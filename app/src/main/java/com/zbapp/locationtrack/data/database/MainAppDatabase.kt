@@ -15,11 +15,14 @@ import androidx.room.TypeConverters
 )
 
 @TypeConverters(
+    LocalDateTimeConverter::class,
+    LocalTimeConverter::class,
+    LocalDateConverter::class,
 )
 abstract class MainAppDatabase: RoomDatabase() {
 
     companion object {
-        const val VERSION = 24
+        const val VERSION = 1
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

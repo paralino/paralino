@@ -24,7 +24,7 @@ android {
 
     defaultConfig {
         applicationId "com.zbapp.locationtrack"
-        minSdkVersion 23
+        minSdkVersion 26
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -129,6 +129,9 @@ dependencies {
     implementation 'org.koin:koin-androidx-viewmodel:2.2.0'
     // endregion
 
+    // region utils
+    implementation 'com.google.android.gms:play-services-location:17.1.0'
+    // endregion
 
     // region 3rd party views
 //    implementation 'com.facebook.shimmer:shimmer:0.5.0'
