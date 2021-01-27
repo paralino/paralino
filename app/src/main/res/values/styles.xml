@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <item name="colorPrimary">@color/theme_lightest</item>
+        <item name="colorPrimaryVariant">@color/theme_lightest</item>
+        <item name="colorOnPrimary">@color/theme_medium</item>
+
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+        <item name="colorOnSecondary">@color/secondaryLightColor</item>
+
+        <item name="android:textColorPrimary">@color/theme_highest</item>
+        <item name="android:textColorSecondary">@color/theme_high</item>
+
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/theme_lightest</item>
+        <item name="android:windowLightStatusBar">@bool/app_windowLightNavigationBar</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+    </style>
+
+    <style name="AppTheme" parent="AppThemeBase">
+    </style>
+
+
+</resources>
