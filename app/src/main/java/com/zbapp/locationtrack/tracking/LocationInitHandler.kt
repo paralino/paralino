@@ -7,7 +7,9 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.zbapp.locationtrack.data.models.location.LocationModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.random.Random
 
 
 class LocationInitHandler(
@@ -22,12 +24,14 @@ class LocationInitHandler(
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
-    private var currentLocation = MutableStateFlow<Location?>(null)
+    val currentLocation = MutableStateFlow<LocationModel?>(null)
+    private var sessionId: String = ""
 
 
     @SuppressLint("MissingPermission")
-    private fun startLocationUpdates() {
+    fun startLocationUpdates() {
         if(LocationConditionStatus.isLocationStatusOk(context)) {
+            sessionId = Random.nextInt(1000, 1000000).toString()
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
@@ -37,7 +41,7 @@ class LocationInitHandler(
     }
 
 
-    private fun stopLocationUpdates() {
+    fun stopLocationUpdates() {
         currentLocation.value = null
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
@@ -45,7 +49,9 @@ class LocationInitHandler(
     private var locationCallback = object: LocationCallback() {
         override fun onLocationResult(location: LocationResult?) {
             location?.lastLocation?.let {
-                currentLocation.value = it
+                currentLocation.value = LocationModel.fromSystem(
+                    it, sessionId, "user_test", null
+                )
             }
         }
     }

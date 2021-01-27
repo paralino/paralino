@@ -1,7 +1,12 @@
 <resources>
+
     <string name="app_name">LocationTrack</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <string name="notifications_active_location_title">Sharing location</string>
+    <string name="notifications_channel_active_location">Active location sharing</string>
+
 </resources>

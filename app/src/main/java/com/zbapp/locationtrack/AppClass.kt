@@ -3,6 +3,7 @@ package com.zbapp.locationtrack
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import com.zbapp.locationtrack.di.KoinSetup
 import com.zbapp.locationtrack.utils.logger.DebugLogger
 import com.zbapp.locationtrack.utils.logger.LoggerKind
 
@@ -25,6 +26,8 @@ class AppClass: Application() {
     private fun init(){
         instance = this
         context = applicationContext
+
+        KoinSetup.initKoin(this)
 
         if(!BuildConfig.forceLogToSystem){
             Logger.setLogger(externalLogTree)
