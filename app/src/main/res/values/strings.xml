@@ -6,6 +6,13 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
+    <string name="button_cancel">Cancel</string>
+    <string name="button_ok">OK</string>
+    <string name="button_done">Done</string>
+    <string name="button_skip">Skip</string>
+
+    <string name="error_generic_snacbar">Ups, please try again.</string>
+
     <string name="notifications_active_location_title">Sharing location</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
 

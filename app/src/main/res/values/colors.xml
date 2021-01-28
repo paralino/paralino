@@ -9,4 +9,7 @@
     <color name="secondaryLightColor">#fffff6</color>
     <color name="secondaryDarkColor">#bdc192</color>
 
+    <color name="backgroundMain">@color/theme_lightest</color>
+    <color name="transparent">@android:color/transparent</color>
+
 </resources>
