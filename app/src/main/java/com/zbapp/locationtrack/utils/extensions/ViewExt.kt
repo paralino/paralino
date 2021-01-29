@@ -3,17 +3,38 @@ package com.zbapp.locationtrack.utils.extensions
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.PaintDrawable
 import android.util.TypedValue
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.widget.ImageViewCompat
+import kotlin.math.max
 
+
+fun View.setShapeBackgroundCircle(@ColorInt color: Int) {
+    val shape = GradientDrawable()
+    var size = max(height, width).takeIf { it > 0 } ?: 100
+    size = size.dp2px
+    shape.setSize(size, size)
+    shape.shape = GradientDrawable.OVAL
+    shape.color = ColorStateList.valueOf(color)
+    background = shape
+}
+
+fun View.setShapeBackgroundRectangle(@ColorInt color: Int, radius: Float) {
+    val shape = PaintDrawable(color)
+    shape.setCornerRadius(radius)
+    background = shape
+}
 
 fun View.setSelectableItemBackground() {
     with(TypedValue()) {
@@ -32,14 +53,6 @@ fun View.backgroundTintRes(@ColorRes resource: Int) {
 
 fun AppCompatImageView.imageTintRes(@ColorRes resource: Int) {
     ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(ContextCompat.getColor(context, resource)))
-}
-
-fun blendColors(from: Int, to: Int, ratio: Float): Int {
-    val inverseRatio = 1f - ratio
-    val r: Float = Color.red(to) * ratio + Color.red(from) * inverseRatio
-    val g: Float = Color.green(to) * ratio + Color.green(from) * inverseRatio
-    val b: Float = Color.blue(to) * ratio + Color.blue(from) * inverseRatio
-    return Color.rgb(r.toInt(), g.toInt(), b.toInt())
 }
 
 fun View.fadeIn(finalAlpha: Float = 1f, duration: Long = 300L, delay: Long = 0, withScaleFrom: Float? = null, finished: (() -> Unit)? = null) {
@@ -114,3 +127,21 @@ fun View.fadeOut(toGone: Boolean = true, finalAlpha: Float = 0f, duration: Long 
 
     animation.start()
 }
+
+inline val Int.px2dp : Int
+    get() = (this.toFloat() / Resources.getSystem().displayMetrics.density).toInt()
+
+inline val Int.dp2px : Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+inline val Double.px2dp : Double
+    get() = this / Resources.getSystem().displayMetrics.density
+
+inline val Double.dp2px : Double
+    get() = this * Resources.getSystem().displayMetrics.density
+
+inline val Float.px2dp : Float
+    get() = this / Resources.getSystem().displayMetrics.density
+
+inline val Float.dp2px : Float
+    get() = this * Resources.getSystem().displayMetrics.density
