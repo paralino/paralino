@@ -6,19 +6,21 @@ package com.zbapp.locationtrack.ui.shared.bottomsheet
 
 import android.content.Context
 import android.util.AttributeSet
-import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.databinding.ElementSheetTitleBinding
 import com.zbapp.locationtrack.utils.BaseRvItem
-import kotlinx.android.synthetic.main.element_sheet_title.view.*
+import com.zbapp.locationtrack.utils.extensions.viewBinding
 
 class BottomSheetTitleItem(context: Context, attributeSet: AttributeSet? = null)
     : BaseRvItem<BottomSheetTitleData>(context, attributeSet){
 
+    val binding by viewBinding(ElementSheetTitleBinding::inflate)
+
     init {
-        inflateFullWidth(R.layout.element_sheet_title)
+        setFullWidth()
     }
 
     override fun applyData(data: BottomSheetTitleData) {
-        tvTitle?.text = data.text(context)
+        binding.tvTitle?.text = data.text(context)
     }
 
 }

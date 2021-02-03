@@ -17,35 +17,36 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.ContentViewCallback
 import com.google.android.material.snackbar.Snackbar
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.databinding.ItemSnackbarBinding
 import com.zbapp.locationtrack.utils.extensions.fadeIn
 import com.zbapp.locationtrack.utils.extensions.fadeOut
-import kotlinx.android.synthetic.main.item_snackbar.view.*
+import com.zbapp.locationtrack.utils.extensions.viewBinding
 
 class AppSnackbarView(context: Context, attributeSet: AttributeSet?):
     ConstraintLayout(context, attributeSet), ContentViewCallback {
 
     var actionClick : (() -> Unit)? = null
+    val binding: ItemSnackbarBinding by viewBinding(ItemSnackbarBinding::inflate)
 
     init {
-        inflate(context, R.layout.item_snackbar, this)
         clipToPadding = false
-        bAction?.setOnClickListener {
+        binding.bAction.setOnClickListener {
             actionClick?.invoke()
         }
     }
 
     fun dataReady(data: AppSnackbarData) {
-        tvText?.text = data.text
-        bAction?.isVisible = !data.actionText.isNullOrBlank()
-        bAction?.text = data.actionText ?: ""
+        binding.tvText?.text = data.text
+        binding.bAction?.isVisible = !data.actionText.isNullOrBlank()
+        binding.bAction?.text = data.actionText ?: ""
     }
 
     override fun animateContentOut(delay: Int, duration: Int) {
-        snackbarHolder?.fadeOut(withScaleTo = 0.6f)
+        binding.snackbarHolder?.fadeOut(withScaleTo = 0.6f)
     }
 
     override fun animateContentIn(delay: Int, duration: Int) {
-        snackbarHolder?.fadeIn(withScaleFrom = 0.6f)
+        binding.snackbarHolder?.fadeIn(withScaleFrom = 0.6f)
     }
 }
 

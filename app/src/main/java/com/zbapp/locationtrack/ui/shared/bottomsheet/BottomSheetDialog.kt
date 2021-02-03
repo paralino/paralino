@@ -15,11 +15,14 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.databinding.LayoutDialogBottomSheetBinding
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
+import com.zbapp.locationtrack.utils.extensions.viewBinding
 import com.zbapp.locationtrack.utils.withClickAction
-import kotlinx.android.synthetic.main.layout_dialog_bottom_sheet.*
 
 open class BottomSheetDialog: BottomSheetDialogFragment() {
+
+    val binding by viewBinding(LayoutDialogBottomSheetBinding::bind)
 
     var actionClick: ((BottomSheetActionData) -> Unit)? = null
     var actionDismiss: (() -> Unit)? = null
@@ -46,7 +49,7 @@ open class BottomSheetDialog: BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter.submitList(items)
-        rvBottomSheet?.adapter = adapter
+        binding.rvBottomSheet?.adapter = adapter
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -91,7 +94,7 @@ open class BottomSheetDialog: BottomSheetDialogFragment() {
             action: ((BottomSheetActionData) -> Unit)? = null
         ): BottomSheetDialog {
             val dialog = BottomSheetDialog().apply {
-                bundleOf("items" to data)
+                arguments = bundleOf("items" to data)
             }
             dialog.actionClick = action
             dialog.show(fragmentManager, "bottomSheet")

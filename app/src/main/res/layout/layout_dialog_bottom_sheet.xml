@@ -1,9 +1,11 @@
-<FrameLayout
-    android:id="@+id/bottomSheetHolder"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    >
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBottomSheet"
@@ -14,6 +16,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:paddingTop="8dp"
         android:paddingBottom="32dp"
-        android:background="@drawable/drawable_sheet_background"/>
+        android:background="@drawable/drawable_sheet_background"
+        />
 
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

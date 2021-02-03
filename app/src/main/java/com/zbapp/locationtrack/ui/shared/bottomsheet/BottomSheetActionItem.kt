@@ -8,29 +8,32 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.core.view.isVisible
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.databinding.ElementSheetActionBinding
 import com.zbapp.locationtrack.utils.BaseRvItem
 import com.zbapp.locationtrack.utils.extensions.setSelectableItemBackground
 import com.zbapp.locationtrack.utils.extensions.setTextColorRes
-import kotlinx.android.synthetic.main.element_sheet_action.view.*
+import com.zbapp.locationtrack.utils.extensions.viewBinding
 
 class BottomSheetActionItem(context: Context, attributeSet: AttributeSet? = null)
     : BaseRvItem<BottomSheetActionData>(context, attributeSet){
 
+    val binding by viewBinding(ElementSheetActionBinding::inflate)
+
     init {
-        inflateFullWidth(R.layout.element_sheet_action)
+        setFullWidth()
         setSelectableItemBackground()
     }
 
     override fun applyData(data: BottomSheetActionData) {
-        ivIcon?.isVisible = data.iconRes != null
-        data.iconRes?.let { ivIcon?.setImageResource(it) }
+        binding.ivIcon?.isVisible = data.iconRes != null
+        data.iconRes?.let { binding.ivIcon?.setImageResource(it) }
 
-        tvTitle?.text = data.text(context)
+        binding.tvTitle?.text = data.text(context)
 
         if(data.colorRes != null) {
-            tvTitle?.setTextColorRes(data.colorRes)
+            binding.tvTitle?.setTextColorRes(data.colorRes)
         } else {
-            tvTitle?.setTextColorRes(R.color.primaryTextColor)
+            binding.tvTitle?.setTextColorRes(R.color.primaryTextColor)
         }
 
     }

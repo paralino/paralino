@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/activity_side_margin_small"
-        android:text="@string/location_banner_sharing_title_active"
+        android:text="@string/location_banner_sharing_active"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/tvLocationStatusSubtitle"
         app:layout_constraintStart_toEndOf="@id/ivLocationStatus"

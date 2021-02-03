@@ -16,9 +16,11 @@
     <string name="notifications_active_location_title">Sharing location</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
 
-    <string name="location_banner_sharing_title_active">Sharing location</string>
+    <string name="location_banner_sharing_active">Sharing location</string>
+    <string name="location_banner_sharing_start">Start sharing</string>
     <string name="location_banner_info_stop">Tap to stop</string>
     <string name="location_banner_info_error">Tap to fix</string>
     <string name="location_banner_tracking_active">Tracking location</string>
+    <string name="location_banner_tracking_start">Start tracking</string>
 
 </resources>

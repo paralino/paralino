@@ -98,14 +98,22 @@ abstract class BaseRvItem<T>(context: Context, attributeSet: AttributeSet? = nul
 
     protected fun inflateFullWidth(@LayoutRes layout: Int) {
         inflate(layout)
+        setFullWidth()
+    }
+
+    protected fun inflateFullHeight(@LayoutRes layout: Int) {
+        inflate(layout)
+        setFullHeight()
+    }
+
+    protected fun setFullWidth() {
         rootView.layoutParams = RecyclerView.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
     }
 
-    protected fun inflateFullHeight(@LayoutRes layout: Int) {
-        inflate(layout)
+    protected fun setFullHeight() {
         rootView.layoutParams = RecyclerView.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.MATCH_PARENT

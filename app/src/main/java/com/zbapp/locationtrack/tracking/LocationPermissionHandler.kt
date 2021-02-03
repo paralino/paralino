@@ -35,10 +35,10 @@ class LocationPermissionHandler(
     val status: LiveData<LocationConditionStatus> = statusLiveData
 
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    override fun onResume(owner: LifecycleOwner) {
-        updateStates()
-    }
+//    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+//    override fun onResume(owner: LifecycleOwner) {
+//        updateStates()
+//    }
 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
@@ -47,17 +47,17 @@ class LocationPermissionHandler(
         locationPermissionLauncher = registry.register(
             "key_location", owner, ActivityResultContracts.RequestPermission()
         ) {
-            updateStates()
+            updateStatus()
         }
 
         locationServiceLauncher = registry.register(
             "key_result_location", owner, ActivityResultContracts.StartActivityForResult()
         ) {
-            updateStates()
+            updateStatus()
         }
     }
 
-    private fun updateStates() {
+    fun updateStatus() {
         if (!LocationConditionStatus.hasLocationPermission(context)) {
             statusLiveData.postValue(LocationConditionStatus.LOCATION_PERMISSION_DENIED)
         } else if (!LocationConditionStatus.isLocationOn(context)) {
@@ -80,7 +80,7 @@ class LocationPermissionHandler(
 
         when {
             LocationConditionStatus.hasLocationPermission(context) -> {
-                updateStates()
+                updateStatus()
                 return true
             }
             needPermissionRationale -> {
@@ -100,7 +100,7 @@ class LocationPermissionHandler(
 
     fun askLocationService(): Boolean {
         if (LocationConditionStatus.isLocationOn(context)) {
-            updateStates()
+            updateStatus()
             return true
         }
 
