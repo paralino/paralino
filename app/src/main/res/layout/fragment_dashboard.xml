@@ -6,10 +6,47 @@
     android:layout_height="match_parent"
     tools:context=".ui.dashboard.DashboardFragment">
 
+    <include
+        android:id="@+id/mainHeader"
+        layout="@layout/element_main_header"
+        />
+
+    <include
+        android:id="@+id/bannerTracking"
+        layout="@layout/element_dashboard_banner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainHeader"
+        app:layout_constraintEnd_toStartOf="@id/bannerSharing"
+        android:layout_marginEnd="@dimen/activity_side_margin_small"
+        app:layout_goneMarginEnd="@dimen/activity_side_margin"
+        android:layout_marginStart="@dimen/activity_side_margin"
+
+        />
+
+    <include
+        android:id="@+id/bannerSharing"
+        layout="@layout/element_dashboard_banner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/bannerTracking"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainHeader"
+        android:layout_marginStart="@dimen/activity_side_margin_small"
+        app:layout_goneMarginStart="@dimen/activity_side_margin"
+        android:layout_marginEnd="@dimen/activity_side_margin"
+
+        />
+    
+    
     <TextView
+        app:layout_goneMarginTop="@dimen/main_header_height"
         android:id="@+id/text_dashboard"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -18,5 +55,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/mainHeader" />
 </androidx.constraintlayout.widget.ConstraintLayout>

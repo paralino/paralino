@@ -1,31 +1,31 @@
 package com.zbapp.locationtrack.ui.dashboard
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.tracking.LocationConditionStatus
+import com.zbapp.locationtrack.tracking.LocationPermissionHandler
+import com.zbapp.locationtrack.tracking.LocationService
+import com.zbapp.locationtrack.ui.base.BaseFragment
+import kotlinx.android.synthetic.main.fragment_dashboard.*
 
-class DashboardFragment : Fragment() {
+class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
 
-    private lateinit var dashboardViewModel: DashboardViewModel
+    private lateinit var vm: DashboardViewModel
+    private lateinit var permissionHandler: LocationPermissionHandler
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        dashboardViewModel =
-            ViewModelProvider(this).get(DashboardViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
-        val textView: TextView = root.findViewById(R.id.text_dashboard)
-        dashboardViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-        return root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        text_dashboard.setOnClickListener {
+            val text = text_dashboard.text.toString()
+            if(text == LocationConditionStatus.LOCATION_PERMISSION_DENIED.name) {
+                permissionHandler.askLocationPermission(null)
+            } else if(text == LocationConditionStatus.LOCATION_SERVICE_DISABLED.name) {
+                permissionHandler.askLocationService()
+            } else {
+                LocationService.start(context ?: return@setOnClickListener)
+            }
+        }
     }
+
 }

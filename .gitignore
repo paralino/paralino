@@ -8,4 +8,5 @@
 .externalNativeBuild
 .cxx
 app/schemas/
-local.properties
+user.properties
+local_resources/

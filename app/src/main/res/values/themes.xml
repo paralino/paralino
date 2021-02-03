@@ -3,15 +3,10 @@
 
     <bool name="app_windowLightNavigationBar">true</bool>
 
-    <color name="theme_lightest">#F0F0F0</color>
-    <color name="theme_light">#E1E1E1</color>
-    <color name="theme_medium">#929292</color>
-    <color name="theme_high">#252525</color>
-    <color name="theme_highest">#151515</color>
-
-    <color name="primaryTextColor">@color/theme_highest</color>
-    <color name="secondaryTextColor">@color/theme_high</color>
-
-    <color name="bottomBarColor">@color/theme_lightest</color>
+    <color name="theme_lightest">@color/light_theme_lightest</color>
+    <color name="theme_light">@color/light_theme_light</color>
+    <color name="theme_medium">@color/light_theme_medium</color>
+    <color name="theme_high">@color/light_theme_high</color>
+    <color name="theme_highest">@color/light_theme_highest</color>
 
 </resources>

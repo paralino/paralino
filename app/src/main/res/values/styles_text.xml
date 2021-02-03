@@ -2,20 +2,20 @@
 <resources>
 
     <style name="TextStyle.Regular" parent="TextAppearance.AppCompat">
-<!--        <item name="fontFamily">@font/</item>-->
+        <item name="fontFamily">@font/font_montserrat_regular</item>
         <item name="android:textColor">@color/main_button_text_color</item>
     </style>
 
     <style name="TextStyle.Medium" parent="TextStyle.Regular">
-
+        <item name="fontFamily">@font/font_montserrat_semibold</item>
     </style>
 
     <style name="TextStyle.Light" parent="TextStyle.Regular">
-
+        <item name="fontFamily">@font/font_montserrat_light</item>
     </style>
 
     <style name="TextStyle.Bold" parent="TextStyle.Regular">
-
+        <item name="fontFamily">@font/font_montserrat_bold</item>
     </style>
 
 
