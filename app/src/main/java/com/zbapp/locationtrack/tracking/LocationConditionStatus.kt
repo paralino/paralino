@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
+import java.lang.Exception
+import java.lang.IllegalStateException
 
 enum class LocationConditionStatus {
     LOCATION_PERMISSION_DENIED,
@@ -40,3 +42,5 @@ enum class LocationConditionStatus {
         }
     }
 }
+
+class LocationStatusException(val status: LocationConditionStatus): IllegalStateException(status.name)

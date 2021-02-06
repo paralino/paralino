@@ -14,31 +14,31 @@
     <include
         android:id="@+id/bannerTracking"
         layout="@layout/element_dashboard_banner"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mainHeader"
         app:layout_constraintEnd_toStartOf="@id/bannerSharing"
         android:layout_marginEnd="@dimen/activity_side_margin_small"
         app:layout_goneMarginEnd="@dimen/activity_side_margin"
         android:layout_marginStart="@dimen/activity_side_margin"
-
+        app:layout_constrainedWidth="true"
+        app:layout_constraintWidth_max="300dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
         />
 
     <include
         android:id="@+id/bannerSharing"
         layout="@layout/element_dashboard_banner"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/bannerTracking"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mainHeader"
         android:layout_marginStart="@dimen/activity_side_margin_small"
         app:layout_goneMarginStart="@dimen/activity_side_margin"
         android:layout_marginEnd="@dimen/activity_side_margin"
-
+        app:layout_constrainedWidth="true"
         />
     
     

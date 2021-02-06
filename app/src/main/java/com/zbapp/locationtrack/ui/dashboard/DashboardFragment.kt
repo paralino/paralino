@@ -6,6 +6,8 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.asLiveData
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.data.database.Payload
+import com.zbapp.locationtrack.data.database.data
 import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.tracking.LocationConditionStatus
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
@@ -32,18 +34,31 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.bannerSharing.root.alpha = 0.3f
         binding.bannerTracking.root.setOnClickListener {
-            permissionHandler.updateStatus()
+            if(vm.isTrackingActive()) {
+                vm.stopTracking()
+            } else {
+                permissionHandler.updateStatus()
+            }
         }
 
         vm.locationInit.currentLocation.asLiveData().observe {
-            Toast.makeText(context, "got location ${it != null}", Toast.LENGTH_SHORT).show()
-            binding.bannerTracking.tvLocationStatusSubtitle.isVisible = it != null
-            if(it != null) {
-                binding.bannerTracking.tvLocationStatusTitle.setText(R.string.location_banner_tracking_active)
-            } else {
-                binding.bannerTracking.tvLocationStatusTitle.setText(R.string.location_banner_tracking_start)
+
+            when(it) {
+                is Payload.Success ->  {
+                    binding.bannerTracking.tvLocationStatusTitle.setText(R.string.location_banner_tracking_active)
+                }
+                is Payload.Error -> {
+                    binding.bannerTracking.tvLocationStatusTitle.setText(R.string.location_banner_tracking_start)
+                    Toast.makeText(context, "error ${it.exception.message}", Toast.LENGTH_SHORT).show()
+                }
+                Payload.Loading -> {
+                    Toast.makeText(context, "Starting", Toast.LENGTH_SHORT).show()
+                }
             }
+
+            binding.bannerTracking.tvLocationStatusSubtitle.isVisible = it is Payload.Success
         }
 
         permissionHandler.status.observe {

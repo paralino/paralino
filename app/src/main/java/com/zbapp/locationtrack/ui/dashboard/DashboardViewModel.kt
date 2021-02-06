@@ -13,4 +13,24 @@ class DashboardViewModel(
         value = "This is dashboard Fragment"
     }
     val text: LiveData<String> = _text
+
+    fun isTrackingActive(): Boolean {
+        return locationInit.isTracking
+    }
+
+    fun startTracking() {
+
+    }
+
+    fun startSharing() {
+
+    }
+
+    fun stopTracking() {
+        locationInit.stopLocationUpdates()
+    }
+
+    fun stopSharing() {
+
+    }
 }
