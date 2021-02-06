@@ -18,6 +18,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="highlightRed">#F44336</color>
+    <color name="highlightGold">#FFC107</color>
     <color name="accent">#26A69A</color>
 
     <color name="primaryTextColor">@color/theme_highest</color>

@@ -12,7 +12,7 @@
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginVertical="8dp"
-        android:layout_marginStart="@dimen/mainSidePaddingMedium"
+        android:layout_marginStart="@dimen/activity_side_margin_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,8 +25,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="10dp"
-        android:layout_marginStart="@dimen/mainSidePaddingSmall"
-        android:layout_marginEnd="@dimen/mainSidePaddingMedium"
+        android:layout_marginStart="@dimen/activity_side_margin"
+        android:layout_marginEnd="@dimen/activity_side_margin_large"
         android:gravity="start|center_vertical"
         android:includeFontPadding="false"
         android:maxLines="1"
@@ -35,7 +35,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ivIcon"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_goneMarginStart="@dimen/mainSidePaddingMedium"
+        app:layout_goneMarginStart="@dimen/activity_side_margin_large"
         tools:text="Today" />
 
 </merge>

@@ -7,7 +7,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.asLiveData
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.data.database.Payload
-import com.zbapp.locationtrack.data.database.data
 import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.tracking.LocationConditionStatus
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
@@ -35,6 +34,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.bannerSharing.root.alpha = 0.3f
+        binding.bannerTracking.root.clipToOutline = true
         binding.bannerTracking.root.setOnClickListener {
             if(vm.isTrackingActive()) {
                 vm.stopTracking()

@@ -9,4 +9,7 @@
     <color name="theme_high">@color/dark_theme_high</color>
     <color name="theme_highest">@color/dark_theme_highest</color>
 
+    <color name="theme_background_section">@color/dark_theme_light</color>
+    <color name="theme_background_section_bright">@color/dark_theme_lightest</color>
+
 </resources>

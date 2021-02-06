@@ -23,4 +23,21 @@
     <string name="location_banner_tracking_active">Tracking location</string>
     <string name="location_banner_tracking_start">Start tracking</string>
 
+    <string name="settings_profile_name_placeholder">Your name</string>
+    <string name="settings_profile_username_placeholder">Your email</string>
+
+    <string name="settings_section_location_title">Location</string>
+    <string name="setting_title_location_defaults">Default location settings</string>
+    <string name="setting_title_location_sharing">Location sharing</string>
+    <string name="setting_title_location_history">Location history</string>
+
+    <string name="settings_section_general_title">Info</string>
+    <string name="setting_title_share">Share with friends</string>
+    <string name="setting_title_rate">Give some stars 🌟🌟🌟🌟🌟</string>
+    <string name="setting_title_feedback">Contact us</string>
+    <string name="setting_title_help">Help &amp; support</string>
+    <string name="setting_title_sourceCode">Check out source code</string>
+    <string name="setting_title_privacy">Privacy &amp; Terms</string>
+    <string name="setting_title_libraries">Acknowledgments</string>
+
 </resources>

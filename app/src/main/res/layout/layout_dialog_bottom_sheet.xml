@@ -16,7 +16,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:paddingTop="8dp"
         android:paddingBottom="32dp"
-        android:background="@drawable/drawable_sheet_background"
+        android:background="@drawable/background_bottom_sheet"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
