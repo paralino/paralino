@@ -2,9 +2,9 @@
 
     <string name="app_name">LocationTrack</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_map">Map</string>
+    <string name="title_settings">Settings</string>
 
     <string name="button_cancel">Cancel</string>
     <string name="button_ok">OK</string>
