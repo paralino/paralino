@@ -22,7 +22,6 @@ data class LocationModel(
 
     val sessionId: String,
     val userId: String,
-    val circleId: String,
 
     val time: LocalDateTime? = null,
     val batteryLevel: Int? = null,
@@ -36,9 +35,8 @@ data class LocationModel(
         accuracy = model.accuracy,
         sessionId = model.sessionId,
         userId = model.userId,
-        circleId = model.circleId,
         time = model.time?.let {
-            try { LocalDateTime.parse(it) }
+            try { LocalDateTime.ofInstant(Instant.ofEpochMilli(it),ZoneOffset.UTC) }
             catch (e: Exception) { null }
         },
         batteryLevel = model.batteryLevel,
@@ -53,7 +51,6 @@ data class LocationModel(
                 accuracy = location.accuracy,
                 sessionId = sessionId,
                 userId = userId,
-                circleId = userId,
                 time = LocalDateTime.ofInstant(Instant.ofEpochMilli(location.time),ZoneOffset.UTC),
                 batteryLevel = batteryLevel
             )
@@ -68,8 +65,7 @@ data class LocationModel(
             accuracy = accuracy,
             sessionId = sessionId,
             userId = userId,
-            circleId = circleId,
-            time = time?.toString(),
+            time = time?.toInstant(ZoneOffset.UTC)?.toEpochMilli(),
             batteryLevel = batteryLevel,
             imageBase64 = imageBase64
         )

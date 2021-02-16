@@ -9,7 +9,6 @@ data class BaseLocationModel(
 
     val sessionId: String,
     val userId: String,
-    val circleId: String,
 
     val time: Long? = null,
     val batteryLevel: Int? = null,
