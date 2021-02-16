@@ -5,8 +5,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.asLiveData
+import com.zbapp.location.models.Payload
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.data.database.Payload
 import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.tracking.LocationConditionStatus
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler

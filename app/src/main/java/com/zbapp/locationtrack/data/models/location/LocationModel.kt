@@ -4,11 +4,11 @@ import android.location.Location
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.android.parcel.Parcelize
+import com.zbapp.location.models.location.BaseLocationModel
+import kotlinx.parcelize.Parcelize
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
 
 @Parcelize
 @Entity(tableName = "locations")
@@ -22,11 +22,28 @@ data class LocationModel(
 
     val sessionId: String,
     val userId: String,
+    val circleId: String,
 
     val time: LocalDateTime? = null,
     val batteryLevel: Int? = null,
     val imageBase64: String? = null,
 ): Parcelable {
+
+    constructor(model: BaseLocationModel): this(
+        id = model.id,
+        lat = model.lat,
+        lng = model.lng,
+        accuracy = model.accuracy,
+        sessionId = model.sessionId,
+        userId = model.userId,
+        circleId = model.circleId,
+        time = model.time?.let {
+            try { LocalDateTime.parse(it) }
+            catch (e: Exception) { null }
+        },
+        batteryLevel = model.batteryLevel,
+        imageBase64 = model.imageBase64
+    )
 
     companion object {
         fun fromSystem(location: Location, sessionId: String, userId: String, batteryLevel: Int? = null): LocationModel {
@@ -36,10 +53,26 @@ data class LocationModel(
                 accuracy = location.accuracy,
                 sessionId = sessionId,
                 userId = userId,
+                circleId = userId,
                 time = LocalDateTime.ofInstant(Instant.ofEpochMilli(location.time),ZoneOffset.UTC),
                 batteryLevel = batteryLevel
             )
         }
+    }
+
+    fun toBaseModel(): BaseLocationModel {
+        return BaseLocationModel(
+            id = id,
+            lat = lat,
+            lng = lng,
+            accuracy = accuracy,
+            sessionId = sessionId,
+            userId = userId,
+            circleId = circleId,
+            time = time?.toString(),
+            batteryLevel = batteryLevel,
+            imageBase64 = imageBase64
+        )
     }
 
 }

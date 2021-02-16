@@ -5,8 +5,8 @@ import android.content.Context
 import android.location.Location
 import android.os.Looper
 import com.google.android.gms.location.*
+import com.zbapp.location.models.Payload
 import com.zbapp.locationtrack.data.config.randomString
-import com.zbapp.locationtrack.data.database.Payload
 import com.zbapp.locationtrack.data.models.location.LocationModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
