@@ -9,12 +9,13 @@ import kotlinx.parcelize.Parcelize
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.util.*
 
 @Parcelize
 @Entity(tableName = "locations")
 data class LocationModel(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: String,
 
     val lat: Double,
     val lng: Double,
@@ -46,6 +47,7 @@ data class LocationModel(
     companion object {
         fun fromSystem(location: Location, sessionId: String, userId: String, batteryLevel: Int? = null): LocationModel {
             return LocationModel(
+                id = UUID.randomUUID().toString(),
                 lat = location.latitude,
                 lng = location.longitude,
                 accuracy = location.accuracy,

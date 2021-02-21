@@ -16,7 +16,7 @@
         app:layout_constraintWidth_max="400dp"
         app:labelVisibilityMode="unlabeled"
         android:background="@drawable/background_bottom_navigation"
-        app:itemIconTint="@color/selected_item_color"
+        app:itemIconTint="@color/checked_item_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

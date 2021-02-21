@@ -6,6 +6,10 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.asLiveData
+import com.zbapp.location.models.circle.Circle
+import com.zbapp.location.models.data
+import com.zbapp.location.models.location.LocationSharingContract
+import com.zbapp.location.repo.location.LocationRepository
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +28,7 @@ class LocationService: Service() {
 
     private val notificationHandler: LocationNotificationHandler by inject()
     private val locationInitHandler: LocationInitHandler by inject()
+    private val locationRepository: LocationRepository by inject()
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -43,10 +48,12 @@ class LocationService: Service() {
 
     private fun startTracking() {
         if(LocationConditionStatus.isLocationStatusOk(this)) {
+            locationRepository.sharingManager.startSharing(LocationSharingContract(Circle.personalTracking.id, 0))
             locationInitHandler.startLocationUpdates()
             locationJob?.cancel()
             locationJob = locationInitHandler.currentLocation
                 .onEach {
+                    it.data?.toBaseModel()?.let { it1 -> locationRepository.pushLocation(it1) }
                     logv("Got location: $it")
                 }
                 .launchIn(serviceDefaultScope)

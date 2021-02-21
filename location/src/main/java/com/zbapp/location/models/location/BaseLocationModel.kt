@@ -1,7 +1,7 @@
 package com.zbapp.location.models.location
 
 data class BaseLocationModel(
-    val id: Int = 0,
+    val id: String,
 
     val lat: Double,
     val lng: Double,

@@ -6,7 +6,7 @@ import com.zbapp.location.utils.replace
 import kotlinx.coroutines.flow.*
 
 class LocationRepository constructor(
-    private val sharingManager: LocationSharingManager
+    val sharingManager: LocationSharingManager
 ) {
 
     // map<circleId, listOfLocations>
@@ -39,10 +39,14 @@ class LocationRepository constructor(
             toMutableMap().apply {
                 sharingManager.allContractsValue.forEach {
                     val list = this.getOrDefault(it.circleId, emptyList())
-                    list.toMutableList().apply {
-                        add(location)
-                        distinctBy { it.userId }
-                    }
+                        .toMutableList().apply {
+                            val index = this.indexOfFirst { it.userId == location.userId }
+                            if(index < 0) {
+                                this.add(location)
+                            } else {
+                                this[index] = location
+                            }
+                        }
                     this[it.circleId] = list
                 }
             }

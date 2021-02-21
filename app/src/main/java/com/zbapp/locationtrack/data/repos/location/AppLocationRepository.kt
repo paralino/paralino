@@ -1,6 +1,6 @@
 package com.zbapp.locationtrack.data.repos.location
 
-class LocationRepository(
+class AppLocationRepository(
     private val dao: LocationDao
 ) {
 }

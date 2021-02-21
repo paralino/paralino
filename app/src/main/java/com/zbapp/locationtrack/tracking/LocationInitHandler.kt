@@ -24,8 +24,8 @@ class LocationInitHandler(
     private val fusedLocationClient =  LocationServices.getFusedLocationProviderClient(context)
 
     private var locationRequest: LocationRequest = LocationRequest().apply {
-        interval = 10000
-        fastestInterval = 5000
+        interval = 8_000
+        fastestInterval = 1_000
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
