@@ -51,7 +51,6 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                 }
                 is Payload.Error -> {
                     binding.bannerTracking.tvLocationStatusTitle.setText(R.string.location_banner_tracking_start)
-                    Toast.makeText(context, "error ${it.exception.message}", Toast.LENGTH_SHORT).show()
                 }
                 Payload.Loading -> {
                     Toast.makeText(context, "Starting", Toast.LENGTH_SHORT).show()

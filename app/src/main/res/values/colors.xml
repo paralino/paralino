@@ -31,7 +31,5 @@
     <color name="backgroundMain">@color/theme_lightest</color>
     <color name="transparent">@android:color/transparent</color>
 
-    <color name="bottomBarColor">@color/theme_light</color>
-
 
 </resources>

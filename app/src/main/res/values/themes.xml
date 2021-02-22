@@ -12,4 +12,6 @@
     <color name="theme_background_section">@color/light_theme_lightest</color>
     <color name="theme_background_section_bright">@color/light_theme_light</color>
 
+    <color name="bottomBarColor">@color/light_theme_lightest</color>
+
 </resources>
