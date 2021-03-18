@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        style="@style/Container.Generic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_side_margin_very_small"
+        android:padding="@dimen/activity_side_margin"
+        android:foreground="?selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <com.zbapp.locationtrack.ui.shared.RoundImageView
+            android:id="@+id/ivGroup"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:backgroundColor="@color/theme_background_section_bright"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvGroupEmoji"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:textSize="28sp"
+            app:layout_constraintBottom_toBottomOf="@id/ivGroup"
+            app:layout_constraintEnd_toEndOf="@id/ivGroup"
+            app:layout_constraintStart_toStartOf="@id/ivGroup"
+            app:layout_constraintTop_toTopOf="@id/ivGroup"
+            tools:text="🦝" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvGroupName"
+            style="@style/TextStyle.Regular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="2"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/tvGroupCount"
+            app:layout_constraintEnd_toStartOf="@id/bAction"
+            app:layout_constraintStart_toEndOf="@id/ivGroup"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="@tools:sample/lorem[20]" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvGroupCount"
+            style="@style/TextStyle.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:drawableStart="@drawable/ic_groups"
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/theme_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@color/theme_medium"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivGroup"
+            app:layout_constraintTop_toBottomOf="@id/tvGroupName"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="5" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/bAction"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/accent"
+            tools:src="@drawable/ic_location_on"
+            tools:visibility="gone" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>

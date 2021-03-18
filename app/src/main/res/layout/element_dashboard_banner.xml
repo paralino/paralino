@@ -1,47 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/activity_side_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginHorizontal="@dimen/activity_side_margin"
+    android:layout_marginVertical="@dimen/activity_side_margin_small"
     android:background="@drawable/shape_main_rounded_background"
-    android:backgroundTint="@color/theme_light"
+    android:backgroundTint="@color/errorBannerBackground"
     android:foreground="?selectableItemBackgroundBorderless"
-    android:elevation="8dp"
-    android:padding="@dimen/activity_side_margin_medium">
+    android:elevation="0dp"
+    android:paddingVertical="@dimen/activity_side_margin_small"
+    android:paddingHorizontal="@dimen/activity_side_margin"
+    >
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/ivLocationStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:src="@drawable/ic_stop_circle"
+        android:id="@+id/ivBannerIcon"
+        android:layout_width="16dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        tools:src="@drawable/ic_location_off"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvLocationStatusTitle"
+        android:id="@+id/tvBannerTitle"
+        style="@style/TextStyle.Regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_side_margin_small"
+        tools:text="@string/location_banner_sharing_active"
+        android:textSize="14sp"
+        android:includeFontPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ivBannerIcon"
+        app:layout_constraintTop_toTopOf="parent"
+         />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvBannerInfo"
         style="@style/TextStyle.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_side_margin_small"
-        android:text="@string/location_banner_sharing_active"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@id/tvLocationStatusSubtitle"
-        app:layout_constraintStart_toEndOf="@id/ivLocationStatus"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvLocationStatusSubtitle"
-        style="@style/TextStyle.Light"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_side_margin_small"
-        android:text="@string/location_banner_info_stop"
-        android:textSize="12sp"
+        android:text="@string/location_banner_fix"
+        android:textSize="13sp"
+        android:textColor="@color/highlightRed"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ivLocationStatus"
-        app:layout_constraintTop_toBottomOf="@id/tvLocationStatusTitle" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

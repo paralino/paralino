@@ -8,10 +8,12 @@ import androidx.core.content.ContextCompat
 import java.lang.Exception
 import java.lang.IllegalStateException
 
-enum class LocationConditionStatus {
-    LOCATION_PERMISSION_DENIED,
-    LOCATION_SERVICE_DISABLED,
-    OK;
+data class LocationConditionStatus constructor(
+    val isGpsOn: Boolean,
+    val isPermissionAllowed: Boolean
+) {
+
+    fun isOK() = isGpsOn && isPermissionAllowed
 
 
     companion object {
@@ -27,20 +29,17 @@ enum class LocationConditionStatus {
             ) == PackageManager.PERMISSION_GRANTED
         }
 
-        fun isLocationStatusOk(context: Context): Boolean {
-            return getLocationStatus(context) == OK
+        fun isOk(context: Context): Boolean {
+            return getLocationStatus(context).isOK()
         }
 
         fun getLocationStatus(context: Context): LocationConditionStatus {
-            return if(!hasLocationPermission(context)) {
-                LOCATION_PERMISSION_DENIED
-            } else if(!isLocationOn(context)) {
-                LOCATION_SERVICE_DISABLED
-            } else {
-                OK
-            }
+            return LocationConditionStatus(
+                isGpsOn = isLocationOn(context),
+                isPermissionAllowed = hasLocationPermission(context)
+            )
         }
     }
 }
 
-class LocationStatusException(val status: LocationConditionStatus): IllegalStateException(status.name)
+class LocationStatusException(val status: LocationConditionStatus): IllegalStateException(status.toString())

@@ -10,4 +10,6 @@ data class LocationSharingContract(
         return this
     }
 
+    val isEndless: Boolean get() = endTimeStamp == 0L
+
 }

@@ -16,7 +16,12 @@ import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItems
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
+import com.zbapp.locationtrack.utils.SimpleRvAdapter
 import com.zbapp.locationtrack.utils.extensions.viewBinding
+import com.zbapp.locationtrack.utils.simpleAdapter
+import com.zbapp.locationtrack.utils.withClickAction
+import com.zbapp.locationtrack.utils.withDataOnClickAction
+import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
@@ -33,48 +38,77 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.bannerSharing.root.alpha = 0.3f
-        binding.bannerTracking.root.clipToOutline = true
-        binding.bannerTracking.root.setOnClickListener {
+        setUi()
+        setupObservers()
+    }
+
+    private fun setUi() {
+        val adapter = SimpleRvAdapter()
+            .addFactory {
+                ErrorListItem(it).withDataOnClickAction {
+                    when(it) {
+                        ErrorListItemType.GPS -> showNoLocationServicesWarning()
+                        ErrorListItemType.PERMISSION -> showNoLocationPermissionWarning()
+                    }
+                }
+            }
+            .addFactory {
+                GroupListItem(it).withClickAction {
+
+                }
+            }
+
+        binding.rvDashboard.adapter = adapter
+    }
+
+    private fun setupObservers() {
+
+        binding.bannerTracking.setOnClickListener {
             if(vm.isTrackingActive()) {
                 vm.stopTracking()
             } else {
-                permissionHandler.updateStatus()
+                permissionHandler.updateRequestStatus()
             }
         }
 
-        vm.locationInit.currentLocation.asLiveData().observe {
+        vm.getGroups().observe {
+            binding.rvDashboard.simpleAdapter?.submitList(it)
+        }
 
+        vm.locationInit.currentLocation.asLiveData().observe {
             when(it) {
                 is Payload.Success ->  {
-                    binding.bannerTracking.tvLocationStatusTitle.setText(R.string.location_banner_tracking_active)
+                    binding.bannerTracking.setText(R.string.location_banner_tracking_active)
+                    binding.bannerTracking.setText(R.string.location_banner_info_stop)
                 }
                 is Payload.Error -> {
-                    binding.bannerTracking.tvLocationStatusTitle.setText(R.string.location_banner_tracking_start)
+                    binding.bannerTracking.setText(R.string.location_banner_tracking_start)
                 }
                 Payload.Loading -> {
                     Toast.makeText(context, "Starting", Toast.LENGTH_SHORT).show()
                 }
             }
-
-            binding.bannerTracking.tvLocationStatusSubtitle.isVisible = it is Payload.Success
         }
 
         permissionHandler.status.observe {
-            when(it) {
-                LocationConditionStatus.LOCATION_PERMISSION_DENIED -> {
+            vm.locationStatus.value = it
+        }
+
+        permissionHandler.requestStatus.observe {
+            when {
+                !it.isPermissionAllowed -> {
                     showNoLocationPermissionWarning()
                 }
-                LocationConditionStatus.LOCATION_SERVICE_DISABLED -> {
+                !it.isGpsOn -> {
                     showNoLocationServicesWarning()
                 }
-                LocationConditionStatus.OK -> {
+                it.isOK() -> {
                     LocationService.start(context ?: return@observe)
                 }
             }
         }
-    }
 
+    }
 
     private fun showNoLocationPermissionWarning() {
         BottomSheetDialog.show(

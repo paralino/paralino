@@ -78,7 +78,7 @@ class LocationInitHandler(
 
     fun startLocationUpdates() {
         val status = LocationConditionStatus.getLocationStatus(context)
-        if(status == LocationConditionStatus.OK) {
+        if(status.isOK()) {
             sessionId = randomString(20)
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,

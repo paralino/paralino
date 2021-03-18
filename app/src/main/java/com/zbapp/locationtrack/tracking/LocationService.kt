@@ -47,7 +47,7 @@ class LocationService: Service() {
     }
 
     private fun startTracking() {
-        if(LocationConditionStatus.isLocationStatusOk(this)) {
+        if(LocationConditionStatus.isOk(this)) {
             locationRepository.sharingManager.startSharing(LocationSharingContract(Circle.personalTracking.id, 0))
             locationInitHandler.startLocationUpdates()
             locationJob?.cancel()

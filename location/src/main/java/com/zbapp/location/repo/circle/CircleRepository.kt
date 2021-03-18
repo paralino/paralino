@@ -11,7 +11,7 @@ class CircleRepository {
     private val personalTrackingCircle get() = Circle.personalTracking
     private val publicSharingCircle get() = Circle.publicSharing
 
-    private fun getAllCircles(): Flow<List<Circle>> {
+    fun getAllCircles(): Flow<List<Circle>> {
         return circles.map {
             it + listOfNotNull(personalTrackingCircle, publicSharingCircle)
         }

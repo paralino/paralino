@@ -37,13 +37,15 @@ class LocationSharingManager {
             }.mapNotNull { it.asValidContract() }
         }
 
+    val isSharingActive: Boolean get() = allContractsValue.isNotEmpty()
+
     fun startSharing(contract: LocationSharingContract) {
         val now = Clock.System.now().toEpochMilliseconds()
-        val max = now + publicSharingMaxDurationMillis
         val end = contract.endTimeStamp
 
         when(contract.circleId) {
             publicSharing.value.circleId -> {
+                val max = now + publicSharingMaxDurationMillis
                 publicSharing.newValue(
                     when {
                         end == null || end < now -> null

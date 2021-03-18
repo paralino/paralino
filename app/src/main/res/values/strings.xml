@@ -22,6 +22,10 @@
     <string name="location_banner_info_error">Tap to fix</string>
     <string name="location_banner_tracking_active">Tracking location</string>
     <string name="location_banner_tracking_start">Start tracking</string>
+    <string name="location_banner_fix">Fix</string>
+
+    <string name="location_banner_error_gps_off">GPS is off</string>
+    <string name="location_banner_error_no_permission">Missing permission</string>
 
     <string name="settings_profile_name_placeholder">Your name</string>
     <string name="settings_profile_username_placeholder">Your email</string>

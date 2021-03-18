@@ -31,14 +31,17 @@ class LocationPermissionHandler(
 
     private var needPermissionRationale: Boolean = false
 
+    private val requestStatusLiveData = MutableLiveData<LocationConditionStatus>()
+    val requestStatus: LiveData<LocationConditionStatus> = requestStatusLiveData
+
     private val statusLiveData = MutableLiveData<LocationConditionStatus>()
     val status: LiveData<LocationConditionStatus> = statusLiveData
 
 
-//    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-//    override fun onResume(owner: LifecycleOwner) {
-//        updateStates()
-//    }
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    override fun onResume(owner: LifecycleOwner) {
+        updateStatus()
+    }
 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
@@ -47,25 +50,23 @@ class LocationPermissionHandler(
         locationPermissionLauncher = registry.register(
             "key_location", owner, ActivityResultContracts.RequestPermission()
         ) {
-            updateStatus()
+            updateRequestStatus()
         }
 
         locationServiceLauncher = registry.register(
             "key_result_location", owner, ActivityResultContracts.StartActivityForResult()
         ) {
-            updateStatus()
+            updateRequestStatus()
         }
     }
 
+    fun updateRequestStatus() {
+        requestStatusLiveData.postValue(LocationConditionStatus.getLocationStatus(context))
+        updateStatus()
+    }
+
     fun updateStatus() {
-        if (!LocationConditionStatus.hasLocationPermission(context)) {
-            statusLiveData.postValue(LocationConditionStatus.LOCATION_PERMISSION_DENIED)
-        } else if (!LocationConditionStatus.isLocationOn(context)) {
-            statusLiveData.postValue(LocationConditionStatus.LOCATION_SERVICE_DISABLED)
-        } else {
-            // all good
-            statusLiveData.postValue(LocationConditionStatus.OK)
-        }
+        statusLiveData.postValue(LocationConditionStatus.getLocationStatus(context))
     }
 
 
@@ -80,7 +81,7 @@ class LocationPermissionHandler(
 
         when {
             LocationConditionStatus.hasLocationPermission(context) -> {
-                updateStatus()
+                updateRequestStatus()
                 return true
             }
             needPermissionRationale -> {
@@ -100,7 +101,7 @@ class LocationPermissionHandler(
 
     fun askLocationService(): Boolean {
         if (LocationConditionStatus.isLocationOn(context)) {
-            updateStatus()
+            updateRequestStatus()
             return true
         }
 
