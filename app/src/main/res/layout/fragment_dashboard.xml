@@ -11,44 +11,17 @@
         layout="@layout/element_main_header"
         />
 
-<!--    <include-->
-<!--        android:id="@+id/bannerGPS"-->
-<!--        layout="@layout/element_dashboard_banner"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginHorizontal="@dimen/activity_side_margin"-->
-<!--        app:layout_constrainedWidth="true"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_chainStyle="packed"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/mainHeader"-->
-<!--        app:layout_constraintWidth_max="200dp"-->
-<!--        app:layout_goneMarginEnd="@dimen/activity_side_margin" />-->
-
-<!--    <include-->
-<!--        android:id="@+id/bannerPermission"-->
-<!--        layout="@layout/element_dashboard_banner"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginHorizontal="@dimen/activity_side_margin"-->
-<!--        app:layout_constrainedWidth="true"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/bannerGPS"-->
-<!--        app:layout_constraintWidth_max="200dp"-->
-<!--        app:layout_goneMarginStart="@dimen/activity_side_margin" />-->
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/bannerTracking"
-        android:layout_width="0dp"
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/bShare"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/activity_side_margin"
-        app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="@dimen/bottomBar_spacing"
-        app:layout_constraintWidth_max="200dp"
         android:text="@string/location_banner_sharing_start"
+        app:icon="@drawable/ic_pin_sharing"
+        android:backgroundTint="@color/accent"
          />
     
     <androidx.recyclerview.widget.RecyclerView

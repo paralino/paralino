@@ -88,6 +88,8 @@ class DashboardViewModel(
                 }
             }
 
+            list.add(GroupAddData())
+
             list
         }
             .asLiveData()

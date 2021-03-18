@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvContent"
+        style="@style/TextStyle.Medium"
+        android:layout_marginTop="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_side_margin_small"
+        android:background="@drawable/shape_dashed_rounded_outline"
+        android:drawableStart="@drawable/ic_group_add"
+        android:drawablePadding="@dimen/activity_side_margin_small"
+        android:drawableTint="@color/accent"
+        android:foreground="?selectableItemBackground"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/activity_side_margin_medium"
+        android:paddingVertical="@dimen/activity_side_margin_small"
+        android:text="@string/dashboard_groups_add_button"
+        android:textColor="@color/accent"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</merge>

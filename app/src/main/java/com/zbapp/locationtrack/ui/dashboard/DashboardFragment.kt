@@ -18,6 +18,7 @@ import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItems
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
 import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItem
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
+import com.zbapp.locationtrack.utils.extensions.backgroundTintRes
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import com.zbapp.locationtrack.utils.simpleAdapter
 import com.zbapp.locationtrack.utils.withClickAction
@@ -59,13 +60,14 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                 }
             }
             .addFactory { ListSubtitleItem(it) }
+            .addFactory { GroupAddItem(it).withClickAction {  } }
 
         binding.rvDashboard.adapter = adapter
     }
 
     private fun setupObservers() {
 
-        binding.bannerTracking.setOnClickListener {
+        binding.bShare.setOnClickListener {
             if(vm.isTrackingActive()) {
                 vm.stopTracking()
             } else {
@@ -80,11 +82,14 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
         vm.locationInit.currentLocation.asLiveData().observe {
             when(it) {
                 is Payload.Success ->  {
-                    binding.bannerTracking.setText(R.string.location_banner_tracking_active)
-                    binding.bannerTracking.setText(R.string.location_banner_info_stop)
+                    binding.bShare.backgroundTintRes(R.color.highlightRed)
+                    binding.bShare.setIconResource(R.drawable.ic_stop_circle)
+                    binding.bShare.setText(R.string.location_banner_info_stop)
                 }
                 is Payload.Error -> {
-                    binding.bannerTracking.setText(R.string.location_banner_tracking_start)
+                    binding.bShare.backgroundTintRes(R.color.accent)
+                    binding.bShare.setIconResource(R.drawable.ic_pin_sharing)
+                    binding.bShare.setText(R.string.location_banner_sharing_start)
                 }
                 Payload.Loading -> {
                     Toast.makeText(context, "Starting", Toast.LENGTH_SHORT).show()

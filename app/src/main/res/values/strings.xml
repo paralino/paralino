@@ -17,8 +17,8 @@
     <string name="notifications_channel_active_location">Active location sharing</string>
 
     <string name="location_banner_sharing_active">Sharing location</string>
-    <string name="location_banner_sharing_start">Start sharing</string>
-    <string name="location_banner_info_stop">Tap to stop</string>
+    <string name="location_banner_sharing_start">Share</string>
+    <string name="location_banner_info_stop">Stop sharing</string>
     <string name="location_banner_info_error">Tap to fix</string>
     <string name="location_banner_tracking_active">Tracking location</string>
     <string name="location_banner_tracking_start">Start tracking</string>
@@ -26,6 +26,7 @@
 
     <string name="dashboard_groups_section_active">Active</string>
     <string name="dashboard_groups_section_inactive">Inactive</string>
+    <string name="dashboard_groups_add_button">Create new group</string>
 
     <string name="location_banner_error_gps_off">GPS is off</string>
     <string name="location_banner_error_no_permission">Missing permission</string>
