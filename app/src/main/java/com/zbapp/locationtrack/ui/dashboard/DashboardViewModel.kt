@@ -5,16 +5,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.zbapp.location.models.circle.Circle
 import com.zbapp.location.repo.LocationSharingManager
 import com.zbapp.location.repo.circle.CircleRepository
-import com.zbapp.location.repo.location.LocationRepository
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.tracking.LocationConditionStatus
 import com.zbapp.locationtrack.tracking.LocationInitHandler
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpaceData
 import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItemData
 import com.zbapp.locationtrack.utils.ListItemType
+import com.zbapp.locationtrack.utils.extensions.dp2px
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 
@@ -67,6 +67,10 @@ class DashboardViewModel(
                     list.add(ErrorListItemType.GPS)
                 if (!location.isPermissionAllowed)
                     list.add(ErrorListItemType.PERMISSION)
+
+                if(!location.isOK()) {
+                    list.add(ListItemEmptySpaceData(16.dp2px))
+                }
             }
 
             val active = groups.filter { group -> sharing.any { it.circleId == group.id } }.map { group ->
