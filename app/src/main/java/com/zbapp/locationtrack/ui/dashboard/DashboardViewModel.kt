@@ -9,8 +9,11 @@ import com.zbapp.location.models.circle.Circle
 import com.zbapp.location.repo.LocationSharingManager
 import com.zbapp.location.repo.circle.CircleRepository
 import com.zbapp.location.repo.location.LocationRepository
+import com.zbapp.locationtrack.AppClass
+import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.tracking.LocationConditionStatus
 import com.zbapp.locationtrack.tracking.LocationInitHandler
+import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItemData
 import com.zbapp.locationtrack.utils.ListItemType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -43,6 +46,7 @@ class DashboardViewModel(
 
     fun stopTracking() {
         locationInit.stopLocationUpdates()
+        locationSharing.stopAllSharing()
     }
 
     fun stopSharing() {
@@ -65,11 +69,24 @@ class DashboardViewModel(
                     list.add(ErrorListItemType.PERMISSION)
             }
 
-            list.addAll(
-                groups.map { group ->
-                    GroupItemData(group, sharing.any { it.circleId == group.id })
+            val active = groups.filter { group -> sharing.any { it.circleId == group.id } }.map { group ->
+                GroupItemData(group, active = true)
+            }
+
+            val inactive = groups.filter { group -> sharing.none { it.circleId == group.id } }.map { group ->
+                GroupItemData(group, active = false)
+            }
+
+            if(active.isEmpty()) {
+                list.addAll(inactive)
+            } else {
+                list.add(ListSubtitleItemData(AppClass.context.getString(R.string.dashboard_groups_section_active)))
+                list.addAll(active)
+                if(inactive.isNotEmpty()) {
+                    list.add(ListSubtitleItemData(AppClass.context.getString(R.string.dashboard_groups_section_inactive)))
+                    list.addAll(inactive)
                 }
-            )
+            }
 
             list
         }

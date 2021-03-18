@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_side_margin_very_small"
+        android:layout_marginBottom="@dimen/activity_side_margin_medium"
         android:padding="@dimen/activity_side_margin"
         android:foreground="?selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"

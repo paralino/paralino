@@ -24,6 +24,9 @@
     <string name="location_banner_tracking_start">Start tracking</string>
     <string name="location_banner_fix">Fix</string>
 
+    <string name="dashboard_groups_section_active">Active</string>
+    <string name="dashboard_groups_section_inactive">Inactive</string>
+
     <string name="location_banner_error_gps_off">GPS is off</string>
     <string name="location_banner_error_no_permission">Missing permission</string>
 

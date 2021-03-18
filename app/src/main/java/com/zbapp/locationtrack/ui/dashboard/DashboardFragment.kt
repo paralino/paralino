@@ -16,6 +16,7 @@ import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItems
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
+import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItem
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import com.zbapp.locationtrack.utils.simpleAdapter
@@ -57,6 +58,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
 
                 }
             }
+            .addFactory { ListSubtitleItem(it) }
 
         binding.rvDashboard.adapter = adapter
     }

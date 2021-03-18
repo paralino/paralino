@@ -22,7 +22,7 @@ class GroupListItem(context: Context, attributeSet: AttributeSet? = null) :
 
     override fun applyData(data: GroupItemData) {
         vb.container.clipToOutline = true
-        vb.container.elevation = if(data.active) 8f.dp2px else 1f.dp2px
+        vb.container.elevation = if(data.active) 8f.dp2px else 2f.dp2px
         vb.tvGroupEmoji.text = data.group.emoji
         vb.tvGroupName.text = data.group.name
         vb.tvGroupCount.text = data.group.userIds.size.toString()

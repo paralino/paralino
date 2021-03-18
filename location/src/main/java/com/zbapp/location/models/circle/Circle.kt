@@ -1,7 +1,5 @@
 package com.zbapp.location.models.circle
 
-import com.sun.org.apache.xpath.internal.operations.Bool
-
 data class Circle constructor(
     val id: String,
     val name: String,
@@ -14,6 +12,6 @@ data class Circle constructor(
         val publicSharing = Circle("publicSharing", "Public", 0, "\uD83C\uDFD9️", emptyList())
     }
 
-    val isFromUser: Boolean get() = id == personalTracking.id || id == publicSharing.id
+    val isFromUser: Boolean get() = id != personalTracking.id && id != publicSharing.id
 
 }
