@@ -40,17 +40,9 @@ class DashboardViewModel(
 
     }
 
-    fun startSharing() {
-
-    }
-
     fun stopTracking() {
         locationInit.stopLocationUpdates()
         locationSharing.stopAllSharing()
-    }
-
-    fun stopSharing() {
-
     }
 
     fun getGroups(): LiveData<List<ListItemType>> {

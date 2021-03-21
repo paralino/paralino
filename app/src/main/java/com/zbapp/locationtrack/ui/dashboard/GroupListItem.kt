@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.ui.dashboard
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.core.view.isVisible
 import com.zbapp.location.models.circle.Circle
 import com.zbapp.locationtrack.databinding.ElementGroupListItemBinding
 import com.zbapp.locationtrack.databinding.ElementSheetTitleBinding
@@ -26,6 +27,7 @@ class GroupListItem(context: Context, attributeSet: AttributeSet? = null) :
         vb.tvGroupEmoji.text = data.group.emoji
         vb.tvGroupName.text = data.group.name
         vb.tvGroupCount.text = data.group.userIds.size.toString()
+        vb.bAction.isVisible = data.active
         vb.bAction.setOnClickListener {
             itemData?.let { onGroupActionClick?.invoke(it) }
         }

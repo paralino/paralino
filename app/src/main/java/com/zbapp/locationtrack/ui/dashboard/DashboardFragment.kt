@@ -58,6 +58,10 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             .addFactory {
                 GroupListItem(it).withClickAction {
 
+                }.apply {
+                    onGroupActionClick = {
+                        vm.stopTracking()
+                    }
                 }
             }
             .addFactory { ListSubtitleItem(it) }
@@ -84,14 +88,10 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
         vm.locationInit.currentLocation.asLiveData().observe {
             when(it) {
                 is Payload.Success ->  {
-                    binding.bShare.backgroundTintRes(R.color.highlightRed)
-                    binding.bShare.setIconResource(R.drawable.ic_stop_circle)
-                    binding.bShare.setText(R.string.location_banner_info_stop)
+
                 }
                 is Payload.Error -> {
-                    binding.bShare.backgroundTintRes(R.color.accent)
-                    binding.bShare.setIconResource(R.drawable.ic_pin_sharing)
-                    binding.bShare.setText(R.string.location_banner_sharing_start)
+
                 }
                 Payload.Loading -> {
                     Toast.makeText(context, "Starting", Toast.LENGTH_SHORT).show()
