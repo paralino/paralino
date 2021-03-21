@@ -22,5 +22,5 @@ val locationModules = module {
     single { LocationInitHandler(androidContext()) }
     single { LocationSharingManager() }
     single { CircleRepository() }
-    single { LocationRepository(get()) }
+    single { LocationRepository(get(), get(), get()) }
 }

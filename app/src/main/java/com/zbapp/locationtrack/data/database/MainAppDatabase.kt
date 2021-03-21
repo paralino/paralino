@@ -5,12 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.zbapp.locationtrack.data.models.location.LocationModel
+import com.zbapp.locationtrack.data.models.location.LocationEntity
+import com.zbapp.locationtrack.data.repos.location.LocationDao
 
 
 @Database(
     entities = [
-    LocationModel::class
+    LocationEntity::class
     ],
     version = MainAppDatabase.VERSION
 )
@@ -22,8 +23,10 @@ import com.zbapp.locationtrack.data.models.location.LocationModel
 )
 abstract class MainAppDatabase: RoomDatabase() {
 
+    abstract fun locationDao(): LocationDao
+
     companion object {
-        const val VERSION = 1
+        const val VERSION = 2
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

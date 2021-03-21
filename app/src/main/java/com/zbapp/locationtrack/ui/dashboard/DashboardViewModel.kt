@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import com.zbapp.location.models.circle.Circle
+import com.zbapp.location.models.location.LocationSharingContract
 import com.zbapp.location.repo.LocationSharingManager
 import com.zbapp.location.repo.circle.CircleRepository
 import com.zbapp.locationtrack.AppClass
@@ -37,7 +39,7 @@ class DashboardViewModel(
     }
 
     fun startTracking() {
-
+        locationSharing.startSharing(LocationSharingContract(Circle.personalTracking.id, 0))
     }
 
     fun stopTracking() {

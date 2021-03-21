@@ -3,10 +3,7 @@ package com.zbapp.location.repo
 import com.zbapp.location.models.circle.Circle
 import com.zbapp.location.models.location.LocationSharingContract
 import com.zbapp.location.utils.replace
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
@@ -29,14 +26,15 @@ class LocationSharingManager {
             add(publicSharing.value)
         }.mapNotNull { it.asValidContract() }
 
-    val allContractsFlow: Flow<List<LocationSharingContract>>
-        get() = combine(userContracts, personalTracking, publicSharing) { u, m, p ->
+    val allContractsFlow: Flow<List<LocationSharingContract>> =
+        combine(userContracts, personalTracking, publicSharing) { u, m, p ->
             u.toMutableList().apply {
                 add(m)
                 add(p)
             }.mapNotNull { it.asValidContract() }
         }
 
+    val sharingStatus: Flow<Boolean> = allContractsFlow.map { it.isNotEmpty() }.distinctUntilChanged()
     val isSharingActive: Boolean get() = allContractsValue.isNotEmpty()
 
     fun startSharing(contract: LocationSharingContract) {

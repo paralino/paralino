@@ -3,12 +3,10 @@ package com.zbapp.locationtrack.ui.dashboard
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.lifecycle.asLiveData
 import com.zbapp.location.models.Payload
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
-import com.zbapp.locationtrack.tracking.LocationConditionStatus
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.tracking.LocationService
 import com.zbapp.locationtrack.ui.base.BaseFragment
@@ -19,18 +17,16 @@ import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
 import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpace
 import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItem
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
-import com.zbapp.locationtrack.utils.extensions.backgroundTintRes
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import com.zbapp.locationtrack.utils.simpleAdapter
 import com.zbapp.locationtrack.utils.withClickAction
 import com.zbapp.locationtrack.utils.withDataOnClickAction
-import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
 
     private val vm: DashboardViewModel by viewModel()
-    val binding by viewBinding(FragmentDashboardBinding::bind)
+    private val binding by viewBinding(FragmentDashboardBinding::bind)
     private lateinit var permissionHandler: LocationPermissionHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,20 +81,6 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             binding.rvDashboard.simpleAdapter?.submitList(it)
         }
 
-        vm.locationInit.currentLocation.asLiveData().observe {
-            when(it) {
-                is Payload.Success ->  {
-
-                }
-                is Payload.Error -> {
-
-                }
-                Payload.Loading -> {
-                    Toast.makeText(context, "Starting", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
         permissionHandler.status.observe {
             vm.locationStatus.value = it
         }
@@ -112,6 +94,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                     showNoLocationServicesWarning()
                 }
                 it.isOK() -> {
+                    vm.startTracking()
                     LocationService.start(context ?: return@observe)
                 }
             }

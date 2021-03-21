@@ -69,7 +69,7 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
 
         vb.mapView.tileProvider.clearTileCache()
 
-        vb.mapView.setOnTouchListener { v, event ->
+        vb.mapView.setOnTouchListener { _, _ ->
             trackPositions = false
             trackMarkerId = null
             vb.fabGroup.isSelected = false
@@ -87,7 +87,7 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
 
         vm.getMarkers().observe {
             var markerToTrack: Marker? = null
-            val markers = it.mapIndexed { i, model ->
+            val markers = it.map { model ->
                 val startMarker = Marker(vb.mapView)
                 startMarker.id = model.userId
                 startMarker.position = GeoPoint(model.lat, model.lng)

@@ -1,6 +1,6 @@
 package com.zbapp.location.models.location
 
-data class BaseLocationModel(
+data class BaseLocationModel constructor(
     val id: String,
 
     val lat: Double,
@@ -8,9 +8,12 @@ data class BaseLocationModel(
     val accuracy: Float = 0f,
 
     val sessionId: String,
+    val circleId: String,
+
     val userId: String,
+    val name: String,
+    val imageBase64: String? = null,
 
     val time: Long? = null,
     val batteryLevel: Int? = null,
-    val imageBase64: String? = null,
 )

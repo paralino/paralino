@@ -2,18 +2,15 @@ package com.zbapp.locationtrack.tracking
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.location.Location
 import android.os.Looper
 import com.google.android.gms.location.*
 import com.zbapp.location.models.Payload
+import com.zbapp.location.models.user.UserMe
 import com.zbapp.locationtrack.data.config.randomString
-import com.zbapp.locationtrack.data.models.location.LocationModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
+import com.zbapp.locationtrack.data.models.location.LocationEntity
+import com.zbapp.locationtrack.utils.extensions.batterLevel
 import kotlinx.coroutines.flow.*
 import java.lang.Exception
-import kotlin.random.Random
 
 
 @SuppressLint("MissingPermission")
@@ -29,8 +26,8 @@ class LocationInitHandler(
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
-    val lastLocation = MutableStateFlow<LocationModel?>(null)
-    val currentLocation = MutableStateFlow<Payload<LocationModel>>(Payload.Error(LocationStoppedException()))
+    val lastLocation = MutableStateFlow<LocationEntity?>(null)
+    val currentLocation = MutableStateFlow<Payload<LocationEntity>>(Payload.Error(LocationStoppedException()))
 
     val isTracking: Boolean get() = currentLocation.value is Payload.Success
 
@@ -76,14 +73,14 @@ class LocationInitHandler(
     private var sessionId: String = ""
 
 
-    fun startLocationUpdates() {
+    fun startLocationUpdates(looper: Looper = Looper.getMainLooper()) {
         val status = LocationConditionStatus.getLocationStatus(context)
         if(status.isOK()) {
             sessionId = randomString(20)
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
-                null
+                looper
             ).addOnFailureListener {
                 currentLocation.value = Payload.Error(it)
             }
@@ -101,8 +98,8 @@ class LocationInitHandler(
     private var locationCallback = object: LocationCallback() {
         override fun onLocationResult(location: LocationResult?) {
             location?.lastLocation?.let {
-                val value = LocationModel.fromSystem(
-                    it, sessionId, "user_test", null
+                val value = LocationEntity.fromSystem(
+                    it, sessionId, UserMe("user_me", "ME", "test", null, ""), context.batterLevel
                 )
                 lastLocation.value = value
                 currentLocation.value = Payload.Success(value)

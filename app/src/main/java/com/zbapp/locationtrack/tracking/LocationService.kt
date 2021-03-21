@@ -10,20 +10,25 @@ import com.zbapp.location.models.circle.Circle
 import com.zbapp.location.models.data
 import com.zbapp.location.models.location.LocationSharingContract
 import com.zbapp.location.repo.location.LocationRepository
+import com.zbapp.locationtrack.data.models.location.LocationEntity
+import com.zbapp.locationtrack.data.models.location.LocationMapper
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import loge
 import logv
+import logw
 import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
 
 class LocationService: Service() {
 
-    var locationJob: Job? = null
+    private var locationJob: Job? = null
     private val serviceDefaultScope = CoroutineScope(Dispatchers.Default + Job())
 
     private val notificationHandler: LocationNotificationHandler by inject()
@@ -42,29 +47,59 @@ class LocationService: Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         isServiceActive = true
-        startTracking()
+        initTracking()
         return Service.START_REDELIVER_INTENT
     }
 
-    private fun startTracking() {
+    private fun initTracking() {
         if(LocationConditionStatus.isOk(this)) {
-            locationRepository.sharingManager.startSharing(LocationSharingContract(Circle.personalTracking.id, 0))
-            locationInitHandler.startLocationUpdates()
-            locationJob?.cancel()
-            locationJob = locationInitHandler.currentLocation
+            locationRepository.sharingManager.sharingStatus
                 .onEach {
-                    it.data?.toBaseModel()?.let { it1 -> locationRepository.pushLocation(it1) }
-                    logv("Got location: $it")
+                    logv("Location sharing status: $it")
+                    if(it) startTracking()
+                    else stopAll()
+                }
+                .catch {
+                    loge(it)
+                    stopAll()
                 }
                 .launchIn(serviceDefaultScope)
         } else {
             logv("Location conditions not met")
-            stopForeground(true)
-            stopSelf()
+            stopAll()
         }
     }
 
+    private fun startTracking() {
+        locationInitHandler.startLocationUpdates(mainLooper)
+        locationJob?.cancel()
+        locationJob = locationInitHandler.currentLocation
+            .onEach {
+                it.data?.let { saveLocation(it) }
+                logv("Got location: $it")
+            }
+            .launchIn(serviceDefaultScope)
+    }
+
+    private fun saveLocation(location: LocationEntity) {
+        if(locationRepository.sharingManager.isSharingActive) {
+            locationRepository.pushLocation(LocationMapper.map(location))
+                .catch { logw("Error saving saving location") }
+                .launchIn(serviceDefaultScope)
+        } else {
+            // We can stop service since all sharing contracts are expired
+            stopAll()
+        }
+    }
+
+    private fun stopAll() {
+        logv("Stop all - location service")
+        stopForeground(true)
+        stopSelf()
+    }
+
     override fun onDestroy() {
+        logv("Killing location service")
         locationInitHandler.stopLocationUpdates()
         notificationHandler.removeNotification()
         isServiceActive = false
