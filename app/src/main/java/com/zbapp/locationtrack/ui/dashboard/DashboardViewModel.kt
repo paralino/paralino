@@ -1,10 +1,7 @@
 package com.zbapp.locationtrack.ui.dashboard
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.zbapp.location.models.circle.Circle
 import com.zbapp.location.models.location.LocationSharingContract
 import com.zbapp.location.repo.LocationSharingManager
@@ -19,6 +16,7 @@ import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 
 class DashboardViewModel(
     val locationInit: LocationInitHandler,
@@ -27,11 +25,6 @@ class DashboardViewModel(
     context: Context
 ) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is dashboard Fragment"
-    }
-    val text: LiveData<String> = _text
-
     val locationStatus = MutableStateFlow(LocationConditionStatus.getLocationStatus(context))
 
     fun isTrackingActive(): Boolean {
@@ -39,12 +32,16 @@ class DashboardViewModel(
     }
 
     fun startTracking() {
-        locationSharing.startSharing(LocationSharingContract(Circle.personalTracking.id, 0))
+        viewModelScope.launch {
+            locationSharing.startSharing(LocationSharingContract(Circle.personalTracking.id, 0))
+        }
     }
 
     fun stopTracking() {
         locationInit.stopLocationUpdates()
-        locationSharing.stopAllSharing()
+        viewModelScope.launch {
+            locationSharing.stopAllSharing()
+        }
     }
 
     fun getGroups(): LiveData<List<ListItemType>> {
@@ -56,7 +53,7 @@ class DashboardViewModel(
         ) { location, groups, sharing ->
             val list = mutableListOf<ListItemType>()
 
-            if (locationSharing.isSharingActive) {
+            if (locationSharing.isSharingActive()) {
                 if (!location.isGpsOn)
                     list.add(ErrorListItemType.GPS)
                 if (!location.isPermissionAllowed)

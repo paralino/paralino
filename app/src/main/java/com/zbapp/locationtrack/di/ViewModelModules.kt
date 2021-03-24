@@ -20,7 +20,7 @@ val viewModelModules = module {
 val locationModules = module {
     factory { LocationNotificationHandler(androidContext()) }
     single { LocationInitHandler(androidContext()) }
-    single { LocationSharingManager() }
+    single { LocationSharingManager(get()) }
     single { CircleRepository() }
     single { LocationRepository(get(), get(), get()) }
 }

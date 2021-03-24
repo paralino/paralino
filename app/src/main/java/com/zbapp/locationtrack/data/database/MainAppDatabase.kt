@@ -6,12 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.zbapp.locationtrack.data.models.location.LocationEntity
+import com.zbapp.locationtrack.data.models.location.SharingContractEntity
 import com.zbapp.locationtrack.data.repos.location.LocationDao
+import com.zbapp.locationtrack.data.repos.location.SharingContractsDao
 
 
 @Database(
     entities = [
-    LocationEntity::class
+    LocationEntity::class,
+    SharingContractEntity::class
     ],
     version = MainAppDatabase.VERSION
 )
@@ -24,9 +27,10 @@ import com.zbapp.locationtrack.data.repos.location.LocationDao
 abstract class MainAppDatabase: RoomDatabase() {
 
     abstract fun locationDao(): LocationDao
+    abstract fun sharingContractDao(): SharingContractsDao
 
     companion object {
-        const val VERSION = 2
+        const val VERSION = 3
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

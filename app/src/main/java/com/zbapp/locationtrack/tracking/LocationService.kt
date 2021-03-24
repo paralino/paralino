@@ -9,6 +9,7 @@ import androidx.lifecycle.asLiveData
 import com.zbapp.location.models.circle.Circle
 import com.zbapp.location.models.data
 import com.zbapp.location.models.location.LocationSharingContract
+import com.zbapp.location.repo.NoValidContractsException
 import com.zbapp.location.repo.location.LocationRepository
 import com.zbapp.locationtrack.data.models.location.LocationEntity
 import com.zbapp.locationtrack.data.models.location.LocationMapper
@@ -26,7 +27,7 @@ import logw
 import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
 
-class LocationService: Service() {
+class LocationService : Service() {
 
     private var locationJob: Job? = null
     private val serviceDefaultScope = CoroutineScope(Dispatchers.Default + Job())
@@ -52,22 +53,17 @@ class LocationService: Service() {
     }
 
     private fun initTracking() {
-        if(LocationConditionStatus.isOk(this)) {
-            locationRepository.sharingManager.sharingStatus
-                .onEach {
-                    logv("Location sharing status: $it")
-                    if(it) startTracking()
-                    else stopAll()
-                }
-                .catch {
-                    loge(it)
-                    stopAll()
-                }
-                .launchIn(serviceDefaultScope)
-        } else {
-            logv("Location conditions not met")
-            stopAll()
-        }
+        locationRepository.sharingManager.sharingStatus
+            .onEach {
+                logv("Location sharing status: $it")
+                if (it) startTracking()
+                else stopAll()
+            }
+            .catch {
+                loge(it)
+                stopAll()
+            }
+            .launchIn(serviceDefaultScope)
     }
 
     private fun startTracking() {
@@ -82,14 +78,15 @@ class LocationService: Service() {
     }
 
     private fun saveLocation(location: LocationEntity) {
-        if(locationRepository.sharingManager.isSharingActive) {
-            locationRepository.pushLocation(LocationMapper.map(location))
-                .catch { logw("Error saving saving location") }
-                .launchIn(serviceDefaultScope)
-        } else {
-            // We can stop service since all sharing contracts are expired
-            stopAll()
-        }
+        locationRepository.pushLocation(LocationMapper.map(location))
+            .catch {
+                logw("Error saving saving location")
+                if (it is NoValidContractsException) {
+                    // We can stop service since all sharing contracts are expired
+                    stopAll()
+                }
+            }
+            .launchIn(serviceDefaultScope)
     }
 
     private fun stopAll() {
