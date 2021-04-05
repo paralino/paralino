@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class LocationRemoteDataSource: ILocationRemoteDataSource {
 
+    // temp local data
     private val locations = MutableStateFlow(emptyMap<String, List<BaseLocationModel>>())
 
     override suspend fun getAllLocations(): List<BaseLocationModel> {

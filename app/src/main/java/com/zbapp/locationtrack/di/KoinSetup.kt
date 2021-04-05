@@ -18,9 +18,9 @@ object KoinSetup {
         daoModules,
         localDataSourceModules,
         remoteDataSourceModule,
-        repositoryModules,
         viewModelModules,
-        locationModules
+        locationModules,
+        coreModule
     )
 
 }

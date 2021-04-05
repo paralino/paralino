@@ -1,21 +1,22 @@
 package com.zbapp.locationtrack.utils.logger
 
 import android.util.Log
+import com.zbapp.location.utils.ILogger
 
-abstract class LoggerKind {
+abstract class LoggerKind: ILogger {
     internal val explicitTag = ThreadLocal<String>()
 
-    open fun getTag(): String? {
+    override fun getTag(): String? {
         val tag: String? = explicitTag.get()
         explicitTag.remove()
         return tag
     }
 
-    open fun v(message: String, t: Throwable? = null) = prepareLog(Log.VERBOSE, t, message)
-    open fun d(message: String, t: Throwable? = null) = prepareLog(Log.DEBUG, t, message)
-    open fun i(message: String, t: Throwable? = null) = prepareLog(Log.INFO, t, message)
-    open fun w(message: String, t: Throwable? = null) = prepareLog(Log.WARN, t, message)
-    open fun e(message: String, t: Throwable? = null) = prepareLog(Log.ERROR, t, message)
+    override fun v(message: String, t: Throwable?) = prepareLog(Log.VERBOSE, t, message)
+    override fun d(message: String, t: Throwable?) = prepareLog(Log.DEBUG, t, message)
+    override fun i(message: String, t: Throwable?) = prepareLog(Log.INFO, t, message)
+    override fun w(message: String, t: Throwable?) = prepareLog(Log.WARN, t, message)
+    override fun e(message: String, t: Throwable?) = prepareLog(Log.ERROR, t, message)
     open fun wtf(message: String, t: Throwable? = null) = prepareLog(Log.ASSERT, t, message)
     open fun log(priority: Int, message: String, t: Throwable?) = prepareLog(priority, t, message)
 

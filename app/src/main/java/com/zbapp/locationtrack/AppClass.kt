@@ -1,8 +1,12 @@
 package com.zbapp.locationtrack
 
+import Logger
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import com.zbapp.location.config
+import com.zbapp.location.logg
+import com.zbapp.locationtrack.data.config.Config
 import com.zbapp.locationtrack.di.KoinSetup
 import com.zbapp.locationtrack.utils.logger.DebugLogger
 import com.zbapp.locationtrack.utils.logger.LoggerKind
@@ -14,6 +18,7 @@ class AppClass: Application() {
         lateinit var context: Context
             private set
 
+        @SuppressLint("StaticFieldLeak")
         lateinit var instance: AppClass
             private set
     }
@@ -28,6 +33,8 @@ class AppClass: Application() {
         context = applicationContext
 
         KoinSetup.initKoin(this)
+        config = Config(context)
+        logg = Logger
 
         if(!BuildConfig.forceLogToSystem){
             Logger.setLogger(externalLogTree)
