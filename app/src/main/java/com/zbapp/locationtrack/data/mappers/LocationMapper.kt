@@ -1,8 +1,7 @@
-package com.zbapp.locationtrack.data.models.location
+package com.zbapp.locationtrack.data.mappers
 
 import com.zbapp.location.models.location.BaseLocationModel
-import com.zbapp.location.models.location.LocationSharingContract
-import com.zbapp.locationtrack.data.IDataMapper
+import com.zbapp.locationtrack.data.models.location.LocationEntity
 import com.zbapp.locationtrack.utils.extensions.toLocalDateTime
 import com.zbapp.locationtrack.utils.extensions.toLocalString
 
@@ -39,14 +38,4 @@ object LocationMapper: IDataMapper<LocationEntity, BaseLocationModel> {
         )
     }
 
-}
-
-object SharingContractsMapper: IDataMapper<SharingContractEntity, LocationSharingContract> {
-    override fun map(model: SharingContractEntity): LocationSharingContract {
-        return LocationSharingContract(model.circleId, model.endTimeUTC)
-    }
-
-    override fun mapReversed(model: LocationSharingContract): SharingContractEntity {
-        return SharingContractEntity(model.circleId, model.endTimeUTC)
-    }
 }

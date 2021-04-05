@@ -5,14 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.asLiveData
-import com.zbapp.location.models.circle.Circle
 import com.zbapp.location.models.data
-import com.zbapp.location.models.location.LocationSharingContract
 import com.zbapp.location.repo.NoValidContractsException
 import com.zbapp.location.repo.location.LocationRepository
 import com.zbapp.locationtrack.data.models.location.LocationEntity
-import com.zbapp.locationtrack.data.models.location.LocationMapper
+import com.zbapp.locationtrack.data.mappers.LocationMapper
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +22,6 @@ import loge
 import logv
 import logw
 import org.koin.android.ext.android.inject
-import kotlin.coroutines.CoroutineContext
 
 class LocationService : Service() {
 

@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.data
+package com.zbapp.locationtrack.data.mappers
 
 interface IDataMapper<ONE, TWO> {
     fun map(model: ONE): TWO

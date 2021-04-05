@@ -2,7 +2,7 @@ package com.zbapp.locationtrack.data.repos.location
 
 import com.zbapp.location.models.location.LocationSharingContract
 import com.zbapp.location.repo.location.ISharingContractsLocalDataSource
-import com.zbapp.locationtrack.data.models.location.SharingContractsMapper
+import com.zbapp.locationtrack.data.mappers.SharingContractsMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
