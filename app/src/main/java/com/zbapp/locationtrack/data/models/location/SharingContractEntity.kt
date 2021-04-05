@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 data class SharingContractEntity(
     @PrimaryKey
     val circleId: String,
-    val endTimeStamp: Long?
+    val endTimeUTC: String?
 ) {
 }

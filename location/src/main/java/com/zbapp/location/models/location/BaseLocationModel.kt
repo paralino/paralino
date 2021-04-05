@@ -14,6 +14,6 @@ data class BaseLocationModel constructor(
     val name: String,
     val imageBase64: String? = null,
 
-    val time: Long? = null,
+    val timeUTC: String? = null,
     val batteryLevel: Int? = null,
 )

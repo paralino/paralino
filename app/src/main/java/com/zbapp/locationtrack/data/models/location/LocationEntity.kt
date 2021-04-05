@@ -5,7 +5,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.zbapp.location.models.user.UserMe
-import com.zbapp.locationtrack.utils.extensions.toDateTime
+import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 import java.util.*
@@ -27,7 +27,7 @@ data class LocationEntity constructor(
     val userId: String,
     val imageBase64: String? = null,
 
-    val time: LocalDateTime? = null,
+    val timeUTC: LocalDateTime? = null,
     val batteryLevel: Int? = null,
 ): Parcelable {
 
@@ -43,7 +43,7 @@ data class LocationEntity constructor(
                 userId = user.id,
                 name = user.name,
                 imageBase64 = user.imageBase64,
-                time = location.time.toDateTime(),
+                timeUTC = location.time.toDateTimeUTC(),
                 batteryLevel = batteryLevel
             )
         }

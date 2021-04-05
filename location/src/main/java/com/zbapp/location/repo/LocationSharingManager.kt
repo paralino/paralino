@@ -6,11 +6,11 @@ import com.zbapp.location.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.location.utils.replace
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.*
 import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.math.max
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 
@@ -60,23 +60,26 @@ class LocationSharingManager(
 
     private fun LocationSharingContract.asValidContract(): LocationSharingContract? {
 
-        if(endTimeStamp == null)
-            return null
+        if(endTimeUTC == null) {
+            // invalid public sharing contract
+            // endless sharing for other groups
+            if(this.circleId == Circle.publicSharing.id) return null
+            else return this
+        } else {
+            val date = LocalDateTime.parse(endTimeUTC).toInstant(TimeZone.UTC)
+            val now = Clock.System.now()
+            if(date <= now) {
+                // expired
+                return null
+            } else {
+                // limit public sharing if needed
+                val maxPublic = now.plus(publicSharingMaxDurationMillis, DateTimeUnit.MILLISECOND)
+                if(this.circleId == Circle.publicSharing.id && date > maxPublic)
+                    return this.copy(endTimeUTC = maxPublic.toLocalDateTime(TimeZone.UTC).toString())
 
-        // endless sharing
-        if(circleId != Circle.publicSharing.id && endTimeStamp == 0L)
-            return this
-
-        // expired
-        val now = Clock.System.now().toEpochMilliseconds()
-        if(endTimeStamp <= now)
-            return null
-
-        // keep public sharing at max allowed duration
-        if(circleId == Circle.publicSharing.id && endTimeStamp > now + publicSharingMaxDurationMillis)
-            return copy(endTimeStamp = now + publicSharingMaxDurationMillis)
-
-        return this
+                return this
+            }
+        }
     }
 
 }

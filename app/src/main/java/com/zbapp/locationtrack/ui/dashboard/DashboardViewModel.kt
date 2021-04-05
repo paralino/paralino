@@ -1,7 +1,10 @@
 package com.zbapp.locationtrack.ui.dashboard
 
 import android.content.Context
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.zbapp.location.models.circle.Circle
 import com.zbapp.location.models.location.LocationSharingContract
 import com.zbapp.location.repo.LocationSharingManager
@@ -14,9 +17,11 @@ import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpaceData
 import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItemData
 import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
+import com.zbapp.locationtrack.utils.extensions.toUTCString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class DashboardViewModel(
     val locationInit: LocationInitHandler,
@@ -33,7 +38,8 @@ class DashboardViewModel(
 
     fun startTracking() {
         viewModelScope.launch {
-            locationSharing.startSharing(LocationSharingContract(Circle.personalTracking.id, 0))
+            val max = LocalDateTime.now().plusMinutes(2).toUTCString()
+            locationSharing.startSharing(LocationSharingContract(Circle.personalTracking.id, max))
         }
     }
 

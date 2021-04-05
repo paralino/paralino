@@ -1,10 +1,8 @@
 package com.zbapp.location.models.location
 
-data class LocationSharingContract(
+data class LocationSharingContract constructor(
     val circleId: String,
-    val endTimeStamp: Long?
+    val endTimeUTC: String?
 ) {
-
-    val isEndless: Boolean get() = endTimeStamp == 0L
 
 }

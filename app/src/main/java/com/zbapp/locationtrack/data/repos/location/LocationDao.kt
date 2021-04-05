@@ -24,7 +24,7 @@ interface LocationDao {
     @Query("SELECT * FROM locations WHERE circleId = :circleId")
     fun getLocationsForCircle(circleId: String): Flow<List<LocationEntity>>
 
-    @Query("SELECT * FROM locations WHERE userId = :userId ORDER BY time ASC LIMIT 1")
+    @Query("SELECT * FROM locations WHERE userId = :userId ORDER BY timeUTC ASC LIMIT 1")
     fun getLastLocationForUser(userId: String): Flow<LocationEntity>
 
     @Query("DELETE FROM locations WHERE userId = :userId AND circleId = :circleId")

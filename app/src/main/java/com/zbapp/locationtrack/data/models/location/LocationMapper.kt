@@ -3,8 +3,8 @@ package com.zbapp.locationtrack.data.models.location
 import com.zbapp.location.models.location.BaseLocationModel
 import com.zbapp.location.models.location.LocationSharingContract
 import com.zbapp.locationtrack.data.IDataMapper
-import com.zbapp.locationtrack.utils.extensions.toDateTime
-import com.zbapp.locationtrack.utils.extensions.toMillis
+import com.zbapp.locationtrack.utils.extensions.toLocalDateTime
+import com.zbapp.locationtrack.utils.extensions.toLocalString
 
 object LocationMapper: IDataMapper<LocationEntity, BaseLocationModel> {
     override fun map(model: LocationEntity): BaseLocationModel {
@@ -18,7 +18,7 @@ object LocationMapper: IDataMapper<LocationEntity, BaseLocationModel> {
             userId = model.userId,
             name = model.name,
             imageBase64 = model.imageBase64,
-            time = model.time?.toMillis(),
+            timeUTC = model.timeUTC?.toLocalString(),
             batteryLevel = model.batteryLevel,
         )
     }
@@ -34,7 +34,7 @@ object LocationMapper: IDataMapper<LocationEntity, BaseLocationModel> {
             userId = model.userId,
             name = model.name,
             imageBase64 = model.imageBase64,
-            time = model.time?.toDateTime(),
+            timeUTC = model.timeUTC?.toLocalDateTime(),
             batteryLevel = model.batteryLevel
         )
     }
@@ -43,10 +43,10 @@ object LocationMapper: IDataMapper<LocationEntity, BaseLocationModel> {
 
 object SharingContractsMapper: IDataMapper<SharingContractEntity, LocationSharingContract> {
     override fun map(model: SharingContractEntity): LocationSharingContract {
-        return LocationSharingContract(model.circleId, model.endTimeStamp)
+        return LocationSharingContract(model.circleId, model.endTimeUTC)
     }
 
     override fun mapReversed(model: LocationSharingContract): SharingContractEntity {
-        return SharingContractEntity(model.circleId, model.endTimeStamp)
+        return SharingContractEntity(model.circleId, model.endTimeUTC)
     }
 }

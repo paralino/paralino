@@ -30,7 +30,7 @@ abstract class MainAppDatabase: RoomDatabase() {
     abstract fun sharingContractDao(): SharingContractsDao
 
     companion object {
-        const val VERSION = 3
+        const val VERSION = 6
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {
