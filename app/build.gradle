@@ -112,17 +112,17 @@ dependencies {
     implementation "androidx.security:security-crypto-ktx:1.1.0-alpha02"
     implementation "androidx.legacy:legacy-support-core-utils:1.0.0"
 
-    implementation "androidx.recyclerview:recyclerview:1.2.0-beta01"
+    implementation "androidx.recyclerview:recyclerview:1.2.0-rc01"
 
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.3.0"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.3.1"
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
 
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.3"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.3"
-    implementation "androidx.fragment:fragment-ktx:1.3.0"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.4"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.4"
+    implementation "androidx.fragment:fragment-ktx:1.3.2"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1"
@@ -131,13 +131,13 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.2.6'
     implementation "androidx.room:room-ktx:2.2.6"
 
-    implementation 'org.koin:koin-android:2.2.0'
-    implementation 'org.koin:koin-androidx-scope:2.2.0'
-    implementation 'org.koin:koin-androidx-viewmodel:2.2.0'
+    implementation 'org.koin:koin-android:2.2.2'
+    implementation 'org.koin:koin-androidx-scope:2.2.2'
+    implementation 'org.koin:koin-androidx-viewmodel:2.2.2'
     // endregion
 
     // region utils
-    implementation 'com.google.android.gms:play-services-location:17.1.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'org.osmdroid:osmdroid-android:6.1.10'
     // endregion
 
