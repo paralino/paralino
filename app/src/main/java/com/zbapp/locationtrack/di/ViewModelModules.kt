@@ -1,9 +1,9 @@
 package com.zbapp.locationtrack.di
 
-import com.zbapp.location.repo.LocationSharingManager
-import com.zbapp.location.repo.circle.CircleRepository
-import com.zbapp.location.repo.location.LocationRepository
-import com.zbapp.location.repo.user.UserRepository
+import com.zbapp.core.repo.LocationSharingManager
+import com.zbapp.core.repo.circle.CircleRepository
+import com.zbapp.core.repo.location.LocationRepository
+import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.locationtrack.tracking.LocationInitHandler
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import com.zbapp.locationtrack.ui.dashboard.DashboardViewModel

@@ -1,10 +1,10 @@
 package com.zbapp.locationtrack.di
 
-import com.zbapp.location.repo.location.ILocationLocalDataSource
-import com.zbapp.location.repo.location.ILocationRemoteDataSource
-import com.zbapp.location.repo.location.ISharingContractsLocalDataSource
-import com.zbapp.location.repo.user.IUserLocalDataSource
-import com.zbapp.location.repo.user.IUserRemoteDataSource
+import com.zbapp.core.repo.location.ILocationLocalDataSource
+import com.zbapp.core.repo.location.ILocationRemoteDataSource
+import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
+import com.zbapp.core.repo.user.IUserLocalDataSource
+import com.zbapp.core.repo.user.IUserRemoteDataSource
 import com.zbapp.locationtrack.data.database.MainAppDatabase
 import com.zbapp.locationtrack.data.repos.location.LocationLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSourceImpl

@@ -1,7 +1,7 @@
 package com.zbapp.locationtrack.net
 
-import com.zbapp.location.models.location.BaseLocationModel
-import com.zbapp.location.repo.location.ILocationRemoteDataSource
+import com.zbapp.core.models.location.BaseLocationModel
+import com.zbapp.core.repo.location.ILocationRemoteDataSource
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class LocationRemoteDataSource: ILocationRemoteDataSource {

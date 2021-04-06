@@ -3,9 +3,8 @@ package com.zbapp.locationtrack.ui.dashboard
 import android.content.Context
 import android.util.AttributeSet
 import androidx.core.view.isVisible
-import com.zbapp.location.models.circle.Circle
+import com.zbapp.core.models.circle.Circle
 import com.zbapp.locationtrack.databinding.ElementGroupListItemBinding
-import com.zbapp.locationtrack.databinding.ElementSheetTitleBinding
 import com.zbapp.locationtrack.utils.BaseRvItem
 import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px

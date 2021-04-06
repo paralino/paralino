@@ -1,6 +1,6 @@
 package com.zbapp.locationtrack.data.mappers
 
-import com.zbapp.location.models.location.BaseLocationModel
+import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.locationtrack.data.models.location.LocationEntity
 import com.zbapp.locationtrack.utils.extensions.toLocalDateTime
 import com.zbapp.locationtrack.utils.extensions.toLocalString

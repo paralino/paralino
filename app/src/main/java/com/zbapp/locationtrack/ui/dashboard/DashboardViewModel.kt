@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.zbapp.location.models.circle.Circle
-import com.zbapp.location.models.location.LocationSharingContract
-import com.zbapp.location.repo.LocationSharingManager
-import com.zbapp.location.repo.circle.CircleRepository
+import com.zbapp.core.models.circle.Circle
+import com.zbapp.core.models.location.LocationSharingContract
+import com.zbapp.core.repo.LocationSharingManager
+import com.zbapp.core.repo.circle.CircleRepository
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.tracking.LocationConditionStatus

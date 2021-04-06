@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
 import com.google.android.gms.location.*
-import com.zbapp.location.models.Payload
-import com.zbapp.location.models.user.UserMe
+import com.zbapp.core.models.Payload
+import com.zbapp.core.models.user.UserMe
 import com.zbapp.locationtrack.data.config.randomString
 import com.zbapp.locationtrack.data.models.location.LocationEntity
 import com.zbapp.locationtrack.utils.extensions.batterLevel

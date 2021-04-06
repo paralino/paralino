@@ -4,10 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.zbapp.location.models.circle.Circle
-import com.zbapp.location.models.location.BaseLocationModel
-import com.zbapp.location.repo.location.LocationRepository
-import kotlinx.coroutines.flow.Flow
+import com.zbapp.core.models.circle.Circle
+import com.zbapp.core.models.location.BaseLocationModel
+import com.zbapp.core.repo.location.LocationRepository
 
 
 class MapViewModel(

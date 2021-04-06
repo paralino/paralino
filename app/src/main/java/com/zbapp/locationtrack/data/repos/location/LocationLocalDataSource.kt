@@ -1,7 +1,7 @@
 package com.zbapp.locationtrack.data.repos.location
 
-import com.zbapp.location.models.location.BaseLocationModel
-import com.zbapp.location.repo.location.ILocationLocalDataSource
+import com.zbapp.core.models.location.BaseLocationModel
+import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.locationtrack.data.models.location.LocationEntity
 import com.zbapp.locationtrack.data.mappers.LocationMapper
 import kotlinx.coroutines.flow.*

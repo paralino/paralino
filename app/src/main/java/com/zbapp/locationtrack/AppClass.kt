@@ -4,8 +4,8 @@ import Logger
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import com.zbapp.location.config
-import com.zbapp.location.logg
+import com.zbapp.core.config
+import com.zbapp.core.logg
 import com.zbapp.locationtrack.data.config.Config
 import com.zbapp.locationtrack.di.KoinSetup
 import com.zbapp.locationtrack.utils.logger.DebugLogger

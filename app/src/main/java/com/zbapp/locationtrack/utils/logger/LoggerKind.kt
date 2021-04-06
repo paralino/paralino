@@ -1,7 +1,7 @@
 package com.zbapp.locationtrack.utils.logger
 
 import android.util.Log
-import com.zbapp.location.utils.ILogger
+import com.zbapp.core.utils.ILogger
 
 abstract class LoggerKind: ILogger {
     internal val explicitTag = ThreadLocal<String>()

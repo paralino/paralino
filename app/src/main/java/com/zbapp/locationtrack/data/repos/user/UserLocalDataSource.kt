@@ -1,7 +1,7 @@
 package com.zbapp.locationtrack.data.repos.user
 
-import com.zbapp.location.models.user.UserMe
-import com.zbapp.location.repo.user.IUserLocalDataSource
+import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.locationtrack.data.mappers.UserMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

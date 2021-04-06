@@ -1,7 +1,7 @@
 package com.zbapp.locationtrack.net
 
-import com.zbapp.location.models.user.UserMe
-import com.zbapp.location.repo.user.IUserRemoteDataSource
+import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.repo.user.IUserRemoteDataSource
 
 class UserRemoteDataSource: IUserRemoteDataSource {
 

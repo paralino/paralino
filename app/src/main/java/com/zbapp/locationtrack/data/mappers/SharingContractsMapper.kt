@@ -1,6 +1,6 @@
 package com.zbapp.locationtrack.data.mappers
 
-import com.zbapp.location.models.location.LocationSharingContract
+import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.locationtrack.data.models.location.SharingContractEntity
 
 object SharingContractsMapper: IDataMapper<SharingContractEntity, LocationSharingContract> {

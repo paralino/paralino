@@ -1,6 +1,6 @@
 package com.zbapp.locationtrack.data.mappers
 
-import com.zbapp.location.models.user.UserMe
+import com.zbapp.core.models.user.UserMe
 import com.zbapp.locationtrack.data.models.user.UserEntity
 
 object UserMapper: IDataMapper<UserEntity, UserMe> {

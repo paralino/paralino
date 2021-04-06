@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.util.lruCache
 import androidx.preference.PreferenceManager
-import com.zbapp.location.models.location.BaseLocationModel
+import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentMapBinding

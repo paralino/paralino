@@ -4,7 +4,7 @@ import android.location.Location
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.zbapp.location.models.user.UserMe
+import com.zbapp.core.models.user.UserMe
 import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime

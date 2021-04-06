@@ -6,7 +6,7 @@ import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.zbapp.location.utils.IConfig
+import com.zbapp.core.utils.IConfig
 
 class Config(context: Context): IConfig {
 

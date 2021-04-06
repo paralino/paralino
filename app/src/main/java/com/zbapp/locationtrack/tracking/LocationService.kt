@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
-import com.zbapp.location.models.data
-import com.zbapp.location.repo.NoValidContractsException
-import com.zbapp.location.repo.location.LocationRepository
+import com.zbapp.core.models.data
+import com.zbapp.core.repo.NoValidContractsException
+import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.locationtrack.data.models.location.LocationEntity
 import com.zbapp.locationtrack.data.mappers.LocationMapper
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
