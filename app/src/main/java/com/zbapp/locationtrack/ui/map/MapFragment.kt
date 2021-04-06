@@ -1,9 +1,12 @@
 package com.zbapp.locationtrack.ui.map
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.core.util.lruCache
 import androidx.preference.PreferenceManager
+import com.zbapp.location.models.location.BaseLocationModel
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentMapBinding
@@ -21,6 +24,8 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.TilesOverlay
+import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
+import org.osmdroid.views.overlay.infowindow.InfoWindow
 
 
 class MapFragment : BaseFragment(R.layout.fragment_map) {
@@ -29,7 +34,19 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
     private lateinit var permissionHandler: LocationPermissionHandler
     private val vb by viewBinding(FragmentMapBinding::bind)
 
+    /**
+     * Cache of current markers displayed on map
+     */
+    private val markerCache = lruCache<String, Marker>(100)
+
+    /**
+     * focus and track all markers
+     */
     private var trackPositions: Boolean = true
+
+    /**
+     * id of specific marker to track and focus on
+     */
     private var trackMarkerId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,40 +103,77 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
         vb.mapView.overlays.add(CopyrightOverlay(AppClass.context))
 
         vm.getMarkers().observe {
-            var markerToTrack: Marker? = null
-            val markers = it.map { model ->
-                val startMarker = Marker(vb.mapView)
-                startMarker.id = model.userId
-                startMarker.position = GeoPoint(model.lat, model.lng)
-                startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                startMarker.infoWindow = null
-                startMarker.setOnMarkerClickListener(::onMarkerClick)
+            updateMarkers(it)
+            reDrawMarkers()
+        }
 
-                if(model.userId == trackMarkerId)
-                    markerToTrack = startMarker
+    }
 
-                startMarker
+    private fun updateMarkers(list: List<BaseLocationModel>) {
+        synchronized(markerCache) {
+            // remove markers not in current list
+            markerCache.snapshot().keys.subtract(list.map { it.userId }).forEach {
+                markerCache.remove(it)
             }
 
-            vb.mapView.overlays.removeAll { it is Marker }
-            vb.mapView.overlays.addAll(markers)
-
-            if(markers.isNotEmpty()) {
-                if (trackPositions) {
-                    vb.mapView.zoomToBoundingBox(
-                        BoundingBox.fromGeoPointsSafe(markers.map { it.position }),
-                        true, 100, 18.0, 100
-                    )
-                } else if (markerToTrack != null) {
-                    vb.mapView.controller.animateTo(
-                        markerToTrack!!.position, vb.mapView.zoomLevelDouble, 100
-                    )
+            list.forEach { model ->
+                val marker = markerCache.get(model.userId)
+                if(marker != null) {
+                    marker.position = GeoPoint(model.lat, model.lng)
+                    if(marker.relatedObject?.toString() != model.imageBase64)
+                        marker.icon = getPin(model.imageBase64)
                 } else {
-                    vb.mapView.postInvalidate()
+                    val newMarker = createMarker(model)
+                    markerCache.put(model.userId, newMarker)
                 }
             }
         }
+    }
 
+    private fun reDrawMarkers() {
+        val markers = markerCache.snapshot().values
+
+        val markerToTrack: Marker? = markers.firstOrNull { it.id == trackMarkerId }
+
+        vb.mapView.overlays.removeAll { it is Marker }
+        vb.mapView.overlays.addAll(markers)
+
+        if(markers.isNotEmpty()) {
+            if (trackPositions) {
+                vb.mapView.zoomToBoundingBox(
+                    BoundingBox.fromGeoPointsSafe(markers.map { it.position }),
+                    true, 100, 18.0, 100
+                )
+            } else if (markerToTrack != null) {
+                vb.mapView.controller.animateTo(
+                    markerToTrack.position, vb.mapView.zoomLevelDouble, 100
+                )
+            } else {
+                vb.mapView.postInvalidate()
+            }
+        }
+    }
+
+    private fun createMarker(model: BaseLocationModel): Marker {
+        val marker = Marker(vb.mapView)
+        marker.id = model.userId
+        marker.relatedObject = model.imageBase64
+        marker.position = GeoPoint(model.lat, model.lng)
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        marker.title = model.name
+        marker.infoWindow = getInfoWindow()
+        marker.icon = getPin(model.imageBase64)
+        marker.setOnMarkerClickListener(::onMarkerClick)
+        return marker
+    }
+
+    private fun getInfoWindow(): InfoWindow {
+        return BasicInfoWindow(R.layout.element_map_pin_info, vb.mapView)
+    }
+
+    private fun getPin(imageBase64: String?): BitmapDrawable {
+        val bitmap = MapPin.populateWithBase64(vb.mapView, imageBase64)
+        return BitmapDrawable(requireContext().resources, bitmap)
     }
 
     fun onMarkerClick(marker: Marker, mapView: MapView?): Boolean {
@@ -127,7 +181,15 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
         trackPositions = false
         vb.fabGroup.isSelected = false
         vb.mapView.controller.animateTo(marker.position, vb.mapView.zoomLevelDouble, 100)
+        if(marker.isInfoWindowShown)
+            marker.closeInfoWindow()
+        else marker.showInfoWindow()
         return false
+    }
+
+    override fun onDestroy() {
+        markerCache.evictAll()
+        super.onDestroy()
     }
 
     override fun onResume() {
