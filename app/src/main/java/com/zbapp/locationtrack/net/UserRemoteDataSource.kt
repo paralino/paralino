@@ -9,8 +9,15 @@ class UserRemoteDataSource: IUserRemoteDataSource {
         return UserMe("user_me", "USER ME", "user@example.com", null, "2021-02-04")
     }
 
-    override suspend fun update(data: UserMe) {
-        // do update
+    override suspend fun updateName(name: String) {
+
     }
 
+    override suspend fun updateImage(imageBase64: String) {
+
+    }
+
+    override suspend fun changePassword(newPassword: String) {
+
+    }
 }

@@ -4,9 +4,9 @@ import com.zbapp.core.models.location.BaseLocationModel
 
 interface ILocationRemoteDataSource {
 
-    suspend fun getAllLocations(): List<BaseLocationModel>
-    suspend fun getLocationsForCircle(circleId: String): List<BaseLocationModel>
-    suspend fun getLocationsForUser(userId: String): List<BaseLocationModel>
-    suspend fun addLocations(locations: List<BaseLocationModel>)
+    suspend fun getCurrentLocationsForCircle(circleId: String): List<BaseLocationModel>
+    suspend fun getLocationsHistoryForUser(circleId: String, userId: String): List<BaseLocationModel>
+    suspend fun getMyLocationsHistory(date: String): List<BaseLocationModel>
+    suspend fun setLocations(current: List<BaseLocationModel>, history: List<BaseLocationModel>)
 
 }

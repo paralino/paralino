@@ -61,10 +61,26 @@ class UserRepository(
         local.update(data)
     }
 
-    fun editUser(data: UserMe): Flow<Boolean> {
+    fun editUsername(newName: String): Flow<Boolean> {
         return getDataOnce(
-            remote = { remote.update(data) },
-            localUpdate = { updateLocalUser(data) },
+            remote = { remote.updateName(newName) },
+            localUpdate = {
+                cachedUser?.copy(name = newName)?.let {
+                    updateLocalUser(it)
+                }
+            },
+            remotePreference = RemotePreference.FORCE
+        ).map { true }
+    }
+
+    fun editUserImage(imageBase64: String): Flow<Boolean> {
+        return getDataOnce(
+            remote = { remote.updateImage(imageBase64) },
+            localUpdate = {
+                cachedUser?.copy(imageBase64 = imageBase64)?.let {
+                    updateLocalUser(it)
+                }
+            },
             remotePreference = RemotePreference.FORCE
         ).map { true }
     }

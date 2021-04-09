@@ -1,10 +1,13 @@
 package com.zbapp.core.models.user
 
-data class UserMe (
-    val id: String,
+import kotlinx.serialization.Serializable
 
-    val name: String,
-    val email: String,
-    val imageBase64: String?,
-    val userSince: String
+@Serializable
+data class UserMe (
+    val id: String = "",
+
+    val name: String = "",
+    val email: String = "",
+    val imageBase64: String? = null,
+    val userSince: String = ""
 )

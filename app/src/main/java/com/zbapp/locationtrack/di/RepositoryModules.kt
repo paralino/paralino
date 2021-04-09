@@ -11,6 +11,7 @@ import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSour
 import com.zbapp.locationtrack.data.repos.user.UserLocalDataSource
 import com.zbapp.locationtrack.net.LocationRemoteDataSource
 import com.zbapp.locationtrack.net.UserRemoteDataSource
+import com.zbapp.remote.user.UserRemoteSource
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -32,5 +33,5 @@ val localDataSourceModules = module {
 
 val remoteDataSourceModule = module {
     single<ILocationRemoteDataSource> { LocationRemoteDataSource() }
-    single<IUserRemoteDataSource> { UserRemoteDataSource() }
+    single<IUserRemoteDataSource> { UserRemoteSource("") }
 }

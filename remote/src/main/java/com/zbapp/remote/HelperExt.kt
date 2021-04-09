@@ -1,0 +1,11 @@
+package com.zbapp.remote
+
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+
+fun LocalDateTime.toUTCString(): String {
+    return this.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
+        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+}

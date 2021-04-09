@@ -9,12 +9,11 @@ object LocationMapper: IDataMapper<LocationEntity, BaseLocationModel> {
     override fun map(model: LocationEntity): BaseLocationModel {
         return BaseLocationModel(
             id = model.id,
+            circleId = model.circleId,
+            userId = model.userId,
             lat = model.lat,
             lng = model.lng,
             accuracy = model.accuracy,
-            sessionId = model.sessionId,
-            circleId = model.circleId,
-            userId = model.userId,
             name = model.name,
             imageBase64 = model.imageBase64,
             timeUTC = model.timeUTC?.toLocalString(),
@@ -25,12 +24,11 @@ object LocationMapper: IDataMapper<LocationEntity, BaseLocationModel> {
     override fun mapReversed(model: BaseLocationModel): LocationEntity {
         return LocationEntity(
             id = model.id,
+            circleId = model.circleId,
+            userId = model.userId,
             lat = model.lat,
             lng = model.lng,
             accuracy = model.accuracy,
-            sessionId = model.sessionId,
-            circleId = model.circleId,
-            userId = model.userId,
             name = model.name,
             imageBase64 = model.imageBase64,
             timeUTC = model.timeUTC?.toLocalDateTime(),

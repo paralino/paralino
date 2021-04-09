@@ -25,7 +25,7 @@ class LocationRepository constructor(
             if(mapped.isEmpty()) throw NoValidContractsException()
 
             local.addLocations(mapped)
-            remote.addLocations(mapped)
+            remote.setCurrentLocations(mapped)
         }
     }
 
