@@ -3,15 +3,15 @@ package com.zbapp.remote
 import com.etebase.client.ItemMetadata
 import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.repo.location.ILocationRemoteDataSource
-import com.zbapp.remote.user.UserRemoteSource
+import com.zbapp.remote.user.RemoteUserCache
 import kotlinx.serialization.decodeFromString
 
-class GroupsRemoteSource(val userSource: UserRemoteSource): ILocationRemoteDataSource {
+class GroupsRemoteSource(
+    val userSource: RemoteUserCache
+): ILocationRemoteDataSource {
 
     override suspend fun getCurrentLocationsForCircle(circleId: String): List<BaseLocationModel> {
-        val collection = userSource.account.collectionManager.list(Constants.collectionTypeGroups).data.firstOrNull {
-            it.uid == circleId
-        } ?: return emptyList()
+        val collection = userSource.account.collectionManager.fetch(circleId)
 
         return when(collection.meta.itemType) {
             Constants.collectionGroupUser -> {
@@ -31,9 +31,7 @@ class GroupsRemoteSource(val userSource: UserRemoteSource): ILocationRemoteDataS
     }
 
     override suspend fun getLocationsHistoryForUser(circleId: String, userId: String): List<BaseLocationModel> {
-        val collection = userSource.account.collectionManager.list(Constants.collectionTypeGroups).data.firstOrNull {
-            it.uid == circleId || it.meta.itemType == circleId
-        } ?: return emptyList()
+        val collection = userSource.account.collectionManager.fetch(circleId)
 
         return when(collection.meta.itemType) {
             Constants.collectionGroupUser -> {

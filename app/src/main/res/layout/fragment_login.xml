@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:animateLayoutChanges="true"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="@dimen/activity_side_margin">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_side_margin_large"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_logo_full"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etEmail"
+        style="@style/TextStyle.Input"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="@dimen/activity_side_margin"
+        android:layout_marginTop="@dimen/activity_side_margin_large"
+        android:gravity="start|center_vertical"
+        android:nextFocusForward="@id/etPassword"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@animator/elevation_animator"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:endIconMode="clear_text"
+        app:endIconTint="@color/theme_medium"
+        app:hintEnabled="false"
+        app:layout_constraintBottom_toTopOf="@id/etPassword"
+        app:layout_constraintTop_toBottomOf="@id/ivLogo"
+        app:layout_constraintVertical_bias="0.6"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/TextStyle.Light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@color/transparent"
+            android:hint="@string/login_placeholder_email"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress"
+            android:paddingVertical="12dp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etPassword"
+        style="@style/TextStyle.Input"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="@dimen/activity_side_margin"
+        android:layout_marginTop="@dimen/activity_side_margin_small"
+        android:gravity="start|center_vertical"
+        android:nextFocusDown="@id/bLogin"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@animator/elevation_animator"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:endIconMode="password_toggle"
+        app:hintEnabled="false"
+        app:layout_constraintBottom_toTopOf="@id/etPasswordConfirm"
+        app:layout_constraintTop_toBottomOf="@id/etEmail">
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/TextStyle.Light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@color/transparent"
+            android:hint="@string/login_placeholder_password"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:paddingVertical="12dp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etPasswordConfirm"
+        style="@style/TextStyle.Input"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="@dimen/activity_side_margin"
+        android:layout_marginTop="@dimen/activity_side_margin_small"
+        android:gravity="start|center_vertical"
+        android:nextFocusDown="@id/bLogin"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@animator/elevation_animator"
+        android:visibility="gone"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:endIconMode="password_toggle"
+        app:hintEnabled="false"
+        app:layout_constraintBottom_toTopOf="@id/tvForgotPassword"
+        app:layout_constraintTop_toBottomOf="@id/etPassword"
+        tools:visibility="visible">
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/TextStyle.Light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@color/transparent"
+            android:hint="@string/login_placeholder_password_confirm"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:paddingVertical="12dp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvForgotPassword"
+        style="@style/TextStyle.ActionButton.Regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_side_margin_small"
+        android:layout_marginBottom="@dimen/activity_side_margin"
+        android:text="@string/login_button_forgot_password"
+        android:textColor="@color/theme_high"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/bLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etPasswordConfirm"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/bLogin"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_side_margin"
+        android:layout_marginTop="@dimen/activity_side_margin_large"
+        android:layout_marginBottom="@dimen/activity_side_margin_large"
+        android:text="@string/login_signup_switch_button_login"
+        app:layout_constraintBottom_toTopOf="@id/tvSignUpLogin"
+        app:layout_constraintTop_toBottomOf="@id/tvForgotPassword" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvSignUpLogin"
+        style="@style/TextStyle.ActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/bottomBar_spacing"
+        android:text="@string/login_signup_switch_button_signup"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

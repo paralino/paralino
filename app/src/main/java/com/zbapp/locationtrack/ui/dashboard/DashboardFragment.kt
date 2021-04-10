@@ -7,6 +7,7 @@ import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.tracking.LocationService
 import com.zbapp.locationtrack.ui.base.BaseFragment
+import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItems
@@ -65,6 +66,10 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
     }
 
     private fun setupObservers() {
+
+        binding.mainHeader.mainHeader.setOnClickListener {
+            navigateDefault(R.id.loginFragment)
+        }
 
         binding.bShare.setOnClickListener {
             if(vm.isTrackingActive()) {
@@ -126,6 +131,12 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                 permissionHandler.askLocationService()
             }
         }
+    }
+
+    override fun onDestroyView() {
+//        binding.mainHeader.mainHeader.setOnClickListener(null)
+//        binding.bShare.setOnClickListener(null)
+        super.onDestroyView()
     }
 
 }

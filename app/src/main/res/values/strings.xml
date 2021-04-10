@@ -48,4 +48,17 @@
     <string name="setting_title_privacy">Privacy &amp; Terms</string>
     <string name="setting_title_libraries">Acknowledgments</string>
 
+    <string name="login_placeholder_email">Email</string>
+    <string name="login_placeholder_password">Password</string>
+    <string name="login_placeholder_password_confirm">Confirm password</string>
+    <string name="login_signup_switch_button_login">LOG IN</string>
+    <string name="login_signup_switch_button_signup">SIGN UP</string>
+    <string name="login_button_forgot_password">Forgot password?</string>
+    <string name="login_button_create_account">CREATE ACCOUNT</string>
+    <string name="login_button_reset_password">RESET PASSWORD</string>
+
+    <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
+    <string name="form_invalid_password_length_description">Your password has to be at least 8 characters.</string>
+    <string name="form_invalid_password_match_description">Passwords don\'t match</string>
+
 </resources>

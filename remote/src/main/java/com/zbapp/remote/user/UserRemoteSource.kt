@@ -1,31 +1,32 @@
 package com.zbapp.remote.user
 
 import com.etebase.client.*
-import com.zbapp.core.config
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.user.IUserRemoteDataSource
 import com.zbapp.remote.BaseRemoteModule
 import com.zbapp.remote.Constants
+import com.zbapp.remote.GroupsRemoteSource
 import com.zbapp.remote.toUTCString
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.time.LocalDateTime
 import java.util.*
 
-class UserRemoteSource(val serverUrl: String): IUserRemoteDataSource {
+class UserRemoteSource(
+    val serverUrl: String,
+    val user: RemoteUserCache,
+    val groupsRemote: GroupsRemoteSource
+): IUserRemoteDataSource {
 
-    var cachedAccount = MutableStateFlow<Account?>(null)
-    val account: Account get() = cachedAccount.value!!
+    private val cachedAccount get() = user.cachedAccount
+    private val account: Account get() = user.account
 
     private fun getEtebaseClient(): Client {
         return BaseRemoteModule.getEtebaseClient(serverUrl)
     }
 
-    suspend fun signUp(email: String, password: String) {
+    override suspend fun signUp(email: String, password: String): String {
         val user = User(Utils.toBase64(Utils.randomBytes(24)), email)
         cachedAccount.value = Account.signup(getEtebaseClient(), user, password)
 
@@ -37,15 +38,17 @@ class UserRemoteSource(val serverUrl: String): IUserRemoteDataSource {
             )
         )
 
-        config.token = cachedAccount.value?.save(null) ?: ""
+        groupsRemote.initGroupsCollection()
+
+        return cachedAccount.value!!.save(null)
     }
 
-    suspend fun login(email: String, password: String) {
+    override suspend fun login(email: String, password: String): String {
         cachedAccount.value = Account.login(getEtebaseClient(), email, password)
-        config.token = cachedAccount.value?.save(null) ?: ""
+        return cachedAccount.value!!.save(null)
     }
 
-    suspend fun restoreSession(accountData: String) {
+    override suspend fun restoreSession(accountData: String) {
         cachedAccount.value = Account.restore(getEtebaseClient(), accountData, null)
     }
 
@@ -53,8 +56,7 @@ class UserRemoteSource(val serverUrl: String): IUserRemoteDataSource {
         account.changePassword(newPassword)
     }
 
-    suspend fun logout() {
-        config.token = ""
+    override suspend fun logout() {
         cachedAccount.value?.logout()
         cachedAccount.value = null
     }

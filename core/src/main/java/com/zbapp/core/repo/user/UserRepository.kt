@@ -25,6 +25,29 @@ class UserRepository(
             _cachedUser = value
         }
 
+    fun login(username: String, password: String): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.login(username, password) },
+            localUpdate = { config.token = it },
+            remotePreference = RemotePreference.FORCE
+        ).map { Unit }
+    }
+
+    fun signUp(username: String, password: String): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.signUp(username, password) },
+            localUpdate = { config.token = it },
+            remotePreference = RemotePreference.FORCE
+        ).map { Unit }
+    }
+
+    fun restoreSession(): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.restoreSession(config.token) },
+            remotePreference = RemotePreference.FORCE
+        )
+    }
+
     fun getUserLocally(): Flow<UserMe> {
         return local.getMe()
             .onEach { cachedUser = it }
@@ -88,6 +111,16 @@ class UserRepository(
     suspend fun clear(){
         cachedUser = null
         local.clear()
+    }
+
+    suspend fun logout(): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.logout() },
+            localUpdate = {
+                config.token = ""
+            },
+            remotePreference = RemotePreference.FORCE
+        )
     }
 
 }
