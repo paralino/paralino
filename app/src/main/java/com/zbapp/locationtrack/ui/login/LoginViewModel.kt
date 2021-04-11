@@ -67,6 +67,7 @@ class LoginViewModel(
     }
 
     fun toggleLoginSignup() {
+        updateValidationState(null)
         when (loginState.value) {
             LoginState.LOGIN -> _loginState.postValue(LoginState.SIGNUP)
             LoginState.SIGNUP -> _loginState.postValue(LoginState.LOGIN)
@@ -76,6 +77,7 @@ class LoginViewModel(
     }
 
     fun toggleForgotPassword() {
+        updateValidationState(null)
         when (loginState.value) {
             LoginState.LOGIN -> _loginState.postValue(LoginState.FORGOT_PASSWORD)
             LoginState.FORGOT_PASSWORD -> _loginState.postValue(LoginState.LOGIN)

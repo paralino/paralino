@@ -7,7 +7,7 @@ import com.zbapp.locationtrack.R
 object LoginValidations {
 
     fun email(email: String): LoginValidation.EMAIL? {
-        if(email.isBlank() || Patterns.EMAIL_ADDRESS.matcher(email).matches())
+        if(email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches())
             return LoginValidation.EMAIL(R.string.form_invalid_email_description)
         return null
     }

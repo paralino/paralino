@@ -46,6 +46,7 @@
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"
             android:hint="@string/login_placeholder_email"
+            android:textCursorDrawable="@null"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
             android:paddingVertical="12dp" />
@@ -75,6 +76,7 @@
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"
             android:hint="@string/login_placeholder_password"
+            android:textCursorDrawable="@null"
             android:imeOptions="actionDone"
             android:inputType="textPassword"
             android:paddingVertical="12dp" />
@@ -107,6 +109,7 @@
             android:background="@color/transparent"
             android:hint="@string/login_placeholder_password_confirm"
             android:imeOptions="actionDone"
+            android:textCursorDrawable="@null"
             android:inputType="textPassword"
             android:paddingVertical="12dp" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -123,6 +126,7 @@
         android:textColor="@color/theme_high"
         android:textSize="12sp"
         android:visibility="gone"
+        android:background="?selectableItemBackgroundBorderless"
         app:layout_constraintBottom_toTopOf="@id/bLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etPasswordConfirm"

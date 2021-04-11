@@ -65,11 +65,4 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
             }
         }
     }
-
-    override fun onDestroyView() {
-        vb.tvForgotPassword.setOnClickListener(null)
-        vb.bLogin.setOnClickListener(null)
-        vb.tvSignUpLogin.setOnClickListener(null)
-        super.onDestroyView()
-    }
 }

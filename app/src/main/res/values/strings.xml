@@ -59,6 +59,6 @@
 
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
     <string name="form_invalid_password_length_description">Your password has to be at least 8 characters.</string>
-    <string name="form_invalid_password_match_description">Passwords don\'t match</string>
+    <string name="form_invalid_password_match_description">Passwords don\'t match.</string>
 
 </resources>

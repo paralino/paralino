@@ -82,10 +82,7 @@ class CustomViewBindingDelegate<out T : ViewBinding>(
 
     init {
         view.doOnAttach {
-            val lifecycleOwner = checkNotNull(view.findViewTreeLifecycleOwner()) {
-                "View: $view does not appear to have a lifecycleOwner"
-            }
-            lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+            view.findViewTreeLifecycleOwner()?.lifecycle?.addObserver(object : DefaultLifecycleObserver {
                 override fun onDestroy(owner: LifecycleOwner) {
                     super.onDestroy(owner)
                     binding = null

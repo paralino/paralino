@@ -22,11 +22,18 @@ import com.zbapp.locationtrack.utils.extensions.fadeIn
 import com.zbapp.locationtrack.utils.extensions.fadeOut
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 
-class AppSnackbarView(context: Context, attributeSet: AttributeSet?):
-    ConstraintLayout(context, attributeSet), ContentViewCallback {
+class AppSnackbarView: ConstraintLayout, ContentViewCallback {
 
     var actionClick : (() -> Unit)? = null
     val binding: ItemSnackbarBinding by viewBinding(ItemSnackbarBinding::inflate)
+
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
+            : super(context, attrs, defStyleAttr)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int)
+            : super(context, attrs, defStyleAttr, defStyleRes)
+
 
     init {
         clipToPadding = false
