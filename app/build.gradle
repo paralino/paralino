@@ -31,6 +31,13 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        def propsFile = rootProject.file('user.properties')
+        if (propsFile.exists()) {
+            def props = new Properties()
+            props.load(new FileInputStream(propsFile))
+            buildConfigField("String", "serverUrl", props['serverUrl'])
+        }
+
         // room schema export
         javaCompileOptions {
             annotationProcessorOptions {

@@ -1,6 +1,5 @@
 package com.zbapp.remote
 
-import com.etebase.client.BuildConfig
 import com.etebase.client.Client
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient

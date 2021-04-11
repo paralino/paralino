@@ -5,6 +5,7 @@ import com.zbapp.core.repo.location.ILocationRemoteDataSource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.IUserRemoteDataSource
+import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.data.database.MainAppDatabase
 import com.zbapp.locationtrack.data.repos.location.LocationLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSourceImpl
@@ -33,7 +34,7 @@ val localDataSourceModules = module {
 
 val remoteDataSourceModule = module {
     single { RemoteUserCache() }
-    single<IUserRemoteDataSource> { UserRemoteSource("", get(), get()) }
+    single<IUserRemoteDataSource> { UserRemoteSource(BuildConfig.serverUrl, get(), get()) }
     single { GroupsRemoteSource(get()) }
     single<ILocationRemoteDataSource> { get<GroupsRemoteSource>() }
 }

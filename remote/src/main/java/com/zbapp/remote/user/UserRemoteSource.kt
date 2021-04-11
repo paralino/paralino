@@ -3,11 +3,7 @@ package com.zbapp.remote.user
 import com.etebase.client.*
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.user.IUserRemoteDataSource
-import com.zbapp.remote.BaseRemoteModule
-import com.zbapp.remote.Constants
-import com.zbapp.remote.GroupsRemoteSource
-import com.zbapp.remote.toUTCString
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.zbapp.remote.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import java.time.LocalDateTime
@@ -28,7 +24,7 @@ class UserRemoteSource(
 
     override suspend fun signUp(email: String, password: String): String {
         val user = User(Utils.toBase64(Utils.randomBytes(24)), email)
-        cachedAccount.value = Account.signup(getEtebaseClient(), user, password)
+        cachedAccount.value = blocking { Account.signup(getEtebaseClient(), user, password) }
 
         initUserCollection(
             UserMe(
@@ -44,25 +40,25 @@ class UserRemoteSource(
     }
 
     override suspend fun login(email: String, password: String): String {
-        cachedAccount.value = Account.login(getEtebaseClient(), email, password)
+        cachedAccount.value = blocking { Account.login(getEtebaseClient(), email, password) }
         return cachedAccount.value!!.save(null)
     }
 
     override suspend fun restoreSession(accountData: String) {
-        cachedAccount.value = Account.restore(getEtebaseClient(), accountData, null)
+        cachedAccount.value = blocking { Account.restore(getEtebaseClient(), accountData, null) }
     }
 
     override suspend fun changePassword(newPassword: String) {
-        account.changePassword(newPassword)
+        blocking { account.changePassword(newPassword) }
     }
 
     override suspend fun logout() {
-        cachedAccount.value?.logout()
+        blocking { cachedAccount.value?.logout() }
         cachedAccount.value = null
     }
 
     override suspend fun getMe(): UserMe {
-        val collection = account.collectionManager.list(Constants.collectionTypeUserProfile).data.first()
+        val collection = blocking { account.collectionManager.list(Constants.collectionTypeUserProfile).data.first() }
         return BaseRemoteModule.formatter.decodeFromString<UserMe>(collection.contentString)
     }
 
@@ -75,21 +71,27 @@ class UserRemoteSource(
     }
 
     private suspend fun updateUser(modify: (UserMe) -> UserMe) {
-        val collection = account.collectionManager.list(Constants.collectionTypeUserProfile).data.first()
-        val user = BaseRemoteModule.formatter.decodeFromString<UserMe>(collection.contentString)
-        collection.content = BaseRemoteModule.formatter.encodeToString(modify(user)).toByteArray()
-        collection.meta.mtime = Date().time
-        account.collectionManager.upload(collection)
+        blocking {
+            val collection =
+                account.collectionManager.list(Constants.collectionTypeUserProfile).data.first()
+            val user = BaseRemoteModule.formatter.decodeFromString<UserMe>(collection.contentString)
+            collection.content =
+                BaseRemoteModule.formatter.encodeToString(modify(user)).toByteArray()
+            collection.meta.mtime = Date().time
+            account.collectionManager.upload(collection)
+        }
     }
 
     private suspend fun initUserCollection(user: UserMe) {
-        val meta = ItemMetadata()
-        meta.name = "User settings"
-        account.collectionManager.create(
-            Constants.collectionTypeUserProfile,
-            meta,
-            BaseRemoteModule.formatter.encodeToString(user)
-        )
+        blocking {
+            val meta = ItemMetadata()
+            meta.name = "User settings"
+            account.collectionManager.create(
+                Constants.collectionTypeUserProfile,
+                meta,
+                BaseRemoteModule.formatter.encodeToString(user)
+            )
+        }
     }
 
 

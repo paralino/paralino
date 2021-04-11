@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.*
 
 abstract class BaseRepository() {
 
-    open fun isOnline(): Boolean? = null
+    open fun isOnline(): Boolean? = true
     private val isOnline: Boolean get() = isOnline() == true
 
     private val cachedInfo = hashMapOf<String, Long>()

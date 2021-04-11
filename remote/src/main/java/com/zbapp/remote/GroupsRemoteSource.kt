@@ -4,6 +4,9 @@ import com.etebase.client.ItemMetadata
 import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.repo.location.ILocationRemoteDataSource
 import com.zbapp.remote.user.RemoteUserCache
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 
 class GroupsRemoteSource(
@@ -11,14 +14,17 @@ class GroupsRemoteSource(
 ): ILocationRemoteDataSource {
 
     override suspend fun getCurrentLocationsForCircle(circleId: String): List<BaseLocationModel> {
-        val collection = userSource.account.collectionManager.fetch(circleId)
+
+        val collection = blocking { userSource.account.collectionManager.fetch(circleId) }
 
         return when(collection.meta.itemType) {
             Constants.collectionGroupUser -> {
-                userSource.account.collectionManager.getItemManager(collection).list().data
-                    .filter { it.meta.itemType == Constants.collectionGroupItemCurrent }
-                    .map { BaseRemoteModule.formatter.decodeFromString(it.contentString) }
-                    ?: emptyList()
+                blocking {
+                    userSource.account.collectionManager.getItemManager(collection).list().data
+                        .filter { it.meta.itemType == Constants.collectionGroupItemCurrent }
+                        .map { BaseRemoteModule.formatter.decodeFromString(it.contentString) }
+                        ?: emptyList()
+                }
             }
             Constants.collectionGroupPublic -> {
                 listOf(BaseRemoteModule.formatter.decodeFromString(collection.contentString))
@@ -35,14 +41,16 @@ class GroupsRemoteSource(
 
         return when(collection.meta.itemType) {
             Constants.collectionGroupUser -> {
-                userSource.account.collectionManager.getItemManager(collection).list().data
-                    .firstOrNull {
-                        it.meta.itemType == Constants.collectionGroupItemHistory &&
-                                it.meta.description == userId
-                    }
-                    ?.let {
-                        BaseRemoteModule.formatter.decodeFromString<List<BaseLocationModel>>(it.contentString)
-                    } ?: emptyList()
+                blocking {
+                    userSource.account.collectionManager.getItemManager(collection).list().data
+                        .firstOrNull {
+                            it.meta.itemType == Constants.collectionGroupItemHistory &&
+                                    it.meta.description == userId
+                        }
+                        ?.let {
+                            BaseRemoteModule.formatter.decodeFromString<List<BaseLocationModel>>(it.contentString)
+                        } ?: emptyList()
+                }
             }
             Constants.collectionGroupPublic -> {
                 listOf(BaseRemoteModule.formatter.decodeFromString<BaseLocationModel>(collection.contentString))
@@ -60,8 +68,10 @@ class GroupsRemoteSource(
 
     override suspend fun setLocations(current: List<BaseLocationModel>, history: List<BaseLocationModel>) {
         val collectionIds = current.map { it.circleId } + history.map { it.circleId }
-        val collections = userSource.account.collectionManager.list(Constants.collectionTypeGroups).data.filter {
-            collectionIds.contains(it.uid)
+        val collections = blocking {
+            userSource.account.collectionManager.list(Constants.collectionTypeGroups).data.filter {
+                collectionIds.contains(it.uid)
+            }
         }
 
         current.forEach { item ->
@@ -73,23 +83,25 @@ class GroupsRemoteSource(
     }
 
     suspend fun initGroupsCollection() {
-        userSource.account.collectionManager.create(
-            Constants.collectionTypeGroups,
-            ItemMetadata().apply {
-                itemType = Constants.collectionGroupPublic
-                name = "Public sharing"
-            },
-            ""
-        )
+        blocking {
+            userSource.account.collectionManager.create(
+                Constants.collectionTypeGroups,
+                ItemMetadata().apply {
+                    itemType = Constants.collectionGroupPublic
+                    name = "Public sharing"
+                },
+                ""
+            )
 
-        userSource.account.collectionManager.create(
-            Constants.collectionTypeGroups,
-            ItemMetadata().apply {
-                itemType = Constants.collectionGroupPrivate
-                name = "Personal log"
-            },
-            ""
-        )
+            userSource.account.collectionManager.create(
+                Constants.collectionTypeGroups,
+                ItemMetadata().apply {
+                    itemType = Constants.collectionGroupPrivate
+                    name = "Personal log"
+                },
+                ""
+            )
+        }
     }
 
 }
