@@ -23,19 +23,28 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
 
         vb.bLogin.setOnClickListener {
             vm.loginOrSignUp(
+                username = vb.etUsername.editText?.text?.toString() ?: "",
                 email = vb.etEmail.editText?.text?.toString() ?: "",
-                password = vb.etPassword.editText?.text?.toString() ?: "",
-                confirmPassword = vb.etPasswordConfirm.editText?.text?.toString() ?: ""
-            ).observe {  }
+                password = vb.etPassword.editText?.text?.toString() ?: ""
+            )
+        }
+
+        vb.etUsername.setEndIconOnClickListener {
+            vm.generateUsername()
+        }
+
+        vm.randomUsername.observe {
+            vb.etUsername.editText?.setText(it)
         }
 
         vm.loginStateValidation.observe {
             val backgroundRes = R.drawable.background_input
             val errorBackgroundRes = R.drawable.background_input_error
 
+            vb.etUsername.setBackgroundResource(if(it is LoginValidation.USERNAME) errorBackgroundRes else backgroundRes)
             vb.etEmail.setBackgroundResource(if(it is LoginValidation.EMAIL) errorBackgroundRes else backgroundRes)
             vb.etPassword.setBackgroundResource(if(it is LoginValidation.PASSWORD) errorBackgroundRes else backgroundRes)
-            vb.etPasswordConfirm.setBackgroundResource(if(it is LoginValidation.CONFIRM_PASSWORD) errorBackgroundRes else backgroundRes)
+//            vb.etPasswordConfirm.setBackgroundResource(if(it is LoginValidation.CONFIRM_PASSWORD) errorBackgroundRes else backgroundRes)
         }
 
         vm.errorState.observe {
@@ -44,21 +53,24 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
 
         vm.loginState.observe {
             vb.tvForgotPassword.isVisible = it == LoginState.LOGIN
+            vb.etUsername.isVisible = it == LoginState.SIGNUP
             vb.etPassword.isVisible = it != LoginState.FORGOT_PASSWORD
-            vb.etPasswordConfirm.isVisible = it == LoginState.SIGNUP
             when(it) {
                 LoginState.LOGIN -> {
-                    vb.etPasswordConfirm.editText?.setText("")
+                    vb.etUsername.editText?.setText("")
+                    vb.etEmail.editText?.setHint(R.string.login_placeholder_email_username)
                     vb.bLogin.setText(R.string.login_signup_switch_button_login)
                     vb.tvSignUpLogin.setText(R.string.login_signup_switch_button_signup)
                 }
                 LoginState.SIGNUP -> {
+                    vb.etEmail.editText?.setHint(R.string.login_placeholder_email)
                     vb.bLogin.setText(R.string.login_button_create_account)
                     vb.tvSignUpLogin.setText(R.string.login_signup_switch_button_login)
                 }
                 LoginState.FORGOT_PASSWORD -> {
                     vb.etPassword.editText?.setText("")
-                    vb.etPasswordConfirm.editText?.setText("")
+                    vb.etUsername.editText?.setText("")
+                    vb.etEmail.editText?.setHint(R.string.login_placeholder_email_username)
                     vb.bLogin.setText(R.string.login_button_reset_password)
                     vb.tvSignUpLogin.setText(R.string.login_signup_switch_button_login)
                 }

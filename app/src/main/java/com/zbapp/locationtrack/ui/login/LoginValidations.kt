@@ -6,9 +6,25 @@ import com.zbapp.locationtrack.R
 
 object LoginValidations {
 
+    fun emailUsername(content: String): LoginValidation.EMAIL? {
+        if(content.isBlank())
+            return LoginValidation.EMAIL(R.string.form_invalid_username_email_description)
+        else if (!content.contains("@"))
+            return username(content)?.let { LoginValidation.EMAIL(it.description) }
+        return email(content)
+    }
+
     fun email(email: String): LoginValidation.EMAIL? {
         if(email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches())
             return LoginValidation.EMAIL(R.string.form_invalid_email_description)
+        return null
+    }
+
+    private fun username(username: String): LoginValidation.USERNAME? {
+        if(username.length < 6)
+            return LoginValidation.USERNAME(R.string.form_invalid_username_length_description)
+        else if(!Regex("^[a-zA-Z0-9\\-_]+\$").matches(username))
+            return LoginValidation.USERNAME(R.string.form_invalid_username_description)
         return null
     }
 
@@ -27,11 +43,11 @@ object LoginValidations {
     }
 
     fun login(email: String, password: String): List<LoginValidation> {
-        return listOfNotNull(email(email), password(password))
+        return listOfNotNull(emailUsername(email), password(password))
     }
 
-    fun signup(email: String, password: String, confirm: String): List<LoginValidation> {
-        return listOfNotNull(email(email), password(password), passwordConfirm(password, confirm))
+    fun signup(username: String, email: String, password: String, confirm: String): List<LoginValidation> {
+        return listOfNotNull(username(username), email(email), password(password))
     }
 
 }
@@ -40,4 +56,5 @@ sealed class LoginValidation(@StringRes val description: Int) {
     class EMAIL(description: Int) : LoginValidation(description)
     class PASSWORD(description: Int) : LoginValidation(description)
     class CONFIRM_PASSWORD(description: Int) : LoginValidation(description)
+    class USERNAME(description: Int) : LoginValidation(description)
 }

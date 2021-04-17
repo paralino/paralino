@@ -10,7 +10,8 @@ interface IUserRemoteDataSource {
     suspend fun updateImage(imageBase64: String)
     suspend fun changePassword(newPassword: String)
 
-    suspend fun signUp(email: String, password: String): String
+    suspend fun generateUsername(): String
+    suspend fun signUp(username: String, email: String, password: String): String
     suspend fun login(email: String, password: String): String
     suspend fun logout()
     suspend fun restoreSession(accountData: String)

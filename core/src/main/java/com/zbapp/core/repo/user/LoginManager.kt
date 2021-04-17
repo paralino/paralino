@@ -15,14 +15,18 @@ class LoginManager(
         return config.isTokenValid
     }
 
-    fun signUp(username: String, password: String): Flow<Unit> {
-        return userRepo.signUp(username, password)
+    fun signUp(username: String, email: String, password: String): Flow<Unit> {
+        return userRepo.signUp(username, email, password)
             .flatMapLatest { syncData() }
     }
 
     fun login(username: String, password: String): Flow<Unit> {
         return userRepo.login(username, password)
             .flatMapLatest { syncData() }
+    }
+
+    fun generateUsername(): Flow<String> {
+        return userRepo.generateUsername()
     }
 
     private fun syncData(): Flow<Unit> {

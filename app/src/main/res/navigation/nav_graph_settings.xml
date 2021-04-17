@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_settings"
+    app:startDestination="@id/navigation_settings">
+
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.zbapp.locationtrack.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings">
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri=".*/settings" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.zbapp.locationtrack.ui.login.LoginFragment"
+        android:label="LoginFragment"
+        tools:layout="@layout/fragment_login">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri=".*/settings/login" />
+    </fragment>
+
+
+</navigation>

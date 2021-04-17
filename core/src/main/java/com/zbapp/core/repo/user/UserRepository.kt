@@ -33,12 +33,18 @@ class UserRepository(
         ).map { Unit }
     }
 
-    fun signUp(username: String, password: String): Flow<Unit> {
+    fun signUp(username: String, email: String, password: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.signUp(username, password) },
+            remote = { remote.signUp(username, email, password) },
             localUpdate = { config.token = it },
             remotePreference = RemotePreference.FORCE
-        ).map { Unit }
+        )
+            .onEach { config.emailConfirmed = false }
+            .map { Unit }
+    }
+
+    fun generateUsername(): Flow<String> {
+        return getDataOnce(remote = { remote.generateUsername() }, remotePreference = RemotePreference.FORCE)
     }
 
     fun restoreSession(): Flow<Unit> {

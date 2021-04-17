@@ -7,9 +7,8 @@ import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.shared.AppSnackbarData
 import com.zbapp.locationtrack.ui.shared.SingleLiveEvent
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
+import kotlin.math.log
 
 @SuppressLint("StaticFieldLeak")
 class LoginViewModel(
@@ -26,8 +25,11 @@ class LoginViewModel(
     private val _errorState = SingleLiveEvent<AppSnackbarData>()
     val errorState = _errorState
 
-    fun loginOrSignUp(email: String, password: String, confirmPassword: String): LiveData<Boolean> {
-        return when (loginState.value) {
+    private val _randomUsername = SingleLiveEvent<String>()
+    val randomUsername = _randomUsername
+
+    fun loginOrSignUp(username: String, email: String, password: String, confirmPassword: String = "") {
+        when (loginState.value) {
             LoginState.LOGIN -> {
                 val validation = LoginValidations.login(email, password).firstOrNull()
                 updateValidationState(validation)
@@ -37,10 +39,10 @@ class LoginViewModel(
             }
             LoginState.SIGNUP -> {
                 val validation =
-                    LoginValidations.signup(email, password, confirmPassword).firstOrNull()
+                    LoginValidations.signup(username, email, password, confirmPassword).firstOrNull()
                 updateValidationState(validation)
                 if (validation == null)
-                    loginManager.signUp(email, password)
+                    loginManager.signUp(username, email, password)
                 else flow { }
             }
             LoginState.FORGOT_PASSWORD -> {
@@ -57,13 +59,22 @@ class LoginViewModel(
                 _errorState.value = AppSnackbarData(context.getString(R.string.error_generic_snacbar), null)
                 emit(false)
             }
-            .asLiveData()
+            .launchIn(viewModelScope)
     }
 
     private fun updateValidationState(validation: LoginValidation?) {
         _loginStateValidation.value = validation
         if(validation != null)
             _errorState.value = AppSnackbarData(context.getString(validation.description), null)
+    }
+
+    fun generateUsername() {
+        loginManager.generateUsername()
+            .onEach { _randomUsername.value = it }
+            .catch {
+                _errorState.value = AppSnackbarData(context.getString(R.string.error_generic_snacbar), null)
+            }
+            .launchIn(viewModelScope)
     }
 
     fun toggleLoginSignup() {

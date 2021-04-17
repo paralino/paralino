@@ -1,13 +1,19 @@
 package com.zbapp.locationtrack.ui.dashboard
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.tracking.LocationService
+import com.zbapp.locationtrack.ui.MainActivity
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
+import com.zbapp.locationtrack.ui.shared.DeeplinkManager
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItems
@@ -68,7 +74,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
     private fun setupObservers() {
 
         binding.mainHeader.mainHeader.setOnClickListener {
-            navigateDefault(R.id.loginFragment)
+            mainActivity?.navigateDeeplink(DeeplinkManager.deeplinkLogin)
         }
 
         binding.bShare.setOnClickListener {

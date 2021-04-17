@@ -14,6 +14,7 @@ class Config(context: Context): IConfig {
         const val keyToken = "prefs.profile.token"
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
+        const val keyEmailConfirmed = "prefs.profile.email.confirmed"
     }
 
     private val sharedData =
@@ -36,6 +37,9 @@ class Config(context: Context): IConfig {
         get() = secureSharedData.getString(keyUserId, "") ?: ""
         set(value) { secureSharedData.edit { putString(keyUserId, value) } }
 
+    override var emailConfirmed: Boolean
+        get() = secureSharedData.getBoolean(keyEmailConfirmed, false)
+        set(value) { secureSharedData.edit { putBoolean(keyEmailConfirmed, value) } }
 
 
     override fun clear() {

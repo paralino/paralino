@@ -1,6 +1,7 @@
 package com.zbapp.remote.user
 
 import com.etebase.client.*
+import com.zbapp.core.config
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.user.IUserRemoteDataSource
 import com.zbapp.remote.*
@@ -17,25 +18,19 @@ class UserRemoteSource(
 
     private val cachedAccount get() = user.cachedAccount
     private val account: Account get() = user.account
+    private val client = BaseRemoteModule.getEtebaseClient(serverUrl)
 
     private fun getEtebaseClient(): Client {
-        return BaseRemoteModule.getEtebaseClient(serverUrl)
+        return client
     }
 
-    override suspend fun signUp(email: String, password: String): String {
-        val user = User(Utils.toBase64(Utils.randomBytes(24)), email)
+    override suspend fun generateUsername(): String {
+        return Utils.toBase64(Utils.randomBytes(16))
+    }
+
+    override suspend fun signUp(username: String, email: String, password: String): String {
+        val user = User(username, email)
         cachedAccount.value = blocking { Account.signup(getEtebaseClient(), user, password) }
-
-        initUserCollection(
-            UserMe(
-                id = user.username,
-                email = email,
-                userSince = LocalDateTime.now().toUTCString()
-            )
-        )
-
-        groupsRemote.initGroupsCollection()
-
         return cachedAccount.value!!.save(null)
     }
 
@@ -80,6 +75,18 @@ class UserRemoteSource(
             collection.meta.mtime = Date().time
             account.collectionManager.upload(collection)
         }
+    }
+
+    suspend fun initCollections() {
+        initUserCollection(
+            UserMe(
+                id = config.userId,
+                email = config.email,
+                userSince = LocalDateTime.now().toUTCString()
+            )
+        )
+
+        groupsRemote.initGroupsCollection()
     }
 
     private suspend fun initUserCollection(user: UserMe) {
