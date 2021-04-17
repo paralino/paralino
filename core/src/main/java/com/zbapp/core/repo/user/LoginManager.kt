@@ -2,9 +2,8 @@ package com.zbapp.core.repo.user
 
 import com.zbapp.core.config
 import com.zbapp.core.repo.circle.CircleRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import com.zbapp.core.utils.UnverifiedUserException
+import kotlinx.coroutines.flow.*
 
 class LoginManager(
     val userRepo: UserRepository,
@@ -15,21 +14,29 @@ class LoginManager(
         return config.isTokenValid
     }
 
+    fun isVerified(): Boolean {
+        return config.emailConfirmed
+    }
+
     fun signUp(username: String, email: String, password: String): Flow<Unit> {
         return userRepo.signUp(username, email, password)
-            .flatMapLatest { syncData() }
     }
 
     fun login(username: String, password: String): Flow<Unit> {
         return userRepo.login(username, password)
             .flatMapLatest { syncData() }
+            .catch {
+                if(it is UnverifiedUserException)
+                    emit(Unit)
+                else throw it
+            }
     }
 
     fun generateUsername(): Flow<String> {
         return userRepo.generateUsername()
     }
 
-    private fun syncData(): Flow<Unit> {
+    fun syncData(): Flow<Unit> {
         return userRepo.refreshUserIfAvailable()
             .flatMapLatest { groupRepo.getAllCircles() }
             .map { Unit }

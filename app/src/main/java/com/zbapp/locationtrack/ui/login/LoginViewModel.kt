@@ -3,12 +3,16 @@ package com.zbapp.locationtrack.ui.login
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.*
+import com.zbapp.core.models.Payload
 import com.zbapp.core.repo.user.LoginManager
+import com.zbapp.core.utils.ConflictException
+import com.zbapp.core.utils.NotFoundException
+import com.zbapp.core.utils.UnauthorizedException
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.shared.AppSnackbarData
 import com.zbapp.locationtrack.ui.shared.SingleLiveEvent
+import com.zbapp.locationtrack.ui.shared.errorStringRes
 import kotlinx.coroutines.flow.*
-import kotlin.math.log
 
 @SuppressLint("StaticFieldLeak")
 class LoginViewModel(
@@ -16,8 +20,8 @@ class LoginViewModel(
     private val loginManager: LoginManager
 ) : ViewModel() {
 
-    private val _loginState = MutableLiveData(LoginState.LOGIN)
-    val loginState: LiveData<LoginState> = _loginState.distinctUntilChanged()
+    private val _loginScreenState = MutableLiveData(LoginState.LOGIN)
+    val loginScreenState: LiveData<LoginState> = _loginScreenState.distinctUntilChanged()
     
     private val _loginStateValidation = SingleLiveEvent<LoginValidation?>()
     val loginStateValidation = _loginStateValidation
@@ -28,8 +32,8 @@ class LoginViewModel(
     private val _randomUsername = SingleLiveEvent<String>()
     val randomUsername = _randomUsername
 
-    fun loginOrSignUp(username: String, email: String, password: String, confirmPassword: String = "") {
-        when (loginState.value) {
+    fun loginOrSignUp(username: String, email: String, password: String, confirmPassword: String = ""): LiveData<Payload<Unit>> {
+        return when (loginScreenState.value) {
             LoginState.LOGIN -> {
                 val validation = LoginValidations.login(email, password).firstOrNull()
                 updateValidationState(validation)
@@ -54,12 +58,21 @@ class LoginViewModel(
             }
             null -> flow { Unit }
         }
-            .map { true }
+            .map<Unit, Payload<Unit>> { Payload.Success(Unit) }
+            .onStart { emit(Payload.Loading) }
             .catch {
-                _errorState.value = AppSnackbarData(context.getString(R.string.error_generic_snacbar), null)
-                emit(false)
+                val error = when(it) {
+                    is NotFoundException -> R.string.error_user_not_found
+                    is ConflictException -> R.string.form_invalid_username_conflict_description
+                    is UnauthorizedException -> R.string.form_invalid_credentials_description
+                    else -> it.errorStringRes() ?: R.string.error_generic_snacbar
+                }
+
+                _errorState.value = AppSnackbarData(context.getString(error), null)
+
+                emit(Payload.Error(it))
             }
-            .launchIn(viewModelScope)
+            .asLiveData()
     }
 
     private fun updateValidationState(validation: LoginValidation?) {
@@ -77,21 +90,25 @@ class LoginViewModel(
             .launchIn(viewModelScope)
     }
 
+    fun isUserVerified(): Boolean {
+        return loginManager.isVerified()
+    }
+
     fun toggleLoginSignup() {
         updateValidationState(null)
-        when (loginState.value) {
-            LoginState.LOGIN -> _loginState.postValue(LoginState.SIGNUP)
-            LoginState.SIGNUP -> _loginState.postValue(LoginState.LOGIN)
-            LoginState.FORGOT_PASSWORD -> _loginState.postValue(LoginState.LOGIN)
+        when (loginScreenState.value) {
+            LoginState.LOGIN -> _loginScreenState.postValue(LoginState.SIGNUP)
+            LoginState.SIGNUP -> _loginScreenState.postValue(LoginState.LOGIN)
+            LoginState.FORGOT_PASSWORD -> _loginScreenState.postValue(LoginState.LOGIN)
             else -> {}
         }
     }
 
     fun toggleForgotPassword() {
         updateValidationState(null)
-        when (loginState.value) {
-            LoginState.LOGIN -> _loginState.postValue(LoginState.FORGOT_PASSWORD)
-            LoginState.FORGOT_PASSWORD -> _loginState.postValue(LoginState.LOGIN)
+        when (loginScreenState.value) {
+            LoginState.LOGIN -> _loginScreenState.postValue(LoginState.FORGOT_PASSWORD)
+            LoginState.FORGOT_PASSWORD -> _loginScreenState.postValue(LoginState.LOGIN)
             else -> {}
         }
     }

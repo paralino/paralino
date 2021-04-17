@@ -1,105 +1,68 @@
 package com.zbapp.remote.user
 
-import com.etebase.client.*
-import com.zbapp.core.config
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.user.IUserRemoteDataSource
-import com.zbapp.remote.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import java.time.LocalDateTime
-import java.util.*
+import com.zbapp.remote.ExceptionMapper
+import com.zbapp.remote.GroupsRemoteSource
+import com.zbapp.remote.api.UserApi
 
-class UserRemoteSource(
-    val serverUrl: String,
-    val user: RemoteUserCache,
-    val groupsRemote: GroupsRemoteSource
+class UserRemoteSource internal constructor(
+    private val api: UserApi
 ): IUserRemoteDataSource {
 
-    private val cachedAccount get() = user.cachedAccount
-    private val account: Account get() = user.account
-    private val client = BaseRemoteModule.getEtebaseClient(serverUrl)
-
-    private fun getEtebaseClient(): Client {
-        return client
-    }
-
-    override suspend fun generateUsername(): String {
-        return Utils.toBase64(Utils.randomBytes(16))
-    }
-
-    override suspend fun signUp(username: String, email: String, password: String): String {
-        val user = User(username, email)
-        cachedAccount.value = blocking { Account.signup(getEtebaseClient(), user, password) }
-        return cachedAccount.value!!.save(null)
-    }
-
-    override suspend fun login(email: String, password: String): String {
-        cachedAccount.value = blocking { Account.login(getEtebaseClient(), email, password) }
-        return cachedAccount.value!!.save(null)
-    }
-
-    override suspend fun restoreSession(accountData: String) {
-        cachedAccount.value = blocking { Account.restore(getEtebaseClient(), accountData, null) }
-    }
-
-    override suspend fun changePassword(newPassword: String) {
-        blocking { account.changePassword(newPassword) }
-    }
-
-    override suspend fun logout() {
-        blocking { cachedAccount.value?.logout() }
-        cachedAccount.value = null
-    }
+    constructor(serverUrl: String,
+                user: RemoteUserCache,
+                groupsRemote: GroupsRemoteSource
+    ) : this(UserApi(serverUrl, user, groupsRemote))
 
     override suspend fun getMe(): UserMe {
-        val collection = blocking { account.collectionManager.list(Constants.collectionTypeUserProfile).data.first() }
-        return BaseRemoteModule.formatter.decodeFromString<UserMe>(collection.contentString)
+        try { return api.getMe() }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
     override suspend fun updateName(name: String) {
-        updateUser { it.copy(name = name) }
+        try { api.updateName(name) }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
     override suspend fun updateImage(imageBase64: String) {
-        updateUser { it.copy(imageBase64 = imageBase64) }
+        try { api.updateImage(imageBase64) }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    private suspend fun updateUser(modify: (UserMe) -> UserMe) {
-        blocking {
-            val collection =
-                account.collectionManager.list(Constants.collectionTypeUserProfile).data.first()
-            val user = BaseRemoteModule.formatter.decodeFromString<UserMe>(collection.contentString)
-            collection.content =
-                BaseRemoteModule.formatter.encodeToString(modify(user)).toByteArray()
-            collection.meta.mtime = Date().time
-            account.collectionManager.upload(collection)
-        }
+    override suspend fun changePassword(newPassword: String) {
+        try { api.changePassword(newPassword) }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    suspend fun initCollections() {
-        initUserCollection(
-            UserMe(
-                id = config.userId,
-                email = config.email,
-                userSince = LocalDateTime.now().toUTCString()
-            )
-        )
-
-        groupsRemote.initGroupsCollection()
+    override suspend fun generateUsername(): String {
+        try { return api.generateUsername() }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    private suspend fun initUserCollection(user: UserMe) {
-        blocking {
-            val meta = ItemMetadata()
-            meta.name = "User settings"
-            account.collectionManager.create(
-                Constants.collectionTypeUserProfile,
-                meta,
-                BaseRemoteModule.formatter.encodeToString(user)
-            )
-        }
+    override suspend fun signUp(username: String, email: String, password: String): String {
+        try { return api.signUp(username, email, password) }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
+    override suspend fun login(email: String, password: String): String {
+        try { return api.login(email, password) }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
+    }
+
+    override suspend fun logout() {
+        try { api.logout() }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
+    }
+
+    override suspend fun restoreSession(accountData: String) {
+        try { api.restoreSession(accountData) }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
+    }
+
+    override suspend fun initVerifiedUser(user: UserMe): UserMe {
+        try { return api.initVerifiedUser(user) }
+        catch (e: Exception) { throw ExceptionMapper.map(e) }
+    }
 
 }

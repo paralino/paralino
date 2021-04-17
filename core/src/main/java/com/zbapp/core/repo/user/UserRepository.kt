@@ -6,6 +6,8 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
+import com.zbapp.core.utils.NotFoundException
+import com.zbapp.core.utils.UnverifiedUserException
 import kotlinx.coroutines.flow.*
 
 
@@ -36,10 +38,14 @@ class UserRepository(
     fun signUp(username: String, email: String, password: String): Flow<Unit> {
         return getDataOnce(
             remote = { remote.signUp(username, email, password) },
-            localUpdate = { config.token = it },
+            localUpdate = {
+                config.userId = username
+                config.email = email
+                config.token = it
+                config.emailConfirmed = false
+            },
             remotePreference = RemotePreference.FORCE
         )
-            .onEach { config.emailConfirmed = false }
             .map { Unit }
     }
 
@@ -75,13 +81,47 @@ class UserRepository(
         }
 
         return getDataOnce(
-            local = null,
-            remote::getMe,
-            ::updateLocalUser,
-            RemotePreference.PREFER
+            remote = remote::getMe,
+            localUpdate = ::updateLocalUser,
+            remotePreference = RemotePreference.FORCE
         ).catch {
-            logg.e("Error refreshing user")
-            throw it
+            if(it is NotFoundException) {
+                logg.v("User does not exist - create it for the first time")
+                emitAll(initializeUser())
+            } else {
+                if(it is UnverifiedUserException)
+                    config.emailConfirmed = false
+                logg.e("Error refreshing user")
+                throw it
+            }
+        }
+    }
+
+    private fun initializeUser(): Flow<UserMe> {
+        if(!config.isTokenValid){
+            return flow { throw Exception("Token is not available") }
+        }
+
+        return getDataOnce(
+            remote = {
+                val user = UserMe(
+                    id = config.userId,
+                    email = config.email
+                )
+                remote.initVerifiedUser(user)
+            },
+            localUpdate = {
+                config.emailConfirmed = true
+                updateLocalUser(it)
+            },
+            remotePreference = RemotePreference.FORCE
+        )
+            .catch {
+                if(it is UnverifiedUserException) {
+                    config.emailConfirmed = false
+                }
+                logg.e("Error refreshing user")
+                throw it
         }
     }
 

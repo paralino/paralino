@@ -6,6 +6,8 @@ interface IUserRemoteDataSource {
 
     suspend fun getMe(): UserMe
 
+    suspend fun initVerifiedUser(user: UserMe): UserMe
+
     suspend fun updateName(name: String)
     suspend fun updateImage(imageBase64: String)
     suspend fun changePassword(newPassword: String)

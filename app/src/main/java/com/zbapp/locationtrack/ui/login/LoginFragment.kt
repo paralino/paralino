@@ -3,9 +3,12 @@ package com.zbapp.locationtrack.ui.login
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
+import com.zbapp.core.models.Payload
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentLoginBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
+import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.shared.AppSnackbar
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -22,11 +25,7 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
         vb.tvSignUpLogin.setOnClickListener { vm.toggleLoginSignup() }
 
         vb.bLogin.setOnClickListener {
-            vm.loginOrSignUp(
-                username = vb.etUsername.editText?.text?.toString() ?: "",
-                email = vb.etEmail.editText?.text?.toString() ?: "",
-                password = vb.etPassword.editText?.text?.toString() ?: ""
-            )
+            onActionButton()
         }
 
         vb.etUsername.setEndIconOnClickListener {
@@ -51,7 +50,7 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
             AppSnackbar.make(vb.bLogin, it)?.show()
         }
 
-        vm.loginState.observe {
+        vm.loginScreenState.observe {
             vb.tvForgotPassword.isVisible = it == LoginState.LOGIN
             vb.etUsername.isVisible = it == LoginState.SIGNUP
             vb.etPassword.isVisible = it != LoginState.FORGOT_PASSWORD
@@ -73,6 +72,27 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
                     vb.etEmail.editText?.setHint(R.string.login_placeholder_email_username)
                     vb.bLogin.setText(R.string.login_button_reset_password)
                     vb.tvSignUpLogin.setText(R.string.login_signup_switch_button_login)
+                }
+            }
+        }
+    }
+
+    private fun onActionButton() {
+        vm.loginOrSignUp(
+            username = vb.etUsername.editText?.text?.toString() ?: "",
+            email = vb.etEmail.editText?.text?.toString() ?: "",
+            password = vb.etPassword.editText?.text?.toString() ?: ""
+        ).observe {
+            vb.bLogin.isEnabled = it !is Payload.Loading
+            when(it) {
+                is Payload.Error -> { }
+                Payload.Loading -> { }
+                is Payload.Success -> {
+                    if(vm.isUserVerified()) {
+                        findNavController().popBackStack()
+                    } else {
+                        navigateDefault(R.id.toEmailConfirmInfo)
+                    }
                 }
             }
         }

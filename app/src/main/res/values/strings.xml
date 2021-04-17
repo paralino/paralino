@@ -10,8 +10,12 @@
     <string name="button_ok">OK</string>
     <string name="button_done">Done</string>
     <string name="button_skip">Skip</string>
+    <string name="button_retry">Retry</string>
 
+    <string name="error_server_unavailable">Unable to connect!</string>
+    <string name="error_something_wrong">Something went wrong!</string>
     <string name="error_generic_snacbar">Ups, please try again.</string>
+    <string name="error_user_not_found">User does not exist</string>
 
     <string name="notifications_active_location_title">Sharing location</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
@@ -61,9 +65,13 @@
 
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
     <string name="form_invalid_username_description">Please try another username.</string>
+    <string name="form_invalid_credentials_description">Please check your credentials and try again.</string>
+    <string name="form_invalid_username_conflict_description">Please use another email or username.</string>
     <string name="form_invalid_username_email_description">Your e-mail or username are not valid.</string>
     <string name="form_invalid_username_length_description">Your username has to be at least 6 characters long.</string>
     <string name="form_invalid_password_length_description">Your password has to be at least 8 characters long.</string>
     <string name="form_invalid_password_match_description">Passwords don\'t match.</string>
+
+    <string name="info_email_confirm">Please confirm your email address!</string>
 
 </resources>

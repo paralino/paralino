@@ -8,6 +8,7 @@ import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.locationtrack.tracking.LocationInitHandler
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import com.zbapp.locationtrack.ui.dashboard.DashboardViewModel
+import com.zbapp.locationtrack.ui.login.LoginCheckViewModel
 import com.zbapp.locationtrack.ui.login.LoginViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
 import org.koin.android.ext.koin.androidContext
@@ -18,6 +19,7 @@ val viewModelModules = module {
     viewModel { DashboardViewModel(get(), get(), get(), androidContext()) }
     viewModel { MapViewModel(get()) }
     viewModel { LoginViewModel(androidContext(), get()) }
+    viewModel { LoginCheckViewModel(androidContext(), get()) }
 }
 
 val locationModules = module {

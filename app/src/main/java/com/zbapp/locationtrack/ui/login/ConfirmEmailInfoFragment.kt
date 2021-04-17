@@ -1,0 +1,37 @@
+package com.zbapp.locationtrack.ui.login
+
+import android.os.Bundle
+import android.view.View
+import androidx.navigation.fragment.findNavController
+import com.zbapp.core.models.Payload
+import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.databinding.FragmentGenericInfoBinding
+import com.zbapp.locationtrack.ui.base.BaseFragment
+import com.zbapp.locationtrack.ui.shared.AppSnackbar
+import com.zbapp.locationtrack.utils.extensions.viewBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
+
+class ConfirmEmailInfoFragment: BaseFragment(R.layout.fragment_generic_info) {
+
+    private val vb by viewBinding(FragmentGenericInfoBinding::bind)
+    private val vm: LoginCheckViewModel by viewModel()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        vb.tvInfo.setText(R.string.info_email_confirm)
+        vb.bAction.setText(R.string.button_done)
+
+        vb.bAction.setOnClickListener {
+            vm.checkAndSync().observe {
+                vb.bAction.isEnabled = it !is Payload.Loading
+                if(it is Payload.Success) findNavController().popBackStack()
+            }
+        }
+
+        vm.errorState.observe {
+            AppSnackbar.make(vb.bAction, it)?.show()
+        }
+    }
+
+}
