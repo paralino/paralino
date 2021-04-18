@@ -26,6 +26,8 @@
     <color name="primaryTextColor">@color/theme_highest</color>
     <color name="secondaryTextColor">@color/theme_high</color>
 
+    <color name="alpha_grey_mask">#55737373</color>
+
     <color name="secondaryColor">#f0f4c3</color>
     <color name="secondaryLightColor">#fffff6</color>
     <color name="secondaryDarkColor">#bdc192</color>

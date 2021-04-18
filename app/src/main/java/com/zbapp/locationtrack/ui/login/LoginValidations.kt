@@ -3,6 +3,7 @@ package com.zbapp.locationtrack.ui.login
 import android.util.Patterns
 import androidx.annotation.StringRes
 import com.zbapp.locationtrack.R
+import java.lang.Exception
 
 object LoginValidations {
 
@@ -58,3 +59,5 @@ sealed class LoginValidation(@StringRes val description: Int) {
     class CONFIRM_PASSWORD(description: Int) : LoginValidation(description)
     class USERNAME(description: Int) : LoginValidation(description)
 }
+
+class ValidationException(val validation: LoginValidation): Exception()

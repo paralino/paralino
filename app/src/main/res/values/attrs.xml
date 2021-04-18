@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="ButtonWithProgress">
+        <attr name="text" format="string" />
+        <attr name="icon" format="reference" />
+        <attr name="buttonTint" format="color" />
+        <attr name="contentTint" format="color" />
+    </declare-styleable>
     <declare-styleable name="RoundImageView">
         <attr name="cornerRadius" format="dimension"/>
         <attr name="backgroundColor" format="color"/>

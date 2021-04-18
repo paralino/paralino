@@ -3,6 +3,7 @@ package com.zbapp.locationtrack.ui.login
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.zbapp.core.models.Payload
 import com.zbapp.locationtrack.R
@@ -11,6 +12,7 @@ import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.shared.AppSnackbar
 import com.zbapp.locationtrack.utils.extensions.viewBinding
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment: BaseFragment(R.layout.fragment_login) {
@@ -84,16 +86,20 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
             password = vb.etPassword.editText?.text?.toString() ?: ""
         ).observe {
             vb.bLogin.isEnabled = it !is Payload.Loading
+            vb.bLogin.setLoading(it is Payload.Loading, it is Payload.Success)
+
             when(it) {
-                is Payload.Error -> { }
-                Payload.Loading -> { }
                 is Payload.Success -> {
-                    if(vm.isUserVerified()) {
-                        findNavController().popBackStack()
-                    } else {
-                        navigateDefault(R.id.toEmailConfirmInfo)
+                    lifecycleScope.launchWhenResumed {
+                        delay(600)
+                        if(vm.isUserVerified()) {
+                            findNavController().popBackStack()
+                        } else {
+                            navigateDefault(R.id.toEmailConfirmInfo)
+                        }
                     }
                 }
+                else -> { }
             }
         }
     }

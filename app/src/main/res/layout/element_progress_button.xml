@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btConfirm"
+        style="@style/MainButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:elevation="2dp"
+        android:text=""
+        android:backgroundTint="@color/accent"
+        app:layout_constraintStart_toStartOf="@id/buttonHolder"
+        app:layout_constraintEnd_toEndOf="@id/buttonHolder"
+        app:layout_constraintBottom_toTopOf="@id/tvButtonInfo"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttonHolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:elevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/buttonIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_side_margin_medium_large"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonTitle"
+            app:layout_constraintEnd_toStartOf="@id/buttonTitle"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/buttonTitle"
+            app:tint="@color/theme_light"
+            tools:src="@drawable/ic_pin_bubble" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/buttonTitle"
+            style="@style/TextStyle.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="@dimen/activity_side_margin_medium_large"
+            android:textColor="@color/theme_lightest"
+            android:textSize="16sp"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/buttonIcon"
+            app:layout_goneMarginStart="@dimen/activity_side_margin_medium_large"
+            tools:text="@tools:sample/lorem[0]" />
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/buttonCheck"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_check"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:tint="@color/main_button_text_color"
+            />
+
+        <ProgressBar
+            android:id="@+id/buttonProgress"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/main_button_text_color"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvButtonInfo"
+        style="@style/TextStyle.Light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_side_margin_large"
+        android:layout_marginVertical="@dimen/activity_side_margin"
+        android:gravity="start|center_vertical"
+        android:lineSpacingExtra="5dp"
+        android:maxLines="5"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btConfirm"
+        tools:text="@tools:sample/lorem/random"
+        tools:visibility="gone" />
+
+</merge>

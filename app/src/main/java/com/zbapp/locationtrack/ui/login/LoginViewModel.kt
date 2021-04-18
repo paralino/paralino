@@ -39,7 +39,7 @@ class LoginViewModel(
                 updateValidationState(validation)
                 if (validation == null)
                     loginManager.login(email, password)
-                else flow { }
+                else flow { throw ValidationException(validation) }
             }
             LoginState.SIGNUP -> {
                 val validation =
@@ -47,21 +47,25 @@ class LoginViewModel(
                 updateValidationState(validation)
                 if (validation == null)
                     loginManager.signUp(username, email, password)
-                else flow { }
+                else flow { throw ValidationException(validation) }
             }
             LoginState.FORGOT_PASSWORD -> {
                 val validation = LoginValidations.email(email)
                 updateValidationState(validation)
                 if (validation == null)
-                    flow { }
-                else flow { }
+                    flow {
+                        // not implemented yet
+                        emit(Unit)
+                    }
+                else flow { throw ValidationException(validation) }
             }
-            null -> flow { Unit }
+            null -> flow { emit(Unit) }
         }
             .map<Unit, Payload<Unit>> { Payload.Success(Unit) }
             .onStart { emit(Payload.Loading) }
             .catch {
                 val error = when(it) {
+                    is ValidationException -> it.validation.description
                     is NotFoundException -> R.string.error_user_not_found
                     is ConflictException -> R.string.form_invalid_username_conflict_description
                     is UnauthorizedException -> R.string.form_invalid_credentials_description
@@ -77,8 +81,6 @@ class LoginViewModel(
 
     private fun updateValidationState(validation: LoginValidation?) {
         _loginStateValidation.value = validation
-        if(validation != null)
-            _errorState.value = AppSnackbarData(context.getString(validation.description), null)
     }
 
     fun generateUsername() {

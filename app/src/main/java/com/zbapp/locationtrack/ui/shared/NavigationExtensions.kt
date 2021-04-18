@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.base.BaseNavOptions
 
 /**
  * Manages the various graphs needed for a [BottomNavigationView].
@@ -282,7 +283,7 @@ fun BottomNavigationView.navigateDeeplink(
                 // otherwise navigate will be ignored
                 // Ignoring navigate() call: FragmentManager has already saved its state
                 navHostFragment.childFragmentManager.popBackStackImmediate(0, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                navHostFragment.navController.navigate(uri)
+                navHostFragment.navController.navigate(uri, BaseNavOptions.default())
             }
         }
     }
