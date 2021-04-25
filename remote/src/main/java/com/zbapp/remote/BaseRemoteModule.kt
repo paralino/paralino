@@ -8,6 +8,12 @@ import java.util.concurrent.TimeUnit
 
 object BaseRemoteModule {
 
+    fun init() {
+        // calling this manually so we can interact with etebase without creating client first
+        // otherwise, this would called when creating etebase Client
+        System.loadLibrary("etebase_android")
+    }
+
     fun getEtebaseClient(serverUrl: String): Client {
         return Client.create(createHttpClient(), serverUrl)
     }

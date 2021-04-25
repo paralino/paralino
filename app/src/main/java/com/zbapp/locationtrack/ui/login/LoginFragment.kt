@@ -3,6 +3,7 @@ package com.zbapp.locationtrack.ui.login
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.zbapp.core.models.Payload
@@ -25,27 +26,26 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
 
         vb.tvForgotPassword.setOnClickListener { vm.toggleForgotPassword() }
         vb.tvSignUpLogin.setOnClickListener { vm.toggleLoginSignup() }
+        vb.bLogin.setOnClickListener { onActionButton() }
 
-        vb.bLogin.setOnClickListener {
-            onActionButton()
+        vb.etUsername.editText?.doAfterTextChanged {
+            if(it.isNullOrBlank()) vb.etUsername.setHint(R.string.login_placeholder_username_or_random)
+            else vb.etUsername.setHint(R.string.login_placeholder_username)
         }
+        vb.etUsername.setEndIconOnClickListener { vm.generateUsername() }
 
-        vb.etUsername.setEndIconOnClickListener {
-            vm.generateUsername()
-        }
-
-        vm.randomUsername.observe {
-            vb.etUsername.editText?.setText(it)
-        }
+        vm.randomUsername.observe { vb.etUsername.editText?.setText(it) }
+        vm.serverUrl.observe { vb.etServer.editText?.setText(it) }
 
         vm.loginStateValidation.observe {
             val backgroundRes = R.drawable.background_input
             val errorBackgroundRes = R.drawable.background_input_error
 
-            vb.etUsername.setBackgroundResource(if(it is LoginValidation.USERNAME) errorBackgroundRes else backgroundRes)
-            vb.etEmail.setBackgroundResource(if(it is LoginValidation.EMAIL) errorBackgroundRes else backgroundRes)
-            vb.etPassword.setBackgroundResource(if(it is LoginValidation.PASSWORD) errorBackgroundRes else backgroundRes)
+            vb.etUsername.setBackgroundResource(if(it.any { it is LoginValidation.USERNAME }) errorBackgroundRes else backgroundRes)
+            vb.etEmail.setBackgroundResource(if(it.any { it is LoginValidation.EMAIL }) errorBackgroundRes else backgroundRes)
+            vb.etPassword.setBackgroundResource(if(it.any { it is LoginValidation.PASSWORD }) errorBackgroundRes else backgroundRes)
 //            vb.etPasswordConfirm.setBackgroundResource(if(it is LoginValidation.CONFIRM_PASSWORD) errorBackgroundRes else backgroundRes)
+            vb.etServer.setBackgroundResource(if(it.any { it is LoginValidation.SERVER }) errorBackgroundRes else backgroundRes)
         }
 
         vm.errorState.observe {
@@ -56,22 +56,23 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
             vb.tvForgotPassword.isVisible = it == LoginState.LOGIN
             vb.etUsername.isVisible = it == LoginState.SIGNUP
             vb.etPassword.isVisible = it != LoginState.FORGOT_PASSWORD
+            vb.etServer.isVisible = it != LoginState.FORGOT_PASSWORD && vm.shouldShowServerUrl
             when(it) {
                 LoginState.LOGIN -> {
                     vb.etUsername.editText?.setText("")
-                    vb.etEmail.editText?.setHint(R.string.login_placeholder_email_username)
-                    vb.bLogin.setText(R.string.login_signup_switch_button_login)
+                    vb.etEmail.setHint(R.string.login_placeholder_email_username)
+                    vb.bLogin.setText(R.string.login_button_login)
                     vb.tvSignUpLogin.setText(R.string.login_signup_switch_button_signup)
                 }
                 LoginState.SIGNUP -> {
-                    vb.etEmail.editText?.setHint(R.string.login_placeholder_email)
+                    vb.etEmail.setHint(R.string.login_placeholder_email)
                     vb.bLogin.setText(R.string.login_button_create_account)
                     vb.tvSignUpLogin.setText(R.string.login_signup_switch_button_login)
                 }
                 LoginState.FORGOT_PASSWORD -> {
                     vb.etPassword.editText?.setText("")
                     vb.etUsername.editText?.setText("")
-                    vb.etEmail.editText?.setHint(R.string.login_placeholder_email_username)
+                    vb.etEmail.setHint(R.string.login_placeholder_email)
                     vb.bLogin.setText(R.string.login_button_reset_password)
                     vb.tvSignUpLogin.setText(R.string.login_signup_switch_button_login)
                 }
@@ -83,7 +84,8 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
         vm.loginOrSignUp(
             username = vb.etUsername.editText?.text?.toString() ?: "",
             email = vb.etEmail.editText?.text?.toString() ?: "",
-            password = vb.etPassword.editText?.text?.toString() ?: ""
+            password = vb.etPassword.editText?.text?.toString() ?: "",
+            serverUrl = vb.etServer.editText?.text?.toString() ?: ""
         ).observe {
             vb.bLogin.isEnabled = it !is Payload.Loading
             vb.bLogin.setLoading(it is Payload.Loading, it is Payload.Success)

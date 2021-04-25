@@ -36,6 +36,7 @@ android {
             def props = new Properties()
             props.load(new FileInputStream(propsFile))
             buildConfigField("String", "serverUrl", props['serverUrl'])
+            buildConfigField("String", "openServerUrl", props['openServerUrl'])
         }
 
         // room schema export

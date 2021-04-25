@@ -20,21 +20,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/etUsername"
+        android:id="@+id/etServer"
         style="@style/TextStyle.Input"
         android:layout_width="match_parent"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
-        android:gravity="start|center_vertical"
-        android:nextFocusForward="@id/etEmail"
-        android:paddingEnd="8dp"
-        android:stateListAnimator="@animator/elevation_animator"
-        app:boxStrokeWidth="0dp"
-        app:boxStrokeWidthFocused="0dp"
-        app:endIconMode="custom"
-        app:endIconDrawable="@drawable/ic_username_random"
-        app:endIconTint="@color/theme_medium"
-        app:hintEnabled="false"
-        app:layout_constraintBottom_toTopOf="@id/etEmail"
+        android:nextFocusDown="@id/etUsername"
+        app:endIconMode="clear_text"
+        android:hint="@string/login_placeholder_server"
+        app:layout_constraintBottom_toTopOf="@id/etUsername"
         app:layout_constraintTop_toBottomOf="@id/ivLogo"
         app:layout_constraintVertical_bias="0.6"
         app:layout_constraintVertical_chainStyle="packed">
@@ -45,11 +38,36 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"
-            android:hint="@string/login_placeholder_username"
+            android:textCursorDrawable="@null"
+            android:imeOptions="actionNext"
+            android:inputType="textUri"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etUsername"
+        style="@style/TextStyle.Input"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="@dimen/activity_side_margin"
+        android:layout_marginTop="@dimen/activity_side_margin_small"
+        android:nextFocusDown="@id/etEmail"
+        app:endIconMode="custom"
+        android:hint="@string/login_placeholder_username_or_random"
+        app:endIconDrawable="@drawable/ic_username_random"
+        app:layout_constraintBottom_toTopOf="@id/etEmail"
+        app:layout_constraintTop_toBottomOf="@id/etServer"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/TextStyle.Light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@color/transparent"
             android:textCursorDrawable="@null"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
-            android:paddingVertical="12dp" />
+             />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -58,15 +76,9 @@
         android:layout_width="match_parent"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
         android:layout_marginTop="@dimen/activity_side_margin_small"
-        android:gravity="start|center_vertical"
-        android:nextFocusForward="@id/etPassword"
-        android:paddingEnd="8dp"
-        android:stateListAnimator="@animator/elevation_animator"
-        app:boxStrokeWidth="0dp"
-        app:boxStrokeWidthFocused="0dp"
+        android:nextFocusDown="@id/etPassword"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/theme_medium"
-        app:hintEnabled="false"
+        android:hint="@string/login_placeholder_email"
         app:layout_constraintBottom_toTopOf="@id/etPassword"
         app:layout_constraintTop_toBottomOf="@id/etUsername"
         >
@@ -77,11 +89,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"
-            android:hint="@string/login_placeholder_email"
             android:textCursorDrawable="@null"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
-            android:paddingVertical="12dp" />
+             />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -90,14 +101,9 @@
         android:layout_width="match_parent"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
         android:layout_marginTop="@dimen/activity_side_margin_small"
-        android:gravity="start|center_vertical"
         android:nextFocusDown="@id/bLogin"
-        android:paddingEnd="8dp"
-        android:stateListAnimator="@animator/elevation_animator"
-        app:boxStrokeWidth="0dp"
-        app:boxStrokeWidthFocused="0dp"
+        android:hint="@string/login_placeholder_password"
         app:endIconMode="password_toggle"
-        app:hintEnabled="false"
         app:layout_constraintBottom_toTopOf="@id/tvForgotPassword"
         app:layout_constraintTop_toBottomOf="@id/etEmail">
 
@@ -107,11 +113,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"
-            android:hint="@string/login_placeholder_password"
             android:textCursorDrawable="@null"
             android:imeOptions="actionDone"
             android:inputType="textPassword"
-            android:paddingVertical="12dp" />
+             />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatTextView

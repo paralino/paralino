@@ -27,17 +27,17 @@ class UserRepository(
             _cachedUser = value
         }
 
-    fun login(username: String, password: String): Flow<Unit> {
+    fun login(serverUrl: String, username: String, password: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.login(username, password) },
+            remote = { remote.login(serverUrl, username, password) },
             localUpdate = { config.token = it },
             remotePreference = RemotePreference.FORCE
         ).map { Unit }
     }
 
-    fun signUp(username: String, email: String, password: String): Flow<Unit> {
+    fun signUp(serverUrl: String, username: String, email: String, password: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.signUp(username, email, password) },
+            remote = { remote.signUp(serverUrl, username, email, password) },
             localUpdate = {
                 config.userId = username
                 config.email = email
@@ -53,9 +53,9 @@ class UserRepository(
         return getDataOnce(remote = { remote.generateUsername() }, remotePreference = RemotePreference.FORCE)
     }
 
-    fun restoreSession(): Flow<Unit> {
+    fun restoreSession(serverUrl: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.restoreSession(config.token) },
+            remote = { remote.restoreSession(serverUrl, config.token) },
             remotePreference = RemotePreference.FORCE
         )
     }
@@ -163,7 +163,7 @@ class UserRepository(
         return getDataOnce(
             remote = { remote.logout() },
             localUpdate = {
-                config.token = ""
+                config.clear()
             },
             remotePreference = RemotePreference.FORCE
         )

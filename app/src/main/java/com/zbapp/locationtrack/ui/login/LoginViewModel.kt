@@ -3,6 +3,7 @@ package com.zbapp.locationtrack.ui.login
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.*
+import com.zbapp.core.config
 import com.zbapp.core.models.Payload
 import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.utils.ConflictException
@@ -23,41 +24,48 @@ class LoginViewModel(
     private val _loginScreenState = MutableLiveData(LoginState.LOGIN)
     val loginScreenState: LiveData<LoginState> = _loginScreenState.distinctUntilChanged()
     
-    private val _loginStateValidation = SingleLiveEvent<LoginValidation?>()
+    private val _loginStateValidation = SingleLiveEvent<List<LoginValidation>>()
     val loginStateValidation = _loginStateValidation
 
     private val _errorState = SingleLiveEvent<AppSnackbarData>()
     val errorState = _errorState
 
-    private val _randomUsername = SingleLiveEvent<String>()
+    private val _randomUsername = MutableLiveData<String>()
     val randomUsername = _randomUsername
 
-    fun loginOrSignUp(username: String, email: String, password: String, confirmPassword: String = ""): LiveData<Payload<Unit>> {
+    val serverUrl = liveData { emit(config.mainServerUrl) }
+    val shouldShowServerUrl: Boolean get() = config.mainServerUrl.isBlank()
+
+
+    fun loginOrSignUp(username: String, email: String, password: String, confirmPassword: String = "", serverUrl: String? = null): LiveData<Payload<Unit>> {
+
+        val validServerUrl = serverUrl?.takeIf { it.isNotBlank() } ?: config.mainServerUrl
+
         return when (loginScreenState.value) {
             LoginState.LOGIN -> {
-                val validation = LoginValidations.login(email, password).firstOrNull()
+                val validation = LoginValidations.login(validServerUrl, email, password)
                 updateValidationState(validation)
-                if (validation == null)
-                    loginManager.login(email, password)
-                else flow { throw ValidationException(validation) }
+                if (validation.isEmpty())
+                    loginManager.login(validServerUrl, email, password)
+                else flow { throw ValidationException(validation.first()) }
             }
             LoginState.SIGNUP -> {
                 val validation =
-                    LoginValidations.signup(username, email, password, confirmPassword).firstOrNull()
+                    LoginValidations.signup(validServerUrl, username, email, password, confirmPassword)
                 updateValidationState(validation)
-                if (validation == null)
-                    loginManager.signUp(username, email, password)
-                else flow { throw ValidationException(validation) }
+                if (validation.isEmpty())
+                    loginManager.signUp(validServerUrl, username, email, password)
+                else flow { throw ValidationException(validation.first()) }
             }
             LoginState.FORGOT_PASSWORD -> {
-                val validation = LoginValidations.email(email)
+                val validation = LoginValidations.email(email).let { listOfNotNull(it) }
                 updateValidationState(validation)
-                if (validation == null)
+                if (validation.isEmpty())
                     flow {
                         // not implemented yet
                         emit(Unit)
                     }
-                else flow { throw ValidationException(validation) }
+                else flow { throw ValidationException(validation.first()) }
             }
             null -> flow { emit(Unit) }
         }
@@ -79,15 +87,16 @@ class LoginViewModel(
             .asLiveData()
     }
 
-    private fun updateValidationState(validation: LoginValidation?) {
-        _loginStateValidation.value = validation
+    private fun updateValidationState(validation: List<LoginValidation>?) {
+        _loginStateValidation.value = validation ?: emptyList()
     }
 
-    fun generateUsername() {
+    fun generateUsername(postError: Boolean = true) {
         loginManager.generateUsername()
             .onEach { _randomUsername.value = it }
             .catch {
-                _errorState.value = AppSnackbarData(context.getString(R.string.error_generic_snacbar), null)
+                if(postError)
+                    _errorState.value = AppSnackbarData(context.getString(R.string.error_generic_snacbar), null)
             }
             .launchIn(viewModelScope)
     }

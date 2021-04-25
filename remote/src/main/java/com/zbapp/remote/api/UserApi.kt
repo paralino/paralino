@@ -11,15 +11,18 @@ import kotlinx.serialization.encodeToString
 import java.time.LocalDateTime
 import java.util.*
 
-internal class UserApi (
-    private val serverUrl: String,
+internal class UserApi constructor(
     private val user: RemoteUserCache,
     private val groupsRemote: GroupsRemoteSource
 ): IUserRemoteDataSource {
 
-    private val cachedAccount get() = user.cachedAccount
+    private val cachedAccount get() = user.accountCache
     private val account: Account get() = user.account
-    private val client = BaseRemoteModule.getEtebaseClient(serverUrl)
+    private lateinit var client: Client
+
+    private suspend fun initServer(serverUrl: String) {
+        client = BaseRemoteModule.getEtebaseClient(serverUrl)
+    }
 
     private fun getEtebaseClient(): Client {
         return client
@@ -29,18 +32,21 @@ internal class UserApi (
         return Utils.toBase64(Utils.randomBytes(16))
     }
 
-    override suspend fun signUp(username: String, email: String, password: String): String {
+    override suspend fun signUp(serverUrl: String, username: String, email: String, password: String): String {
+        initServer(serverUrl)
         val user = User(username, email)
         cachedAccount.value = blocking { Account.signup(getEtebaseClient(), user, password) }
         return cachedAccount.value!!.save(null)
     }
 
-    override suspend fun login(email: String, password: String): String {
+    override suspend fun login(serverUrl: String, email: String, password: String): String {
+        initServer(serverUrl)
         cachedAccount.value = blocking { Account.login(getEtebaseClient(), email, password) }
         return cachedAccount.value!!.save(null)
     }
 
-    override suspend fun restoreSession(accountData: String) {
+    override suspend fun restoreSession(serverUrl: String, accountData: String) {
+        initServer(serverUrl)
         cachedAccount.value = blocking { Account.restore(getEtebaseClient(), accountData, null) }
     }
 

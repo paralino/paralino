@@ -69,8 +69,13 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/main_button_text_color</item>
         <item name="android:textColorHint">@color/theme_medium</item>
+        <item name="endIconTint">@color/theme_medium</item>
+        <item name="hintTextColor">@color/theme_medium</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
         <item name="android:background">@drawable/background_input</item>
         <item name="android:gravity">start|center_vertical</item>
+        <item name="android:stateListAnimator">@animator/elevation_animator</item>
     </style>
 
     <style name="MainButton" parent="Widget.AppCompat.Button">

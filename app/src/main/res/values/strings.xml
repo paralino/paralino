@@ -52,15 +52,18 @@
     <string name="setting_title_privacy">Privacy &amp; Terms</string>
     <string name="setting_title_libraries">Acknowledgments</string>
 
-    <string name="login_placeholder_username">Username or random =></string>
+    <string name="login_placeholder_server">Server url</string>
+    <string name="login_placeholder_username">Username</string>
+    <string name="login_placeholder_username_or_random">Add username or use magic =></string>
     <string name="login_placeholder_email">Email</string>
     <string name="login_placeholder_email_username">Email or Username</string>
     <string name="login_placeholder_password">Password</string>
     <string name="login_placeholder_password_confirm">Confirm password</string>
-    <string name="login_signup_switch_button_login">LOG IN</string>
-    <string name="login_signup_switch_button_signup">SIGN UP</string>
+    <string name="login_signup_switch_button_login">or LOG IN</string>
+    <string name="login_signup_switch_button_signup">or SIGN UP</string>
     <string name="login_button_forgot_password">Forgot password?</string>
     <string name="login_button_create_account">CREATE ACCOUNT</string>
+    <string name="login_button_login">LOG IN</string>
     <string name="login_button_reset_password">RESET PASSWORD</string>
 
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
@@ -71,6 +74,7 @@
     <string name="form_invalid_username_length_description">Your username has to be at least 6 characters long.</string>
     <string name="form_invalid_password_length_description">Your password has to be at least 8 characters long.</string>
     <string name="form_invalid_password_match_description">Passwords don\'t match.</string>
+    <string name="form_invalid_server_url">Please enter a valid server url.</string>
 
     <string name="info_email_confirm">Please confirm your email address!</string>
 

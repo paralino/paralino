@@ -7,6 +7,7 @@ import androidx.preference.PreferenceManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.zbapp.core.utils.IConfig
+import com.zbapp.locationtrack.BuildConfig
 
 class Config(context: Context): IConfig {
 
@@ -15,6 +16,8 @@ class Config(context: Context): IConfig {
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
         const val keyEmailConfirmed = "prefs.profile.email.confirmed"
+        const val keyServerUrlMain = "prefs.server.main"
+        const val keyServerUrlOpen = "prefs.server.open"
     }
 
     private val sharedData =
@@ -41,6 +44,23 @@ class Config(context: Context): IConfig {
         get() = secureSharedData.getBoolean(keyEmailConfirmed, false)
         set(value) { secureSharedData.edit { putBoolean(keyEmailConfirmed, value) } }
 
+    override var mainServerUrl: String
+        get() = secureSharedData.getString(keyServerUrlMain, null) ?: BuildConfig.serverUrl
+        set(value) {
+            if(value.isEmpty())
+                secureSharedData.edit { remove(keyServerUrlMain) }
+            else
+                secureSharedData.edit { putString(keyServerUrlMain, value) }
+        }
+
+    override var openServerUrl: String
+        get() = secureSharedData.getString(keyServerUrlOpen, null) ?: BuildConfig.openServerUrl.takeIf { it.isNotEmpty() } ?: mainServerUrl
+        set(value) {
+            if(value.isEmpty())
+                secureSharedData.edit { remove(keyServerUrlOpen) }
+            else
+                secureSharedData.edit { putString(keyServerUrlOpen, value) }
+        }
 
     override fun clear() {
         sharedData.edit { clear() }

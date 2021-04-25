@@ -57,11 +57,12 @@ class AppSnackbarView: ConstraintLayout, ContentViewCallback {
     }
 }
 
-data class AppSnackbarData(
+data class AppSnackbarData constructor(
     val text: SpannableString,
-    val actionText: String? = null
+    val actionText: String? = null,
+    val id: String = text.toString()
 ){
-    constructor(text: String, actionText: String?): this(SpannableString(text), actionText)
+    constructor(text: String, actionText: String?, id: String = text): this(SpannableString(text), actionText, id)
 }
 
 class AppSnackbar (

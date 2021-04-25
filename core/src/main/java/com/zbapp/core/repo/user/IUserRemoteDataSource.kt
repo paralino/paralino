@@ -13,9 +13,10 @@ interface IUserRemoteDataSource {
     suspend fun changePassword(newPassword: String)
 
     suspend fun generateUsername(): String
-    suspend fun signUp(username: String, email: String, password: String): String
-    suspend fun login(email: String, password: String): String
-    suspend fun logout()
-    suspend fun restoreSession(accountData: String)
 
+    suspend fun signUp(serverUrl: String, username: String, email: String, password: String): String
+    suspend fun login(serverUrl: String, email: String, password: String): String
+    suspend fun restoreSession(serverUrl: String, accountData: String)
+
+    suspend fun logout()
 }

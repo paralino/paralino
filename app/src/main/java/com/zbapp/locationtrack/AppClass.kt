@@ -10,6 +10,7 @@ import com.zbapp.locationtrack.data.config.Config
 import com.zbapp.locationtrack.di.KoinSetup
 import com.zbapp.locationtrack.utils.logger.DebugLogger
 import com.zbapp.locationtrack.utils.logger.LoggerKind
+import com.zbapp.remote.BaseRemoteModule
 
 class AppClass: Application() {
 
@@ -34,8 +35,12 @@ class AppClass: Application() {
 
         KoinSetup.initKoin(this)
         config = Config(context)
-        logg = Logger
+        initLogger()
+        BaseRemoteModule.init()
+    }
 
+    private fun initLogger() {
+        logg = Logger
         if(!BuildConfig.forceLogToSystem){
             Logger.setLogger(externalLogTree)
         }else{

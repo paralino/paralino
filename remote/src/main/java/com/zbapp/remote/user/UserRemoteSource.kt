@@ -10,10 +10,10 @@ class UserRemoteSource internal constructor(
     private val api: UserApi
 ): IUserRemoteDataSource {
 
-    constructor(serverUrl: String,
-                user: RemoteUserCache,
+    constructor(user: RemoteUserCache,
                 groupsRemote: GroupsRemoteSource
-    ) : this(UserApi(serverUrl, user, groupsRemote))
+    ) : this(UserApi(user, groupsRemote))
+
 
     override suspend fun getMe(): UserMe {
         try { return api.getMe() }
@@ -40,13 +40,13 @@ class UserRemoteSource internal constructor(
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    override suspend fun signUp(username: String, email: String, password: String): String {
-        try { return api.signUp(username, email, password) }
+    override suspend fun signUp(serverUrl: String, username: String, email: String, password: String): String {
+        try { return api.signUp(serverUrl, username, email, password) }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    override suspend fun login(email: String, password: String): String {
-        try { return api.login(email, password) }
+    override suspend fun login(serverUrl: String, email: String, password: String): String {
+        try { return api.login(serverUrl, email, password) }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
@@ -55,8 +55,8 @@ class UserRemoteSource internal constructor(
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    override suspend fun restoreSession(accountData: String) {
-        try { api.restoreSession(accountData) }
+    override suspend fun restoreSession(serverUrl: String, accountData: String) {
+        try { api.restoreSession(serverUrl, accountData) }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
