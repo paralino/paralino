@@ -2,20 +2,20 @@ package com.zbapp.locationtrack.data.repos.location
 
 import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.repo.location.ILocationLocalDataSource
-import com.zbapp.locationtrack.data.models.location.LocationEntity
 import com.zbapp.locationtrack.data.mappers.LocationMapper
-import kotlinx.coroutines.flow.*
+import com.zbapp.locationtrack.data.mappers.mapFlowOfList
+import kotlinx.coroutines.flow.Flow
 
 class LocationLocalDataSource(
     private val dao: LocationDao
 ): ILocationLocalDataSource {
 
     override fun getLocationsForGroup(groupId: String): Flow<List<BaseLocationModel>> {
-        return dao.getLocationsForGroup(groupId).mapLocation()
+        return LocationMapper.mapFlowOfList(dao.getLocationsForGroup(groupId))
     }
 
     override fun getLocationsForUser(userId: String): Flow<List<BaseLocationModel>> {
-        return dao.getLocationsForUser(userId).mapLocation()
+        return LocationMapper.mapFlowOfList(dao.getLocationsForUser(userId))
     }
 
     override suspend fun addLocation(locationModel: BaseLocationModel) {
@@ -29,12 +29,4 @@ class LocationLocalDataSource(
     override suspend fun clearAll() {
         dao.clear()
     }
-
-    private fun Flow<List<LocationEntity>>.mapLocation(): Flow<List<BaseLocationModel>> {
-        return map { it.map { LocationMapper.map(it) }.toTypedArray() }
-            .distinctUntilChanged { old, new ->
-                old.contentEquals(new)
-            }.map { it.toList() }
-    }
-
 }

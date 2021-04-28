@@ -1,15 +1,19 @@
 package com.zbapp.locationtrack.di
 
+import com.zbapp.core.repo.group.IGroupLocalDataSource
+import com.zbapp.core.repo.group.IGroupRemoteDataSource
 import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.core.repo.location.ILocationRemoteDataSource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.IUserRemoteDataSource
 import com.zbapp.locationtrack.data.database.MainAppDatabase
+import com.zbapp.locationtrack.data.repos.group.UserGroupLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.LocationLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSourceImpl
 import com.zbapp.locationtrack.data.repos.user.UserLocalDataSource
 import com.zbapp.remote.GroupsRemoteSource
+import com.zbapp.remote.LocationRemoteSource
 import com.zbapp.remote.user.RemoteUserCache
 import com.zbapp.remote.user.UserRemoteSource
 import org.koin.android.ext.koin.androidContext
@@ -23,17 +27,19 @@ val daoModules = module {
     single { get<MainAppDatabase>().locationDao() }
     single { get<MainAppDatabase>().sharingContractDao() }
     single { get<MainAppDatabase>().userDao() }
+    single { get<MainAppDatabase>().groupsDao() }
 }
 
 val localDataSourceModules = module {
     single<ILocationLocalDataSource> { LocationLocalDataSource(get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get()) }
     single<IUserLocalDataSource> { UserLocalDataSource(get()) }
+    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get()) }
 }
 
 val remoteDataSourceModule = module {
     single { RemoteUserCache() }
     single<IUserRemoteDataSource> { UserRemoteSource(get(), get()) }
-    single { GroupsRemoteSource(get()) }
-    single<ILocationRemoteDataSource> { get<GroupsRemoteSource>() }
+    single<ILocationRemoteDataSource> { LocationRemoteSource(get()) }
+    single<IGroupRemoteDataSource> { GroupsRemoteSource(get()) }
 }

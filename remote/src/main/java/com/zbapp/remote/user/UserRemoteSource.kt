@@ -10,9 +10,8 @@ class UserRemoteSource internal constructor(
     private val api: UserApi
 ): IUserRemoteDataSource {
 
-    constructor(user: RemoteUserCache,
-                groupsRemote: GroupsRemoteSource
-    ) : this(UserApi(user, groupsRemote))
+    constructor(user: RemoteUserCache, groupsRemote: GroupsRemoteSource)
+            : this(UserApi(user, groupsRemote))
 
 
     override suspend fun getMe(): UserMe {

@@ -92,7 +92,7 @@ internal class UserApi constructor(
         )
 
         initUserCollection(newUser)
-        groupsRemote.initGroupsCollection()
+        groupsRemote.initGroups()
 
         return newUser
     }

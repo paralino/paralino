@@ -1,38 +1,38 @@
 package com.zbapp.remote
 
-import com.zbapp.core.models.location.BaseLocationModel
-import com.zbapp.core.repo.location.ILocationRemoteDataSource
+import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.repo.group.IGroupRemoteDataSource
 import com.zbapp.remote.api.GroupsApi
 import com.zbapp.remote.user.RemoteUserCache
 
 class GroupsRemoteSource internal constructor(
     private val api: GroupsApi
-): ILocationRemoteDataSource {
+): IGroupRemoteDataSource {
 
     constructor(user: RemoteUserCache) : this(GroupsApi(user))
 
-    override suspend fun getCurrentLocationsForGroup(groupId: String): List<BaseLocationModel> {
-        try { return api.getCurrentLocationsForGroup(groupId) }
+    override suspend fun initGroups() {
+        try { api.initGroups() }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    override suspend fun getLocationsHistoryForUser(groupId: String, userId: String): List<BaseLocationModel> {
-        try { return api.getLocationsHistoryForUser(groupId, userId) }
+    override suspend fun createOrUpdateGroup(group: UserGroup): UserGroup {
+        try { return api.createOrUpdateGroup(group) }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    override suspend fun getMyLocationsHistory(date: String): List<BaseLocationModel> {
-        try { return api.getMyLocationsHistory(date) }
+    override suspend fun getAllGroups(): List<UserGroup> {
+        try { return api.getAllGroups() }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    override suspend fun setLocations(current: List<BaseLocationModel>, history: List<BaseLocationModel>) {
-        try { api.setLocations(current, history) }
+    override suspend fun getGroup(groupId: String): UserGroup {
+        try { return api.getGroup(groupId) }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    suspend fun initGroupsCollection() {
-        try { api.initGroupsCollection() }
+    override suspend fun deleteGroup(groupId: String) {
+        try { api.deleteGroup(groupId) }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 

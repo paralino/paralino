@@ -1,41 +1,47 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.repo.base.BaseRepository
+import com.zbapp.core.repo.base.RemotePreference
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 
-class GroupRepository {
-
-    private val groups = MutableStateFlow(emptyList<UserGroup>())
-    private val personalTrackingGroup get() = UserGroup.personalTracking
-    private val publicSharingGroup get() = UserGroup.publicSharing
+class GroupRepository(
+    private val local: IGroupLocalDataSource,
+    private val remote: IGroupRemoteDataSource
+): BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
-        return groups.map {
-            it + listOfNotNull(personalTrackingGroup, publicSharingGroup)
-        }
+        return local.getAllGroups()
     }
 
     fun getMyGroups(): Flow<List<UserGroup>> {
-        return groups
+        return getAllGroups().mapLatest { it.filter { it.isFromUser } }
     }
 
     fun getGroup(id: String): Flow<UserGroup?> {
-        return groups.map { it.firstOrNull { it.id == id } }
+        return subscribeToData(
+            local = local.getGroup(id),
+            remote = { remote.getGroup(id) },
+            localUpdate = { local.updateOrCreateGroup(it) },
+            remotePreference = RemotePreference.PREFER
+        )
     }
 
-    fun createOrUpdateGroup(userGroup: UserGroup) {
-        groups.value = groups.value.toMutableList().apply {
-            removeAll { it.id == userGroup.id }
-            add(userGroup)
-        }
+    fun createOrUpdateGroup(userGroup: UserGroup): Flow<UserGroup> {
+        return getDataOnce(
+            remote = { remote.createOrUpdateGroup(userGroup) },
+            localUpdate = { local.updateOrCreateGroup(it) },
+            remotePreference = RemotePreference.FORCE
+        )
     }
 
-    fun deleteGroup(id: String) {
-        groups.value = groups.value.toMutableList().apply {
-            removeAll { it.id == id }
-        }
+    fun deleteGroup(id: String): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.deleteGroup(id) },
+            localUpdate = { local.deleteGroup(id) },
+            remotePreference = RemotePreference.FORCE
+        )
     }
 
 }

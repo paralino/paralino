@@ -1,6 +1,9 @@
 package com.zbapp.locationtrack.data.database
 
 import androidx.room.TypeConverter
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -52,4 +55,18 @@ class LocalTimeConverter {
     fun toDateString(time: LocalTime?): String? {
         return time?.toString()
     }
+}
+
+class ListOfStringsConverters {
+
+    @TypeConverter
+    fun fromString(value: String?): List<String>? {
+        return Json.decodeFromString<List<String>>(value ?: return null)
+    }
+
+    @TypeConverter
+    fun fromList(list: List<String>?): String? {
+        return Json.encodeToString(list ?: return null)
+    }
+
 }

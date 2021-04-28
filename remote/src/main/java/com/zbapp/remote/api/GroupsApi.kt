@@ -1,7 +1,9 @@
 package com.zbapp.remote.api
 
 import com.etebase.client.ItemMetadata
+import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.BaseLocationModel
+import com.zbapp.core.repo.group.IGroupRemoteDataSource
 import com.zbapp.core.repo.location.ILocationRemoteDataSource
 import com.zbapp.remote.BaseRemoteModule
 import com.zbapp.remote.Constants
@@ -11,7 +13,7 @@ import kotlinx.serialization.decodeFromString
 
 internal class GroupsApi (
     private val userSource: RemoteUserCache
-): ILocationRemoteDataSource {
+): ILocationRemoteDataSource, IGroupRemoteDataSource {
 
     override suspend fun getCurrentLocationsForGroup(groupId: String): List<BaseLocationModel> {
 
@@ -82,7 +84,7 @@ internal class GroupsApi (
 
     }
 
-    suspend fun initGroupsCollection() {
+    override suspend fun initGroups() {
         blocking {
             userSource.account.collectionManager.create(
                 Constants.collectionTypeGroups,
@@ -102,5 +104,21 @@ internal class GroupsApi (
                 ""
             ).let { userSource.account.collectionManager.upload(it) }
         }
+    }
+
+    override suspend fun createOrUpdateGroup(group: UserGroup): UserGroup {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllGroups(): List<UserGroup> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getGroup(groupId: String): UserGroup {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteGroup(groupId: String) {
+        TODO("Not yet implemented")
     }
 }
