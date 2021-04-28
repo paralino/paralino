@@ -15,7 +15,7 @@ import java.util.*
 data class LocationEntity constructor(
     @PrimaryKey
     val id: String,
-    val circleId: String,
+    val groupId: String,
     val userId: String,
 
     val lat: Double,
@@ -34,7 +34,7 @@ data class LocationEntity constructor(
             return LocationEntity(
                 id = UUID.randomUUID().toString(),
                 userId = user.id,
-                circleId = "",
+                groupId = "",
                 lat = location.latitude,
                 lng = location.longitude,
                 accuracy = location.accuracy,

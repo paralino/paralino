@@ -5,10 +5,10 @@ import com.zbapp.locationtrack.data.models.location.SharingContractEntity
 
 object SharingContractsMapper: IDataMapper<SharingContractEntity, LocationSharingContract> {
     override fun map(model: SharingContractEntity): LocationSharingContract {
-        return LocationSharingContract(model.circleId, model.endTimeUTC)
+        return LocationSharingContract(model.groupId, model.endTimeUTC)
     }
 
     override fun mapReversed(model: LocationSharingContract): SharingContractEntity {
-        return SharingContractEntity(model.circleId, model.endTimeUTC)
+        return SharingContractEntity(model.groupId, model.endTimeUTC)
     }
 }

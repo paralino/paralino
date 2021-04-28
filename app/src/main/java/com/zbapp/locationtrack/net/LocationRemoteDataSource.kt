@@ -9,11 +9,11 @@ class LocationRemoteDataSource: ILocationRemoteDataSource {
     // temp local data
     private val locations = MutableStateFlow(emptyMap<String, List<BaseLocationModel>>())
 
-    override suspend fun getCurrentLocationsForCircle(circleId: String): List<BaseLocationModel> {
-        return locations.value.getOrDefault(circleId, emptyList())
+    override suspend fun getCurrentLocationsForGroup(groupId: String): List<BaseLocationModel> {
+        return locations.value.getOrDefault(groupId, emptyList())
     }
 
-    override suspend fun getLocationsHistoryForUser(circleId: String, userId: String): List<BaseLocationModel> {
+    override suspend fun getLocationsHistoryForUser(groupId: String, userId: String): List<BaseLocationModel> {
         return locations.value.flatMap { it.value }.filter { it.userId == userId }
     }
 
@@ -27,7 +27,7 @@ class LocationRemoteDataSource: ILocationRemoteDataSource {
     ) {
         val list = this.locations.value.toMutableMap().also { map ->
             current.forEach { location ->
-                val list = map.getOrDefault(location.circleId, emptyList())
+                val list = map.getOrDefault(location.groupId, emptyList())
                     .toMutableList().apply {
                         val index = this.indexOfFirst { it.userId == location.userId }
                         if (index < 0) {
@@ -36,7 +36,7 @@ class LocationRemoteDataSource: ILocationRemoteDataSource {
                             this[index] = location
                         }
                     }
-                map[location.circleId] = list
+                map[location.groupId] = list
             }
         }
 

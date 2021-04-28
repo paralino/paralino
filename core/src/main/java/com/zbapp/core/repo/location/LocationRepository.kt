@@ -12,14 +12,14 @@ class LocationRepository constructor(
     private val remote: ILocationRemoteDataSource
 ) {
 
-    fun getLocationsForCircle(circleId: String): Flow<List<BaseLocationModel>> {
-        return local.getLocationsForCircle(circleId)
+    fun getLocationsForGroup(groupId: String): Flow<List<BaseLocationModel>> {
+        return local.getLocationsForGroup(groupId)
     }
 
     fun pushLocation(location: BaseLocationModel): Flow<Unit> {
         return flow {
             val mapped = sharingManager.allValidContracts().map {
-                location.copy(id = randomString(), circleId = it.circleId)
+                location.copy(id = randomString(), groupId = it.groupId)
             }
 
             if(mapped.isEmpty()) throw NoValidContractsException()

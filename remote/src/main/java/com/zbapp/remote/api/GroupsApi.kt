@@ -13,9 +13,9 @@ internal class GroupsApi (
     private val userSource: RemoteUserCache
 ): ILocationRemoteDataSource {
 
-    override suspend fun getCurrentLocationsForCircle(circleId: String): List<BaseLocationModel> {
+    override suspend fun getCurrentLocationsForGroup(groupId: String): List<BaseLocationModel> {
 
-        val collection = blocking { userSource.account.collectionManager.fetch(circleId) }
+        val collection = blocking { userSource.account.collectionManager.fetch(groupId) }
 
         return when(collection.meta.itemType) {
             Constants.collectionGroupUser -> {
@@ -36,8 +36,8 @@ internal class GroupsApi (
         }
     }
 
-    override suspend fun getLocationsHistoryForUser(circleId: String, userId: String): List<BaseLocationModel> {
-        val collection = userSource.account.collectionManager.fetch(circleId)
+    override suspend fun getLocationsHistoryForUser(groupId: String, userId: String): List<BaseLocationModel> {
+        val collection = userSource.account.collectionManager.fetch(groupId)
 
         return when(collection.meta.itemType) {
             Constants.collectionGroupUser -> {
@@ -67,7 +67,7 @@ internal class GroupsApi (
     }
 
     override suspend fun setLocations(current: List<BaseLocationModel>, history: List<BaseLocationModel>) {
-        val collectionIds = current.map { it.circleId } + history.map { it.circleId }
+        val collectionIds = current.map { it.groupId } + history.map { it.groupId }
         val collections = blocking {
             userSource.account.collectionManager.list(Constants.collectionTypeGroups).data.filter {
                 collectionIds.contains(it.uid)
@@ -75,7 +75,7 @@ internal class GroupsApi (
         }
 
         current.forEach { item ->
-            val collection = collections.firstOrNull { it.uid == item.circleId }
+            val collection = collections.firstOrNull { it.uid == item.groupId }
             val items = BaseRemoteModule.formatter.decodeFromString<List<BaseRemoteModule>>(collection?.contentString ?: "")
 
         }

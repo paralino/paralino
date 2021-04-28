@@ -34,7 +34,7 @@ abstract class MainAppDatabase: RoomDatabase() {
     abstract fun userDao(): UserDao
 
     companion object {
-        const val VERSION = 7
+        const val VERSION = 8
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

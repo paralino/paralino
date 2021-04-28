@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.zbapp.core.models.circle.Circle
+import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.repo.LocationSharingManager
-import com.zbapp.core.repo.circle.CircleRepository
+import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.tracking.LocationConditionStatus
@@ -26,7 +26,7 @@ import java.time.LocalDateTime
 class DashboardViewModel(
     val locationInit: LocationInitHandler,
     private val locationSharing: LocationSharingManager,
-    private val circleRepository: CircleRepository,
+    private val groupRepository: GroupRepository,
     context: Context
 ) : ViewModel() {
 
@@ -39,7 +39,7 @@ class DashboardViewModel(
     fun startTracking() {
         viewModelScope.launch {
             val max = LocalDateTime.now().plusMinutes(2).toUTCString()
-            locationSharing.startSharing(LocationSharingContract(Circle.personalTracking.id, max))
+            locationSharing.startSharing(LocationSharingContract(UserGroup.personalTracking.id, max))
         }
     }
 
@@ -54,7 +54,7 @@ class DashboardViewModel(
 
         return combine(
             locationStatus,
-            circleRepository.getAllCircles(),
+            groupRepository.getAllGroups(),
             locationSharing.allContractsFlow
         ) { location, groups, sharing ->
             val list = mutableListOf<ListItemType>()
@@ -70,11 +70,11 @@ class DashboardViewModel(
                 }
             }
 
-            val active = groups.filter { group -> sharing.any { it.circleId == group.id } }.map { group ->
+            val active = groups.filter { group -> sharing.any { it.groupId == group.id } }.map { group ->
                 GroupItemData(group, active = true)
             }
 
-            val inactive = groups.filter { group -> sharing.none { it.circleId == group.id } }.map { group ->
+            val inactive = groups.filter { group -> sharing.none { it.groupId == group.id } }.map { group ->
                 GroupItemData(group, active = false)
             }
 

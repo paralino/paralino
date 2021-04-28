@@ -1,7 +1,7 @@
 package com.zbapp.locationtrack.di
 
 import com.zbapp.core.repo.LocationSharingManager
-import com.zbapp.core.repo.circle.CircleRepository
+import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.repo.user.UserRepository
@@ -30,7 +30,7 @@ val locationModules = module {
 val coreModule = module {
     single { LoginManager(get(), get()) }
     single { LocationSharingManager(get()) }
-    single { CircleRepository() }
+    single { GroupRepository() }
     single { UserRepository(get(), get()) }
     single { LocationRepository(get(), get(), get()) }
 }

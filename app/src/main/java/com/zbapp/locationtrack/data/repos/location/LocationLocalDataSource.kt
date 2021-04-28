@@ -10,8 +10,8 @@ class LocationLocalDataSource(
     private val dao: LocationDao
 ): ILocationLocalDataSource {
 
-    override fun getLocationsForCircle(circleId: String): Flow<List<BaseLocationModel>> {
-        return dao.getLocationsForCircle(circleId).mapLocation()
+    override fun getLocationsForGroup(groupId: String): Flow<List<BaseLocationModel>> {
+        return dao.getLocationsForGroup(groupId).mapLocation()
     }
 
     override fun getLocationsForUser(userId: String): Flow<List<BaseLocationModel>> {

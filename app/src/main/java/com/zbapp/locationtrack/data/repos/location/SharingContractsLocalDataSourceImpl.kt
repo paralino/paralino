@@ -23,7 +23,7 @@ class SharingContractsLocalDataSourceImpl(
     }
 
     override suspend fun cancelContracts(ids: List<String>) {
-        dao.clearForCircle(ids)
+        dao.clearForGroup(ids)
     }
 
     override suspend fun cancelAll() {

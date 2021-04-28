@@ -3,7 +3,7 @@ package com.zbapp.locationtrack.ui.dashboard
 import android.content.Context
 import android.util.AttributeSet
 import androidx.core.view.isVisible
-import com.zbapp.core.models.circle.Circle
+import com.zbapp.core.models.group.UserGroup
 import com.zbapp.locationtrack.databinding.ElementGroupListItemBinding
 import com.zbapp.locationtrack.utils.BaseRvItem
 import com.zbapp.locationtrack.utils.ListItemType
@@ -35,7 +35,7 @@ class GroupListItem(context: Context, attributeSet: AttributeSet? = null) :
 }
 
 data class GroupItemData(
-    val group: Circle,
+    val group: UserGroup,
     val active: Boolean
 ) : ListItemType {
 

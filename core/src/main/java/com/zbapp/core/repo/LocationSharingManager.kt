@@ -1,6 +1,6 @@
 package com.zbapp.core.repo
 
-import com.zbapp.core.models.circle.Circle
+import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import kotlinx.coroutines.flow.*
@@ -36,8 +36,8 @@ class LocationSharingManager(
         contractsDataSource.cancelAll()
     }
 
-    suspend fun stopSharing(circleId: String) {
-        contractsDataSource.cancelContracts(listOf(circleId))
+    suspend fun stopSharing(groupId: String) {
+        contractsDataSource.cancelContracts(listOf(groupId))
     }
 
     suspend fun allValidContracts(): List<LocationSharingContract> {
@@ -47,7 +47,7 @@ class LocationSharingManager(
         val expired = all.subtract(valid)
 
         expired.takeIf { it.isNotEmpty() }
-            ?.map { it.circleId }
+            ?.map { it.groupId }
             ?.let { contractsDataSource.cancelContracts(it) }
 
         return valid
@@ -58,7 +58,7 @@ class LocationSharingManager(
         if(endTimeUTC == null) {
             // invalid public sharing contract
             // endless sharing for other groups
-            if(this.circleId == Circle.publicSharing.id) return null
+            if(this.groupId == UserGroup.publicSharing.id) return null
             else return this
         } else {
             val date = LocalDateTime.parse(endTimeUTC).toInstant(TimeZone.UTC)
@@ -69,7 +69,7 @@ class LocationSharingManager(
             } else {
                 // limit public sharing if needed
                 val maxPublic = now.plus(publicSharingMaxDurationMillis, DateTimeUnit.MILLISECOND)
-                if(this.circleId == Circle.publicSharing.id && date > maxPublic)
+                if(this.groupId == UserGroup.publicSharing.id && date > maxPublic)
                     return this.copy(endTimeUTC = maxPublic.toLocalDateTime(TimeZone.UTC).toString())
 
                 return this

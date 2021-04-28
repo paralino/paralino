@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ILocationLocalDataSource {
 
-    fun getLocationsForCircle(circleId: String): Flow<List<BaseLocationModel>>
+    fun getLocationsForGroup(groupId: String): Flow<List<BaseLocationModel>>
     fun getLocationsForUser(userId: String): Flow<List<BaseLocationModel>>
     suspend fun addLocation(locationModel: BaseLocationModel)
     suspend fun addLocations(locations: List<BaseLocationModel>)

@@ -2,7 +2,7 @@ package com.zbapp.core.models.location
 
 data class BaseLocationModel constructor(
     val id: String,
-    val circleId: String,
+    val groupId: String,
     val userId: String,
 
     val lat: Double,

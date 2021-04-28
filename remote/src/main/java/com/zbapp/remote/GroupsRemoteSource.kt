@@ -3,7 +3,6 @@ package com.zbapp.remote
 import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.repo.location.ILocationRemoteDataSource
 import com.zbapp.remote.api.GroupsApi
-import com.zbapp.remote.api.UserApi
 import com.zbapp.remote.user.RemoteUserCache
 
 class GroupsRemoteSource internal constructor(
@@ -12,13 +11,13 @@ class GroupsRemoteSource internal constructor(
 
     constructor(user: RemoteUserCache) : this(GroupsApi(user))
 
-    override suspend fun getCurrentLocationsForCircle(circleId: String): List<BaseLocationModel> {
-        try { return api.getCurrentLocationsForCircle(circleId) }
+    override suspend fun getCurrentLocationsForGroup(groupId: String): List<BaseLocationModel> {
+        try { return api.getCurrentLocationsForGroup(groupId) }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    override suspend fun getLocationsHistoryForUser(circleId: String, userId: String): List<BaseLocationModel> {
-        try { return api.getLocationsHistoryForUser(circleId, userId) }
+    override suspend fun getLocationsHistoryForUser(groupId: String, userId: String): List<BaseLocationModel> {
+        try { return api.getLocationsHistoryForUser(groupId, userId) }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 

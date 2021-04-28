@@ -9,7 +9,7 @@ object LocationMapper: IDataMapper<LocationEntity, BaseLocationModel> {
     override fun map(model: LocationEntity): BaseLocationModel {
         return BaseLocationModel(
             id = model.id,
-            circleId = model.circleId,
+            groupId = model.groupId,
             userId = model.userId,
             lat = model.lat,
             lng = model.lng,
@@ -24,7 +24,7 @@ object LocationMapper: IDataMapper<LocationEntity, BaseLocationModel> {
     override fun mapReversed(model: BaseLocationModel): LocationEntity {
         return LocationEntity(
             id = model.id,
-            circleId = model.circleId,
+            groupId = model.groupId,
             userId = model.userId,
             lat = model.lat,
             lng = model.lng,

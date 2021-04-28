@@ -16,11 +16,11 @@ interface SharingContractsDao {
     @Query("SELECT * FROM sharing_contracts")
     fun getAll(): Flow<List<SharingContractEntity>>
 
-    @Query("SELECT * FROM sharing_contracts WHERE circleId = :circleId")
-    fun get(circleId: String): Flow<SharingContractEntity>
+    @Query("SELECT * FROM sharing_contracts WHERE groupId = :groupId")
+    fun get(groupId: String): Flow<SharingContractEntity>
 
-    @Query("DELETE FROM sharing_contracts WHERE circleId IN (:ids)")
-    suspend fun clearForCircle(ids: List<String>)
+    @Query("DELETE FROM sharing_contracts WHERE groupId IN (:ids)")
+    suspend fun clearForGroup(ids: List<String>)
 
     @Query("DELETE FROM sharing_contracts")
     suspend fun clear()

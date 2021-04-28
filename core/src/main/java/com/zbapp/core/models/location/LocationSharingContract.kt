@@ -1,7 +1,7 @@
 package com.zbapp.core.models.location
 
 data class LocationSharingContract constructor(
-    val circleId: String,
+    val groupId: String,
     val endTimeUTC: String?
 ) {
 

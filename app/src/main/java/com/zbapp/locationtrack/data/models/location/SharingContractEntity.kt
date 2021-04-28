@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "sharing_contracts")
 data class SharingContractEntity(
     @PrimaryKey
-    val circleId: String,
+    val groupId: String,
     val endTimeUTC: String?
 ) {
 }
