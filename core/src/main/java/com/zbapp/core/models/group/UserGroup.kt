@@ -10,6 +10,7 @@ data class UserGroup constructor(
     companion object {
         val personalTracking = UserGroup("personalTracking", "Personal", 0, "\uD83D\uDD12", emptyList())
         val publicSharing = UserGroup("publicSharing", "Public", 0, "\uD83C\uDFD9️", emptyList())
+        fun empty() = UserGroup("", "", 0, "\uD83D\uDD12️", emptyList())
     }
 
     val isFromUser: Boolean get() = id != personalTracking.id && id != publicSharing.id

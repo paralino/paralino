@@ -1,6 +1,9 @@
 package com.zbapp.remote.api
 
+import com.etebase.client.Collection
+import com.etebase.client.FetchOptions
 import com.etebase.client.ItemMetadata
+import com.etebase.client.exceptions.NotFoundException
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.repo.group.IGroupRemoteDataSource
@@ -10,6 +13,7 @@ import com.zbapp.remote.Constants
 import com.zbapp.remote.blocking
 import com.zbapp.remote.user.RemoteUserCache
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 
 internal class GroupsApi (
     private val userSource: RemoteUserCache
@@ -85,40 +89,65 @@ internal class GroupsApi (
     }
 
     override suspend fun initGroups() {
-        blocking {
-            userSource.account.collectionManager.create(
-                Constants.collectionTypeGroups,
-                ItemMetadata().apply {
-                    itemType = Constants.collectionGroupPublic
-                    name = "Public sharing"
-                },
-                ""
-            ).let { userSource.account.collectionManager.upload(it) }
+        createGroup(UserGroup.empty(), Constants.collectionGroupPrivate, "Personal log")
+        createGroup(UserGroup.empty(), Constants.collectionGroupPublic, "Public sharing")
+    }
 
-            userSource.account.collectionManager.create(
+    private suspend fun createGroup(group: UserGroup, type: String = Constants.collectionGroupUser, infoName: String = ""): Collection {
+        return blocking {
+            val collection = userSource.account.collectionManager.create(
                 Constants.collectionTypeGroups,
                 ItemMetadata().apply {
-                    itemType = Constants.collectionGroupPrivate
-                    name = "Personal log"
+                    itemType = type
+                    name = infoName
                 },
-                ""
-            ).let { userSource.account.collectionManager.upload(it) }
+                BaseRemoteModule.formatter.encodeToString(group)
+            )
+            userSource.account.collectionManager.upload(collection)
+            collection
         }
     }
 
     override suspend fun createOrUpdateGroup(group: UserGroup): UserGroup {
-        TODO("Not yet implemented")
+        if(group.id.isBlank()) {
+            return createGroup(group).let { group.copy(id = it.uid) }
+        } else {
+            return blocking {
+                try {
+                    val collection = userSource.account.collectionManager.fetch(group.id)
+                    collection.setContent(BaseRemoteModule.formatter.encodeToString(group))
+                    userSource.account.collectionManager.upload(collection)
+                    group
+                } catch (e: Exception) {
+                    if(e is NotFoundException) {
+                        createGroup(group).let { group.copy(id = it.uid) }
+                    } else throw e
+                }
+            }
+        }
     }
 
     override suspend fun getAllGroups(): List<UserGroup> {
-        TODO("Not yet implemented")
+        return blocking {
+            userSource.account.collectionManager.list(Constants.collectionTypeGroups).data
+                .map { collection ->
+                    BaseRemoteModule.formatter.decodeFromString<UserGroup>(collection.contentString)
+                        .copy(id = collection.uid)
+                }
+        }
     }
 
     override suspend fun getGroup(groupId: String): UserGroup {
-        TODO("Not yet implemented")
+        return blocking {
+            userSource.account.collectionManager.fetch(groupId).contentString.let {
+                BaseRemoteModule.formatter.decodeFromString(it)
+            }
+        }
     }
 
     override suspend fun deleteGroup(groupId: String) {
-        TODO("Not yet implemented")
+        blocking {
+            userSource.account.collectionManager.fetch(groupId).delete()
+        }
     }
 }
