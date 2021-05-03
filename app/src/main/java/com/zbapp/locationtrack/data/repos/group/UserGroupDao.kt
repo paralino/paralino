@@ -23,6 +23,6 @@ interface UserGroupDao {
     suspend fun deleteGroup(id: String)
 
     @Query("DELETE FROM groups")
-    fun clear()
+    suspend fun clear()
 
 }

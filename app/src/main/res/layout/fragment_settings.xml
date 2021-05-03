@@ -212,6 +212,12 @@
                     android:drawableStart="@drawable/ic_library_ack"
                     android:text="@string/setting_title_libraries" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvLogout"
+                    style="@style/Settings.Item"
+                    android:drawableStart="@drawable/ic_logout"
+                    android:text="@string/setting_title_logout" />
+
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView

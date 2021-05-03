@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.ui.settings
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
@@ -28,6 +29,9 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
         binding.tvSettingLocation.setOnClickListener { }
         binding.tvSettingAck.setOnClickListener { }
         binding.ivProfileEdit.setOnClickListener { }
+        binding.tvLogout.setOnClickListener {
+            vm.logout().observe { Toast.makeText(requireContext(), "Logout: $it", Toast.LENGTH_SHORT).show() }
+        }
     }
 
 }

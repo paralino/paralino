@@ -29,6 +29,11 @@ class LocationRepository constructor(
         }
     }
 
+    suspend fun clear() {
+        sharingManager.stopAllSharing()
+        local.clearAll()
+    }
+
 
 }
 

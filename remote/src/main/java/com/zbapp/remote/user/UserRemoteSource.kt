@@ -1,6 +1,7 @@
 package com.zbapp.remote.user
 
 import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.repo.group.IGroupRemoteDataSource
 import com.zbapp.core.repo.user.IUserRemoteDataSource
 import com.zbapp.remote.ExceptionMapper
 import com.zbapp.remote.GroupsRemoteSource
@@ -10,7 +11,7 @@ class UserRemoteSource internal constructor(
     private val api: UserApi
 ): IUserRemoteDataSource {
 
-    constructor(user: RemoteUserCache, groupsRemote: GroupsRemoteSource)
+    constructor(user: RemoteUserCache, groupsRemote: IGroupRemoteDataSource)
             : this(UserApi(user, groupsRemote))
 
 

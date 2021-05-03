@@ -1,19 +1,20 @@
 package com.zbapp.locationtrack.ui.dashboard
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
+import com.zbapp.core.repo.user.LoginManager
+import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.tracking.LocationConditionStatus
 import com.zbapp.locationtrack.tracking.LocationInitHandler
+import com.zbapp.locationtrack.ui.shared.list.EmptyStateData
 import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpaceData
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptyState
 import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItemData
 import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
@@ -27,6 +28,7 @@ class DashboardViewModel(
     val locationInit: LocationInitHandler,
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
+    private val loginManager: LoginManager,
     context: Context
 ) : ViewModel() {
 
@@ -51,6 +53,23 @@ class DashboardViewModel(
     }
 
     fun getGroups(): LiveData<List<ListItemType>> {
+
+        if(!loginManager.isLoggedIn()) {
+            return liveData {
+                emit(listOf(
+                    ListItemEmptySpaceData(100.dp2px),
+                    EmptyStateData(
+                        iconRes = null,
+                        AppClass.context.getString(R.string.login_button_login),
+                        AppClass.context.getString(R.string.login_button_login)
+                    )
+                ))
+            }
+        } else if(!loginManager.isVerified()) {
+            return liveData {
+                emit(listOf(ErrorListItemType.EMAIL))
+            }
+        }
 
         return combine(
             locationStatus,

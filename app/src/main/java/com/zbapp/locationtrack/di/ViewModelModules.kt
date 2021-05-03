@@ -5,21 +5,25 @@ import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.locationtrack.data.repos.LogoutControl
 import com.zbapp.locationtrack.tracking.LocationInitHandler
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import com.zbapp.locationtrack.ui.dashboard.DashboardViewModel
 import com.zbapp.locationtrack.ui.login.LoginCheckViewModel
 import com.zbapp.locationtrack.ui.login.LoginViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
+import com.zbapp.locationtrack.ui.settings.SettingsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { DashboardViewModel(get(), get(), get(), androidContext()) }
+    viewModel { DashboardViewModel(get(), get(), get(), get(), androidContext()) }
     viewModel { MapViewModel(get()) }
+    viewModel { SettingsViewModel(get()) }
     viewModel { LoginViewModel(androidContext(), get()) }
     viewModel { LoginCheckViewModel(androidContext(), get()) }
+    factory { LogoutControl(get(), get(), get()) }
 }
 
 val locationModules = module {

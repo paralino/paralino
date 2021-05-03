@@ -2,6 +2,7 @@ package com.zbapp.remote.api
 
 import com.etebase.client.*
 import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.repo.group.IGroupRemoteDataSource
 import com.zbapp.core.repo.user.IUserRemoteDataSource
 import com.zbapp.core.utils.NotFoundException
 import com.zbapp.remote.*
@@ -13,7 +14,7 @@ import java.util.*
 
 internal class UserApi constructor(
     private val user: RemoteUserCache,
-    private val groupsRemote: GroupsRemoteSource
+    private val groupsRemote: IGroupRemoteDataSource
 ): IUserRemoteDataSource {
 
     private val cachedAccount get() = user.accountCache

@@ -11,7 +11,6 @@
     android:foreground="?selectableItemBackgroundBorderless"
     android:elevation="0dp"
     android:paddingVertical="@dimen/activity_side_margin_small"
-    android:paddingHorizontal="@dimen/activity_side_margin"
     >
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -20,6 +19,7 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         tools:src="@drawable/ic_location_off"
+        android:layout_marginStart="@dimen/activity_side_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,6 +32,7 @@
         android:layout_marginStart="@dimen/activity_side_margin_small"
         tools:text="@string/location_banner_sharing_active"
         android:textSize="14sp"
+        android:textColor="@color/secondaryTextColor"
         android:includeFontPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/ivBannerIcon"
@@ -43,8 +44,12 @@
         style="@style/TextStyle.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/activity_side_margin_medium"
+        android:paddingVertical="@dimen/activity_side_margin_very_small"
         android:text="@string/location_banner_fix"
         android:textSize="13sp"
+        android:layout_marginEnd="@dimen/activity_side_margin_small"
+        android:background="@drawable/shape_main_rounded_background"
         android:textColor="@color/highlightRed"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

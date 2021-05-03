@@ -6,6 +6,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.zbapp.core.models.Payload
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.databinding.ElementGenericInfoBinding
 import com.zbapp.locationtrack.databinding.FragmentGenericInfoBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.shared.AppSnackbar
@@ -16,18 +17,19 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ConfirmEmailInfoFragment: BaseFragment(R.layout.fragment_generic_info) {
 
     private val vb by viewBinding(FragmentGenericInfoBinding::bind)
+    private val vbContent by viewBinding { ElementGenericInfoBinding.bind(vb.root) }
     private val vm: LoginCheckViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        vb.tvInfo.setText(R.string.info_email_confirm)
-        vb.bAction.setText(R.string.button_done)
+        vbContent.tvInfo.setText(R.string.info_email_confirm)
+        vbContent.bAction.setText(R.string.button_done)
 
-        vb.bAction.setOnClickListener {
+        vbContent.bAction.setOnClickListener {
             vm.checkAndSync().observe {
-                vb.bAction.isEnabled = it !is Payload.Loading
-                vb.bAction.setLoading(it is Payload.Loading, it is Payload.Success)
+                vbContent.bAction.isEnabled = it !is Payload.Loading
+                vbContent.bAction.setLoading(loading = it is Payload.Loading, withCheck = it is Payload.Success)
                 if(it is Payload.Success)
                     lifecycleScope.launchWhenResumed {
                         delay(600)
@@ -37,7 +39,7 @@ class ConfirmEmailInfoFragment: BaseFragment(R.layout.fragment_generic_info) {
         }
 
         vm.errorState.observe {
-            AppSnackbar.make(vb.bAction, it)?.show()
+            AppSnackbar.make(vbContent.bAction, it)?.show()
         }
     }
 

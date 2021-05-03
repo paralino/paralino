@@ -2,42 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundMain"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:background="@color/backgroundMain">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/TextStyle.Regular"
-        android:gravity="center"
-        android:lineSpacingExtra="2dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bAction"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:text="@tools:sample/lorem"
-        app:layout_constrainedWidth="true"
-        app:layout_constrainedHeight="true"
-        android:layout_margin="@dimen/activity_side_margin_large"
-        />
-
-    <com.zbapp.locationtrack.ui.shared.ButtonWithProgress
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:background="?selectableItemBackground"
-        tools:text="Button"
-        app:contentTint="@color/white"
-        app:buttonTint="@color/accent"
-        android:id="@+id/bAction"
-        app:layout_goneMarginTop="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tvInfo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+    <include layout="@layout/element_generic_info" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

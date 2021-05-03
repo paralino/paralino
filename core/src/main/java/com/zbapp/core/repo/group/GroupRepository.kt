@@ -44,4 +44,8 @@ class GroupRepository(
         )
     }
 
+    suspend fun clear() {
+        local.clearAll()
+    }
+
 }

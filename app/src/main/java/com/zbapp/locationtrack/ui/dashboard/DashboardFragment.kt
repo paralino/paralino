@@ -1,24 +1,19 @@
 package com.zbapp.locationtrack.ui.dashboard
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.navigation.NavDeepLinkRequest
-import androidx.navigation.NavDirections
-import androidx.navigation.fragment.findNavController
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.tracking.LocationService
-import com.zbapp.locationtrack.ui.MainActivity
 import com.zbapp.locationtrack.ui.base.BaseFragment
-import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.shared.DeeplinkManager
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItems
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
 import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpace
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptyState
 import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItem
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
 import com.zbapp.locationtrack.utils.extensions.viewBinding
@@ -67,15 +62,16 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             .addFactory { ListSubtitleItem(it) }
             .addFactory { ListItemEmptySpace(it) }
             .addFactory { GroupAddItem(it).withClickAction {  } }
+            .addFactory {
+                ListItemEmptyState(it).withClickAction {
+                    mainActivity?.navigateDeeplink(DeeplinkManager.deeplinkLogin)
+                }
+            }
 
         binding.rvDashboard.adapter = adapter
     }
 
     private fun setupObservers() {
-
-        binding.mainHeader.mainHeader.setOnClickListener {
-            mainActivity?.navigateDeeplink(DeeplinkManager.deeplinkLogin)
-        }
 
         binding.bShare.setOnClickListener {
             if(vm.isTrackingActive()) {

@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.*
 class UserRepository(
     private val local: IUserLocalDataSource,
     private val remote: IUserRemoteDataSource
-): BaseRepository() {
+) : BaseRepository() {
 
     companion object {
         var _cachedUser: UserMe? = null
@@ -50,7 +50,10 @@ class UserRepository(
     }
 
     fun generateUsername(): Flow<String> {
-        return getDataOnce(remote = { remote.generateUsername() }, remotePreference = RemotePreference.FORCE)
+        return getDataOnce(
+            remote = { remote.generateUsername() },
+            remotePreference = RemotePreference.FORCE
+        )
     }
 
     fun restoreSession(serverUrl: String): Flow<Unit> {
@@ -76,7 +79,7 @@ class UserRepository(
     }
 
     fun refreshUserIfAvailable(): Flow<UserMe> {
-        if(!config.isTokenValid){
+        if (!config.isTokenValid) {
             return flow { throw Exception("Token is not available") }
         }
 
@@ -85,11 +88,11 @@ class UserRepository(
             localUpdate = ::updateLocalUser,
             remotePreference = RemotePreference.FORCE
         ).catch {
-            if(it is NotFoundException) {
+            if (it is NotFoundException) {
                 logg.v("User does not exist - create it for the first time")
                 emitAll(initializeUser())
             } else {
-                if(it is UnverifiedUserException)
+                if (it is UnverifiedUserException)
                     config.emailConfirmed = false
                 logg.e("Error refreshing user")
                 throw it
@@ -98,7 +101,7 @@ class UserRepository(
     }
 
     private fun initializeUser(): Flow<UserMe> {
-        if(!config.isTokenValid){
+        if (!config.isTokenValid) {
             return flow { throw Exception("Token is not available") }
         }
 
@@ -117,12 +120,12 @@ class UserRepository(
             remotePreference = RemotePreference.FORCE
         )
             .catch {
-                if(it is UnverifiedUserException) {
+                if (it is UnverifiedUserException) {
                     config.emailConfirmed = false
                 }
                 logg.e("Error refreshing user")
                 throw it
-        }
+            }
     }
 
     private suspend fun updateLocalUser(data: UserMe) {
@@ -154,15 +157,16 @@ class UserRepository(
         ).map { true }
     }
 
-    suspend fun clear(){
+    suspend fun clear() {
         cachedUser = null
         local.clear()
     }
 
-    suspend fun logout(): Flow<Unit> {
+    fun logout(): Flow<Unit> {
         return getDataOnce(
             remote = { remote.logout() },
             localUpdate = {
+                clear()
                 config.clear()
             },
             remotePreference = RemotePreference.FORCE
