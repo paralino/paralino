@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_bottom_sheet"
+        android:paddingHorizontal="@dimen/activity_side_margin"
+        android:paddingTop="@dimen/activity_side_margin_small"
+        android:paddingBottom="@dimen/activity_side_margin_large"
+        >
+
+        <com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/title"
+            />
+
+        <com.zbapp.locationtrack.ui.shared.RoundImageView
+            android:id="@+id/ivGroup"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:backgroundColor="@color/theme_background_section_bright"
+            app:cornerRadius="10dp"
+            android:layout_marginStart="@dimen/activity_side_margin"
+            android:layout_marginTop="@dimen/activity_side_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvGroupEmoji"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:textSize="28sp"
+            app:layout_constraintBottom_toBottomOf="@id/ivGroup"
+            app:layout_constraintEnd_toEndOf="@id/ivGroup"
+            app:layout_constraintStart_toStartOf="@id/ivGroup"
+            app:layout_constraintTop_toTopOf="@id/ivGroup"
+            tools:text="🦝" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etGroupName"
+            style="@style/TextStyle.Regular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/activity_side_margin_small"
+            android:layout_marginEnd="@dimen/activity_side_margin"
+            android:background="@color/transparent"
+            android:imeOptions="actionNext"
+            android:inputType="textUri"
+            android:maxLines="1"
+            android:maxLength="30"
+            android:padding="@dimen/activity_side_margin_small"
+            android:textCursorDrawable="@null"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/ivGroup"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivGroup"
+            app:layout_constraintTop_toTopOf="@id/ivGroup"
+            tools:text="@tools:sample/lorem/random" />
+
+        <com.zbapp.locationtrack.ui.shared.ButtonWithProgress
+            android:id="@+id/bCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_side_margin_small"
+            android:layout_marginEnd="@dimen/activity_side_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivGroup"
+            app:buttonTint="@color/accent"
+            app:contentTint="@color/light_theme_light"
+            app:text="Create"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

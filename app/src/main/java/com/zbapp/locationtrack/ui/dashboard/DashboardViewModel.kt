@@ -97,7 +97,15 @@ class DashboardViewModel(
                 GroupItemData(group, active = false)
             }
 
-            if(active.isEmpty()) {
+            if(active.isEmpty() && inactive.isEmpty()) {
+                list.add(ListItemEmptySpaceData(100.dp2px))
+                list.add(
+                    EmptyStateData(
+                        iconRes = R.drawable.ic_groups,
+                        AppClass.context.getString(R.string.dashboard_groups_add_button)
+                    )
+                )
+            } else if(active.isEmpty()) {
                 list.addAll(inactive)
             } else {
                 list.add(ListSubtitleItemData(AppClass.context.getString(R.string.dashboard_groups_section_active)))

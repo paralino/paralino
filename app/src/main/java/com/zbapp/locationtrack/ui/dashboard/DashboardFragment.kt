@@ -7,6 +7,7 @@ import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.tracking.LocationService
 import com.zbapp.locationtrack.ui.base.BaseFragment
+import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.shared.DeeplinkManager
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
@@ -54,14 +55,16 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                 GroupListItem(it).withClickAction {
 
                 }.apply {
-                    onGroupActionClick = {
-                        vm.stopTracking()
-                    }
+                    onGroupActionClick = { vm.stopTracking() }
                 }
             }
             .addFactory { ListSubtitleItem(it) }
             .addFactory { ListItemEmptySpace(it) }
-            .addFactory { GroupAddItem(it).withClickAction {  } }
+            .addFactory {
+                GroupAddItem(it).withClickAction {
+                    navigateDefault(R.id.createGroupFragment)
+                }
+            }
             .addFactory {
                 ListItemEmptyState(it).withClickAction {
                     mainActivity?.navigateDeeplink(DeeplinkManager.deeplinkLogin)
@@ -108,13 +111,13 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
 
     private fun showNoLocationPermissionWarning() {
         BottomSheetDialog.show(
-            childFragmentManager, mutableListOf(
+            this, mutableListOf(
                 BottomSheetTitleData("Location permission"),
                 BottomSheetActionData("ok", R.string.button_ok),
                 BottomSheetItems.CANCEL
             )
-        ) {
-            if (it.id == "ok") {
+        ) { _, bundle ->
+            if (BottomSheetDialog.getAction(bundle)?.id == "ok") {
                 permissionHandler.askLocationPermission(requireActivity())
             }
         }
@@ -123,22 +126,16 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
 
     private fun showNoLocationServicesWarning() {
         BottomSheetDialog.show(
-            childFragmentManager, mutableListOf(
+            this, mutableListOf(
                 BottomSheetTitleData("Location gps"),
                 BottomSheetActionData("ok", R.string.button_ok),
                 BottomSheetItems.CANCEL
             )
-        ) {
-            if (it.id == "ok") {
+        ) { _, bundle ->
+            if (BottomSheetDialog.getAction(bundle)?.id == "ok") {
                 permissionHandler.askLocationService()
             }
         }
-    }
-
-    override fun onDestroyView() {
-//        binding.mainHeader.mainHeader.setOnClickListener(null)
-//        binding.bShare.setOnClickListener(null)
-        super.onDestroyView()
     }
 
 }

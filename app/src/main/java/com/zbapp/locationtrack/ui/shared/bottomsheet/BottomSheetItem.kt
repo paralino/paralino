@@ -12,7 +12,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.utils.ListItemType
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 interface BottomSheetItemData: ListItemType, Parcelable {
     fun text(context: Context): SpannableString

@@ -1,5 +1,8 @@
 package com.zbapp.core.models.group
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class UserGroup constructor(
     val id: String,
     val name: String,
@@ -11,6 +14,7 @@ data class UserGroup constructor(
         val personalTracking = UserGroup("personalTracking", "Personal", 0, "\uD83D\uDD12", emptyList())
         val publicSharing = UserGroup("publicSharing", "Public", 0, "\uD83C\uDFD9️", emptyList())
         fun empty() = UserGroup("", "", 0, "\uD83D\uDD12️", emptyList())
+        fun new(icon: String, name: String) = UserGroup("", name, 0, icon, emptyList())
     }
 
     val isFromUser: Boolean get() = id != personalTracking.id && id != publicSharing.id

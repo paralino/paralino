@@ -5,14 +5,14 @@
 package com.zbapp.locationtrack.ui.shared.bottomsheet
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.LayoutDialogBottomSheetBinding
@@ -23,9 +23,6 @@ import com.zbapp.locationtrack.utils.withClickAction
 open class BottomSheetDialog: BottomSheetDialogFragment() {
 
     val binding by viewBinding(LayoutDialogBottomSheetBinding::bind)
-
-    var actionClick: ((BottomSheetActionData) -> Unit)? = null
-    var actionDismiss: (() -> Unit)? = null
 
     private var canDismiss = true
 
@@ -55,11 +52,9 @@ open class BottomSheetDialog: BottomSheetDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog =  super.onCreateDialog(savedInstanceState)
 
-        if (isCancelable) dialog.setOnCancelListener { dismiss() }
-
         dialog.setOnKeyListener { _, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                dismiss()
+                dismissAllowingStateLoss()
                 return@setOnKeyListener true
             }
             false
@@ -68,37 +63,52 @@ open class BottomSheetDialog: BottomSheetDialogFragment() {
     }
 
     protected fun performAction(item: BottomSheetActionItem){
-        val data = item.itemData ?: return
-        actionClick?.invoke(data)
+        performAction(item.itemData ?: return)
+    }
+
+    protected fun performAction(data: BottomSheetActionData){
+        setFragmentResult(keyResult, bundleOf("data" to data))
         if(canDismiss){
-            dismiss()
+            dismissAllowingStateLoss()
         }
     }
 
     override fun onDestroy() {
-        dialog?.setOnCancelListener(null)
         dialog?.setOnDismissListener(null)
         super.onDestroy()
     }
 
-    override fun onCancel(dialog: DialogInterface) {
-        super.onCancel(dialog)
-        actionDismiss?.invoke()
-    }
-
     companion object {
 
+        val keyResult = "keyResult"
+
+        fun getAction(bundle: Bundle) = bundle.getParcelable<BottomSheetActionData>("data")
+
         fun show(
-            fragmentManager: FragmentManager,
+            parent: Fragment,
             data: MutableList<BottomSheetItemData>,
-            action: ((BottomSheetActionData) -> Unit)? = null
+            listener: ((String, Bundle) -> Unit)? = null
         ): BottomSheetDialog {
-            val dialog = BottomSheetDialog().apply {
+            return show(parent, BottomSheetDialog(), data, listener)
+        }
+
+        fun show(
+            parent: Fragment,
+            source: BottomSheetDialog,
+            data: MutableList<BottomSheetItemData>,
+            listener: ((String, Bundle) -> Unit)? = null
+        ): BottomSheetDialog {
+            val dialog = source.apply {
                 arguments = bundleOf("items" to data)
             }
-            dialog.actionClick = action
-            dialog.show(fragmentManager, "bottomSheet")
+            dialog.show(parent.childFragmentManager, data.hashCode().toString())
+
+            if(listener != null) {
+                parent.childFragmentManager.setFragmentResultListener(keyResult, parent, listener)
+            }
+
             return dialog
         }
+
     }
 }

@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.ui.shared
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -23,8 +24,7 @@ import com.zbapp.locationtrack.databinding.ElementProgressButtonBinding
 import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 
-class ButtonWithProgress
-    : ConstraintLayout {
+class ButtonWithProgress: ConstraintLayout {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
@@ -61,8 +61,8 @@ class ButtonWithProgress
 
             val text = attributes.getString(R.styleable.ButtonWithProgress_text) ?: ""
             val icon = attributes.getDrawable(R.styleable.ButtonWithProgress_icon)
-            val tint = attributes.getColor(R.styleable.ButtonWithProgress_buttonTint, 0xffffff)
-            val contentTint = attributes.getColor(R.styleable.ButtonWithProgress_contentTint, 0x000000)
+            val tint = attributes.getColor(R.styleable.ButtonWithProgress_buttonTint, Color.TRANSPARENT)
+            val contentTint = attributes.getColor(R.styleable.ButtonWithProgress_contentTint, Color.BLACK)
             itemData = ButtonWithProgressData(text = text, iconDrawable = icon, buttonTint = tint, contentTint = contentTint)
             attributes.recycle()
         } else {
@@ -171,9 +171,13 @@ data class ButtonWithProgressData constructor(
     val hasIcon: Boolean get() = (iconRes?.takeIf { it != 0 } ?: iconDrawable) != null
 
     fun applyTint(button: AppCompatButton) {
-        buttonTint?.let {
-            ViewCompat.setBackgroundTintList(button, ColorStateList.valueOf(it))
-        } ?: let { button.backgroundTintList = null }
+        if(buttonTint == Color.TRANSPARENT){
+            button.setBackgroundResource(R.color.transparent)
+        } else {
+            buttonTint?.let {
+                ViewCompat.setBackgroundTintList(button, ColorStateList.valueOf(it))
+            } ?: let { button.backgroundTintList = null }
+        }
     }
 
     fun applyTint(textView: TextView, icon: ImageView, check: ImageView, progress: ProgressBar) {

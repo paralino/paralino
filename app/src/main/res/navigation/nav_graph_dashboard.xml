@@ -12,4 +12,11 @@
         tools:layout="@layout/fragment_dashboard"
         android:label="@string/title_dashboard" />
 
+    <dialog
+        android:id="@+id/createGroupFragment"
+        android:name="com.zbapp.locationtrack.ui.groups.CreateGroupFragment"
+        tools:layout="@layout/fragment_create_group"
+        android:label="CreateGroupFragment" />
+
+
 </navigation>

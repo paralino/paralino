@@ -19,7 +19,12 @@ object ExceptionMapper {
             }
             is NotFoundException -> com.zbapp.core.utils.NotFoundException(message)
             is ConflictException -> com.zbapp.core.utils.ConflictException(message)
-            is HttpException -> com.zbapp.core.utils.ConnectionException(message)
+            is HttpException -> {
+                if(message?.contains("unique_email") == true)
+                    com.zbapp.core.utils.ConflictException(message)
+                else
+                    com.zbapp.core.utils.ConnectionException(message)
+            }
             else -> GenericServerException(message)
         }
     }

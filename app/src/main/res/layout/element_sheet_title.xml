@@ -8,12 +8,15 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTitle"
-        style="@style/TextStyle.Light"
+        style="@style/TextStyle.Medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_side_margin"
+        android:textColor="@color/secondaryTextColor"
+        android:layout_marginHorizontal="@dimen/activity_side_margin"
+        android:layout_marginTop="@dimen/activity_side_margin"
+        android:layout_marginBottom="@dimen/activity_side_margin_medium_large"
         android:maxLines="2"
-        android:gravity="center"
+        android:gravity="start|center_vertical"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
