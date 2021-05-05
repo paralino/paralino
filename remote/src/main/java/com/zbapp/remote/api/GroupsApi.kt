@@ -1,7 +1,6 @@
 package com.zbapp.remote.api
 
 import com.etebase.client.Collection
-import com.etebase.client.FetchOptions
 import com.etebase.client.ItemMetadata
 import com.etebase.client.exceptions.NotFoundException
 import com.zbapp.core.models.group.UserGroup
@@ -9,7 +8,7 @@ import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.repo.group.IGroupRemoteDataSource
 import com.zbapp.core.repo.location.ILocationRemoteDataSource
 import com.zbapp.remote.BaseRemoteModule
-import com.zbapp.remote.Constants
+import com.zbapp.core.utils.Constants
 import com.zbapp.remote.blocking
 import com.zbapp.remote.user.RemoteUserCache
 import kotlinx.serialization.decodeFromString
@@ -89,17 +88,17 @@ internal class GroupsApi (
     }
 
     override suspend fun initGroups() {
-        createGroup(UserGroup.empty(), Constants.collectionGroupPrivate, "Personal log")
-        createGroup(UserGroup.empty(), Constants.collectionGroupPublic, "Public sharing")
+        createGroup(UserGroup.personalTracking)
+        createGroup(UserGroup.publicSharing)
     }
 
-    private suspend fun createGroup(group: UserGroup, type: String = Constants.collectionGroupUser, infoName: String = ""): Collection {
+    private suspend fun createGroup(group: UserGroup, infoName: String = ""): Collection {
         return blocking {
             val collection = userSource.account.collectionManager.create(
                 Constants.collectionTypeGroups,
                 ItemMetadata().apply {
-                    itemType = type
-                    name = infoName
+                    itemType = group.type
+                    name = infoName.takeIf { it.isNotBlank() } ?: group.name
                 },
                 BaseRemoteModule.formatter.encodeToString(group)
             )
@@ -131,23 +130,29 @@ internal class GroupsApi (
         return blocking {
             userSource.account.collectionManager.list(Constants.collectionTypeGroups).data
                 .map { collection ->
-                    BaseRemoteModule.formatter.decodeFromString<UserGroup>(collection.contentString)
-                        .copy(id = collection.uid)
-                }
+                    if(collection.contentString.isBlank() || collection.isDeleted) {
+                        null
+                    } else {
+                        BaseRemoteModule.formatter.decodeFromString<UserGroup>(collection.contentString)
+                            .copy(id = collection.uid)
+                    }
+                }.filterNotNull()
         }
     }
 
     override suspend fun getGroup(groupId: String): UserGroup {
         return blocking {
             userSource.account.collectionManager.fetch(groupId).contentString.let {
-                BaseRemoteModule.formatter.decodeFromString(it)
+                BaseRemoteModule.formatter.decodeFromString<UserGroup>(it).copy(id = groupId)
             }
         }
     }
 
     override suspend fun deleteGroup(groupId: String) {
         blocking {
-            userSource.account.collectionManager.fetch(groupId).delete()
+            val collection = userSource.account.collectionManager.fetch(groupId)
+            collection.delete()
+            userSource.account.collectionManager.upload(collection)
         }
     }
 }

@@ -23,6 +23,7 @@ import com.zbapp.locationtrack.utils.extensions.toUTCString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -52,6 +53,12 @@ class DashboardViewModel(
         viewModelScope.launch {
             locationSharing.stopAllSharing()
         }
+    }
+
+    fun deleteGroup(id: String) {
+        groupRepository.deleteGroup(id)
+            .catch {  }
+            .launchIn(viewModelScope)
     }
 
     fun getGroups(): LiveData<List<ListItemType>> {

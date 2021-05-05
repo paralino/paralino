@@ -1,4 +1,4 @@
-package com.zbapp.remote
+package com.zbapp.core.utils
 
 object Constants {
     const val collectionTypeUserProfile = "location.settings"

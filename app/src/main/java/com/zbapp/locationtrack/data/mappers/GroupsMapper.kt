@@ -7,6 +7,7 @@ object GroupsMapper: IDataMapper<UserGroupEntity, UserGroup> {
     override fun map(model: UserGroupEntity): UserGroup {
         return UserGroup(
             id = model.id,
+            type = model.type,
             name = model.name,
             color = model.color,
             emoji = model.emoji,
@@ -17,6 +18,7 @@ object GroupsMapper: IDataMapper<UserGroupEntity, UserGroup> {
     override fun mapReversed(model: UserGroup): UserGroupEntity {
         return UserGroupEntity(
             id = model.id,
+            type = model.type,
             name = model.name,
             color = model.color,
             emoji = model.emoji,

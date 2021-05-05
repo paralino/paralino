@@ -9,6 +9,7 @@ import com.zbapp.locationtrack.data.database.ListOfStringsConverters
 data class UserGroupEntity(
     @PrimaryKey
     val id: String,
+    val type: String,
     val name: String,
     val color: Int,
     val emoji: String,

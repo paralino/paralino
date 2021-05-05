@@ -53,7 +53,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             }
             .addFactory {
                 GroupListItem(it).withClickAction {
-
+                    vm.deleteGroup(it.itemData?.group?.id ?: "")
                 }.apply {
                     onGroupActionClick = { vm.stopTracking() }
                 }

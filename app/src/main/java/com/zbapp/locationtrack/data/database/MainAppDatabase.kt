@@ -39,7 +39,7 @@ abstract class MainAppDatabase: RoomDatabase() {
     abstract fun groupsDao(): UserGroupDao
 
     companion object {
-        const val VERSION = 9
+        const val VERSION = 10
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

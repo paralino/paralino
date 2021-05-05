@@ -22,6 +22,8 @@ object ExceptionMapper {
             is HttpException -> {
                 if(message?.contains("unique_email") == true)
                     com.zbapp.core.utils.ConflictException(message)
+                if(message?.contains("invalid_mail_server") == true)
+                    com.zbapp.core.utils.NotFoundException(message)
                 else
                     com.zbapp.core.utils.ConnectionException(message)
             }
