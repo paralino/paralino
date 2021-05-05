@@ -19,8 +19,8 @@ open class LoggerImpl: LoggerKind() {
     }
 
     /** Set a one-time tag for use on the next logging call. */
-    fun tag(tag: String): LoggerKind {
-        LOGGER?.explicitTag?.set(tag)
+    override fun tag(tag: String): LoggerKind {
+        LOGGER?.tag(tag)
         return this
     }
 

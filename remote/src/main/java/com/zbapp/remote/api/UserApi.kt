@@ -21,7 +21,7 @@ internal class UserApi constructor(
     private val account: Account get() = user.account
     private lateinit var client: Client
 
-    private suspend fun initServer(serverUrl: String) {
+    private fun initServer(serverUrl: String) {
         client = BaseRemoteModule.getEtebaseClient(serverUrl)
     }
 
@@ -46,9 +46,9 @@ internal class UserApi constructor(
         return cachedAccount.value!!.save(null)
     }
 
-    override suspend fun restoreSession(serverUrl: String, accountData: String) {
+    override fun restoreSession(serverUrl: String, accountData: String) {
         initServer(serverUrl)
-        cachedAccount.value = blocking { Account.restore(getEtebaseClient(), accountData, null) }
+        cachedAccount.value = Account.restore(getEtebaseClient(), accountData, null)
     }
 
     override suspend fun changePassword(newPassword: String) {

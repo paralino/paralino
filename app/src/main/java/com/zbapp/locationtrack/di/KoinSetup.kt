@@ -19,6 +19,7 @@ object KoinSetup {
         localDataSourceModules,
         remoteDataSourceModule,
         viewModelModules,
+        utilModule,
         locationModules,
         coreModule
     )

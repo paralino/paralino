@@ -5,6 +5,7 @@ import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.locationtrack.data.PreCheckControl
 import com.zbapp.locationtrack.data.repos.LogoutControl
 import com.zbapp.locationtrack.tracking.LocationInitHandler
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
@@ -25,7 +26,11 @@ val viewModelModules = module {
     viewModel { LoginViewModel(androidContext(), get()) }
     viewModel { LoginCheckViewModel(androidContext(), get()) }
     viewModel { CreateGroupViewModel(get()) }
+}
+
+val utilModule = module {
     factory { LogoutControl(get(), get(), get()) }
+    single { PreCheckControl(get()) }
 }
 
 val locationModules = module {

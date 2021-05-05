@@ -56,11 +56,8 @@ class UserRepository(
         )
     }
 
-    fun restoreSession(serverUrl: String): Flow<Unit> {
-        return getDataOnce(
-            remote = { remote.restoreSession(serverUrl, config.token) },
-            remotePreference = RemotePreference.FORCE
-        )
+    fun restoreSession(serverUrl: String) {
+        remote.restoreSession(serverUrl, config.token)
     }
 
     fun getUserLocally(): Flow<UserMe> {
@@ -85,7 +82,10 @@ class UserRepository(
 
         return getDataOnce(
             remote = remote::getMe,
-            localUpdate = ::updateLocalUser,
+            localUpdate = {
+                config.emailConfirmed = true
+                updateLocalUser(it)
+            },
             remotePreference = RemotePreference.FORCE
         ).catch {
             if (it is NotFoundException) {

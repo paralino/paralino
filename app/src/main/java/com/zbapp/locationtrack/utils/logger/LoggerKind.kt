@@ -6,6 +6,11 @@ import com.zbapp.core.utils.ILogger
 abstract class LoggerKind: ILogger {
     internal val explicitTag = ThreadLocal<String>()
 
+    override fun tag(tag: String): ILogger {
+        explicitTag.set(tag)
+        return this
+    }
+
     override fun getTag(): String? {
         val tag: String? = explicitTag.get()
         explicitTag.remove()

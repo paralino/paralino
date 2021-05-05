@@ -12,7 +12,12 @@ class GroupRepository(
 ): BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
-        return local.getAllGroups()
+        return subscribeToData(
+            local = local.getAllGroups(),
+            remote = { remote.getAllGroups() },
+            localUpdate = { local.replaceGroups(it) },
+            remotePreference = RemotePreference.CACHE("groups", 10_000)
+        )
     }
 
     fun getMyGroups(): Flow<List<UserGroup>> {

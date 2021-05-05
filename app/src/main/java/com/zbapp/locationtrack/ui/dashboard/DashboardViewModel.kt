@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.ui.dashboard
 
 import android.content.Context
 import androidx.lifecycle.*
+import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.repo.LocationSharingManager
@@ -20,6 +21,7 @@ import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
 import com.zbapp.locationtrack.utils.extensions.toUTCString
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -120,6 +122,7 @@ class DashboardViewModel(
 
             list
         }
+            .catch { logg.e("Error on dashboard", it) }
             .asLiveData()
     }
 }

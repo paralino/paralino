@@ -16,7 +16,7 @@ interface IUserRemoteDataSource {
 
     suspend fun signUp(serverUrl: String, username: String, email: String, password: String): String
     suspend fun login(serverUrl: String, email: String, password: String): String
-    suspend fun restoreSession(serverUrl: String, accountData: String)
+    fun restoreSession(serverUrl: String, accountData: String)
 
     suspend fun logout()
 }

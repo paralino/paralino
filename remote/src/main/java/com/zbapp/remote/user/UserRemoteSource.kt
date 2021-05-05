@@ -55,7 +55,7 @@ class UserRemoteSource internal constructor(
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }
 
-    override suspend fun restoreSession(serverUrl: String, accountData: String) {
+    override fun restoreSession(serverUrl: String, accountData: String) {
         try { api.restoreSession(serverUrl, accountData) }
         catch (e: Exception) { throw ExceptionMapper.map(e) }
     }

@@ -11,6 +11,10 @@ class UserGroupLocalDataSource (
     private val dao: UserGroupDao
 ): IGroupLocalDataSource {
 
+    override suspend fun replaceGroups(data: List<UserGroup>) {
+        dao.replaceGroups(*data.map { GroupsMapper.mapReversed(it) }.toTypedArray())
+    }
+
     override suspend fun updateOrCreateGroup(group: UserGroup) {
         dao.createOrUpdate(GroupsMapper.mapReversed(group))
     }

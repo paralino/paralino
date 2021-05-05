@@ -6,11 +6,18 @@ import android.app.Application
 import android.content.Context
 import com.zbapp.core.config
 import com.zbapp.core.logg
+import com.zbapp.locationtrack.data.PreCheckControl
 import com.zbapp.locationtrack.data.config.Config
 import com.zbapp.locationtrack.di.KoinSetup
 import com.zbapp.locationtrack.utils.logger.DebugLogger
 import com.zbapp.locationtrack.utils.logger.LoggerKind
 import com.zbapp.remote.BaseRemoteModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import org.koin.android.ext.android.inject
 
 class AppClass: Application() {
 
@@ -24,8 +31,14 @@ class AppClass: Application() {
             private set
     }
 
+
+    lateinit var appDefaultScope: CoroutineScope
+    private val applicationJob = SupervisorJob()
+    private val launcher: PreCheckControl by inject()
+
     override fun onCreate() {
         super.onCreate()
+        appDefaultScope = CoroutineScope(Dispatchers.Default + applicationJob)
         init()
     }
 
@@ -37,6 +50,10 @@ class AppClass: Application() {
         config = Config(context)
         initLogger()
         BaseRemoteModule.init()
+
+        launcher.start()
+            .catch { logg.d("Error with initial refresh: ${it.message}") }
+            .launchIn(appDefaultScope)
     }
 
     private fun initLogger() {
@@ -53,5 +70,10 @@ class AppClass: Application() {
             // TODO maybe log to file
         }
     }}
+
+    override fun onTerminate() {
+        applicationJob.cancel()
+        super.onTerminate()
+    }
 
 }

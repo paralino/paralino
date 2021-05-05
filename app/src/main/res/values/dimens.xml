@@ -10,5 +10,6 @@
     <dimen name="main_header_height">64dp</dimen>
     <dimen name="bottomBar_spacing">100dp</dimen>
     <dimen name="bottomBar_spacing_small">70dp</dimen>
+    <dimen name="bottomBar_spacing_large">160dp</dimen>
 
 </resources>

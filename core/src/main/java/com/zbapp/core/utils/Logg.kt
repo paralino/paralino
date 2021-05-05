@@ -1,6 +1,7 @@
 package com.zbapp.core.utils
 
 interface ILogger {
+    fun tag(tag: String): ILogger
     fun getTag(): String?
     fun v(message: String, t: Throwable? = null)
     fun d(message: String, t: Throwable? = null)
