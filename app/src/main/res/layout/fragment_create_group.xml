@@ -48,27 +48,33 @@
             app:layout_constraintTop_toTopOf="@id/ivGroup"
             tools:text="🦝" />
 
-        <com.google.android.material.textfield.TextInputEditText
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/etGroupName"
-            style="@style/TextStyle.Regular"
+            style="@style/TextStyle.Input"
+            android:stateListAnimator="@null"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/activity_side_margin_small"
             android:layout_marginEnd="@dimen/activity_side_margin"
-            android:background="@color/transparent"
-            android:imeOptions="actionNext"
-            android:inputType="textUri"
-            android:maxLines="1"
-            android:maxLength="30"
-            android:padding="@dimen/activity_side_margin_small"
-            android:textCursorDrawable="@null"
-            android:textSize="18sp"
+            app:endIconMode="none"
+            android:hint="@string/groups_new_name_placeholder"
             app:layout_constraintBottom_toBottomOf="@id/ivGroup"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ivGroup"
-            app:layout_constraintTop_toTopOf="@id/ivGroup"
-            tools:text="@tools:sample/lorem/random" />
+            app:layout_constraintTop_toTopOf="@id/ivGroup">
+
+            <com.google.android.material.textfield.TextInputEditText
+                style="@style/TextStyle.Light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@color/transparent"
+                android:textCursorDrawable="@null"
+                android:imeOptions="actionDone"
+                android:maxLines="1"
+                android:maxLength="30"
+                android:inputType="textCapWords"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.zbapp.locationtrack.ui.shared.ButtonWithProgress
             android:id="@+id/bCreate"

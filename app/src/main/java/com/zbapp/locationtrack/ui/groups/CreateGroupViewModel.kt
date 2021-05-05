@@ -16,7 +16,7 @@ class CreateGroupViewModel(
 
     fun createGroup(icon: String, name: String): LiveData<Payload<Unit>> {
         return groupRepo.createOrUpdateGroup(
-            UserGroup.new(icon, name)
+            UserGroup.new(icon, name.trim())
         )
             .map<UserGroup, Payload<Unit>> { Payload.Success(Unit) }
             .onStart { emit(Payload.Loading) }

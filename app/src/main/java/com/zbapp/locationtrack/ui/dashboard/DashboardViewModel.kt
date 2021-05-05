@@ -69,8 +69,8 @@ class DashboardViewModel(
                     ListItemEmptySpaceData(100.dp2px),
                     EmptyStateData(
                         iconRes = null,
-                        AppClass.context.getString(R.string.login_button_login),
-                        AppClass.context.getString(R.string.login_button_login)
+                        infoText = AppClass.context.getString(R.string.dashboard_info_logged_out),
+                        buttonText = AppClass.context.getString(R.string.login_button_login)
                     )
                 ))
             }
@@ -111,7 +111,7 @@ class DashboardViewModel(
                 list.add(
                     EmptyStateData(
                         iconRes = R.drawable.ic_groups,
-                        AppClass.context.getString(R.string.dashboard_groups_add_button)
+                        infoText = AppClass.context.getString(R.string.dashboard_info_no_groups)
                     )
                 )
             } else if(active.isEmpty()) {

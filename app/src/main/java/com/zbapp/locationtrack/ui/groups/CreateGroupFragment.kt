@@ -7,13 +7,15 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.zbapp.core.models.Payload
+import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentCreateGroupBinding
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
 import com.zbapp.locationtrack.ui.shared.emoji.EmojiItemData
 import com.zbapp.locationtrack.ui.shared.emoji.EmojiPickerFragment
-import com.zbapp.core.utils.Emojis
+import com.zbapp.locationtrack.ui.shared.snackBarError
+import com.zbapp.locationtrack.ui.shared.snackBarSimple
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -51,7 +53,16 @@ class CreateGroupFragment: BottomSheetDialogFragment() {
         }
 
         vb.bCreate.setOnClickListener {
-            vm.createGroup(vb.tvGroupEmoji.text.toString(), vb.etGroupName.text?.toString() ?: "").observe(viewLifecycleOwner) {
+
+            if(vb.etGroupName.editText?.text?.isBlank() == true){
+                vb.etGroupName.setBackgroundResource(R.drawable.background_input_error)
+                snackBarSimple(vb.root, requireContext().getString(R.string.form_generic_validation))
+                return@setOnClickListener
+            } else {
+                vb.etGroupName.setBackgroundResource(R.drawable.background_input)
+            }
+
+            vm.createGroup(vb.tvGroupEmoji.text.toString(), vb.etGroupName.editText?.text?.toString() ?: "").observe(viewLifecycleOwner) {
                 vb.bCreate.isEnabled = it !is Payload.Loading
                 vb.bCreate.setLoading(it is Payload.Loading, withCheck = it is Payload.Success)
                 if(it is Payload.Success) {
@@ -59,6 +70,8 @@ class CreateGroupFragment: BottomSheetDialogFragment() {
                         delay(600)
                         dismissAllowingStateLoss()
                     }
+                } else if(it is Payload.Error) {
+                    snackBarError(vb.root, requireContext())
                 }
             }
         }

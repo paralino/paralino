@@ -7,6 +7,7 @@
         <item name="android:navigationBarColor">@color/theme_lightest</item>
         <item name="android:windowIsFloating">false</item>
         <item name="bottomSheetStyle">@style/BottomSheetDialogSheetStyle</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
     <style name="BottomSheetDialogSheetStyle" parent="Widget.MaterialComponents.BottomSheet">
