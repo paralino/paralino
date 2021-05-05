@@ -83,5 +83,6 @@
     <string name="info_email_confirm">Please confirm your email address!</string>
 
     <string name="groups_new_name_placeholder">Group name</string>
+    <string name="groups_new_button_text">Create</string>
 
 </resources>

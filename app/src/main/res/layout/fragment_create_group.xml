@@ -60,7 +60,8 @@
             app:layout_constraintBottom_toBottomOf="@id/ivGroup"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ivGroup"
-            app:layout_constraintTop_toTopOf="@id/ivGroup">
+            app:layout_constraintTop_toTopOf="@id/ivGroup"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 style="@style/TextStyle.Light"
@@ -85,8 +86,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivGroup"
             app:buttonTint="@color/accent"
+            app:text="@string/groups_new_button_text"
             app:contentTint="@color/light_theme_light"
-            app:text="Create"
             />
 
 
