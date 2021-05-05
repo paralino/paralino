@@ -13,7 +13,7 @@ import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
 import com.zbapp.locationtrack.ui.shared.emoji.EmojiItemData
 import com.zbapp.locationtrack.ui.shared.emoji.EmojiPickerFragment
-import com.zbapp.locationtrack.ui.shared.emoji.Emojis
+import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel

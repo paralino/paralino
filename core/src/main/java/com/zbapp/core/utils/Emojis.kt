@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.ui.shared.emoji
+package com.zbapp.core.utils
 
 object Emojis {
 
