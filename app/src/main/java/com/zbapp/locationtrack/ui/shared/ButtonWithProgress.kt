@@ -15,10 +15,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.ViewCompat
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.core.view.postDelayed
+import androidx.core.view.*
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementProgressButtonBinding
 import com.zbapp.locationtrack.utils.ListItemType
@@ -85,7 +82,7 @@ class ButtonWithProgress: ConstraintLayout {
         setContent(data.text, data.infoText)
 
         data.applyIcon(vb.buttonIcon)
-        vb.buttonIcon.isVisible = vb.buttonTitle.isVisible == true && itemData?.hasIcon == true
+        vb.buttonIcon.isVisible = !vb.buttonTitle.isInvisible && itemData?.hasIcon == true
     }
 
     fun setContent(text: String, infoText: String = "") {
@@ -95,6 +92,7 @@ class ButtonWithProgress: ConstraintLayout {
         vb.tvButtonInfo.text = infoText
         vb.buttonTitle.text = text
 
+        vb.buttonTitle.isVisible = itemData?.hasText ?: text.isNotEmpty()
         vb.tvButtonInfo.isVisible = infoText.isNotBlank()
     }
 
@@ -115,7 +113,7 @@ class ButtonWithProgress: ConstraintLayout {
         if(data.loading || withCheck) {
             vb.btConfirm.isClickable = false
             vb.buttonIcon.visibility = if(data.hasIcon) View.INVISIBLE else View.GONE
-            vb.buttonTitle.isInvisible = true
+            vb.buttonTitle.visibility = if(data.hasText) View.INVISIBLE else View.GONE
             vb.buttonProgress.isVisible = data.loading
             vb.buttonCheck.isVisible = !data.loading && withCheck && wasLoadingBefore
             if(!data.loading && withCheck) {
@@ -138,7 +136,7 @@ class ButtonWithProgress: ConstraintLayout {
         val data = itemData ?: return
         vb.btConfirm?.isClickable = true
         vb.buttonIcon?.isVisible = data.hasIcon
-        vb.buttonTitle?.isVisible = true
+        vb.buttonTitle?.isVisible = data.hasText
         vb.buttonProgress?.isVisible = false
         vb.buttonCheck?.isVisible = false
     }
@@ -146,7 +144,7 @@ class ButtonWithProgress: ConstraintLayout {
     fun brieflyShowCheckMark() {
         vb.btConfirm?.isClickable = false
         vb.buttonIcon?.visibility = if(itemData?.hasIcon == true) View.INVISIBLE else View.GONE
-        vb.buttonTitle?.isInvisible = true
+        vb.buttonTitle?.visibility = if(itemData?.hasText == true) View.INVISIBLE else View.GONE
         vb.buttonProgress?.isVisible = false
         vb.buttonCheck?.isVisible = true
         vb.buttonCheck?.postDelayed(800) {
@@ -169,6 +167,7 @@ data class ButtonWithProgressData constructor(
 ): ListItemType {
 
     val hasIcon: Boolean get() = (iconRes?.takeIf { it != 0 } ?: iconDrawable) != null
+    val hasText: Boolean get() = text.isNotEmpty()
 
     fun applyTint(button: AppCompatButton) {
         if(buttonTint == Color.TRANSPARENT){

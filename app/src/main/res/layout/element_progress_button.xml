@@ -34,6 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_side_margin_medium_large"
+            app:layout_goneMarginEnd="@dimen/activity_side_margin_medium_large"
             app:layout_constraintBottom_toBottomOf="@+id/buttonTitle"
             app:layout_constraintEnd_toStartOf="@id/buttonTitle"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -57,7 +58,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/buttonIcon"
             app:layout_goneMarginStart="@dimen/activity_side_margin_medium_large"
-            tools:text="@tools:sample/lorem[0]" />
+            tools:text="@tools:sample/lorem"
+             />
 
 
         <androidx.appcompat.widget.AppCompatImageView
