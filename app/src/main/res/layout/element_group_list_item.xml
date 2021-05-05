@@ -18,30 +18,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-
-        <com.zbapp.locationtrack.ui.shared.RoundImageView
-            android:id="@+id/ivGroup"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:backgroundColor="@color/theme_background_section_bright"
-            app:cornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvGroupEmoji"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:gravity="center"
             android:includeFontPadding="false"
             android:maxLines="1"
             android:textColor="@color/black"
+            android:background="@drawable/background_input"
             android:textSize="28sp"
-            app:layout_constraintBottom_toBottomOf="@id/ivGroup"
-            app:layout_constraintEnd_toEndOf="@id/ivGroup"
-            app:layout_constraintStart_toStartOf="@id/ivGroup"
-            app:layout_constraintTop_toTopOf="@id/ivGroup"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="🦝" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -57,7 +46,7 @@
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@id/tvGroupCount"
             app:layout_constraintEnd_toStartOf="@id/bAction"
-            app:layout_constraintStart_toEndOf="@id/ivGroup"
+            app:layout_constraintStart_toEndOf="@id/tvGroupEmoji"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="@tools:sample/lorem[20]" />
@@ -76,7 +65,7 @@
             android:textColor="@color/theme_medium"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/ivGroup"
+            app:layout_constraintStart_toEndOf="@id/tvGroupEmoji"
             app:layout_constraintTop_toBottomOf="@id/tvGroupName"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="5" />

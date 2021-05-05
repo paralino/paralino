@@ -80,7 +80,8 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             if(vm.isTrackingActive()) {
                 vm.stopTracking()
             } else {
-                permissionHandler.updateRequestStatus()
+//                permissionHandler.updateRequestStatus()
+                navigateDefault(R.id.sharingStartFragment)
             }
         }
 

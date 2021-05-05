@@ -18,5 +18,18 @@
         tools:layout="@layout/fragment_create_group"
         android:label="CreateGroupFragment" />
 
+    <fragment
+        android:id="@+id/sharingStartFragment"
+        android:name="com.zbapp.locationtrack.ui.groups.SharingStartFragment"
+        android:label="SharingStartFragment"
+        tools:layout="@layout/fragment_sharing_start"
+        >
+        <argument
+            android:name="groupId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+
 
 </navigation>

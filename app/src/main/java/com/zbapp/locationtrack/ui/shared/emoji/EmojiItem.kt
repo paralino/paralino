@@ -15,12 +15,16 @@ class EmojiItem(context: Context, attributeSet: AttributeSet? = null)
 
     val vb by viewBinding(ElementEmojiBinding::inflate)
 
+    init {
+        vb.tvGroupEmoji.clipToOutline = true
+    }
+
     override fun applyData(data: EmojiItemData) {
         vb.tvGroupEmoji.text = data.content
     }
 
     override fun setOnClickListener(l: OnClickListener?) {
-        vb.ivGroup.setOnClickListener(l)
+        vb.tvGroupEmoji.setOnClickListener(l)
     }
 
 }

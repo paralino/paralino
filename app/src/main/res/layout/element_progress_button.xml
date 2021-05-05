@@ -12,12 +12,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
+        android:backgroundTint="@color/accent"
         android:elevation="2dp"
         android:text=""
-        android:backgroundTint="@color/accent"
-        app:layout_constraintStart_toStartOf="@id/buttonHolder"
-        app:layout_constraintEnd_toEndOf="@id/buttonHolder"
         app:layout_constraintBottom_toTopOf="@id/tvButtonInfo"
+        app:layout_constraintEnd_toEndOf="@id/buttonHolder"
+        app:layout_constraintStart_toStartOf="@id/buttonHolder"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -34,32 +34,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_side_margin_medium_large"
-            app:layout_goneMarginEnd="@dimen/activity_side_margin_medium_large"
             app:layout_constraintBottom_toBottomOf="@+id/buttonTitle"
             app:layout_constraintEnd_toStartOf="@id/buttonTitle"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/buttonTitle"
+            app:layout_goneMarginEnd="@dimen/activity_side_margin_medium_large"
             app:tint="@color/theme_light"
             tools:src="@drawable/ic_pin_bubble" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/buttonTitle"
-            style="@style/TextStyle.Bold"
+            style="@style/TextStyle.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="@dimen/activity_side_margin_medium_large"
             android:textColor="@color/theme_lightest"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/buttonIcon"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_goneMarginStart="@dimen/activity_side_margin_medium_large"
-            tools:text="@tools:sample/lorem"
-             />
+            app:textAllCaps="true"
+            tools:text="@tools:sample/lorem" />
 
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -70,10 +70,9 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:tint="@color/main_button_text_color"
-            />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/main_button_text_color" />
 
         <ProgressBar
             android:id="@+id/buttonProgress"
@@ -84,8 +83,8 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

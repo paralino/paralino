@@ -2,9 +2,11 @@ package com.zbapp.locationtrack.ui.dashboard
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import androidx.core.view.isVisible
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.locationtrack.databinding.ElementGroupListItemBinding
+import com.zbapp.locationtrack.databinding.ElementProgressButtonBinding
 import com.zbapp.locationtrack.utils.BaseRvItem
 import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
@@ -13,7 +15,7 @@ import com.zbapp.locationtrack.utils.extensions.viewBinding
 class GroupListItem(context: Context, attributeSet: AttributeSet? = null) :
     BaseRvItem<GroupItemData>(context, attributeSet) {
 
-    val vb by viewBinding(ElementGroupListItemBinding::inflate)
+    private val vb = ElementGroupListItemBinding.inflate(LayoutInflater.from(context), this)
     var onGroupActionClick: ((GroupItemData) -> Unit)? = null
 
     init {

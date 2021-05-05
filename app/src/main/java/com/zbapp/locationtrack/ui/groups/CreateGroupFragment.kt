@@ -39,8 +39,9 @@ class CreateGroupFragment: BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         vb.title.itemData = BottomSheetTitleData(requireContext().getString(R.string.dashboard_groups_add_button))
+        vb.tvGroupEmoji.clipToOutline = true
         vb.tvGroupEmoji.text = Emojis.group1.random()
-        vb.ivGroup.setOnClickListener {
+        vb.tvGroupEmoji.setOnClickListener {
             BottomSheetDialog.show(
                 this,
                 EmojiPickerFragment(),

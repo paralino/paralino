@@ -21,6 +21,7 @@
     <color name="highlightGold">#FFC107</color>
     <color name="accent">#26A69A</color>
     <color name="accentLight">#80CBC4</color>
+    <color name="accentVeryLight">#E0F2F1</color>
     <color name="accentDark">#00796B</color>
 
     <color name="primaryTextColor">@color/theme_highest</color>
