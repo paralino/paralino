@@ -99,11 +99,11 @@ class DashboardViewModel(
             }
 
             val active = groups.filter { group -> sharing.any { it.groupId == group.id } }.map { group ->
-                GroupItemData(group, active = true)
+                GroupItemData(group, uiType = GroupItemData.GroupUiType.ACTIVE)
             }
 
             val inactive = groups.filter { group -> sharing.none { it.groupId == group.id } }.map { group ->
-                GroupItemData(group, active = false)
+                GroupItemData(group, uiType = GroupItemData.GroupUiType.INACTIVE)
             }
 
             if(active.isEmpty() && inactive.isEmpty()) {

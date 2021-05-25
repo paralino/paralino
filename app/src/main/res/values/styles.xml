@@ -12,6 +12,8 @@
         <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
         <item name="colorOnSecondary">@color/secondaryLightColor</item>
 
+        <item name="colorControlHighlight">@color/alpha_grey_highlight</item>
+
         <item name="android:textColorPrimary">@color/theme_highest</item>
         <item name="android:textColorSecondary">@color/theme_high</item>
 

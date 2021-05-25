@@ -8,17 +8,24 @@ import com.zbapp.core.utils.SharingDurationPreset
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentSharingStartBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
+import com.zbapp.locationtrack.ui.dashboard.GroupItemData
+import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.utils.extensions.viewBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.Duration
 
 class SharingStartFragment: BaseFragment(R.layout.fragment_sharing_start) {
 
     private val vb by viewBinding(FragmentSharingStartBinding::bind)
+    private val vm: SharingViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         vb.ivClose.setOnClickListener { findNavController().popBackStack() }
+        vb.groupPicker.setOnClickListener {
+            pickGroup()
+        }
 
         vb.timeSeekBar.max = SharingDurationPreset.presets.size - 1
         vb.timeSeekBar.progress = 2
@@ -30,6 +37,24 @@ class SharingStartFragment: BaseFragment(R.layout.fragment_sharing_start) {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+
+        vm.selectedGroup.observe {
+            vb.groupPicker.itemData = it
+        }
+    }
+
+    private fun pickGroup() {
+        vm.getAllGroups().observe { groups ->
+            BottomSheetDialog.show(
+                this,
+                GroupPickerFragment(),
+                groups.map { GroupItemData(it, GroupItemData.GroupUiType.PICKER) }.toMutableList()
+            ) { _, bundle ->
+                BottomSheetDialog.getAction(bundle)?.id?.let {
+                    vm.setSelectedGroup(it)
+                }
+            }
+        }
     }
 
     fun getTime(milis: Long): String {

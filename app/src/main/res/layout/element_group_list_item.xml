@@ -14,6 +14,7 @@
         android:layout_marginTop="@dimen/activity_side_margin_very_small"
         android:layout_marginBottom="@dimen/activity_side_margin_medium"
         android:padding="@dimen/activity_side_margin"
+        android:animateLayoutChanges="true"
         android:foreground="?selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">

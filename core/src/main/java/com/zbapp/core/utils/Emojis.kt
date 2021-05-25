@@ -120,5 +120,7 @@ object Emojis {
         "⚫", // circle black
     )
 
+    val lightBulb = "\uD83D\uDCA1"
+
     val allEmojis = group1 + group2
 }

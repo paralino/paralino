@@ -20,6 +20,10 @@ class GroupRepository(
         )
     }
 
+    fun getAllGroupsLocally(): Flow<List<UserGroup>> {
+        return local.getAllGroups()
+    }
+
     fun getMyGroups(): Flow<List<UserGroup>> {
         return getAllGroups().mapLatest { it.filter { it.isFromUser } }
     }

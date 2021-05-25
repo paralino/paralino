@@ -38,7 +38,7 @@ class SingleLiveEvent<T> : MediatorLiveData<T>() {
 
     @MainThread
     override fun removeObserver(observer: Observer<in T>) {
-        if (observers.remove(observer)) {
+        if (observers.removeAll { it == observer }) {
             super.removeObserver(observer)
             return
         }
