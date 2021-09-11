@@ -8,9 +8,6 @@ object SharingDurationPreset {
     private const val minute = 60 * second
     private const val hour = 60 * minute
     private const val day = 24 * hour
-    private const val week = 7 * day
-    private const val month = 30 * day
-    private const val year = 365 * day
 
     val presets = listOf(
         15 * minute,
@@ -24,14 +21,11 @@ object SharingDurationPreset {
         2 * day,
         3 * day,
         5 * day,
-        week,
+        7 * day,
         10 * day,
-        2 * week,
-        month,
-        2 * month,
-        3 * month,
-        6 * month,
-        year,
+        15 * day,
+        30 * day,
+        365 * day,
         0
     )
 

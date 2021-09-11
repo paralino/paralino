@@ -22,7 +22,7 @@
         android:layout_marginBottom="@dimen/bottomBar_spacing"
         android:text="@string/location_banner_sharing_start"
         app:icon="@drawable/ic_pin_sharing"
-        android:backgroundTint="@color/accent"
+        android:backgroundTint="@color/fab_background_color"
          />
     
     <androidx.recyclerview.widget.RecyclerView

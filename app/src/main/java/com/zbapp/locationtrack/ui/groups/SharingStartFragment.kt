@@ -22,13 +22,30 @@ class SharingStartFragment: BaseFragment(R.layout.fragment_sharing_start) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        vb.ivClose.setOnClickListener { findNavController().popBackStack() }
+        setUi()
+        setObservers()
+    }
+
+    private fun setUi() {
+        vb.timeSeekBar.max = SharingDurationPreset.presets.size - 1
+        vb.timeSeekBar.progress = 2
+        vb.tvDuration.text = getTime(SharingDurationPreset.presets[vb.timeSeekBar.progress])
+        vb.switchBattery.switchText.setText(R.string.groups_sharing_setting_battery_share)
+    }
+
+    private fun setObservers() {
+        vb.ivClose.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         vb.groupPicker.setOnClickListener {
             pickGroup()
         }
 
-        vb.timeSeekBar.max = SharingDurationPreset.presets.size - 1
-        vb.timeSeekBar.progress = 2
+        vb.bShareStart.setOnClickListener {
+
+        }
+
         vb.timeSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 vb.tvDuration.text = getTime(SharingDurationPreset.presets[progress])
@@ -40,6 +57,7 @@ class SharingStartFragment: BaseFragment(R.layout.fragment_sharing_start) {
 
         vm.selectedGroup.observe {
             vb.groupPicker.itemData = it
+            vb.bShareStart.isEnabled = it.id.isNotBlank()
         }
     }
 
@@ -59,18 +77,23 @@ class SharingStartFragment: BaseFragment(R.layout.fragment_sharing_start) {
 
     fun getTime(milis: Long): String {
         val duration = Duration.ofMillis(milis)
+
+        fun getPluralTime(id: Int, value: Long): String {
+            return resources.getQuantityString(id, value.toInt(), value.toInt())
+        }
+
         return if(duration.toDays() >= 365) {
-            "${duration.toDays() / 365} years"
+            getPluralTime(R.plurals.groups_sharing_duration_type_years, duration.toDays() / 365)
         } else if(duration.toDays() >= 30) {
-            "${duration.toDays() / 30} months"
+            getPluralTime(R.plurals.groups_sharing_duration_type_months, duration.toDays() / 30)
         } else if(duration.toDays() >= 1) {
-            "${duration.toDays()} days"
+            getPluralTime(R.plurals.groups_sharing_duration_type_days, duration.toDays())
         } else if(duration.toHours() >= 1) {
-            "${duration.toHours()} hours"
+            getPluralTime(R.plurals.groups_sharing_duration_type_hours, duration.toHours())
         } else if(duration.toMinutes() > 1) {
-            "${duration.toMinutes()} minutes"
+            getPluralTime(R.plurals.groups_sharing_duration_type_minutes, duration.toMinutes())
         } else {
-            "infinite"
+            getString(R.string.groups_sharing_duration_type_infinite)
         }
     }
 

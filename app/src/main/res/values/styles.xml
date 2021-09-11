@@ -8,9 +8,9 @@
         <item name="colorPrimaryVariant">@color/theme_lightest</item>
         <item name="colorOnPrimary">@color/theme_medium</item>
 
-        <item name="colorSecondary">@color/secondaryColor</item>
-        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
-        <item name="colorOnSecondary">@color/secondaryLightColor</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accentDark</item>
+        <item name="colorOnSecondary">@color/theme_lightest</item>
 
         <item name="colorControlHighlight">@color/alpha_grey_highlight</item>
 
