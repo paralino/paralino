@@ -2,3 +2,4 @@ include ':remote'
 include ':core'
 include ':app'
 rootProject.name = "LocationTrack"
+include ':crypto'
