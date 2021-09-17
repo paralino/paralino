@@ -5,8 +5,6 @@ import android.content.Context
 import com.virgilsecurity.android.common.exception.*
 import com.virgilsecurity.android.ethreeenclave.interaction.EThree
 import com.virgilsecurity.android.ethreeenclave.interaction.model.EThreeParams
-import com.virgilsecurity.sdk.crypto.VirgilKeyPair
-import kotlinx.coroutines.runBlocking
 
 
 class CryptoAuth(
@@ -88,6 +86,14 @@ class CryptoAuth(
         blocking {
             ethree.backupPrivateKey(password).execute()
         }
+    }
+
+    fun encryptData(data: String): String {
+        return ethree.authEncrypt(data)
+    }
+
+    fun decryptData(data: String): String {
+        return ethree.authEncrypt(data)
     }
 
     companion object {
