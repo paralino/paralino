@@ -2,14 +2,14 @@ package com.zbapp.remote
 
 import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.repo.location.ILocationRemoteDataSource
-import com.zbapp.remote.api.GroupsApi
+import com.zbapp.remote.api.GroupsApi_OLD
 import com.zbapp.remote.user.RemoteUserCache
 
 class LocationRemoteSource internal constructor(
-    private val api: GroupsApi
+    private val api: GroupsApi_OLD
 ): ILocationRemoteDataSource {
 
-    constructor(user: RemoteUserCache) : this(GroupsApi(user))
+    constructor(user: RemoteUserCache) : this(GroupsApi_OLD(user))
 
     override suspend fun getCurrentLocationsForGroup(groupId: String): List<BaseLocationModel> {
         try { return api.getCurrentLocationsForGroup(groupId) }

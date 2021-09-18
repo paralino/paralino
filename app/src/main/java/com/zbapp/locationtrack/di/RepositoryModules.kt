@@ -6,16 +6,21 @@ import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.core.repo.location.ILocationRemoteDataSource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.core.repo.user.IUserLocalDataSource
-import com.zbapp.core.repo.user.IUserRemoteDataSource
+import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.data.database.MainAppDatabase
 import com.zbapp.locationtrack.data.repos.group.UserGroupLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.LocationLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSourceImpl
 import com.zbapp.locationtrack.data.repos.user.UserLocalDataSource
+import com.zbapp.core.models.BackendConfig
+import com.zbapp.core.repo.user.IUserApi
 import com.zbapp.remote.GroupsRemoteSource
 import com.zbapp.remote.LocationRemoteSource
+import com.zbapp.remote.appwrite.AppWriteRemoteModule
 import com.zbapp.remote.user.RemoteUserCache
-import com.zbapp.remote.user.UserRemoteSource
+import com.zbapp.core.repo.user.UserRemoteSource
+import com.zbapp.remote.api.UserApi
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -39,7 +44,18 @@ val localDataSourceModules = module {
 
 val remoteDataSourceModule = module {
     single { RemoteUserCache() }
-    single<IUserRemoteDataSource> { UserRemoteSource(get(), get()) }
+    single<IUserApi> { UserApi(get()) }
+    single { UserRemoteSource(get()) }
     single<ILocationRemoteDataSource> { LocationRemoteSource(get()) }
     single<IGroupRemoteDataSource> { GroupsRemoteSource(get()) }
+    single {
+        AppWriteRemoteModule(
+            androidApplication(),
+            BackendConfig(
+                serverUrl = BuildConfig.serverUrl,
+                projectId = "",
+                debug = BuildConfig.internalTesting
+            )
+        )
+    }
 }

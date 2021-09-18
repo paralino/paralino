@@ -8,6 +8,7 @@ data class UserMe (
 
     val name: String = "",
     val email: String = "",
-    val imageBase64: String? = null,
-    val userSince: String = ""
+    var imageBase64: String? = null,
+    val registration: Long = 0,
+    val emailVerification: Boolean = false
 )

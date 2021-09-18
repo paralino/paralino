@@ -11,7 +11,7 @@ import com.zbapp.locationtrack.data.config.Config
 import com.zbapp.locationtrack.di.KoinSetup
 import com.zbapp.locationtrack.utils.logger.DebugLogger
 import com.zbapp.locationtrack.utils.logger.LoggerKind
-import com.zbapp.remote.BaseRemoteModule
+import com.zbapp.remote.appwrite.AppWriteRemoteModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -49,7 +49,6 @@ class AppClass: Application() {
         KoinSetup.initKoin(this)
         config = Config(context)
         initLogger()
-        BaseRemoteModule.init()
 
         launcher.start()
             .catch { logg.d("Error with initial refresh: ${it.message}") }

@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.*
 
 class UserRepository(
     private val local: IUserLocalDataSource,
-    private val remote: IUserRemoteDataSource
+    private val remote: UserRemoteSource
 ) : BaseRepository() {
 
     companion object {

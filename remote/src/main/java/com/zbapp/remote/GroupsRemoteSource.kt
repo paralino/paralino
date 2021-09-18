@@ -2,14 +2,14 @@ package com.zbapp.remote
 
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.repo.group.IGroupRemoteDataSource
-import com.zbapp.remote.api.GroupsApi
+import com.zbapp.remote.api.GroupsApi_OLD
 import com.zbapp.remote.user.RemoteUserCache
 
 class GroupsRemoteSource internal constructor(
-    private val api: GroupsApi
+    private val api: GroupsApi_OLD
 ): IGroupRemoteDataSource {
 
-    constructor(user: RemoteUserCache) : this(GroupsApi(user))
+    constructor(user: RemoteUserCache) : this(GroupsApi_OLD(user))
 
     override suspend fun initGroups() {
         try { api.initGroups() }
