@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.mapLatest
 
 class GroupRepository(
     private val local: IGroupLocalDataSource,
-    private val remote: IGroupRemoteDataSource
+    private val remote: GroupsRemoteSource
 ): BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {

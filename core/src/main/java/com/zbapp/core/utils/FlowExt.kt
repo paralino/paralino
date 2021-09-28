@@ -9,5 +9,6 @@ fun <T> MutableStateFlow<T>.replace(action: T.() -> T) {
     value = action(value)
 }
 
-suspend inline fun <T> blocking(noinline action: suspend CoroutineScope.() -> T) = withContext(
-    Dispatchers.IO, action)
+suspend inline fun <T> blocking(noinline action: suspend CoroutineScope.() -> T): T {
+    return withContext(Dispatchers.IO, action)
+}

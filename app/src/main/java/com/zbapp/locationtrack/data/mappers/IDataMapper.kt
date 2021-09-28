@@ -4,13 +4,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-interface IDataMapper<ONE, TWO> {
-    fun map(model: ONE): TWO
-    fun mapReversed(model: TWO): ONE
+interface IDataMapper<CORE, LOCAL, REMOTE> {
+    fun core2Local(model: CORE): LOCAL
+    fun core2Remote(model: CORE): REMOTE
+    fun local2Core(model: LOCAL): CORE
+    fun local2Remote(model: LOCAL): REMOTE
+    fun remote2Core(model: REMOTE): CORE
+    fun remote2Local(model: REMOTE): LOCAL
 }
 
-inline fun <T, reified U> IDataMapper<T, U>.mapFlowOfList(flow: Flow<List<T>>): Flow<List<U>> {
-    return flow.map { it.map { this.map(it) }.toTypedArray() }
+inline fun <reified CORE, LOCAL, REMOTE> IDataMapper<CORE, LOCAL, REMOTE>.mapFlowOfList(flow: Flow<List<LOCAL>>): Flow<List<CORE>> {
+    return flow.map { it.map { this.local2Core(it) }.toTypedArray() }
         .distinctUntilChanged { old, new ->
             old.contentEquals(new)
         }.map { it.toList() }

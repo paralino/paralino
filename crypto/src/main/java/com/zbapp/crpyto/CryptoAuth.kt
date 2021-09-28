@@ -5,6 +5,9 @@ import android.content.Context
 import com.virgilsecurity.android.common.exception.*
 import com.virgilsecurity.android.ethreeenclave.interaction.EThree
 import com.virgilsecurity.android.ethreeenclave.interaction.model.EThreeParams
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 
 class CryptoAuth(
@@ -93,7 +96,15 @@ class CryptoAuth(
     }
 
     fun decryptData(data: String): String {
-        return ethree.authEncrypt(data)
+        return ethree.authDecrypt(data)
+    }
+
+    inline fun <reified T> encryptModel(data: T): String {
+        return encryptData(formatter.encodeToString(data))
+    }
+
+    inline fun <reified T> decryptModel(data: String): T {
+        return formatter.decodeFromString(decryptData(data))
     }
 
     companion object {
@@ -102,6 +113,12 @@ class CryptoAuth(
                 DerivedPasswords(it.loginPassword, it.backupPassword)
             }
         }
+    }
+
+    val formatter = Json {
+        encodeDefaults = true
+        ignoreUnknownKeys = true
+        coerceInputValues = true
     }
 
 }

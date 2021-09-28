@@ -25,6 +25,14 @@ class AppWriteRemoteModule(
             .setSelfSigned(config.debug)
     }
 
+    inline fun <T> execute(action: AppWriteRemoteModule.() -> T): T {
+        try {
+            return action()
+        } catch (e: Exception) {
+            throw  mapException(e)
+        }
+    }
+
     fun mapException(exception: Exception): Exception {
         val sourceException = (exception as? AppwriteException) ?: return exception
         return BaseRemoteException.fromCode(sourceException.code, sourceException.message)

@@ -16,7 +16,10 @@ class UserRemoteSource constructor(
     }
 
     suspend fun login(email: String, password: String): UserMe {
-        return executeUserOperation { api.login(email, password) }
+        return blocking {
+            api.login(email, password)
+            getUserFromJson(api.getMe())
+        }
     }
 
     suspend fun getMe(): UserMe {

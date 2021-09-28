@@ -5,8 +5,6 @@ import com.etebase.client.ItemMetadata
 import com.etebase.client.exceptions.NotFoundException
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.BaseLocationModel
-import com.zbapp.core.repo.group.IGroupRemoteDataSource
-import com.zbapp.core.repo.location.ILocationRemoteDataSource
 import com.zbapp.core.utils.BaseRemoteModule
 import com.zbapp.core.utils.Constants
 import com.zbapp.remote.blocking
@@ -16,7 +14,7 @@ import kotlinx.serialization.encodeToString
 
 internal class GroupsApi_OLD (
     private val userSource: RemoteUserCache
-): ILocationRemoteDataSource, IGroupRemoteDataSource {
+) {
 
     override suspend fun getCurrentLocationsForGroup(groupId: String): List<BaseLocationModel> {
 

@@ -4,12 +4,13 @@ import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.NoValidContractsException
 import com.zbapp.core.utils.randomString
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class LocationRepository constructor(
     val sharingManager: LocationSharingManager,
     private val local: ILocationLocalDataSource,
-    private val remote: ILocationRemoteDataSource
+    private val remote: LocationRemoteSource
 ) {
 
     fun getLocationsForGroup(groupId: String): Flow<List<BaseLocationModel>> {
@@ -22,9 +23,9 @@ class LocationRepository constructor(
                 location.copy(id = randomString(), groupId = it.groupId)
             }
 
-            if(mapped.isEmpty()) throw NoValidContractsException()
+            if(!sharingManager.isSharingActive()) throw NoValidContractsException()
 
-            remote.setLocations(mapped)
+            remote.saveCurrentLocation(location)
             local.addLocations(mapped)
         }
     }
