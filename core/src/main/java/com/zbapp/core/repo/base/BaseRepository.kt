@@ -21,9 +21,9 @@ abstract class BaseRepository() {
      * @param remotePreference - flag indicating how execution will use remote data
      * @param delay - optional milliseconds delay for remote data, can be used to simulate slow response
      */
-    protected fun <T> subscribeToData(local: Flow<T>,
-                                      remote: (suspend () -> T)? = null,
-                                      localUpdate: (suspend (T) -> Unit)? = null,
+    protected fun <T, U> subscribeToData(local: Flow<T>,
+                                      remote: (suspend () -> U)? = null,
+                                      localUpdate: (suspend (U) -> Unit)? = null,
                                       remotePreference: RemotePreference = RemotePreference.PREFER,
                                       delay: Long? = null): Flow<T> {
 

@@ -15,9 +15,8 @@ import com.zbapp.locationtrack.data.repos.group.UserGroupLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.LocationLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSourceImpl
 import com.zbapp.locationtrack.data.repos.user.UserLocalDataSource
-import com.zbapp.remote.api.UserApi
+import com.zbapp.remote.appwrite.UserApi
 import com.zbapp.remote.appwrite.AppWriteRemoteModule
-import com.zbapp.remote.user.RemoteUserCache
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -34,14 +33,13 @@ val daoModules = module {
 }
 
 val localDataSourceModules = module {
-    single<ILocationLocalDataSource> { LocationLocalDataSource(get()) }
+    single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get()) }
     single<IUserLocalDataSource> { UserLocalDataSource(get()) }
-    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get()) }
+    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get()) }
 }
 
 val remoteDataSourceModule = module {
-    single { RemoteUserCache() }
     single<IUserApi> { UserApi(get()) }
     single { UserRemoteSource(get()) }
     single { LocationRemoteSource(get()) }

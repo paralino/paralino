@@ -11,5 +11,6 @@ import kotlinx.parcelize.Parcelize
 data class UserGroupEntity(
     @PrimaryKey
     val id: String,
+    val ownerId: String?,
     val data: String
 ): Parcelable

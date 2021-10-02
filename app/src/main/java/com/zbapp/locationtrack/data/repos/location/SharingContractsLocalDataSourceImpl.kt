@@ -11,15 +11,15 @@ class SharingContractsLocalDataSourceImpl(
 ): ISharingContractsLocalDataSource {
 
     override suspend fun createContract(contract: LocationSharingContract) {
-        dao.createOrUpdate(SharingContractsMapper.mapReversed(contract))
+        dao.createOrUpdate(SharingContractsMapper.core2Local(contract))
     }
 
     override fun get(id: String): Flow<LocationSharingContract> {
-        return dao.get(id).map { SharingContractsMapper.map(it) }
+        return dao.get(id).map { SharingContractsMapper.local2Core(it) }
     }
 
     override fun getAllContracts(): Flow<List<LocationSharingContract>> {
-        return dao.getAll().map { it.map { SharingContractsMapper.map(it) } }
+        return dao.getAll().map { it.map { SharingContractsMapper.local2Core(it) } }
     }
 
     override suspend fun cancelContracts(ids: List<String>) {

@@ -9,12 +9,12 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 class GroupsRemoteSource constructor(
-    private val api: IGroupsApi
+    private val api: IDocumentsApi
 ) {
 
     suspend fun createOrUpdateGroup(group: SimpleDocumentRaw): SimpleDocumentRaw {
         return blocking {
-            api.createOrUpdateGroup(Constants.collectionGroupUser, group).let {
+            api.createOrUpdateDocument(Constants.collectionGroupUser, group).let {
                 getGroupFromJson(it)
             }
         }
@@ -22,7 +22,7 @@ class GroupsRemoteSource constructor(
 
     suspend fun getAllGroups(): List<SimpleDocumentRaw> {
         return blocking {
-            api.getGroups(Constants.collectionGroupUser).let {
+            api.getDocuments(Constants.collectionGroupUser).let {
                 getGroupsFromJson(it)
             }
         }
@@ -30,7 +30,7 @@ class GroupsRemoteSource constructor(
 
     suspend fun getGroup(groupId: String): SimpleDocumentRaw {
         return blocking {
-            api.getGroup(Constants.collectionGroupUser, groupId).let {
+            api.getDocument(Constants.collectionGroupUser, groupId).let {
                 getGroupFromJson(it)
             }
         }
@@ -38,7 +38,7 @@ class GroupsRemoteSource constructor(
 
     suspend fun deleteGroup(groupId: String) {
         blocking {
-            api.deleteGroup(Constants.collectionGroupUser, groupId)
+            api.deleteDocument(Constants.collectionGroupUser, groupId)
         }
     }
 
@@ -46,6 +46,7 @@ class GroupsRemoteSource constructor(
         val json = BaseRemoteModule.formatter.parseToJsonElement(content)
         return SimpleDocumentRaw(
             id = json.jsonObject["id"]!!.jsonPrimitive.content,
+            ownerId = null,
             data = json.jsonObject["data"]?.jsonObject?.jsonPrimitive?.content ?: ""
         )
     }
@@ -55,6 +56,7 @@ class GroupsRemoteSource constructor(
         return json.jsonObject["documents"]?.jsonArray?.map {
             SimpleDocumentRaw(
                 id = it.jsonObject["id"]!!.jsonPrimitive.content,
+                ownerId = null,
                 data = it.jsonObject["data"]?.jsonObject?.jsonPrimitive?.content ?: ""
             )
         } ?: emptyList()

@@ -1,4 +1,4 @@
-package com.zbapp.remote.api
+package com.zbapp.remote.appwrite
 
 import com.zbapp.core.repo.user.IUserApi
 import com.zbapp.core.repo.user.SessionResponse

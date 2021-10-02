@@ -10,7 +10,6 @@ data class UserEntity(
 
     val name: String,
     val email: String,
-    val imageBase64: String?,
-    val userSince: String
+    val imageBase64: String?
 ) {
 }

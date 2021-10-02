@@ -3,24 +3,22 @@ package com.zbapp.locationtrack.data.mappers
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.locationtrack.data.models.user.UserEntity
 
-object UserMapper: IDataMapper<UserEntity, UserMe> {
-    override fun map(model: UserEntity): UserMe {
+object UserMapper: IDataMapperLocal<UserMe, UserEntity> {
+    override fun local2Core(model: UserEntity): UserMe {
         return UserMe(
             id = model.id,
             name = model.name,
             email = model.email,
-            imageBase64 = model.imageBase64,
-            userSince = model.userSince
+            imageBase64 = model.imageBase64
         )
     }
 
-    override fun mapReversed(model: UserMe): UserEntity {
+    override fun core2Local(model: UserMe): UserEntity {
         return UserEntity(
             id = model.id,
             name = model.name,
             email = model.email,
-            imageBase64 = model.imageBase64,
-            userSince = model.userSince
+            imageBase64 = model.imageBase64
         )
     }
 }

@@ -3,11 +3,12 @@ package com.zbapp.crpyto
 import com.virgilsecurity.android.common.model.FindUsersResult
 import com.virgilsecurity.android.ethreeenclave.interaction.EThree
 import com.virgilsecurity.sdk.cards.Card
+import com.zbapp.core.repo.group.IGroupCrypto
 import java.util.*
 
 class CryptoGroups(
     private val eThree: EThree
-) {
+): IGroupCrypto {
 
     private val groups = hashMapOf<String, CryptoGroupData>()
     private val users = FindUsersResult()
@@ -74,13 +75,15 @@ class CryptoGroups(
         }
     }
 
-    fun encryptData(groupId: String, data: String): String {
+    override suspend fun encryptData(groupId: String, data: String): String {
         return getGroupLocally(groupId)?.encryptData(data)!!
     }
 
-    suspend fun decryptData(groupId: String, senderId: String, data: String, dataDate: Date? = null): String {
+    override suspend fun decryptData(groupId: String, data: String, senderId: String?, dataDate: Date?): String {
         return blocking {
-            getGroupLocally(groupId)?.decryptData(getUserCard(senderId)!!, data, dataDate)!!
+            val group = getGroupLocally(groupId)
+            val sender = senderId ?: group!!.ownerId
+            group!!.decryptData(getUserCard(sender)!!, data, dataDate)
         }
     }
 

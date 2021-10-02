@@ -15,18 +15,9 @@ import java.util.*
 data class LocationEntity constructor(
     @PrimaryKey
     val id: String,
-    val groupId: String,
     val userId: String,
 
-    val lat: Double,
-    val lng: Double,
-    val accuracy: Float = 0f,
-
-    val name: String,
-    val imageBase64: String? = null,
-
-    val timeUTC: LocalDateTime? = null,
-    val batteryLevel: Int? = null
+    val data: String
 ): Parcelable {
 
     companion object {
@@ -34,14 +25,7 @@ data class LocationEntity constructor(
             return LocationEntity(
                 id = UUID.randomUUID().toString(),
                 userId = user.id,
-                groupId = "",
-                lat = location.latitude,
-                lng = location.longitude,
-                accuracy = location.accuracy,
-                name = user.name,
-                imageBase64 = user.imageBase64,
-                timeUTC = location.time.toDateTimeUTC(),
-                batteryLevel = batteryLevel
+                data = ""
             )
         }
     }

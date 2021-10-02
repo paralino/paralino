@@ -10,7 +10,7 @@ interface LocationDao {
     @Transaction
     suspend fun saveOnlyOneLocation(vararg data: LocationEntity) {
         data.forEach {
-            clearForUser(it.userId, it.groupId)
+            clearForUser(it.userId)
         }
         createOrUpdate(*data)
     }
@@ -18,17 +18,14 @@ interface LocationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createOrUpdate(vararg data: LocationEntity)
 
+    @Query("SELECT * FROM locations WHERE userId IN (:userIds)")
+    fun getLocationsForUsers(userIds: List<String>): Flow<List<LocationEntity>>
+
     @Query("SELECT * FROM locations WHERE userId = :userId")
-    fun getLocationsForUser(userId: String): Flow<List<LocationEntity>>
-
-    @Query("SELECT * FROM locations WHERE groupId = :groupId")
-    fun getLocationsForGroup(groupId: String): Flow<List<LocationEntity>>
-
-    @Query("SELECT * FROM locations WHERE userId = :userId ORDER BY timeUTC ASC LIMIT 1")
     fun getLastLocationForUser(userId: String): Flow<LocationEntity>
 
-    @Query("DELETE FROM locations WHERE userId = :userId AND groupId = :groupId")
-    suspend fun clearForUser(userId: String, groupId: String)
+    @Query("DELETE FROM locations WHERE userId = :userId")
+    suspend fun clearForUser(userId: String)
 
     @Query("DELETE FROM locations")
     suspend fun clear()

@@ -11,15 +11,15 @@ class UserLocalDataSource(
 ): IUserLocalDataSource {
 
     override fun getMe(): Flow<UserMe> {
-        return dao.get().map { UserMapper.map(it) }
+        return dao.get().map { UserMapper.local2Core(it) }
     }
 
     override suspend fun getMeOnce(): UserMe? {
-        return dao.tryGetUser()?.let { UserMapper.map(it) }
+        return dao.tryGetUser()?.let { UserMapper.local2Core(it) }
     }
 
     override suspend fun update(data: UserMe) {
-        dao.save(UserMapper.mapReversed(data))
+        dao.save(UserMapper.core2Local(data))
     }
 
     override suspend fun clear() {

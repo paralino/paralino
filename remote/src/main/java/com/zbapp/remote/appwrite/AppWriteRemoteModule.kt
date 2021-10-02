@@ -29,13 +29,15 @@ class AppWriteRemoteModule(
         try {
             return action()
         } catch (e: Exception) {
-            throw  mapException(e)
+            throw mapException(e)
         }
     }
 
-    fun mapException(exception: Exception): Exception {
-        val sourceException = (exception as? AppwriteException) ?: return exception
-        return BaseRemoteException.fromCode(sourceException.code, sourceException.message)
+    companion object {
+        fun mapException(exception: Exception): Exception {
+            val sourceException = (exception as? AppwriteException) ?: return exception
+            return BaseRemoteException.fromCode(sourceException.code, sourceException.message)
+        }
     }
 
 }

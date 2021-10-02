@@ -1,29 +1,35 @@
 package com.zbapp.locationtrack.data.repos.location
 
-import com.zbapp.core.models.location.BaseLocationModel
+import com.zbapp.core.models.raw.SimpleDocumentRaw
 import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.locationtrack.data.mappers.LocationMapper
 import com.zbapp.locationtrack.data.mappers.mapFlowOfList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapLatest
 
 class LocationLocalDataSource(
-    private val dao: LocationDao
+    private val dao: LocationDao,
+    private val mapper: LocationMapper
 ): ILocationLocalDataSource {
 
-    override fun getLocationsForGroup(groupId: String): Flow<List<BaseLocationModel>> {
-        return LocationMapper.mapFlowOfList(dao.getLocationsForGroup(groupId))
+    override suspend fun addLocation(data: SimpleDocumentRaw) {
+        dao.createOrUpdate(mapper.remote2Local(data))
     }
 
-    override fun getLocationsForUser(userId: String): Flow<List<BaseLocationModel>> {
-        return LocationMapper.mapFlowOfList(dao.getLocationsForUser(userId))
+    override suspend fun addLocations(data: List<SimpleDocumentRaw>) {
+        dao.saveOnlyOneLocation(*data.map { mapper.remote2Local(it) }.toTypedArray())
     }
 
-    override suspend fun addLocation(locationModel: BaseLocationModel) {
-        dao.saveOnlyOneLocation(LocationMapper.mapReversed(locationModel))
+    override fun getLocationForUser(userId: String): Flow<SimpleDocumentRaw> {
+        return dao.getLastLocationForUser(userId).mapLatest(mapper::local2Remote)
     }
 
-    override suspend fun addLocations(locations: List<BaseLocationModel>) {
-        dao.saveOnlyOneLocation(*locations.map { LocationMapper.mapReversed(it) }.toTypedArray())
+    override fun getLocationsForUsers(userIds: List<String>): Flow<List<SimpleDocumentRaw>> {
+        return mapper.mapFlowOfList(dao.getLocationsForUsers(userIds))
+    }
+
+    override suspend fun clearForUser(userId: String) {
+        dao.clearForUser(userId)
     }
 
     override suspend fun clearAll() {
