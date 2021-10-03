@@ -10,10 +10,10 @@ class DocumentsApi constructor(
 ) : IDocumentsApi {
 
     override suspend fun createOrUpdateDocument(collectionId: String, data: SimpleDocumentRaw, users: List<String>?): DocumentResponse {
-        return createOrUpdateDocument(collectionId, data.id, mapOf("data" to data.data), users)
+        return createOrUpdateDocument(collectionId, data.id, mapOf("ownerId" to data.ownerId, "data" to data.data), users)
     }
 
-    override suspend fun createOrUpdateDocument(collectionId: String, groupId: String, data: Map<String, String>, users: List<String>?): DocumentResponse {
+    override suspend fun createOrUpdateDocument(collectionId: String, groupId: String, data: Map<String, String?>, users: List<String>?): DocumentResponse {
         return remoteModule.execute {
             if(groupId.isBlank())
                 database.createDocument(collectionId, data, read = users).body!!.string()

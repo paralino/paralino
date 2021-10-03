@@ -62,6 +62,9 @@ class Config(context: Context): IConfig {
                 secureSharedData.edit { putString(keyServerKeyMain, value) }
         }
 
+    override val collectionGroupsID: String get() = BuildConfig.keyCollectionGroups
+    override val collectionLocationsID: String get() = BuildConfig.keyCollectionLocations
+
     override fun clear() {
         sharedData.edit { clear() }
         secureSharedData.edit { clear() }

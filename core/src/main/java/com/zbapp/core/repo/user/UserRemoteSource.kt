@@ -39,14 +39,7 @@ class UserRemoteSource constructor(
     }
 
     private suspend fun executeUserOperation(action: suspend () -> String): UserMe {
-        return getUserFromJson(action())
-    }
-
-    private fun getUserFromJson(content: String): UserMe {
-        val json = BaseRemoteModule.formatter.parseToJsonElement(content)
-        val user = BaseRemoteModule.formatter.decodeFromJsonElement<UserMe>(json)
-        user.imageBase64 = json.jsonObject["prefs"]?.jsonObject?.get("userImage")?.jsonPrimitive?.content
-        return user
+        return IUserApi.getUserFromJson(action())
     }
 
 }

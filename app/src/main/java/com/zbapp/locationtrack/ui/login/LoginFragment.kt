@@ -80,7 +80,7 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
             email = vb.etEmail.editText?.text?.toString() ?: "",
             password = vb.etPassword.editText?.text?.toString() ?: ""
         ).observe {
-            vb.bLogin.isEnabled = it !is Payload.Loading
+            vb.bLogin.isEnabled = it is Payload.Error
             vb.bLogin.setLoading(it is Payload.Loading, it is Payload.Success)
 
             when(it) {

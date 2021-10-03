@@ -38,6 +38,8 @@ android {
             props.load(new FileInputStream(propsFile))
             buildConfigField("String", "serverUrl", props['serverUrl'])
             buildConfigField("String", "serverKey", props['serverKey'])
+            buildConfigField("String", "keyCollectionGroups", props['keyCollectionGroups'])
+            buildConfigField("String", "keyCollectionLocations", props['keyCollectionLocations'])
         }
 
         // room schema export

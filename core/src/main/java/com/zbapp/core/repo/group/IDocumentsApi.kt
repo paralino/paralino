@@ -17,7 +17,7 @@ interface IDocumentsApi {
     suspend fun createOrUpdateDocument(
         collectionId: String,
         groupId: String,
-        data: Map<String, String>,
+        data: Map<String, String?>,
         users: List<String>? = null
     ): DocumentResponse
 
@@ -40,9 +40,9 @@ interface IDocumentsApi {
 
         private fun parseDocument(element: JsonElement): SimpleDocumentRaw {
             return SimpleDocumentRaw(
-                id = element.jsonObject["id"]!!.jsonPrimitive.content,
-                ownerId = "",
-                data = element.jsonObject["data"]?.jsonObject?.jsonPrimitive?.content ?: ""
+                id = element.jsonObject["\$id"]!!.jsonPrimitive.content,
+                ownerId = element.jsonObject["ownerId"]!!.jsonPrimitive.content,
+                data = element.jsonObject["data"]?.jsonPrimitive?.content ?: ""
             )
         }
     }

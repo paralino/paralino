@@ -13,11 +13,12 @@ class GroupsMapper(
 ) : IDataMapper<UserGroup, UserGroupEntity, SimpleDocumentRaw> {
 
     override suspend fun core2Remote(model: UserGroup): SimpleDocumentRaw {
-        return SimpleDocumentRaw(model.id, model.ownerId, crypto.encryptModel(model.id, model))
+        return SimpleDocumentRaw(model.id, model.ownerId, crypto.encryptModel(groupId = model.id, data = model))
     }
 
     override suspend fun remote2Core(model: SimpleDocumentRaw): UserGroup {
-        return crypto.decryptModel(model.id, model.data, model.ownerId)
+        return crypto.decryptModel<UserGroup>(groupId = model.id, data = model.data, senderId = model.ownerId)
+            .copy(id = model.id)
     }
 
     override fun local2Remote(model: UserGroupEntity): SimpleDocumentRaw {

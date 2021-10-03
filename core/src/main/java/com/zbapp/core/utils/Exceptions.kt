@@ -26,9 +26,9 @@ open class BaseRemoteException(
 }
 
 class ConnectionException(message: String?, code: Int?, cause: Throwable? = null): BaseRemoteException(message, cause, code)
-class UnverifiedUserException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
-class PermissionDeniedException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
-class UnauthorizedException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class UnverifiedUserException(message: String?, cause: Throwable? = null): UnauthorizedException(message, cause)
+class PermissionDeniedException(message: String?, cause: Throwable? = null): UnauthorizedException(message, cause)
+open class UnauthorizedException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class InvalidRequestException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class NotFoundException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)

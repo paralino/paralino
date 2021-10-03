@@ -1,5 +1,6 @@
 package com.zbapp.core.models.group
 
+import com.zbapp.core.config
 import com.zbapp.core.utils.Constants
 import kotlinx.serialization.Serializable
 
@@ -18,7 +19,7 @@ data class UserGroup constructor(
         val personalTracking = UserGroup("personalTracking", Constants.collectionGroupPrivate, "Personal", 0, "\uD83D\uDD12", "", emptyList())
         val publicSharing = UserGroup("publicSharing", Constants.collectionGroupPublic, "Public", 0, "\uD83C\uDFD9️", "", emptyList())
         fun empty(type: String) = UserGroup("", type, "", 0, "\uD83D\uDD12️", "", emptyList())
-        fun new(icon: String, name: String) = UserGroup("", Constants.collectionGroupUser, name, 0, icon, "", emptyList())
+        fun new(icon: String, name: String) = UserGroup("", Constants.collectionGroupUser, name, 0, icon, config.userId, emptyList())
     }
 
     val isFromUser: Boolean get() = type == Constants.collectionGroupUser

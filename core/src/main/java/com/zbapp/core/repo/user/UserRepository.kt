@@ -6,7 +6,9 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
+import com.zbapp.core.repo.base.asRemoteException
 import com.zbapp.core.utils.NotFoundException
+import com.zbapp.core.utils.UnauthorizedException
 import com.zbapp.core.utils.UnverifiedUserException
 import kotlinx.coroutines.flow.*
 
@@ -124,6 +126,8 @@ class UserRepository(
 //    }
 
     private suspend fun updateLocalUser(data: UserMe) {
+        config.userId = data.id
+        config.email = data.email
         cachedUser = data
         local.update(data)
     }
@@ -165,7 +169,15 @@ class UserRepository(
                 config.clear()
             },
             remotePreference = RemotePreference.FORCE
-        )
+        ).catch {
+            // TODO maybe always log user out? Even if offline or some other error happens, log out locally
+            // it will leave active session in the backend
+            if(it is UnauthorizedException) {
+                clear()
+                config.clear()
+                emit(Unit)
+            } else throw it
+        }
     }
 
 }

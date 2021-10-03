@@ -31,7 +31,7 @@ val viewModelModules = module {
 }
 
 val utilModule = module {
-    factory { LogoutControl(get(), get(), get()) }
+    factory { LogoutControl(get(), get(), get(), get()) }
     single { PreCheckControl(get()) }
 }
 

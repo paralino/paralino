@@ -35,3 +35,35 @@ class CryptoRepository(private val app: Application) : ICryptoRepository {
         return cryptoAuth!!.decryptData(data)
     }
 }
+
+class DummyCryptoRepository(): ICryptoRepository{
+    override fun init(userId: String) {
+
+    }
+
+    override fun reset() {
+
+    }
+
+    override suspend fun encryptData(data: String): String {
+        return data
+    }
+
+    override suspend fun encryptData(groupId: String, data: String): String {
+        return data
+    }
+
+    override suspend fun decryptData(data: String): String {
+        return data
+    }
+
+    override suspend fun decryptData(
+        groupId: String,
+        data: String,
+        senderId: String?,
+        dataDate: Date?
+    ): String {
+        return data
+    }
+
+}

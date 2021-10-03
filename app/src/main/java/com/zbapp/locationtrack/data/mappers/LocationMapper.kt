@@ -20,7 +20,7 @@ class LocationMapper(
     }
 
     override suspend fun remote2Core(model: SimpleDocumentRaw): BaseLocationModel {
-        return crypto.decryptModel(model.id, model.data, model.ownerId)
+        return crypto.decryptModel<BaseLocationModel>(model.id, model.data, model.ownerId).copy(id = model.id)
     }
 
     override fun remote2Local(model: SimpleDocumentRaw): LocationEntity {

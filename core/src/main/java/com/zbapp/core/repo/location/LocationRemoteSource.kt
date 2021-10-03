@@ -1,14 +1,10 @@
 package com.zbapp.core.repo.location
 
+import com.zbapp.core.config
 import com.zbapp.core.models.raw.LocationHistoryRaw
 import com.zbapp.core.models.raw.SimpleDocumentRaw
 import com.zbapp.core.repo.group.IDocumentsApi
-import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.Constants
 import com.zbapp.core.utils.blocking
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
 class LocationRemoteSource constructor(
     private val api: IDocumentsApi
@@ -16,7 +12,7 @@ class LocationRemoteSource constructor(
 
     suspend fun getCurrentLocationsForGroup(groupId: String): List<SimpleDocumentRaw> {
         return blocking {
-            api.getDocuments(Constants.collectionGroupItemCurrent).let {
+            api.getDocuments(config.collectionLocationsID).let {
                 IDocumentsApi.getDocumentsFromJson(it)
             }
         }
@@ -32,7 +28,7 @@ class LocationRemoteSource constructor(
 
     suspend fun saveCurrentLocation(data: SimpleDocumentRaw, readPermissions: List<String>): SimpleDocumentRaw {
         return blocking {
-            val response = api.createOrUpdateDocument(Constants.collectionGroupItemCurrent, data, readPermissions)
+            val response = api.createOrUpdateDocument(config.collectionLocationsID, data, readPermissions)
             IDocumentsApi.getDocumentFromJson(response)
         }
     }

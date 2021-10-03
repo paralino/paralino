@@ -3,14 +3,15 @@ package com.zbapp.locationtrack.di
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.IDataMapperCore
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.models.raw.SimpleDocumentRaw
 import com.zbapp.core.repo.group.*
-import com.zbapp.core.repo.location.*
+import com.zbapp.core.repo.location.ILocationLocalDataSource
+import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
+import com.zbapp.core.repo.location.LocationRemoteSource
 import com.zbapp.core.repo.user.IUserApi
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.UserRemoteSource
-import com.zbapp.crpyto.CryptoRepository
+import com.zbapp.crpyto.DummyCryptoRepository
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.data.database.MainAppDatabase
 import com.zbapp.locationtrack.data.mappers.GroupsMapper
@@ -68,7 +69,8 @@ val remoteDataSourceModule = module {
 }
 
 val coreDependencyModules = module {
-    single<ICryptoRepository> { CryptoRepository(androidApplication()) }
+//    single<ICryptoRepository> { CryptoRepository(androidApplication()) }
+    single<ICryptoRepository> { DummyCryptoRepository() }
 
     single<IDataMapperCore<UserGroup, SimpleDocumentRaw>> { get<GroupsMapper>() }
 //    single<IDataMapperCore<BaseLocationModel, SimpleDocumentRaw>> { get<LocationMapper>() }
