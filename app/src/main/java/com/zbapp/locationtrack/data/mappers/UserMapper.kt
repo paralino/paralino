@@ -3,8 +3,8 @@ package com.zbapp.locationtrack.data.mappers
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.locationtrack.data.models.user.UserEntity
 
-object UserMapper: IDataMapperLocal<UserMe, UserEntity> {
-    override fun local2Core(model: UserEntity): UserMe {
+object UserMapper: IDataMapperLocal<UserEntity, UserMe> {
+    override fun local2Remote(model: UserEntity): UserMe {
         return UserMe(
             id = model.id,
             name = model.name,
@@ -13,7 +13,7 @@ object UserMapper: IDataMapperLocal<UserMe, UserEntity> {
         )
     }
 
-    override fun core2Local(model: UserMe): UserEntity {
+    override fun remote2Local(model: UserMe): UserEntity {
         return UserEntity(
             id = model.id,
             name = model.name,

@@ -15,7 +15,7 @@ class CryptoAuth(
     identity: String
 ): IUserCrypto {
 
-    private val ethree = EThree(
+    internal val ethree = EThree(
         EThreeParams(
             identity = identity,
             tokenCallback = { "" },

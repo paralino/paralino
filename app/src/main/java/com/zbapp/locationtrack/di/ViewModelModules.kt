@@ -43,7 +43,7 @@ val locationModules = module {
 val coreModule = module {
     single { LoginManager(get(), get()) }
     single { LocationSharingManager(get()) }
-    single { GroupRepository(get(), get()) }
+    single { GroupRepository(get(), get(), get()) }
     single { UserRepository(get(), get()) }
-    single { LocationRepository(get(), get(), get()) }
+    single { LocationRepository(get(), get(), get(), get(), get()) }
 }

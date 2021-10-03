@@ -20,42 +20,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/etServer"
-        style="@style/TextStyle.Input"
-        android:layout_width="match_parent"
-        android:layout_marginHorizontal="@dimen/activity_side_margin"
-        android:nextFocusDown="@id/etUsername"
-        app:endIconMode="clear_text"
-        android:hint="@string/login_placeholder_server"
-        app:layout_constraintBottom_toTopOf="@id/etUsername"
-        app:layout_constraintTop_toBottomOf="@id/ivLogo"
-        app:layout_constraintVertical_bias="0.6"
-        app:layout_constraintVertical_chainStyle="packed">
-
-        <com.google.android.material.textfield.TextInputEditText
-            style="@style/TextStyle.Light"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@color/transparent"
-            android:textCursorDrawable="@null"
-            android:imeOptions="actionNext"
-            android:inputType="textUri"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etUsername"
         style="@style/TextStyle.Input"
         android:layout_width="match_parent"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
         android:layout_marginTop="@dimen/activity_side_margin_small"
         android:nextFocusDown="@id/etEmail"
-        app:endIconMode="custom"
         android:hint="@string/login_placeholder_username_or_random"
-        app:endIconDrawable="@drawable/ic_username_random"
         app:layout_constraintBottom_toTopOf="@id/etEmail"
-        app:layout_constraintTop_toBottomOf="@id/etServer"
+        app:layout_constraintTop_toBottomOf="@id/ivLogo"
+        app:layout_constraintVertical_bias="0.6"
+        app:layout_constraintVertical_chainStyle="packed"
         >
 
         <com.google.android.material.textfield.TextInputEditText

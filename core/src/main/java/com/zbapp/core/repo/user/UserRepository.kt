@@ -27,21 +27,22 @@ class UserRepository(
             _cachedUser = value
         }
 
-    fun login(serverUrl: String, username: String, password: String): Flow<Unit> {
+    fun login(email: String, password: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.login(serverUrl, username, password) },
+            remote = { remote.login(email, password) },
             localUpdate = { config.token = it },
             remotePreference = RemotePreference.FORCE
         ).map { Unit }
     }
 
-    fun signUp(serverUrl: String, username: String, email: String, password: String): Flow<Unit> {
+    fun signUp(userName: String?, email: String, password: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.signUp(serverUrl, username, email, password) },
+            remote = { remote.signUp(userName, email, password) },
             localUpdate = {
-                config.userId = username
+                updateLocalUser(it)
+                config.userId = it.id
                 config.email = email
-                config.token = it
+                config.token = "loggedIn"
                 config.emailConfirmed = false
             },
             remotePreference = RemotePreference.FORCE
@@ -49,15 +50,8 @@ class UserRepository(
             .map { Unit }
     }
 
-    fun generateUsername(): Flow<String> {
-        return getDataOnce(
-            remote = { remote.generateUsername() },
-            remotePreference = RemotePreference.FORCE
-        )
-    }
-
     fun restoreSession(serverUrl: String) {
-        remote.restoreSession(serverUrl, config.token)
+//        remote.restoreSession(serverUrl, config.token)
     }
 
     fun getUserLocally(): Flow<UserMe> {
@@ -72,7 +66,7 @@ class UserRepository(
     fun getMe(): Flow<Payload<UserMe>> {
         return getUserLocally().map<UserMe, Payload<UserMe>> {
             Payload.Success(it)
-        }.catch { emit(Payload.Error(it)) }
+        }.onStart { emit(Payload.Loading) }.catch { emit(Payload.Error(it)) }
     }
 
     fun refreshUserIfAvailable(): Flow<UserMe> {
@@ -90,7 +84,8 @@ class UserRepository(
         ).catch {
             if (it is NotFoundException) {
                 logg.v("User does not exist - create it for the first time")
-                emitAll(initializeUser())
+//                emitAll(initializeUser())
+                throw it
             } else {
                 if (it is UnverifiedUserException)
                     config.emailConfirmed = false
@@ -99,34 +94,34 @@ class UserRepository(
             }
         }
     }
-
-    private fun initializeUser(): Flow<UserMe> {
-        if (!config.isTokenValid) {
-            return flow { throw Exception("Token is not available") }
-        }
-
-        return getDataOnce(
-            remote = {
-                val user = UserMe(
-                    id = config.userId,
-                    email = config.email
-                )
-                remote.initVerifiedUser(user)
-            },
-            localUpdate = {
-                config.emailConfirmed = true
-                updateLocalUser(it)
-            },
-            remotePreference = RemotePreference.FORCE
-        )
-            .catch {
-                if (it is UnverifiedUserException) {
-                    config.emailConfirmed = false
-                }
-                logg.e("Error refreshing user")
-                throw it
-            }
-    }
+//
+//    private fun initializeUser(): Flow<UserMe> {
+//        if (!config.isTokenValid) {
+//            return flow { throw Exception("Token is not available") }
+//        }
+//
+//        return getDataOnce(
+//            remote = {
+//                val user = UserMe(
+//                    id = config.userId,
+//                    email = config.email
+//                )
+//                remote.initVerifiedUser(user)
+//            },
+//            localUpdate = {
+//                config.emailConfirmed = true
+//                updateLocalUser(it)
+//            },
+//            remotePreference = RemotePreference.FORCE
+//        )
+//            .catch {
+//                if (it is UnverifiedUserException) {
+//                    config.emailConfirmed = false
+//                }
+//                logg.e("Error refreshing user")
+//                throw it
+//            }
+//    }
 
     private suspend fun updateLocalUser(data: UserMe) {
         cachedUser = data
@@ -147,7 +142,7 @@ class UserRepository(
 
     fun editUserImage(imageBase64: String): Flow<Boolean> {
         return getDataOnce(
-            remote = { remote.updateImage(imageBase64) },
+            remote = { remote.updateUserImage(imageBase64) },
             localUpdate = {
                 cachedUser?.copy(imageBase64 = imageBase64)?.let {
                     updateLocalUser(it)

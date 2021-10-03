@@ -16,8 +16,8 @@ class Config(context: Context): IConfig {
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
         const val keyEmailConfirmed = "prefs.profile.email.confirmed"
-        const val keyServerUrlMain = "prefs.server.main"
-        const val keyServerUrlOpen = "prefs.server.open"
+        const val keyServerUrlMain = "prefs.server.url"
+        const val keyServerKeyMain = "prefs.server.key"
     }
 
     private val sharedData =
@@ -53,13 +53,13 @@ class Config(context: Context): IConfig {
                 secureSharedData.edit { putString(keyServerUrlMain, value) }
         }
 
-    override var openServerUrl: String
-        get() = secureSharedData.getString(keyServerUrlOpen, null) ?: BuildConfig.openServerUrl.takeIf { it.isNotEmpty() } ?: mainServerUrl
+    override var mainServerKey: String
+        get() = secureSharedData.getString(keyServerKeyMain, null) ?: BuildConfig.serverKey
         set(value) {
             if(value.isEmpty())
-                secureSharedData.edit { remove(keyServerUrlOpen) }
+                secureSharedData.edit { remove(keyServerKeyMain) }
             else
-                secureSharedData.edit { putString(keyServerUrlOpen, value) }
+                secureSharedData.edit { putString(keyServerKeyMain, value) }
         }
 
     override fun clear() {

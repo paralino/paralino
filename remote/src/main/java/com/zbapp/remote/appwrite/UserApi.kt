@@ -9,7 +9,7 @@ class UserApi constructor(
     private val remoteModule: AppWriteRemoteModule
 ) : IUserApi {
 
-    override suspend fun signUp(userName: String, email: String, password: String): UserResponse {
+    override suspend fun signUp(userName: String?, email: String, password: String): UserResponse {
         return remoteModule.execute { account.create(email, password, userName).body!!.string() }
     }
 

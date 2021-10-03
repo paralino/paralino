@@ -57,11 +57,11 @@
 
     <string name="login_placeholder_server">Server url</string>
     <string name="login_placeholder_username">Username</string>
-    <string name="login_placeholder_username_or_random">Add username or use magic =></string>
-    <string name="login_placeholder_email">Email</string>
-    <string name="login_placeholder_email_username">Email or Username</string>
-    <string name="login_placeholder_password">Password</string>
-    <string name="login_placeholder_password_confirm">Confirm password</string>
+    <string name="login_placeholder_username_or_random">Name (optional)</string>
+    <string name="login_placeholder_email">Email*</string>
+    <string name="login_placeholder_email_username">Email*</string>
+    <string name="login_placeholder_password">Password*</string>
+    <string name="login_placeholder_password_confirm">Confirm password*</string>
     <string name="login_signup_switch_button_login">or LOG IN</string>
     <string name="login_signup_switch_button_signup">or SIGN UP</string>
     <string name="login_button_forgot_password">Forgot password?</string>
@@ -72,8 +72,8 @@
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
     <string name="form_invalid_username_description">Please try another username.</string>
     <string name="form_invalid_credentials_description">Please check your credentials and try again.</string>
-    <string name="form_invalid_username_conflict_description">Please use another email or username.</string>
-    <string name="form_invalid_username_email_description">Your e-mail or username are not valid.</string>
+    <string name="form_invalid_username_conflict_description">Please use another email.</string>
+    <string name="form_invalid_username_email_description">Your e-mail is not valid.</string>
     <string name="form_invalid_username_length_description">Your username has to be at least 6 characters long.</string>
     <string name="form_invalid_password_length_description">Your password has to be at least 8 characters long.</string>
     <string name="form_invalid_password_match_description">Passwords don\'t match.</string>

@@ -2,7 +2,6 @@ package com.zbapp.core.repo.user
 
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.blocking
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -11,15 +10,12 @@ class UserRemoteSource constructor(
     private val api: IUserApi
 ) {
 
-    suspend fun signUp(userName: String, email: String, password: String): UserMe {
+    suspend fun signUp(userName: String?, email: String, password: String): UserMe {
         return executeUserOperation { api.signUp(userName, email, password) }
     }
 
-    suspend fun login(email: String, password: String): UserMe {
-        return blocking {
-            api.login(email, password)
-            getUserFromJson(api.getMe())
-        }
+    suspend fun login(email: String, password: String): SessionResponse {
+        return api.login(email, password)
     }
 
     suspend fun getMe(): UserMe {
@@ -34,16 +30,16 @@ class UserRemoteSource constructor(
         return executeUserOperation { api.changePassword(newPassword, oldPassword) }
     }
 
-    suspend fun updateUserData(data: Map<String, String>): UserMe {
-        return executeUserOperation { api.updateUserData(data) }
+    suspend fun updateUserImage(imageBase64: String): UserMe {
+        return executeUserOperation { api.updateUserData(mapOf("userImage" to imageBase64)) }
     }
 
     suspend fun logout() {
-        blocking { api.logout() }
+        api.logout()
     }
 
     private suspend fun executeUserOperation(action: suspend () -> String): UserMe {
-        return blocking { getUserFromJson(action()) }
+        return getUserFromJson(action())
     }
 
     private fun getUserFromJson(content: String): UserMe {

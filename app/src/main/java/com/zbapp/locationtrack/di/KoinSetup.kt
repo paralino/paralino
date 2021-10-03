@@ -14,14 +14,16 @@ object KoinSetup {
     }
 
     private val modules = listOf(
+        coreDependencyModules,
+        mappersModule,
         databaseModules,
         daoModules,
-        localDataSourceModules,
         remoteDataSourceModule,
         viewModelModules,
         utilModule,
         locationModules,
-        coreModule
+        coreModule,
+        cryptoModule,
     )
 
 }

@@ -18,22 +18,18 @@ class LoginManager(
         return config.emailConfirmed
     }
 
-    fun signUp(serverUrl: String, username: String, email: String, password: String): Flow<Unit> {
-        return userRepo.signUp(serverUrl, username, email, password)
+    fun signUp(userName: String, email: String, password: String): Flow<Unit> {
+        return userRepo.signUp(userName, email, password)
     }
 
-    fun login(serverUrl: String, username: String, password: String): Flow<Unit> {
-        return userRepo.login(serverUrl, username, password)
+    fun login(email: String, password: String): Flow<Unit> {
+        return userRepo.login(email, password)
             .flatMapLatest { syncData() }
             .catch {
                 if(it is UnverifiedUserException)
                     emit(Unit)
                 else throw it
             }
-    }
-
-    fun generateUsername(): Flow<String> {
-        return userRepo.generateUsername()
     }
 
     fun syncData(): Flow<Unit> {

@@ -5,12 +5,14 @@ data class LocationSharingContract constructor(
     val endTimeUTC: String?
 ) {
 
-    val isToGroup: Boolean = groupId.startsWith("group:")
-    val id: String = groupId.replace("group:" ,"").replace("user:", "")
+    val isToGroup: Boolean = groupId.startsWith(groupPrefix)
+    val objectId: String = groupId.replace(groupPrefix ,"").replace(userPrefix, "")
 
     companion object {
-        fun toUser(userId: String, endTimeUTC: String?) = LocationSharingContract("user:$userId", endTimeUTC)
-        fun toGroup(groupId: String, endTimeUTC: String?) = LocationSharingContract("group:$groupId", endTimeUTC)
+        const val groupPrefix = "groupID:"
+        const val userPrefix = "userID:"
+        fun toUser(userId: String, endTimeUTC: String?) = LocationSharingContract("$userPrefix$userId", endTimeUTC)
+        fun toGroup(groupId: String, endTimeUTC: String?) = LocationSharingContract("$groupPrefix$groupId", endTimeUTC)
     }
 
 }

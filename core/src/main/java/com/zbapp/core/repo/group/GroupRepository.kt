@@ -34,7 +34,7 @@ class GroupRepository(
         return getAllGroups().mapLatest { it.filter { it.isFromUser } }
     }
 
-    fun getGroup(id: String): Flow<UserGroup?> {
+    fun getGroup(id: String): Flow<UserGroup> {
         return subscribeToData(
             local = local.getGroup(id).decrypt(mapper),
             remote = { remote.getGroup(id) },

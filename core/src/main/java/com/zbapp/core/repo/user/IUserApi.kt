@@ -1,7 +1,7 @@
 package com.zbapp.core.repo.user
 
 interface IUserApi {
-    suspend fun signUp(userName: String, email: String, password: String): UserResponse
+    suspend fun signUp(userName: String?, email: String, password: String): UserResponse
     suspend fun login(email: String, password: String): SessionResponse
     suspend fun getMe(): UserResponse
     suspend fun updateName(name: String): UserResponse

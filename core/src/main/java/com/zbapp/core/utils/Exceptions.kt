@@ -2,37 +2,35 @@ package com.zbapp.core.utils
 
 import com.zbapp.core.config
 
-open class BaseRemoteException(message: String?): Exception(message) {
+open class BaseRemoteException(
+    message: String?,
+    cause: Throwable?,
+    val code: Int? = null
+) : Exception(message, cause) {
     companion object {
-        fun fromCode(code: Int?, message: String?): BaseRemoteException {
-            return when(code) {
-                500 -> ConnectionException(message)
-                401 -> UnauthorizedException(message)
+        fun fromCode(code: Int?, message: String?, cause: Throwable?): BaseRemoteException {
+            return when (code) {
+                400 -> InvalidRequestException(message, cause)
+                401 -> UnauthorizedException(message, cause)
                 403 -> {
-                    if(!config.emailConfirmed) UnverifiedUserException(message)
-                    else PermissionDeniedException(message)
+                    if(!config.emailConfirmed) UnverifiedUserException(message, cause)
+                    else PermissionDeniedException(message, cause)
                 }
-                404 -> NotFoundException(message)
-                304 -> ConflictException(message)
-                301 -> {
-                    if(message?.contains("unique_email") == true)
-                        ConflictException(message)
-                    else if(message?.contains("invalid_mail_server") == true)
-                        NotFoundException(message)
-                    else
-                        ConnectionException(message)
-                }
-                else -> GenericServerException(message)
+                404 -> NotFoundException(message, cause)
+                409 -> ConflictException(message, cause)
+                429, 503, 504 -> ConnectionException(message, code, cause)
+                else -> GenericServerException(message, code, cause)
             }
         }
     }
 }
 
-class UnverifiedUserException(message: String?): BaseRemoteException(message)
-class PermissionDeniedException(message: String?): BaseRemoteException(message)
-class UnauthorizedException(message: String?): BaseRemoteException(message)
-class ConnectionException(message: String?): BaseRemoteException(message)
-class NotFoundException(message: String?): BaseRemoteException(message)
-class ConflictException(message: String?): BaseRemoteException(message)
-class GenericServerException(message: String?) : BaseRemoteException(message)
+class ConnectionException(message: String?, code: Int?, cause: Throwable? = null): BaseRemoteException(message, cause, code)
+class UnverifiedUserException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class PermissionDeniedException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class UnauthorizedException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class InvalidRequestException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class NotFoundException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class GenericServerException(message: String?, code: Int?, cause: Throwable? = null) : BaseRemoteException(message, cause, code)
 

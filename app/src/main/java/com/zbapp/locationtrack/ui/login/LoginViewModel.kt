@@ -30,31 +30,23 @@ class LoginViewModel(
     private val _errorState = SingleLiveEvent<AppSnackbarData>()
     val errorState = _errorState
 
-    private val _randomUsername = MutableLiveData<String>()
-    val randomUsername = _randomUsername
 
-    val serverUrl = liveData { emit(config.mainServerUrl) }
-    val shouldShowServerUrl: Boolean get() = config.mainServerUrl.isBlank()
-
-
-    fun loginOrSignUp(username: String, email: String, password: String, confirmPassword: String = "", serverUrl: String? = null): LiveData<Payload<Unit>> {
-
-        val validServerUrl = serverUrl?.takeIf { it.isNotBlank() } ?: config.mainServerUrl
+    fun loginOrSignUp(userName: String, email: String, password: String, confirmPassword: String = ""): LiveData<Payload<Unit>> {
 
         return when (loginScreenState.value) {
             LoginState.LOGIN -> {
-                val validation = LoginValidations.login(validServerUrl, email, password)
+                val validation = LoginValidations.login(email, password)
                 updateValidationState(validation)
                 if (validation.isEmpty())
-                    loginManager.login(validServerUrl, email, password)
+                    loginManager.login(email, password)
                 else flow { throw ValidationException(validation.first()) }
             }
             LoginState.SIGNUP -> {
                 val validation =
-                    LoginValidations.signup(validServerUrl, username, email, password, confirmPassword)
+                    LoginValidations.signup(userName, email, password, null)
                 updateValidationState(validation)
                 if (validation.isEmpty())
-                    loginManager.signUp(validServerUrl, username, email, password)
+                    loginManager.signUp(userName, email, password)
                 else flow { throw ValidationException(validation.first()) }
             }
             LoginState.FORGOT_PASSWORD -> {
@@ -90,17 +82,6 @@ class LoginViewModel(
     private fun updateValidationState(validation: List<LoginValidation>?) {
         _loginStateValidation.value = validation ?: emptyList()
     }
-
-    fun generateUsername(postError: Boolean = true) {
-        loginManager.generateUsername()
-            .onEach { _randomUsername.value = it }
-            .catch {
-                if(postError)
-                    _errorState.value = AppSnackbarData(context.getString(R.string.error_generic_snacbar), null)
-            }
-            .launchIn(viewModelScope)
-    }
-
     fun isUserVerified(): Boolean {
         return loginManager.isVerified()
     }

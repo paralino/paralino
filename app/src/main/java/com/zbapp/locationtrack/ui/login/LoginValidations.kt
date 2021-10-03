@@ -22,10 +22,6 @@ object LoginValidations {
     }
 
     private fun username(username: String): LoginValidation.USERNAME? {
-        if(username.length < 6)
-            return LoginValidation.USERNAME(R.string.form_invalid_username_length_description)
-        else if(!Regex("^[a-zA-Z0-9\\-_]+\$").matches(username))
-            return LoginValidation.USERNAME(R.string.form_invalid_username_description)
         return null
     }
 
@@ -49,12 +45,12 @@ object LoginValidations {
         return null
     }
 
-    fun login(serverUrl: String, email: String, password: String): List<LoginValidation> {
-        return listOfNotNull(server(serverUrl), emailUsername(email), password(password))
+    fun login(email: String, password: String): List<LoginValidation> {
+        return listOfNotNull(emailUsername(email), password(password))
     }
 
-    fun signup(serverUrl: String, username: String, email: String, password: String, confirm: String): List<LoginValidation> {
-        return listOfNotNull(server(serverUrl), username(username), email(email), password(password))
+    fun signup(username: String, email: String, password: String, confirm: String?): List<LoginValidation> {
+        return listOfNotNull(username(username), email(email), password(password))
     }
 
 }

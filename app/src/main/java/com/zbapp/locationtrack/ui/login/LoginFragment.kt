@@ -32,10 +32,6 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
             if(it.isNullOrBlank()) vb.etUsername.setHint(R.string.login_placeholder_username_or_random)
             else vb.etUsername.setHint(R.string.login_placeholder_username)
         }
-        vb.etUsername.setEndIconOnClickListener { vm.generateUsername() }
-
-        vm.randomUsername.observe { vb.etUsername.editText?.setText(it) }
-        vm.serverUrl.observe { vb.etServer.editText?.setText(it) }
 
         vm.loginStateValidation.observe {
             val backgroundRes = R.drawable.background_input
@@ -45,7 +41,6 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
             vb.etEmail.setBackgroundResource(if(it.any { it is LoginValidation.EMAIL }) errorBackgroundRes else backgroundRes)
             vb.etPassword.setBackgroundResource(if(it.any { it is LoginValidation.PASSWORD }) errorBackgroundRes else backgroundRes)
 //            vb.etPasswordConfirm.setBackgroundResource(if(it is LoginValidation.CONFIRM_PASSWORD) errorBackgroundRes else backgroundRes)
-            vb.etServer.setBackgroundResource(if(it.any { it is LoginValidation.SERVER }) errorBackgroundRes else backgroundRes)
         }
 
         vm.errorState.observe {
@@ -56,7 +51,6 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
             vb.tvForgotPassword.isVisible = it == LoginState.LOGIN
             vb.etUsername.isVisible = it == LoginState.SIGNUP
             vb.etPassword.isVisible = it != LoginState.FORGOT_PASSWORD
-            vb.etServer.isVisible = it != LoginState.FORGOT_PASSWORD && vm.shouldShowServerUrl
             when(it) {
                 LoginState.LOGIN -> {
                     vb.etUsername.editText?.setText("")
@@ -82,10 +76,9 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
 
     private fun onActionButton() {
         vm.loginOrSignUp(
-            username = vb.etUsername.editText?.text?.toString() ?: "",
+            userName = vb.etUsername.editText?.text?.toString() ?: "",
             email = vb.etEmail.editText?.text?.toString() ?: "",
-            password = vb.etPassword.editText?.text?.toString() ?: "",
-            serverUrl = vb.etServer.editText?.text?.toString() ?: ""
+            password = vb.etPassword.editText?.text?.toString() ?: ""
         ).observe {
             vb.bLogin.isEnabled = it !is Payload.Loading
             vb.bLogin.setLoading(it is Payload.Loading, it is Payload.Success)

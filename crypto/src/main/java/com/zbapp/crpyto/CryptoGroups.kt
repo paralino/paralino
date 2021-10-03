@@ -7,9 +7,10 @@ import com.zbapp.core.repo.group.IGroupCrypto
 import java.util.*
 
 class CryptoGroups(
-    private val eThree: EThree
+    private val cryptoAuth: CryptoAuth
 ): IGroupCrypto {
 
+    private val eThree: EThree = cryptoAuth.ethree
     private val groups = hashMapOf<String, CryptoGroupData>()
     private val users = FindUsersResult()
 

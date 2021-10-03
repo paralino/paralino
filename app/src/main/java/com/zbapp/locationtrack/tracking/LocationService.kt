@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.zbapp.core.models.data
+import com.zbapp.core.models.location.PostLocationModel
 import com.zbapp.core.repo.NoValidContractsException
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.locationtrack.data.models.location.LocationEntity
@@ -73,8 +74,8 @@ class LocationService : Service() {
             .launchIn(serviceDefaultScope)
     }
 
-    private fun saveLocation(location: LocationEntity) {
-        locationRepository.pushLocation(LocationMapper.map(location))
+    private fun saveLocation(data: PostLocationModel) {
+        locationRepository.pushLocation(data)
             .catch {
                 logw("Error saving saving location")
                 if (it is NoValidContractsException) {

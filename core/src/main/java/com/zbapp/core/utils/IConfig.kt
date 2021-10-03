@@ -7,7 +7,7 @@ interface IConfig {
     var userId: String
     var emailConfirmed: Boolean
     var mainServerUrl: String
-    var openServerUrl: String
+    var mainServerKey: String
 
     val isTokenValid: Boolean
         get() = token.isNotBlank()

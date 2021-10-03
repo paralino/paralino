@@ -8,8 +8,8 @@ import com.zbapp.locationtrack.R
 fun Throwable.errorStringRes(): Int? {
     return when(this) {
         is UnverifiedUserException -> R.string.info_email_confirm
-        is ConnectionException, is GenericServerException -> R.string.error_server_unavailable
-        is BaseRemoteException -> R.string.error_something_wrong
+        is ConnectionException -> R.string.error_server_unavailable
+        is GenericServerException -> R.string.error_something_wrong
         else -> null
     }
 }

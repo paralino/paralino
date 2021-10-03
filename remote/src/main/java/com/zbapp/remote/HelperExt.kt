@@ -12,5 +12,3 @@ fun LocalDateTime.toUTCString(): String {
     return this.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 }
-
-suspend inline fun <T> blocking(noinline action: suspend CoroutineScope.() -> T) = withContext(Dispatchers.IO, action)

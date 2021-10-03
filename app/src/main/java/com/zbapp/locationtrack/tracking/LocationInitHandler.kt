@@ -3,14 +3,17 @@ package com.zbapp.locationtrack.tracking
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
-import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.zbapp.core.models.Payload
-import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.models.location.PostLocationModel
 import com.zbapp.locationtrack.data.config.randomString
-import com.zbapp.locationtrack.data.models.location.LocationEntity
 import com.zbapp.locationtrack.utils.extensions.batterLevel
-import kotlinx.coroutines.flow.*
-import java.lang.Exception
+import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
+import com.zbapp.locationtrack.utils.extensions.toLocalString
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @SuppressLint("MissingPermission")
@@ -26,8 +29,8 @@ class LocationInitHandler(
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
-    val lastLocation = MutableStateFlow<LocationEntity?>(null)
-    val currentLocation = MutableStateFlow<Payload<LocationEntity>>(Payload.Error(LocationStoppedException()))
+    val lastLocation = MutableStateFlow<PostLocationModel?>(null)
+    val currentLocation = MutableStateFlow<Payload<PostLocationModel>>(Payload.Error(LocationStoppedException()))
 
     val isTracking: Boolean get() = currentLocation.value is Payload.Success
 
@@ -98,8 +101,8 @@ class LocationInitHandler(
     private var locationCallback = object: LocationCallback() {
         override fun onLocationResult(location: LocationResult?) {
             location?.lastLocation?.let {
-                val value = LocationEntity.fromSystem(
-                    it, sessionId, UserMe("user_me", "ME", "test", null, ""), context.batterLevel
+                val value = PostLocationModel(
+                    it.latitude, it.longitude, it.accuracy, it.time.toDateTimeUTC().toLocalString(), context.batterLevel
                 )
                 lastLocation.value = value
                 currentLocation.value = Payload.Success(value)

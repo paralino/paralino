@@ -27,7 +27,7 @@ class AppWriteRemoteModule(
 
     inline fun <T> execute(action: AppWriteRemoteModule.() -> T): T {
         try {
-            return action()
+            return action(this)
         } catch (e: Exception) {
             throw mapException(e)
         }
@@ -36,7 +36,7 @@ class AppWriteRemoteModule(
     companion object {
         fun mapException(exception: Exception): Exception {
             val sourceException = (exception as? AppwriteException) ?: return exception
-            return BaseRemoteException.fromCode(sourceException.code, sourceException.message)
+            return BaseRemoteException.fromCode(sourceException.code, sourceException.message, sourceException.cause ?: Throwable(sourceException.response))
         }
     }
 
