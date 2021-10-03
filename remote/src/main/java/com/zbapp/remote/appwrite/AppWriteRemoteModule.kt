@@ -8,6 +8,8 @@ import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
 import io.appwrite.services.Database
 import io.appwrite.services.Teams
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
 class AppWriteRemoteModule(
     private val app: Application,
@@ -22,7 +24,16 @@ class AppWriteRemoteModule(
         Client(app)
             .setEndpoint(config.serverUrl)
             .setProject(config.projectId)
-            .setSelfSigned(config.debug)
+            .setSelfSigned(config.debug, okHttpClient(config.debug))
+    }
+
+    private fun okHttpClient(debug: Boolean): OkHttpClient {
+        val interceptor = HttpLoggingInterceptor().apply {
+            level = if(debug) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+        }
+        return OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
     }
 
     inline fun <T> execute(action: AppWriteRemoteModule.() -> T): T {

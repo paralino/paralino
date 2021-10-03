@@ -33,6 +33,7 @@ android {
 
 dependencies {
     implementation project(path: ':core')
+    implementation project(path: ':appwrite')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
@@ -41,7 +42,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0"
 
     implementation 'com.etebase:client:2.3.2'
-    implementation 'io.appwrite:sdk-for-android:0.2.0'
+//    implementation 'io.appwrite:sdk-for-android:0.2.0'
 
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.0"))
     implementation("com.squareup.okhttp3:okhttp")

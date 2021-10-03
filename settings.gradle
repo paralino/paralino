@@ -3,3 +3,5 @@ include ':core'
 include ':app'
 rootProject.name = "LocationTrack"
 include ':crypto'
+include ':appwrite'
+project(':appwrite').projectDir = new File('appwrite-android/library')
