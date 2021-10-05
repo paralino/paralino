@@ -199,4 +199,21 @@ class UserRepository(
         }
     }
 
+    fun deleteAccount(): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.deleteAccount() },
+            localUpdate = {
+                clear()
+                config.clear()
+            },
+            remotePreference = RemotePreference.FORCE
+        ).catch {
+            if (it is UnauthorizedException) {
+                clear()
+                config.clear()
+                emit(Unit)
+            } else throw it
+        }
+    }
+
 }

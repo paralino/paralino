@@ -54,6 +54,7 @@
     <string name="setting_title_privacy">Privacy &amp; Terms</string>
     <string name="setting_title_libraries">Acknowledgments</string>
     <string name="setting_title_logout">Logout</string>
+    <string name="setting_title_delete_account">Delete account</string>
 
     <string name="login_placeholder_server">Server url</string>
     <string name="login_placeholder_username">Username</string>

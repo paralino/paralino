@@ -32,6 +32,10 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
         binding.tvLogout.setOnClickListener {
             vm.logout().observe { Toast.makeText(requireContext(), "Logout: $it", Toast.LENGTH_SHORT).show() }
         }
+
+        binding.tvDeleteAccount.setOnClickListener {
+            vm.deleteAccount().observe { Toast.makeText(requireContext(), "Delete account: $it", Toast.LENGTH_SHORT).show() }
+        }
     }
 
 }

@@ -218,6 +218,12 @@
                     android:drawableStart="@drawable/ic_logout"
                     android:text="@string/setting_title_logout" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDeleteAccount"
+                    style="@style/Settings.Item"
+                    android:drawableStart="@drawable/ic_danger"
+                    android:text="@string/setting_title_delete_account" />
+
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
