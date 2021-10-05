@@ -18,6 +18,10 @@ class UserRemoteSource constructor(
         return api.login(email, password)
     }
 
+    suspend fun singUpAnonymously(): SessionResponse {
+        return api.createAnonymous()
+    }
+
     suspend fun getMe(): UserMe {
         return executeUserOperation { api.getMe() }
     }
@@ -32,6 +36,14 @@ class UserRemoteSource constructor(
 
     suspend fun updateUserImage(imageBase64: String): UserMe {
         return executeUserOperation { api.updateUserData(mapOf("userImage" to imageBase64)) }
+    }
+
+    suspend fun updateEmail(email: String, password: String): UserMe {
+        return executeUserOperation { api.updateEmail(email, password) }
+    }
+
+    suspend fun deleteAccount() {
+        api.deleteAccount()
     }
 
     suspend fun logout() {

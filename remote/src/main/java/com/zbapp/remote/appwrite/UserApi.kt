@@ -17,6 +17,10 @@ class UserApi constructor(
         return remoteModule.execute { account.createSession(email, password).body!!.string() }
     }
 
+    override suspend fun createAnonymous(): SessionResponse {
+        return remoteModule.execute { account.createAnonymousSession().body!!.string() }
+    }
+
     override suspend fun getMe(): UserResponse {
         return remoteModule.execute { account.get().body!!.string() }
     }
@@ -31,6 +35,14 @@ class UserApi constructor(
 
     override suspend fun changePassword(newPassword: String, oldPassword: String?): UserResponse {
         return remoteModule.execute { account.updatePassword(newPassword, oldPassword).body!!.string() }
+    }
+
+    override suspend fun updateEmail(email: String, password: String): UserResponse {
+        return remoteModule.execute { account.updateEmail(email, password).body!!.string() }
+    }
+
+    override suspend fun deleteAccount() {
+        return remoteModule.execute { account.delete() }
     }
 
     override suspend fun logout() {

@@ -52,6 +52,25 @@ class UserRepository(
             .map { Unit }
     }
 
+    fun signUpAnonymously(): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.singUpAnonymously() },
+            remotePreference = RemotePreference.FORCE
+        ).flatMapLatest {
+            getDataOnce(
+                remote = { remote.getMe() },
+                localUpdate = {
+                    updateLocalUser(it)
+                    config.userId = it.id
+                    config.email = ""
+                    config.token = "anon"
+                    config.emailConfirmed = true
+                },
+                remotePreference = RemotePreference.FORCE
+            )
+        }.map { Unit }
+    }
+
     fun restoreSession(serverUrl: String) {
 //        remote.restoreSession(serverUrl, config.token)
     }
@@ -172,7 +191,7 @@ class UserRepository(
         ).catch {
             // TODO maybe always log user out? Even if offline or some other error happens, log out locally
             // it will leave active session in the backend
-            if(it is UnauthorizedException) {
+            if (it is UnauthorizedException) {
                 clear()
                 config.clear()
                 emit(Unit)
