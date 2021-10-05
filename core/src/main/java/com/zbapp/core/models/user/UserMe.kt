@@ -7,8 +7,16 @@ data class UserMe (
     val id: String = "",
 
     val name: String = "",
+
     val email: String = "",
-    var imageBase64: String? = null,
     val registration: Long = 0,
-    val emailVerification: Boolean = false
+    val emailVerification: Boolean = false,
+
+    val data: UserMeData? = null
+)
+
+@Serializable
+data class UserMeData(
+    var imageBase64: String? = null,
+    val friends: List<UserFriend> = emptyList()
 )

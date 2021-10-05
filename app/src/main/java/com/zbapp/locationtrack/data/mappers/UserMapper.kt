@@ -1,24 +1,47 @@
 package com.zbapp.locationtrack.data.mappers
 
+import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.repo.group.IUserCrypto
+import com.zbapp.core.repo.group.decryptModel
+import com.zbapp.core.repo.group.encryptModel
 import com.zbapp.locationtrack.data.models.user.UserEntity
 
-object UserMapper: IDataMapperLocal<UserEntity, UserMe> {
-    override fun local2Remote(model: UserEntity): UserMe {
+class UserMapper(
+    private val crypto: IUserCrypto
+) : IDataMapper<UserMe, UserEntity, UserMeRaw> {
+    
+    override suspend fun local2Remote(model: UserEntity): UserMeRaw {
+        return crypto.decryptModel<UserMeRaw>(model.data)?.copy(id = model.id)
+            ?: UserMeRaw(id = model.id)
+    }
+
+    override suspend fun remote2Local(model: UserMeRaw): UserEntity {
+        return UserEntity(
+            id = model.id,
+            data = crypto.encryptModel(model)
+        )
+    }
+
+    override suspend fun remote2Core(model: UserMeRaw): UserMe {
         return UserMe(
             id = model.id,
             name = model.name,
             email = model.email,
-            imageBase64 = model.imageBase64
+            registration = model.registration,
+            emailVerification = model.emailVerification,
+            data = crypto.decryptModel(model.data)
         )
     }
 
-    override fun remote2Local(model: UserMe): UserEntity {
-        return UserEntity(
+    override suspend fun core2Remote(model: UserMe): UserMeRaw {
+        return UserMeRaw(
             id = model.id,
             name = model.name,
             email = model.email,
-            imageBase64 = model.imageBase64
+            registration = model.registration,
+            emailVerification = model.emailVerification,
+            data = crypto.encryptModel(model.data)
         )
     }
 }

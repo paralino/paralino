@@ -1,5 +1,6 @@
 package com.zbapp.locationtrack.data.repos.user
 
+import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.locationtrack.data.mappers.UserMapper
@@ -11,16 +12,17 @@ class UserLocalDataSource(
     private val mapper: UserMapper
 ): IUserLocalDataSource {
 
-    override fun getMe(): Flow<UserMe> {
+    override fun getMe(): Flow<UserMeRaw> {
         return dao.get().map { mapper.local2Remote(it) }
     }
 
-    override suspend fun getMeOnce(): UserMe? {
+    override suspend fun getMeOnce(): UserMeRaw? {
         return dao.tryGetUser()?.let { mapper.local2Remote(it) }
     }
 
-    override suspend fun update(data: UserMe) {
-        dao.save(UserMapper.remote2Local(data))
+    override suspend fun update(data: UserMeRaw): UserMe {
+        dao.save(mapper.remote2Local(data))
+        return mapper.remote2Core(data)
     }
 
     override suspend fun clear() {

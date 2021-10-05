@@ -8,8 +8,6 @@ data class UserEntity(
     @PrimaryKey
     val id: String,
 
-    val name: String,
-    val email: String,
-    val imageBase64: String?
+    val data: String?
 ) {
 }

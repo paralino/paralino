@@ -4,6 +4,8 @@ import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.IDataMapperCore
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.raw.SimpleDocumentRaw
+import com.zbapp.core.models.raw.UserMeRaw
+import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.group.*
 import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
@@ -46,7 +48,7 @@ val cryptoModule = module {
 }
 
 val mappersModule = module {
-    single { UserMapper }
+    single { UserMapper(get()) }
     single { SharingContractsMapper }
     single { GroupsMapper(get()) }
     single { LocationMapper(get()) }
@@ -73,6 +75,7 @@ val coreDependencyModules = module {
     single<ICryptoRepository> { DummyCryptoRepository() }
 
     single<IDataMapperCore<UserGroup, SimpleDocumentRaw>> { get<GroupsMapper>() }
+//    single<IDataMapperCore<UserMe, UserMeRaw>> { get<UserMapper>() }
 //    single<IDataMapperCore<BaseLocationModel, SimpleDocumentRaw>> { get<LocationMapper>() }
 
     single<IUserApi> { UserApi(get()) }

@@ -12,18 +12,19 @@ class LocationMapper(
 ) : IDataMapper<BaseLocationModel, LocationEntity, SimpleDocumentRaw> {
 
     override suspend fun core2Remote(model: BaseLocationModel): SimpleDocumentRaw {
-        return SimpleDocumentRaw(model.id, model.userId, crypto.encryptModel(model.id, model))
+        return SimpleDocumentRaw(model.id, model.userId, crypto.encryptModel(model.id, model) ?: "")
     }
 
-    override fun local2Remote(model: LocationEntity): SimpleDocumentRaw {
+    override suspend fun local2Remote(model: LocationEntity): SimpleDocumentRaw {
         return SimpleDocumentRaw(model.id, model.userId, model.data)
     }
 
     override suspend fun remote2Core(model: SimpleDocumentRaw): BaseLocationModel {
-        return crypto.decryptModel<BaseLocationModel>(model.id, model.data, model.ownerId).copy(id = model.id)
+        return crypto.decryptModel<BaseLocationModel>(model.id, model.data, model.ownerId)!!
+            .copy(id = model.id)
     }
 
-    override fun remote2Local(model: SimpleDocumentRaw): LocationEntity {
+    override suspend fun remote2Local(model: SimpleDocumentRaw): LocationEntity {
         return LocationEntity(model.id, model.ownerId ?: "", model.data)
     }
 

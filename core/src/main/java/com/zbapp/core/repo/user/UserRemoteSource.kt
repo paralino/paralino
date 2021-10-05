@@ -1,21 +1,17 @@
 package com.zbapp.core.repo.user
 
-import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserSession
-import com.zbapp.core.utils.BaseRemoteModule
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
 class UserRemoteSource constructor(
     private val api: IUserApi
 ) {
 
-    suspend fun signUp(userName: String?, email: String, password: String): UserMe {
+    suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
         return executeUserOperation { api.signUp(userName, email, password) }
     }
 
-    suspend fun signUpAncCreateSession(userName: String?, email: String, password: String): Pair<UserMe, UserSession> {
+    suspend fun signUpAncCreateSession(userName: String?, email: String, password: String): Pair<UserMeRaw, UserSession> {
         return signUp(userName, email, password).let {
             it to login(email, password)
         }
@@ -29,23 +25,23 @@ class UserRemoteSource constructor(
         return executeSessionOperation { api.createAnonymous() }
     }
 
-    suspend fun getMe(): UserMe {
+    suspend fun getMe(): UserMeRaw {
         return executeUserOperation { api.getMe() }
     }
 
-    suspend fun updateName(name: String): UserMe {
+    suspend fun updateName(name: String): UserMeRaw {
         return executeUserOperation { api.updateName(name) }
     }
 
-    suspend fun changePassword(newPassword: String, oldPassword: String?): UserMe {
+    suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw {
         return executeUserOperation { api.changePassword(newPassword, oldPassword) }
     }
 
-    suspend fun updateUserImage(imageBase64: String): UserMe {
+    suspend fun updateUserImage(imageBase64: String): UserMeRaw {
         return executeUserOperation { api.updateUserData(mapOf("userImage" to imageBase64)) }
     }
 
-    suspend fun updateEmail(email: String, password: String): UserMe {
+    suspend fun updateEmail(email: String, password: String): UserMeRaw {
         return executeUserOperation { api.updateEmail(email, password) }
     }
 
@@ -57,7 +53,7 @@ class UserRemoteSource constructor(
         api.logout()
     }
 
-    private suspend fun executeUserOperation(action: suspend () -> String): UserMe {
+    private suspend fun executeUserOperation(action: suspend () -> String): UserMeRaw {
         return IUserApi.getUserFromJson(action())
     }
 

@@ -2,11 +2,13 @@ package com.zbapp.core.repo.user
 
 import com.zbapp.core.config
 import com.zbapp.core.logg
+import com.zbapp.core.models.IDataMapperCore
 import com.zbapp.core.models.Payload
+import com.zbapp.core.models.decrypt
+import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
-import com.zbapp.core.repo.base.asRemoteException
 import com.zbapp.core.utils.NotFoundException
 import com.zbapp.core.utils.UnauthorizedException
 import com.zbapp.core.utils.UnverifiedUserException
@@ -15,7 +17,8 @@ import kotlinx.coroutines.flow.*
 
 class UserRepository(
     private val local: IUserLocalDataSource,
-    private val remote: UserRemoteSource
+    private val remote: UserRemoteSource,
+    val mapper: IDataMapperCore<UserMe, UserMeRaw>
 ) : BaseRepository() {
 
     companion object {
@@ -76,6 +79,7 @@ class UserRepository(
 
     fun getUserLocally(): Flow<UserMe> {
         return local.getMe()
+            .decrypt(mapper)
             .onEach { cachedUser = it }
             .catch {
                 cachedUser = null
@@ -101,7 +105,9 @@ class UserRepository(
                 updateLocalUser(it)
             },
             remotePreference = RemotePreference.FORCE
-        ).catch {
+        )
+            .decrypt(mapper)
+            .catch {
             if (it is NotFoundException) {
                 logg.v("User does not exist - create it for the first time")
 //                emitAll(initializeUser())
@@ -143,21 +149,17 @@ class UserRepository(
 //            }
 //    }
 
-    private suspend fun updateLocalUser(data: UserMe) {
+    private suspend fun updateLocalUser(data: UserMeRaw) {
         config.userId = data.id
         config.email = data.email
-        cachedUser = data
-        local.update(data)
+        cachedUser = local.update(data)
+
     }
 
     fun editUsername(newName: String): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateName(newName) },
-            localUpdate = {
-                cachedUser?.copy(name = newName)?.let {
-                    updateLocalUser(it)
-                }
-            },
+            localUpdate = { updateLocalUser(it) },
             remotePreference = RemotePreference.FORCE
         ).map { true }
     }
@@ -165,11 +167,7 @@ class UserRepository(
     fun editUserImage(imageBase64: String): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateUserImage(imageBase64) },
-            localUpdate = {
-                cachedUser?.copy(imageBase64 = imageBase64)?.let {
-                    updateLocalUser(it)
-                }
-            },
+            localUpdate = { updateLocalUser(it) },
             remotePreference = RemotePreference.FORCE
         ).map { true }
     }
