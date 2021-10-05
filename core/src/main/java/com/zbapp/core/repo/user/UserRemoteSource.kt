@@ -1,6 +1,7 @@
 package com.zbapp.core.repo.user
 
 import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
@@ -14,12 +15,18 @@ class UserRemoteSource constructor(
         return executeUserOperation { api.signUp(userName, email, password) }
     }
 
-    suspend fun login(email: String, password: String): SessionResponse {
-        return api.login(email, password)
+    suspend fun signUpAncCreateSession(userName: String?, email: String, password: String): Pair<UserMe, UserSession> {
+        return signUp(userName, email, password).let {
+            it to login(email, password)
+        }
     }
 
-    suspend fun singUpAnonymously(): SessionResponse {
-        return api.createAnonymous()
+    suspend fun login(email: String, password: String): UserSession {
+        return executeSessionOperation { api.login(email, password) }
+    }
+
+    suspend fun singUpAnonymously(): UserSession {
+        return executeSessionOperation { api.createAnonymous() }
     }
 
     suspend fun getMe(): UserMe {
@@ -52,6 +59,10 @@ class UserRemoteSource constructor(
 
     private suspend fun executeUserOperation(action: suspend () -> String): UserMe {
         return IUserApi.getUserFromJson(action())
+    }
+
+    private suspend fun executeSessionOperation(action: suspend () -> String): UserSession {
+        return IUserApi.getSessionDataJson(action())
     }
 
 }

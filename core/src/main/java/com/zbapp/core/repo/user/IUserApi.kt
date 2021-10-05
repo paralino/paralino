@@ -1,6 +1,7 @@
 package com.zbapp.core.repo.user
 
 import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.json.*
 
@@ -26,6 +27,14 @@ interface IUserApi {
                 imageBase64 = json.jsonObject["prefs"]?.jsonObject?.get("userImage")?.jsonPrimitive?.content,
                 registration = json.jsonObject["registration"]?.jsonPrimitive?.longOrNull ?: 0,
                 emailVerification = json.jsonObject["emailVerification"]?.jsonPrimitive?.booleanOrNull ?: false,
+            )
+        }
+
+        fun getSessionDataJson(content: String): UserSession {
+            val json = BaseRemoteModule.formatter.parseToJsonElement(content)
+            return UserSession(
+                id = json.jsonObject["\$id"]?.jsonPrimitive?.content!!,
+                expire = json.jsonObject["expire"]?.jsonPrimitive?.longOrNull ?: 0,
             )
         }
     }

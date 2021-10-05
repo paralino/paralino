@@ -32,20 +32,20 @@ class UserRepository(
     fun login(email: String, password: String): Flow<Unit> {
         return getDataOnce(
             remote = { remote.login(email, password) },
-            localUpdate = { config.token = it },
+            localUpdate = { config.token = it.id },
             remotePreference = RemotePreference.FORCE
         ).map { Unit }
     }
 
     fun signUp(userName: String?, email: String, password: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.signUp(userName, email, password) },
+            remote = { remote.signUpAncCreateSession(userName, email, password) },
             localUpdate = {
-                updateLocalUser(it)
-                config.userId = it.id
-                config.email = email
-                config.token = "loggedIn"
-                config.emailConfirmed = false
+                updateLocalUser(it.first)
+                config.userId = it.first.id
+                config.email = it.first.email
+                config.token = it.second.id
+                config.emailConfirmed = true
             },
             remotePreference = RemotePreference.FORCE
         )
@@ -54,21 +54,20 @@ class UserRepository(
 
     fun signUpAnonymously(): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.singUpAnonymously() },
+            remote = {
+                remote.singUpAnonymously().let {
+                    remote.getMe() to it
+                }
+            },
+            localUpdate = {
+                updateLocalUser(it.first)
+                config.userId = it.first.id
+                config.email = it.first.email
+                config.token = it.second.id
+                config.emailConfirmed = true
+            },
             remotePreference = RemotePreference.FORCE
-        ).flatMapLatest {
-            getDataOnce(
-                remote = { remote.getMe() },
-                localUpdate = {
-                    updateLocalUser(it)
-                    config.userId = it.id
-                    config.email = ""
-                    config.token = "anon"
-                    config.emailConfirmed = true
-                },
-                remotePreference = RemotePreference.FORCE
-            )
-        }.map { Unit }
+        ).map { Unit }
     }
 
     fun restoreSession(serverUrl: String) {
