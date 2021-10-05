@@ -1,11 +1,8 @@
 package com.zbapp.locationtrack.data.mappers
 
-import com.zbapp.core.models.IDataMapperCore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-
-interface IDataMapper<CORE, LOCAL, REMOTE>: IDataMapperCore<CORE, REMOTE>, IDataMapperLocal<LOCAL, REMOTE>
 
 interface IDataMapperLocal<LOCAL, REMOTE> {
     suspend fun local2Remote(model: LOCAL): REMOTE

@@ -1,6 +1,7 @@
 package com.zbapp.locationtrack.data.mappers
 
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.mappers.IGroupDataMapperCore
 import com.zbapp.core.models.raw.SimpleDocumentRaw
 import com.zbapp.core.repo.group.IGroupCrypto
 import com.zbapp.core.repo.group.IUserCrypto
@@ -10,7 +11,7 @@ import com.zbapp.locationtrack.data.models.group.UserGroupEntity
 
 class GroupsMapper(
     private val crypto: IGroupCrypto
-) : IDataMapper<UserGroup, UserGroupEntity, SimpleDocumentRaw> {
+) : IGroupDataMapperCore, IDataMapperLocal<UserGroupEntity, SimpleDocumentRaw> {
 
     override suspend fun core2Remote(model: UserGroup): SimpleDocumentRaw {
         return SimpleDocumentRaw(

@@ -1,5 +1,6 @@
 package com.zbapp.locationtrack.data.mappers
 
+import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.group.IUserCrypto
@@ -9,7 +10,7 @@ import com.zbapp.locationtrack.data.models.user.UserEntity
 
 class UserMapper(
     private val crypto: IUserCrypto
-) : IDataMapper<UserMe, UserEntity, UserMeRaw> {
+) : IUserDataMapperCore, IDataMapperLocal<UserEntity, UserMeRaw> {
     
     override suspend fun local2Remote(model: UserEntity): UserMeRaw {
         return crypto.decryptModel<UserMeRaw>(model.data)?.copy(id = model.id)

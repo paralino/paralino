@@ -1,11 +1,10 @@
 package com.zbapp.core.repo.location
 
 import com.zbapp.core.config
-import com.zbapp.core.models.IDataMapperCore
-import com.zbapp.core.models.decryptList
 import com.zbapp.core.models.location.BaseLocationModel
 import com.zbapp.core.models.location.PostLocationModel
-import com.zbapp.core.models.raw.SimpleDocumentRaw
+import com.zbapp.core.models.mappers.ILocationDataMapperCore
+import com.zbapp.core.models.mappers.decryptList
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.NoValidContractsException
 import com.zbapp.core.repo.group.GroupRepository
@@ -18,7 +17,7 @@ class LocationRepository constructor(
     private val local: ILocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val groupsRepos: GroupRepository,
-    private val mapper: IDataMapperCore<BaseLocationModel, SimpleDocumentRaw>
+    private val mapper: ILocationDataMapperCore
 ) {
 
     fun getLocationsForGroup(groupId: String): Flow<List<BaseLocationModel>> {

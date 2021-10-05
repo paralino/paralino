@@ -2,9 +2,9 @@ package com.zbapp.core.repo.user
 
 import com.zbapp.core.config
 import com.zbapp.core.logg
-import com.zbapp.core.models.IDataMapperCore
 import com.zbapp.core.models.Payload
-import com.zbapp.core.models.decrypt
+import com.zbapp.core.models.mappers.IUserDataMapperCore
+import com.zbapp.core.models.mappers.decrypt
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.base.BaseRepository
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.*
 class UserRepository(
     private val local: IUserLocalDataSource,
     private val remote: UserRemoteSource,
-    val mapper: IDataMapperCore<UserMe, UserMeRaw>
+    val mapper: IUserDataMapperCore
 ) : BaseRepository() {
 
     companion object {
@@ -108,17 +108,17 @@ class UserRepository(
         )
             .decrypt(mapper)
             .catch {
-            if (it is NotFoundException) {
-                logg.v("User does not exist - create it for the first time")
+                if (it is NotFoundException) {
+                    logg.v("User does not exist - create it for the first time")
 //                emitAll(initializeUser())
-                throw it
-            } else {
-                if (it is UnverifiedUserException)
-                    config.emailConfirmed = false
-                logg.e("Error refreshing user")
-                throw it
+                    throw it
+                } else {
+                    if (it is UnverifiedUserException)
+                        config.emailConfirmed = false
+                    logg.e("Error refreshing user")
+                    throw it
+                }
             }
-        }
     }
 //
 //    private fun initializeUser(): Flow<UserMe> {

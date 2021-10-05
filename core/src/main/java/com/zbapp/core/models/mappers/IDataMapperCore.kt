@@ -1,4 +1,4 @@
-package com.zbapp.core.models
+package com.zbapp.core.models.mappers
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

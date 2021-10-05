@@ -1,10 +1,9 @@
 package com.zbapp.core.repo.group
 
-import com.zbapp.core.models.IDataMapperCore
-import com.zbapp.core.models.decrypt
-import com.zbapp.core.models.decryptList
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.raw.SimpleDocumentRaw
+import com.zbapp.core.models.mappers.IGroupDataMapperCore
+import com.zbapp.core.models.mappers.decrypt
+import com.zbapp.core.models.mappers.decryptList
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import kotlinx.coroutines.flow.Flow
@@ -14,8 +13,8 @@ import kotlinx.coroutines.flow.mapLatest
 class GroupRepository(
     private val local: IGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
-    private val mapper: IDataMapperCore<UserGroup, SimpleDocumentRaw>
-): BaseRepository() {
+    private val mapper: IGroupDataMapperCore
+) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
         return subscribeToData(
