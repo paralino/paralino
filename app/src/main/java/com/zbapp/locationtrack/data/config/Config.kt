@@ -64,6 +64,7 @@ class Config(context: Context): IConfig {
 
     override val collectionGroupsID: String get() = BuildConfig.keyCollectionGroups
     override val collectionLocationsID: String get() = BuildConfig.keyCollectionLocations
+    override val collectionInvitesID: String get() = BuildConfig.keyCollectionInvites
 
     override fun clear() {
         sharedData.edit { clear() }

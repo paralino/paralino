@@ -11,6 +11,7 @@ interface IConfig {
     var mainServerKey: String
     val collectionGroupsID: String
     val collectionLocationsID: String
+    val collectionInvitesID: String
 
     val isTokenValid: Boolean
         get() = token.isNotBlank()

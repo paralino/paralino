@@ -120,34 +120,6 @@ class UserRepository(
                 }
             }
     }
-//
-//    private fun initializeUser(): Flow<UserMe> {
-//        if (!config.isTokenValid) {
-//            return flow { throw Exception("Token is not available") }
-//        }
-//
-//        return getDataOnce(
-//            remote = {
-//                val user = UserMe(
-//                    id = config.userId,
-//                    email = config.email
-//                )
-//                remote.initVerifiedUser(user)
-//            },
-//            localUpdate = {
-//                config.emailConfirmed = true
-//                updateLocalUser(it)
-//            },
-//            remotePreference = RemotePreference.FORCE
-//        )
-//            .catch {
-//                if (it is UnverifiedUserException) {
-//                    config.emailConfirmed = false
-//                }
-//                logg.e("Error refreshing user")
-//                throw it
-//            }
-//    }
 
     private suspend fun updateLocalUser(data: UserMeRaw) {
         config.userId = data.id
@@ -172,7 +144,9 @@ class UserRepository(
         ).map { true }
     }
 
-    suspend fun clear() {
+
+
+    private suspend fun clear() {
         cachedUser = null
         local.clear()
     }

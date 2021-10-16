@@ -7,6 +7,7 @@ import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
 import io.appwrite.services.Database
+import io.appwrite.services.Functions
 import io.appwrite.services.Teams
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -19,6 +20,7 @@ class AppWriteRemoteModule(
     internal val account: Account by lazy { Account(client) }
     internal val teams: Teams by lazy { Teams(client) }
     internal val database: Database by lazy { Database(client) }
+    internal val functions: Functions by lazy { Functions(client) }
 
     private val client: Client by lazy {
         Client(app)

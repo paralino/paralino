@@ -5,6 +5,7 @@ import com.zbapp.core.models.mappers.IGroupDataMapperCore
 import com.zbapp.core.models.mappers.ILocationDataMapperCore
 import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.repo.group.*
+import com.zbapp.core.repo.invite.IInviteApi
 import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.core.repo.location.LocationRemoteSource
@@ -24,6 +25,7 @@ import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSour
 import com.zbapp.locationtrack.data.repos.user.UserLocalDataSource
 import com.zbapp.remote.appwrite.AppWriteRemoteModule
 import com.zbapp.remote.appwrite.DocumentsApi
+import com.zbapp.remote.appwrite.InviteApi
 import com.zbapp.remote.appwrite.UserApi
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -76,6 +78,7 @@ val coreDependencyModules = module {
     single<IUserDataMapperCore> { get<UserMapper>() }
     single<ILocationDataMapperCore> { get<LocationMapper>() }
 
+    single<IInviteApi> { InviteApi(get(), get()) }
     single<IUserApi> { UserApi(get()) }
     single<IDocumentsApi> { DocumentsApi(get()) }
 

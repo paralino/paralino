@@ -40,6 +40,7 @@ android {
             buildConfigField("String", "serverKey", props['serverKey'])
             buildConfigField("String", "keyCollectionGroups", props['keyCollectionGroups'])
             buildConfigField("String", "keyCollectionLocations", props['keyCollectionLocations'])
+            buildConfigField("String", "keyCollectionInvites", props['keyCollectionInvites'])
         }
 
         // room schema export

@@ -33,4 +33,5 @@ class InvalidRequestException(message: String?, cause: Throwable? = null): BaseR
 class NotFoundException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class GenericServerException(message: String?, code: Int?, cause: Throwable? = null) : BaseRemoteException(message, cause, code)
+class TimeoutException(message: String?, cause: Throwable? = null) : BaseRemoteException(message, cause)
 
