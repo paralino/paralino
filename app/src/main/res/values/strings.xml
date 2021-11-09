@@ -93,4 +93,6 @@
 
     <string name="groups_sharing_duration_type_infinite">Endless</string>
 
+    <string name="invite_create_button">Create invite code</string>
+
 </resources>
