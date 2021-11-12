@@ -1,10 +1,15 @@
 package com.zbapp.locationtrack.utils.extensions
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.BATTERY_SERVICE
+import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.BatteryManager
+import androidx.core.content.ContextCompat
+import com.zbapp.locationtrack.BuildConfig
 
 
 val Context.batterLevel: Int get() {
@@ -15,4 +20,21 @@ val Context.batterLevel: Int get() {
 fun Context.isDarkThemeOn(): Boolean {
     return resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
+}
+
+fun Context.shareAndCopy(data: String, copyKey: String = BuildConfig.APPLICATION_ID) {
+    copy(data, copyKey)
+    share(data)
+}
+
+fun Context.share(data: String) {
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.type = "text/plain"
+    intent.putExtra(Intent.EXTRA_TEXT, data);
+    startActivity(Intent.createChooser(intent, "Share"))
+}
+
+fun Context.copy(data: String, copyKey: String = BuildConfig.APPLICATION_ID + "_copyKey") {
+    ContextCompat.getSystemService(this, ClipboardManager::class.java)
+        ?.setPrimaryClip(ClipData.newPlainText(copyKey, data))
 }
