@@ -95,5 +95,7 @@
 
     <string name="invite_create_button">Create invite code</string>
     <string name="toast_copy_invite_code">Invite code copied</string>
+    <string name="invite_delete_alert_title">Are you sure you want to delete invite code?</string>
+    <string name="invite_manage_empty_description">You don\'t have an active invite code.\nAdd one to start securely sharing your location with your friends.</string>
 
 </resources>

@@ -8,7 +8,9 @@ import com.zbapp.core.models.Payload
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentInviteManageBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
-import com.zbapp.locationtrack.ui.dashboard.GroupAddItem
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpace
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptyState
+import com.zbapp.locationtrack.ui.shared.list.emptyStateItem
 import com.zbapp.locationtrack.ui.shared.snackBarError
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
 import com.zbapp.locationtrack.utils.extensions.copy
@@ -48,7 +50,7 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
                     }
                     it.onDelete = {
                         AlertDialog.Builder(requireContext())
-                            .setTitle("Are you sure you want to delete invite code?")
+                            .setTitle(R.string.invite_delete_alert_title)
                             .setNegativeButton(R.string.button_ok) { _, _ ->
 
                             }
@@ -59,10 +61,9 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
                     }
                 }
             }
+            .addFactory { ListItemEmptySpace(it) }
             .addFactory {
-                GroupAddItem(it).withClickAction {
-                    addInvite()
-                }
+                ListItemEmptyState(it).withClickAction { addInvite() }
             }
     }
 
@@ -84,15 +85,12 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
 
     private fun addInvite() {
         vm.createInviteCode(1).observe {
+            vb.rvInvites.emptyStateItem?.getButton()?.setLoading(loading = it is Payload.Loading, withCheck = false)
             when (it) {
-                Payload.Loading -> {
-                    // TODO add loading
-                }
+                Payload.Loading -> { }
+                is Payload.Success -> { /* do nothing */ }
                 is Payload.Error -> {
                     snackBarError(vb.rvInvites, requireContext())
-                }
-                is Payload.Success -> {
-                    // nothing?
                 }
             }
         }

@@ -10,8 +10,12 @@ import com.zbapp.core.models.invite.InviteCode
 import com.zbapp.core.repo.invite.InviteRepository
 import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.core.utils.mapToPayload
-import com.zbapp.locationtrack.ui.dashboard.GroupAddData
+import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.base.myApp
+import com.zbapp.locationtrack.ui.shared.list.EmptyStateData
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpaceData
 import com.zbapp.locationtrack.utils.ListItemType
+import com.zbapp.locationtrack.utils.extensions.dp2px
 
 class ManageInviteViewModel(
     app: Application,
@@ -29,7 +33,14 @@ class ManageInviteViewModel(
         return repo.getMyInviteCodes()
             .mapToPayload {
                 it.map { InviteCodeData(it) }.ifEmpty {
-                    listOf(GroupAddData())
+                    listOf(
+                        ListItemEmptySpaceData(100.dp2px),
+                        EmptyStateData(
+                            iconRes = R.drawable.ic_add_link,
+                            infoText = myApp.getString(R.string.invite_manage_empty_description),
+                            buttonText = myApp.getString(R.string.invite_create_button)
+                        )
+                    )
                 }
             }
             .asLiveData()
