@@ -9,9 +9,9 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.models.invite.InviteCode
 import com.zbapp.core.repo.invite.InviteRepository
 import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.core.utils.mapToPayload
 import com.zbapp.locationtrack.ui.dashboard.GroupAddData
 import com.zbapp.locationtrack.utils.ListItemType
-import com.zbapp.locationtrack.utils.extensions.mapToPayload
 
 class ManageInviteViewModel(
     app: Application,
