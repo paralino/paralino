@@ -29,7 +29,7 @@ class LocationNotificationHandler (
         intent.apply { flags = Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED }
         val pendingIntent = TaskStackBuilder.create(context)
             .apply { addNextIntentWithParentStack(intent) }
-            .getPendingIntent(100, PendingIntent.FLAG_UPDATE_CURRENT)
+            .getPendingIntent(100, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
             .setContentTitle(context.getString(R.string.notifications_active_location_title))
