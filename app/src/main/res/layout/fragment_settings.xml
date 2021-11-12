@@ -159,6 +159,7 @@
             <LinearLayout
                 android:id="@+id/settingHolderGeneral"
                 style="@style/Settings.Container"
+                app:layout_goneMarginTop="@dimen/activity_side_margin_large"
                 android:layout_width="match_parent"
                 app:layout_constraintTop_toBottomOf="@id/settingHolderLocation">
 
