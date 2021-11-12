@@ -1,25 +1,23 @@
 package com.zbapp.locationtrack.ui.login
 
-import android.annotation.SuppressLint
-import android.content.Context
+import android.app.Application
 import androidx.lifecycle.*
-import com.zbapp.core.config
 import com.zbapp.core.models.Payload
 import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.utils.ConflictException
 import com.zbapp.core.utils.NotFoundException
 import com.zbapp.core.utils.UnauthorizedException
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.ui.shared.AppSnackbarData
 import com.zbapp.locationtrack.ui.shared.SingleLiveEvent
 import com.zbapp.locationtrack.ui.shared.errorStringRes
 import kotlinx.coroutines.flow.*
 
-@SuppressLint("StaticFieldLeak")
 class LoginViewModel(
-    private val context: Context,
+    app: Application,
     private val loginManager: LoginManager
-) : ViewModel() {
+) : AndroidViewModel(app) {
 
     private val _loginScreenState = MutableLiveData(LoginState.LOGIN)
     val loginScreenState: LiveData<LoginState> = _loginScreenState.distinctUntilChanged()
@@ -72,7 +70,7 @@ class LoginViewModel(
                     else -> it.errorStringRes() ?: R.string.error_generic_snacbar
                 }
 
-                _errorState.value = AppSnackbarData(context.getString(error), null)
+                _errorState.value = AppSnackbarData(myApp.getString(error), null)
 
                 emit(Payload.Error(it))
             }

@@ -1,5 +1,6 @@
 package com.zbapp.locationtrack.ui.dashboard
 
+import android.app.Application
 import android.content.Context
 import androidx.lifecycle.*
 import com.zbapp.core.logg
@@ -28,14 +29,14 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 class DashboardViewModel(
+    app: Application,
     val locationInit: LocationInitHandler,
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
-    private val loginManager: LoginManager,
-    context: Context
-) : ViewModel() {
+    private val loginManager: LoginManager
+) : AndroidViewModel(app) {
 
-    val locationStatus = MutableStateFlow(LocationConditionStatus.getLocationStatus(context))
+    val locationStatus = MutableStateFlow(LocationConditionStatus.getLocationStatus(app))
 
     fun isTrackingActive(): Boolean {
         return locationInit.isTracking

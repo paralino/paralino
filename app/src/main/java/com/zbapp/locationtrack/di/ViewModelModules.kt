@@ -13,22 +13,25 @@ import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import com.zbapp.locationtrack.ui.dashboard.DashboardViewModel
 import com.zbapp.locationtrack.ui.groups.CreateGroupViewModel
 import com.zbapp.locationtrack.ui.groups.SharingViewModel
+import com.zbapp.locationtrack.ui.invite.ManageInviteViewModel
 import com.zbapp.locationtrack.ui.login.LoginCheckViewModel
 import com.zbapp.locationtrack.ui.login.LoginViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsViewModel
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { DashboardViewModel(get(), get(), get(), get(), androidContext()) }
+    viewModel { DashboardViewModel(androidApplication(), get(), get(), get(), get()) }
     viewModel { MapViewModel(get()) }
-    viewModel { SettingsViewModel(get()) }
-    viewModel { LoginViewModel(androidContext(), get()) }
-    viewModel { LoginCheckViewModel(androidContext(), get()) }
+    viewModel { SettingsViewModel(get(), get()) }
+    viewModel { LoginViewModel(androidApplication(), get()) }
+    viewModel { LoginCheckViewModel(androidApplication(), get()) }
     viewModel { CreateGroupViewModel(get()) }
     viewModel { SharingViewModel(get()) }
+    viewModel { ManageInviteViewModel(androidApplication(), get(), get()) }
 }
 
 val utilModule = module {
