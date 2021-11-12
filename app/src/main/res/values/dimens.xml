@@ -8,8 +8,8 @@
     <dimen name="activity_side_margin_large">32dp</dimen>
 
     <dimen name="main_header_height">64dp</dimen>
-    <dimen name="bottomBar_spacing">100dp</dimen>
-    <dimen name="bottomBar_spacing_small">70dp</dimen>
-    <dimen name="bottomBar_spacing_large">160dp</dimen>
+    <dimen name="bottomBar_spacing">80dp</dimen>
+    <dimen name="bottomBar_spacing_small">50dp</dimen>
+    <dimen name="bottomBar_spacing_large">140dp</dimen>
 
 </resources>
