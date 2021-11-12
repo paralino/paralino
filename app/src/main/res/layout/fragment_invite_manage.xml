@@ -10,6 +10,7 @@
         layout="@layout/element_main_header" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvInvites"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
