@@ -2,9 +2,9 @@ package com.zbapp.core.models
 
 sealed class Payload<out R> {
 
+    object Loading : Payload<Nothing>()
     data class Success<out T>(val data: T) : Payload<T>()
     data class Error<T>(val exception: Throwable) : Payload<T>()
-    object Loading : Payload<Nothing>()
 
     override fun toString(): String {
         return when (this) {

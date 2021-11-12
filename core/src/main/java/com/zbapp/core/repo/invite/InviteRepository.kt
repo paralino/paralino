@@ -6,8 +6,8 @@ import com.zbapp.core.repo.base.RemotePreference
 import kotlinx.coroutines.flow.Flow
 
 class InviteRepository(
-    val api: IInviteApi
-): BaseRepository() {
+    private val api: IInviteApi
+) : BaseRepository() {
 
     fun createInviteCode(data: InviteCode): Flow<InviteCode> {
         return getDataOnce(
@@ -37,8 +37,8 @@ class InviteRepository(
         )
     }
 
-    fun revokeInviteCode(id: String) {
-        getDataOnce(
+    fun revokeInviteCode(id: String): Flow<Unit> {
+        return getDataOnce(
             remote = { api.revokeInviteCode(id) },
             remotePreference = RemotePreference.FORCE
         )

@@ -1,4 +1,6 @@
 package com.zbapp.locationtrack.ui.base
 
-class BaseViewModel {
-}
+import androidx.lifecycle.AndroidViewModel
+import com.zbapp.locationtrack.AppClass
+
+val AndroidViewModel.myApp: AppClass get() = getApplication() as AppClass
