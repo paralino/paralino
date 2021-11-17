@@ -22,7 +22,7 @@ class InviteApi constructor(
         return remoteModule.execute {
             val tempId = randomString()
             val payload = BaseRemoteModule.formatter.encodeToString(data.copy(tempId = tempId))
-            functions.createExecution(functionId = "invite-create", data = payload)
+            functions.createExecution(functionId = config.functionInviteCreateID, data = payload)
             poll { getMyInviteCodes().firstOrNull { it.tempId == tempId } }
         }
     }
@@ -37,20 +37,20 @@ class InviteApi constructor(
 
     override suspend fun getInviteByCode(code: String): InviteCode {
         return remoteModule.execute {
-            functions.createExecution(functionId = "invite-get-code", code)
+            functions.createExecution(functionId = config.functionInviteGetCodeID, code)
             poll { getMyInviteCodes().firstOrNull { it.inviteCode == code } }
         }
     }
 
     override suspend fun getInviteByUrl(url: String): InviteCode {
         return remoteModule.execute {
-            functions.createExecution(functionId = "invite-get-url", url)
+            functions.createExecution(functionId = config.functionInviteGetUrlID, url)
             poll { getMyInviteCodes().firstOrNull { it.inviteUrl == url } }
         }
     }
 
     private suspend fun poll(action: suspend () -> InviteCode?): InviteCode {
-        return withTimeoutOrNull(30_000) {
+        return withTimeoutOrNull(15_000) {
             delay(1_000)
             var invite: InviteCode? = action()
             while (invite == null) {

@@ -65,6 +65,9 @@ class Config(context: Context): IConfig {
     override val collectionGroupsID: String get() = BuildConfig.keyCollectionGroups
     override val collectionLocationsID: String get() = BuildConfig.keyCollectionLocations
     override val collectionInvitesID: String get() = BuildConfig.keyCollectionInvites
+    override val functionInviteCreateID: String get() = BuildConfig.keyFunctionInviteCreate
+    override val functionInviteGetCodeID: String get() = BuildConfig.keyFunctionInviteGetCode
+    override val functionInviteGetUrlID: String get() = BuildConfig.keyFunctionInviteGetUrl
 
     override fun clear() {
         sharedData.edit { clear() }

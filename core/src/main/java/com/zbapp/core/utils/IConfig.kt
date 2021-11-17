@@ -12,6 +12,9 @@ interface IConfig {
     val collectionGroupsID: String
     val collectionLocationsID: String
     val collectionInvitesID: String
+    val functionInviteCreateID: String
+    val functionInviteGetCodeID: String
+    val functionInviteGetUrlID: String
 
     val isTokenValid: Boolean
         get() = token.isNotBlank()
