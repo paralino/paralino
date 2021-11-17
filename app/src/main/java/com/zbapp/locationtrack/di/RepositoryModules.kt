@@ -1,11 +1,13 @@
 package com.zbapp.locationtrack.di
 
+import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
 import com.zbapp.core.models.mappers.ILocationDataMapperCore
 import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.repo.group.*
 import com.zbapp.core.repo.invite.IInviteApi
+import com.zbapp.core.repo.invite.IInviteCodeLocalDataSource
 import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.core.repo.location.LocationRemoteSource
@@ -13,13 +15,12 @@ import com.zbapp.core.repo.user.IUserApi
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.UserRemoteSource
 import com.zbapp.crpyto.DummyCryptoRepository
+import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.data.database.MainAppDatabase
-import com.zbapp.locationtrack.data.mappers.GroupsMapper
-import com.zbapp.locationtrack.data.mappers.LocationMapper
-import com.zbapp.locationtrack.data.mappers.SharingContractsMapper
-import com.zbapp.locationtrack.data.mappers.UserMapper
+import com.zbapp.locationtrack.data.mappers.*
 import com.zbapp.locationtrack.data.repos.group.UserGroupLocalDataSource
+import com.zbapp.locationtrack.data.repos.invite.InviteLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.LocationLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSourceImpl
 import com.zbapp.locationtrack.data.repos.user.UserLocalDataSource
@@ -40,6 +41,7 @@ val daoModules = module {
     single { get<MainAppDatabase>().sharingContractDao() }
     single { get<MainAppDatabase>().userDao() }
     single { get<MainAppDatabase>().groupsDao() }
+    single { get<MainAppDatabase>().inviteDao() }
 }
 
 val cryptoModule = module {
@@ -52,6 +54,7 @@ val mappersModule = module {
     single { SharingContractsMapper }
     single { GroupsMapper(get()) }
     single { LocationMapper(get()) }
+    single { InviteCodeMapper(get()) }
 }
 
 val remoteDataSourceModule = module {
@@ -71,6 +74,7 @@ val remoteDataSourceModule = module {
 }
 
 val coreDependencyModules = module {
+    single<ICoroutineScopeProvider> { androidApplication() as AppClass }
 //    single<ICryptoRepository> { CryptoRepository(androidApplication()) }
     single<ICryptoRepository> { DummyCryptoRepository() }
 
@@ -86,4 +90,5 @@ val coreDependencyModules = module {
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }
     single<IUserLocalDataSource> { UserLocalDataSource(get(), get()) }
     single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get()) }
+    single<IInviteCodeLocalDataSource> { InviteLocalDataSource(get(), get()) }
 }

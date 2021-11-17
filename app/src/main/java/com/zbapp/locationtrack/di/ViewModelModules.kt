@@ -47,7 +47,7 @@ val locationModules = module {
 val coreModule = module {
     single { LoginManager(get(), get()) }
     single { LocationSharingManager(get()) }
-    single { InviteRepository(get()) }
+    single { InviteRepository(get(), get()) }
     single { GroupRepository(get(), get(), get()) }
     single { UserRepository(get(), get(), get()) }
     single { LocationRepository(get(), get(), get(), get(), get()) }
