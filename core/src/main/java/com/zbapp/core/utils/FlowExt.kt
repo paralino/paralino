@@ -16,7 +16,7 @@ suspend inline fun <T> blocking(noinline action: suspend CoroutineScope.() -> T)
 
 inline fun <reified T, R> Flow<T>.mapToPayload(
     throwError: Boolean = false,
-    noinline transform: suspend (value: T) -> R
+    noinline transform: suspend (value: T) -> R = { it as R }
 ): Flow<Payload<R>> {
     return this
         .map<T, Payload<R>> { Payload.Success(transform.invoke(it)) }

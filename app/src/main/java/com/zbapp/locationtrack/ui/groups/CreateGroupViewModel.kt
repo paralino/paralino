@@ -6,9 +6,7 @@ import androidx.lifecycle.asLiveData
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.repo.group.GroupRepository
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import com.zbapp.core.utils.mapToPayload
 
 class CreateGroupViewModel(
     private val groupRepo: GroupRepository
@@ -17,11 +15,7 @@ class CreateGroupViewModel(
     fun createGroup(icon: String, name: String): LiveData<Payload<Unit>> {
         return groupRepo.createOrUpdateGroup(
             UserGroup.new(icon, name.trim())
-        )
-            .map<Unit, Payload<Unit>> { Payload.Success(Unit) }
-            .onStart { emit(Payload.Loading) }
-            .catch { emit(Payload.Error(it)) }
-            .asLiveData()
+        ).mapToPayload<Unit, Unit>().asLiveData()
     }
 
 }
