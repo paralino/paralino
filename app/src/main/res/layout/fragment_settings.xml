@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/main_header_height"
             android:paddingBottom="@dimen/bottomBar_spacing"
+            android:animateLayoutChanges="true"
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
