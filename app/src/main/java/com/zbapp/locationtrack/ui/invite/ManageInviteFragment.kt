@@ -50,6 +50,7 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
                     }
                     it.onDelete = {
                         AlertDialog.Builder(requireContext())
+                            .setTitle(R.string.alert_title_confirm)
                             .setMessage(R.string.invite_delete_alert_title)
                             .setPositiveButton(R.string.button_ok) { _, _ ->
                                 deleteInvite(it)
