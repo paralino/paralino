@@ -79,7 +79,7 @@ class UserRepository(
         ).map { Unit }
     }
 
-    fun restoreSession(serverUrl: String) {
+    fun restoreSession() {
 //        remote.restoreSession(serverUrl, config.token)
     }
 

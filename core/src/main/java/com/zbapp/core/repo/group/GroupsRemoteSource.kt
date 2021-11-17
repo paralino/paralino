@@ -1,12 +1,13 @@
 package com.zbapp.core.repo.group
 
-import com.zbapp.core.config
+import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.raw.SimpleDocumentRaw
 import com.zbapp.core.utils.InvalidRequestException
 import com.zbapp.core.utils.blocking
 
 class GroupsRemoteSource constructor(
-    private val api: IDocumentsApi
+    private val api: IDocumentsApi,
+    private val config: BackendConfig
 ) {
 
     suspend fun createOrUpdateGroup(group: SimpleDocumentRaw): SimpleDocumentRaw {
@@ -35,7 +36,7 @@ class GroupsRemoteSource constructor(
 
     suspend fun deleteGroup(groupId: String) {
         blocking {
-            if(groupId.isBlank()) throw InvalidRequestException("Document id is invalid: $groupId")
+            if (groupId.isBlank()) throw InvalidRequestException("Document id is invalid: $groupId")
             api.deleteDocument(config.collectionGroupsID, groupId)
         }
     }

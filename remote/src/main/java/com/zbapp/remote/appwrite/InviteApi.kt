@@ -1,6 +1,5 @@
 package com.zbapp.remote.appwrite
 
-import com.zbapp.core.config
 import com.zbapp.core.models.invite.InviteCode
 import com.zbapp.core.repo.group.IDocumentsApi
 import com.zbapp.core.repo.invite.IInviteApi
@@ -22,13 +21,16 @@ class InviteApi constructor(
         return remoteModule.execute {
             val tempId = randomString()
             val payload = BaseRemoteModule.formatter.encodeToString(data.copy(tempId = tempId))
-            functions.createExecution(functionId = config.functionInviteCreateID, data = payload)
+            functions.createExecution(
+                functionId = remoteModule.config.functionInviteCreateID,
+                data = payload
+            )
             poll { getMyInviteCodes().firstOrNull { it.tempId == tempId } }
         }
     }
 
     override suspend fun getMyInviteCodes(): List<InviteCode> {
-        val docs = documentsApi.getDocuments(config.collectionInvitesID)
+        val docs = documentsApi.getDocuments(remoteModule.config.collectionInvitesID)
         val json = BaseRemoteModule.formatter.parseToJsonElement(docs)
         return json.jsonObject["documents"]?.jsonArray?.map {
             BaseRemoteModule.formatter.decodeFromJsonElement(it)
@@ -37,7 +39,10 @@ class InviteApi constructor(
 
     override suspend fun getInviteByCode(code: String): InviteCode {
         return remoteModule.execute {
-            functions.createExecution(functionId = config.functionInviteGetCodeID, code)
+            functions.createExecution(
+                functionId = remoteModule.config.functionInviteGetCodeID,
+                code
+            )
             poll { getMyInviteCodes().firstOrNull { it.inviteCode == code } }
         }
     }
@@ -62,7 +67,7 @@ class InviteApi constructor(
     }
 
     override suspend fun revokeInviteCode(id: String) {
-        documentsApi.deleteDocument(config.collectionInvitesID, id)
+        documentsApi.deleteDocument(remoteModule.config.collectionInvitesID, id)
     }
 
 }

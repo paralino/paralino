@@ -1,13 +1,14 @@
 package com.zbapp.core.repo.location
 
-import com.zbapp.core.config
+import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.raw.LocationHistoryRaw
 import com.zbapp.core.models.raw.SimpleDocumentRaw
 import com.zbapp.core.repo.group.IDocumentsApi
 import com.zbapp.core.utils.blocking
 
 class LocationRemoteSource constructor(
-    private val api: IDocumentsApi
+    private val api: IDocumentsApi,
+    private val config: BackendConfig
 ) {
 
     suspend fun getCurrentLocationsForGroup(groupId: String): List<SimpleDocumentRaw> {

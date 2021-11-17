@@ -59,16 +59,25 @@ val mappersModule = module {
 
 val remoteDataSourceModule = module {
     single { UserRemoteSource(get()) }
-    single { LocationRemoteSource(get()) }
-    single { GroupsRemoteSource(get()) }
+    single { LocationRemoteSource(get(), get()) }
+    single { GroupsRemoteSource(get(), get()) }
+    single {
+        BackendConfig(
+            serverUrl = BuildConfig.serverUrl,
+            projectId = BuildConfig.serverKey,
+            collectionGroupsID = BuildConfig.keyCollectionGroups,
+            collectionLocationsID = BuildConfig.keyCollectionLocations,
+            collectionInvitesID = BuildConfig.keyCollectionInvites,
+            functionInviteCreateID = BuildConfig.keyFunctionInviteCreate,
+            functionInviteGetCodeID = BuildConfig.keyFunctionInviteGetCode,
+            functionInviteGetUrlID = BuildConfig.keyFunctionInviteGetUrl,
+            debug = BuildConfig.internalTesting
+        )
+    }
     single {
         AppWriteRemoteModule(
             androidApplication(),
-            BackendConfig(
-                serverUrl = BuildConfig.serverUrl,
-                projectId = BuildConfig.serverKey,
-                debug = BuildConfig.internalTesting
-            )
+            get()
         )
     }
 }

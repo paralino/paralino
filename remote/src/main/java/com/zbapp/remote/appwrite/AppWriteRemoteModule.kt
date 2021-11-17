@@ -14,7 +14,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 class AppWriteRemoteModule(
     private val app: Application,
-    config: BackendConfig
+    val config: BackendConfig
 ) {
 
     internal val account: Account by lazy { Account(client) }
