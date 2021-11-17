@@ -13,5 +13,7 @@
     <color name="theme_background_section_bright">@color/light_theme_light</color>
 
     <color name="bottomBarColor">@color/light_theme_light</color>
+    <color name="theme_accentVeryLightDark">@color/accentVeryLight</color>
+    <color name="theme_accentLightDark">@color/accentLight</color>
 
 </resources>

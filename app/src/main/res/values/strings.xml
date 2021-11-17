@@ -11,6 +11,7 @@
     <string name="button_done">Done</string>
     <string name="button_skip">Skip</string>
     <string name="button_retry">Retry</string>
+    <string name="button_confirm">Confirm</string>
 
     <string name="alert_title_confirm">Please confirm</string>
     <string name="error_server_unavailable">Unable to connect!</string>
@@ -98,5 +99,8 @@
     <string name="toast_copy_invite_code">Invite code copied</string>
     <string name="invite_delete_alert_title">Are you sure you want to delete invite code?</string>
     <string name="invite_manage_empty_description">You don\'t have an active invite code.\nAdd one to start securely sharing your location with your friends.</string>
+    <string name="invite_accept_code_placeholder">Invite code</string>
+    <string name="invite_accept_disclaimer_user">By accepting this invite you will be connected with **%s**. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
+    <string name="invite_accept_disclaimer_group">By accepting this invite you will be added to **%s** group and all group members will see your presence. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
 
 </resources>
