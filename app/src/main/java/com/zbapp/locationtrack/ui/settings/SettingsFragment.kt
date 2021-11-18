@@ -30,7 +30,6 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
         binding.tvAppInfo.text = "v${BuildConfig.VERSION_NAME}"
 
         binding.profileHeader.setOnClickListener { }
-        binding.tvSettingLocation.setOnClickListener { }
         binding.tvSettingAck.setOnClickListener { }
         binding.ivProfileEdit.setOnClickListener { }
         binding.tvLogout.setOnClickListener {
@@ -39,6 +38,10 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
 
         binding.tvDeleteAccount.setOnClickListener {
             vm.deleteAccount().observe { Toast.makeText(requireContext(), "Delete account: $it", Toast.LENGTH_SHORT).show() }
+        }
+
+        binding.tvSettingLocation.setOnClickListener {
+            navigateDefault(R.id.acceptInviteFragment)
         }
 
         binding.tvSettingSharing.setOnClickListener {
