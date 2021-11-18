@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contentHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_bottom_sheet"
@@ -42,7 +43,7 @@
                 android:background="@color/transparent"
                 android:gravity="center_horizontal"
                 android:imeOptions="actionDone"
-                android:inputType="textCapCharacters"
+                android:inputType="textNoSuggestions|textVisiblePassword|textCapCharacters"
                 android:maxLength="10"
                 android:maxLines="1"
                 android:textAllCaps="true"
@@ -112,7 +113,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvInviteDescription"
-            style="@style/TextStyle.Light"
+            style="@style/TextStyle.Regular"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/activity_side_margin"
@@ -130,7 +131,7 @@
             tools:visibility="visible" />
 
         <com.zbapp.locationtrack.ui.shared.ButtonWithProgress
-            android:id="@+id/bCreate"
+            android:id="@+id/btConfirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_side_margin_medium_large"

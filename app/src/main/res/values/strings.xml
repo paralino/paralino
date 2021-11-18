@@ -102,5 +102,8 @@
     <string name="invite_accept_code_placeholder">Invite code</string>
     <string name="invite_accept_disclaimer_user">By accepting this invite you will be connected with **%s**. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
     <string name="invite_accept_disclaimer_group">By accepting this invite you will be added to **%s** group and all group members will see your presence. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
+    <string name="invite_accept_button_accept">Accept invite</string>
+    <string name="invite_accept_button_request">Request access</string>
+    <string name="invite_accept_title">Connect with others</string>
 
 </resources>
