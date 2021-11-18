@@ -71,6 +71,7 @@ val remoteDataSourceModule = module {
             functionInviteCreateID = BuildConfig.keyFunctionInviteCreate,
             functionInviteGetCodeID = BuildConfig.keyFunctionInviteGetCode,
             functionInviteGetUrlID = BuildConfig.keyFunctionInviteGetUrl,
+            functionInviteAcceptID = BuildConfig.keyFunctionInviteAcceptCode,
             debug = BuildConfig.internalTesting
         )
     }

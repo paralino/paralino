@@ -10,6 +10,7 @@ data class BackendConfig constructor(
     val functionInviteCreateID: String,
     val functionInviteGetCodeID: String,
     val functionInviteGetUrlID: String,
+    val functionInviteAcceptID: String,
 
     val debug: Boolean
 )

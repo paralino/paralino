@@ -43,6 +43,7 @@ android {
             buildConfigField("String", "keyFunctionInviteCreate", props['keyFunctionInviteCreate'])
             buildConfigField("String", "keyFunctionInviteGetCode", props['keyFunctionInviteGetCode'])
             buildConfigField("String", "keyFunctionInviteGetUrl", props['keyFunctionInviteGetUrl'])
+            buildConfigField("String", "keyFunctionInviteAcceptCode", props['keyFunctionInviteAcceptCode'])
         }
 
         // room schema export
