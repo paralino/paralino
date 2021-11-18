@@ -34,7 +34,7 @@ class InviteRepository(
 
     fun getAllInviteCodes(): Flow<Payload<List<InviteCode>>> {
         return subscribeToData(
-            remote = { api.getMyInviteCodes() },
+            remote = { api.getInviteCodes() },
             local = local.getAllInviteCodes(),
             localUpdate = { local.replaceInviteCode(it) },
             remotePreference = RemotePreference.FORCE
@@ -43,18 +43,18 @@ class InviteRepository(
 
     fun getMyInviteCodes(): Flow<Payload<List<InviteCode>>> {
         return subscribeToData(
-            remote = { api.getMyInviteCodes() },
+            remote = { api.getInviteCodes() },
             local = local.getInviteCodesForUser(config.userId),
             localUpdate = { local.replaceInviteCode(it) },
             remotePreference = RemotePreference.FORCE
         ).mapToPayload()
     }
 
-    fun getInviteByCode(code: String): Flow<InviteCode> {
+    fun getInviteByCode(code: String): Flow<Payload<InviteCode>> {
         return getDataOnce(
             remote = { api.getInviteByCode(code) },
             remotePreference = RemotePreference.FORCE
-        )
+        ).mapToPayload()
     }
 
     fun getInviteByUrl(url: String): Flow<InviteCode> {
@@ -62,6 +62,14 @@ class InviteRepository(
             remote = { api.getInviteByUrl(url) },
             remotePreference = RemotePreference.FORCE
         )
+    }
+
+    fun acceptInvite(code: String): Flow<Payload<InviteCode>> {
+        return getDataOnce(
+            remote = { api.acceptInviteByCode(code) },
+            localUpdate = { local.addInviteCode(it) },
+            remotePreference = RemotePreference.FORCE
+        ).mapToPayload()
     }
 
     fun revokeInviteCode(id: String): Flow<Payload<Unit>> {

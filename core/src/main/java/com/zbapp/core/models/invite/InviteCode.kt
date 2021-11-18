@@ -31,6 +31,19 @@ data class InviteCode private constructor(
     val validity: Long,
     val userLimit: Int
 ) {
+
+    fun matchesInviteCode(code: String): Boolean {
+        return inviteCode
+            .replace("-", "")
+            .replace(" ", "")
+            .equals(
+                code.replace("-", "")
+                    .replace(" ", ""),
+                ignoreCase = true
+            )
+    }
+    val isGroupInvite get() = !groupId.isNullOrBlank()
+
     companion object {
         fun appInvite(
             ownerId: String,

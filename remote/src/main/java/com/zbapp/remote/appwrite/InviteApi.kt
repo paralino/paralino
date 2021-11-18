@@ -25,11 +25,11 @@ class InviteApi constructor(
                 functionId = remoteModule.config.functionInviteCreateID,
                 data = payload
             )
-            poll { getMyInviteCodes().firstOrNull { it.tempId == tempId } }
+            poll { getInviteCodes().firstOrNull { it.tempId == tempId } }
         }
     }
 
-    override suspend fun getMyInviteCodes(): List<InviteCode> {
+    override suspend fun getInviteCodes(): List<InviteCode> {
         val docs = documentsApi.getDocuments(remoteModule.config.collectionInvitesID)
         val json = BaseRemoteModule.formatter.parseToJsonElement(docs)
         return json.jsonObject["documents"]?.jsonArray?.map {
@@ -39,18 +39,28 @@ class InviteApi constructor(
 
     override suspend fun getInviteByCode(code: String): InviteCode {
         return remoteModule.execute {
+//            functions.createExecution(
+//                functionId = remoteModule.config.functionInviteGetCodeID,
+//                code
+//            )
+            poll { getInviteCodes().firstOrNull { it.matchesInviteCode(code) } }
+        }
+    }
+
+    override suspend fun acceptInviteByCode(code: String): InviteCode {
+        return remoteModule.execute {
             functions.createExecution(
-                functionId = remoteModule.config.functionInviteGetCodeID,
+                functionId = remoteModule.config.functionInviteAcceptID,
                 code
             )
-            poll { getMyInviteCodes().firstOrNull { it.inviteCode == code } }
+            poll { getInviteCodes().firstOrNull { it.matchesInviteCode(code) } }
         }
     }
 
     override suspend fun getInviteByUrl(url: String): InviteCode {
         return remoteModule.execute {
             functions.createExecution(functionId = config.functionInviteGetUrlID, url)
-            poll { getMyInviteCodes().firstOrNull { it.inviteUrl == url } }
+            poll { getInviteCodes().firstOrNull { it.inviteUrl == url } }
         }
     }
 
