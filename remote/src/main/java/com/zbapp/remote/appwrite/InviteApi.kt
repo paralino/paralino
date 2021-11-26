@@ -39,10 +39,10 @@ class InviteApi constructor(
 
     override suspend fun getInviteByCode(code: String): InviteCode {
         return remoteModule.execute {
-//            functions.createExecution(
-//                functionId = remoteModule.config.functionInviteGetCodeID,
-//                code
-//            )
+            functions.createExecution(
+                functionId = remoteModule.config.functionInviteGetCodeID,
+                code
+            )
             poll { getInviteCodes().firstOrNull { it.matchesInviteCode(code) } }
         }
     }
@@ -66,7 +66,7 @@ class InviteApi constructor(
 
     private suspend fun poll(action: suspend () -> InviteCode?): InviteCode {
         return withTimeoutOrNull(15_000) {
-            delay(1_000)
+            delay(2_000)
             var invite: InviteCode? = action()
             while (invite == null) {
                 delay(3_000)
