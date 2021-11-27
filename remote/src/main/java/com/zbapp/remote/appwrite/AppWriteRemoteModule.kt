@@ -23,10 +23,10 @@ class AppWriteRemoteModule(
     internal val functions: Functions by lazy { Functions(client) }
 
     private val client: Client by lazy {
-        Client(app)
+        Client(app, selfSigned = false)
             .setEndpoint(config.serverUrl)
             .setProject(config.projectId)
-            .setSelfSigned(config.debug, okHttpClient(config.debug))
+            .setSelfSigned(status = false, okHttpClient(config.debug))
     }
 
     private fun okHttpClient(debug: Boolean): OkHttpClient {
