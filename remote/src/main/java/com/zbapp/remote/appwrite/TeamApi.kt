@@ -1,6 +1,6 @@
 package com.zbapp.remote.appwrite
 
-import com.zbapp.core.models.raw.SimpleDocumentRaw
+import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.repo.group.ITeamApi
 import com.zbapp.core.repo.group.TeamListResponse
 import com.zbapp.core.repo.group.TeamMembershipsResponse
@@ -12,18 +12,18 @@ class TeamApi constructor(
     private val remoteModule: AppWriteRemoteModule,
 ) : ITeamApi {
 
-    override suspend fun createOrUpdateTeam(data: SimpleDocumentRaw): TeamResponse {
+    override suspend fun createOrUpdateTeam(data: MemberDocumentRaw): TeamResponse {
         return if (data.id.isNotBlank()) updateTeam(data)
         else createTeam(data)
     }
 
-    private suspend fun createTeam(data: SimpleDocumentRaw): TeamResponse {
+    private suspend fun createTeam(data: MemberDocumentRaw): TeamResponse {
         return remoteModule.execute {
             teams.create(BaseRemoteModule.formatter.encodeToString(data)).body!!.string()
         }
     }
 
-    private suspend fun updateTeam(data: SimpleDocumentRaw): TeamResponse {
+    private suspend fun updateTeam(data: MemberDocumentRaw): TeamResponse {
         return remoteModule.execute {
             teams.update(data.id, BaseRemoteModule.formatter.encodeToString(data)).body!!.string()
         }

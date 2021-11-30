@@ -8,7 +8,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.zbapp.core.models.Payload
-import com.zbapp.core.models.location.PostLocationModel
+import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.locationtrack.data.config.randomString
 import com.zbapp.locationtrack.utils.extensions.batterLevel
 import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
@@ -29,8 +29,8 @@ class LocationInitHandler(
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
-    val lastLocation = MutableStateFlow<PostLocationModel?>(null)
-    val currentLocation = MutableStateFlow<Payload<PostLocationModel>>(Payload.Error(LocationStoppedException()))
+    val lastLocation = MutableStateFlow<LocationDataModel?>(null)
+    val currentLocation = MutableStateFlow<Payload<LocationDataModel>>(Payload.Error(LocationStoppedException()))
 
     val isTracking: Boolean get() = currentLocation.value is Payload.Success
 
@@ -101,7 +101,7 @@ class LocationInitHandler(
     private var locationCallback = object: LocationCallback() {
         override fun onLocationResult(location: LocationResult?) {
             location?.lastLocation?.let {
-                val value = PostLocationModel(
+                val value = LocationDataModel(
                     it.latitude, it.longitude, it.accuracy, it.time.toDateTimeUTC().toLocalString(), context.batterLevel
                 )
                 lastLocation.value = value

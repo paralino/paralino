@@ -2,48 +2,38 @@ package com.zbapp.core.models.location
 
 import java.util.*
 
-data class BaseLocationModel constructor(
+data class MemberModel constructor(
     val id: String,
     val groupId: String,
     val userId: String,
 
-    val lat: Double,
-    val lng: Double,
-    val accuracy: Float = 0f,
-
     val name: String,
     val imageBase64: String? = null,
 
-    val timeUTC: String? = null,
-    val batteryLevel: Int? = null
+    val data: LocationDataModel? = null
 ) {
 
     companion object {
         fun fromSystem(
-            id: String,
             userId: String,
             name: String,
             imageBase64: String?,
-            model: PostLocationModel
-        ): BaseLocationModel {
-            return BaseLocationModel(
+            model: LocationDataModel
+        ): MemberModel {
+            return MemberModel(
                 id = UUID.randomUUID().toString(),
                 groupId = "",
                 userId = userId,
-                lat = model.lat,
-                lng = model.lng,
-                accuracy = model.accuracy,
                 name = name,
                 imageBase64 = imageBase64,
-                timeUTC = model.timeUTC,
-                batteryLevel = model.batteryLevel
+                data = model
             )
         }
     }
 
 }
 
-data class PostLocationModel(
+data class LocationDataModel(
     val lat: Double,
     val lng: Double,
     val accuracy: Float = 0f,

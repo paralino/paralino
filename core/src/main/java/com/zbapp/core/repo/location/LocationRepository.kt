@@ -1,9 +1,9 @@
 package com.zbapp.core.repo.location
 
 import com.zbapp.core.config
-import com.zbapp.core.models.location.BaseLocationModel
-import com.zbapp.core.models.location.PostLocationModel
-import com.zbapp.core.models.mappers.ILocationDataMapperCore
+import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.location.LocationDataModel
+import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.mappers.decryptList
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.NoValidContractsException
@@ -17,16 +17,16 @@ class LocationRepository constructor(
     private val local: ILocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val groupsRepos: GroupRepository,
-    private val mapper: ILocationDataMapperCore
+    private val mapper: IMemberMapperCore
 ) {
 
-    fun getLocationsForGroup(groupId: String): Flow<List<BaseLocationModel>> {
+    fun getLocationsForGroup(groupId: String): Flow<List<MemberModel>> {
         return groupsRepos.getGroup(groupId).flatMapLatest {
             local.getLocationsForUsers(it.userIds)
         }.decryptList(mapper)
     }
 
-    fun pushLocation(data: PostLocationModel): Flow<Unit> {
+    fun pushLocation(data: LocationDataModel): Flow<Unit> {
         return flow {
             val ids = sharingManager.allValidContracts().map { it.objectId }
 
@@ -34,7 +34,7 @@ class LocationRepository constructor(
 
             val document = remote.saveCurrentLocation(
                 mapper.core2Remote(
-                    BaseLocationModel.fromSystem("", config.userId, "name", null, data)
+                    MemberModel.fromSystem(config.userId, "name", null, data)
                 ),
                 ids
             )

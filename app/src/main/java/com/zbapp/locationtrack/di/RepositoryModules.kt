@@ -3,7 +3,7 @@ package com.zbapp.locationtrack.di
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
-import com.zbapp.core.models.mappers.ILocationDataMapperCore
+import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.repo.group.*
 import com.zbapp.core.repo.invite.IInviteApi
@@ -37,7 +37,7 @@ val databaseModules = module {
 }
 
 val daoModules = module {
-    single { get<MainAppDatabase>().locationDao() }
+    single { get<MainAppDatabase>().memberDao() }
     single { get<MainAppDatabase>().sharingContractDao() }
     single { get<MainAppDatabase>().userDao() }
     single { get<MainAppDatabase>().groupsDao() }
@@ -53,7 +53,7 @@ val mappersModule = module {
     single { UserMapper(get()) }
     single { SharingContractsMapper }
     single { GroupsMapper(get()) }
-    single { LocationMapper(get()) }
+    single { MemberMapper(get()) }
     single { InviteCodeMapper(get()) }
 }
 
@@ -90,7 +90,7 @@ val coreDependencyModules = module {
 
     single<IGroupDataMapperCore> { get<GroupsMapper>() }
     single<IUserDataMapperCore> { get<UserMapper>() }
-    single<ILocationDataMapperCore> { get<LocationMapper>() }
+    single<IMemberMapperCore> { get<MemberMapper>() }
 
     single<IInviteApi> { InviteApi(get(), get()) }
     single<IUserApi> { UserApi(get()) }

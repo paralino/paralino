@@ -1,7 +1,7 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.models.BackendConfig
-import com.zbapp.core.models.raw.SimpleDocumentRaw
+import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.utils.InvalidRequestException
 import com.zbapp.core.utils.blocking
 
@@ -10,26 +10,28 @@ class GroupsRemoteSource constructor(
     private val config: BackendConfig
 ) {
 
-    suspend fun createOrUpdateGroup(group: SimpleDocumentRaw): SimpleDocumentRaw {
+    suspend fun createOrUpdateGroup(group: GroupDocumentRaw): GroupDocumentRaw {
         return blocking {
             api.createOrUpdateDocument(config.collectionGroupsID, group).let {
-                IDocumentsApi.getDocumentFromJson(it)
+                GroupDocumentRaw.fromRemote(IDocumentsApi.getDocumentFromJson(it))
             }
         }
     }
 
-    suspend fun getAllGroups(): List<SimpleDocumentRaw> {
+    suspend fun getAllGroups(): List<GroupDocumentRaw> {
         return blocking {
             api.getDocuments(config.collectionGroupsID).let {
-                IDocumentsApi.getDocumentsFromJson(it)
+                IDocumentsApi.getDocumentsFromJson(it).map {
+                    GroupDocumentRaw.fromRemote(it)
+                }
             }
         }
     }
 
-    suspend fun getGroup(groupId: String): SimpleDocumentRaw {
+    suspend fun getGroup(groupId: String): GroupDocumentRaw {
         return blocking {
             api.getDocument(config.collectionGroupsID, groupId).let {
-                IDocumentsApi.getDocumentFromJson(it)
+                GroupDocumentRaw.fromRemote(IDocumentsApi.getDocumentFromJson(it))
             }
         }
     }
