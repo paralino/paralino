@@ -20,7 +20,7 @@ class AcceptInviteViewModel(
     private val repo: InviteRepository
 ) : AndroidViewModel(app) {
 
-    private val code = MutableStateFlow("")
+    private val code = MutableStateFlow<String?>("")
     private val inviteCodeData = MutableStateFlow<Payload<AcceptInviteEvent>>(
         Payload.Success(AcceptInviteEvent.InviteAccept(emptyData("")))
     )
@@ -28,21 +28,22 @@ class AcceptInviteViewModel(
     val inviteCodeLiveData = inviteCodeData.asLiveData()
 
     fun invalidateCode() {
-        this.code.value = ""
+        this.code.value = null
         inviteCodeData.value = Payload.Success(AcceptInviteEvent.InviteAccept(emptyData("")))
     }
 
-    fun acceptOrLoadInvite(code: String) {
+    fun acceptOrLoadInvite(code: String?) {
         this.code.value = code
-        if (inviteCodeData.value.data is AcceptInviteEvent.InviteLoaded) {
-            repo.acceptInvite(code)
+        val currentState = inviteCodeData.value.data
+        if (currentState is AcceptInviteEvent.InviteLoaded) {
+            repo.acceptInvite(currentState.data.code)
                 .onEach {
                     inviteCodeData.value = it.mapSuccess {
-                        AcceptInviteEvent.InviteAccept(emptyData(code))
+                        AcceptInviteEvent.InviteAccept(emptyData(currentState.data.code))
                     }
                 }
                 .launchIn(viewModelScope)
-        } else if (code.isNotBlank()) {
+        } else if (!code.isNullOrBlank()) {
             repo.getInviteByCode(code)
                 .onEach {
                     inviteCodeData.value = it.mapSuccess { invite ->
@@ -52,18 +53,15 @@ class AcceptInviteViewModel(
                                 name = if (invite.isGroupInvite) invite.groupName
                                     ?: "" else invite.ownerName,
                                 description = if (invite.isGroupInvite) myApp.getString(
-                                    R.string.invite_accept_disclaimer_group,
+                                    R.string.invite_connect_disclaimer_group,
                                     invite.groupName ?: ""
                                 )
-                                else myApp.getString(
-                                    R.string.invite_accept_disclaimer_user,
-                                    invite.ownerName
-                                ),
+                                else null,
                                 imageEmoji = if (invite.isGroupInvite) invite.groupEmoji
                                     ?: Emojis.lock else invite.ownerImageBase64.takeIf { it.isNotBlank() }
                                     ?: Emojis.robot,
-                                actionButtonText = if (invite.isGroupInvite) myApp.getString(R.string.invite_accept_button_request)
-                                else myApp.getString(R.string.invite_accept_button_accept),
+                                actionButtonText = if (invite.isGroupInvite) myApp.getString(R.string.invite_connect_button_request)
+                                else myApp.getString(R.string.invite_connect_button_addToGroup),
                                 groupCount = if (invite.isGroupInvite) invite.groupMembersCount else null
                             )
                         )

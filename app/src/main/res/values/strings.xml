@@ -95,15 +95,15 @@
 
     <string name="groups_sharing_duration_type_infinite">Endless</string>
 
-    <string name="invite_create_button">Create invite code</string>
-    <string name="toast_copy_invite_code">Invite code copied</string>
-    <string name="invite_delete_alert_title">Are you sure you want to delete invite code?</string>
-    <string name="invite_manage_empty_description">You don\'t have an active invite code.\nAdd one to start securely sharing your location with your friends.</string>
-    <string name="invite_accept_code_placeholder">Invite code</string>
-    <string name="invite_accept_disclaimer_user">By accepting this invite you will be connected with **%s**. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
-    <string name="invite_accept_disclaimer_group">By accepting this invite you will be added to **%s** group and all group members will see your presence. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
-    <string name="invite_accept_button_accept">Accept invite</string>
-    <string name="invite_accept_button_request">Request access</string>
-    <string name="invite_accept_title">Connect with others</string>
+    <string name="invite_create_button">CREATE PERSONAL ID</string>
+    <string name="toast_copy_invite_code">ID copied</string>
+    <string name="invite_delete_alert_title">Are you sure you want to delete this ID?</string>
+    <string name="invite_manage_empty_description">You don\'t have an active personal ID.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
+    <string name="invite_manage_description">Someone wants to add you to their group?\nShare this code with them and start securely sharing your location.</string>
+    <string name="invite_connect_code_placeholder">User ID</string>
+    <string name="invite_connect_disclaimer_group">By accepting this invite you will be added to **%s** group and all group members will see your presence. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
+    <string name="invite_connect_button_addToGroup">ADD TO GROUP</string>
+    <string name="invite_connect_button_request">REQUEST ACCESS</string>
+    <string name="invite_connect_title">To connect with others, enter their user ID</string>
 
 </resources>

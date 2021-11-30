@@ -29,7 +29,8 @@ class ManageInviteViewModel(
         return repo.getMyInviteCodes()
             .map {
                 it.mapSuccess {
-                    it.map { InviteCodeData(it) }.ifEmpty {
+                    val codes = it.map { InviteCodeData(it) }
+                    if (codes.isEmpty()) {
                         listOf(
                             ListItemEmptySpaceData(100.dp2px),
                             EmptyStateData(
@@ -38,6 +39,12 @@ class ManageInviteViewModel(
                                 buttonText = myApp.getString(R.string.invite_create_button)
                             )
                         )
+                    } else {
+                        mutableListOf<ListItemType>().apply {
+                            addAll(codes)
+                            add(ListItemEmptySpaceData(20.dp2px))
+                            add(EmptyStateData(infoText = myApp.getString(R.string.invite_manage_description)))
+                        }
                     }
                 }
             }

@@ -29,7 +29,8 @@ class InviteCodeListItem(context: Context, attributeSet: AttributeSet? = null) :
     override fun applyData(data: InviteCodeData) {
         vb.tvInviteCode.text = data.invite.inviteCode
         vb.tvInviteCodeValidity.text = data.invite.validity.toDateTimeUTC()
-            .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG, FormatStyle.SHORT))
+            .toLocalTime()
+            .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
     }
 }
 

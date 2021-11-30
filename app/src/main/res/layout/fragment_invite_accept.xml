@@ -28,7 +28,7 @@
             android:layout_height="80dp"
             android:layout_marginHorizontal="@dimen/activity_side_margin"
             android:layout_marginTop="@dimen/activity_side_margin"
-            android:hint="@string/invite_accept_code_placeholder"
+            android:hint="@string/invite_connect_code_placeholder"
             android:stateListAnimator="@null"
             app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
@@ -127,7 +127,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvInviteImage"
-            tools:text="@string/invite_accept_disclaimer_group"
+            tools:text="@string/invite_connect_disclaimer_group"
             tools:visibility="visible" />
 
         <com.zbapp.locationtrack.ui.shared.ButtonWithProgress

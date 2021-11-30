@@ -16,10 +16,11 @@ import com.zbapp.locationtrack.ui.shared.snackBarError
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class AcceptInviteFragment : BottomSheetDialogFragment() {
+class AccessCodeInputFragment : BottomSheetDialogFragment() {
 
-    val vb by viewBinding(FragmentInviteAcceptBinding::bind)
-    val vm by viewModel<AcceptInviteViewModel>()
+    private val vb by viewBinding(FragmentInviteAcceptBinding::bind)
+    private val vm by viewModel<AcceptInviteViewModel>()
+    private val args by lazy { arguments?.let { AccessCodeInputFragmentArgs.fromBundle(it) } }
 
     override fun getTheme(): Int {
         return R.style.BottomSheetDialogStyle
@@ -43,13 +44,12 @@ class AcceptInviteFragment : BottomSheetDialogFragment() {
             setAnimateParentHierarchy(false)
         }
         vb.title.itemData =
-            BottomSheetTitleData(requireContext().getString(R.string.invite_accept_title))
+            BottomSheetTitleData(requireContext().getString(R.string.invite_connect_title))
         vb.etInvite.editText?.doAfterTextChanged {
             vm.invalidateCode()
         }
 
-        val args = ""
-        vm.acceptOrLoadInvite(args)
+        vm.acceptOrLoadInvite(args?.code)
     }
 
     private fun setupObservers() {
@@ -68,7 +68,7 @@ class AcceptInviteFragment : BottomSheetDialogFragment() {
                     val data = it.data
                     vb.tvInviteName.isVisible = data is AcceptInviteEvent.InviteLoaded
                     vb.tvInviteImage.isVisible = data is AcceptInviteEvent.InviteLoaded
-                    vb.tvInviteDescription.isVisible = data is AcceptInviteEvent.InviteLoaded
+                    vb.tvInviteDescription.isVisible = data is AcceptInviteEvent.InviteLoaded && !data.data.description.isNullOrBlank()
                     vb.tvGroupCount.isVisible =
                         data is AcceptInviteEvent.InviteLoaded && data.data.groupCount != null
 
