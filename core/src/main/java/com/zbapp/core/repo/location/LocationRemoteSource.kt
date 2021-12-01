@@ -4,7 +4,9 @@ import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.raw.LocationHistoryRaw
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.repo.group.IDocumentsApi
+import com.zbapp.core.utils.BaseRemoteModule
 import com.zbapp.core.utils.blocking
+import kotlinx.serialization.decodeFromString
 
 class LocationRemoteSource constructor(
     private val api: IDocumentsApi,
@@ -14,9 +16,7 @@ class LocationRemoteSource constructor(
     suspend fun getCurrentLocationsForGroup(groupId: String): List<MemberDocumentRaw> {
         return blocking {
             api.getDocuments(config.collectionLocationsID).let {
-                IDocumentsApi.getDocumentsFromJson(it).map {
-                    MemberDocumentRaw.fromRemote(it)
-                }
+                BaseRemoteModule.formatter.decodeFromString(it)
             }
         }
     }
@@ -34,9 +34,12 @@ class LocationRemoteSource constructor(
         readPermissions: List<String>
     ): MemberDocumentRaw {
         return blocking {
-            val response =
-                api.createOrUpdateDocument(config.collectionLocationsID, data, readPermissions)
-            MemberDocumentRaw.fromRemote(IDocumentsApi.getDocumentFromJson(response))
+            api.createOrUpdateDocument(
+                collectionId = config.collectionLocationsID,
+                groupId = data.groupId,
+                data = data.toPostJson(),
+                users = readPermissions
+            ).let { BaseRemoteModule.formatter.decodeFromString(it) }
         }
     }
 

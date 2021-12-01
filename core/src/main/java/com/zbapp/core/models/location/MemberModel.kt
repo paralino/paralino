@@ -1,7 +1,9 @@
 package com.zbapp.core.models.location
 
+import kotlinx.serialization.Serializable
 import java.util.*
 
+@Serializable
 data class MemberModel constructor(
     val id: String,
     val groupId: String,
@@ -33,6 +35,7 @@ data class MemberModel constructor(
 
 }
 
+@Serializable
 data class LocationDataModel(
     val lat: Double,
     val lng: Double,

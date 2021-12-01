@@ -20,7 +20,7 @@ class GroupRepository(
         return subscribeToData(
             local = local.getAllGroups().decryptList(mapper),
             remote = { remote.getAllGroups() },
-            localUpdate = { local.replaceGroups(it) },
+            localUpdate = { local.recreateGroups(it) },
             remotePreference = RemotePreference.CACHE("groups", 10_000)
         )
     }

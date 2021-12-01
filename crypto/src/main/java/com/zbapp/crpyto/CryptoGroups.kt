@@ -3,7 +3,7 @@ package com.zbapp.crpyto
 import com.virgilsecurity.android.common.model.FindUsersResult
 import com.virgilsecurity.android.ethreeenclave.interaction.EThree
 import com.virgilsecurity.sdk.cards.Card
-import com.zbapp.core.repo.group.IGroupCrypto
+import com.zbapp.core.repo.base.IGroupCrypto
 import java.util.*
 
 class CryptoGroups(

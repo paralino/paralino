@@ -1,21 +1,23 @@
 package com.zbapp.core.models.raw
 
-import com.zbapp.core.repo.group.DocumentModel
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.*
 
 @Serializable
 data class GroupDocumentRaw constructor(
     val id: String,
     val ownerId: String?,
-    val data: String
+    val data: String,
+    val members: List<MemberDocumentRaw>
 ) {
-    companion object {
-        fun fromRemote(data: DocumentModel): GroupDocumentRaw {
-            return GroupDocumentRaw(
-                id = data["id"] ?: "",
-                ownerId = data["ownerId"] ?: "",
-                data = data["data"] ?: ""
-            )
+
+    fun toPostJson(): JsonObject {
+        return buildJsonObject {
+            put("ownerId", ownerId)
+            put("data", data)
+            putJsonArray("members") {
+                members.forEach { addJsonObject { it.toPostJson() } }
+            }
         }
     }
 }

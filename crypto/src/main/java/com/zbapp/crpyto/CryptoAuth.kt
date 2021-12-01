@@ -5,9 +5,7 @@ import android.content.Context
 import com.virgilsecurity.android.common.exception.*
 import com.virgilsecurity.android.ethreeenclave.interaction.EThree
 import com.virgilsecurity.android.ethreeenclave.interaction.model.EThreeParams
-import com.zbapp.core.repo.group.IUserCrypto
-import kotlinx.serialization.*
-import kotlinx.serialization.json.Json
+import com.zbapp.core.repo.base.IUserCrypto
 
 
 class CryptoAuth(

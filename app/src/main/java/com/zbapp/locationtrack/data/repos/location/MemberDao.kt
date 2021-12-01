@@ -8,11 +8,15 @@ import kotlinx.coroutines.flow.Flow
 interface MemberDao {
 
     @Transaction
-    suspend fun saveOnlyOneLocation(vararg data: MemberEntity) {
-        data.forEach {
-            clearForUser(it.userId)
-        }
-        createOrUpdate(*data)
+    suspend fun recreateForGroup(groupId: String, data: List<MemberEntity>) {
+        clearForGroup(groupId)
+        createOrUpdate(*data.toTypedArray())
+    }
+
+    @Transaction
+    suspend fun recreateAll(data: List<MemberEntity>) {
+        clear()
+        createOrUpdate(*data.toTypedArray())
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -24,8 +28,20 @@ interface MemberDao {
     @Query("SELECT * FROM members WHERE userId = :userId")
     fun getLastLocationForUser(userId: String): Flow<MemberEntity>
 
+    @Query("SELECT * FROM members WHERE groupId = :groupId")
+    fun getLocationsForGroup(groupId: String): Flow<List<MemberEntity>>
+
+    @Query("SELECT COUNT(:groupId) FROM members")
+    fun memberCountInGroup(groupId: String): Flow<Int>
+
+    @Query("DELETE FROM members WHERE id = :id")
+    suspend fun clearForMember(id: String)
+
     @Query("DELETE FROM members WHERE userId = :userId")
     suspend fun clearForUser(userId: String)
+
+    @Query("DELETE FROM members WHERE groupId = :groupId")
+    suspend fun clearForGroup(groupId: String)
 
     @Query("DELETE FROM members")
     suspend fun clear()

@@ -1,7 +1,7 @@
 package com.zbapp.crpyto
 
 import android.app.Application
-import com.zbapp.core.repo.group.ICryptoRepository
+import com.zbapp.core.repo.base.ICryptoRepository
 import java.util.*
 
 class CryptoRepository(private val app: Application) : ICryptoRepository {
@@ -36,7 +36,7 @@ class CryptoRepository(private val app: Application) : ICryptoRepository {
     }
 }
 
-class DummyCryptoRepository(): ICryptoRepository{
+class DummyCryptoRepository(): ICryptoRepository {
     override fun init(userId: String) {
 
     }

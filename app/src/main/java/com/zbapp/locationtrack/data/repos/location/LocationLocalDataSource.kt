@@ -10,26 +10,46 @@ import kotlinx.coroutines.flow.mapLatest
 class LocationLocalDataSource(
     private val dao: MemberDao,
     private val mapper: MemberMapper
-): ILocationLocalDataSource {
+) : ILocationLocalDataSource {
 
-    override suspend fun addLocation(data: MemberDocumentRaw) {
-        dao.createOrUpdate(mapper.remote2Local(data))
+    override suspend fun createOrUpdateMembers(vararg data: MemberDocumentRaw) {
+        dao.createOrUpdate(*data.map { mapper.remote2Local(it) }.toTypedArray())
     }
 
-    override suspend fun addLocations(data: List<MemberDocumentRaw>) {
-        dao.saveOnlyOneLocation(*data.map { mapper.remote2Local(it) }.toTypedArray())
+    override suspend fun recreateAllMember(data: List<MemberDocumentRaw>) {
+        dao.recreateAll(data.map { mapper.remote2Local(it) })
     }
 
-    override fun getLocationForUser(userId: String): Flow<MemberDocumentRaw> {
+    override suspend fun recreateMembersForGroup(groupId: String, data: List<MemberDocumentRaw>) {
+        dao.recreateForGroup(groupId, data.map { mapper.remote2Local(it) })
+    }
+
+    override fun getMemberModelsForUser(userId: String): Flow<MemberDocumentRaw> {
         return dao.getLastLocationForUser(userId).mapLatest(mapper::local2Remote)
     }
 
-    override fun getLocationsForUsers(userIds: List<String>): Flow<List<MemberDocumentRaw>> {
+    override fun getMemberModelsForUsers(userIds: List<String>): Flow<List<MemberDocumentRaw>> {
         return mapper.mapFlowOfList(dao.getLocationsForUsers(userIds))
+    }
+
+    override fun getMembersForGroup(groupId: String): Flow<List<MemberDocumentRaw>> {
+        return mapper.mapFlowOfList(dao.getLocationsForGroup(groupId))
+    }
+
+    override fun memberCountInGroup(groupId: String): Flow<Int> {
+        return dao.memberCountInGroup(groupId)
+    }
+
+    override suspend fun clearForMember(id: String) {
+        dao.clearForMember(id)
     }
 
     override suspend fun clearForUser(userId: String) {
         dao.clearForUser(userId)
+    }
+
+    override suspend fun clearForGroup(groupId: String) {
+        dao.clearForGroup(groupId)
     }
 
     override suspend fun clearAll() {

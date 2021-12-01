@@ -1,15 +1,14 @@
 package com.zbapp.core.repo.location
 
 import com.zbapp.core.config
-import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.LocationDataModel
+import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.mappers.decryptList
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.NoValidContractsException
 import com.zbapp.core.repo.group.GroupRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 
 class LocationRepository constructor(
@@ -21,9 +20,7 @@ class LocationRepository constructor(
 ) {
 
     fun getLocationsForGroup(groupId: String): Flow<List<MemberModel>> {
-        return groupsRepos.getGroup(groupId).flatMapLatest {
-            local.getLocationsForUsers(it.userIds)
-        }.decryptList(mapper)
+        return local.getMembersForGroup(groupId).decryptList(mapper)
     }
 
     fun pushLocation(data: LocationDataModel): Flow<Unit> {
@@ -38,7 +35,7 @@ class LocationRepository constructor(
                 ),
                 ids
             )
-            local.addLocation(document)
+            local.createOrUpdateMembers(document)
         }
     }
 

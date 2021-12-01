@@ -11,6 +11,7 @@ data class MemberEntity constructor(
     @PrimaryKey
     val id: String,
     val userId: String,
+    val groupId: String?,
 
     val data: String,
     val mutableData: String? = null

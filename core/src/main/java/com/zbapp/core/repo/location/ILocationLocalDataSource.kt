@@ -5,13 +5,18 @@ import kotlinx.coroutines.flow.Flow
 
 interface ILocationLocalDataSource {
 
-    suspend fun addLocation(data: MemberDocumentRaw)
-    suspend fun addLocations(data: List<MemberDocumentRaw>)
+    suspend fun createOrUpdateMembers(vararg data: MemberDocumentRaw)
+    suspend fun recreateAllMember(data: List<MemberDocumentRaw>)
+    suspend fun recreateMembersForGroup(groupId: String, data: List<MemberDocumentRaw>)
 
-    fun getLocationForUser(userId: String): Flow<MemberDocumentRaw>
-    fun getLocationsForUsers(userIds: List<String>): Flow<List<MemberDocumentRaw>>
+    fun getMemberModelsForUser(userId: String): Flow<MemberDocumentRaw>
+    fun getMemberModelsForUsers(userIds: List<String>): Flow<List<MemberDocumentRaw>>
+    fun getMembersForGroup(groupId: String): Flow<List<MemberDocumentRaw>>
+    fun memberCountInGroup(groupId: String): Flow<Int>
 
+    suspend fun clearForMember(id: String)
     suspend fun clearForUser(userId: String)
+    suspend fun clearForGroup(groupId: String)
     suspend fun clearAll()
 
 }

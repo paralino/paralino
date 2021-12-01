@@ -43,7 +43,7 @@ abstract class MainAppDatabase : RoomDatabase() {
     abstract fun inviteDao(): InviteCodeDao
 
     companion object {
-        const val VERSION = 12
+        const val VERSION = 13
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

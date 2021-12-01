@@ -1,9 +1,9 @@
 package com.zbapp.locationtrack.data.mappers
 
 import com.zbapp.core.models.invite.InviteCode
-import com.zbapp.core.repo.group.IUserCrypto
-import com.zbapp.core.repo.group.decryptModel
-import com.zbapp.core.repo.group.encryptModel
+import com.zbapp.core.repo.base.IUserCrypto
+import com.zbapp.core.repo.base.decryptModel
+import com.zbapp.core.repo.base.encryptModel
 import com.zbapp.locationtrack.data.models.invite.InviteCodeEntity
 
 class InviteCodeMapper(

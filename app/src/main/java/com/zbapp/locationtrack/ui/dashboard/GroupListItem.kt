@@ -52,7 +52,7 @@ data class GroupItemData constructor(
 ) : ListItemType, BottomSheetItemData {
 
     constructor(group: UserGroup, uiType: GroupUiType): this(
-        group.id, group.name, group.emoji, group.userIds.size, uiType
+        group.id, group.name, group.emoji, group.members.size, uiType
     )
 
     override fun getIdentifier(): String {

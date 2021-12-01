@@ -5,6 +5,9 @@ import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
 import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.mappers.IUserDataMapperCore
+import com.zbapp.core.repo.base.ICryptoRepository
+import com.zbapp.core.repo.base.IGroupCrypto
+import com.zbapp.core.repo.base.IUserCrypto
 import com.zbapp.core.repo.group.*
 import com.zbapp.core.repo.invite.IInviteApi
 import com.zbapp.core.repo.invite.IInviteCodeLocalDataSource
@@ -52,7 +55,7 @@ val cryptoModule = module {
 val mappersModule = module {
     single { UserMapper(get()) }
     single { SharingContractsMapper }
-    single { GroupsMapper(get()) }
+    single { GroupsMapper(get(), get()) }
     single { MemberMapper(get()) }
     single { InviteCodeMapper(get()) }
 }
@@ -99,6 +102,6 @@ val coreDependencyModules = module {
     single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }
     single<IUserLocalDataSource> { UserLocalDataSource(get(), get()) }
-    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get()) }
+    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get()) }
     single<IInviteCodeLocalDataSource> { InviteLocalDataSource(get(), get()) }
 }
