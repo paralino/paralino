@@ -1,24 +1,23 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.mappers.IGroupDataMapperCore
-import com.zbapp.core.models.mappers.decrypt
-import com.zbapp.core.models.mappers.decryptList
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
+import com.zbapp.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 
-class GroupRepository(
+class GroupRepository constructor(
     private val local: IGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
-    private val mapper: IGroupDataMapperCore
+    private val userRepository: UserRepository
 ) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
         return subscribeToData(
-            local = local.getAllGroups().decryptList(mapper),
+            local = local.getAllGroups(),
             remote = { remote.getAllGroups() },
             localUpdate = { local.recreateGroups(it) },
             remotePreference = RemotePreference.CACHE("groups", 10_000)
@@ -26,7 +25,7 @@ class GroupRepository(
     }
 
     fun getAllGroupsLocally(): Flow<List<UserGroup>> {
-        return local.getAllGroups().decryptList(mapper)
+        return local.getAllGroups()
     }
 
     fun getMyGroups(): Flow<List<UserGroup>> {
@@ -35,16 +34,27 @@ class GroupRepository(
 
     fun getGroup(id: String): Flow<UserGroup> {
         return subscribeToData(
-            local = local.getGroup(id).decrypt(mapper),
+            local = local.getGroup(id),
             remote = { remote.getGroup(id) },
             localUpdate = { local.updateOrCreateGroup(it) },
             remotePreference = RemotePreference.PREFER
         )
     }
 
-    fun createOrUpdateGroup(userGroup: UserGroup): Flow<Unit> {
+    fun createGroup(name: String, emoji: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.createOrUpdateGroup(mapper.core2Remote(userGroup)) },
+            remote = {
+                val group = UserGroup.new(emoji, name.trim())
+                remote.createGroup(group, userRepository.cachedUser!!)
+            },
+            localUpdate = { local.updateOrCreateGroup(it) },
+            remotePreference = RemotePreference.FORCE
+        ).map { Unit }
+    }
+
+    fun updateGroup(userGroup: UserGroup): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.updateGroup(userGroup) },
             localUpdate = { local.updateOrCreateGroup(it) },
             remotePreference = RemotePreference.FORCE
         ).map { Unit }
@@ -52,7 +62,10 @@ class GroupRepository(
 
     fun deleteGroup(id: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.deleteGroup(id) },
+            remote = {
+                val group = local.getGroup(id).first()
+                remote.deleteGroup(group)
+            },
             localUpdate = { local.deleteGroup(id) },
             remotePreference = RemotePreference.FORCE
         )

@@ -36,9 +36,9 @@ class LocationRemoteSource constructor(
         return blocking {
             api.createOrUpdateDocument(
                 collectionId = config.collectionLocationsID,
-                groupId = data.groupId,
+                docId = data.groupId,
                 data = data.toPostJson(),
-                users = readPermissions
+                read = readPermissions
             ).let { BaseRemoteModule.formatter.decodeFromString(it) }
         }
     }

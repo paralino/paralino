@@ -8,7 +8,9 @@ import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.repo.base.ICryptoRepository
 import com.zbapp.core.repo.base.IGroupCrypto
 import com.zbapp.core.repo.base.IUserCrypto
-import com.zbapp.core.repo.group.*
+import com.zbapp.core.repo.group.GroupsRemoteSource
+import com.zbapp.core.repo.group.IDocumentsApi
+import com.zbapp.core.repo.group.IGroupLocalDataSource
 import com.zbapp.core.repo.invite.IInviteApi
 import com.zbapp.core.repo.invite.IInviteCodeLocalDataSource
 import com.zbapp.core.repo.location.ILocationLocalDataSource
@@ -63,7 +65,7 @@ val mappersModule = module {
 val remoteDataSourceModule = module {
     single { UserRemoteSource(get()) }
     single { LocationRemoteSource(get(), get()) }
-    single { GroupsRemoteSource(get(), get()) }
+    single { GroupsRemoteSource(get(), get(), get(), get()) }
     single {
         BackendConfig(
             serverUrl = BuildConfig.serverUrl,

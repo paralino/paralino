@@ -4,11 +4,22 @@ import kotlinx.serialization.json.JsonObject
 
 interface IDocumentsApi {
 
+    suspend fun createChildDocument(
+        collectionId: String,
+        data: Any,
+        read: List<String>?,
+        write: List<String>?,
+        parentDocId: String,
+        parentDocProperty: String,
+        appendToParent: Boolean
+    ): DocumentResponse
+
     suspend fun createOrUpdateDocument(
         collectionId: String,
-        groupId: String?,
-        data: JsonObject,
-        users: List<String>? = null
+        data: Any,
+        docId: String? = null,
+        read: List<String>? = null,
+        write: List<String>? = null
     ): DocumentResponse
 
     suspend fun getDocument(collectionId: String, groupId: String): DocumentResponse

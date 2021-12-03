@@ -1,5 +1,8 @@
 package com.zbapp.locationtrack.data.repos.group
 
+import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.mappers.decrypt
+import com.zbapp.core.models.mappers.decryptList
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.repo.group.IGroupLocalDataSource
 import com.zbapp.core.repo.location.ILocationLocalDataSource
@@ -24,15 +27,16 @@ class UserGroupLocalDataSource(
         memberLocal.recreateMembersForGroup(group.id, group.members)
     }
 
-    override fun getGroup(groupId: String): Flow<GroupDocumentRaw> {
+    override fun getGroup(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
                 mapper.local2Remote(group).copy(members = members)
             }
+            .decrypt(mapper)
     }
 
-    override fun getAllGroups(): Flow<List<GroupDocumentRaw>> {
-        return mapper.mapFlowOfList(dao.getAllGroups())
+    override fun getAllGroups(): Flow<List<UserGroup>> {
+        return mapper.mapFlowOfList(dao.getAllGroups()).decryptList(mapper)
     }
 
     override suspend fun deleteGroup(groupId: String) {

@@ -1,7 +1,9 @@
 package com.zbapp.core.models.raw
 
+import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -16,6 +18,7 @@ data class MemberDocumentRaw constructor(
     val mutableData: String? = null
 ) {
 
+    fun toPostString() = BaseRemoteModule.formatter.encodeToString(toPostJson())
     fun toPostJson(): JsonObject {
         return buildJsonObject {
             put("ownerId", ownerId)

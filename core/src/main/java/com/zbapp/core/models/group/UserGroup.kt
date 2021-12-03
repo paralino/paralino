@@ -18,7 +18,14 @@ data class UserGroup constructor(
         val personalTracking = UserGroup("personalTracking", "", Constants.collectionGroupPrivate, "Personal", "\uD83D\uDD12", emptyList())
         val publicSharing = UserGroup("publicSharing", "", Constants.collectionGroupPublic, "Public", "\uD83C\uDFD9️", emptyList())
         fun empty(type: String) = UserGroup("", type, "","\uD83D\uDD12️", "", emptyList())
-        fun new(icon: String, name: String) = UserGroup("", config.userId, Constants.collectionGroupUser, name, icon, emptyList())
+        fun new(icon: String, name: String) = UserGroup(
+            id = "",
+            ownerId = config.userId,
+            type = Constants.collectionGroupUser,
+            name = name,
+            emoji = icon,
+            members = emptyList()
+        )
     }
 
     val isFromUser: Boolean get() = type == Constants.collectionGroupUser

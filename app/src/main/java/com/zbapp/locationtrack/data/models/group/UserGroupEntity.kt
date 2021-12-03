@@ -13,7 +13,7 @@ import kotlinx.parcelize.Parcelize
 data class UserGroupEntity(
     @PrimaryKey
     val id: String,
-    val ownerId: String?,
+    val ownerId: String,
     val data: String,
 
     @Ignore
@@ -21,6 +21,6 @@ data class UserGroupEntity(
 ): Parcelable {
 
     // to satisfy room
-    constructor(id: String, ownerId: String?, data: String): this(id, ownerId, data, emptyList())
+    constructor(id: String, ownerId: String, data: String): this(id, ownerId, data, emptyList())
 
 }

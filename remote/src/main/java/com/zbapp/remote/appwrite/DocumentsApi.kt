@@ -9,17 +9,40 @@ class DocumentsApi constructor(
     private val remoteModule: AppWriteRemoteModule
 ) : IDocumentsApi {
 
-    override suspend fun createOrUpdateDocument(
+    override suspend fun createChildDocument(
         collectionId: String,
-        groupId: String?,
-        data: JsonObject,
-        users: List<String>?
+        data: Any,
+        read: List<String>?,
+        write: List<String>?,
+        parentDocId: String,
+        parentDocProperty: String,
+        appendToParent: Boolean
     ): DocumentResponse {
         return remoteModule.execute {
-            if (groupId.isNullOrBlank())
-                database.createDocument(collectionId, data, read = users).body!!.string()
+            database.createDocument(
+                collectionId = collectionId,
+                data = data,
+                read = read,
+                write = write,
+                parentDocument = parentDocId,
+                parentProperty = parentDocProperty,
+                parentPropertyType = if(appendToParent) "append" else "assign"
+            ).body!!.string()
+        }
+    }
+
+    override suspend fun createOrUpdateDocument(
+        collectionId: String,
+        data: Any,
+        docId: String?,
+        read: List<String>?,
+        write: List<String>?
+    ): DocumentResponse {
+        return remoteModule.execute {
+            if (docId.isNullOrBlank())
+                database.createDocument(collectionId, data, read = read, write = write).body!!.string()
             else
-                database.updateDocument(collectionId, groupId, data, read = users).body!!.string()
+                database.updateDocument(collectionId, docId, data, read = read, write).body!!.string()
         }
     }
 
