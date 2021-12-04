@@ -19,28 +19,57 @@ import com.zbapp.locationtrack.ui.shared.snackBarSimple
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-class CreateGroupFragment: BottomSheetDialogFragment() {
+class CreateGroupFragment : BottomSheetDialogFragment() {
 
     val vb by viewBinding(FragmentGroupCreateBinding::bind)
-    val vm: CreateGroupViewModel by viewModel()
+    private val args by lazy { arguments?.let { CreateGroupFragmentArgs.fromBundle(it) } }
+    val vm: CreateGroupViewModel by viewModel { parametersOf(args?.groupId) }
 
     override fun getTheme(): Int {
         return R.style.BottomSheetDialogStyle
     }
 
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_group_create, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUi()
+        setObservers()
+    }
 
-        vb.title.itemData = BottomSheetTitleData(requireContext().getString(R.string.dashboard_groups_add_button))
+    private fun setUi() {
         vb.tvGroupEmoji.clipToOutline = true
         vb.tvGroupEmoji.text = Emojis.group1.random()
+    }
+
+    private fun setObservers() {
+
+        vm.groupDetails.observe(viewLifecycleOwner) {
+            when (it) {
+                Payload.Loading -> {}
+                is Payload.Success -> {
+                    vb.title.itemData =
+                        BottomSheetTitleData(requireContext().getString(R.string.group_edit_title))
+                    vb.tvGroupEmoji.text = it.data.image
+                    vb.etGroupName.editText?.setText(it.data.name)
+                    vb.bCreate.setText(R.string.button_save)
+                }
+                is Payload.Error -> {
+                    vb.title.itemData =
+                        BottomSheetTitleData(requireContext().getString(R.string.group_create_title))
+                    vb.tvGroupEmoji.text = Emojis.group1.random()
+                    vb.bCreate.setText(R.string.group_create_button_text)
+                }
+            }
+        }
+
         vb.tvGroupEmoji.setOnClickListener {
             BottomSheetDialog.show(
                 this,
@@ -55,23 +84,29 @@ class CreateGroupFragment: BottomSheetDialogFragment() {
 
         vb.bCreate.setOnClickListener {
 
-            if(vb.etGroupName.editText?.text?.isBlank() == true){
+            if (vb.etGroupName.editText?.text?.isBlank() == true) {
                 vb.etGroupName.setBackgroundResource(R.drawable.background_input_error)
-                snackBarSimple(vb.root, requireContext().getString(R.string.form_generic_validation))
+                snackBarSimple(
+                    vb.root,
+                    requireContext().getString(R.string.form_generic_validation)
+                )
                 return@setOnClickListener
             } else {
                 vb.etGroupName.setBackgroundResource(R.drawable.background_input)
             }
 
-            vm.createGroup(vb.tvGroupEmoji.text.toString(), vb.etGroupName.editText?.text?.toString() ?: "").observe(viewLifecycleOwner) {
+            vm.createGroup(
+                vb.tvGroupEmoji.text.toString(),
+                vb.etGroupName.editText?.text?.toString() ?: ""
+            ).observe(viewLifecycleOwner) {
                 vb.bCreate.isEnabled = it !is Payload.Loading
                 vb.bCreate.setLoading(it is Payload.Loading, withCheck = it is Payload.Success)
-                if(it is Payload.Success) {
+                if (it is Payload.Success) {
                     lifecycleScope.launchWhenResumed {
-                        delay(600)
+                        delay(300)
                         dismissAllowingStateLoss()
                     }
-                } else if(it is Payload.Error) {
+                } else if (it is Payload.Error) {
                     snackBarError(vb.root, requireContext())
                 }
             }

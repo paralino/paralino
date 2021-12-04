@@ -32,7 +32,7 @@ val viewModelModules = module {
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { LoginViewModel(androidApplication(), get()) }
     viewModel { LoginCheckViewModel(androidApplication(), get()) }
-    viewModel { CreateGroupViewModel(get()) }
+    viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { SharingViewModel(get()) }
     viewModel { ManageInviteViewModel(androidApplication(), get()) }
     viewModel { AcceptInviteViewModel(androidApplication(), get()) }

@@ -38,6 +38,10 @@ class GroupRepository constructor(
         return local.getGroup(id)
     }
 
+    fun getGroupWithoutMembers(id: String): Flow<UserGroup> {
+        return local.getGroupWithoutMembers(id)
+    }
+
     fun getGroup(id: String): Flow<UserGroup> {
         return subscribeToData(
             local = local.getGroup(id),

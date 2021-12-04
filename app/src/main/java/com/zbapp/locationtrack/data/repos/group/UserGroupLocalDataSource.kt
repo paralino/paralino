@@ -10,6 +10,8 @@ import com.zbapp.locationtrack.data.mappers.GroupsMapper
 import com.zbapp.locationtrack.data.mappers.mapFlowOfList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 
 class UserGroupLocalDataSource(
     private val dao: UserGroupDao,
@@ -27,8 +29,15 @@ class UserGroupLocalDataSource(
         memberLocal.recreateMembersForGroup(group.id, group.members)
     }
 
+    override fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
+        return dao.getGroup(groupId)
+            .map { mapper.local2Remote(it) }
+            .decrypt(mapper)
+    }
+
     override fun getGroup(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
+            .filterNotNull()
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
                 mapper.local2Remote(group).copy(members = members)
             }
@@ -36,7 +45,9 @@ class UserGroupLocalDataSource(
     }
 
     override fun getAllGroups(): Flow<List<UserGroup>> {
-        return mapper.mapFlowOfList(dao.getAllGroups()).decryptList(mapper)
+        return mapper.mapFlowOfList(dao.getAllGroups())
+            .decryptList(mapper)
+            .map { it.sortedBy { it.name } }
     }
 
     override suspend fun deleteGroup(groupId: String) {

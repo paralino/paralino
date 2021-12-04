@@ -12,6 +12,7 @@
     <string name="button_skip">Skip</string>
     <string name="button_retry">Retry</string>
     <string name="button_confirm">Confirm</string>
+    <string name="button_save">Save</string>
 
     <string name="alert_title_confirm">Please confirm</string>
     <string name="error_server_unavailable">Unable to connect!</string>
@@ -85,8 +86,6 @@
 
     <string name="info_email_confirm">Please confirm your email address!</string>
 
-    <string name="groups_new_name_placeholder">Group name</string>
-    <string name="groups_new_button_text">Create</string>
     <string name="groups_sharing_section_title_group">Group</string>
     <string name="groups_sharing_section_title_duration">Duration</string>
     <string name="groups_sharing_section_title_extra">Extra</string>
@@ -113,5 +112,10 @@
     <string name="group_details_menu_delete">Delete group</string>
     <string name="group_details_delete_group_alert_title">Are you sure you want delete this group?\nThis is irreversible and will remove all connection with members and remove all group data!</string>
     <string name="group_details_delete_group_alert_button">Delete</string>
+
+    <string name="group_create_title">Create new group</string>
+    <string name="group_edit_title">Edit group</string>
+    <string name="group_create_name_placeholder">Group name</string>
+    <string name="group_create_button_text">Create</string>
 
 </resources>

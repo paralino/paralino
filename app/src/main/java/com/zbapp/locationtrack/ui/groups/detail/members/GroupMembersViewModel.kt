@@ -17,13 +17,16 @@ class GroupMembersViewModel constructor(
 
     val groupMembers = groupRepo.getGroupLocally(groupId)
         .map { group ->
-            group.members.map {
-                GroupMemberItemData(
-                    member = it,
-                    canDelete = true
+            group.members
+                .sortedBy { it.name }
+                .sortedBy { it.userId == config.userId }
+                .map {
+                    GroupMemberItemData(
+                        member = it,
+                        canDelete = true
 //                    canDelete = group.ownerId == config.userId && it.userId != config.userId
-                )
-            }
+                    )
+                }
         }
         .asLiveData()
 
