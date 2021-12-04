@@ -9,7 +9,7 @@ interface MemberDao {
 
     @Transaction
     suspend fun recreateForGroup(groupId: String, data: List<MemberEntity>) {
-        clearForGroup(groupId)
+        clearAllMembersForGroup(groupId)
         createOrUpdate(*data.toTypedArray())
     }
 
@@ -35,13 +35,13 @@ interface MemberDao {
     fun memberCountInGroup(groupId: String): Flow<Int>
 
     @Query("DELETE FROM members WHERE id = :id")
-    suspend fun clearForMember(id: String)
+    suspend fun removeMember(id: String)
 
     @Query("DELETE FROM members WHERE userId = :userId")
-    suspend fun clearForUser(userId: String)
+    suspend fun clearAllMembersForUser(userId: String)
 
     @Query("DELETE FROM members WHERE groupId = :groupId")
-    suspend fun clearForGroup(groupId: String)
+    suspend fun clearAllMembersForGroup(groupId: String)
 
     @Query("DELETE FROM members")
     suspend fun clear()

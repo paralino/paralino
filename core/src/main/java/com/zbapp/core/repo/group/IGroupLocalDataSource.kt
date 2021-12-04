@@ -13,6 +13,7 @@ interface IGroupLocalDataSource {
     fun getAllGroups(): Flow<List<UserGroup>>
 
     suspend fun deleteGroup(groupId: String)
+    suspend fun removeMember(memberId: String)
     suspend fun clearAll()
 
 }

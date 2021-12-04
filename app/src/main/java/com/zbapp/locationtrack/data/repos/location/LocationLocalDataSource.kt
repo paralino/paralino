@@ -40,16 +40,16 @@ class LocationLocalDataSource(
         return dao.memberCountInGroup(groupId)
     }
 
-    override suspend fun clearForMember(id: String) {
-        dao.clearForMember(id)
+    override suspend fun removeMember(id: String) {
+        dao.removeMember(id)
     }
 
-    override suspend fun clearForUser(userId: String) {
-        dao.clearForUser(userId)
+    override suspend fun clearAllMembersForUser(userId: String) {
+        dao.clearAllMembersForUser(userId)
     }
 
-    override suspend fun clearForGroup(groupId: String) {
-        dao.clearForGroup(groupId)
+    override suspend fun clearAllMembersForGroup(groupId: String) {
+        dao.clearAllMembersForGroup(groupId)
     }
 
     override suspend fun clearAll() {

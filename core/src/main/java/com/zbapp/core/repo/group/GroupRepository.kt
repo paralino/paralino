@@ -1,6 +1,8 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
@@ -30,6 +32,10 @@ class GroupRepository constructor(
 
     fun getMyGroups(): Flow<List<UserGroup>> {
         return getAllGroups().mapLatest { it.filter { it.isFromUser } }
+    }
+
+    fun getGroupLocally(id: String): Flow<UserGroup> {
+        return local.getGroup(id)
     }
 
     fun getGroup(id: String): Flow<UserGroup> {
@@ -67,6 +73,19 @@ class GroupRepository constructor(
                 remote.deleteGroup(group)
             },
             localUpdate = { local.deleteGroup(id) },
+            remotePreference = RemotePreference.FORCE
+        )
+    }
+
+    fun removeMember(member: MemberModel): Flow<GroupDocumentRaw> {
+        return getDataOnce(
+            remote = {
+                val group = local.getGroup(member.groupId).first()
+                remote.removeUserFromGroup(group, member)
+            },
+            localUpdate = {
+                local.removeMember(memberId = member.id)
+            },
             remotePreference = RemotePreference.FORCE
         )
     }

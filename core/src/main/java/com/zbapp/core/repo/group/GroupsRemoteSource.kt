@@ -12,8 +12,10 @@ import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.utils.BaseRemoteModule
 import com.zbapp.core.utils.blocking
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
@@ -63,11 +65,18 @@ class GroupsRemoteSource constructor(
         return addUserToGroup(group.id, group.members.map { it.userId }, *member)
     }
 
-    suspend fun addUserToGroup(group: GroupDocumentRaw, vararg member: MemberModel): GroupDocumentRaw {
+    suspend fun addUserToGroup(
+        group: GroupDocumentRaw,
+        vararg member: MemberModel
+    ): GroupDocumentRaw {
         return addUserToGroup(group.id, group.members.map { it.ownerId }, *member)
     }
 
-    suspend fun addUserToGroup(groupId: String, currentMembers: List<String>, vararg member: MemberModel): GroupDocumentRaw {
+    suspend fun addUserToGroup(
+        groupId: String,
+        currentMembers: List<String>,
+        vararg member: MemberModel
+    ): GroupDocumentRaw {
         return blocking {
 
             member.forEach {
@@ -101,17 +110,25 @@ class GroupsRemoteSource constructor(
     }
 
     suspend fun removeUserFromGroup(
-        group: GroupDocumentRaw,
-        member: MemberDocumentRaw
+        group: UserGroup,
+        member: MemberModel
+    ): GroupDocumentRaw {
+        return removeUserFromGroup(group.id, group.members.map { it.userId }, member)
+    }
+
+    suspend fun removeUserFromGroup(
+        groupId: String,
+        currentMembers: List<String>,
+        member: MemberModel
     ): GroupDocumentRaw {
         return blocking {
             api.deleteDocument(remoteConfig.collectionLocationsID, member.id)
             api.createOrUpdateDocument(
                 collectionId = remoteConfig.collectionGroupsID,
                 data = JsonObject(emptyMap()),
-                docId = group.id,
-                read = group.members.map { it.ownerId }
-                    .filter { it != config.userId && it != member.ownerId }
+                docId = groupId,
+                read = currentMembers.map { it }
+                    .filter { it != config.userId && it != member.userId }
                     .map { "user:$it" }
                     .ifEmpty { null },
                 write = null

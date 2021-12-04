@@ -14,9 +14,9 @@ interface ILocationLocalDataSource {
     fun getMembersForGroup(groupId: String): Flow<List<MemberDocumentRaw>>
     fun memberCountInGroup(groupId: String): Flow<Int>
 
-    suspend fun clearForMember(id: String)
-    suspend fun clearForUser(userId: String)
-    suspend fun clearForGroup(groupId: String)
+    suspend fun removeMember(id: String)
+    suspend fun clearAllMembersForUser(userId: String)
+    suspend fun clearAllMembersForGroup(groupId: String)
     suspend fun clearAll()
 
 }
