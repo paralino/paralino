@@ -10,6 +10,8 @@ import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.utils.BaseRemoteModule
+import com.zbapp.core.utils.ConflictException
+import com.zbapp.core.utils.PermissionDeniedException
 import com.zbapp.core.utils.blocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.JsonObject
@@ -113,22 +115,18 @@ class GroupsRemoteSource constructor(
         group: UserGroup,
         member: MemberModel
     ): GroupDocumentRaw {
-        return removeUserFromGroup(group.id, group.members.map { it.userId }, member)
-    }
-
-    suspend fun removeUserFromGroup(
-        groupId: String,
-        currentMembers: List<String>,
-        member: MemberModel
-    ): GroupDocumentRaw {
         return blocking {
+
+            if(member.id == group.ownerId)
+                throw PermissionDeniedException("Owner can not be removed from the group")
+
             api.deleteDocument(remoteConfig.collectionLocationsID, member.id)
             api.createOrUpdateDocument(
                 collectionId = remoteConfig.collectionGroupsID,
                 data = JsonObject(emptyMap()),
-                docId = groupId,
-                read = currentMembers.map { it }
-                    .filter { it != config.userId && it != member.userId }
+                docId = group.id,
+                read = group.members.map { it.userId }
+                    .filter { it != member.userId }
                     .map { "user:$it" }
                     .ifEmpty { null },
                 write = null
