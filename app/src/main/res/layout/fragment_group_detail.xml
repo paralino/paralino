@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_close"
+        app:menu="@menu/group_detail_menu"
+        app:titleCentered="true" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/activity_side_margin"
+        android:paddingBottom="@dimen/bottomBar_spacing"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/groupHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_side_margin"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvGroupEmoji"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/background_input"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textSize="70sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="🦝" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvGroupName"
+                style="@style/TextStyle.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/activity_side_margin"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:maxLines="3"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvGroupEmoji"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tvGroupEmoji"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="@tools:sample/lorem[20]" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bMembers"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_side_margin_medium_large"
+                android:layout_marginTop="@dimen/activity_side_margin_medium"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/accent"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_groups"
+                app:iconPadding="@dimen/activity_side_margin_medium"
+                app:iconTint="@color/accent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvGroupEmoji"
+                app:layout_constraintVertical_bias="1"
+                tools:text="@string/group_details_section_members_title" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

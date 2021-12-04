@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.ui.groups
+package com.zbapp.locationtrack.ui.groups.create
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.zbapp.core.models.Payload
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.databinding.FragmentCreateGroupBinding
+import com.zbapp.locationtrack.databinding.FragmentGroupCreateBinding
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
 import com.zbapp.locationtrack.ui.shared.emoji.EmojiItemData
@@ -22,7 +22,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreateGroupFragment: BottomSheetDialogFragment() {
 
-    val vb by viewBinding(FragmentCreateGroupBinding::bind)
+    val vb by viewBinding(FragmentGroupCreateBinding::bind)
     val vm: CreateGroupViewModel by viewModel()
 
     override fun getTheme(): Int {
@@ -32,7 +32,7 @@ class CreateGroupFragment: BottomSheetDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_create_group, container, false)
+        return inflater.inflate(R.layout.fragment_group_create, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

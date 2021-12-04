@@ -8,6 +8,7 @@ import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.tracking.LocationService
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
+import com.zbapp.locationtrack.ui.groups.detail.GroupDetailFragmentArgs
 import com.zbapp.locationtrack.ui.shared.DeeplinkManager
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
@@ -45,7 +46,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
         val adapter = SimpleRvAdapter()
             .addFactory {
                 ErrorListItem(it).withDataOnClickAction {
-                    when(it) {
+                    when (it) {
                         ErrorListItemType.GPS -> showNoLocationServicesWarning()
                         ErrorListItemType.PERMISSION -> showNoLocationPermissionWarning()
                     }
@@ -53,7 +54,12 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             }
             .addFactory {
                 GroupListItem(it).withClickAction {
-                    vm.deleteGroup(it.itemData?.id ?: "")
+                    it.itemData?.id?.let {
+                        navigateDefault(
+                            R.id.groupDetailFragment,
+                            GroupDetailFragmentArgs(it).toBundle()
+                        )
+                    }
                 }.apply {
                     onGroupActionClick = { vm.stopTracking() }
                 }
@@ -77,7 +83,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
     private fun setupObservers() {
 
         binding.bShare.setOnClickListener {
-            if(vm.isTrackingActive()) {
+            if (vm.isTrackingActive()) {
                 vm.stopTracking()
             } else {
 //                permissionHandler.updateRequestStatus()

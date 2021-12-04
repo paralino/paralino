@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.ui.groups
+package com.zbapp.locationtrack.ui.groups.create
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel

@@ -106,4 +106,12 @@
     <string name="invite_connect_button_request">REQUEST ACCESS</string>
     <string name="invite_connect_title">To connect with others, enter their user ID</string>
 
+    <string name="group_members_item_remove_button">Remove</string>
+    <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>
+    <string name="group_details_section_members_title">Members **(%d)**</string>
+    <string name="group_details_menu_edit">Edit</string>
+    <string name="group_details_menu_delete">Delete group</string>
+    <string name="group_details_delete_group_alert_title">Are you sure you want delete this group?\nThis is irreversible and will remove all connection with members and remove all group data!</string>
+    <string name="group_details_delete_group_alert_button">Delete</string>
+
 </resources>
