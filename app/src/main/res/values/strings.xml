@@ -11,6 +11,7 @@
     <string name="button_done">Done</string>
     <string name="button_skip">Skip</string>
     <string name="button_retry">Retry</string>
+    <string name="button_next">Next</string>
     <string name="button_confirm">Confirm</string>
     <string name="button_save">Save</string>
 
@@ -101,8 +102,11 @@
     <string name="invite_manage_description">Someone wants to add you to their group?\nShare this code with them and start securely sharing your location.</string>
     <string name="invite_connect_code_placeholder">User ID</string>
     <string name="invite_connect_disclaimer_group">By accepting this invite you will be added to **%s** group and all group members will see your presence. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
+    <string name="invite_connect_disclaimer_user">You are about to add **%1$s** to **%2$s** group.\nAfter that you can start securely sharing your location.</string>
     <string name="invite_connect_button_addToGroup">ADD TO GROUP</string>
     <string name="invite_connect_button_request">REQUEST ACCESS</string>
+    <string name="invite_connect_button_pickGroup">Choose a group</string>
+    <string name="invite_connect_alert_pickGroup">Please choose a group</string>
     <string name="invite_connect_title">To connect with others, enter their user ID</string>
 
     <string name="group_members_item_remove_button">Remove</string>
@@ -112,6 +116,7 @@
     <string name="group_details_menu_delete">Delete group</string>
     <string name="group_details_delete_group_alert_title">Are you sure you want delete this group?\nThis is irreversible and will remove all connection with members and remove all group data!</string>
     <string name="group_details_delete_group_alert_button">Delete</string>
+    <string name="group_details_add_member_button">Add new member</string>
 
     <string name="group_create_title">Create new group</string>
     <string name="group_edit_title">Edit group</string>

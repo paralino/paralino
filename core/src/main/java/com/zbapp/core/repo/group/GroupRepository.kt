@@ -1,6 +1,7 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.invite.InviteCode
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.repo.base.BaseRepository
@@ -81,6 +82,27 @@ class GroupRepository constructor(
         )
     }
 
+    fun addMemberByAccessCode(groupId: String, code: InviteCode): Flow<GroupDocumentRaw> {
+        return getDataOnce(
+            remote = {
+                val member = MemberModel(
+                    id = "",
+                    groupId = groupId,
+                    userId = code.ownerId,
+                    imageBase64 = code.ownerImageBase64,
+                    name = code.ownerName,
+                    data = null
+                )
+                val group = local.getGroup(groupId).first()
+                remote.addUserToGroup(group, member)
+            },
+            localUpdate = {
+                local.updateOrCreateGroup(it)
+            },
+            remotePreference = RemotePreference.FORCE
+        )
+    }
+
     fun removeMember(member: MemberModel): Flow<GroupDocumentRaw> {
         return getDataOnce(
             remote = {
@@ -88,7 +110,7 @@ class GroupRepository constructor(
                 remote.removeUserFromGroup(group, member)
             },
             localUpdate = {
-                local.removeMember(memberId = member.id)
+                local.updateOrCreateGroup(it)
             },
             remotePreference = RemotePreference.FORCE
         )

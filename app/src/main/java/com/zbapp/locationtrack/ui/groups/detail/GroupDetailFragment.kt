@@ -13,6 +13,7 @@ import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.groups.create.CreateGroupFragmentArgs
 import com.zbapp.locationtrack.ui.groups.detail.members.GroupMembersFragmentArgs
+import com.zbapp.locationtrack.ui.invite.AccessCodeInputFragmentArgs
 import com.zbapp.locationtrack.ui.shared.snackBarError
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -67,6 +68,10 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                     vm.groupDetails.value?.data?.name ?: ""
                 ).toBundle()
             )
+        }
+
+        vb.bAddMember.setOnClickListener {
+            navigateDefault(R.id.acceptInviteFragment, AccessCodeInputFragmentArgs(code = null, groupId = args.groupId).toBundle())
         }
     }
 

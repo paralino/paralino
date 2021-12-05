@@ -14,6 +14,8 @@
 
     <color name="bottomBarColor">@color/light_theme_light</color>
     <color name="theme_accentVeryLightDark">@color/accentVeryLight</color>
+    <color name="theme_accentVeryLightNormal">@color/accentVeryLight</color>
     <color name="theme_accentLightDark">@color/accentLight</color>
+    <color name="theme_accentDarkVeryLight">@color/accentDark</color>
 
 </resources>

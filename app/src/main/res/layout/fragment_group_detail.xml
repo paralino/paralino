@@ -72,13 +72,35 @@
                 app:icon="@drawable/ic_groups"
                 app:iconPadding="@dimen/activity_side_margin_medium"
                 app:iconTint="@color/accent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/bAddMember"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvGroupEmoji"
                 app:layout_constraintVertical_bias="1"
                 tools:text="@string/group_details_section_members_title" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bAddMember"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_side_margin_medium_large"
+                android:layout_marginTop="@dimen/activity_side_margin_medium"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/theme_accentDarkVeryLight"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_group_add"
+                android:backgroundTint="@color/theme_accentVeryLightDark"
+                app:iconPadding="@dimen/activity_side_margin_medium"
+                app:iconTint="@color/theme_accentDarkVeryLight"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bMembers"
+                app:layout_constraintVertical_bias="1"
+                android:text="@string/group_details_add_member_button" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -62,6 +62,11 @@
             app:argType="string"
             android:defaultValue="@null"
             />
+        <argument
+            android:name="groupId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <deepLink
             android:id="@+id/deepLink"
             app:uri=".*/invite/{code}" />
