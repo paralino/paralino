@@ -10,23 +10,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_close"
         app:menu="@menu/group_detail_menu"
+        app:navigationIcon="@drawable/ic_close"
         app:titleCentered="true" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/activity_side_margin"
+        android:layout_height="0dp"
+        android:overScrollMode="ifContentScrolls"
+        android:paddingHorizontal="@dimen/activity_side_margin"
+        android:paddingTop="@dimen/activity_side_margin_large"
         android:paddingBottom="@dimen/bottomBar_spacing"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/groupHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_side_margin"
-            app:layout_constraintTop_toTopOf="parent">
+
+            >
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvGroupEmoji"
@@ -59,14 +61,46 @@
                 app:layout_constraintVertical_chainStyle="packed"
                 tools:text="@tools:sample/lorem[20]" />
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mapHolder"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="48dp"
+                app:cardCornerRadius="8dp"
+                app:layout_constraintTop_toBottomOf="@id/tvGroupEmoji">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/image_map_wide_placeholder" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@color/alpha_grey_strong" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/TextStyle.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:drawableEnd="@drawable/ic_arrow_light_right"
+                    android:drawableTint="@color/theme_light"
+                    android:text="@string/group_details_map_action_button"
+                    android:textColor="@color/theme_light"
+                    android:textSize="16sp" />
+
+            </com.google.android.material.card.MaterialCardView>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/bMembers"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/activity_side_margin_medium_large"
-                android:layout_marginTop="@dimen/activity_side_margin_medium"
+                android:layout_marginTop="@dimen/activity_side_margin_medium_large"
                 android:gravity="start|center_vertical"
+                android:padding="@dimen/activity_side_margin_medium_large"
                 android:textColor="@color/accent"
                 app:cornerRadius="12dp"
                 app:icon="@drawable/ic_groups"
@@ -76,7 +110,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvGroupEmoji"
+                app:layout_constraintTop_toBottomOf="@id/mapHolder"
                 app:layout_constraintVertical_bias="1"
                 tools:text="@string/group_details_section_members_title" />
 
@@ -85,13 +119,13 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/activity_side_margin_medium_large"
-                android:layout_marginTop="@dimen/activity_side_margin_medium"
+                android:backgroundTint="@color/theme_accentVeryLightDark"
                 android:gravity="start|center_vertical"
+                android:padding="@dimen/activity_side_margin_medium_large"
+                android:text="@string/group_details_add_member_button"
                 android:textColor="@color/theme_accentDarkVeryLight"
                 app:cornerRadius="12dp"
                 app:icon="@drawable/ic_person_add"
-                android:backgroundTint="@color/theme_accentVeryLightDark"
                 app:iconPadding="@dimen/activity_side_margin_medium"
                 app:iconTint="@color/theme_accentDarkVeryLight"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -99,11 +133,8 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/bMembers"
-                app:layout_constraintVertical_bias="1"
-                android:text="@string/group_details_add_member_button" />
+                app:layout_constraintVertical_bias="1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

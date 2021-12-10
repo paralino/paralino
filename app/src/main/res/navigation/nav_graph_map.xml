@@ -9,6 +9,10 @@
         android:id="@+id/navigation_map"
         android:name="com.zbapp.locationtrack.ui.map.MapFragment"
         android:label="@string/title_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+        <deepLink
+            android:id="@+id/deepLinkMap"
+            app:uri=".*/map" />
+    </fragment>
 
 </navigation>
