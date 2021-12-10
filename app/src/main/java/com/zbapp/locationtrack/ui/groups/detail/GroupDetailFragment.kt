@@ -71,7 +71,13 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
         }
 
         vb.bAddMember.setOnClickListener {
-            navigateDefault(R.id.acceptInviteFragment, AccessCodeInputFragmentArgs(code = null, groupId = args.groupId).toBundle())
+            navigateDefault(
+                R.id.acceptInviteFragment,
+                AccessCodeInputFragmentArgs(
+                    code = null,
+                    groupId = args.groupId
+                ).toBundle()
+            )
         }
     }
 

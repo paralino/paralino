@@ -7,6 +7,7 @@ data class BackendConfig constructor(
     val collectionGroupsID: String,
     val collectionLocationsID: String,
     val collectionInvitesID: String,
+
     val functionInviteCreateID: String,
     val functionInviteGetCodeID: String,
     val functionInviteGetUrlID: String,

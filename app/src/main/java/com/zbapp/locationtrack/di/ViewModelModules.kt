@@ -38,7 +38,7 @@ val viewModelModules = module {
     viewModel { ManageInviteViewModel(androidApplication(), get()) }
     viewModel { (args: AccessCodeInputFragmentArgs?) -> AcceptInviteViewModel(androidApplication(), args, get(), get()) }
     viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get()) }
-    viewModel { (groupID: String) -> GroupMembersViewModel(groupID, get()) }
+    viewModel { (groupID: String) -> GroupMembersViewModel(androidApplication(), groupID, get()) }
 }
 
 val utilModule = module {

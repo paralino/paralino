@@ -9,10 +9,15 @@ import com.zbapp.core.models.location.MemberModel
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentGroupMembersBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
+import com.zbapp.locationtrack.ui.base.navigateDefault
+import com.zbapp.locationtrack.ui.invite.AccessCodeInputFragmentArgs
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpace
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptyState
 import com.zbapp.locationtrack.ui.shared.snackBarError
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import com.zbapp.locationtrack.utils.simpleAdapter
+import com.zbapp.locationtrack.utils.withClickAction
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -27,16 +32,38 @@ class GroupMembersFragment : BaseFragment(R.layout.fragment_group_members) {
         super.onViewCreated(view, savedInstanceState)
 
         vb.toolbar.title = args.groupName
+        vb.toolbar.setOnMenuItemClickListener {
+            return@setOnMenuItemClickListener when (it.itemId) {
+                R.id.itemMemberAdd -> {
+                    addNewMember()
+                    true
+                }
+                else -> false
+            }
+        }
+
         vb.rvMembers.adapter = SimpleRvAdapter()
             .addFactory {
                 GroupMemberListItem(it).also {
                     it.onMemberDelete = { askToRemoveMember(it.member) }
                 }
             }
+            .addFactory { ListItemEmptyState(it).withClickAction { addNewMember() } }
+            .addFactory { ListItemEmptySpace(it) }
 
         vm.groupMembers.observe(viewLifecycleOwner) {
             vb.rvMembers.simpleAdapter?.submitList(it)
         }
+    }
+
+    private fun addNewMember() {
+        navigateDefault(
+            R.id.acceptInviteFragment,
+            AccessCodeInputFragmentArgs(
+                code = null,
+                groupId = args.groupId
+            ).toBundle()
+        )
     }
 
     private fun askToRemoveMember(member: MemberModel) {

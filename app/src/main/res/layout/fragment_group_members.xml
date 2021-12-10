@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_close"
+        app:menu="@menu/group_members_menu"
         app:titleCentered="true" />
 
     <androidx.recyclerview.widget.RecyclerView
