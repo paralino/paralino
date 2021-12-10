@@ -39,7 +39,7 @@ class GroupMembersViewModel constructor(
                     listOf(
                         ListItemEmptySpaceData(100.dp2px),
                         EmptyStateData(
-                            iconRes = R.drawable.ic_group_add,
+                            iconRes = R.drawable.ic_person_add,
                             infoText = myApp.getString(R.string.group_members_empty_info),
                             buttonText = myApp.getString(R.string.group_details_add_member_button)
                         )

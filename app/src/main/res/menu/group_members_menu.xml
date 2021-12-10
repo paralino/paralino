@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/itemMemberAdd"
-        android:icon="@drawable/ic_group_add"
+        android:icon="@drawable/ic_person_add"
         app:showAsAction="ifRoom"
         android:title="@string/group_details_add_member_button" />
 

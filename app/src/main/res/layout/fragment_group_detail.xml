@@ -90,7 +90,7 @@
                 android:gravity="start|center_vertical"
                 android:textColor="@color/theme_accentDarkVeryLight"
                 app:cornerRadius="12dp"
-                app:icon="@drawable/ic_group_add"
+                app:icon="@drawable/ic_person_add"
                 android:backgroundTint="@color/theme_accentVeryLightDark"
                 app:iconPadding="@dimen/activity_side_margin_medium"
                 app:iconTint="@color/theme_accentDarkVeryLight"
