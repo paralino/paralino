@@ -1,7 +1,7 @@
 package com.zbapp.locationtrack.data.repos
 
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.repo.group.ICryptoRepository
+import com.zbapp.core.repo.base.ICryptoRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow

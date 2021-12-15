@@ -3,7 +3,9 @@ package com.zbapp.locationtrack.ui.shared.list
 import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.DrawableRes
+import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import com.zbapp.locationtrack.databinding.ElementGenericInfoBinding
 import com.zbapp.locationtrack.ui.shared.ButtonWithProgress
 import com.zbapp.locationtrack.utils.BaseRvItem
@@ -46,4 +48,8 @@ data class EmptyStateData constructor(
     override fun getIdentifier(): String {
         return infoText
     }
+}
+
+val RecyclerView.emptyStateItem: ListItemEmptyState? get() {
+    return this.children.firstOrNull { it is ListItemEmptyState } as? ListItemEmptyState
 }

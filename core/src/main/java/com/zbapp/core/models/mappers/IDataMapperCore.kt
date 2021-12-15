@@ -27,15 +27,23 @@ fun <REMOTE, CORE> Flow<List<CORE>>.encryptList(mapper: IDataMapperCore<CORE, RE
     return this.map { it.encryptList(mapper) }
 }
 
-suspend fun <REMOTE, CORE> List<CORE>.encryptList(mapper: IDataMapperCore<CORE, REMOTE>): List<REMOTE> {
-    return this.map { mapper.core2Remote(it) }
-}
-
-
 fun <REMOTE, CORE> Flow<List<REMOTE>>.decryptList(mapper: IDataMapperCore<CORE, REMOTE>): Flow<List<CORE>> {
     return this.map { it.decryptList(mapper) }
 }
 
-suspend fun <REMOTE, CORE> List<REMOTE>.decryptList(mapper: IDataMapperCore<CORE, REMOTE>): List<CORE> {
-    return this.map { mapper.remote2Core(it) }
+
+suspend inline fun <REMOTE, CORE> List<CORE>.encryptList(mapper: IDataMapperCore<CORE, REMOTE>): List<REMOTE> {
+    return mapper.encryptList(this)
+}
+
+suspend inline fun <REMOTE, CORE> IDataMapperCore<CORE, REMOTE>.encryptList(list: List<CORE>): List<REMOTE> {
+    return list.map { this.core2Remote(it) }
+}
+
+suspend inline fun <REMOTE, CORE> List<REMOTE>.decryptList(mapper: IDataMapperCore<CORE, REMOTE>): List<CORE> {
+    return mapper.decryptList(this)
+}
+
+suspend inline fun <REMOTE, CORE> IDataMapperCore<CORE, REMOTE>.decryptList(list: List<REMOTE>): List<CORE> {
+    return list.map { this.remote2Core(it) }
 }

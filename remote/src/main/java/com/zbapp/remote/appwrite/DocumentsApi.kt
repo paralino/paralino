@@ -1,24 +1,48 @@
 package com.zbapp.remote.appwrite
 
-import com.zbapp.core.models.raw.SimpleDocumentRaw
 import com.zbapp.core.repo.group.DocumentResponse
 import com.zbapp.core.repo.group.DocumentsResponse
 import com.zbapp.core.repo.group.IDocumentsApi
+import kotlinx.serialization.json.JsonObject
 
 class DocumentsApi constructor(
     private val remoteModule: AppWriteRemoteModule
 ) : IDocumentsApi {
 
-    override suspend fun createOrUpdateDocument(collectionId: String, data: SimpleDocumentRaw, users: List<String>?): DocumentResponse {
-        return createOrUpdateDocument(collectionId, data.id, mapOf("ownerId" to data.ownerId, "data" to data.data), users)
+    override suspend fun createChildDocument(
+        collectionId: String,
+        data: Any,
+        read: List<String>?,
+        write: List<String>?,
+        parentDocId: String,
+        parentDocProperty: String,
+        appendToParent: Boolean
+    ): DocumentResponse {
+        return remoteModule.execute {
+            database.createDocument(
+                collectionId = collectionId,
+                data = data,
+                read = read,
+                write = write,
+                parentDocument = parentDocId,
+                parentProperty = parentDocProperty,
+                parentPropertyType = if(appendToParent) "append" else "assign"
+            ).body!!.string()
+        }
     }
 
-    override suspend fun createOrUpdateDocument(collectionId: String, groupId: String, data: Map<String, String?>, users: List<String>?): DocumentResponse {
+    override suspend fun createOrUpdateDocument(
+        collectionId: String,
+        data: Any,
+        docId: String?,
+        read: List<String>?,
+        write: List<String>?
+    ): DocumentResponse {
         return remoteModule.execute {
-            if(groupId.isBlank())
-                database.createDocument(collectionId, data, read = users).body!!.string()
+            if (docId.isNullOrBlank())
+                database.createDocument(collectionId, data, read = read, write = write).body!!.string()
             else
-                database.updateDocument(collectionId, groupId, data, read = users).body!!.string()
+                database.updateDocument(collectionId, docId, data, read = read, write).body!!.string()
         }
     }
 

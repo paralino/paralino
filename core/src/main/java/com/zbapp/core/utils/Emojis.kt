@@ -2,8 +2,12 @@ package com.zbapp.core.utils
 
 object Emojis {
 
+    val lightBulb = "\uD83D\uDCA1"
+    val lock = "\uD83D\uDD12"
+    val robot = "\uD83E\uDD16"
+
     val group1 = listOf(
-        "\uD83D\uDD12", // lock
+        lock, // lock
         "\uD83E\uDD81", // lion
         "\uD83D\uDC2F", // tiger
         "\uD83D\uDC34", // horse
@@ -12,7 +16,7 @@ object Emojis {
         "\uD83D\uDC2E", // cow
         "\uD83D\uDC37", // pig
         "\uD83D\uDC7D", // alien
-        "\uD83E\uDD16", // robot
+        robot, // robot
         "\uD83D\uDC80", // skull
         "\uD83D\uDCA9", // poo
         "\uD83D\uDC31", // cat
@@ -119,8 +123,6 @@ object Emojis {
         "⚪", // circle white
         "⚫", // circle black
     )
-
-    val lightBulb = "\uD83D\uDCA1"
 
     val allEmojis = group1 + group2
 }

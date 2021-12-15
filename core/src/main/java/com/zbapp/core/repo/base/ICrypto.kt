@@ -1,4 +1,4 @@
-package com.zbapp.core.repo.group
+package com.zbapp.core.repo.base
 
 import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.decodeFromString

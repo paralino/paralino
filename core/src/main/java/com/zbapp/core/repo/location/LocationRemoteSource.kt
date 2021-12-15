@@ -1,19 +1,22 @@
 package com.zbapp.core.repo.location
 
-import com.zbapp.core.config
+import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.raw.LocationHistoryRaw
-import com.zbapp.core.models.raw.SimpleDocumentRaw
+import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.repo.group.IDocumentsApi
+import com.zbapp.core.utils.BaseRemoteModule
 import com.zbapp.core.utils.blocking
+import kotlinx.serialization.decodeFromString
 
 class LocationRemoteSource constructor(
-    private val api: IDocumentsApi
+    private val api: IDocumentsApi,
+    private val config: BackendConfig
 ) {
 
-    suspend fun getCurrentLocationsForGroup(groupId: String): List<SimpleDocumentRaw> {
+    suspend fun getCurrentLocationsForGroup(groupId: String): List<MemberDocumentRaw> {
         return blocking {
             api.getDocuments(config.collectionLocationsID).let {
-                IDocumentsApi.getDocumentsFromJson(it)
+                BaseRemoteModule.formatter.decodeFromString(it)
             }
         }
     }
@@ -26,10 +29,17 @@ class LocationRemoteSource constructor(
         TODO("Not yet implemented")
     }
 
-    suspend fun saveCurrentLocation(data: SimpleDocumentRaw, readPermissions: List<String>): SimpleDocumentRaw {
+    suspend fun saveCurrentLocation(
+        data: MemberDocumentRaw,
+        readPermissions: List<String>
+    ): MemberDocumentRaw {
         return blocking {
-            val response = api.createOrUpdateDocument(config.collectionLocationsID, data, readPermissions)
-            IDocumentsApi.getDocumentFromJson(response)
+            api.createOrUpdateDocument(
+                collectionId = config.collectionLocationsID,
+                docId = data.groupId,
+                data = data.toPostJson(),
+                read = readPermissions
+            ).let { BaseRemoteModule.formatter.decodeFromString(it) }
         }
     }
 

@@ -11,22 +11,22 @@ import kotlinx.coroutines.flow.*
 
 class PreCheckControl(
     private val userRepository: UserRepository
-): BaseRepository() {
+) : BaseRepository() {
 
     fun start(): Flow<DataSetupState> {
 
-        if(BuildConfig.internalTesting) {
+        if (BuildConfig.internalTesting) {
             StrictMode.VmPolicy.Builder()
                 .detectAll()
                 .penaltyLog()
                 .build()
         }
 
-        if(!config.isTokenValid || config.mainServerUrl.isBlank())
+        if (!config.isTokenValid)
             return flow { throw NotFoundException("User not found") }
 
         return flow {
-            userRepository.restoreSession(config.mainServerUrl)
+            userRepository.restoreSession()
             emit(DataSetupState.SESSION_READY)
             initialRefresh().firstOrNull()
             emit(DataSetupState.USER_READY)

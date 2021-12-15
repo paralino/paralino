@@ -4,9 +4,12 @@
     <!-- Base application theme. -->
     <style name="AppThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <item name="colorPrimary">@color/theme_lightest</item>
-        <item name="colorPrimaryVariant">@color/theme_lightest</item>
-        <item name="colorOnPrimary">@color/theme_medium</item>
+        <item name="colorPrimary">@color/theme_high</item>
+        <item name="colorPrimaryVariant">@color/theme_highest</item>
+        <item name="colorOnPrimary">@color/theme_light</item>
+
+        <item name="colorSurface">@color/theme_lightest</item>
+        <item name="colorOnSurface">@color/theme_highest</item>
 
         <item name="colorSecondary">@color/accent</item>
         <item name="colorSecondaryVariant">@color/accentDark</item>

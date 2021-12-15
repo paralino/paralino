@@ -1,24 +1,25 @@
 package com.zbapp.core.repo.group
 
-import com.zbapp.core.models.raw.SimpleDocumentRaw
-import com.zbapp.core.utils.BaseRemoteModule
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.JsonObject
 
 interface IDocumentsApi {
-    suspend fun createOrUpdateDocument(
+
+    suspend fun createChildDocument(
         collectionId: String,
-        data: SimpleDocumentRaw,
-        users: List<String>? = null
+        data: Any,
+        read: List<String>?,
+        write: List<String>?,
+        parentDocId: String,
+        parentDocProperty: String,
+        appendToParent: Boolean
     ): DocumentResponse
 
     suspend fun createOrUpdateDocument(
         collectionId: String,
-        groupId: String,
-        data: Map<String, String?>,
-        users: List<String>? = null
+        data: Any,
+        docId: String? = null,
+        read: List<String>? = null,
+        write: List<String>? = null
     ): DocumentResponse
 
     suspend fun getDocument(collectionId: String, groupId: String): DocumentResponse
@@ -27,25 +28,6 @@ interface IDocumentsApi {
 
     suspend fun deleteDocument(collectionId: String, groupId: String)
 
-    companion object {
-        fun getDocumentFromJson(content: DocumentResponse): SimpleDocumentRaw {
-            val json = BaseRemoteModule.formatter.parseToJsonElement(content)
-            return parseDocument(json)
-        }
-
-        fun getDocumentsFromJson(content: DocumentsResponse): List<SimpleDocumentRaw> {
-            val json = BaseRemoteModule.formatter.parseToJsonElement(content)
-            return json.jsonObject["documents"]?.jsonArray?.map { parseDocument(it) } ?: emptyList()
-        }
-
-        private fun parseDocument(element: JsonElement): SimpleDocumentRaw {
-            return SimpleDocumentRaw(
-                id = element.jsonObject["\$id"]!!.jsonPrimitive.content,
-                ownerId = element.jsonObject["ownerId"]!!.jsonPrimitive.content,
-                data = element.jsonObject["data"]?.jsonPrimitive?.content ?: ""
-            )
-        }
-    }
 }
 
 typealias DocumentsResponse = String

@@ -3,6 +3,7 @@ package com.zbapp.core.repo.user
 import com.zbapp.core.config
 import com.zbapp.core.logg
 import com.zbapp.core.models.Payload
+import com.zbapp.core.models.data
 import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.models.mappers.decrypt
 import com.zbapp.core.models.raw.UserMeRaw
@@ -12,6 +13,8 @@ import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.utils.NotFoundException
 import com.zbapp.core.utils.UnauthorizedException
 import com.zbapp.core.utils.UnverifiedUserException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
 
@@ -21,16 +24,19 @@ class UserRepository(
     val mapper: IUserDataMapperCore
 ) : BaseRepository() {
 
-    companion object {
-        var _cachedUser: UserMe? = null
-    }
-
     val cachedUserId: String get() = config.userId
-    var cachedUser: UserMe?
-        get() = _cachedUser
-        set(value) {
-            _cachedUser = value
-        }
+
+    val localUser: StateFlow<Payload<UserMe>> = local.getMe()
+        .decrypt(mapper)
+        .map<UserMe, Payload<UserMe>> { Payload.Success(it) }
+        .catch { emit(Payload.Error(it)) }
+        .stateIn(
+            scope = CoroutineScope(Dispatchers.Main),
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = Payload.Loading
+        )
+
+    val cachedUser: UserMe? get() = localUser.value.data
 
     fun login(email: String, password: String): Flow<Unit> {
         return getDataOnce(
@@ -73,24 +79,12 @@ class UserRepository(
         ).map { Unit }
     }
 
-    fun restoreSession(serverUrl: String) {
+    fun restoreSession() {
 //        remote.restoreSession(serverUrl, config.token)
     }
 
-    fun getUserLocally(): Flow<UserMe> {
-        return local.getMe()
-            .decrypt(mapper)
-            .onEach { cachedUser = it }
-            .catch {
-                cachedUser = null
-                throw it
-            }
-    }
-
     fun getMe(): Flow<Payload<UserMe>> {
-        return getUserLocally().map<UserMe, Payload<UserMe>> {
-            Payload.Success(it)
-        }.onStart { emit(Payload.Loading) }.catch { emit(Payload.Error(it)) }
+        return localUser
     }
 
     fun refreshUserIfAvailable(): Flow<UserMe> {
@@ -120,40 +114,11 @@ class UserRepository(
                 }
             }
     }
-//
-//    private fun initializeUser(): Flow<UserMe> {
-//        if (!config.isTokenValid) {
-//            return flow { throw Exception("Token is not available") }
-//        }
-//
-//        return getDataOnce(
-//            remote = {
-//                val user = UserMe(
-//                    id = config.userId,
-//                    email = config.email
-//                )
-//                remote.initVerifiedUser(user)
-//            },
-//            localUpdate = {
-//                config.emailConfirmed = true
-//                updateLocalUser(it)
-//            },
-//            remotePreference = RemotePreference.FORCE
-//        )
-//            .catch {
-//                if (it is UnverifiedUserException) {
-//                    config.emailConfirmed = false
-//                }
-//                logg.e("Error refreshing user")
-//                throw it
-//            }
-//    }
 
     private suspend fun updateLocalUser(data: UserMeRaw) {
         config.userId = data.id
         config.email = data.email
-        cachedUser = local.update(data)
-
+        local.update(data)
     }
 
     fun editUsername(newName: String): Flow<Boolean> {
@@ -172,8 +137,9 @@ class UserRepository(
         ).map { true }
     }
 
-    suspend fun clear() {
-        cachedUser = null
+
+
+    private suspend fun clear() {
         local.clear()
     }
 

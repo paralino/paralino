@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_side_margin_medium_large"
+        android:background="@drawable/shape_main_rounded_background"
+        android:elevation="8dp"
+        android:padding="@dimen/activity_side_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvInviteCode"
+            style="@style/TextStyle.Bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/activity_side_margin_very_small"
+            app:autoSizeMaxTextSize="100sp"
+            app:autoSizeMinTextSize="16sp"
+            app:autoSizeTextType="uniform"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintHeight_min="60dp"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="KDSKF-JKFSD" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvInviteCodeValidity"
+            style="@style/TextStyle.Regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_time"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/activity_side_margin_small"
+            android:paddingVertical="@dimen/activity_side_margin_small"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvInviteCode"
+            tools:text="June 23, 2021 14:30" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/bCopy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_copy"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/bShare"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="@id/tvInviteCode"
+            app:layout_constraintTop_toBottomOf="@id/tvInviteCodeValidity" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/bShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_side_margin"
+            android:layout_marginTop="8dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_share"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tvInviteCode"
+            app:layout_constraintStart_toEndOf="@id/bCopy"
+            app:layout_constraintTop_toBottomOf="@id/tvInviteCodeValidity" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/bDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_side_margin"
+            android:layout_marginTop="8dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_delete"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tvInviteCode"
+            app:layout_constraintTop_toBottomOf="@id/tvInviteCodeValidity"
+            app:tint="@color/highlightRed" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>

@@ -6,11 +6,9 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.zbapp.core.models.data
-import com.zbapp.core.models.location.PostLocationModel
+import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.repo.NoValidContractsException
 import com.zbapp.core.repo.location.LocationRepository
-import com.zbapp.locationtrack.data.models.location.LocationEntity
-import com.zbapp.locationtrack.data.mappers.LocationMapper
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +72,7 @@ class LocationService : Service() {
             .launchIn(serviceDefaultScope)
     }
 
-    private fun saveLocation(data: PostLocationModel) {
+    private fun saveLocation(data: LocationDataModel) {
         locationRepository.pushLocation(data)
             .catch {
                 logw("Error saving saving location")

@@ -6,7 +6,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.util.lruCache
 import androidx.preference.PreferenceManager
-import com.zbapp.core.models.location.BaseLocationModel
+import com.zbapp.core.models.location.LocationDataModel
+import com.zbapp.core.models.location.MemberModel
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentMapBinding
@@ -81,7 +82,7 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
         )
         vb.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
-        if(requireContext().isDarkThemeOn())
+        if (requireContext().isDarkThemeOn())
             vb.mapView.overlayManager?.tilesOverlay?.setColorFilter(TilesOverlay.INVERT_COLORS)
 
         vb.mapView.tileProvider.clearTileCache()
@@ -109,24 +110,26 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
 
     }
 
-    private fun updateMarkers(list: List<BaseLocationModel>) {
+    private fun updateMarkers(list: List<MemberModel>) {
         synchronized(markerCache) {
             // remove markers not in current list
             markerCache.snapshot().keys.subtract(list.map { it.userId }).forEach {
                 markerCache.remove(it)
             }
 
-            list.forEach { model ->
-                val marker = markerCache.get(model.userId)
-                if(marker != null) {
-                    marker.position = GeoPoint(model.lat, model.lng)
-                    if(marker.relatedObject?.toString() != model.imageBase64)
-                        marker.icon = getPin(model.imageBase64)
-                } else {
-                    val newMarker = createMarker(model)
-                    markerCache.put(model.userId, newMarker)
+            list
+                .filter { it.data != null }
+                .forEach { model ->
+                    val marker = markerCache.get(model.userId)
+                    if (marker != null) {
+                        marker.position = GeoPoint(model.data!!.lat, model.data!!.lng)
+                        if (marker.relatedObject?.toString() != model.imageBase64)
+                            marker.icon = getPin(model.imageBase64)
+                    } else {
+                        val newMarker = createMarker(model, model.data!!)
+                        markerCache.put(model.userId, newMarker)
+                    }
                 }
-            }
         }
     }
 
@@ -138,7 +141,7 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
         vb.mapView.overlays.removeAll { it is Marker }
         vb.mapView.overlays.addAll(markers)
 
-        if(markers.isNotEmpty()) {
+        if (markers.isNotEmpty()) {
             if (trackPositions) {
                 vb.mapView.zoomToBoundingBox(
                     BoundingBox.fromGeoPointsSafe(markers.map { it.position }),
@@ -154,11 +157,11 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
         }
     }
 
-    private fun createMarker(model: BaseLocationModel): Marker {
+    private fun createMarker(model: MemberModel, data: LocationDataModel): Marker {
         val marker = Marker(vb.mapView)
         marker.id = model.userId
         marker.relatedObject = model.imageBase64
-        marker.position = GeoPoint(model.lat, model.lng)
+        marker.position = GeoPoint(data.lat, data.lng)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         marker.title = model.name
         marker.infoWindow = getInfoWindow()
@@ -181,7 +184,7 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
         trackPositions = false
         vb.fabGroup.isSelected = false
         vb.mapView.controller.animateTo(marker.position, vb.mapView.zoomLevelDouble, 100)
-        if(marker.isInfoWindowShown)
+        if (marker.isInfoWindowShown)
             marker.closeInfoWindow()
         else marker.showInfoWindow()
         return false

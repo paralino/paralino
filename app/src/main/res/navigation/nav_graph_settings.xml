@@ -39,5 +39,38 @@
         tools:layout="@layout/fragment_generic_info"
         />
 
+    <fragment
+        android:id="@+id/manageInviteFragment"
+        android:name="com.zbapp.locationtrack.ui.invite.ManageInviteFragment"
+        android:label="ManageInviteFragment"
+        tools:layout="@layout/fragment_invite_manage"
+        >
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri=".*/settings/invite" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/acceptInviteFragment"
+        android:name="com.zbapp.locationtrack.ui.invite.AccessCodeInputFragment"
+        android:label="AcceptInviteFragment"
+        tools:layout="@layout/fragment_invite_accept"
+        >
+        <argument
+            android:name="code"
+            app:nullable="true"
+            app:argType="string"
+            android:defaultValue="@null"
+            />
+        <argument
+            android:name="groupId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri=".*/invite/{code}" />
+    </dialog>
+
 
 </navigation>

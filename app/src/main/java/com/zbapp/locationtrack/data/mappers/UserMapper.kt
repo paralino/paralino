@@ -3,9 +3,9 @@ package com.zbapp.locationtrack.data.mappers
 import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
-import com.zbapp.core.repo.group.IUserCrypto
-import com.zbapp.core.repo.group.decryptModel
-import com.zbapp.core.repo.group.encryptModel
+import com.zbapp.core.repo.base.IUserCrypto
+import com.zbapp.core.repo.base.decryptModel
+import com.zbapp.core.repo.base.encryptModel
 import com.zbapp.locationtrack.data.models.user.UserEntity
 
 class UserMapper(

@@ -11,7 +11,11 @@
     <string name="button_done">Done</string>
     <string name="button_skip">Skip</string>
     <string name="button_retry">Retry</string>
+    <string name="button_next">Next</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="button_save">Save</string>
 
+    <string name="alert_title_confirm">Please confirm</string>
     <string name="error_server_unavailable">Unable to connect!</string>
     <string name="error_something_wrong">Something went wrong!</string>
     <string name="error_generic_snacbar">Ups, please try again.</string>
@@ -83,8 +87,6 @@
 
     <string name="info_email_confirm">Please confirm your email address!</string>
 
-    <string name="groups_new_name_placeholder">Group name</string>
-    <string name="groups_new_button_text">Create</string>
     <string name="groups_sharing_section_title_group">Group</string>
     <string name="groups_sharing_section_title_duration">Duration</string>
     <string name="groups_sharing_section_title_extra">Extra</string>
@@ -92,5 +94,35 @@
     <string name="groups_sharing_button_start">Start sharing</string>
 
     <string name="groups_sharing_duration_type_infinite">Endless</string>
+
+    <string name="invite_create_button">CREATE PERSONAL ID</string>
+    <string name="toast_copy_invite_code">ID copied</string>
+    <string name="invite_delete_alert_title">Are you sure you want to delete this ID?</string>
+    <string name="invite_manage_empty_description">You don\'t have an active personal ID.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
+    <string name="invite_manage_description">Someone wants to add you to their group?\nShare this code with them and start securely sharing your location.</string>
+    <string name="invite_connect_code_placeholder">User ID</string>
+    <string name="invite_connect_disclaimer_group">By accepting this invite you will be added to **%s** group and all group members will see your presence. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
+    <string name="invite_connect_disclaimer_user">You are about to add **%1$s** to **%2$s** group.\nAfter that you can start securely sharing your location.</string>
+    <string name="invite_connect_button_addToGroup">ADD TO GROUP</string>
+    <string name="invite_connect_button_request">REQUEST ACCESS</string>
+    <string name="invite_connect_button_pickGroup">Choose a group</string>
+    <string name="invite_connect_alert_pickGroup">Please choose a group</string>
+    <string name="invite_connect_title">To connect with others, enter their user ID</string>
+
+    <string name="group_members_item_remove_button">Remove</string>
+    <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>
+    <string name="group_members_empty_info">This group is lonely!\nAdd someone to securely share your location with.</string>
+    <string name="group_details_section_members_title">Members **(%d)**</string>
+    <string name="group_details_menu_edit">Edit</string>
+    <string name="group_details_menu_delete">Delete group</string>
+    <string name="group_details_delete_group_alert_title">Are you sure you want delete this group?\nThis is irreversible and will remove all connection with members and remove all group data!</string>
+    <string name="group_details_delete_group_alert_button">Delete</string>
+    <string name="group_details_add_member_button">Add new member</string>
+    <string name="group_details_map_action_button">Open map</string>
+
+    <string name="group_create_title">Create new group</string>
+    <string name="group_edit_title">Edit group</string>
+    <string name="group_create_name_placeholder">Group name</string>
+    <string name="group_create_button_text">Create</string>
 
 </resources>
