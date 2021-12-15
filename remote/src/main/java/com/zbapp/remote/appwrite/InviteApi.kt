@@ -4,10 +4,7 @@ import com.zbapp.core.models.invite.InviteCode
 import com.zbapp.core.repo.group.IDocumentsApi
 import com.zbapp.core.repo.invite.IInviteApi
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.TimeoutException
 import com.zbapp.core.utils.randomString
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonArray
@@ -62,18 +59,6 @@ class InviteApi constructor(
             functions.createExecution(functionId = config.functionInviteGetUrlID, url)
             poll { getInviteCodes().firstOrNull { it.inviteUrl == url } }
         }
-    }
-
-    private suspend fun poll(action: suspend () -> InviteCode?): InviteCode {
-        return withTimeoutOrNull(15_000) {
-            delay(2_000)
-            var invite: InviteCode? = action()
-            while (invite == null) {
-                delay(3_000)
-                invite = action()
-            }
-            invite
-        } ?: throw TimeoutException("Invite code request timed out")
     }
 
     override suspend fun revokeInviteCode(id: String) {
