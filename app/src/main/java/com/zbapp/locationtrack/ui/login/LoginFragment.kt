@@ -93,6 +93,10 @@ class LoginFragment : BaseFragment(R.layout.fragment_login) {
             val isDone = it is Payload.Success && it.data == SignUpStep.ALL_DONE
             val isLoading =
                 it is Payload.Loading || (it is Payload.Success && it.data != SignUpStep.ALL_DONE)
+
+            vb.tvForgotPassword.isEnabled = it is Payload.Error
+            vb.tvSignUpLogin.isEnabled = it is Payload.Error
+
             vb.bLogin.isEnabled = it is Payload.Error
             vb.bLogin.setLoading(isLoading, isDone)
 
