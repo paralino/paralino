@@ -23,7 +23,6 @@ interface IUserApi {
             val json = BaseRemoteModule.formatter.parseToJsonElement(content)
             return UserMeRaw(
                 id = json.jsonObject["\$id"]?.jsonPrimitive?.content!!,
-                name = json.jsonObject["name"]?.jsonPrimitive?.content ?: "",
                 email = json.jsonObject["email"]?.jsonPrimitive?.content ?: "",
                 registration = json.jsonObject["registration"]?.jsonPrimitive?.longOrNull ?: 0,
                 emailVerification = json.jsonObject["emailVerification"]?.jsonPrimitive?.booleanOrNull ?: false,

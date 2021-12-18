@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 data class UserMeRaw constructor(
     val id: String = "",
 
-    val name: String = "",
     val email: String = "",
     val registration: Long = 0,
     val emailVerification: Boolean = false,
@@ -16,12 +15,14 @@ data class UserMeRaw constructor(
 @Serializable
 data class UserMeDataRaw constructor(
     var imageBase64: String? = null,
+    var userName: String? = null,
     val privateKeyBackup: String? = null,
     val asymmetricKeys: List<String>? = null
 ) {
     fun toPostJson(): Map<String, Any> {
         return mutableMapOf<String, Any>().apply {
             imageBase64?.let { put("imageBase64", it) }
+            userName?.let { put("userName", it) }
             privateKeyBackup?.let { put("privateKeyBackup", it) }
             asymmetricKeys?.takeIf { it.isNotEmpty() }?.let { keys ->
                 put("asymmetricKeys", keys)

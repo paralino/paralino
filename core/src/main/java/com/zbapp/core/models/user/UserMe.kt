@@ -6,18 +6,20 @@ import kotlinx.serialization.Serializable
 data class UserMe constructor(
     val id: String = "",
 
-    val name: String = "",
-
     val email: String = "",
     val registration: Long = 0,
     val emailVerification: Boolean = false,
 
     val data: UserMeData? = null
-)
+) {
+
+    val name: String get() = data?.userName ?: ""
+}
 
 @Serializable
 data class UserMeData constructor(
     var imageBase64: String? = null,
+    val userName: String = "",
     val privateKeyBackup: SymmetricCryptoKeyData? = null,
     val asymmetricKeys: List<AsymmetricCryptoKeyData>? = null
 )

@@ -34,7 +34,6 @@ class UserMapper(
     override suspend fun remote2Core(model: UserMeRaw): UserMe {
         return UserMe(
             id = model.id,
-            name = model.name,
             email = model.email,
             registration = model.registration,
             emailVerification = model.emailVerification,
@@ -45,7 +44,6 @@ class UserMapper(
     override suspend fun core2Remote(model: UserMe): UserMeRaw {
         return UserMeRaw(
             id = model.id,
-            name = model.name,
             email = model.email,
             registration = model.registration,
             emailVerification = model.emailVerification,
@@ -58,6 +56,7 @@ class UserDataMapper(private val crypto: IUserCrypto) : IUserDataMapperCore {
     override suspend fun remote2Core(model: UserMeDataRaw): UserMeData {
         return UserMeData(
             imageBase64 = model.imageBase64?.let { crypto.decryptData(it) },
+            userName = model.userName?.let { crypto.decryptData(it) } ?: "",
             privateKeyBackup = model.privateKeyBackup?.let {
                 BaseRemoteModule.formatter.decodeFromString(it)
             },
@@ -68,6 +67,7 @@ class UserDataMapper(private val crypto: IUserCrypto) : IUserDataMapperCore {
     override suspend fun core2Remote(model: UserMeData): UserMeDataRaw {
         return UserMeDataRaw(
             imageBase64 = model.imageBase64?.let { crypto.encryptData(it) },
+            userName = model.userName.let { crypto.encryptData(it) },
             privateKeyBackup = model.privateKeyBackup?.let {
                 BaseRemoteModule.formatter.encodeToString(it)
             },

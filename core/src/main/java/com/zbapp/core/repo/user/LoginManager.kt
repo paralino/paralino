@@ -37,7 +37,9 @@ class LoginManager(
             val user: Pair<UserMeRaw, UserSession>
             try {
                 delay(500)
-                user = userRepo.remoteSignUp(userName, email, password).first()
+                // encrypted name can not fit in database field in appwrite
+                // user name is saved encrypted to user preferences
+                user = userRepo.remoteSignUp(userName = null, email, password).first()
             } catch (e: Exception) {
                 throw SignUpStepException(SignUpStep.SIGNING_UP, e)
             }
@@ -46,7 +48,7 @@ class LoginManager(
             val remoteData: UserMeDataRaw
             try {
                 delay(500)
-                remoteData = prepareUserKeys(password, user.first.id)
+                remoteData = prepareUserKeys(password, user.first.id, userName)
             } catch (e: Exception) {
                 cryptoAuth.clearUserPersonalKey()
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
@@ -78,11 +80,12 @@ class LoginManager(
             }
     }
 
-    private suspend fun prepareUserKeys(password: String, userId: String): UserMeDataRaw {
+    private suspend fun prepareUserKeys(password: String, userId: String, name: String): UserMeDataRaw {
         val keys = cryptoAuth.generateNewKeysForUser(password, userId, null)
 
         cryptoAuth.saveUserKeyLocally(keys.userPersonalKey)
         val data = UserMeData(
+            userName = name,
             privateKeyBackup = keys.symmetricCryptoKeyData,
             asymmetricKeys = listOf(keys.asymmetricCryptoKeyData)
         )
