@@ -1,10 +1,13 @@
 package com.zbapp.locationtrack.di
 
 import com.zbapp.core.ICoroutineScopeProvider
+import com.zbapp.core.crypto.CryptoAuth
+import com.zbapp.core.crypto.ICryptoAuthProvider
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
 import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.mappers.IUserDataMapperCore
+import com.zbapp.core.models.mappers.IUserMapperCore
 import com.zbapp.core.repo.base.ICryptoRepository
 import com.zbapp.core.repo.base.IGroupCrypto
 import com.zbapp.core.repo.base.IUserCrypto
@@ -19,6 +22,7 @@ import com.zbapp.core.repo.location.LocationRemoteSource
 import com.zbapp.core.repo.user.IUserApi
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.UserRemoteSource
+import com.zbapp.crpyto.CryptoAuthProvider
 import com.zbapp.crpyto.DummyCryptoRepository
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.BuildConfig
@@ -52,10 +56,14 @@ val daoModules = module {
 val cryptoModule = module {
     single<IUserCrypto> { get<ICryptoRepository>() }
     single<IGroupCrypto> { get<ICryptoRepository>() }
+    single { CryptoAuthProvider() }
+    single<ICryptoAuthProvider> { get<CryptoAuthProvider>() }
+    single { CryptoAuth(get()) }
 }
 
 val mappersModule = module {
-    single { UserMapper(get()) }
+    single { UserDataMapper(get()) }
+    single { UserMapper(get(), get()) }
     single { SharingContractsMapper }
     single { GroupsMapper(get(), get()) }
     single { MemberMapper(get()) }
@@ -91,10 +99,11 @@ val remoteDataSourceModule = module {
 val coreDependencyModules = module {
     single<ICoroutineScopeProvider> { androidApplication() as AppClass }
 //    single<ICryptoRepository> { CryptoRepository(androidApplication()) }
-    single<ICryptoRepository> { DummyCryptoRepository() }
+    single<ICryptoRepository> { DummyCryptoRepository(get()) }
 
     single<IGroupDataMapperCore> { get<GroupsMapper>() }
-    single<IUserDataMapperCore> { get<UserMapper>() }
+    single<IUserMapperCore> { get<UserMapper>() }
+    single<IUserDataMapperCore> { get<UserDataMapper>() }
     single<IMemberMapperCore> { get<MemberMapper>() }
 
     single<IInviteApi> { InviteApi(get(), get()) }
