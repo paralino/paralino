@@ -141,10 +141,9 @@ class LoginViewModel(
 
     private fun getSignUpStepError(error: SignUpStepException): String? {
         val defaultRes: Int? = when (error.cause) {
-            is NotFoundException -> R.string.error_user_not_found
             is ConflictException -> R.string.form_invalid_username_conflict_description
             is UnauthorizedException -> R.string.form_invalid_credentials_description
-            else -> error.errorStringRes()
+            else -> error.cause?.errorStringRes()
         }
 
         if (defaultRes != null)

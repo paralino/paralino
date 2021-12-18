@@ -3,6 +3,7 @@ package com.zbapp.remote.appwrite
 import android.app.Application
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.utils.BaseRemoteException
+import com.zbapp.core.utils.ConnectionException
 import com.zbapp.core.utils.TimeoutException
 import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
@@ -14,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.net.UnknownHostException
 
 class AppWriteRemoteModule(
     private val app: Application,
@@ -75,12 +77,17 @@ class AppWriteRemoteModule(
 
     companion object {
         fun mapException(exception: Exception): Exception {
-            val sourceException = (exception as? AppwriteException) ?: return exception
-            return BaseRemoteException.fromCode(
-                sourceException.code,
-                sourceException.message,
-                sourceException.cause ?: Throwable(sourceException.response)
-            )
+            return (exception as? AppwriteException)?.let {
+                BaseRemoteException.fromCode(
+                    it.code,
+                    it.message,
+                    it.cause ?: Throwable(it.response)
+                )
+            } ?: let {
+                if(exception is UnknownHostException) {
+                    ConnectionException(exception.message, code = null, exception)
+                } else exception
+            }
         }
     }
 
