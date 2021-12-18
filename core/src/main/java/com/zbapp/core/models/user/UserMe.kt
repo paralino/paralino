@@ -26,7 +26,6 @@ data class UserMeData constructor(
 
 @Serializable
 data class AsymmetricCryptoKeyData(
-    val identity: String,
     val privateKey: String,
     val publicKey: String,
     val version: Int
@@ -34,7 +33,6 @@ data class AsymmetricCryptoKeyData(
 
 @Serializable
 data class SymmetricCryptoKeyData(
-    val identity: String,
     val key: String,
     val version: Int
 )

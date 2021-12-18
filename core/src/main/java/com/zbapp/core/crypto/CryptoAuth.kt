@@ -31,7 +31,6 @@ class CryptoAuth(
                 context = userId.asByteArray()
             )
             SymmetricCryptoKeyData(
-                userId,
                 key = newEncryptedUserKey.asBase64String(),
                 version = keyData.version + 1
             )
@@ -82,12 +81,10 @@ class CryptoAuth(
         )
 
         val symmetricData = SymmetricCryptoKeyData(
-            identity = userId,
             key = encryptedPersonalKey.asBase64String(),
             version = userData?.privateKeyBackup?.version?.plus(1) ?: 1
         )
         val asymmetricData = AsymmetricCryptoKeyData(
-            identity = userId,
             privateKey = encryptedPrivateKey.asBase64String(),
             publicKey = newKeyPair.publicKey.asBase64String(),
             version = userData?.asymmetricKeys?.size?.plus(1) ?: 1
@@ -99,7 +96,6 @@ class CryptoAuth(
     fun generateNewAsymmetricUserKey(user: UserMe): AsymmetricCryptoKeyData {
         val newKeyPair = cryptoAuthProvider.createNewAsymmetricKey()
         return AsymmetricCryptoKeyData(
-            identity = user.id,
             privateKey = newKeyPair.publicKey.asBase64String(),
             publicKey = newKeyPair.publicKey.asBase64String(),
             version = user.data?.asymmetricKeys?.size?.plus(1) ?: 1
