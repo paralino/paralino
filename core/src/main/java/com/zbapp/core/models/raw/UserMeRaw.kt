@@ -1,14 +1,35 @@
 package com.zbapp.core.models.raw
 
+import com.zbapp.core.utils.BaseRemoteModule
+import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
 
 @Serializable
-data class UserMeRaw(
+data class UserMeRaw constructor(
     val id: String = "",
 
     val name: String = "",
     val email: String = "",
     val registration: Long = 0,
     val emailVerification: Boolean = false,
-    val data: String? = null
+    val data: UserMeDataRaw? = null
 )
+
+@Serializable
+data class UserMeDataRaw constructor(
+    var imageBase64: String? = null,
+    val privateKeyBackup: String? = null,
+    val asymmetricKeys: List<String>? = null
+) {
+    fun toPostJson(): Map<String, Any> {
+        return mutableMapOf<String, Any>().apply {
+            imageBase64?.let { put("imageBase64", it) }
+            privateKeyBackup?.let { put("privateKeyBackup", it) }
+            asymmetricKeys?.takeIf { it.isNotEmpty() }?.let { keys ->
+                put("asymmetricKeys", keys)
+            }
+        }
+    }
+}

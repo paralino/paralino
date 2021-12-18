@@ -1,16 +1,24 @@
 package com.zbapp.crpyto
 
+import android.content.Context
 import com.virgilsecurity.android.common.model.FindUsersResult
 import com.virgilsecurity.android.ethreeenclave.interaction.EThree
+import com.virgilsecurity.android.ethreeenclave.interaction.model.EThreeParams
 import com.virgilsecurity.sdk.cards.Card
 import com.zbapp.core.repo.base.IGroupCrypto
 import java.util.*
 
 class CryptoGroups(
-    private val cryptoAuth: CryptoAuth
+    context: Context
 ): IGroupCrypto {
 
-    private val eThree: EThree = cryptoAuth.ethree
+    private val eThree = EThree(
+        EThreeParams(
+            identity = "identity",
+            tokenCallback = { "" },
+            context = context
+        )
+    )
     private val groups = hashMapOf<String, CryptoGroupData>()
     private val users = FindUsersResult()
 

@@ -1,20 +1,21 @@
 package com.zbapp.crpyto
 
 import android.app.Application
+import com.zbapp.core.crypto.CryptoAuth
+import com.zbapp.core.crypto.ICryptoAuthProvider
 import com.zbapp.core.repo.base.ICryptoRepository
 import java.util.*
 
-class CryptoRepository(private val app: Application) : ICryptoRepository {
+class CryptoRepository(
+    private val app: Application,
+    private val cryptoAuthProvider: ICryptoAuthProvider
+) : ICryptoRepository {
 
     var cryptoAuth: CryptoAuth? = null
     var cryptoGroups: CryptoGroups? = null
 
-    override fun init(userId: String) {
-        cryptoAuth = CryptoAuth(app, userId)
-        cryptoGroups = CryptoGroups(cryptoAuth!!)
-    }
-
     override fun reset() {
+        cryptoAuth?.logout()
         cryptoAuth = null
         cryptoGroups = null
     }
@@ -23,7 +24,12 @@ class CryptoRepository(private val app: Application) : ICryptoRepository {
         return cryptoGroups!!.encryptData(groupId, data)
     }
 
-    override suspend fun decryptData(groupId: String, data: String, senderId: String?, dataDate: Date?): String {
+    override suspend fun decryptData(
+        groupId: String,
+        data: String,
+        senderId: String?,
+        dataDate: Date?
+    ): String {
         return cryptoGroups!!.decryptData(groupId, data, senderId, dataDate)
     }
 
@@ -36,17 +42,16 @@ class CryptoRepository(private val app: Application) : ICryptoRepository {
     }
 }
 
-class DummyCryptoRepository(): ICryptoRepository {
-    override fun init(userId: String) {
-
-    }
+class DummyCryptoRepository constructor(
+    private val cryptoAuth: CryptoAuth
+) : ICryptoRepository {
 
     override fun reset() {
-
+        cryptoAuth.logout()
     }
 
     override suspend fun encryptData(data: String): String {
-        return data
+        return cryptoAuth!!.encryptData(data)
     }
 
     override suspend fun encryptData(groupId: String, data: String): String {
@@ -54,7 +59,7 @@ class DummyCryptoRepository(): ICryptoRepository {
     }
 
     override suspend fun decryptData(data: String): String {
-        return data
+        return cryptoAuth!!.decryptData(data)
     }
 
     override suspend fun decryptData(

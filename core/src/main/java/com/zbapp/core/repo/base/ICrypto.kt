@@ -6,7 +6,6 @@ import kotlinx.serialization.encodeToString
 import java.util.*
 
 interface ICryptoRepository: IUserCrypto, IGroupCrypto {
-    fun init(userId: String)
     fun reset()
 }
 
