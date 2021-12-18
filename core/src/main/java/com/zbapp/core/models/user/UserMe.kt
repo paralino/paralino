@@ -1,6 +1,5 @@
 package com.zbapp.core.models.user
 
-import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,13 +17,8 @@ data class UserMe constructor(
 
 @Serializable
 data class UserMeData constructor(
-    @EncodeDefault(EncodeDefault.Mode.NEVER)
     var imageBase64: String? = null,
-
-    @EncodeDefault(EncodeDefault.Mode.NEVER)
     val privateKeyBackup: SymmetricCryptoKeyData? = null,
-
-    @EncodeDefault(EncodeDefault.Mode.NEVER)
     val asymmetricKeys: List<AsymmetricCryptoKeyData>? = null
 )
 

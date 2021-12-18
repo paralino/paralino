@@ -1,10 +1,6 @@
 package com.zbapp.core.models.raw
 
-import com.zbapp.core.utils.BaseRemoteModule
-import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
 
 @Serializable
 data class UserMeRaw constructor(

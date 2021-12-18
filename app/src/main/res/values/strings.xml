@@ -74,6 +74,21 @@
     <string name="login_button_login">LOG IN</string>
     <string name="login_button_reset_password">RESET PASSWORD</string>
 
+    <string name="login_step_logIn">Logging you in</string>
+    <string name="login_step_signUp">Creating account</string>
+    <string name="login_step_encryption">Setting up encryption</string>
+    <string name="login_step_allDone">Success!</string>
+    <string name="login_step_user_setup">Preparing user</string>
+
+    <string name="login_step_error_signUp">Error while creating account</string>
+    <string name="login_step_error_encryption_signUp">Error while setting up encryption</string>
+    <string name="login_step_error_user_setup_signUp">Unable to setup user data, try logging in with current credentials!</string>
+    <string name="login_step_error_user_save_signUp">Error while saving user data, try logging in with current credentials!</string>
+    <string name="login_step_error_logIn">Error while logging you in</string>
+    <string name="login_step_error_encryption_logIn">Your encryption keys seems to be corrupted or non existent, please try again or reset your password (This will delete all your previous data)</string>
+    <string name="login_step_error_user_setup_logIn">Your encryption keys seems to be corrupted, please try again or reset your password (This will delete all your previous data)</string>
+    <string name="login_step_error_user_save_logIn">Unable to save user data, please try again!</string>
+
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
     <string name="form_invalid_username_description">Please try another username.</string>
     <string name="form_invalid_credentials_description">Please check your credentials and try again.</string>

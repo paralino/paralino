@@ -4,11 +4,14 @@ import com.zbapp.core.config
 import com.zbapp.core.crypto.CryptoAuth
 import com.zbapp.core.logg
 import com.zbapp.core.models.mappers.IUserDataMapperCore
+import com.zbapp.core.models.raw.UserMeDataRaw
+import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.SymmetricCryptoKeyData
 import com.zbapp.core.models.user.UserMeData
+import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.UnverifiedUserException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.decodeFromString
 
@@ -27,51 +30,111 @@ class LoginManager(
         return config.emailConfirmed
     }
 
-    fun signUp(userName: String, email: String, password: String): Flow<Unit> {
+    fun signUp(userName: String, email: String, password: String): Flow<SignUpStep> {
         return flow {
-            // TODO separate executions to signup, encryption setup and upload
-            // encrypt user name and sign up
-            val user = userRepo.remoteSignUp(userName, email, password).first()
 
-            // generate crypto keys
-            val keys = cryptoAuth.generateNewKeysForUser(password, user.first.id, null)
+            emit(SignUpStep.SIGNING_UP)
+            val user: Pair<UserMeRaw, UserSession>
+            try {
+                delay(500)
+                user = userRepo.remoteSignUp(userName, email, password).first()
+            } catch (e: Exception) {
+                throw SignUpStepException(SignUpStep.SIGNING_UP, e)
+            }
 
-            // if sign up is success, save keys and user locally, backup user key
-            cryptoAuth.saveUserKeyLocally(keys.userPersonalKey)
-            val data = UserMeData(
-                privateKeyBackup = keys.symmetricCryptoKeyData,
-                asymmetricKeys = listOf(keys.asymmetricCryptoKeyData)
-            )
+            emit(SignUpStep.GENERATING_KEYS)
+            val remoteData: UserMeDataRaw
+            try {
+                delay(500)
+                remoteData = prepareUserKeys(password, user.first.id)
+            } catch (e: Exception) {
+                cryptoAuth.clearUserPersonalKey()
+                throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
+            }
 
-            val remoteData = userDataMapper.core2Remote(data)
+            emit(SignUpStep.INIT_USER_DATA)
+            val updatedUser: UserMeRaw
+            try {
+                delay(500)
+                updatedUser = userRepo.uploadAndInitKeysAndData(remoteData).first()
+            } catch (e: Exception) {
+                cryptoAuth.clearUserPersonalKey()
+                throw SignUpStepException(SignUpStep.INIT_USER_DATA, e)
+            }
 
-            val remoteUser = userRepo.uploadAndInitKeysAndData(remoteData).first()
-            userRepo.initLocallyAfterSignUp(remoteUser, user.second)
-            emit(remoteUser)
+            emit(SignUpStep.SAVE_USER)
+            try {
+                delay(500)
+                userRepo.initLocallyAfterSignUp(updatedUser, user.second)
+            } catch (e: Exception) {
+                throw SignUpStepException(SignUpStep.SAVE_USER, e)
+            }
+
+            emit(SignUpStep.ALL_DONE)
         }
             .catch {
                 logg.e(it)
                 throw it
             }
-            .map { Unit }
     }
 
-    fun login(email: String, password: String): Flow<Unit> {
-        return userRepo.login(email, password)
-            .flatMapLatest { session -> userRepo.getUserIfAvailable().map { it to session } }
-            .onEach {
-                val data: SymmetricCryptoKeyData =
-                    BaseRemoteModule.formatter.decodeFromString(it.first.data?.privateKeyBackup!!)
-                cryptoAuth.signIn(password, it.first.id, data.key)
-                userRepo.initLocallyAfterSignUp(it.first, it.second)
+    private suspend fun prepareUserKeys(password: String, userId: String): UserMeDataRaw {
+        val keys = cryptoAuth.generateNewKeysForUser(password, userId, null)
+
+        cryptoAuth.saveUserKeyLocally(keys.userPersonalKey)
+        val data = UserMeData(
+            privateKeyBackup = keys.symmetricCryptoKeyData,
+            asymmetricKeys = listOf(keys.asymmetricCryptoKeyData)
+        )
+
+        return userDataMapper.core2Remote(data)
+    }
+
+    fun login(email: String, password: String): Flow<SignUpStep> {
+        return flow {
+
+            emit(SignUpStep.SIGNING_UP)
+            val session: UserSession
+            val user: UserMeRaw
+            try {
+                delay(500)
+                session = userRepo.login(email, password).first()
+                user = userRepo.getUserIfAvailable().first()
+            } catch (e: Exception) {
+                throw SignUpStepException(SignUpStep.SIGNING_UP, e)
             }
-            .flatMapLatest { syncData() }
-            .catch {
-                logg.e(it)
-                if (it is UnverifiedUserException)
-                    emit(Unit)
-                else throw it
+
+            emit(SignUpStep.GENERATING_KEYS)
+            val data: SymmetricCryptoKeyData
+            try {
+                delay(500)
+                data = BaseRemoteModule.formatter.decodeFromString(user.data?.privateKeyBackup!!)
+            } catch (e: Exception) {
+                throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
             }
+
+            emit(SignUpStep.INIT_USER_DATA)
+            try {
+                delay(500)
+                val userKey = cryptoAuth.signIn(password, user.id, data.key)
+                cryptoAuth.saveUserKeyLocally(userKey)
+            } catch (e: Exception) {
+                cryptoAuth.logout()
+                throw SignUpStepException(SignUpStep.INIT_USER_DATA, e)
+            }
+
+            emit(SignUpStep.SAVE_USER)
+            try {
+                userRepo.initLocallyAfterSignUp(user, session)
+            } catch (e: Exception) {
+                throw SignUpStepException(SignUpStep.SAVE_USER, e)
+            }
+
+            emit(SignUpStep.ALL_DONE)
+        }.catch {
+            logg.e(it)
+            throw it
+        }
     }
 
     fun syncUserAndData(): Flow<Unit> {
@@ -85,3 +148,13 @@ class LoginManager(
     }
 
 }
+
+enum class SignUpStep {
+    SIGNING_UP,
+    GENERATING_KEYS,
+    INIT_USER_DATA,
+    SAVE_USER,
+    ALL_DONE
+}
+
+class SignUpStepException(val step: SignUpStep, cause: Throwable) : Exception(cause)

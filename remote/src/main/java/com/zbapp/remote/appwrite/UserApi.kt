@@ -3,8 +3,6 @@ package com.zbapp.remote.appwrite
 import com.zbapp.core.repo.user.IUserApi
 import com.zbapp.core.repo.user.SessionResponse
 import com.zbapp.core.repo.user.UserResponse
-import com.zbapp.remote.appwrite.AppWriteRemoteModule
-import kotlinx.serialization.json.JsonObject
 
 class UserApi constructor(
     private val remoteModule: AppWriteRemoteModule
@@ -34,12 +32,10 @@ class UserApi constructor(
         return remoteModule.execute { account.updatePrefs(data).body!!.string() }
     }
 
-    override suspend fun updateUserData(data: JsonObject): UserResponse {
-        return remoteModule.execute { account.updatePrefs(data).body!!.string() }
-    }
-
     override suspend fun changePassword(newPassword: String, oldPassword: String?): UserResponse {
-        return remoteModule.execute { account.updatePassword(newPassword, oldPassword).body!!.string() }
+        return remoteModule.execute {
+            account.updatePassword(newPassword, oldPassword).body!!.string()
+        }
     }
 
     override suspend fun updateEmail(email: String, password: String): UserResponse {

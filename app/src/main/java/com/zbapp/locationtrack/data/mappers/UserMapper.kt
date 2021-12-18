@@ -4,7 +4,6 @@ import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.models.mappers.IUserMapperCore
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
-import com.zbapp.core.models.user.SymmetricCryptoKeyData
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.models.user.UserMeData
 import com.zbapp.core.repo.base.IUserCrypto
@@ -59,7 +58,9 @@ class UserDataMapper(private val crypto: IUserCrypto) : IUserDataMapperCore {
     override suspend fun remote2Core(model: UserMeDataRaw): UserMeData {
         return UserMeData(
             imageBase64 = model.imageBase64?.let { crypto.decryptData(it) },
-            privateKeyBackup = model.privateKeyBackup?.let { BaseRemoteModule.formatter.decodeFromString(it) },
+            privateKeyBackup = model.privateKeyBackup?.let {
+                BaseRemoteModule.formatter.decodeFromString(it)
+            },
             asymmetricKeys = model.asymmetricKeys?.map { crypto.decryptModel(it)!! }
         )
     }
@@ -67,7 +68,9 @@ class UserDataMapper(private val crypto: IUserCrypto) : IUserDataMapperCore {
     override suspend fun core2Remote(model: UserMeData): UserMeDataRaw {
         return UserMeDataRaw(
             imageBase64 = model.imageBase64?.let { crypto.encryptData(it) },
-            privateKeyBackup = model.privateKeyBackup?.let { BaseRemoteModule.formatter.encodeToString(it) },
+            privateKeyBackup = model.privateKeyBackup?.let {
+                BaseRemoteModule.formatter.encodeToString(it)
+            },
             asymmetricKeys = model.asymmetricKeys?.map { crypto.encryptModel(it)!! }
         )
     }

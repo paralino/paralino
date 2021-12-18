@@ -9,7 +9,6 @@ import com.zbapp.core.models.mappers.decrypt
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
-import com.zbapp.core.models.user.UserMeData
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
@@ -19,7 +18,6 @@ import com.zbapp.core.utils.UnverifiedUserException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.serialization.json.JsonObject
 
 
 class UserRepository(
@@ -83,14 +81,6 @@ class UserRepository(
         ).map { Unit }
     }
 
-    fun restoreSession() {
-//        remote.restoreSession(serverUrl, config.token)
-    }
-
-    fun getMe(): Flow<Payload<UserMe>> {
-        return localUser
-    }
-
     fun getUserIfAvailable(): Flow<UserMeRaw> {
         if (!config.isTokenValid) {
             return flow { throw Exception("Token is not available") }
@@ -121,7 +111,7 @@ class UserRepository(
             }
     }
 
-    suspend fun updateLocalUser(data: UserMeRaw) {
+    private suspend fun updateLocalUser(data: UserMeRaw) {
         config.userId = data.id
         config.email = data.email
         local.update(data)

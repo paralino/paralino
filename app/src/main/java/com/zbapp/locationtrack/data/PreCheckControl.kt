@@ -26,7 +26,6 @@ class PreCheckControl(
             return flow { throw NotFoundException("User not found") }
 
         return flow {
-            userRepository.restoreSession()
             emit(DataSetupState.SESSION_READY)
             initialRefresh().firstOrNull()
             emit(DataSetupState.USER_READY)

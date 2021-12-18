@@ -42,6 +42,10 @@ class CryptoAuth(
         cryptoAuthProvider.saveUserPersonalKeyLocally(key)
     }
 
+    fun clearUserPersonalKey() {
+        cryptoAuthProvider.clearUserPersonalKey()
+    }
+
     fun logout() {
         cryptoAuthProvider.clearAllUserKeys()
     }
@@ -49,18 +53,13 @@ class CryptoAuth(
     suspend fun signIn(
         password: String,
         userId: String,
-        keyData: String?
-    ) {
-        blocking {
-            keyData?.let {
-                val userKey = cryptoAuthProvider.decryptDataWithPassword(
-                    data = it.base64ToByteArray(),
-                    password = password,
-                    context = userId.asByteArray()
-                )
-                cryptoAuthProvider.saveUserPersonalKeyLocally(userKey)
-            }
-        }
+        keyData: String
+    ): ByteArray {
+        return cryptoAuthProvider.decryptDataWithPassword(
+            data = keyData.base64ToByteArray(),
+            password = password,
+            context = userId.asByteArray()
+        )
     }
 
     suspend fun generateNewKeysForUser(
@@ -108,12 +107,12 @@ class CryptoAuth(
     }
 
     override suspend fun encryptData(data: String): String {
-        if(data.isEmpty()) return data
+        if (data.isEmpty()) return data
         return encryptDataWithKey(data, cryptoAuthProvider.loadUserPersonalKey())
     }
 
     override suspend fun decryptData(data: String): String {
-        if(data.isEmpty()) return data
+        if (data.isEmpty()) return data
         return decryptDataWithKey(data, cryptoAuthProvider.loadUserPersonalKey())
     }
 

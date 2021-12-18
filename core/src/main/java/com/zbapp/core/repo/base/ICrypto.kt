@@ -5,13 +5,18 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import java.util.*
 
-interface ICryptoRepository: IUserCrypto, IGroupCrypto {
+interface ICryptoRepository : IUserCrypto, IGroupCrypto {
     fun reset()
 }
 
 interface IGroupCrypto {
     suspend fun encryptData(groupId: String, data: String): String
-    suspend fun decryptData(groupId: String, data: String, senderId: String? = null, dataDate: Date? = null): String
+    suspend fun decryptData(
+        groupId: String,
+        data: String,
+        senderId: String? = null,
+        dataDate: Date? = null
+    ): String
 }
 
 interface IUserCrypto {
@@ -35,7 +40,14 @@ suspend inline fun <reified T> IGroupCrypto.encryptModel(groupId: String, data: 
     return encryptData(groupId, BaseRemoteModule.formatter.encodeToString(data))
 }
 
-suspend inline fun <reified T> IGroupCrypto.decryptModel(groupId: String, data: String?, senderId: String? = null, dataDate: Date? = null): T? {
+suspend inline fun <reified T> IGroupCrypto.decryptModel(
+    groupId: String,
+    data: String?,
+    senderId: String? = null,
+    dataDate: Date? = null
+): T? {
     data ?: return null
-    return BaseRemoteModule.formatter.decodeFromString(decryptData(groupId, data, senderId, dataDate))
+    return BaseRemoteModule.formatter.decodeFromString(
+        decryptData(groupId, data, senderId, dataDate)
+    )
 }
