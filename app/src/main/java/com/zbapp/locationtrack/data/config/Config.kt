@@ -12,6 +12,7 @@ class Config(context: Context) : IConfig {
 
     companion object {
         const val keyToken = "prefs.profile.token"
+        const val keyUserKey = "prefs.user.cryptKey"
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
         const val keyEmailConfirmed = "prefs.profile.email.confirmed"
@@ -47,6 +48,12 @@ class Config(context: Context) : IConfig {
         get() = secureSharedData.getBoolean(keyEmailConfirmed, false)
         set(value) {
             secureSharedData.edit { putBoolean(keyEmailConfirmed, value) }
+        }
+
+    override var userKey: String
+        get() = secureSharedData.getString(keyUserKey, "") ?: ""
+        set(value) {
+            secureSharedData.edit { putString(keyUserKey, value) }
         }
 
     override fun clear() {
