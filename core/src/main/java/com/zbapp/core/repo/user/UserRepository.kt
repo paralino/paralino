@@ -4,10 +4,13 @@ import com.zbapp.core.config
 import com.zbapp.core.logg
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
-import com.zbapp.core.models.mappers.IUserDataMapperCore
+import com.zbapp.core.models.mappers.IUserMapperCore
 import com.zbapp.core.models.mappers.decrypt
+import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.models.user.UserMeData
+import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.utils.NotFoundException
@@ -16,12 +19,13 @@ import com.zbapp.core.utils.UnverifiedUserException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.json.JsonObject
 
 
 class UserRepository(
     private val local: IUserLocalDataSource,
     private val remote: UserRemoteSource,
-    val mapper: IUserDataMapperCore
+    val mapper: IUserMapperCore
 ) : BaseRepository() {
 
     val cachedUserId: String get() = config.userId
@@ -38,27 +42,29 @@ class UserRepository(
 
     val cachedUser: UserMe? get() = localUser.value.data
 
-    fun login(email: String, password: String): Flow<Unit> {
+    fun login(email: String, password: String): Flow<UserSession> {
         return getDataOnce(
             remote = { remote.login(email, password) },
             localUpdate = { config.token = it.id },
             remotePreference = RemotePreference.FORCE
-        ).map { Unit }
+        )
     }
 
-    fun signUp(userName: String?, email: String, password: String): Flow<Unit> {
+    fun remoteSignUp(
+        userName: String?,
+        email: String,
+        password: String
+    ): Flow<Pair<UserMeRaw, UserSession>> {
         return getDataOnce(
-            remote = { remote.signUpAncCreateSession(userName, email, password) },
-            localUpdate = {
-                updateLocalUser(it.first)
-                config.userId = it.first.id
-                config.email = it.first.email
-                config.token = it.second.id
-                config.emailConfirmed = true
-            },
+            remote = { remote.signUpAndCreateSession(userName, email, password) },
             remotePreference = RemotePreference.FORCE
         )
-            .map { Unit }
+    }
+
+    suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
+        updateLocalUser(userMeRaw)
+        config.token = userSession.id
+        config.emailConfirmed = true
     }
 
     fun signUpAnonymously(): Flow<Unit> {
@@ -70,8 +76,6 @@ class UserRepository(
             },
             localUpdate = {
                 updateLocalUser(it.first)
-                config.userId = it.first.id
-                config.email = it.first.email
                 config.token = it.second.id
                 config.emailConfirmed = true
             },
@@ -87,24 +91,18 @@ class UserRepository(
         return localUser
     }
 
-    fun refreshUserIfAvailable(): Flow<UserMe> {
+    fun getUserIfAvailable(): Flow<UserMeRaw> {
         if (!config.isTokenValid) {
             return flow { throw Exception("Token is not available") }
         }
 
         return getDataOnce(
             remote = remote::getMe,
-            localUpdate = {
-                config.emailConfirmed = true
-                updateLocalUser(it)
-            },
             remotePreference = RemotePreference.FORCE
         )
-            .decrypt(mapper)
             .catch {
                 if (it is NotFoundException) {
-                    logg.v("User does not exist - create it for the first time")
-//                emitAll(initializeUser())
+                    logg.v("User does not exist")
                     throw it
                 } else {
                     if (it is UnverifiedUserException)
@@ -115,10 +113,33 @@ class UserRepository(
             }
     }
 
-    private suspend fun updateLocalUser(data: UserMeRaw) {
+    fun refreshUserIfAvailable(): Flow<UserMeRaw> {
+        return getUserIfAvailable()
+            .onEach {
+                config.emailConfirmed = true
+                updateLocalUser(it)
+            }
+    }
+
+    suspend fun updateLocalUser(data: UserMeRaw) {
         config.userId = data.id
         config.email = data.email
         local.update(data)
+    }
+
+    fun uploadAndInitKeysAndData(data: UserMeDataRaw): Flow<UserMeRaw> {
+        return getDataOnce(
+            remote = { remote.updateUserData(data.toPostJson()) },
+            remotePreference = RemotePreference.FORCE
+        )
+    }
+
+    fun updateUserData(data: Map<String, Any>): Flow<Boolean> {
+        return getDataOnce(
+            remote = { remote.updateUserData(data) },
+            localUpdate = { updateLocalUser(it) },
+            remotePreference = RemotePreference.FORCE
+        ).map { true }
     }
 
     fun editUsername(newName: String): Flow<Boolean> {
@@ -136,7 +157,6 @@ class UserRepository(
             remotePreference = RemotePreference.FORCE
         ).map { true }
     }
-
 
 
     private suspend fun clear() {

@@ -4,6 +4,7 @@ import com.zbapp.core.repo.user.IUserApi
 import com.zbapp.core.repo.user.SessionResponse
 import com.zbapp.core.repo.user.UserResponse
 import com.zbapp.remote.appwrite.AppWriteRemoteModule
+import kotlinx.serialization.json.JsonObject
 
 class UserApi constructor(
     private val remoteModule: AppWriteRemoteModule
@@ -29,7 +30,11 @@ class UserApi constructor(
         return remoteModule.execute { account.updateName(name).body!!.string() }
     }
 
-    override suspend fun updateUserData(data: Map<String, String>): UserResponse {
+    override suspend fun updateUserData(data: Map<String, Any>): UserResponse {
+        return remoteModule.execute { account.updatePrefs(data).body!!.string() }
+    }
+
+    override suspend fun updateUserData(data: JsonObject): UserResponse {
         return remoteModule.execute { account.updatePrefs(data).body!!.string() }
     }
 

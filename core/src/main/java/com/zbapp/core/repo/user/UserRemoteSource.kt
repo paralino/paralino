@@ -2,6 +2,7 @@ package com.zbapp.core.repo.user
 
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserSession
+import kotlinx.serialization.json.JsonObject
 
 class UserRemoteSource constructor(
     private val api: IUserApi
@@ -11,7 +12,7 @@ class UserRemoteSource constructor(
         return executeUserOperation { api.signUp(userName, email, password) }
     }
 
-    suspend fun signUpAncCreateSession(userName: String?, email: String, password: String): Pair<UserMeRaw, UserSession> {
+    suspend fun signUpAndCreateSession(userName: String?, email: String, password: String): Pair<UserMeRaw, UserSession> {
         return signUp(userName, email, password).let {
             it to login(email, password)
         }
@@ -38,7 +39,15 @@ class UserRemoteSource constructor(
     }
 
     suspend fun updateUserImage(imageBase64: String): UserMeRaw {
-        return executeUserOperation { api.updateUserData(mapOf("userImage" to imageBase64)) }
+        return executeUserOperation { api.updateUserData(mapOf("imageBase64" to imageBase64)) }
+    }
+
+    suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {
+        return executeUserOperation { api.updateUserData(data) }
+    }
+
+    suspend fun updateUserData(data: JsonObject): UserMeRaw {
+        return executeUserOperation { api.updateUserData(data) }
     }
 
     suspend fun updateEmail(email: String, password: String): UserMeRaw {

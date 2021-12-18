@@ -1,12 +1,11 @@
 package com.zbapp.core.repo.user
 
+import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.utils.BaseRemoteModule
-import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.longOrNull
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
 
 interface IUserApi {
     suspend fun signUp(userName: String?, email: String, password: String): UserResponse
@@ -14,7 +13,8 @@ interface IUserApi {
     suspend fun createAnonymous(): SessionResponse
     suspend fun getMe(): UserResponse
     suspend fun updateName(name: String): UserResponse
-    suspend fun updateUserData(data: Map<String, String>): UserResponse
+    suspend fun updateUserData(data: Map<String, Any>): UserResponse
+    suspend fun updateUserData(data: JsonObject): UserResponse
     suspend fun changePassword(newPassword: String, oldPassword: String?): UserResponse
     suspend fun updateEmail(email: String, password: String): UserResponse
     suspend fun deleteAccount()
@@ -29,7 +29,7 @@ interface IUserApi {
                 email = json.jsonObject["email"]?.jsonPrimitive?.content ?: "",
                 registration = json.jsonObject["registration"]?.jsonPrimitive?.longOrNull ?: 0,
                 emailVerification = json.jsonObject["emailVerification"]?.jsonPrimitive?.booleanOrNull ?: false,
-                data = json.jsonObject["prefs"]?.jsonObject?.get("data")?.jsonPrimitive?.content
+                data = BaseRemoteModule.formatter.decodeFromJsonElement<UserMeDataRaw>(json.jsonObject["prefs"]!!.jsonObject)
             )
         }
 

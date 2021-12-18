@@ -30,7 +30,7 @@ class LoginCheckViewModel(
     val errorState = _errorState
 
     fun checkAndSync(): LiveData<Payload<Unit>> {
-        return loginManager.syncData()
+        return loginManager.syncUserAndData()
             .map<Unit, Payload<Unit>> { Payload.Success(Unit) }
             .onStart { emit(Payload.Loading) }
             .catch {
