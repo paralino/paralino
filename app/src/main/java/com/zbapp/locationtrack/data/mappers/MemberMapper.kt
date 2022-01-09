@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.data.mappers
 
 import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.repo.base.IGroupCrypto
@@ -14,13 +15,14 @@ class MemberMapper(
 ) : IMemberMapperCore, IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
 
     override suspend fun core2Remote(model: MemberModel): MemberDocumentRaw {
-        val locationData = crypto.encryptModel(groupId = model.id, data = model.data)
         return MemberDocumentRaw(
             id = model.id,
             ownerId = model.userId,
             groupId = model.groupId,
-            data = crypto.encryptModel(model.groupId, model.copy(data = null)) ?: "",
-            mutableData = locationData
+            membersAccessKeys = null,
+            ownerPublicKey = null,
+            data = crypto.encryptModel(model.groupId, model.data) ?: "",
+            mutableData = crypto.encryptModel(groupId = model.id, data = model.data)
         )
     }
 
@@ -29,6 +31,8 @@ class MemberMapper(
             id = model.id,
             ownerId = model.userId,
             groupId = model.groupId,
+            membersAccessKeys = null,
+            ownerPublicKey = null,
             data = model.data,
             mutableData = model.mutableData
         )
@@ -41,11 +45,19 @@ class MemberMapper(
             senderId = model.ownerId
         )
 
-        return crypto.decryptModel<MemberModel>(
+        val memberData = crypto.decryptModel<MemberModelData>(
             groupId = model.groupId ?: model.id,
             data = model.data,
             senderId = model.ownerId
-        )!!.copy(id = model.id, data = locationData)
+        )!!
+
+        return MemberModel(
+            id = model.id,
+            groupId = model.groupId ?: model.id,
+            userId = model.ownerId,
+            data = memberData,
+            mutableData = locationData
+        )
     }
 
     override suspend fun remote2Local(model: MemberDocumentRaw): MemberEntity {

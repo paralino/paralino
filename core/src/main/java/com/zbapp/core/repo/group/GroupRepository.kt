@@ -3,6 +3,7 @@ package com.zbapp.core.repo.group
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.invite.InviteCode
 import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
@@ -89,9 +90,8 @@ class GroupRepository constructor(
                     id = "",
                     groupId = groupId,
                     userId = code.ownerId,
-                    imageBase64 = code.ownerImageBase64,
-                    name = code.ownerName,
-                    data = null
+                    data = MemberModelData(code.ownerName, code.ownerImageBase64),
+                    mutableData = null
                 )
                 val group = local.getGroup(groupId).first()
                 remote.addUserToGroup(group, member)

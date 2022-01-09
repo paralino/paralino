@@ -9,11 +9,12 @@ data class MemberModel constructor(
     val groupId: String,
     val userId: String,
 
-    val name: String,
-    val imageBase64: String? = null,
-
-    val data: LocationDataModel? = null
+    val data: MemberModelData,
+    val mutableData: LocationDataModel? = null
 ) {
+
+    val name: String get() = data.name
+    val imageBase64: String? get() = data.imageBase64
 
     companion object {
         fun fromSystem(
@@ -26,14 +27,19 @@ data class MemberModel constructor(
                 id = UUID.randomUUID().toString(),
                 groupId = "",
                 userId = userId,
-                name = name,
-                imageBase64 = imageBase64,
-                data = model
+                data = MemberModelData(name, imageBase64),
+                mutableData = model
             )
         }
     }
 
 }
+
+@Serializable
+data class MemberModelData constructor(
+    val name: String,
+    val imageBase64: String? = null
+)
 
 @Serializable
 data class LocationDataModel(

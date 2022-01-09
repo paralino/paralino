@@ -4,6 +4,7 @@ import com.zbapp.core.config
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
 import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
@@ -32,7 +33,7 @@ class GroupsRemoteSource constructor(
 
             val doc = api.createOrUpdateDocument(
                 collectionId = remoteConfig.collectionGroupsID,
-                data = mapped.copy(members = emptyList()).toPostString(),
+                data = mapped.copy(members = emptyList()).toPostJson(),
                 docId = mapped.id
             ).let {
                 BaseRemoteModule.formatter.decodeFromString<GroupDocumentRaw>(it)
@@ -42,9 +43,8 @@ class GroupsRemoteSource constructor(
                 id = "",
                 groupId = doc.id,
                 userId = me.id,
-                imageBase64 = me.data?.imageBase64,
-                name = me.name,
-                data = null
+                data = MemberModelData(me.name, me.data?.imageBase64),
+                mutableData = null
             )
             addUserToGroup(doc, member)
         }
@@ -55,7 +55,7 @@ class GroupsRemoteSource constructor(
             val mapped = mapper.core2Remote(group)
             api.createOrUpdateDocument(
                 remoteConfig.collectionGroupsID,
-                mapped.toPostString(),
+                mapped.toPostJson(),
                 mapped.id
             ).let {
                 BaseRemoteModule.formatter.decodeFromString(it)
@@ -85,7 +85,7 @@ class GroupsRemoteSource constructor(
                 val mapped = memberMapper.core2Remote(it)
                 api.createChildDocument(
                     collectionId = remoteConfig.collectionLocationsID,
-                    data = mapped.toPostString(),
+                    data = mapped.toPostJson(),
                     read = null,
                     write = null,
                     parentDocId = groupId,
