@@ -26,6 +26,7 @@ class AppWriteRemoteModule(
     internal val teams: Teams by lazy { Teams(client) }
     internal val database: Database by lazy { Database(client) }
     internal val functions: Functions by lazy { Functions(client) }
+    val uniqueIdPlaceholder = "unique()"
 
     private val client: Client by lazy {
         Client(app, selfSigned = false)
