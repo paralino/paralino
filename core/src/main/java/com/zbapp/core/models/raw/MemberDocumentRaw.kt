@@ -3,6 +3,7 @@ package com.zbapp.core.models.raw
 import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
 @Serializable
@@ -32,6 +33,23 @@ data class MemberDocumentRaw constructor(
             }
             put("data", data)
             put("mutableData", mutableData)
+        }
+    }
+
+    companion object {
+        @Suppress("UNCHECKED_CAST")
+        fun from(map: Map<String, Any>): MemberDocumentRaw {
+            return MemberDocumentRaw(
+                id = map["\$id"] as String,
+                ownerId = map["ownerId"] as String,
+                groupId = map["groupId"] as? String,
+                membersAccessKeys = (map["ownerPublicKey"] as? List<String>)?.map {
+                    BaseRemoteModule.formatter.decodeFromString(it)
+                },
+                ownerPublicKey = map["ownerPublicKey"] as String,
+                data = map["data"] as String,
+                mutableData = map["mutableData"] as? String,
+            )
         }
     }
 }

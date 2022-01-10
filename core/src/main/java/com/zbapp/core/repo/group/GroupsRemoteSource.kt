@@ -8,17 +8,11 @@ import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
 import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
-import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.models.user.UserMe
-import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.ConflictException
+import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.utils.PermissionDeniedException
 import com.zbapp.core.utils.blocking
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 
 class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
@@ -35,9 +29,7 @@ class GroupsRemoteSource constructor(
                 collectionId = remoteConfig.collectionGroupsID,
                 data = mapped.copy(members = emptyList()).toPostJson(),
                 docId = mapped.id
-            ).let {
-                BaseRemoteModule.formatter.decodeFromString<GroupDocumentRaw>(it)
-            }
+            ).parseGroup()
 
             val member = MemberModel(
                 id = "",
@@ -57,9 +49,7 @@ class GroupsRemoteSource constructor(
                 remoteConfig.collectionGroupsID,
                 mapped.toPostJson(),
                 mapped.id
-            ).let {
-                BaseRemoteModule.formatter.decodeFromString(it)
-            }
+            ).parseGroup()
         }
     }
 
@@ -81,16 +71,14 @@ class GroupsRemoteSource constructor(
     ): GroupDocumentRaw {
         return blocking {
 
+            // TODO adapt for new sdk without nested documents
             member.forEach {
                 val mapped = memberMapper.core2Remote(it)
-                api.createChildDocument(
+                api.createOrUpdateDocument(
                     collectionId = remoteConfig.collectionLocationsID,
                     data = mapped.toPostJson(),
                     read = null,
-                    write = null,
-                    parentDocId = groupId,
-                    parentDocProperty = "members",
-                    appendToParent = true
+                    write = null
                 )
             }
 
@@ -105,9 +93,7 @@ class GroupsRemoteSource constructor(
                     .map { "user:$it" }
                     .ifEmpty { null },
                 write = null
-            ).let {
-                BaseRemoteModule.formatter.decodeFromString(it)
-            }
+            ).parseGroup()
         }
     }
 
@@ -117,7 +103,7 @@ class GroupsRemoteSource constructor(
     ): GroupDocumentRaw {
         return blocking {
 
-            if(member.id == group.ownerId)
+            if (member.id == group.ownerId)
                 throw PermissionDeniedException("Owner can not be removed from the group")
 
             api.deleteDocument(remoteConfig.collectionLocationsID, member.id)
@@ -130,27 +116,19 @@ class GroupsRemoteSource constructor(
                     .map { "user:$it" }
                     .ifEmpty { null },
                 write = null
-            ).let {
-                BaseRemoteModule.formatter.decodeFromString(it)
-            }
+            ).parseGroup()
         }
     }
 
     suspend fun getAllGroups(): List<GroupDocumentRaw> {
         return blocking {
-            api.getDocuments(remoteConfig.collectionGroupsID).let {
-                BaseRemoteModule.formatter.parseToJsonElement(it).jsonObject["documents"]?.jsonArray?.let {
-                    BaseRemoteModule.formatter.decodeFromJsonElement(it)
-                } ?: emptyList()
-            }
+            api.getDocuments(remoteConfig.collectionGroupsID).map { it.parseGroup() }
         }
     }
 
     suspend fun getGroup(groupId: String): GroupDocumentRaw {
         return blocking {
-            api.getDocument(remoteConfig.collectionGroupsID, groupId).let {
-                BaseRemoteModule.formatter.decodeFromString(it)
-            }
+            api.getDocument(remoteConfig.collectionGroupsID, groupId).parseGroup()
         }
     }
 
@@ -161,6 +139,10 @@ class GroupsRemoteSource constructor(
                 api.deleteDocument(remoteConfig.collectionLocationsID, it.id)
             }
         }
+    }
+
+    private suspend fun Map<String, Any>.parseGroup(): GroupDocumentRaw {
+        return GroupDocumentRaw.from(this)
     }
 
 }

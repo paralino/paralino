@@ -1,4 +1,4 @@
-package com.zbapp.core.repo.user
+package com.zbapp.core.repo.api
 
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserSession

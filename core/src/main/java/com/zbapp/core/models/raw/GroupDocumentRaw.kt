@@ -3,6 +3,7 @@ package com.zbapp.core.models.raw
 import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
 @Serializable
@@ -31,6 +32,23 @@ data class GroupDocumentRaw constructor(
 //            putJsonArray("members") {
 //                members.forEach { addJsonObject { it.toPostJson() } }
 //            }
+        }
+    }
+
+    companion object {
+        @Suppress("UNCHECKED_CAST")
+        fun from(map: Map<String, Any>): GroupDocumentRaw {
+            return GroupDocumentRaw(
+                id = map["\$id"] as String,
+                ownerId = map["ownerId"] as String,
+                data = map["data"] as String,
+                groupKeys = (map["groupKeys"] as? List<String>)?.map {
+                    BaseRemoteModule.formatter.decodeFromString(it)
+                },
+                members = (map["members"] as List<Map<String, Any>>).map {
+                    MemberDocumentRaw.from(it)
+                },
+            )
         }
     }
 }

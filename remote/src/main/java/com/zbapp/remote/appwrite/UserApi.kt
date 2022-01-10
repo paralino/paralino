@@ -3,7 +3,7 @@ package com.zbapp.remote.appwrite
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserSession
-import com.zbapp.core.repo.user.IUserApi
+import com.zbapp.core.repo.api.IUserApi
 import com.zbapp.core.utils.BaseRemoteModule
 import io.appwrite.models.Session
 import io.appwrite.models.User
@@ -16,40 +16,40 @@ class UserApi constructor(
 
     override suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
         return remoteModule.execute {
-            account.create(uniqueIdPlaceholder, email, password, userName).getUserFromRemote()
+            account.create(uniqueIdPlaceholder, email, password, userName).parseUser()
         }
     }
 
     override suspend fun login(email: String, password: String): UserSession {
         return remoteModule.execute {
-            account.createSession(email, password).getSessionFromRemote()
+            account.createSession(email, password).parseSession()
         }
     }
 
     override suspend fun createAnonymous(): UserSession {
-        return remoteModule.execute { account.createAnonymousSession().getSessionFromRemote() }
+        return remoteModule.execute { account.createAnonymousSession().parseSession() }
     }
 
     override suspend fun getMe(): UserMeRaw {
-        return remoteModule.execute { account.get().getUserFromRemote() }
+        return remoteModule.execute { account.get().parseUser() }
     }
 
     override suspend fun updateName(name: String): UserMeRaw {
-        return remoteModule.execute { account.updateName(name).getUserFromRemote() }
+        return remoteModule.execute { account.updateName(name).parseUser() }
     }
 
     override suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {
-        return remoteModule.execute { account.updatePrefs(data).getUserFromRemote() }
+        return remoteModule.execute { account.updatePrefs(data).parseUser() }
     }
 
     override suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw {
         return remoteModule.execute {
-            account.updatePassword(newPassword, oldPassword).getUserFromRemote()
+            account.updatePassword(newPassword, oldPassword).parseUser()
         }
     }
 
     override suspend fun updateEmail(email: String, password: String): UserMeRaw {
-        return remoteModule.execute { account.updateEmail(email, password).getUserFromRemote() }
+        return remoteModule.execute { account.updateEmail(email, password).parseUser() }
     }
 
     override suspend fun deleteAccount() {
@@ -60,7 +60,7 @@ class UserApi constructor(
         return remoteModule.execute { account.deleteSessions() }
     }
 
-    private fun User.getUserFromRemote(): UserMeRaw {
+    private fun User.parseUser(): UserMeRaw {
         return UserMeRaw(
             id = this.id,
             email = this.email,
@@ -74,7 +74,7 @@ class UserApi constructor(
         )
     }
 
-    private fun Session.getSessionFromRemote(): UserSession {
+    private fun Session.parseSession(): UserSession {
         return UserSession(
             id = this.id,
             expire = this.expire,

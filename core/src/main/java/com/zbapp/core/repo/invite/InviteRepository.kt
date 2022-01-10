@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class InviteRepository(
-    private val api: IInviteApi,
+    private val remote: InviteRemoteSource,
     private val local: IInviteCodeLocalDataSource,
     private val userRepo: UserRepository
 ) : BaseRepository() {
@@ -26,7 +26,7 @@ class InviteRepository(
             userLimit = userLimit
         )
         return getDataOnce(
-            remote = { api.createInviteCode(invite) },
+            remote = { remote.createInviteCode(invite) },
             remotePreference = RemotePreference.FORCE,
             localUpdate = { local.addInviteCode(it) }
         ).mapToPayload()
@@ -34,7 +34,7 @@ class InviteRepository(
 
     fun getAllInviteCodes(): Flow<Payload<List<InviteCode>>> {
         return subscribeToData(
-            remote = { api.getInviteCodes() },
+            remote = { remote.getInviteCodes() },
             local = local.getAllInviteCodes(),
             localUpdate = { local.replaceInviteCode(it) },
             remotePreference = RemotePreference.FORCE
@@ -43,7 +43,7 @@ class InviteRepository(
 
     fun getMyInviteCodes(): Flow<Payload<List<InviteCode>>> {
         return subscribeToData(
-            remote = { api.getInviteCodes() },
+            remote = { remote.getInviteCodes() },
             local = local.getInviteCodesForUser(config.userId),
             localUpdate = { local.replaceInviteCode(it) },
             remotePreference = RemotePreference.FORCE
@@ -52,21 +52,21 @@ class InviteRepository(
 
     fun getInviteByCode(code: String): Flow<Payload<InviteCode>> {
         return getDataOnce(
-            remote = { api.getInviteByCode(code) },
+            remote = { remote.getInviteByCode(code) },
             remotePreference = RemotePreference.FORCE
         ).mapToPayload()
     }
 
     fun getInviteByUrl(url: String): Flow<InviteCode> {
         return getDataOnce(
-            remote = { api.getInviteByUrl(url) },
+            remote = { remote.getInviteByUrl(url) },
             remotePreference = RemotePreference.FORCE
         )
     }
 
     fun acceptInvite(code: String): Flow<Payload<InviteCode>> {
         return getDataOnce(
-            remote = { api.acceptInviteByCode(code) },
+            remote = { remote.acceptInviteByCode(code) },
             localUpdate = { local.addInviteCode(it) },
             remotePreference = RemotePreference.FORCE
         ).mapToPayload()
@@ -74,7 +74,7 @@ class InviteRepository(
 
     fun revokeInviteCode(id: String): Flow<Payload<Unit>> {
         return getDataOnce(
-            remote = { api.revokeInviteCode(id) },
+            remote = { remote.revokeInviteCode(id) },
             localUpdate = { local.deleteInviteCode(id) },
             remotePreference = RemotePreference.FORCE
         ).mapToPayload()

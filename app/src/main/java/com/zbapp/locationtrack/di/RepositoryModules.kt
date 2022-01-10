@@ -8,18 +8,19 @@ import com.zbapp.core.models.mappers.IGroupDataMapperCore
 import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.models.mappers.IUserMapperCore
+import com.zbapp.core.repo.api.IDocumentsApi
+import com.zbapp.core.repo.api.IFunctionsApi
+import com.zbapp.core.repo.api.IUserApi
 import com.zbapp.core.repo.base.ICryptoRepository
 import com.zbapp.core.repo.base.IGroupCrypto
 import com.zbapp.core.repo.base.IUserCrypto
 import com.zbapp.core.repo.group.GroupsRemoteSource
-import com.zbapp.core.repo.group.IDocumentsApi
 import com.zbapp.core.repo.group.IGroupLocalDataSource
-import com.zbapp.core.repo.invite.IInviteApi
 import com.zbapp.core.repo.invite.IInviteCodeLocalDataSource
+import com.zbapp.core.repo.invite.InviteRemoteSource
 import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.core.repo.location.LocationRemoteSource
-import com.zbapp.core.repo.user.IUserApi
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.UserRemoteSource
 import com.zbapp.crpyto.CryptoAuthProvider
@@ -35,7 +36,7 @@ import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSour
 import com.zbapp.locationtrack.data.repos.user.UserLocalDataSource
 import com.zbapp.remote.appwrite.AppWriteRemoteModule
 import com.zbapp.remote.appwrite.DocumentsApi
-import com.zbapp.remote.appwrite.InviteApi
+import com.zbapp.remote.appwrite.FunctionsApi
 import com.zbapp.remote.appwrite.UserApi
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -74,6 +75,7 @@ val remoteDataSourceModule = module {
     single { UserRemoteSource(get()) }
     single { LocationRemoteSource(get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get()) }
+    single { InviteRemoteSource(get(), get(), get()) }
     single {
         BackendConfig(
             serverUrl = BuildConfig.serverUrl,
@@ -106,9 +108,9 @@ val coreDependencyModules = module {
     single<IUserDataMapperCore> { get<UserDataMapper>() }
     single<IMemberMapperCore> { get<MemberMapper>() }
 
-    single<IInviteApi> { InviteApi(get(), get()) }
     single<IUserApi> { UserApi(get()) }
     single<IDocumentsApi> { DocumentsApi(get()) }
+    single<IFunctionsApi> { FunctionsApi(get()) }
 
     single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }

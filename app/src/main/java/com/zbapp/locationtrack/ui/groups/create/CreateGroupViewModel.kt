@@ -52,10 +52,8 @@ class CreateGroupViewModel(
         val group = groupFlow.value.data
 
         return if (group != null) {
-            val newGroup = group.copy(
-                emoji = icon,
-                name = name
-            )
+            val newData = group.data.copy(name = name, emoji = icon)
+            val newGroup = group.copy(data = newData)
             groupRepo.updateGroup(newGroup)
         } else {
             groupRepo.createGroup(name, icon)

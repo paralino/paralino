@@ -1,13 +1,14 @@
 package com.zbapp.remote.appwrite
 
 import com.zbapp.core.models.raw.GroupDocumentRaw
-import com.zbapp.core.repo.group.ITeamApi
-import com.zbapp.core.repo.group.TeamListResponse
-import com.zbapp.core.repo.group.TeamMembershipsResponse
-import com.zbapp.core.repo.group.TeamResponse
+import com.zbapp.core.repo.api.ITeamApi
+import com.zbapp.core.repo.api.TeamListResponse
+import com.zbapp.core.repo.api.TeamMembershipsResponse
+import com.zbapp.core.repo.api.TeamResponse
 import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.encodeToString
 
+// TODO parse properly
 class TeamApi constructor(
     private val remoteModule: AppWriteRemoteModule,
 ) : ITeamApi {
@@ -19,13 +20,13 @@ class TeamApi constructor(
 
     private suspend fun createTeam(data: GroupDocumentRaw): TeamResponse {
         return remoteModule.execute {
-            teams.create(BaseRemoteModule.formatter.encodeToString(data)).body!!.string()
+            teams.create(uniqueIdPlaceholder, BaseRemoteModule.formatter.encodeToString(data)).toString()
         }
     }
 
     private suspend fun updateTeam(data: GroupDocumentRaw): TeamResponse {
         return remoteModule.execute {
-            teams.update(data.id, BaseRemoteModule.formatter.encodeToString(data)).body!!.string()
+            teams.update(data.id, BaseRemoteModule.formatter.encodeToString(data)).toString()
         }
     }
 
@@ -38,15 +39,15 @@ class TeamApi constructor(
     }
 
     override suspend fun getTeam(teamId: String): TeamResponse {
-        return remoteModule.execute { teams.get(teamId).body!!.string() }
+        return remoteModule.execute { teams.get(teamId).toString() }
     }
 
     override suspend fun getTeams(): TeamListResponse {
-        return remoteModule.execute { teams.list().body!!.string() }
+        return remoteModule.execute { teams.list().toString() }
     }
 
     override suspend fun getTeamMembers(teamId: String): TeamMembershipsResponse {
-        return remoteModule.execute { teams.getMemberships(teamId).body!!.string() }
+        return remoteModule.execute { teams.getMemberships(teamId).toString() }
     }
 
 }

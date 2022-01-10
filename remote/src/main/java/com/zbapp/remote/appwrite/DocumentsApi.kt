@@ -1,35 +1,12 @@
 package com.zbapp.remote.appwrite
 
-import com.zbapp.core.repo.group.DocumentResponse
-import com.zbapp.core.repo.group.DocumentsResponse
-import com.zbapp.core.repo.group.IDocumentsApi
-import kotlinx.serialization.json.JsonObject
+import com.zbapp.core.repo.api.IDocumentsApi
+import io.appwrite.models.Document
+import io.appwrite.models.DocumentList
 
 class DocumentsApi constructor(
     private val remoteModule: AppWriteRemoteModule
 ) : IDocumentsApi {
-
-    override suspend fun createChildDocument(
-        collectionId: String,
-        data: Any,
-        read: List<String>?,
-        write: List<String>?,
-        parentDocId: String,
-        parentDocProperty: String,
-        appendToParent: Boolean
-    ): DocumentResponse {
-        return remoteModule.execute {
-            database.createDocument(
-                collectionId = collectionId,
-                data = data,
-                read = read,
-                write = write,
-                parentDocument = parentDocId,
-                parentProperty = parentDocProperty,
-                parentPropertyType = if(appendToParent) "append" else "assign"
-            ).body!!.string()
-        }
-    }
 
     override suspend fun createOrUpdateDocument(
         collectionId: String,
@@ -37,25 +14,45 @@ class DocumentsApi constructor(
         docId: String?,
         read: List<String>?,
         write: List<String>?
-    ): DocumentResponse {
+    ): Map<String, Any> {
         return remoteModule.execute {
             if (docId.isNullOrBlank())
-                database.createDocument(collectionId, data, read = read, write = write).body!!.string()
+                database.createDocument(
+                    collectionId = collectionId,
+                    documentId = uniqueIdPlaceholder,
+                    data = data,
+                    read = read,
+                    write = write
+                ).parseDocument()
             else
-                database.updateDocument(collectionId, docId, data, read = read, write).body!!.string()
+                database.updateDocument(
+                    collectionId = collectionId,
+                    documentId = docId,
+                    data = data,
+                    read = read,
+                    write = write
+                ).parseDocument()
         }
     }
 
-    override suspend fun getDocument(collectionId: String, groupId: String): DocumentResponse {
-        return remoteModule.execute { database.getDocument(collectionId, groupId).body!!.string() }
+    override suspend fun getDocument(collectionId: String, groupId: String): Map<String, Any> {
+        return remoteModule.execute { database.getDocument(collectionId, groupId).parseDocument() }
     }
 
-    override suspend fun getDocuments(collectionId: String): DocumentsResponse {
-        return remoteModule.execute { database.listDocuments(collectionId).body!!.string() }
+    override suspend fun getDocuments(collectionId: String): List<Map<String, Any>> {
+        return remoteModule.execute { database.listDocuments(collectionId).parseListOfDocuments() }
     }
 
     override suspend fun deleteDocument(collectionId: String, groupId: String) {
         remoteModule.execute { database.deleteDocument(collectionId, groupId) }
+    }
+
+    private fun Document.parseDocument(): Map<String, Any> {
+        return this.data
+    }
+
+    private fun DocumentList.parseListOfDocuments(): List<Map<String, Any>> {
+        return this.documents.map { it.parseDocument() }
     }
 
 }

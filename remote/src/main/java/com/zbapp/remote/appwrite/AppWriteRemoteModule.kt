@@ -4,15 +4,12 @@ import android.app.Application
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.utils.BaseRemoteException
 import com.zbapp.core.utils.ConnectionException
-import com.zbapp.core.utils.TimeoutException
 import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
 import io.appwrite.services.Database
 import io.appwrite.services.Functions
 import io.appwrite.services.Teams
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.net.UnknownHostException
@@ -53,29 +50,6 @@ class AppWriteRemoteModule(
         }
     }
 
-    suspend inline fun <reified T> poll(
-        firstDelayMillis: Long = 2_000,
-        delay: Long = 3_000,
-        canThrow: Boolean = false,
-        crossinline action: suspend () -> T?
-    ): T {
-        return withTimeoutOrNull(15_000) {
-            delay(firstDelayMillis)
-            var invite: T?
-            do {
-                invite = try {
-                    action()
-                } catch (e: Exception) {
-                    if (canThrow) throw e
-                    else null
-                }
-                if (invite == null)
-                    delay(delay)
-            } while (invite == null)
-            invite
-        } ?: throw TimeoutException("Invite code request timed out")
-    }
-
     companion object {
         fun mapException(exception: Exception): Exception {
             return (exception as? AppwriteException)?.let {
@@ -85,7 +59,7 @@ class AppWriteRemoteModule(
                     it.cause ?: Throwable(it.response)
                 )
             } ?: let {
-                if(exception is UnknownHostException) {
+                if (exception is UnknownHostException) {
                     ConnectionException(exception.message, code = null, exception)
                 } else exception
             }
