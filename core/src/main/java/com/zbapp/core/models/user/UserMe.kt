@@ -22,7 +22,9 @@ data class UserMeData constructor(
     val userName: String = "",
     val privateKeyBackup: SymmetricCryptoKeyData? = null,
     val asymmetricKeys: List<AsymmetricCryptoKeyData>? = null
-)
+) {
+    val latestAsymmetricKey get() = asymmetricKeys?.maxByOrNull { it.version }
+}
 
 @Serializable
 data class AsymmetricCryptoKeyData(
@@ -33,6 +35,6 @@ data class AsymmetricCryptoKeyData(
 
 @Serializable
 data class SymmetricCryptoKeyData(
-    val key: String,
+    val encryptedKey: String,
     val version: Int
 )
