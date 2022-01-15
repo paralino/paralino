@@ -3,6 +3,7 @@ package com.zbapp.locationtrack.data.mappers
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
+import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.repo.base.IGroupCrypto
 import com.zbapp.core.repo.base.decryptModel
@@ -20,7 +21,7 @@ class GroupsMapper(
             ownerId = model.ownerId,
             data = crypto.encryptModel(groupId = model.id, data = model.data) ?: "",
             members = model.members.map { memberMapper.core2Remote(it) },
-            groupKeys = emptyList()
+            groupKeys = model.groupKeys.map { GroupCryptoKeyDataRaw(it.memberId, it.encryptedKey) }
         )
     }
 
@@ -36,7 +37,8 @@ class GroupsMapper(
             id = model.id,
             ownerId = model.ownerId,
             data = groupData,
-            members = membersData
+            members = membersData,
+            groupKey = ""
         )
     }
 
