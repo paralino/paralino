@@ -21,7 +21,7 @@ class CryptoAuth(
     ): SymmetricCryptoKeyData {
         return blocking {
             val userKey = cryptoAuthProvider.decryptDataWithPassword(
-                data = keyData.key.base64ToByteArray(),
+                data = keyData.encryptedKey.base64ToByteArray(),
                 password = oldBackupPassword,
                 context = userId.asByteArray()
             )
@@ -31,7 +31,7 @@ class CryptoAuth(
                 context = userId.asByteArray()
             )
             SymmetricCryptoKeyData(
-                key = newEncryptedUserKey.asBase64String(),
+                encryptedKey = newEncryptedUserKey.asBase64String(),
                 version = keyData.version + 1
             )
         }
@@ -81,7 +81,7 @@ class CryptoAuth(
         )
 
         val symmetricData = SymmetricCryptoKeyData(
-            key = encryptedPersonalKey.asBase64String(),
+            encryptedKey = encryptedPersonalKey.asBase64String(),
             version = userData?.privateKeyBackup?.version?.plus(1) ?: 1
         )
         val asymmetricData = AsymmetricCryptoKeyData(
@@ -95,11 +95,21 @@ class CryptoAuth(
 
     fun generateNewAsymmetricUserKey(user: UserMe): AsymmetricCryptoKeyData {
         val newKeyPair = cryptoAuthProvider.createNewAsymmetricKey()
+        val encryptedPrivateKey = cryptoAuthProvider.encryptDataWithSymmetricKey(
+            data = newKeyPair.privateKey,
+            key = cryptoAuthProvider.loadUserPersonalKey(),
+            context = user.id.asByteArray()
+        )
+
         return AsymmetricCryptoKeyData(
-            privateKey = newKeyPair.publicKey.asBase64String(),
+            privateKey = encryptedPrivateKey.asBase64String(),
             publicKey = newKeyPair.publicKey.asBase64String(),
             version = user.data?.asymmetricKeys?.size?.plus(1) ?: 1
         )
+    }
+
+    fun getNewSymmetricKey(): ByteArray {
+        return cryptoAuthProvider.createNewSymmetricKey()
     }
 
     override suspend fun encryptData(data: String): String {
@@ -112,9 +122,17 @@ class CryptoAuth(
         return decryptDataWithKey(data, cryptoAuthProvider.loadUserPersonalKey())
     }
 
+    suspend fun encryptDataWithKey(data: String, key: String): String {
+        return encryptDataWithKey(data, key.base64ToByteArray())
+    }
+
     suspend fun encryptDataWithKey(data: String, key: ByteArray): String {
+        return encryptDataWithKey(data.asByteArray(), key)
+    }
+
+    suspend fun encryptDataWithKey(data: ByteArray, key: ByteArray): String {
         return cryptoAuthProvider.encryptDataWithSymmetricKey(
-            data = data.asByteArray(),
+            data = data,
             key = key,
             context = null
         ).asBase64String()
