@@ -3,20 +3,15 @@ package com.zbapp.core.crypto
 interface ICryptoAuthProvider {
     fun createNewSymmetricKey(): ByteArray
     fun createNewAsymmetricKey(): KeyPair
-    fun encryptDataWithSymmetricKey(
-        data: ByteArray,
-        key: ByteArray,
-        context: ByteArray?
-    ): ByteArray
 
-    fun decryptDataWithSymmetricKey(
-        data: ByteArray,
-        key: ByteArray,
-        context: ByteArray?
-    ): ByteArray
-
+    fun encryptDataWithSymmetricKey(data: ByteArray, key: ByteArray, context: ByteArray?): ByteArray
+    fun decryptDataWithSymmetricKey(data: ByteArray, key: ByteArray, context: ByteArray?): ByteArray
     fun encryptDataWithPassword(data: ByteArray, password: String, context: ByteArray?): ByteArray
     fun decryptDataWithPassword(data: ByteArray, password: String, context: ByteArray?): ByteArray
+
+    fun encryptDataWithKeyPair(data: ByteArray, myPrivateKey: ByteArray, publicKey: ByteArray): ByteArray
+    fun decryptDataWithKeyPair(data: ByteArray, myPrivateKey: ByteArray, publicKey: ByteArray): ByteArray
+
     fun saveUserPersonalKeyLocally(data: ByteArray)
     fun loadUserPersonalKey(): ByteArray
     fun clearUserPersonalKey()

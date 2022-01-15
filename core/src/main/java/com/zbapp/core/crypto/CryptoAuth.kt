@@ -154,6 +154,30 @@ class CryptoAuth(
         ).asString()
     }
 
+    suspend fun encryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String {
+        return cryptoAuthProvider.encryptDataWithKeyPair(
+            data = data.asByteArray(),
+            myPrivateKey = myPrivateKey.base64ToByteArray(),
+            publicKey = publicKey.base64ToByteArray()
+        ).asBase64String()
+    }
+
+    suspend fun encryptDataWithKeyPair(data: ByteArray, myPrivateKey: String, publicKey: String): String {
+        return cryptoAuthProvider.encryptDataWithKeyPair(
+            data = data,
+            myPrivateKey = myPrivateKey.base64ToByteArray(),
+            publicKey = publicKey.base64ToByteArray()
+        ).asBase64String()
+    }
+
+    suspend fun decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String {
+        return cryptoAuthProvider.decryptDataWithKeyPair(
+            data = data.base64ToByteArray(),
+            myPrivateKey = myPrivateKey.base64ToByteArray(),
+            publicKey = publicKey.base64ToByteArray()
+        ).asString()
+    }
+
     private fun ByteArray.asString(): String {
         return cryptoAuthProvider.byteArrayToString(this)
     }

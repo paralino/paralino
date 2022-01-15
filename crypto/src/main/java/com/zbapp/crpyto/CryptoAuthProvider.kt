@@ -1,9 +1,7 @@
 package com.zbapp.crpyto
 
 import android.util.Base64
-import com.cossacklabs.themis.KeypairGenerator
-import com.cossacklabs.themis.SecureCell
-import com.cossacklabs.themis.SymmetricKey
+import com.cossacklabs.themis.*
 import com.zbapp.core.config
 import com.zbapp.core.crypto.ICryptoAuthProvider
 import com.zbapp.core.crypto.KeyPair
@@ -47,6 +45,16 @@ class CryptoAuthProvider : ICryptoAuthProvider {
     override fun decryptDataWithPassword(data: ByteArray, password: String, context: ByteArray?): ByteArray {
         val cell = SecureCell.SealWithPassphrase(password)
         return cell.decrypt(data, context)
+    }
+
+    override fun encryptDataWithKeyPair(data: ByteArray, myPrivateKey: ByteArray, publicKey: ByteArray): ByteArray {
+        val message = SecureMessage(PrivateKey(myPrivateKey))
+        return message.wrap(data, PublicKey(publicKey))
+    }
+
+    override fun decryptDataWithKeyPair(data: ByteArray, myPrivateKey: ByteArray, publicKey: ByteArray): ByteArray {
+        val message = SecureMessage(PrivateKey(myPrivateKey))
+        return message.unwrap(data, PublicKey(publicKey))
     }
 
     override fun saveUserPersonalKeyLocally(data: ByteArray) {
