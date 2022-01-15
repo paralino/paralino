@@ -80,13 +80,6 @@ val remoteDataSourceModule = module {
         BackendConfig(
             serverUrl = BuildConfig.serverUrl,
             projectId = BuildConfig.serverKey,
-            collectionGroupsID = BuildConfig.keyCollectionGroups,
-            collectionLocationsID = BuildConfig.keyCollectionLocations,
-            collectionInvitesID = BuildConfig.keyCollectionInvites,
-            functionInviteCreateID = BuildConfig.keyFunctionInviteCreate,
-            functionInviteGetCodeID = BuildConfig.keyFunctionInviteGetCode,
-            functionInviteGetUrlID = BuildConfig.keyFunctionInviteGetUrl,
-            functionInviteAcceptID = BuildConfig.keyFunctionInviteAcceptCode,
             debug = BuildConfig.internalTesting
         )
     }
