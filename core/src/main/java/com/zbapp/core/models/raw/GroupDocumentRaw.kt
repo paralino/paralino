@@ -15,7 +15,7 @@ data class GroupDocumentRaw constructor(
 
     // used for decrypting basic group data
     // encrypted with members public key
-    val groupKeys: List<GroupCryptoKeyData>?,
+    val groupKeys: List<GroupCryptoKeyDataRaw>?,
 
     val members: List<MemberDocumentRaw> = emptyList()
 ) {
@@ -23,15 +23,13 @@ data class GroupDocumentRaw constructor(
     @OptIn(ExperimentalStdlibApi::class)
     fun toPostJson(): Map<String, Any> {
         return buildMap {
+            put("ownerId", ownerId)
             put("data", data)
             put("groupKeys") {
                 groupKeys?.map {
                     BaseRemoteModule.formatter.encodeToString(it)
                 }
             }
-//            putJsonArray("members") {
-//                members.forEach { addJsonObject { it.toPostJson() } }
-//            }
         }
     }
 
@@ -45,19 +43,38 @@ data class GroupDocumentRaw constructor(
                 groupKeys = (map["groupKeys"] as? List<String>)?.map {
                     BaseRemoteModule.formatter.decodeFromString(it)
                 },
-                members = (map["members"] as List<Map<String, Any>>).map {
-                    MemberDocumentRaw.from(it)
-                },
+//                members = (map["members"] as List<Map<String, Any>>).map {
+//                    MemberDocumentRaw.from(it)
+//                },
             )
         }
     }
 }
 
 @Serializable
-data class GroupCryptoKeyData constructor(
-    val groupId: String,
+data class GroupCryptoKeyDataRaw constructor(
     val memberId: String,
-    // group key encrypted with member public key
-    val key: String,
-    val version: Int
+
+    /**
+     * group key encrypted with member public key
+     */
+    val encryptedKey: String
+)
+
+@Serializable
+data class CreateGroupPostData(
+    val userPublicKey: String,
+    val encryptedGroupKey: String,
+    val encryptedMemberKey: String,
+    val groupData: String,
+    val memberData: String
+)
+
+@Serializable
+data class CreateGroupMemberFunctionData(
+    val groupId: String,
+    val userId: String,
+    val userPublicKey: String,
+    val encryptedGroupKey: String,
+    val memberData: String
 )

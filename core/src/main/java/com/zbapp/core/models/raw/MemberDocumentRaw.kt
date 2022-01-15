@@ -15,7 +15,7 @@ data class MemberDocumentRaw constructor(
 
     // group member keys, used for decrypting
     val membersAccessKeys: List<GroupMemberCryptoKeyData>?,
-    val ownerPublicKey: String?,
+    val ownerPublicKey: String,
 
     val data: String,
     val mutableData: String? = null
@@ -26,6 +26,7 @@ data class MemberDocumentRaw constructor(
         return buildMap {
             put("ownerId", ownerId)
             put("groupId", groupId)
+            put("ownerPublicKey", ownerPublicKey)
             put("membersAccessKeys") {
                 membersAccessKeys?.map {
                     BaseRemoteModule.formatter.encodeToString(it)
@@ -43,7 +44,7 @@ data class MemberDocumentRaw constructor(
                 id = map["\$id"] as String,
                 ownerId = map["ownerId"] as String,
                 groupId = map["groupId"] as? String,
-                membersAccessKeys = (map["ownerPublicKey"] as? List<String>)?.map {
+                membersAccessKeys = (map["membersAccessKeys"] as? List<String>)?.map {
                     BaseRemoteModule.formatter.decodeFromString(it)
                 },
                 ownerPublicKey = map["ownerPublicKey"] as String,
@@ -66,10 +67,7 @@ data class MemberDocumentRaw constructor(
  */
 @Serializable
 data class GroupMemberCryptoKeyData constructor(
-    val groupId: String,
-    val ownerId: String,
-    val forMemberId: String,
+    val memberId: String,
     // owner data encryption key K encrypted with member public key
-    val key: String,
-    val version: Int
+    val encryptedKey: String
 )

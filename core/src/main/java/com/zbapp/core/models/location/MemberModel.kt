@@ -8,7 +8,7 @@ data class MemberModel constructor(
     val id: String,
     val groupId: String,
     val userId: String,
-
+    val publicKey: String,
     val data: MemberModelData,
     val mutableData: LocationDataModel? = null
 ) {
@@ -27,6 +27,7 @@ data class MemberModel constructor(
                 id = UUID.randomUUID().toString(),
                 groupId = "",
                 userId = userId,
+                publicKey = "",
                 data = MemberModelData(name, imageBase64),
                 mutableData = model
             )

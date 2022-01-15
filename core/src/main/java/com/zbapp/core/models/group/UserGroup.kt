@@ -10,6 +10,8 @@ data class UserGroup constructor(
     val id: String,
     val ownerId: String = "",
     val data: UserGroupData = UserGroupData(),
+    val groupKey: String,
+    val groupKeys: List<GroupCryptoKeyData> = emptyList(),
     val members: List<MemberModel> = emptyList()
 ) {
 
@@ -18,12 +20,13 @@ data class UserGroup constructor(
     val type: String get() = data.type
 
     companion object {
-        val personalTracking = UserGroup("personalTracking", "", UserGroupData("Personal", "\uD83D\uDD12", Constants.collectionGroupPrivate), emptyList())
-        val publicSharing = UserGroup("publicSharing", "", UserGroupData("Public", "\uD83C\uDFD9️", Constants.collectionGroupPublic), emptyList())
+        val personalTracking = UserGroup("personalTracking", "", UserGroupData("Personal", "\uD83D\uDD12", Constants.collectionGroupPrivate), "", emptyList())
+        val publicSharing = UserGroup("publicSharing", "", UserGroupData("Public", "\uD83C\uDFD9️", Constants.collectionGroupPublic), "", emptyList())
         fun new(icon: String, name: String) = UserGroup(
             id = "",
             ownerId = config.userId,
             data = UserGroupData(name, icon, Constants.collectionGroupUser),
+            "",
             members = emptyList()
         )
     }
@@ -40,3 +43,9 @@ data class UserGroupData constructor(
 ) {
 
 }
+
+@Serializable
+data class GroupCryptoKeyData constructor(
+    val memberId: String,
+    val encryptedKey: String
+)
