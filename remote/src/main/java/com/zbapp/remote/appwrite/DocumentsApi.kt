@@ -10,8 +10,8 @@ class DocumentsApi constructor(
 
     override suspend fun createOrUpdateDocument(
         collectionId: String,
-        data: Any,
         docId: String?,
+        data: Any,
         read: List<String>?,
         write: List<String>?
     ): Map<String, Any> {
@@ -35,16 +35,16 @@ class DocumentsApi constructor(
         }
     }
 
-    override suspend fun getDocument(collectionId: String, groupId: String): Map<String, Any> {
-        return remoteModule.execute { database.getDocument(collectionId, groupId).parseDocument() }
+    override suspend fun getDocument(collectionId: String, documentId: String): Map<String, Any> {
+        return remoteModule.execute { database.getDocument(collectionId, documentId).parseDocument() }
     }
 
     override suspend fun getDocuments(collectionId: String): List<Map<String, Any>> {
         return remoteModule.execute { database.listDocuments(collectionId).parseListOfDocuments() }
     }
 
-    override suspend fun deleteDocument(collectionId: String, groupId: String) {
-        remoteModule.execute { database.deleteDocument(collectionId, groupId) }
+    override suspend fun deleteDocument(collectionId: String, documentId: String) {
+        remoteModule.execute { database.deleteDocument(collectionId, documentId) }
     }
 
     private fun Document.parseDocument(): Map<String, Any> {

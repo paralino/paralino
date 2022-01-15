@@ -13,7 +13,7 @@ class LocationRemoteSource constructor(
 
     suspend fun getCurrentLocationsForGroup(groupId: String): List<MemberDocumentRaw> {
         return blocking {
-            api.getDocuments(config.collectionLocationsID).map {
+            api.getDocuments(config.resourceIds.collectionGroupMembersID).map {
                 MemberDocumentRaw.from(it)
             }
         }
@@ -33,7 +33,7 @@ class LocationRemoteSource constructor(
     ): MemberDocumentRaw {
         return blocking {
             api.createOrUpdateDocument(
-                collectionId = config.collectionLocationsID,
+                collectionId = config.resourceIds.collectionGroupMembersID,
                 docId = data.groupId,
                 data = data.toPostJson(),
                 read = readPermissions

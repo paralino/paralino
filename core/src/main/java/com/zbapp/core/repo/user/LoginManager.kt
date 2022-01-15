@@ -119,7 +119,7 @@ class LoginManager(
             emit(SignUpStep.INIT_USER_DATA)
             try {
                 delay(500)
-                val userKey = cryptoAuth.signIn(password, user.id, data.key)
+                val userKey = cryptoAuth.signIn(password, user.id, data.encryptedKey)
                 cryptoAuth.saveUserKeyLocally(userKey)
             } catch (e: Exception) {
                 cryptoAuth.logout()
