@@ -83,7 +83,7 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
     }
 
     private fun addInvite() {
-        vm.createInviteCode(1).observe {
+        vm.createInviteCode().observe {
             vb.rvInvites.emptyStateItem?.getButton()?.setLoading(loading = it is Payload.Loading, withCheck = false)
             when (it) {
                 Payload.Loading -> { }

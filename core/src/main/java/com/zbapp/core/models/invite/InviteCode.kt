@@ -19,6 +19,7 @@ data class InviteCode private constructor(
     val ownerId: String,
     val ownerName: String,
     val ownerImageBase64: String,
+    val ownerKey: String,
 
     val groupId: String?,
     val groupName: String?,
@@ -42,57 +43,16 @@ data class InviteCode private constructor(
                 ignoreCase = true
             )
     }
+
     val isGroupInvite get() = !groupId.isNullOrBlank()
 
-    companion object {
-        fun appInvite(
-            ownerId: String,
-            ownerName: String,
-            ownerImageBase64: String,
-            userLimit: Int = 0
-        ): InviteCode {
-            return InviteCode(
-                id = "",
-                tempId = "",
-                ownerId = ownerId,
-                ownerName = ownerName,
-                ownerImageBase64 = ownerImageBase64,
-                groupId = null,
-                groupName = null,
-                groupEmoji = null,
-                groupMembersCount = null,
-                inviteCode = "",
-                inviteUrl = "",
-                validity = 0,
-                userLimit = userLimit
-            )
-        }
+}
 
-        fun groupInvite(
-            ownerId: String,
-            ownerName: String,
-            ownerImageBase64: String,
-            groupId: String?,
-            groupName: String?,
-            groupEmoji: String?,
-            groupMembersCount: Int?,
-            userLimit: Int = 0
-        ): InviteCode {
-            return InviteCode(
-                id = "",
-                tempId = "",
-                ownerId = ownerId,
-                ownerName = ownerName,
-                ownerImageBase64 = ownerImageBase64,
-                groupId = groupId,
-                groupName = groupName,
-                groupEmoji = groupEmoji,
-                groupMembersCount = groupMembersCount,
-                inviteCode = "",
-                inviteUrl = "",
-                validity = 0,
-                userLimit = userLimit
-            )
-        }
-    }
+data class PersonalCodeData constructor(
+    val ownerId: String,
+    val ownerName: String,
+    val ownerImageBase64: String,
+    val ownerKey: String
+) {
+
 }

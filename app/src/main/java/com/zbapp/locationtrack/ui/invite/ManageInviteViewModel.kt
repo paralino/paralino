@@ -51,8 +51,8 @@ class ManageInviteViewModel(
             .asLiveData()
     }
 
-    fun createInviteCode(userLimit: Int = 1): LiveData<Payload<InviteCode>> {
-        return repo.createInviteCode(userLimit).asLiveData()
+    fun createInviteCode(): LiveData<Payload<InviteCode>> {
+        return repo.createInviteCode().asLiveData()
     }
 
 }
