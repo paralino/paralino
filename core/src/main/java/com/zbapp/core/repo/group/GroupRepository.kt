@@ -90,11 +90,12 @@ class GroupRepository constructor(
                     id = "",
                     groupId = groupId,
                     userId = code.ownerId,
+                    publicKey = code.ownerKey,
                     data = MemberModelData(code.ownerName, code.ownerImageBase64),
                     mutableData = null
                 )
                 val group = local.getGroup(groupId).first()
-                remote.addUserToGroup(group, member)
+                remote.addUserToGroup(group, member, userRepository.cachedUser!!)
             },
             localUpdate = {
                 local.updateOrCreateGroup(it)
