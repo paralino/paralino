@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.ui.login
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.google.android.material.snackbar.Snackbar
 import com.zbapp.core.models.Payload
 import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.repo.user.SignUpStep
@@ -88,7 +89,7 @@ class LoginViewModel(
 
                 _loginInfoState.value = ""
                 _errorState.value =
-                    AppSnackbarData(error ?: myApp.getString(R.string.error_generic_snacbar), null)
+                    AppSnackbarData(error ?: myApp.getString(R.string.error_generic_snacbar), null, Snackbar.LENGTH_LONG)
 
                 emit(Payload.Error(it))
             }
@@ -164,6 +165,7 @@ class LoginViewModel(
                     else -> null
                 }
             }
+            // TODO ofer user an option to generate keys again
             SignUpStep.INIT_USER_DATA -> {
                 when (loginScreenState.value) {
                     LoginState.LOGIN -> R.string.login_step_error_user_setup_logIn

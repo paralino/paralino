@@ -110,6 +110,7 @@ class LoginManager(
             emit(SignUpStep.GENERATING_KEYS)
             val data: SymmetricCryptoKeyData
             try {
+                // TODO check if there are no keys and data and maybe generate them again
                 delay(500)
                 data = BaseRemoteModule.formatter.decodeFromString(user.data?.privateKeyBackup!!)
             } catch (e: Exception) {
