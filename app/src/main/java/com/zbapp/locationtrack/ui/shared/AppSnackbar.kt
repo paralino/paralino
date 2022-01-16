@@ -60,9 +60,15 @@ class AppSnackbarView: ConstraintLayout, ContentViewCallback {
 data class AppSnackbarData constructor(
     val text: SpannableString,
     val actionText: String? = null,
+    val duration: Int = if(actionText.isNullOrBlank()) Snackbar.LENGTH_SHORT else Snackbar.LENGTH_INDEFINITE,
     val id: String = text.toString()
 ){
-    constructor(text: String, actionText: String?, id: String = text): this(SpannableString(text), actionText, id)
+    constructor(
+        text: String,
+        actionText: String?,
+        duration: Int = if(actionText.isNullOrBlank()) Snackbar.LENGTH_SHORT else Snackbar.LENGTH_INDEFINITE,
+        id: String = text
+    ): this(SpannableString(text), actionText, duration, id)
 }
 
 class AppSnackbar (
@@ -88,9 +94,8 @@ class AppSnackbar (
                 snackbar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 snackbar.actionClick = actionClick
                 snackbar.dataReady(data)
-                val duration = if(actionClick == null || data.actionText.isNullOrEmpty()) Snackbar.LENGTH_SHORT else Snackbar.LENGTH_INDEFINITE
                 return AppSnackbar(parent, snackbar)
-                    .setDuration(duration)
+                    .setDuration(data.duration)
                     .setAnimationMode(ANIMATION_MODE_SLIDE)
             }catch ( e: Exception){ }
 
