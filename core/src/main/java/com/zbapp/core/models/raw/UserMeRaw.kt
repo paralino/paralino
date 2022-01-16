@@ -29,4 +29,15 @@ data class UserMeDataRaw constructor(
             }
         }
     }
+
+    companion object {
+        fun parseData(prefs: Map<String, Any>): UserMeDataRaw? {
+            return UserMeDataRaw(
+                imageBase64 = prefs["imageBase64"] as? String,
+                userName = prefs["userName"] as? String,
+                privateKeyBackup = prefs["privateKeyBackup"] as? String,
+                asymmetricKeys = prefs["asymmetricKeys"] as? List<String>
+            )
+        }
+    }
 }

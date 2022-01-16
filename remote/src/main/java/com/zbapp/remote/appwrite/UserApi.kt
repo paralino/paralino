@@ -4,11 +4,8 @@ import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.api.IUserApi
-import com.zbapp.core.utils.BaseRemoteModule
 import io.appwrite.models.Session
 import io.appwrite.models.User
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
 
 class UserApi constructor(
     private val remoteModule: AppWriteRemoteModule
@@ -66,11 +63,7 @@ class UserApi constructor(
             email = this.email,
             registration = this.registration,
             emailVerification = this.emailVerification,
-            data = this.prefs.convertTo {
-                BaseRemoteModule.formatter.decodeFromJsonElement<UserMeDataRaw>(
-                    BaseRemoteModule.formatter.encodeToJsonElement(it)
-                )
-            }
+            data = UserMeDataRaw.parseData(this.prefs.data)
         )
     }
 
