@@ -1,7 +1,8 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.invite.InviteCode
+import com.zbapp.core.models.invite.PersonalCodeData
+import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.raw.GroupDocumentRaw
@@ -83,7 +84,7 @@ class GroupRepository constructor(
         )
     }
 
-    fun addMemberByAccessCode(groupId: String, code: InviteCode): Flow<GroupDocumentRaw> {
+    fun addMemberByAccessCode(groupId: String, code: PersonalCodeReadData): Flow<GroupDocumentRaw> {
         return getDataOnce(
             remote = {
                 val member = MemberModel(

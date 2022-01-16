@@ -2,7 +2,7 @@ package com.zbapp.locationtrack.ui.invite
 
 import android.content.Context
 import android.util.AttributeSet
-import com.zbapp.core.models.invite.InviteCode
+import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.locationtrack.databinding.ElementInviteCodeBinding
 import com.zbapp.locationtrack.utils.BaseRvItem
 import com.zbapp.locationtrack.utils.ListItemType
@@ -27,17 +27,17 @@ class InviteCodeListItem(context: Context, attributeSet: AttributeSet? = null) :
     }
 
     override fun applyData(data: InviteCodeData) {
-        vb.tvInviteCode.text = data.invite.inviteCode
-        vb.tvInviteCodeValidity.text = data.invite.validity.toDateTimeUTC()
-            .toLocalTime()
-            .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+        vb.tvInviteCode.text = data.personalCodeData.code
+        vb.tvInviteCodeValidity.text = data.personalCodeData.validity.toDateTimeUTC()
+            .toLocalDate()
+            .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
     }
 }
 
 data class InviteCodeData(
-    val invite: InviteCode
+    val personalCodeData: PersonalCodeData
 ) : ListItemType {
     override fun getIdentifier(): String {
-        return invite.inviteCode
+        return personalCodeData.code
     }
 }

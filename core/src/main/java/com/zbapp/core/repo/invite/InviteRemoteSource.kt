@@ -1,8 +1,9 @@
 package com.zbapp.core.repo.invite
 
 import com.zbapp.core.models.BackendConfig
-import com.zbapp.core.models.invite.InviteCode
 import com.zbapp.core.models.invite.PersonalCodeData
+import com.zbapp.core.models.invite.PersonalCodeCreateData
+import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.BaseRemoteModule
@@ -17,7 +18,7 @@ class InviteRemoteSource constructor(
     private val docApi: IDocumentsApi,
     private val remoteConfig: BackendConfig,
 ) {
-    suspend fun createInviteCode(data: PersonalCodeData): InviteCode {
+    suspend fun createInviteCode(data: PersonalCodeCreateData): PersonalCodeData {
         val id = functionsApi.createExecution(
             functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
             data = BaseRemoteModule.formatter.encodeToString(data)
@@ -29,13 +30,13 @@ class InviteRemoteSource constructor(
         }
     }
 
-    suspend fun getInviteCodes(): List<InviteCode> {
+    suspend fun getInviteCodes(): List<PersonalCodeData> {
         val docs =
             docApi.getDocuments(remoteConfig.resourceIds.collectionPersonalCodeID).toJsonArray()
         return BaseRemoteModule.formatter.decodeFromJsonElement(docs)
     }
 
-    suspend fun getInviteByCode(code: String): InviteCode {
+    suspend fun getInviteByCode(code: String): PersonalCodeReadData {
         val id = functionsApi.createExecution(
             functionId = remoteConfig.resourceIds.functionPersonalCodeReadID,
             code
@@ -44,7 +45,7 @@ class InviteRemoteSource constructor(
             functionsApi.getExecution(remoteConfig.resourceIds.functionPersonalCodeReadID, id)
                 .takeIf { it.isSuccess }
                 ?.let {
-                    BaseRemoteModule.formatter.decodeFromString<InviteCode>(it.stdout)
+                    BaseRemoteModule.formatter.decodeFromString<PersonalCodeReadData>(it.stdout)
                 }
         }
     }

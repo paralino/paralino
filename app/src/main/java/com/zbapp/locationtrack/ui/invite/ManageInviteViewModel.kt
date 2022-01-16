@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import com.zbapp.core.models.Payload
-import com.zbapp.core.models.invite.InviteCode
+import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.core.models.mapSuccess
 import com.zbapp.core.repo.invite.InviteRepository
 import com.zbapp.locationtrack.R
@@ -21,7 +21,7 @@ class ManageInviteViewModel(
     private val repo: InviteRepository
 ) : AndroidViewModel(app) {
 
-    fun deleteInvite(code: InviteCode): LiveData<Payload<Unit>> {
+    fun deleteInvite(code: PersonalCodeData): LiveData<Payload<Unit>> {
         return repo.revokeInviteCode(code.id).asLiveData()
     }
 
@@ -51,7 +51,7 @@ class ManageInviteViewModel(
             .asLiveData()
     }
 
-    fun createInviteCode(): LiveData<Payload<InviteCode>> {
+    fun createInviteCode(): LiveData<Payload<PersonalCodeData>> {
         return repo.createInviteCode().asLiveData()
     }
 

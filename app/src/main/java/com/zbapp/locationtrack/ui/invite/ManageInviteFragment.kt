@@ -36,7 +36,7 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
             .addFactory {
                 InviteCodeListItem(it).also {
                     it.onCopy = {
-                        context?.copy(it.invite.inviteCode)
+                        context?.copy(it.personalCodeData.code)
                         context?.let {
                             Toast.makeText(
                                 it,
@@ -46,7 +46,7 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
                         }
                     }
                     it.onShare = {
-                        context?.share(it.invite.inviteUrl)
+                        context?.share(it.personalCodeData.urlCode)
                     }
                     it.onDelete = {
                         AlertDialog.Builder(requireContext())
@@ -96,7 +96,7 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
     }
 
     private fun deleteInvite(code: InviteCodeData) {
-        vm.deleteInvite(code.invite).observe {
+        vm.deleteInvite(code.personalCodeData).observe {
             when (it) {
                 Payload.Loading -> {
                     // TODO add loading

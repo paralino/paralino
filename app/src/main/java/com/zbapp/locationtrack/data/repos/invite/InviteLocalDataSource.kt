@@ -1,6 +1,6 @@
 package com.zbapp.locationtrack.data.repos.invite
 
-import com.zbapp.core.models.invite.InviteCode
+import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.core.repo.invite.IInviteCodeLocalDataSource
 import com.zbapp.locationtrack.data.mappers.InviteCodeMapper
 import com.zbapp.locationtrack.data.mappers.mapFlowOfList
@@ -11,19 +11,19 @@ class InviteLocalDataSource(
     private val mapper: InviteCodeMapper
 ) : IInviteCodeLocalDataSource {
 
-    override suspend fun replaceInviteCode(data: List<InviteCode>) {
+    override suspend fun replaceInviteCode(data: List<PersonalCodeData>) {
         dao.replaceAll(*data.map { mapper.remote2Local(it) }.toTypedArray())
     }
 
-    override suspend fun addInviteCode(data: InviteCode) {
+    override suspend fun addInviteCode(data: PersonalCodeData) {
         dao.createOrUpdate(mapper.remote2Local(data))
     }
 
-    override fun getAllInviteCodes(): Flow<List<InviteCode>> {
+    override fun getAllInviteCodes(): Flow<List<PersonalCodeData>> {
         return mapper.mapFlowOfList(dao.getAll())
     }
 
-    override fun getInviteCodesForUser(ownerId: String): Flow<List<InviteCode>> {
+    override fun getInviteCodesForUser(ownerId: String): Flow<List<PersonalCodeData>> {
         return mapper.mapFlowOfList(dao.getForOwner(ownerId))
     }
 
