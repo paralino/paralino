@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.mapSuccess
 import com.zbapp.core.models.raw.GroupDocumentRaw
@@ -43,7 +42,7 @@ class AcceptInviteViewModel(
         args?.code?.let { loadInvite(code = it) }
         args?.groupId?.let {
             viewModelScope.launch {
-                currentGroup.value = groupRepo.getGroupLocally(it).firstOrNull()
+                currentGroup.value = groupRepo.getGroupWithMembersLocally(it).firstOrNull()
             }
         }
     }

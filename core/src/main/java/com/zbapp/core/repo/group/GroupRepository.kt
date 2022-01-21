@@ -1,7 +1,6 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
@@ -37,17 +36,17 @@ class GroupRepository constructor(
         return getAllGroups().mapLatest { it.filter { it.isFromUser } }
     }
 
-    fun getGroupLocally(id: String): Flow<UserGroup> {
-        return local.getGroup(id)
+    fun getGroupWithMembersLocally(id: String): Flow<UserGroup> {
+        return local.getGroupWithMembers(id)
     }
 
     fun getGroupWithoutMembers(id: String): Flow<UserGroup> {
         return local.getGroupWithoutMembers(id)
     }
 
-    fun getGroup(id: String): Flow<UserGroup> {
+    fun getGroupWithMembers(id: String): Flow<UserGroup> {
         return subscribeToData(
-            local = local.getGroup(id),
+            local = local.getGroupWithMembers(id),
             remote = { remote.getGroup(id) },
             localUpdate = { local.updateOrCreateGroup(it) },
             remotePreference = RemotePreference.PREFER
@@ -68,7 +67,7 @@ class GroupRepository constructor(
     fun updateGroup(userGroup: UserGroup): Flow<Unit> {
         return getDataOnce(
             remote = { remote.updateGroup(userGroup) },
-            localUpdate = { local.updateOrCreateGroup(it) },
+            localUpdate = { local.updateGroupOnly(it) },
             remotePreference = RemotePreference.FORCE
         ).map { Unit }
     }
@@ -76,7 +75,7 @@ class GroupRepository constructor(
     fun deleteGroup(id: String): Flow<Unit> {
         return getDataOnce(
             remote = {
-                val group = local.getGroup(id).first()
+                val group = local.getGroupWithMembers(id).first()
                 remote.deleteGroup(group)
             },
             localUpdate = { local.deleteGroup(id) },
@@ -95,24 +94,24 @@ class GroupRepository constructor(
                     data = MemberModelData(code.ownerName, code.ownerImageBase64),
                     mutableData = null
                 )
-                val group = local.getGroup(groupId).first()
+                val group = local.getGroupWithMembers(groupId).first()
                 remote.addUserToGroup(group, member, userRepository.cachedUser!!)
             },
             localUpdate = {
                 local.updateOrCreateGroup(it)
             },
             remotePreference = RemotePreference.FORCE
-        )
+        ).map { it.group }
     }
 
-    fun removeMember(member: MemberModel): Flow<GroupDocumentRaw> {
+    fun removeMember(member: MemberModel): Flow<Unit> {
         return getDataOnce(
             remote = {
-                val group = local.getGroup(member.groupId).first()
+                val group = local.getGroupWithMembers(member.groupId).first()
                 remote.removeUserFromGroup(group, member)
             },
             localUpdate = {
-                local.updateOrCreateGroup(it)
+                local.removeMember(member.groupId, member.userId)
             },
             remotePreference = RemotePreference.FORCE
         )

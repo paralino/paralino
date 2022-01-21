@@ -1,35 +1,21 @@
 package com.zbapp.core.models.raw
 
-import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 
 @Serializable
 data class GroupDocumentRaw constructor(
     @SerialName("\$id")
     val id: String,
-    val ownerId: String,
-    val data: String = "",
-
-    // used for decrypting basic group data
-    // encrypted with members public key
-    val groupKeys: List<GroupCryptoKeyDataRaw>?,
-
-    val members: List<MemberDocumentRaw> = emptyList()
+    val ownerUserId: String,
+    val data: String = ""
 ) {
 
     @OptIn(ExperimentalStdlibApi::class)
     fun toPostJson(): Map<String, Any> {
         return buildMap {
-            put("ownerId", ownerId)
+            put("ownerUserId", ownerUserId)
             put("data", data)
-            put("groupKeys") {
-                groupKeys?.map {
-                    BaseRemoteModule.formatter.encodeToString(it)
-                }
-            }
         }
     }
 
@@ -38,31 +24,51 @@ data class GroupDocumentRaw constructor(
         fun from(map: Map<String, Any>): GroupDocumentRaw {
             return GroupDocumentRaw(
                 id = map["\$id"] as String,
-                ownerId = map["ownerId"] as String,
-                data = map["data"] as String,
-                groupKeys = (map["groupKeys"] as? List<String>)?.map {
-                    BaseRemoteModule.formatter.decodeFromString(it)
-                },
-//                members = (map["members"] as List<Map<String, Any>>).map {
-//                    MemberDocumentRaw.from(it)
-//                },
+                ownerUserId = map["ownerUserId"] as String,
+                data = map["data"] as String
             )
         }
     }
 }
 
 @Serializable
-data class GroupCryptoKeyDataRaw constructor(
-    val memberId: String,
-
-    /**
-     * group key encrypted with member public key
-     */
-    val encryptedKey: String
+data class GroupWithMemberRaw constructor(
+    val group: GroupDocumentRaw,
+    val groupKey: GroupCryptoKeyDataRaw,
+    val members: List<MemberDocumentRaw>,
+    val memberKeys: List<GroupMemberCryptoKeyDataRaw>
 )
 
 @Serializable
-data class CreateGroupPostData(
+data class GroupCryptoKeyDataRaw constructor(
+    @SerialName("\$id")
+    val id: String,
+    val groupId: String,
+    val memberId: String,
+    val memberUserId: String,
+    val time: Long,
+
+    /**
+     * group key encrypted with member public key, signed with owner private key
+     */
+    val encryptedGroupKey: String
+) {
+    companion object {
+        fun from(map: Map<String, Any>): GroupCryptoKeyDataRaw {
+            return GroupCryptoKeyDataRaw(
+                id = map["\$id"] as String,
+                groupId = map["groupId"] as String,
+                memberId = map["memberId"] as String,
+                memberUserId = map["memberUserId"] as String,
+                time = map["time"] as Long,
+                encryptedGroupKey = map["encryptedGroupKey"] as String
+            )
+        }
+    }
+}
+
+@Serializable
+data class CreateGroupPostData constructor(
     val userPublicKey: String,
     val encryptedGroupKey: String,
     val encryptedMemberKey: String,
@@ -71,10 +77,16 @@ data class CreateGroupPostData(
 )
 
 @Serializable
-data class CreateGroupMemberFunctionData(
+data class CreateGroupMemberFunctionData constructor(
     val groupId: String,
     val userId: String,
     val userPublicKey: String,
     val encryptedGroupKey: String,
     val memberData: String
+)
+
+@Serializable
+data class DeleteGroupMemberFunctionData constructor(
+    val groupId: String,
+    val userId: String
 )

@@ -43,6 +43,9 @@ interface MemberDao {
     @Query("DELETE FROM members WHERE groupId = :groupId")
     suspend fun clearAllMembersForGroup(groupId: String)
 
+    @Query("DELETE FROM members WHERE groupId = :groupId AND userId = :userId")
+    suspend fun clearAllMembersForGroup(groupId: String, userId: String)
+
     @Query("DELETE FROM members")
     suspend fun clear()
 

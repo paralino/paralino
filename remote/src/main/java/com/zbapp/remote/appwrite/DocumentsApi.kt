@@ -1,6 +1,7 @@
 package com.zbapp.remote.appwrite
 
 import com.zbapp.core.repo.api.IDocumentsApi
+import io.appwrite.Query
 import io.appwrite.models.Document
 import io.appwrite.models.DocumentList
 
@@ -41,6 +42,15 @@ class DocumentsApi constructor(
 
     override suspend fun getDocuments(collectionId: String): List<Map<String, Any>> {
         return remoteModule.execute { database.listDocuments(collectionId).parseListOfDocuments() }
+    }
+
+    override suspend fun getDocumentsFor(collectionId: String, vararg keyValue: Pair<String, Any>): List<Map<String, Any>> {
+        return remoteModule.execute {
+            database.listDocuments(
+                collectionId = collectionId,
+                queries = keyValue.map { Query.equal(attribute = it.first, value = it.second) }
+            ).parseListOfDocuments()
+        }
     }
 
     override suspend fun deleteDocument(collectionId: String, documentId: String) {

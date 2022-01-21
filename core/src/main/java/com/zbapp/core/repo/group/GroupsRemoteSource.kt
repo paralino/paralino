@@ -7,9 +7,7 @@ import com.zbapp.core.models.group.UserGroupData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
-import com.zbapp.core.models.raw.CreateGroupMemberFunctionData
-import com.zbapp.core.models.raw.CreateGroupPostData
-import com.zbapp.core.models.raw.GroupDocumentRaw
+import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
@@ -25,7 +23,7 @@ class GroupsRemoteSource constructor(
     private val cryptoAuth: CryptoAuth
 ) {
 
-    suspend fun createGroup(group: UserGroup, me: UserMe): GroupDocumentRaw {
+    suspend fun createGroup(group: UserGroup, me: UserMe): GroupWithMemberRaw {
         return blocking {
 
             val groupKey = cryptoAuth.getNewSymmetricKey()
@@ -65,10 +63,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (data.isSuccess) {
-                api.getDocument(
-                    collectionId = remoteConfig.resourceIds.collectionGroupsID,
-                    documentId = data.stdout
-                ).parseGroup()
+                getGroup(data.stdout)
             } else {
                 throw BaseRemoteException.fromCode(
                     null,
@@ -94,7 +89,7 @@ class GroupsRemoteSource constructor(
         group: UserGroup,
         member: MemberModel,
         owner: UserMe
-    ): GroupDocumentRaw {
+    ): GroupWithMemberRaw {
         return blocking {
             val encryptedGroupKey = cryptoAuth.encryptDataWithKeyPair(
                 data = group.groupKey,
@@ -119,10 +114,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (data.isSuccess) {
-                api.getDocument(
-                    collectionId = remoteConfig.resourceIds.collectionGroupsID,
-                    documentId = data.stdout
-                ).parseGroup()
+                getGroup(data.stdout)
             } else {
                 throw BaseRemoteException.fromCode(
                     null,
@@ -133,52 +125,95 @@ class GroupsRemoteSource constructor(
         }
     }
 
-    suspend fun removeUserFromGroup(
-        group: UserGroup,
-        member: MemberModel
-    ): GroupDocumentRaw {
+    suspend fun removeUserFromGroup(group: UserGroup, member: MemberModel) {
         return blocking {
 
-            if (member.id == group.ownerId)
+            if (member.userId == group.ownerUserId)
                 throw PermissionDeniedException("Owner can not be removed from the group")
 
-            api.deleteDocument(remoteConfig.resourceIds.collectionGroupMembersID, member.id)
-            api.createOrUpdateDocument(
-                collectionId = remoteConfig.resourceIds.collectionGroupsID,
-                docId = group.id,
-                data = JsonObject(emptyMap()),
-                read = group.members.map { it.userId }
-                    .filter { it != member.userId }
-                    .map { "user:$it" }
-                    .ifEmpty { null },
-                write = null
-            ).parseGroup()
+            val payload = DeleteGroupMemberFunctionData(
+                groupId = group.id,
+                userId = member.userId
+            )
+
+            val data = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionDeleteGroupMemberID,
+                data = BaseRemoteModule.formatter.encodeToString(payload)
+            )
+
+            if (!data.isSuccess) {
+                throw BaseRemoteException.fromCode(
+                    null,
+                    "Unable to delete group member",
+                    Exception(data.stderr)
+                )
+            }
         }
     }
 
-    suspend fun getAllGroups(): List<GroupDocumentRaw> {
+    suspend fun getAllGroups(): List<GroupWithMemberRaw> {
         return blocking {
-            api.getDocuments(remoteConfig.resourceIds.collectionGroupsID).map { it.parseGroup() }
+            val groups = api.getDocuments(remoteConfig.resourceIds.collectionGroupsID).map { it.parseGroup() }
+            val groupKeys = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupKeysID).map { it.parseGroupKey() }
+            val members = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersID).map { it.parseGroupMember() }
+            val groupMemberKeys = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersKeysID).map { it.parseGroupMemberKey() }
+            groups.map { group ->
+                GroupWithMemberRaw(
+                    group = group,
+                    groupKey = groupKeys.first { it.groupId == group.id },
+                    members = members,
+                    memberKeys = groupMemberKeys
+                )
+            }
         }
     }
 
-    suspend fun getGroup(groupId: String): GroupDocumentRaw {
+    suspend fun getGroup(groupId: String): GroupWithMemberRaw {
         return blocking {
-            api.getDocument(remoteConfig.resourceIds.collectionGroupsID, groupId).parseGroup()
+            val groupKey = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupKeysID, "groupId" to groupId).takeIf { it.size == 1 }!!.map { it.parseGroupKey() }.first()
+            val group = api.getDocument(remoteConfig.resourceIds.collectionGroupsID, groupId).parseGroup()
+            val members = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersID, "groupId" to groupId).map { it.parseGroupMember() }
+            val groupMemberKeys = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersKeysID, "groupId" to groupId).map { it.parseGroupMemberKey() }
+            GroupWithMemberRaw(
+                group = group,
+                groupKey = groupKey,
+                members = members,
+                memberKeys = groupMemberKeys
+            )
         }
     }
 
     suspend fun deleteGroup(group: UserGroup) {
         blocking {
-            api.deleteDocument(remoteConfig.resourceIds.collectionGroupsID, group.id)
-            group.members.forEach {
-                api.deleteDocument(remoteConfig.resourceIds.collectionGroupMembersID, it.id)
+            val data = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionDeleteGroupID,
+                data = group.id
+            )
+
+            if (!data.isSuccess) {
+                throw BaseRemoteException.fromCode(
+                    null,
+                    "Unable to delete group",
+                    Exception(data.stderr)
+                )
             }
         }
     }
 
     private suspend fun Map<String, Any>.parseGroup(): GroupDocumentRaw {
         return GroupDocumentRaw.from(this)
+    }
+
+    private suspend fun Map<String, Any>.parseGroupMember(): MemberDocumentRaw {
+        return MemberDocumentRaw.from(this)
+    }
+
+    private suspend fun Map<String, Any>.parseGroupKey(): GroupCryptoKeyDataRaw {
+        return GroupCryptoKeyDataRaw.from(this)
+    }
+
+    private suspend fun Map<String, Any>.parseGroupMemberKey(): GroupMemberCryptoKeyDataRaw {
+        return GroupMemberCryptoKeyDataRaw.from(this)
     }
 
 }

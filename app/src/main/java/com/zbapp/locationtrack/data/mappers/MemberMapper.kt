@@ -17,7 +17,7 @@ class MemberMapper(
     override suspend fun core2Remote(model: MemberModel): MemberDocumentRaw {
         return MemberDocumentRaw(
             id = model.id,
-            ownerId = model.userId,
+            ownerUserId = model.userId,
             groupId = model.groupId,
             membersAccessKeys = null,
             ownerPublicKey = "",
@@ -29,7 +29,7 @@ class MemberMapper(
     override suspend fun local2Remote(model: MemberEntity): MemberDocumentRaw {
         return MemberDocumentRaw(
             id = model.id,
-            ownerId = model.userId,
+            ownerUserId = model.userId,
             groupId = model.groupId,
             membersAccessKeys = null,
             ownerPublicKey = "",
@@ -42,19 +42,19 @@ class MemberMapper(
         val locationData = crypto.decryptModel<LocationDataModel>(
             groupId = model.groupId ?: model.id,
             data = model.mutableData,
-            senderId = model.ownerId
+            senderId = model.ownerUserId
         )
 
         val memberData = crypto.decryptModel<MemberModelData>(
             groupId = model.groupId ?: model.id,
             data = model.data,
-            senderId = model.ownerId
+            senderId = model.ownerUserId
         )!!
 
         return MemberModel(
             id = model.id,
             groupId = model.groupId ?: model.id,
-            userId = model.ownerId,
+            userId = model.ownerUserId,
             data = memberData,
             mutableData = locationData,
             publicKey = model.ownerPublicKey
@@ -64,7 +64,7 @@ class MemberMapper(
     override suspend fun remote2Local(model: MemberDocumentRaw): MemberEntity {
         return MemberEntity(
             id = model.id,
-            userId = model.ownerId,
+            userId = model.ownerUserId,
             groupId = model.groupId,
             data = model.data,
             mutableData = model.mutableData

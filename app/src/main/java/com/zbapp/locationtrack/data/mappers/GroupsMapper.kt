@@ -18,7 +18,7 @@ class GroupsMapper(
     override suspend fun core2Remote(model: UserGroup): GroupDocumentRaw {
         return GroupDocumentRaw(
             id = model.id,
-            ownerId = model.ownerId,
+            ownerUserId = model.ownerUserId,
             data = crypto.encryptModel(groupId = model.id, data = model.data) ?: "",
             members = model.members.map { memberMapper.core2Remote(it) },
             groupKeys = model.groupKeys.map { GroupCryptoKeyDataRaw(it.memberId, it.encryptedKey) }
@@ -30,12 +30,12 @@ class GroupsMapper(
         val groupData = crypto.decryptModel<UserGroupData>(
             groupId = model.id,
             data = model.data,
-            senderId = model.ownerId
+            senderId = model.ownerUserId
         )!!
 
         return UserGroup(
             id = model.id,
-            ownerId = model.ownerId,
+            ownerUserId = model.ownerUserId,
             data = groupData,
             members = membersData,
             groupKey = ""
@@ -45,7 +45,7 @@ class GroupsMapper(
     override suspend fun local2Remote(model: UserGroupEntity): GroupDocumentRaw {
         return GroupDocumentRaw(
             id = model.id,
-            ownerId = model.ownerId,
+            ownerUserId = model.ownerUserId,
             data = model.data,
             members = model.members.map { memberMapper.local2Remote(it) },
             groupKeys = emptyList()
@@ -55,7 +55,7 @@ class GroupsMapper(
     override suspend fun remote2Local(model: GroupDocumentRaw): UserGroupEntity {
         return UserGroupEntity(
             id = model.id,
-            ownerId = model.ownerId,
+            ownerUserId = model.ownerUserId,
             data = model.data,
             members = model.members.map { memberMapper.remote2Local(it) }
         )

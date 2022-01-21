@@ -13,7 +13,7 @@ import kotlinx.parcelize.Parcelize
 data class UserGroupEntity(
     @PrimaryKey
     val id: String,
-    val ownerId: String,
+    val ownerUserId: String,
     val data: String,
 
     @Ignore

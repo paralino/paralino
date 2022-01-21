@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserGroup constructor(
     val id: String,
-    val ownerId: String = "",
+    val ownerUserId: String = "",
     val data: UserGroupData = UserGroupData(),
     val groupKey: String,
     val groupKeys: List<GroupCryptoKeyData> = emptyList(),
@@ -24,7 +24,7 @@ data class UserGroup constructor(
         val publicSharing = UserGroup("publicSharing", "", UserGroupData("Public", "\uD83C\uDFD9️", Constants.collectionGroupPublic), "", emptyList())
         fun new(icon: String, name: String) = UserGroup(
             id = "",
-            ownerId = config.userId,
+            ownerUserId = config.userId,
             data = UserGroupData(name, icon, Constants.collectionGroupUser),
             "",
             members = emptyList()

@@ -1,20 +1,15 @@
 package com.zbapp.core.models.raw
 
-import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 
 @Serializable
 data class MemberDocumentRaw constructor(
     @SerialName("\$id")
     val id: String,
-    val ownerId: String,
+    val ownerUserId: String,
     val groupId: String?,
 
-    // group member keys, used for decrypting
-    val membersAccessKeys: List<GroupMemberCryptoKeyData>?,
     val ownerPublicKey: String,
 
     val data: String,
@@ -24,14 +19,9 @@ data class MemberDocumentRaw constructor(
     @OptIn(ExperimentalStdlibApi::class)
     fun toPostJson(): Map<String, Any?> {
         return buildMap {
-            put("ownerId", ownerId)
+            put("ownerUserId", ownerUserId)
             put("groupId", groupId)
             put("ownerPublicKey", ownerPublicKey)
-            put("membersAccessKeys") {
-                membersAccessKeys?.map {
-                    BaseRemoteModule.formatter.encodeToString(it)
-                }
-            }
             put("data", data)
             put("mutableData", mutableData)
         }
@@ -42,11 +32,8 @@ data class MemberDocumentRaw constructor(
         fun from(map: Map<String, Any>): MemberDocumentRaw {
             return MemberDocumentRaw(
                 id = map["\$id"] as String,
-                ownerId = map["ownerId"] as String,
+                ownerUserId = map["ownerUserId"] as String,
                 groupId = map["groupId"] as? String,
-                membersAccessKeys = (map["membersAccessKeys"] as? List<String>)?.map {
-                    BaseRemoteModule.formatter.decodeFromString(it)
-                },
                 ownerPublicKey = map["ownerPublicKey"] as String,
                 data = map["data"] as String,
                 mutableData = map["mutableData"] as? String,
@@ -54,6 +41,12 @@ data class MemberDocumentRaw constructor(
         }
     }
 }
+
+@Serializable
+data class MemberWithKeyRaw(
+    val member: MemberDocumentRaw,
+    val key: GroupMemberCryptoKeyDataRaw
+)
 
 /**
  * User generates encryption key K and encrypts it with other members public key
@@ -66,8 +59,28 @@ data class MemberDocumentRaw constructor(
  * Location data encryption is not tied to group encryption
  */
 @Serializable
-data class GroupMemberCryptoKeyData constructor(
+data class GroupMemberCryptoKeyDataRaw constructor(
+    @SerialName("\$id")
+    val id: String,
     val memberId: String,
-    // owner data encryption key K encrypted with member public key
-    val encryptedKey: String
-)
+    val groupId: String,
+    val ownerMemberId: String,
+    val memberUserId: String,
+    val time: Long,
+    // owner sender key K encrypted with member public key, signed with owner private key
+    val encryptedSenderKey: String
+) {
+    companion object {
+        fun from(map: Map<String, Any>): GroupMemberCryptoKeyDataRaw {
+            return GroupMemberCryptoKeyDataRaw(
+                id = map["\$id"] as String,
+                memberId = map["memberId"] as String,
+                ownerMemberId = map["ownerMemberId"] as String,
+                memberUserId = map["memberUserId"] as String,
+                groupId = map["groupId"] as String,
+                time = map["time"] as Long,
+                encryptedSenderKey = map["encryptedSenderKey"] as String
+            )
+        }
+    }
+}

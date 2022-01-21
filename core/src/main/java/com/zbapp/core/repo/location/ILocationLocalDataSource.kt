@@ -17,6 +17,7 @@ interface ILocationLocalDataSource {
     suspend fun removeMember(id: String)
     suspend fun clearAllMembersForUser(userId: String)
     suspend fun clearAllMembersForGroup(groupId: String)
+    suspend fun clearAllMembersForGroup(groupId: String, userId: String)
     suspend fun clearAll()
 
 }
