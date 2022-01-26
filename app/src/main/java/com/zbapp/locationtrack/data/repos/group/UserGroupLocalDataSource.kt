@@ -74,7 +74,8 @@ class UserGroupLocalDataSource(
         return dao.getGroup(groupId)
             .filterNotNull()
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
-                mapper.local2Remote(group).copy(members = members)
+                // TODO add members
+                mapper.local2Remote(group)
             }
             .decrypt(mapper)
     }

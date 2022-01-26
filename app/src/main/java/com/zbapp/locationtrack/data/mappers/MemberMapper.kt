@@ -19,7 +19,6 @@ class MemberMapper(
             id = model.id,
             ownerUserId = model.userId,
             groupId = model.groupId,
-            membersAccessKeys = null,
             ownerPublicKey = "",
             data = crypto.encryptModel(model.groupId, model.data) ?: "",
             mutableData = crypto.encryptModel(groupId = model.id, data = model.data)
@@ -31,7 +30,6 @@ class MemberMapper(
             id = model.id,
             ownerUserId = model.userId,
             groupId = model.groupId,
-            membersAccessKeys = null,
             ownerPublicKey = "",
             data = model.data,
             mutableData = model.mutableData
