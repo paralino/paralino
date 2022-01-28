@@ -8,10 +8,11 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "groups")
-data class UserGroupEntity(
+data class UserGroupEntity constructor(
     @PrimaryKey
     val id: String,
     val ownerUserId: String,
+    val ownerPublicKey: String,
     val data: String
 ) : Parcelable {
 

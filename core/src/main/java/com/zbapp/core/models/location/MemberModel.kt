@@ -43,7 +43,7 @@ data class MemberModelData constructor(
 )
 
 @Serializable
-data class LocationDataModel(
+data class LocationDataModel constructor(
     val lat: Double,
     val lng: Double,
     val accuracy: Float = 0f,

@@ -2,14 +2,14 @@ package com.zbapp.locationtrack.data.repos.location
 
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.repo.location.ILocationLocalDataSource
-import com.zbapp.locationtrack.data.mappers.MemberMapper
+import com.zbapp.locationtrack.data.mappers.MemberMapperLocal
 import com.zbapp.locationtrack.data.mappers.mapFlowOfList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 
 class LocationLocalDataSource(
     private val dao: MemberDao,
-    private val mapper: MemberMapper
+    private val mapper: MemberMapperLocal
 ) : ILocationLocalDataSource {
 
     override suspend fun createOrUpdateMembers(vararg data: MemberDocumentRaw) {

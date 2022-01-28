@@ -6,9 +6,9 @@ import com.zbapp.core.crypto.CryptoKeyRepository
 import com.zbapp.core.crypto.ICryptoAuthProvider
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
-import com.zbapp.core.models.mappers.IMemberMapperCore
 import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.models.mappers.IUserMapperCore
+import com.zbapp.core.models.mappers.MemberMapperCore
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.repo.api.IUserApi
@@ -57,15 +57,16 @@ val cryptoModule = module {
     single { CryptoAuthProvider() }
     single<ICryptoAuthProvider> { get<CryptoAuthProvider>() }
     single { CryptoAuth(get()) }
-    single { CryptoKeyRepository(get(), get(), get(), get()) }
+    single { CryptoKeyRepository(get(), get(), get(), get(), get()) }
 }
 
 val mappersModule = module {
     single { UserDataMapper(get()) }
     single { UserMapper(get(), get()) }
     single { SharingContractsMapper }
-    single { GroupsMapper(get(), get()) }
-    single { MemberMapper(get(), get(), get()) }
+    single { GroupsMapper(get(), get(), get()) }
+    single { MemberMapperCore(get(), get()) }
+    single { MemberMapperLocal }
     single { InviteCodeMapper(get()) }
     single { GroupKeysMapper() }
     single { GroupMemberKeysMapper() }
@@ -97,7 +98,6 @@ val coreDependencyModules = module {
     single<IGroupDataMapperCore> { get<GroupsMapper>() }
     single<IUserMapperCore> { get<UserMapper>() }
     single<IUserDataMapperCore> { get<UserDataMapper>() }
-    single<IMemberMapperCore> { get<MemberMapper>() }
 
     single<IUserApi> { UserApi(get()) }
     single<IDocumentsApi> { DocumentsApi(get()) }

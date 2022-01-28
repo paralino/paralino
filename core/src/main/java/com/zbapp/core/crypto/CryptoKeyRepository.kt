@@ -5,6 +5,8 @@ import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
+import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.core.utils.NotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.stateIn
 
 
 class CryptoKeyRepository(
+    private val userRepo: UserRepository,
     private val cryptoAuth: CryptoAuth,
     private val local: ICryptoKeyLocalDataSource,
     private val remote: CryptoKeyRemoteDataSource,
@@ -64,16 +67,33 @@ class CryptoKeyRepository(
             initialValue = emptyList()
         )
 
-    fun getGroupKey(groupId: String): GroupCryptoKeyDataRaw? {
-        return groupKeys.value.firstOrNull { it.groupId == groupId }
+    suspend fun getGroupKey(groupId: String, ownerPublicKey: String): String? {
+        val keyRaw = groupKeys.value.firstOrNull { it.groupId == groupId }
+            ?: return null
+
+        val groupKey = cryptoAuth.decryptDataWithKeyPair(
+            data = keyRaw.encryptedGroupKey,
+            myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
+            publicKey = ownerPublicKey
+        )
+
+        return groupKey
     }
 
     fun listenToGroupKey(groupId: String): Flow<GroupCryptoKeyDataRaw?> {
         return groupKeys.map { it.firstOrNull { it.groupId == groupId } }
     }
 
-    fun getMemberKey(groupId: String, memberId: String): GroupMemberCryptoKeyDataRaw? {
-        return memberKeys.value.firstOrNull { it.groupId == groupId && it.memberId == memberId }
+    suspend fun getMemberKey(groupId: String, memberId: String, memberPublicKey: String): String? {
+        val keyRaw = memberKeys.value.firstOrNull { it.groupId == groupId && it.memberId == memberId }
+            ?: return null
+
+        val memberKey = cryptoAuth.decryptDataWithKeyPair(
+            data = keyRaw.encryptedSenderKey,
+            myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
+            publicKey = memberPublicKey
+        )
+        return memberKey
     }
 
     fun listenToMemberKey(groupId: String, memberId: String): Flow<GroupMemberCryptoKeyDataRaw?> {

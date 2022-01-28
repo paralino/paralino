@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 data class UserGroup constructor(
     val id: String,
     val ownerUserId: String = "",
+    val ownerPublicKey: String,
     val data: UserGroupData = UserGroupData(),
     val groupKey: String,
     val groupKeys: List<GroupCryptoKeyData> = emptyList(),
@@ -20,11 +21,12 @@ data class UserGroup constructor(
     val type: String get() = data.type
 
     companion object {
-        val personalTracking = UserGroup("personalTracking", "", UserGroupData("Personal", "\uD83D\uDD12", Constants.collectionGroupPrivate), "", emptyList())
-        val publicSharing = UserGroup("publicSharing", "", UserGroupData("Public", "\uD83C\uDFD9️", Constants.collectionGroupPublic), "", emptyList())
+        val personalTracking = UserGroup("personalTracking", "", "", UserGroupData("Personal", "\uD83D\uDD12", Constants.collectionGroupPrivate), "", emptyList())
+        val publicSharing = UserGroup("publicSharing", "", "", UserGroupData("Public", "\uD83C\uDFD9️", Constants.collectionGroupPublic), "", emptyList())
         fun new(icon: String, name: String) = UserGroup(
             id = "",
             ownerUserId = config.userId,
+            "",
             data = UserGroupData(name, icon, Constants.collectionGroupUser),
             "",
             members = emptyList()

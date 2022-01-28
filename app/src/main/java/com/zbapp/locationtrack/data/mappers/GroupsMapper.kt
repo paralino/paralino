@@ -3,7 +3,7 @@ package com.zbapp.locationtrack.data.mappers
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
-import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
+import com.zbapp.core.models.mappers.MemberMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.repo.base.IGroupCrypto
 import com.zbapp.core.repo.base.decryptModel
@@ -12,13 +12,15 @@ import com.zbapp.locationtrack.data.models.group.UserGroupEntity
 
 class GroupsMapper(
     private val crypto: IGroupCrypto,
-    private val memberMapper: MemberMapper
+    private val memberMapperLocal: MemberMapperLocal,
+    private val memberMapperCore: MemberMapperCore
 ) : IGroupDataMapperCore, IDataMapperLocal<UserGroupEntity, GroupDocumentRaw> {
 
     override suspend fun core2Remote(model: UserGroup): GroupDocumentRaw {
         return GroupDocumentRaw(
             id = model.id,
             ownerUserId = model.ownerUserId,
+            ownerPublicKey = model.ownerPublicKey,
             data = crypto.encryptModel(groupId = model.id, data = model.data) ?: ""
         )
     }
@@ -33,6 +35,7 @@ class GroupsMapper(
         return UserGroup(
             id = model.id,
             ownerUserId = model.ownerUserId,
+            ownerPublicKey = model.ownerPublicKey,
             data = groupData,
             members = emptyList(),
             groupKey = ""
@@ -43,6 +46,7 @@ class GroupsMapper(
         return GroupDocumentRaw(
             id = model.id,
             ownerUserId = model.ownerUserId,
+            ownerPublicKey = model.ownerPublicKey,
             data = model.data
         )
     }
@@ -51,6 +55,7 @@ class GroupsMapper(
         return UserGroupEntity(
             id = model.id,
             ownerUserId = model.ownerUserId,
+            ownerPublicKey = model.ownerPublicKey,
             data = model.data
         )
     }

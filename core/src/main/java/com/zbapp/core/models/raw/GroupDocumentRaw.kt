@@ -8,6 +8,7 @@ data class GroupDocumentRaw constructor(
     @SerialName("\$id")
     val id: String,
     val ownerUserId: String,
+    val ownerPublicKey: String,
     val data: String = ""
 ) {
 
@@ -15,6 +16,7 @@ data class GroupDocumentRaw constructor(
     fun toPostJson(): Map<String, Any> {
         return buildMap {
             put("ownerUserId", ownerUserId)
+            put("ownerPublicKey", ownerPublicKey)
             put("data", data)
         }
     }
@@ -25,6 +27,7 @@ data class GroupDocumentRaw constructor(
             return GroupDocumentRaw(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
+                ownerPublicKey = map["ownerPublicKey"] as String,
                 data = map["data"] as String
             )
         }
