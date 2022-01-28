@@ -1,8 +1,7 @@
 package com.zbapp.locationtrack.data.repos.group
 
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.mappers.decrypt
-import com.zbapp.core.models.mappers.decryptList
+import com.zbapp.core.models.mappers.GroupDataMapperCore
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
@@ -11,18 +10,19 @@ import com.zbapp.core.repo.group.IGroupLocalDataSource
 import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.locationtrack.data.mappers.GroupKeysMapper
 import com.zbapp.locationtrack.data.mappers.GroupMemberKeysMapper
-import com.zbapp.locationtrack.data.mappers.GroupsMapper
+import com.zbapp.locationtrack.data.mappers.GroupsMapperLocal
 import com.zbapp.locationtrack.data.mappers.mapFlowOfList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
-class UserGroupLocalDataSource(
+class UserGroupLocalDataSource constructor(
     private val dao: UserGroupDao,
     private val keysDao: GroupKeysDao,
     private val memberKeysDao: GroupMemberKeysDao,
-    private val mapper: GroupsMapper,
+    private val mapper: GroupsMapperLocal,
+    private val mapperCore: GroupDataMapperCore,
     private val keysMapper: GroupKeysMapper,
     private val keysMemberMapper: GroupMemberKeysMapper,
     private val memberLocal: ILocationLocalDataSource
@@ -67,7 +67,7 @@ class UserGroupLocalDataSource(
     override fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
             .map { mapper.local2Remote(it) }
-            .decrypt(mapper)
+            .map { mapperCore.remote2Core(it) }
     }
 
     override fun getGroupWithMembers(groupId: String): Flow<UserGroup> {
@@ -77,12 +77,12 @@ class UserGroupLocalDataSource(
                 // TODO add members
                 mapper.local2Remote(group)
             }
-            .decrypt(mapper)
+            .map { mapperCore.remote2Core(it) }
     }
 
     override fun getAllGroups(): Flow<List<UserGroup>> {
         return mapper.mapFlowOfList(dao.getAllGroups())
-            .decryptList(mapper)
+            .map { it.map { mapperCore.remote2Core(it) } }
             .map { it.sortedBy { it.name } }
     }
 

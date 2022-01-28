@@ -6,20 +6,19 @@ import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
-import com.zbapp.core.models.mappers.IGroupDataMapperCore
+import com.zbapp.core.models.mappers.GroupDataMapperCore
 import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.*
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.JsonObject
 
 class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
-    private val mapper: IGroupDataMapperCore,
+    private val mapper: GroupDataMapperCore,
     private val cryptoAuth: CryptoAuth
 ) {
 
