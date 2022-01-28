@@ -5,7 +5,6 @@ import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.*
-import java.lang.Exception
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 

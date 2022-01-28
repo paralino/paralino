@@ -1,7 +1,6 @@
 package com.zbapp.core.models.location
 
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 data class MemberModel constructor(
@@ -24,7 +23,7 @@ data class MemberModel constructor(
             model: LocationDataModel
         ): MemberModel {
             return MemberModel(
-                id = UUID.randomUUID().toString(),
+                id = "",
                 groupId = "",
                 userId = userId,
                 publicKey = "",
