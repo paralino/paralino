@@ -167,15 +167,11 @@ class GroupsRemoteSource constructor(
     suspend fun getAllGroups(): List<GroupWithMemberRaw> {
         return blocking {
             val groups = api.getDocuments(remoteConfig.resourceIds.collectionGroupsID).map { it.parseGroup() }
-            val groupKeys = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupKeysID).map { it.parseGroupKey() }
             val members = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersID).map { it.parseGroupMember() }
-            val groupMemberKeys = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersKeysID).map { it.parseGroupMemberKey() }
             groups.map { group ->
                 GroupWithMemberRaw(
                     group = group,
-                    groupKey = groupKeys.first { it.groupId == group.id },
-                    members = members,
-                    memberKeys = groupMemberKeys
+                    members = members
                 )
             }
         }
@@ -183,24 +179,20 @@ class GroupsRemoteSource constructor(
 
     suspend fun getGroup(groupId: String): GroupWithMemberRaw {
         return blocking {
-            val groupKey = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupKeysID, "groupId" to groupId).takeIf { it.size == 1 }!!.map { it.parseGroupKey() }.first()
             val group = api.getDocument(remoteConfig.resourceIds.collectionGroupsID, groupId).parseGroup()
             val members = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersID, "groupId" to groupId).map { it.parseGroupMember() }
-            val groupMemberKeys = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersKeysID, "groupId" to groupId).map { it.parseGroupMemberKey() }
             GroupWithMemberRaw(
                 group = group,
-                groupKey = groupKey,
-                members = members,
-                memberKeys = groupMemberKeys
+                members = members
             )
         }
     }
 
-    suspend fun deleteGroup(group: UserGroup) {
+    suspend fun deleteGroup(groupId: String) {
         blocking {
             val data = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionDeleteGroupID,
-                data = group.id
+                data = groupId
             )
 
             if (!data.isSuccess) {
@@ -219,14 +211,6 @@ class GroupsRemoteSource constructor(
 
     private fun Map<String, Any>.parseGroupMember(): MemberDocumentRaw {
         return MemberDocumentRaw.from(this)
-    }
-
-    private fun Map<String, Any>.parseGroupKey(): GroupCryptoKeyDataRaw {
-        return GroupCryptoKeyDataRaw.from(this)
-    }
-
-    private fun Map<String, Any>.parseGroupMemberKey(): GroupMemberCryptoKeyDataRaw {
-        return GroupMemberCryptoKeyDataRaw.from(this)
     }
 
 }

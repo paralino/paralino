@@ -23,6 +23,9 @@ interface GroupKeysDao {
     @Query("SELECT * FROM group_keys WHERE groupId = :groupId")
     fun getForGroup(groupId: String): Flow<GroupKeyEntity>
 
+    @Query("SELECT * FROM group_keys WHERE groupId = :groupId")
+    fun getForGroupOnce(groupId: String): GroupKeyEntity?
+
     @Query("SELECT * FROM group_keys WHERE memberId = :memberId")
     fun getForMember(memberId: String): Flow<GroupKeyEntity>
 

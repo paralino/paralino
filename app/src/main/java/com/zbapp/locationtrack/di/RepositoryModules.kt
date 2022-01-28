@@ -4,8 +4,12 @@ import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.crypto.CryptoAuth
 import com.zbapp.core.crypto.CryptoKeyRepository
 import com.zbapp.core.crypto.ICryptoAuthProvider
+import com.zbapp.core.crypto.ICryptoKeyLocalDataSource
 import com.zbapp.core.models.BackendConfig
-import com.zbapp.core.models.mappers.*
+import com.zbapp.core.models.mappers.GroupDataMapperCore
+import com.zbapp.core.models.mappers.IUserDataMapperCore
+import com.zbapp.core.models.mappers.IUserMapperCore
+import com.zbapp.core.models.mappers.MemberMapperCore
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.repo.api.IUserApi
@@ -23,6 +27,7 @@ import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.data.database.MainAppDatabase
 import com.zbapp.locationtrack.data.mappers.*
+import com.zbapp.locationtrack.data.repos.group.CryptoKeyLocalDataSource
 import com.zbapp.locationtrack.data.repos.group.UserGroupLocalDataSource
 import com.zbapp.locationtrack.data.repos.invite.InviteLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.LocationLocalDataSource
@@ -103,8 +108,7 @@ val coreDependencyModules = module {
     single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }
     single<IUserLocalDataSource> { UserLocalDataSource(get(), get()) }
-    single<IGroupLocalDataSource> {
-        UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get())
-    }
+    single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get(), get(), get()) }
+    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get(), get()) }
     single<IInviteCodeLocalDataSource> { InviteLocalDataSource(get(), get()) }
 }

@@ -6,6 +6,7 @@ import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.BaseRemoteModule
+import com.zbapp.core.utils.ConflictException
 import com.zbapp.core.utils.blocking
 import com.zbapp.core.utils.toJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
@@ -23,9 +24,15 @@ class CryptoKeyRemoteDataSource(
         }
     }
 
-    suspend fun getAllGroupKeysForGroup(groupId: String): List<GroupCryptoKeyDataRaw> {
+    suspend fun getGroupKeyForGroup(groupId: String): GroupCryptoKeyDataRaw {
         return blocking {
-            api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupKeysID, "groupId" to groupId).map { it.parseGroupKey() }
+            api.getDocumentsFor(
+                collectionId = remoteConfig.resourceIds.collectionGroupKeysID,
+                keyValue = arrayOf("groupId" to groupId)
+            ).map { it.parseGroupKey() }
+                .takeIf { it.size == 1 }
+                ?.first()
+                ?: throw ConflictException("Multiple keys found")
         }
     }
 

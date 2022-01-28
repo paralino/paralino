@@ -78,11 +78,9 @@ class GroupRepository constructor(
     }
 
     fun deleteGroup(id: String): Flow<Unit> {
+        // TODO delete group keys
         return getDataOnce(
-            remote = {
-                val group = local.getGroupWithMembers(id).first()
-                remote.deleteGroup(group)
-            },
+            remote = { remote.deleteGroup(id) },
             localUpdate = { local.deleteGroup(id) },
             remotePreference = RemotePreference.FORCE
         )

@@ -13,11 +13,6 @@ interface IGroupLocalDataSource {
     suspend fun updateOrCreateGroup(group: GroupWithMemberRaw)
     suspend fun updateGroupOnly(group: GroupDocumentRaw)
 
-    suspend fun recreateGroupKeys(keys: List<GroupCryptoKeyDataRaw>)
-    suspend fun recreateGroupMemberKeys(keys: List<GroupMemberCryptoKeyDataRaw>)
-    suspend fun saveGroupKeys(vararg keys: GroupCryptoKeyDataRaw)
-    suspend fun saveGroupMemberKeys(vararg keys: GroupMemberCryptoKeyDataRaw)
-
     suspend fun getGroupOwnerPublicKey(groupId: String): String?
     fun getGroupWithoutMembers(groupId: String): Flow<UserGroup>
     fun getGroupWithMembers(groupId: String): Flow<UserGroup>

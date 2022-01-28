@@ -42,13 +42,12 @@ class CryptoKeyRepository(
     fun refreshKeysForGroup(groupId: String) {
         getDataOnce(
             remote = {
-                val groupKeys = remote.getAllGroupKeysForGroup(groupId)
+                val groupKeys = remote.getGroupKeyForGroup(groupId)
                 val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
                 groupKeys to memberKeys
             },
             localUpdate = {
-                // TODO check for proper key
-                local.recreateGroupKeyForGroup(groupId, it.first.first())
+                local.recreateGroupKeyForGroup(groupId, it.first)
                 local.recreateMemberKeysForGroup(groupId, it.second)
             },
             remotePreference = RemotePreference.FORCE
@@ -87,10 +86,6 @@ class CryptoKeyRepository(
         return groupKey
     }
 
-    fun listenToGroupKey(groupId: String): Flow<GroupCryptoKeyDataRaw?> {
-        return groupKeys.map { it.firstOrNull { it.groupId == groupId } }
-    }
-
     suspend fun getMemberKey(groupId: String, memberId: String, memberPublicKey: String): String? {
         val keyRaw = memberKeys.value.firstOrNull { it.groupId == groupId && it.memberId == memberId }
             ?: return null
@@ -103,10 +98,13 @@ class CryptoKeyRepository(
         return memberKey
     }
 
+    fun listenToGroupKey(groupId: String): Flow<GroupCryptoKeyDataRaw?> {
+        return groupKeys.map { it.firstOrNull { it.groupId == groupId } }
+    }
+
     fun listenToMemberKey(groupId: String, memberId: String): Flow<GroupMemberCryptoKeyDataRaw?> {
         return memberKeys.map { it.firstOrNull { it.groupId == groupId && it.memberId == memberId } }
     }
-
 
     suspend fun deleteGroupKeyForGroup(groupId: String) {
         local.deleteGroupKeyForGroup(groupId)

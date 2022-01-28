@@ -14,11 +14,6 @@ interface ICryptoKeyLocalDataSource {
     fun getAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>>
     fun getAllMemberKeys(): Flow<List<GroupMemberCryptoKeyDataRaw>>
 
-    fun getGroupKey(groupId: String): Flow<GroupCryptoKeyDataRaw>
-    suspend fun getGroupKeyOnce(groupId: String): GroupCryptoKeyDataRaw
-    fun getMemberKey(groupId: String, memberId: String): Flow<GroupMemberCryptoKeyDataRaw>
-    suspend fun getMemberKeyOnce(groupId: String, memberId: String): GroupMemberCryptoKeyDataRaw
-
     suspend fun deleteGroupKeyForGroup(groupId: String)
     suspend fun deleteAllKeysForGroup(groupId: String)
     suspend fun deleteKeysForUser(groupId: String, userId: String)
