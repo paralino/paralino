@@ -138,9 +138,17 @@ class CryptoAuth(
         ).asBase64String()
     }
 
+    suspend fun decryptDataWithKey(data: String, key: String): String {
+        return decryptDataWithKey(data, key.base64ToByteArray())
+    }
+
     suspend fun decryptDataWithKey(data: String, key: ByteArray): String {
+        return decryptDataWithKey(data.base64ToByteArray(), key)
+    }
+
+    suspend fun decryptDataWithKey(data: ByteArray, key: ByteArray): String {
         return cryptoAuthProvider.decryptDataWithSymmetricKey(
-            data = data.base64ToByteArray(),
+            data = data,
             key = key,
             context = null
         ).asString()

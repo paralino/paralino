@@ -12,7 +12,7 @@ data class MemberEntity constructor(
     val id: String,
     val userId: String,
     val groupId: String?,
-
+    val ownerPublicKey: String,
     val data: String,
     val mutableData: String? = null
 ) : Parcelable

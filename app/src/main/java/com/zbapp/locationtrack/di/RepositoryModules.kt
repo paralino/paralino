@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.di
 
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.crypto.CryptoAuth
+import com.zbapp.core.crypto.CryptoKeyRepository
 import com.zbapp.core.crypto.ICryptoAuthProvider
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.mappers.IGroupDataMapperCore
@@ -11,9 +12,6 @@ import com.zbapp.core.models.mappers.IUserMapperCore
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.repo.api.IUserApi
-import com.zbapp.core.repo.base.ICryptoRepository
-import com.zbapp.core.repo.base.IGroupCrypto
-import com.zbapp.core.repo.base.IUserCrypto
 import com.zbapp.core.repo.group.GroupsRemoteSource
 import com.zbapp.core.repo.group.IGroupLocalDataSource
 import com.zbapp.core.repo.invite.IInviteCodeLocalDataSource
@@ -24,7 +22,6 @@ import com.zbapp.core.repo.location.LocationRemoteSource
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.UserRemoteSource
 import com.zbapp.crpyto.CryptoAuthProvider
-import com.zbapp.crpyto.DummyCryptoRepository
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.data.database.MainAppDatabase
@@ -57,11 +54,10 @@ val daoModules = module {
 }
 
 val cryptoModule = module {
-    single<IUserCrypto> { get<ICryptoRepository>() }
-    single<IGroupCrypto> { get<ICryptoRepository>() }
     single { CryptoAuthProvider() }
     single<ICryptoAuthProvider> { get<CryptoAuthProvider>() }
     single { CryptoAuth(get()) }
+    single { CryptoKeyRepository(get(), get(), get(), get()) }
 }
 
 val mappersModule = module {
@@ -97,8 +93,6 @@ val remoteDataSourceModule = module {
 
 val coreDependencyModules = module {
     single<ICoroutineScopeProvider> { androidApplication() as AppClass }
-//    single<ICryptoRepository> { CryptoRepository(androidApplication()) }
-    single<ICryptoRepository> { DummyCryptoRepository(get()) }
 
     single<IGroupDataMapperCore> { get<GroupsMapper>() }
     single<IUserMapperCore> { get<UserMapper>() }
@@ -112,6 +106,8 @@ val coreDependencyModules = module {
     single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }
     single<IUserLocalDataSource> { UserLocalDataSource(get(), get()) }
-    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get()) }
+    single<IGroupLocalDataSource> {
+        UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get())
+    }
     single<IInviteCodeLocalDataSource> { InviteLocalDataSource(get(), get()) }
 }

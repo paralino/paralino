@@ -5,10 +5,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import java.util.*
 
-interface ICryptoRepository : IUserCrypto, IGroupCrypto {
-    fun reset()
-}
-
 interface IGroupCrypto {
     suspend fun encryptData(groupId: String, data: String): String
     suspend fun decryptData(
