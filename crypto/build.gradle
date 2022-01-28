@@ -40,5 +40,5 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
 
-    implementation 'com.cossacklabs.com:themis:0.13.1'
+    implementation 'com.cossacklabs.com:themis:0.14.0'
 }
