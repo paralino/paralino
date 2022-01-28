@@ -54,7 +54,7 @@ val cryptoModule = module {
     single { CryptoAuthProvider() }
     single<ICryptoAuthProvider> { get<CryptoAuthProvider>() }
     single { CryptoAuth(get()) }
-    single { CryptoKeyRepository(get(), get(), get(), get(), get()) }
+    single { CryptoKeyRepository(get(), get(), get(), get(), get(), get()) }
 }
 
 val mappersModule = module {
@@ -73,7 +73,7 @@ val mappersModule = module {
 val remoteDataSourceModule = module {
     single { UserRemoteSource(get()) }
     single { LocationRemoteSource(get(), get()) }
-    single { GroupsRemoteSource(get(), get(), get(), get(), get()) }
+    single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { InviteRemoteSource(get(), get(), get()) }
     single {
         BackendConfig(

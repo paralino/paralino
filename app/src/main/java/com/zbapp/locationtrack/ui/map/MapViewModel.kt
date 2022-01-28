@@ -19,7 +19,7 @@ class MapViewModel(
     val text: LiveData<String> = _text
 
     fun getMarkers(): LiveData<List<MemberModel>> {
-        return locationRepository.getLocationsForGroup(UserGroup.personalTracking.id).asLiveData()
+        return locationRepository.getLocationsForGroup(UserGroup.personalTrackingId).asLiveData()
     }
 
 }

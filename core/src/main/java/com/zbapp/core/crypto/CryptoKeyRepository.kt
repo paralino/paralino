@@ -5,6 +5,7 @@ import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
+import com.zbapp.core.repo.group.IGroupLocalDataSource
 import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.core.utils.NotFoundException
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 class CryptoKeyRepository(
     private val userRepo: UserRepository,
     private val cryptoAuth: CryptoAuth,
+    private val groupsLocal: IGroupLocalDataSource,
     private val local: ICryptoKeyLocalDataSource,
     private val remote: CryptoKeyRemoteDataSource,
     private val scopeProvider: ICoroutineScopeProvider
@@ -66,6 +68,11 @@ class CryptoKeyRepository(
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
+
+    suspend fun getGroupKey(groupId: String): String? {
+        val ownerPublicKey = groupsLocal.getGroupOwnerPublicKey(groupId) ?: return null
+        return getGroupKey(groupId, ownerPublicKey)
+    }
 
     suspend fun getGroupKey(groupId: String, ownerPublicKey: String): String? {
         val keyRaw = groupKeys.value.firstOrNull { it.groupId == groupId }

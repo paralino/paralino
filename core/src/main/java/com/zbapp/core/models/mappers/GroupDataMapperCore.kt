@@ -53,8 +53,7 @@ class GroupDataMapperCore constructor(
             ownerUserId = model.ownerUserId,
             ownerPublicKey = model.ownerPublicKey,
             data = groupData,
-            members = emptyList(),
-            groupKey = ""
+            members = emptyList()
         )
     }
 }

@@ -80,6 +80,10 @@ class UserGroupLocalDataSource constructor(
             .map { mapperCore.remote2Core(it) }
     }
 
+    override suspend fun getGroupOwnerPublicKey(groupId: String): String? {
+        return dao.getGroupPublicKeyOnce(groupId)
+    }
+
     override fun getAllGroups(): Flow<List<UserGroup>> {
         return mapper.mapFlowOfList(dao.getAllGroups())
             .map { it.map { mapperCore.remote2Core(it) } }

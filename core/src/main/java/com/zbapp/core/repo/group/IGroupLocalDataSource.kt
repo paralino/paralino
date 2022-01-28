@@ -18,6 +18,7 @@ interface IGroupLocalDataSource {
     suspend fun saveGroupKeys(vararg keys: GroupCryptoKeyDataRaw)
     suspend fun saveGroupMemberKeys(vararg keys: GroupMemberCryptoKeyDataRaw)
 
+    suspend fun getGroupOwnerPublicKey(groupId: String): String?
     fun getGroupWithoutMembers(groupId: String): Flow<UserGroup>
     fun getGroupWithMembers(groupId: String): Flow<UserGroup>
     fun getAllGroups(): Flow<List<UserGroup>>

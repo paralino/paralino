@@ -1,6 +1,5 @@
 package com.zbapp.core.models.group
 
-import com.zbapp.core.config
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.utils.Constants
 import kotlinx.serialization.Serializable
@@ -11,8 +10,6 @@ data class UserGroup constructor(
     val ownerUserId: String = "",
     val ownerPublicKey: String,
     val data: UserGroupData = UserGroupData(),
-    val groupKey: String,
-    val groupKeys: List<GroupCryptoKeyData> = emptyList(),
     val members: List<MemberModel> = emptyList()
 ) {
 
@@ -21,16 +18,8 @@ data class UserGroup constructor(
     val type: String get() = data.type
 
     companion object {
-        val personalTracking = UserGroup("personalTracking", "", "", UserGroupData("Personal", "\uD83D\uDD12", Constants.collectionGroupPrivate), "", emptyList())
-        val publicSharing = UserGroup("publicSharing", "", "", UserGroupData("Public", "\uD83C\uDFD9️", Constants.collectionGroupPublic), "", emptyList())
-        fun new(icon: String, name: String) = UserGroup(
-            id = "",
-            ownerUserId = config.userId,
-            "",
-            data = UserGroupData(name, icon, Constants.collectionGroupUser),
-            "",
-            members = emptyList()
-        )
+        const val personalTrackingId = "personalTracking"
+        const val publicSharingId = "publicSharing"
     }
 
     val isFromUser: Boolean get() = type == Constants.collectionGroupUser
@@ -45,9 +34,3 @@ data class UserGroupData constructor(
 ) {
 
 }
-
-@Serializable
-data class GroupCryptoKeyData constructor(
-    val memberId: String,
-    val encryptedKey: String
-)

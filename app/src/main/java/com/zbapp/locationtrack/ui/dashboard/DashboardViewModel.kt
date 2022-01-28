@@ -45,7 +45,7 @@ class DashboardViewModel(
     fun startTracking() {
         viewModelScope.launch {
             val max = LocalDateTime.now().plusMinutes(2).toUTCString()
-            locationSharing.startSharing(LocationSharingContract(UserGroup.personalTracking.id, max))
+            locationSharing.startSharing(LocationSharingContract(UserGroup.personalTrackingId, max))
         }
     }
 

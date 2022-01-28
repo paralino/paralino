@@ -56,8 +56,13 @@ class GroupRepository constructor(
     fun createGroup(name: String, emoji: String): Flow<Unit> {
         return getDataOnce(
             remote = {
-                val group = UserGroup.new(emoji, name.trim())
-                remote.createGroup(group, userRepository.cachedUser!!)
+                val userData = userRepository.cachedUser!!.data!!
+                remote.createGroup(
+                    name = name,
+                    image = emoji,
+                    myData = MemberModelData(userData.userName, userData.imageBase64),
+                    myKey = userData.latestAsymmetricKey!!
+                )
             },
             localUpdate = { local.updateOrCreateGroup(it) },
             remotePreference = RemotePreference.FORCE
@@ -86,16 +91,7 @@ class GroupRepository constructor(
     fun addMemberByAccessCode(groupId: String, code: PersonalCodeReadData): Flow<GroupDocumentRaw> {
         return getDataOnce(
             remote = {
-                val member = MemberModel(
-                    id = "",
-                    groupId = groupId,
-                    userId = code.ownerId,
-                    publicKey = code.ownerKey,
-                    data = MemberModelData(code.ownerName, code.ownerImageBase64),
-                    mutableData = null
-                )
-                val group = local.getGroupWithMembers(groupId).first()
-                remote.addUserToGroup(group, member, userRepository.cachedUser!!)
+                remote.addUserToGroup(groupId, code, userRepository.cachedUser?.data?.latestAsymmetricKey!!)
             },
             localUpdate = {
                 local.updateOrCreateGroup(it)
