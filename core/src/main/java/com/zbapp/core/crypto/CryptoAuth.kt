@@ -225,17 +225,3 @@ data class DerivedPasswords(
     val loginPassword: String,
     val backupPassword: String
 )
-
-//fun Exception.isEThreeException(code: Int): Boolean {
-//    return when(this) {
-//        is EThreeException -> this.description.errorCode == code
-//        is EThreeRatchetException -> this.description.errorCode == code
-//        is FindUsersException -> this.description.errorCode == code
-//        is FileGroupStorageException -> this.description.errorCode == code
-//        is GroupException -> this.description.errorCode == code
-//        is RawGroupException -> this.description.errorCode == code
-//        is SQLiteStorageException -> this.description.errorCode == code
-//        is TemporaryChannelException -> this.description.errorCode == code
-//        else -> false
-//    }
-//}

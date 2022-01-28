@@ -40,6 +40,5 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
 
-    implementation 'com.virgilsecurity:ethree-enclave:2.0.10'
     implementation 'com.cossacklabs.com:themis:0.13.1'
 }
