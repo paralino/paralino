@@ -23,7 +23,7 @@ interface GroupMemberKeysDao {
     @Query("SELECT * FROM group_member_keys WHERE groupId = :groupId")
     fun getForGroup(groupId: String): Flow<List<GroupMemberKeyEntity>>
 
-    @Query("SELECT * FROM group_member_keys WHERE groupId = :memberId")
+    @Query("SELECT * FROM group_member_keys WHERE memberId = :memberId")
     fun getForMember(memberId: String): Flow<GroupMemberKeyEntity>
 
 
