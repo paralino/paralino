@@ -34,12 +34,13 @@ class LoginManager(
         return flow {
 
             emit(SignUpStep.SIGNING_UP)
+            val derivedPasswords = cryptoAuth.derivePassword(password)
             val user: Pair<UserMeRaw, UserSession>
             try {
                 delay(500)
                 // encrypted name can not fit in database field in appwrite
                 // user name is saved encrypted to user preferences
-                user = userRepo.remoteSignUp(userName = null, email, password).first()
+                user = userRepo.remoteSignUp(userName = null, email, derivedPasswords.loginPassword).first()
             } catch (e: Exception) {
                 throw SignUpStepException(SignUpStep.SIGNING_UP, e)
             }
@@ -48,7 +49,7 @@ class LoginManager(
             val remoteData: UserMeDataRaw
             try {
                 delay(500)
-                remoteData = prepareUserKeys(password, user.first.id, userName)
+                remoteData = prepareUserKeys(derivedPasswords.backupPassword, user.first.id, userName)
             } catch (e: Exception) {
                 cryptoAuth.clearUserPersonalKey()
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
@@ -97,11 +98,12 @@ class LoginManager(
         return flow {
 
             emit(SignUpStep.SIGNING_UP)
+            val derivedPasswords = cryptoAuth.derivePassword(password)
             val session: UserSession
             val user: UserMeRaw
             try {
                 delay(500)
-                session = userRepo.login(email, password).first()
+                session = userRepo.login(email, derivedPasswords.loginPassword).first()
                 user = userRepo.getUserIfAvailable().first()
             } catch (e: Exception) {
                 throw SignUpStepException(SignUpStep.SIGNING_UP, e)
@@ -120,7 +122,7 @@ class LoginManager(
             emit(SignUpStep.INIT_USER_DATA)
             try {
                 delay(500)
-                val userKey = cryptoAuth.signIn(password, user.id, data.encryptedKey)
+                val userKey = cryptoAuth.signIn(derivedPasswords.backupPassword, user.id, data.encryptedKey)
                 cryptoAuth.saveUserKeyLocally(userKey)
             } catch (e: Exception) {
                 cryptoAuth.logout()

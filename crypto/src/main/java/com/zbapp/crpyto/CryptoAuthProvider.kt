@@ -3,8 +3,10 @@ package com.zbapp.crpyto
 import android.util.Base64
 import com.cossacklabs.themis.*
 import com.zbapp.core.config
+import com.zbapp.core.crypto.HashType
 import com.zbapp.core.crypto.ICryptoAuthProvider
 import com.zbapp.core.crypto.KeyPair
+import java.security.MessageDigest
 
 class CryptoAuthProvider : ICryptoAuthProvider {
 
@@ -88,6 +90,14 @@ class CryptoAuthProvider : ICryptoAuthProvider {
 
     override fun byteArrayToString(data: ByteArray): String {
         return data.decodeToString(throwOnInvalidSequence = true)
+    }
+
+    override fun computeHash(data: ByteArray, type: HashType): ByteArray {
+        val algo = when(type) {
+            HashType.SHA256 -> "SHA-256"
+            HashType.SHA512 -> "SHA-512"
+        }
+        return MessageDigest.getInstance(algo).digest(data)
     }
 
 

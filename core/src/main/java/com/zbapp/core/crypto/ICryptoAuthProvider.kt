@@ -20,6 +20,13 @@ interface ICryptoAuthProvider {
     fun fromBase64(data: String): ByteArray
     fun toByteArray(data: String): ByteArray
     fun byteArrayToString(data: ByteArray): String
+
+    fun computeHash(data: ByteArray, type: HashType): ByteArray
+}
+
+enum class HashType {
+    SHA256,
+    SHA512
 }
 
 class KeyPair(val privateKey: ByteArray, val publicKey: ByteArray)

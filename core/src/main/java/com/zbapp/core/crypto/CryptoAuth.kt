@@ -202,12 +202,16 @@ class CryptoAuth(
         return cryptoAuthProvider.toByteArray(this)
     }
 
-    companion object {
-//        fun getDerivedPassword(password: String): DerivedPasswords {
-//            return EThree.derivePasswords(password).let {
-//                DerivedPasswords(it.loginPassword, it.backupPassword)
-//            }
-//        }
+    fun derivePassword(password: String): DerivedPasswords {
+        val passwordData = password.asByteArray()
+
+        val passwordHash = cryptoAuthProvider.computeHash(passwordData, HashType.SHA256)
+        val sourceHash = cryptoAuthProvider.computeHash(passwordHash, HashType.SHA512)
+
+        return DerivedPasswords(
+            loginPassword = sourceHash.sliceArray(0 until 32).asBase64String(),
+            backupPassword = sourceHash.sliceArray(32 until 64).asBase64String()
+        )
     }
 }
 
