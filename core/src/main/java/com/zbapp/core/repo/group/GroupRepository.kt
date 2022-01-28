@@ -1,5 +1,6 @@
 package com.zbapp.core.repo.group
 
+import com.zbapp.core.crypto.CryptoKeyRepository
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
@@ -16,7 +17,8 @@ import kotlinx.coroutines.flow.mapLatest
 class GroupRepository constructor(
     private val local: IGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val cryptoKeyRepo: CryptoKeyRepository
 ) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
@@ -78,10 +80,12 @@ class GroupRepository constructor(
     }
 
     fun deleteGroup(id: String): Flow<Unit> {
-        // TODO delete group keys
         return getDataOnce(
             remote = { remote.deleteGroup(id) },
-            localUpdate = { local.deleteGroup(id) },
+            localUpdate = {
+                local.deleteGroup(id)
+                cryptoKeyRepo.deleteAllKeysForGroup(id)
+            },
             remotePreference = RemotePreference.FORCE
         )
     }
