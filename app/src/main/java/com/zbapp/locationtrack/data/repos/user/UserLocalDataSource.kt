@@ -16,10 +16,6 @@ class UserLocalDataSource(
         return dao.get().map { mapper.local2Remote(it) }
     }
 
-    override suspend fun getMeOnce(): UserMeRaw? {
-        return dao.tryGetUser()?.let { mapper.local2Remote(it) }
-    }
-
     override suspend fun update(data: UserMeRaw): UserMe {
         dao.save(mapper.remote2Local(data))
         return mapper.remote2Core(data)
@@ -28,6 +24,5 @@ class UserLocalDataSource(
     override suspend fun clear() {
         dao.clear()
     }
-
 
 }

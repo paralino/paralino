@@ -34,6 +34,12 @@ interface MemberDao {
     @Query("SELECT COUNT(:groupId) FROM members")
     fun memberCountInGroup(groupId: String): Flow<Int>
 
+    @Query("SELECT groupId FROM members WHERE id = :id")
+    suspend fun getGroupIdForMember(id: String): String?
+
+    @Query("SELECT groupId FROM members WHERE userId = :id")
+    suspend fun getGroupIdsForUser(id: String): List<String>
+
     @Query("DELETE FROM members WHERE id = :id")
     suspend fun removeMember(id: String)
 

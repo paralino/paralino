@@ -26,3 +26,10 @@ inline fun <reified T, R> Flow<T>.mapToPayload(
             if (throwError) throw it
         }
 }
+
+inline fun <reified DATA> Flow<List<DATA>>.distinctFlowOfList(): Flow<List<DATA>> {
+    return this.map { it.toTypedArray() }
+        .distinctUntilChanged { old, new ->
+            old.contentEquals(new)
+        }.map { it.toList() }
+}

@@ -1,9 +1,17 @@
 package com.zbapp.locationtrack.data.mappers
 
+import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.mappers.MemberMapperCore
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.locationtrack.data.models.location.MemberEntity
 
-object MemberMapperLocal : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
+class MemberMapperLocal(
+    private val coreMapper: MemberMapperCore
+) : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
+
+    suspend fun local2Core(model: MemberEntity, ownerPublicKey: String): MemberModel {
+        return coreMapper.remote2Core(local2Remote(model), ownerPublicKey)
+    }
 
     override suspend fun local2Remote(model: MemberEntity): MemberDocumentRaw {
         return MemberDocumentRaw(

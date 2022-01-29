@@ -18,7 +18,6 @@ class CryptoKEKRepository(
     private val remote: CryptoKeyRemoteDataSource,
     private val local: ICryptoKeyLocalDataSource,
     private val userRepo: UserRepository,
-    private val groupsLocal: IGroupLocalDataSource,
     private val cryptoCore: CryptoCore
 ) : BaseRepository() {
 
@@ -67,7 +66,7 @@ class CryptoKEKRepository(
         )
 
     suspend fun getGroupKey(groupId: String): String? {
-        val ownerPublicKey = groupsLocal.getGroupOwnerPublicKey(groupId) ?: return null
+        val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return null
         return getGroupKey(groupId, ownerPublicKey)
     }
 

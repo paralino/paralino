@@ -21,8 +21,6 @@ class LocationRepository constructor(
 
     fun getLocationsForGroup(groupId: String): Flow<List<MemberModel>> {
         return local.getMembersForGroup(groupId)
-                // TODO add group public key
-            .map { it.map { mapper.remote2Core(it, "") } }
     }
 
     fun pushLocation(data: LocationDataModel): Flow<Unit> {

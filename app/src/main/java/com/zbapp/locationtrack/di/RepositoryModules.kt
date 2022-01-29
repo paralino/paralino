@@ -62,17 +62,17 @@ val cryptoModule = module {
     single<ICryptoHashProvider> { get<CryptoHashProvider>() }
     single<ICryptoKeyProvider> { get<CryptoKeyProvider>() }
     single { CryptoCore(get(), get(), get()) }
-    single { CryptoKEKRepository(get(), get(), get(), get(), get(), get()) }
+    single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
 }
 
 val mappersModule = module {
     single { UserDataMapper(get()) }
     single { UserMapper(get(), get()) }
     single { SharingContractsMapper }
-    single { GroupsMapperLocal }
+    single { GroupsMapperLocal(get()) }
     single { GroupDataMapperCore(get(), get()) }
     single { MemberMapperCore(get(), get()) }
-    single { MemberMapperLocal }
+    single { MemberMapperLocal(get()) }
     single { InviteCodeMapper(get()) }
     single { GroupKeysMapper() }
     single { GroupMemberKeysMapper() }
@@ -83,6 +83,7 @@ val remoteDataSourceModule = module {
     single { LocationRemoteSource(get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { InviteRemoteSource(get(), get(), get()) }
+    single { CryptoKeyRemoteDataSource(get(), get(), get(), get()) }
     single {
         BackendConfig(
             serverUrl = BuildConfig.serverUrl,
@@ -108,10 +109,10 @@ val coreDependencyModules = module {
     single<IDocumentsApi> { DocumentsApi(get()) }
     single<IFunctionsApi> { FunctionsApi(get()) }
 
-    single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get()) }
+    single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }
     single<IUserLocalDataSource> { UserLocalDataSource(get(), get()) }
-    single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get(), get(), get()) }
-    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get(), get()) }
+    single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get(), get(), get(), get()) }
+    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get()) }
     single<IInviteCodeLocalDataSource> { InviteLocalDataSource(get(), get()) }
 }

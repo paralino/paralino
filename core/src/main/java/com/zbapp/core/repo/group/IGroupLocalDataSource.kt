@@ -1,9 +1,7 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupDocumentRaw
-import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
 import kotlinx.coroutines.flow.Flow
 
@@ -13,7 +11,6 @@ interface IGroupLocalDataSource {
     suspend fun updateOrCreateGroup(group: GroupWithMemberRaw)
     suspend fun updateGroupOnly(group: GroupDocumentRaw)
 
-    suspend fun getGroupOwnerPublicKey(groupId: String): String?
     fun getGroupWithoutMembers(groupId: String): Flow<UserGroup>
     fun getGroupWithMembers(groupId: String): Flow<UserGroup>
     fun getAllGroups(): Flow<List<UserGroup>>

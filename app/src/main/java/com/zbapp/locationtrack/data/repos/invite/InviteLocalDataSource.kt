@@ -2,9 +2,10 @@ package com.zbapp.locationtrack.data.repos.invite
 
 import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.core.repo.invite.IInviteCodeLocalDataSource
+import com.zbapp.core.utils.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.InviteCodeMapper
-import com.zbapp.locationtrack.data.mappers.mapFlowOfList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class InviteLocalDataSource(
     private val dao: InviteCodeDao,
@@ -20,11 +21,15 @@ class InviteLocalDataSource(
     }
 
     override fun getAllInviteCodes(): Flow<List<PersonalCodeData>> {
-        return mapper.mapFlowOfList(dao.getAll())
+        return dao.getAll()
+            .distinctFlowOfList()
+            .map { it.map { mapper.local2Remote(it) } }
     }
 
     override fun getInviteCodesForUser(ownerId: String): Flow<List<PersonalCodeData>> {
-        return mapper.mapFlowOfList(dao.getForOwner(ownerId))
+        return dao.getForOwner(ownerId)
+            .distinctFlowOfList()
+            .map { it.map { mapper.local2Remote(it) } }
     }
 
     override suspend fun deleteInviteCode(id: String) {

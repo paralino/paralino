@@ -1,14 +1,18 @@
 package com.zbapp.locationtrack.data.repos.location
 
+import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.repo.location.ILocationLocalDataSource
+import com.zbapp.core.utils.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.MemberMapperLocal
-import com.zbapp.locationtrack.data.mappers.mapFlowOfList
+import com.zbapp.locationtrack.data.repos.group.UserGroupDao
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 class LocationLocalDataSource(
     private val dao: MemberDao,
+    private val groupDao: UserGroupDao,
     private val mapper: MemberMapperLocal
 ) : ILocationLocalDataSource {
 
@@ -24,16 +28,35 @@ class LocationLocalDataSource(
         dao.recreateForGroup(groupId, data.map { mapper.remote2Local(it) })
     }
 
-    override fun getMemberModelsForUser(userId: String): Flow<MemberDocumentRaw> {
-        return dao.getLastLocationForUser(userId).mapLatest(mapper::local2Remote)
+    override fun getMemberModelsForUser(userId: String): Flow<MemberModel> {
+        return dao.getLastLocationForUser(userId)
+            .distinctUntilChanged()
+            .map {
+                val key = it.groupId?.let { groupDao.getGroupPublicKeyOnce(it) } ?: ""
+                mapper.local2Core(it, key)
+            }
     }
 
-    override fun getMemberModelsForUsers(userIds: List<String>): Flow<List<MemberDocumentRaw>> {
-        return mapper.mapFlowOfList(dao.getLocationsForUsers(userIds))
+    override fun getMemberModelsForUsers(userIds: List<String>): Flow<List<MemberModel>> {
+        return dao.getLocationsForUsers(userIds)
+            .distinctFlowOfList()
+            .map {
+                it.map {
+                    val key = it.groupId?.let { groupDao.getGroupPublicKeyOnce(it) } ?: ""
+                    mapper.local2Core(it, key)
+                }
+            }
     }
 
-    override fun getMembersForGroup(groupId: String): Flow<List<MemberDocumentRaw>> {
-        return mapper.mapFlowOfList(dao.getLocationsForGroup(groupId))
+    override fun getMembersForGroup(groupId: String): Flow<List<MemberModel>> {
+        return dao.getLocationsForGroup(groupId)
+            .distinctFlowOfList()
+            .map {
+                val key = groupDao.getGroupPublicKeyOnce(groupId)!!
+                it.map {
+                    mapper.local2Core(it, key)
+                }
+            }
     }
 
     override fun memberCountInGroup(groupId: String): Flow<Int> {

@@ -3,13 +3,15 @@ package com.zbapp.locationtrack.data.repos.group
 import com.zbapp.core.crypto.ICryptoKeyLocalDataSource
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
+import com.zbapp.core.utils.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.GroupKeysMapper
 import com.zbapp.locationtrack.data.mappers.GroupMemberKeysMapper
-import com.zbapp.locationtrack.data.mappers.mapFlowOfList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class CryptoKeyLocalDataSource constructor(
     private val keysDao: GroupKeysDao,
+    private val groupDao: UserGroupDao,
     private val memberKeysDao: GroupMemberKeysDao,
     private val keysMapper: GroupKeysMapper,
     private val keysMemberMapper: GroupMemberKeysMapper
@@ -37,11 +39,19 @@ class CryptoKeyLocalDataSource constructor(
     }
 
     override fun getAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
-        return keysMapper.mapFlowOfList(keysDao.getAll())
+        return keysDao.getAll()
+            .distinctFlowOfList()
+            .map { it.map { keysMapper.local2Remote(it) } }
     }
 
     override fun getAllMemberKeys(): Flow<List<GroupMemberCryptoKeyDataRaw>> {
-        return keysMemberMapper.mapFlowOfList(memberKeysDao.getAll())
+        return memberKeysDao.getAll()
+            .distinctFlowOfList()
+            .map { it.map { keysMemberMapper.local2Remote(it) } }
+    }
+
+    override suspend fun getGroupOwnerPublicKey(groupId: String): String? {
+        return groupDao.getGroupPublicKeyOnce(groupId)
     }
 
     override suspend fun deleteGroupKeyForGroup(groupId: String) {

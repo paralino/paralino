@@ -1,13 +1,12 @@
 package com.zbapp.locationtrack.data.repos.group
 
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.mappers.GroupDataMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
 import com.zbapp.core.repo.group.IGroupLocalDataSource
 import com.zbapp.core.repo.location.ILocationLocalDataSource
+import com.zbapp.core.utils.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.GroupsMapperLocal
-import com.zbapp.locationtrack.data.mappers.mapFlowOfList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.map
 class UserGroupLocalDataSource constructor(
     private val dao: UserGroupDao,
     private val mapper: GroupsMapperLocal,
-    private val mapperCore: GroupDataMapperCore,
     private val memberLocal: ILocationLocalDataSource
 ) : IGroupLocalDataSource {
 
@@ -36,27 +34,21 @@ class UserGroupLocalDataSource constructor(
 
     override fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
-            .map { mapper.local2Remote(it) }
-            .map { mapperCore.remote2Core(it) }
+            .map { mapper.local2Core(it) }
     }
 
     override fun getGroupWithMembers(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
             .filterNotNull()
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
-                // TODO add members
-                mapper.local2Remote(group)
+                mapper.local2Core(group).copy(members = members)
             }
-            .map { mapperCore.remote2Core(it) }
-    }
-
-    override suspend fun getGroupOwnerPublicKey(groupId: String): String? {
-        return dao.getGroupPublicKeyOnce(groupId)
     }
 
     override fun getAllGroups(): Flow<List<UserGroup>> {
-        return mapper.mapFlowOfList(dao.getAllGroups())
-            .map { it.map { mapperCore.remote2Core(it) } }
+        return dao.getAllGroups()
+            .distinctFlowOfList()
+            .map { it.map { mapper.local2Core(it) } }
             .map { it.sortedBy { it.name } }
     }
 
