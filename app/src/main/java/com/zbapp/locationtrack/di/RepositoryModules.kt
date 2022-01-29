@@ -1,10 +1,7 @@
 package com.zbapp.locationtrack.di
 
 import com.zbapp.core.ICoroutineScopeProvider
-import com.zbapp.core.crypto.CryptoAuth
-import com.zbapp.core.crypto.CryptoKeyRepository
-import com.zbapp.core.crypto.ICryptoAuthProvider
-import com.zbapp.core.crypto.ICryptoKeyLocalDataSource
+import com.zbapp.core.crypto.*
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.mappers.GroupDataMapperCore
 import com.zbapp.core.models.mappers.IUserDataMapperCore
@@ -22,7 +19,9 @@ import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.core.repo.location.LocationRemoteSource
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.UserRemoteSource
-import com.zbapp.crpyto.CryptoAuthProvider
+import com.zbapp.crpyto.CryptoFrameworkProvider
+import com.zbapp.crpyto.CryptoHashProvider
+import com.zbapp.crpyto.CryptoKeyProvider
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.data.database.MainAppDatabase
@@ -56,10 +55,14 @@ val daoModules = module {
 }
 
 val cryptoModule = module {
-    single { CryptoAuthProvider() }
-    single<ICryptoAuthProvider> { get<CryptoAuthProvider>() }
-    single { CryptoAuth(get()) }
-    single { CryptoKeyRepository(get(), get(), get(), get(), get(), get()) }
+    single { CryptoFrameworkProvider() }
+    single { CryptoHashProvider() }
+    single { CryptoKeyProvider() }
+    single<ICryptoServiceProvider> { get<CryptoFrameworkProvider>() }
+    single<ICryptoHashProvider> { get<CryptoHashProvider>() }
+    single<ICryptoKeyProvider> { get<CryptoKeyProvider>() }
+    single { CryptoCore(get(), get(), get()) }
+    single { CryptoKEKRepository(get(), get(), get(), get(), get(), get()) }
 }
 
 val mappersModule = module {

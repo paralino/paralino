@@ -15,7 +15,7 @@ class CryptoKeyRemoteDataSource(
     private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
-    private val cryptoAuth: CryptoAuth
+    private val cryptoCore: CryptoCore
 ) {
 
     suspend fun getAllGroupKeys(): List<GroupCryptoKeyDataRaw> {

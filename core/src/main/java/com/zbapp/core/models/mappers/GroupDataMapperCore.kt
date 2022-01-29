@@ -1,7 +1,7 @@
 package com.zbapp.core.models.mappers
 
-import com.zbapp.core.crypto.CryptoAuth
-import com.zbapp.core.crypto.CryptoKeyRepository
+import com.zbapp.core.crypto.CryptoCore
+import com.zbapp.core.crypto.CryptoKEKRepository
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
 import com.zbapp.core.models.raw.GroupDocumentRaw
@@ -11,17 +11,17 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
 class GroupDataMapperCore constructor(
-    private val cryptoRepo: CryptoKeyRepository,
-    private val cryptoAuth: CryptoAuth
+    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoCore: CryptoCore
 ) {
     suspend fun core2Remote(model: UserGroup): GroupDocumentRaw {
 
-        val groupKey = cryptoRepo.getGroupKey(
+        val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
             ownerPublicKey = model.ownerPublicKey
         ) ?: throw NotFoundException("Missing group key")
 
-        val groupData = cryptoAuth.encryptDataWithKey(
+        val groupData = cryptoCore.encryptDataWithKey(
             data = BaseRemoteModule.formatter.encodeToString(model.data),
             key = groupKey
         )
@@ -36,12 +36,12 @@ class GroupDataMapperCore constructor(
 
     suspend fun remote2Core(model: GroupDocumentRaw): UserGroup {
 
-        val groupKey = cryptoRepo.getGroupKey(
+        val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
             ownerPublicKey = model.ownerPublicKey
         ) ?: throw NotFoundException("Missing group key")
 
-        val groupData = cryptoAuth.decryptDataWithKey(
+        val groupData = cryptoCore.decryptDataWithKey(
             data = model.data,
             key = groupKey
         ).let {

@@ -7,21 +7,19 @@ import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.group.IGroupLocalDataSource
 import com.zbapp.core.repo.user.UserRepository
-import com.zbapp.core.utils.NotFoundException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 
-class CryptoKeyRepository(
-    private val userRepo: UserRepository,
-    private val cryptoAuth: CryptoAuth,
-    private val groupsLocal: IGroupLocalDataSource,
-    private val local: ICryptoKeyLocalDataSource,
+class CryptoKEKRepository(
+    private val scopeProvider: ICoroutineScopeProvider,
     private val remote: CryptoKeyRemoteDataSource,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val local: ICryptoKeyLocalDataSource,
+    private val userRepo: UserRepository,
+    private val groupsLocal: IGroupLocalDataSource,
+    private val cryptoCore: CryptoCore
 ) : BaseRepository() {
 
     fun refreshAllKeys() {
@@ -77,7 +75,7 @@ class CryptoKeyRepository(
         val keyRaw = groupKeys.value.firstOrNull { it.groupId == groupId }
             ?: return null
 
-        val groupKey = cryptoAuth.decryptDataWithKeyPair(
+        val groupKey = cryptoCore.decryptDataWithKeyPair(
             data = keyRaw.encryptedGroupKey,
             myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
             publicKey = ownerPublicKey
@@ -90,7 +88,7 @@ class CryptoKeyRepository(
         val keyRaw = memberKeys.value.firstOrNull { it.groupId == groupId && it.memberId == memberId }
             ?: return null
 
-        val memberKey = cryptoAuth.decryptDataWithKeyPair(
+        val memberKey = cryptoCore.decryptDataWithKeyPair(
             data = keyRaw.encryptedSenderKey,
             myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
             publicKey = memberPublicKey
@@ -118,16 +116,7 @@ class CryptoKeyRepository(
         local.deleteKeysForUser(groupId, userId)
     }
 
-    suspend fun reset() {
+    suspend fun clearKeys() {
         local.deleteAllKeys()
-        cryptoAuth.logout()
-    }
-
-    suspend fun encryptData(data: String): String {
-        return cryptoAuth.encryptData(data)
-    }
-
-    suspend fun decryptData(data: String): String {
-        return cryptoAuth.decryptData(data)
     }
 }

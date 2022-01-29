@@ -1,6 +1,7 @@
 package com.zbapp.locationtrack.data.repos
 
-import com.zbapp.core.crypto.CryptoKeyRepository
+import com.zbapp.core.crypto.CryptoCore
+import com.zbapp.core.crypto.CryptoKEKRepository
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.repo.user.UserRepository
@@ -13,7 +14,8 @@ class LogoutControl(
     private val userRepo: UserRepository,
     private val groupsRepo: GroupRepository,
     private val locationRepo: LocationRepository,
-    private val cryptoKeyRepo: CryptoKeyRepository
+    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoCore: CryptoCore
 ) {
 
     fun logout(): Flow<Boolean> {
@@ -25,7 +27,8 @@ class LogoutControl(
             .onEach {
                 groupsRepo.clear()
                 locationRepo.clear()
-                cryptoKeyRepo.reset()
+                cryptoKEKRepo.clearKeys()
+                cryptoCore.clearUserPersonalKey()
             }
     }
 
@@ -35,8 +38,8 @@ class LogoutControl(
             .onEach {
                 groupsRepo.clear()
                 locationRepo.clear()
-                // TODO crypto delete account
-                cryptoKeyRepo.reset()
+                cryptoKEKRepo.clearKeys()
+                cryptoCore.clearUserPersonalKey()
             }
     }
 

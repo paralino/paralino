@@ -1,6 +1,6 @@
 package com.zbapp.core.repo.group
 
-import com.zbapp.core.crypto.CryptoKeyRepository
+import com.zbapp.core.crypto.CryptoKEKRepository
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
@@ -18,7 +18,7 @@ class GroupRepository constructor(
     private val local: IGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val userRepository: UserRepository,
-    private val cryptoKeyRepo: CryptoKeyRepository
+    private val cryptoKEKRepo: CryptoKEKRepository
 ) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
@@ -84,7 +84,7 @@ class GroupRepository constructor(
             remote = { remote.deleteGroup(id) },
             localUpdate = {
                 local.deleteGroup(id)
-                cryptoKeyRepo.deleteAllKeysForGroup(id)
+                cryptoKEKRepo.deleteAllKeysForGroup(id)
             },
             remotePreference = RemotePreference.FORCE
         )

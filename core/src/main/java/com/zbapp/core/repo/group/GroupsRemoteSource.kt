@@ -1,7 +1,7 @@
 package com.zbapp.core.repo.group
 
-import com.zbapp.core.crypto.CryptoAuth
-import com.zbapp.core.crypto.CryptoKeyRepository
+import com.zbapp.core.crypto.CryptoCore
+import com.zbapp.core.crypto.CryptoKEKRepository
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
@@ -11,7 +11,6 @@ import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.GroupDataMapperCore
 import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
-import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.*
@@ -22,8 +21,8 @@ class GroupsRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
     private val mapper: GroupDataMapperCore,
-    private val cryptoAuth: CryptoAuth,
-    private val cryptoKeyRepo: CryptoKeyRepository
+    private val cryptoCore: CryptoCore,
+    private val cryptoKEKRepo: CryptoKEKRepository
 ) {
 
     suspend fun createGroup(
@@ -34,15 +33,15 @@ class GroupsRemoteSource constructor(
     ): GroupWithMemberRaw {
         return blocking {
 
-            val groupKey = cryptoAuth.getNewSymmetricKey()
-            val encryptedGroupKey = cryptoAuth.encryptDataWithKeyPair(
+            val groupKey = cryptoCore.getNewSymmetricKey().content
+            val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                 data = groupKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = myKey.publicKey
             )
 
-            val memberSenderKey = cryptoAuth.getNewSymmetricKey()
-            val encryptedSenderKey = cryptoAuth.encryptDataWithKeyPair(
+            val memberSenderKey = cryptoCore.getNewSymmetricKey().content
+            val encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                 data = memberSenderKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = myKey.publicKey
@@ -54,11 +53,11 @@ class GroupsRemoteSource constructor(
                 userPublicKey = myKey.publicKey,
                 encryptedGroupKey = encryptedGroupKey,
                 encryptedMemberKey = encryptedSenderKey,
-                groupData = cryptoAuth.encryptDataWithKey(
+                groupData = cryptoCore.encryptDataWithKey(
                     BaseRemoteModule.formatter.encodeToString(groupData),
                     groupKey
                 ),
-                memberData = cryptoAuth.encryptDataWithKey(
+                memberData = cryptoCore.encryptDataWithKey(
                     BaseRemoteModule.formatter.encodeToString(myData),
                     groupKey
                 )
@@ -99,10 +98,10 @@ class GroupsRemoteSource constructor(
     ): GroupWithMemberRaw {
         return blocking {
 
-            val groupKey = cryptoKeyRepo.getGroupKey(groupId)
+            val groupKey = cryptoKEKRepo.getGroupKey(groupId)
                 ?: throw NotFoundException("Group key not found")
 
-            val encryptedGroupKey = cryptoAuth.encryptDataWithKeyPair(
+            val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                 data = groupKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = codeData.ownerKey
@@ -113,7 +112,7 @@ class GroupsRemoteSource constructor(
                 userId = codeData.ownerId,
                 userPublicKey = codeData.ownerKey,
                 encryptedGroupKey = encryptedGroupKey,
-                memberData = cryptoAuth.encryptDataWithKey(
+                memberData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
                         MemberModelData(codeData.ownerName, codeData.ownerImageBase64)
                     ),

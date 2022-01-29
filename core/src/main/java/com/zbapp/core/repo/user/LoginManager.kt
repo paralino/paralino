@@ -1,7 +1,7 @@
 package com.zbapp.core.repo.user
 
 import com.zbapp.core.config
-import com.zbapp.core.crypto.CryptoAuth
+import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.logg
 import com.zbapp.core.models.mappers.IUserDataMapperCore
 import com.zbapp.core.models.raw.UserMeDataRaw
@@ -18,7 +18,7 @@ import kotlinx.serialization.decodeFromString
 class LoginManager(
     val userRepo: UserRepository,
     val groupRepo: GroupRepository,
-    val cryptoAuth: CryptoAuth,
+    val cryptoCore: CryptoCore,
     val userDataMapper: IUserDataMapperCore
 ) {
 
@@ -34,7 +34,7 @@ class LoginManager(
         return flow {
 
             emit(SignUpStep.SIGNING_UP)
-            val derivedPasswords = cryptoAuth.derivePassword(password)
+            val derivedPasswords = cryptoCore.derivePassword(password)
             val user: Pair<UserMeRaw, UserSession>
             try {
                 delay(500)
@@ -51,7 +51,7 @@ class LoginManager(
                 delay(500)
                 remoteData = prepareUserKeys(derivedPasswords.backupPassword, user.first.id, userName)
             } catch (e: Exception) {
-                cryptoAuth.clearUserPersonalKey()
+                cryptoCore.clearUserPersonalKey()
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
             }
 
@@ -61,7 +61,7 @@ class LoginManager(
                 delay(500)
                 updatedUser = userRepo.uploadAndInitKeysAndData(remoteData).first()
             } catch (e: Exception) {
-                cryptoAuth.clearUserPersonalKey()
+                cryptoCore.clearUserPersonalKey()
                 throw SignUpStepException(SignUpStep.INIT_USER_DATA, e)
             }
 
@@ -82,9 +82,10 @@ class LoginManager(
     }
 
     private suspend fun prepareUserKeys(password: String, userId: String, name: String): UserMeDataRaw {
-        val keys = cryptoAuth.generateNewKeysForUser(password, userId, null)
+        val keys = cryptoCore.generateNewKeysForUser(password, userId, null)
 
-        cryptoAuth.saveUserKeyLocally(keys.userPersonalKey)
+        cryptoCore.saveUserKeyLocally(keys.userPersonalKey)
+
         val data = UserMeData(
             userName = name,
             privateKeyBackup = keys.symmetricCryptoKeyData,
@@ -98,7 +99,7 @@ class LoginManager(
         return flow {
 
             emit(SignUpStep.SIGNING_UP)
-            val derivedPasswords = cryptoAuth.derivePassword(password)
+            val derivedPasswords = cryptoCore.derivePassword(password)
             val session: UserSession
             val user: UserMeRaw
             try {
@@ -122,10 +123,10 @@ class LoginManager(
             emit(SignUpStep.INIT_USER_DATA)
             try {
                 delay(500)
-                val userKey = cryptoAuth.signIn(derivedPasswords.backupPassword, user.id, data.encryptedKey)
-                cryptoAuth.saveUserKeyLocally(userKey)
+                val userKey = cryptoCore.signIn(derivedPasswords.backupPassword, user.id, data.encryptedKey)
+                cryptoCore.saveUserKeyLocally(userKey.content)
             } catch (e: Exception) {
-                cryptoAuth.logout()
+                cryptoCore.clearUserPersonalKey()
                 throw SignUpStepException(SignUpStep.INIT_USER_DATA, e)
             }
 
