@@ -5,12 +5,8 @@ import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
-import com.zbapp.core.repo.group.IGroupLocalDataSource
 import com.zbapp.core.repo.user.UserRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 
 
 class CryptoKEKRepository(
@@ -21,8 +17,10 @@ class CryptoKEKRepository(
     private val cryptoCore: CryptoCore
 ) : BaseRepository() {
 
-    fun refreshAllKeys() {
-        getDataOnce(
+
+
+    fun refreshAllKeys(): Flow<Pair<List<GroupCryptoKeyDataRaw>, List<GroupMemberCryptoKeyDataRaw>>> {
+        return getDataOnce(
             remote = {
                 val groupKeys = remote.getAllGroupKeys()
                 val memberKeys = remote.getAllGroupMemberKeys()
@@ -36,8 +34,8 @@ class CryptoKEKRepository(
         )
     }
 
-    fun refreshKeysForGroup(groupId: String) {
-        getDataOnce(
+    fun refreshKeysForGroup(groupId: String): Flow<Pair<GroupCryptoKeyDataRaw, List<GroupMemberCryptoKeyDataRaw>>> {
+        return getDataOnce(
             remote = {
                 val groupKeys = remote.getGroupKeyForGroup(groupId)
                 val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
@@ -49,6 +47,14 @@ class CryptoKEKRepository(
             },
             remotePreference = RemotePreference.FORCE
         )
+    }
+
+    fun refreshAllKeysSilently() {
+        refreshAllKeys().launchIn(scopeProvider.defaultScope)
+    }
+
+    fun refreshKeysForGroupSilently(groupId: String) {
+        refreshKeysForGroup(groupId).launchIn(scopeProvider.defaultScope)
     }
 
     val groupKeys = local.getAllGroupKeys()

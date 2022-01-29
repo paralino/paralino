@@ -9,10 +9,7 @@ import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.*
 
 class GroupRepository constructor(
     private val local: IGroupLocalDataSource,
@@ -64,7 +61,9 @@ class GroupRepository constructor(
                     image = emoji,
                     myData = MemberModelData(userData.userName, userData.imageBase64),
                     myKey = userData.latestAsymmetricKey!!
-                )
+                ).also {
+                    cryptoKEKRepo.refreshKeysForGroup(it.group.id).first()
+                }
             },
             localUpdate = { local.updateOrCreateGroup(it) },
             remotePreference = RemotePreference.FORCE
