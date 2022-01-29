@@ -39,18 +39,13 @@ class CryptoCore(
         )
 
         val newKeyPair = getNewAsymmetricKey()
-        val encryptedPrivateKey = serviceProvider.encryptDataWithSymmetricKey(
-            data = newKeyPair.privateKey,
-            key = newPersonalKey,
-            context = userId.toData(hashProvider).content
-        )
 
         val symmetricData = SymmetricCryptoKeyData(
             encryptedKey = encryptedPersonalKey.asBase64String(hashProvider),
             version = userData?.privateKeyBackup?.version?.plus(1) ?: 1
         )
         val asymmetricData = AsymmetricCryptoKeyData(
-            privateKey = encryptedPrivateKey.asBase64String(hashProvider),
+            privateKey = newKeyPair.privateKey.toData().asBase64String(hashProvider),
             publicKey = newKeyPair.publicKey.toData().asBase64String(hashProvider),
             version = userData?.asymmetricKeys?.size?.plus(1) ?: 1
         )
