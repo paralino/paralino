@@ -40,6 +40,9 @@ interface MemberDao {
     @Query("SELECT groupId FROM members WHERE userId = :id")
     suspend fun getGroupIdsForUser(id: String): List<String>
 
+    @Query("SELECT ownerPublicKey FROM members WHERE groupId = :groupId AND userId = :userId")
+    suspend fun getMemberPublicKeyOnce(groupId: String, userId: String): String?
+
     @Query("DELETE FROM members WHERE id = :id")
     suspend fun removeMember(id: String)
 

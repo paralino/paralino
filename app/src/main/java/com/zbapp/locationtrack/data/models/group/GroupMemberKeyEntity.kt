@@ -7,10 +7,9 @@ import androidx.room.PrimaryKey
 data class GroupMemberKeyEntity constructor(
     @PrimaryKey
     val id: String,
-    val memberId: String,
     val groupId: String,
-    val ownerMemberId: String,
     val memberUserId: String,
+    val ownerUserId: String,
     val time: Long,
     // owner sender key K encrypted with member public key, signed with owner private key
     val encryptedSenderKey: String

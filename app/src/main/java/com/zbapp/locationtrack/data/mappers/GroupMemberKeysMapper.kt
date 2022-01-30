@@ -8,9 +8,8 @@ class GroupMemberKeysMapper: IDataMapperLocal<GroupMemberKeyEntity, GroupMemberC
         return GroupMemberCryptoKeyDataRaw(
             id = model.id,
             groupId = model.groupId,
-            memberId = model.memberId,
-            ownerMemberId = model.ownerMemberId,
             memberUserId = model.memberUserId,
+            ownerUserId = model.ownerUserId,
             time = model.time,
             encryptedSenderKey = model.encryptedSenderKey
         )
@@ -20,9 +19,8 @@ class GroupMemberKeysMapper: IDataMapperLocal<GroupMemberKeyEntity, GroupMemberC
         return GroupMemberKeyEntity(
             id = model.id,
             groupId = model.groupId,
-            memberId = model.memberId,
-            ownerMemberId = model.ownerMemberId,
             memberUserId = model.memberUserId,
+            ownerUserId = model.ownerUserId,
             time = model.time,
             encryptedSenderKey = model.encryptedSenderKey
         )

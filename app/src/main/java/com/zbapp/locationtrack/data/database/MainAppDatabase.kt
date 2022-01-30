@@ -51,7 +51,7 @@ abstract class MainAppDatabase : RoomDatabase() {
     abstract fun groupMemberKeysDao(): GroupMemberKeysDao
 
     companion object {
-        const val VERSION = 16
+        const val VERSION = 17
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

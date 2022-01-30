@@ -23,9 +23,6 @@ interface GroupMemberKeysDao {
     @Query("SELECT * FROM group_member_keys WHERE groupId = :groupId")
     fun getForGroup(groupId: String): Flow<List<GroupMemberKeyEntity>>
 
-    @Query("SELECT * FROM group_member_keys WHERE memberId = :memberId")
-    fun getForMember(memberId: String): Flow<GroupMemberKeyEntity>
-
 
     @Query("DELETE FROM group_member_keys WHERE id = :id")
     suspend fun delete(id: String)

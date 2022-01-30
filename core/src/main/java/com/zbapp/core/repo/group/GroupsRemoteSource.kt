@@ -1,5 +1,6 @@
 package com.zbapp.core.repo.group
 
+import com.zbapp.core.config
 import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.crypto.CryptoKEKRepository
 import com.zbapp.core.models.BackendConfig
@@ -101,8 +102,18 @@ class GroupsRemoteSource constructor(
             val groupKey = cryptoKEKRepo.getGroupKey(groupId)
                 ?: throw NotFoundException("Group key not found")
 
+            val memberKey = cryptoKEKRepo.getMemberKey(groupId, config.userId)
+                ?: throw NotFoundException("Member key not found")
+
+
             val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                 data = groupKey,
+                myPrivateKey = myKey.privateKey,
+                publicKey = codeData.ownerKey
+            )
+
+            val encryptedMemberKey = cryptoCore.encryptDataWithKeyPair(
+                data = memberKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = codeData.ownerKey
             )
@@ -112,6 +123,7 @@ class GroupsRemoteSource constructor(
                 userId = codeData.ownerId,
                 userPublicKey = codeData.ownerKey,
                 encryptedGroupKey = encryptedGroupKey,
+                encryptedOwnerKey = encryptedMemberKey,
                 memberData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
                         MemberModelData(codeData.ownerName, codeData.ownerImageBase64)

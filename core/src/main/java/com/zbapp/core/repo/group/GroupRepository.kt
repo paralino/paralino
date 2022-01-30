@@ -21,7 +21,10 @@ class GroupRepository constructor(
     fun getAllGroups(): Flow<List<UserGroup>> {
         return subscribeToData(
             local = local.getAllGroups(),
-            remote = { remote.getAllGroups() },
+            remote = {
+                remote.getAllGroups()
+                    .also { cryptoKEKRepo.refreshAllKeys().first() }
+            },
             localUpdate = { local.recreateGroups(it) },
             remotePreference = RemotePreference.CACHE("groups", 10_000)
         )
@@ -46,7 +49,10 @@ class GroupRepository constructor(
     fun getGroupWithMembers(id: String): Flow<UserGroup> {
         return subscribeToData(
             local = local.getGroupWithMembers(id),
-            remote = { remote.getGroup(id) },
+            remote = {
+                remote.getGroup(id)
+                    .also { cryptoKEKRepo.refreshKeysForGroup(id).first() }
+            },
             localUpdate = { local.updateOrCreateGroup(it) },
             remotePreference = RemotePreference.PREFER
         )
@@ -61,9 +67,7 @@ class GroupRepository constructor(
                     image = emoji,
                     myData = MemberModelData(userData.userName, userData.imageBase64),
                     myKey = userData.latestAsymmetricKey!!
-                ).also {
-                    cryptoKEKRepo.refreshKeysForGroup(it.group.id).first()
-                }
+                ).also { cryptoKEKRepo.refreshKeysForGroup(it.group.id).first() }
             },
             localUpdate = { local.updateOrCreateGroup(it) },
             remotePreference = RemotePreference.FORCE
@@ -92,10 +96,15 @@ class GroupRepository constructor(
     fun addMemberByAccessCode(groupId: String, code: PersonalCodeReadData): Flow<GroupDocumentRaw> {
         return getDataOnce(
             remote = {
-                remote.addUserToGroup(groupId, code, userRepository.cachedUser?.data?.latestAsymmetricKey!!)
+                remote.addUserToGroup(
+                    groupId,
+                    code,
+                    userRepository.cachedUser?.data?.latestAsymmetricKey!!
+                )
             },
             localUpdate = {
                 local.updateOrCreateGroup(it)
+                    .also { cryptoKEKRepo.refreshKeysForGroup(groupId).first() }
             },
             remotePreference = RemotePreference.FORCE
         ).map { it.group }
@@ -109,6 +118,7 @@ class GroupRepository constructor(
             },
             localUpdate = {
                 local.removeMember(member.groupId, member.userId)
+                cryptoKEKRepo.deleteKeysForUser(member.groupId, member.userId)
             },
             remotePreference = RemotePreference.FORCE
         )

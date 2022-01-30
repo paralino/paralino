@@ -45,7 +45,6 @@ data class GroupCryptoKeyDataRaw constructor(
     @SerialName("\$id")
     val id: String,
     val groupId: String,
-    val memberId: String,
     val memberUserId: String,
     val time: Long,
 
@@ -59,7 +58,6 @@ data class GroupCryptoKeyDataRaw constructor(
             return GroupCryptoKeyDataRaw(
                 id = map["\$id"] as String,
                 groupId = map["groupId"] as String,
-                memberId = map["memberId"] as String,
                 memberUserId = map["memberUserId"] as String,
                 time = map["time"] as Long,
                 encryptedGroupKey = map["encryptedGroupKey"] as String
@@ -83,6 +81,7 @@ data class CreateGroupMemberFunctionData constructor(
     val userId: String,
     val userPublicKey: String,
     val encryptedGroupKey: String,
+    val encryptedOwnerKey: String,
     val memberData: String
 )
 

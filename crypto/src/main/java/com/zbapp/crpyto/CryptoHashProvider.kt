@@ -22,7 +22,7 @@ class CryptoHashProvider: ICryptoHashProvider {
     }
 
     override fun byteArrayToString(data: ByteArray): String {
-        return data.decodeToString(throwOnInvalidSequence = true)
+        return data.decodeToString(throwOnInvalidSequence = false)
     }
 
     override fun computeHash(data: ByteArray, type: HashType): Data {

@@ -71,42 +71,47 @@ class CryptoKEKRepository(
             initialValue = emptyList()
         )
 
-    suspend fun getGroupKey(groupId: String): String? {
+    suspend fun getGroupKey(groupId: String): ByteArray? {
         val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return null
         return getGroupKey(groupId, ownerPublicKey)
     }
 
-    suspend fun getGroupKey(groupId: String, ownerPublicKey: String): String? {
+    suspend fun getGroupKey(groupId: String, ownerPublicKey: String): ByteArray? {
         val keyRaw = groupKeys.value.firstOrNull { it.groupId == groupId }
             ?: return null
 
-        val groupKey = cryptoCore.decryptDataWithKeyPair(
-            data = keyRaw.encryptedGroupKey,
+        val groupKey = cryptoCore.decryptKeyWithKeyPair(
+            key = keyRaw.encryptedGroupKey,
             myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
             publicKey = ownerPublicKey
         )
 
-        return groupKey
+        return groupKey.content
     }
 
-    suspend fun getMemberKey(groupId: String, memberId: String, memberPublicKey: String): String? {
-        val keyRaw = memberKeys.value.firstOrNull { it.groupId == groupId && it.memberId == memberId }
+    suspend fun getMemberKey(groupId: String, memberUserId: String): ByteArray? {
+        val memberPublicKey = local.getMemberPublicKey(groupId, memberUserId) ?: return null
+        return getMemberKey(groupId, memberUserId, memberPublicKey)
+    }
+
+    suspend fun getMemberKey(groupId: String, memberUserId: String, memberPublicKey: String): ByteArray? {
+        val keyRaw = memberKeys.value.firstOrNull { it.groupId == groupId && it.memberUserId == memberUserId }
             ?: return null
 
-        val memberKey = cryptoCore.decryptDataWithKeyPair(
-            data = keyRaw.encryptedSenderKey,
+        val memberKey = cryptoCore.decryptKeyWithKeyPair(
+            key = keyRaw.encryptedSenderKey,
             myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
             publicKey = memberPublicKey
         )
-        return memberKey
+        return memberKey.content
     }
 
     fun listenToGroupKey(groupId: String): Flow<GroupCryptoKeyDataRaw?> {
         return groupKeys.map { it.firstOrNull { it.groupId == groupId } }
     }
 
-    fun listenToMemberKey(groupId: String, memberId: String): Flow<GroupMemberCryptoKeyDataRaw?> {
-        return memberKeys.map { it.firstOrNull { it.groupId == groupId && it.memberId == memberId } }
+    fun listenToMemberKey(groupId: String, memberUserId: String): Flow<GroupMemberCryptoKeyDataRaw?> {
+        return memberKeys.map { it.firstOrNull { it.groupId == groupId && it.memberUserId == memberUserId } }
     }
 
     suspend fun deleteGroupKeyForGroup(groupId: String) {

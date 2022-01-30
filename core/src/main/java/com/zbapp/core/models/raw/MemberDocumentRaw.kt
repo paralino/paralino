@@ -62,10 +62,9 @@ data class MemberWithKeyRaw(
 data class GroupMemberCryptoKeyDataRaw constructor(
     @SerialName("\$id")
     val id: String,
-    val memberId: String,
     val groupId: String,
-    val ownerMemberId: String,
     val memberUserId: String,
+    val ownerUserId: String,
     val time: Long,
     // owner sender key K encrypted with member public key, signed with owner private key
     val encryptedSenderKey: String
@@ -74,9 +73,8 @@ data class GroupMemberCryptoKeyDataRaw constructor(
         fun from(map: Map<String, Any>): GroupMemberCryptoKeyDataRaw {
             return GroupMemberCryptoKeyDataRaw(
                 id = map["\$id"] as String,
-                memberId = map["memberId"] as String,
-                ownerMemberId = map["ownerMemberId"] as String,
                 memberUserId = map["memberUserId"] as String,
+                ownerUserId = map["ownerUserId"] as String,
                 groupId = map["groupId"] as String,
                 time = map["time"] as Long,
                 encryptedSenderKey = map["encryptedSenderKey"] as String

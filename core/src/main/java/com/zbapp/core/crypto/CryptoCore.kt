@@ -177,6 +177,14 @@ class CryptoCore(
         ).asString(hashProvider)
     }
 
+    suspend fun decryptKeyWithKeyPair(key: String, myPrivateKey: String, publicKey: String): Data {
+        return serviceProvider.decryptDataWithKeyPair(
+            data = key.base64ToData(hashProvider).content,
+            myPrivateKey = myPrivateKey.base64ToData(hashProvider).content,
+            publicKey = publicKey.base64ToData(hashProvider).content
+        )
+    }
+
     fun derivePassword(password: String): DerivedPasswords {
         val passwordData = password.toData(hashProvider).content
 

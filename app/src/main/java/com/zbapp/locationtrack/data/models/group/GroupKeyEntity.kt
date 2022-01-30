@@ -8,7 +8,6 @@ data class GroupKeyEntity constructor(
     @PrimaryKey
     val id: String,
     val groupId: String,
-    val memberId: String,
     val memberUserId: String,
     val time: Long,
     val encryptedGroupKey: String
