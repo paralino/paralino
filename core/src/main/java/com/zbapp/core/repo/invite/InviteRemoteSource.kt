@@ -24,7 +24,7 @@ class InviteRemoteSource constructor(
             data = BaseRemoteModule.formatter.encodeToString(data)
         )
         return poll {
-            functionsApi.getExecution(remoteConfig.resourceIds.functionPersonalCodeReadID, id)
+            functionsApi.getExecution(remoteConfig.resourceIds.functionPersonalCodeCreateID, id)
                 .takeIf { it.isSuccess }
                 ?.let { getInviteCodes().firstOrNull { it.ownerId == data.ownerId } }
         }
