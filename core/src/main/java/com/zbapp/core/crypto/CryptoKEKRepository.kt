@@ -95,7 +95,7 @@ class CryptoKEKRepository(
     }
 
     suspend fun getMemberKey(groupId: String, memberUserId: String, memberPublicKey: String): ByteArray? {
-        val keyRaw = memberKeys.value.firstOrNull { it.groupId == groupId && it.memberUserId == memberUserId }
+        val keyRaw = memberKeys.value.firstOrNull { it.groupId == groupId && it.ownerUserId == memberUserId }
             ?: return null
 
         val memberKey = cryptoCore.decryptKeyWithKeyPair(
