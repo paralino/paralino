@@ -52,6 +52,8 @@ class MemberMapperCore constructor(
             ownerUserId = model.userId,
             groupId = model.groupId,
             ownerPublicKey = model.publicKey,
+            groupKeyVersion = model.groupKeyVersion,
+            memberKeyVersion = model.memberKeyVersion,
             data = memberData,
             mutableData = locationData
         )
@@ -94,9 +96,11 @@ class MemberMapperCore constructor(
             id = model.id,
             groupId = model.groupId ?: model.id,
             userId = model.ownerUserId,
+            publicKey = model.ownerPublicKey,
+            groupKeyVersion = model.groupKeyVersion,
+            memberKeyVersion = model.memberKeyVersion,
             data = memberData,
-            mutableData = locationData,
-            publicKey = model.ownerPublicKey
+            mutableData = locationData
         )
     }
 }

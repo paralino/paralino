@@ -30,6 +30,7 @@ class GroupDataMapperCore constructor(
             id = model.id,
             ownerUserId = model.ownerUserId,
             ownerPublicKey = model.ownerPublicKey,
+            keyVersion = model.keyVersion,
             data = groupData
         )
     }
@@ -52,6 +53,7 @@ class GroupDataMapperCore constructor(
             id = model.id,
             ownerUserId = model.ownerUserId,
             ownerPublicKey = model.ownerPublicKey,
+            keyVersion = model.keyVersion,
             data = groupData,
             members = emptyList()
         )

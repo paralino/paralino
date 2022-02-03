@@ -9,6 +9,6 @@ data class GroupKeyEntity constructor(
     val id: String,
     val groupId: String,
     val memberUserId: String,
-    val time: Long,
+    val version: Long,
     val encryptedGroupKey: String
 )

@@ -13,6 +13,7 @@ data class UserGroupEntity constructor(
     val id: String,
     val ownerUserId: String,
     val ownerPublicKey: String,
+    val keyVersion: Long,
     val data: String
 ) : Parcelable {
 

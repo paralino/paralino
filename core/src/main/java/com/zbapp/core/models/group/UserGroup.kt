@@ -7,8 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserGroup constructor(
     val id: String,
-    val ownerUserId: String = "",
+    val ownerUserId: String,
     val ownerPublicKey: String,
+    val keyVersion: Long,
     val data: UserGroupData = UserGroupData(),
     val members: List<MemberModel> = emptyList()
 ) {

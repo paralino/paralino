@@ -8,6 +8,8 @@ data class MemberModel constructor(
     val groupId: String,
     val userId: String,
     val publicKey: String,
+    val groupKeyVersion: Long,
+    val memberKeyVersion: Long,
     val data: MemberModelData,
     val mutableData: LocationDataModel? = null
 ) {
@@ -27,6 +29,8 @@ data class MemberModel constructor(
                 groupId = "",
                 userId = userId,
                 publicKey = "",
+                groupKeyVersion = 0,
+                memberKeyVersion = 0,
                 data = MemberModelData(name, imageBase64),
                 mutableData = model
             )

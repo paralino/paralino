@@ -13,6 +13,8 @@ data class MemberEntity constructor(
     val userId: String,
     val groupId: String?,
     val ownerPublicKey: String,
+    val groupKeyVersion: Long,
+    val memberKeyVersion: Long,
     val data: String,
     val mutableData: String? = null
 ) : Parcelable

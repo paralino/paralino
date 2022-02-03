@@ -19,6 +19,8 @@ class MemberMapperLocal(
             ownerUserId = model.userId,
             groupId = model.groupId,
             ownerPublicKey = model.ownerPublicKey,
+            groupKeyVersion = model.groupKeyVersion,
+            memberKeyVersion = model.memberKeyVersion,
             data = model.data,
             mutableData = model.mutableData
         )
@@ -30,6 +32,8 @@ class MemberMapperLocal(
             userId = model.ownerUserId,
             groupId = model.groupId,
             ownerPublicKey = model.ownerPublicKey,
+            groupKeyVersion = model.groupKeyVersion,
+            memberKeyVersion = model.memberKeyVersion,
             data = model.data,
             mutableData = model.mutableData
         )

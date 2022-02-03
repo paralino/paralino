@@ -10,7 +10,7 @@ class GroupMemberKeysMapper: IDataMapperLocal<GroupMemberKeyEntity, GroupMemberC
             groupId = model.groupId,
             memberUserId = model.memberUserId,
             ownerUserId = model.ownerUserId,
-            time = model.time,
+            version = model.version,
             encryptedSenderKey = model.encryptedSenderKey
         )
     }
@@ -21,7 +21,7 @@ class GroupMemberKeysMapper: IDataMapperLocal<GroupMemberKeyEntity, GroupMemberC
             groupId = model.groupId,
             memberUserId = model.memberUserId,
             ownerUserId = model.ownerUserId,
-            time = model.time,
+            version = model.version,
             encryptedSenderKey = model.encryptedSenderKey
         )
     }

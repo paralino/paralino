@@ -9,6 +9,7 @@ data class GroupDocumentRaw constructor(
     val id: String,
     val ownerUserId: String,
     val ownerPublicKey: String,
+    val keyVersion: Long,
     val data: String = ""
 ) {
 
@@ -28,6 +29,7 @@ data class GroupDocumentRaw constructor(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 ownerPublicKey = map["ownerPublicKey"] as String,
+                keyVersion = map["keyVersion"] as Long,
                 data = map["data"] as String
             )
         }
@@ -46,7 +48,7 @@ data class GroupCryptoKeyDataRaw constructor(
     val id: String,
     val groupId: String,
     val memberUserId: String,
-    val time: Long,
+    val version: Long,
 
     /**
      * group key encrypted with member public key, signed with owner private key
@@ -59,7 +61,7 @@ data class GroupCryptoKeyDataRaw constructor(
                 id = map["\$id"] as String,
                 groupId = map["groupId"] as String,
                 memberUserId = map["memberUserId"] as String,
-                time = map["time"] as Long,
+                version = map["version"] as Long,
                 encryptedGroupKey = map["encryptedGroupKey"] as String
             )
         }

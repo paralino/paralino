@@ -9,7 +9,7 @@ class GroupKeysMapper: IDataMapperLocal<GroupKeyEntity, GroupCryptoKeyDataRaw> {
             id = model.id,
             groupId = model.groupId,
             memberUserId = model.memberUserId,
-            time = model.time,
+            version = model.version,
             encryptedGroupKey = model.encryptedGroupKey
         )
     }
@@ -19,7 +19,7 @@ class GroupKeysMapper: IDataMapperLocal<GroupKeyEntity, GroupCryptoKeyDataRaw> {
             id = model.id,
             groupId = model.groupId,
             memberUserId = model.memberUserId,
-            time = model.time,
+            version = model.version,
             encryptedGroupKey = model.encryptedGroupKey
         )
     }
