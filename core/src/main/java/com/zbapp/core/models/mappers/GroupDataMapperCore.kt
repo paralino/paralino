@@ -18,7 +18,8 @@ class GroupDataMapperCore constructor(
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
-            ownerPublicKey = model.ownerPublicKey
+            ownerPublicKey = model.ownerPublicKey,
+            keyVersion = model.keyVersion
         ) ?: throw NotFoundException("Missing group key")
 
         val groupData = cryptoCore.encryptDataWithKey(
@@ -39,7 +40,8 @@ class GroupDataMapperCore constructor(
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
-            ownerPublicKey = model.ownerPublicKey
+            ownerPublicKey = model.ownerPublicKey,
+            keyVersion = model.keyVersion
         ) ?: throw NotFoundException("Missing group key")
 
         val groupData = cryptoCore.decryptDataWithKey(

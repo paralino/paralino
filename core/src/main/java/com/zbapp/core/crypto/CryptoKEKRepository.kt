@@ -17,7 +17,19 @@ class CryptoKEKRepository(
     private val cryptoCore: CryptoCore
 ) : BaseRepository() {
 
+    private val groupKeys = local.getAllGroupKeys()
+        .stateIn(
+            scope = scopeProvider.defaultScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
 
+    private val memberKeys = local.getAllMemberKeys()
+        .stateIn(
+            scope = scopeProvider.defaultScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
 
     fun refreshAllKeys(): Flow<Pair<List<GroupCryptoKeyDataRaw>, List<GroupMemberCryptoKeyDataRaw>>> {
         return getDataOnce(
@@ -57,27 +69,26 @@ class CryptoKEKRepository(
         refreshKeysForGroup(groupId).launchIn(scopeProvider.defaultScope)
     }
 
-    val groupKeys = local.getAllGroupKeys()
-        .stateIn(
-            scope = scopeProvider.defaultScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
+    fun getLatestGroupKeyVersion(groupId: String): Long? {
+        return groupKeys.value.filter { it.groupId == groupId }.maxByOrNull { it.version }?.version
+    }
 
-    val memberKeys = local.getAllMemberKeys()
-        .stateIn(
-            scope = scopeProvider.defaultScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
-
-    suspend fun getGroupKey(groupId: String): ByteArray? {
+    suspend fun getLatestGroupKey(groupId: String): ByteArray? {
         val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return null
         return getGroupKey(groupId, ownerPublicKey)
     }
 
-    suspend fun getGroupKey(groupId: String, ownerPublicKey: String): ByteArray? {
-        val keyRaw = groupKeys.value.firstOrNull { it.groupId == groupId }
+    suspend fun getGroupKey(groupId: String, ownerPublicKey: String, keyVersion: Long? = null): ByteArray? {
+        val keyRaw = groupKeys.value
+            .filter { it.groupId == groupId }
+            .let {
+                if(keyVersion != null)
+                    // if key version is passed get matching key
+                    it.firstOrNull { it.version == keyVersion }
+                else
+                    // otherwise get latest key
+                    it.maxByOrNull { it.version }
+            }
             ?: return null
 
         val groupKey = cryptoCore.decryptKeyWithKeyPair(
@@ -95,7 +106,9 @@ class CryptoKEKRepository(
     }
 
     suspend fun getMemberKey(groupId: String, memberUserId: String, memberPublicKey: String): ByteArray? {
-        val keyRaw = memberKeys.value.firstOrNull { it.groupId == groupId && it.ownerUserId == memberUserId }
+        val keyRaw = memberKeys.value
+            .filter { it.groupId == groupId && it.ownerUserId == memberUserId }
+            .maxByOrNull { it.version }
             ?: return null
 
         val memberKey = cryptoCore.decryptKeyWithKeyPair(

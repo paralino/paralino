@@ -99,7 +99,7 @@ class GroupsRemoteSource constructor(
     ): GroupWithMemberRaw {
         return blocking {
 
-            val groupKey = cryptoKEKRepo.getGroupKey(groupId)
+            val groupKey = cryptoKEKRepo.getLatestGroupKey(groupId)
                 ?: throw NotFoundException("Group key not found")
 
             val memberKey = cryptoKEKRepo.getMemberKey(groupId, config.userId)

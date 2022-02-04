@@ -27,7 +27,9 @@ class MemberMapperCore constructor(
         val groupKey = model.groupId?.let {
             cryptoKEKRepo.getGroupKey(
                 groupId = it,
-                ownerPublicKey = groupOwnerPublicKey
+                ownerPublicKey = groupOwnerPublicKey,
+                // use latest group key
+                keyVersion = null
             ) ?: throw NotFoundException("Missing group key")
         } ?: memberKey
 
@@ -52,7 +54,7 @@ class MemberMapperCore constructor(
             ownerUserId = model.userId,
             groupId = model.groupId,
             ownerPublicKey = model.publicKey,
-            groupKeyVersion = model.groupKeyVersion,
+            groupKeyVersion = cryptoKEKRepo.getLatestGroupKeyVersion(model.groupId)!!,
             memberKeyVersion = model.memberKeyVersion,
             data = memberData,
             mutableData = locationData
@@ -70,7 +72,8 @@ class MemberMapperCore constructor(
         val groupKey = model.groupId?.let {
             cryptoKEKRepo.getGroupKey(
                 groupId = it,
-                ownerPublicKey = groupOwnerPublicKey
+                ownerPublicKey = groupOwnerPublicKey,
+                keyVersion = model.groupKeyVersion
             ) ?: throw NotFoundException("Missing group key")
         } ?: memberKey ?: throw NotFoundException("Missing group key")
 
