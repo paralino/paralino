@@ -37,7 +37,7 @@ class MemberMapperCore constructor(
         val locationData = model.mutableData?.let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = memberKey
+                key = memberKey.data.content
             )
         }
 
@@ -45,7 +45,7 @@ class MemberMapperCore constructor(
         val memberData = model.data.let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = groupKey
+                key = groupKey.data.content
             )
         }
 
@@ -81,7 +81,7 @@ class MemberMapperCore constructor(
         val locationData = model.mutableData?.takeIf { it.isNotBlank() }?.let {
             val data = cryptoCore.decryptDataWithKey(
                 data = it,
-                key = memberKey ?: throw NotFoundException("Missing member key")
+                key = memberKey?.data?.content ?: throw NotFoundException("Missing member key")
             )
             BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(data)
         }
@@ -90,7 +90,7 @@ class MemberMapperCore constructor(
         val memberData = model.data.let {
             val data = cryptoCore.decryptDataWithKey(
                 data = it,
-                key = groupKey
+                key = groupKey.data.content
             )
             BaseRemoteModule.formatter.decodeFromString<MemberModelData>(data)
         }

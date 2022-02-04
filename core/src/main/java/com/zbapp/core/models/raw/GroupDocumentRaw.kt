@@ -10,6 +10,7 @@ data class GroupDocumentRaw constructor(
     val ownerUserId: String,
     val ownerPublicKey: String,
     val keyVersion: Long,
+    val shouldRotateKeys: Boolean,
     val data: String = ""
 ) {
 
@@ -30,6 +31,7 @@ data class GroupDocumentRaw constructor(
                 ownerUserId = map["ownerUserId"] as String,
                 ownerPublicKey = map["ownerPublicKey"] as String,
                 keyVersion = map["keyVersion"] as Long,
+                shouldRotateKeys = map["shouldRotateKeys"] as Boolean,
                 data = map["data"] as String
             )
         }
@@ -84,11 +86,32 @@ data class CreateGroupMemberFunctionData constructor(
     val userPublicKey: String,
     val encryptedGroupKey: String,
     val encryptedOwnerKey: String,
+    val oldKeys: List<GroupMemberOldKeysData>,
     val memberData: String
+)
+
+@Serializable
+data class GroupMemberOldKeysData constructor(
+    val version: Long,
+    val encryptedGroupKey: String,
 )
 
 @Serializable
 data class DeleteGroupMemberFunctionData constructor(
     val groupId: String,
     val userId: String
+)
+
+@Serializable
+data class UpdateGroupKeysFunctionData(
+    val groupId: String,
+    val userPublicKey: String,
+    val encryptedGroupKeys: List<GroupKeysPayload>,
+    val groupData: String
+)
+
+@Serializable
+data class GroupKeysPayload(
+    val userId: String,
+    val encryptedGroupKey: String
 )

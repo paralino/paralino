@@ -24,7 +24,7 @@ class GroupDataMapperCore constructor(
 
         val groupData = cryptoCore.encryptDataWithKey(
             data = BaseRemoteModule.formatter.encodeToString(model.data),
-            key = groupKey
+            key = groupKey.data.content
         )
 
         return GroupDocumentRaw(
@@ -32,6 +32,7 @@ class GroupDataMapperCore constructor(
             ownerUserId = model.ownerUserId,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion,
+            shouldRotateKeys = model.shouldRotateKeys,
             data = groupData
         )
     }
@@ -46,7 +47,7 @@ class GroupDataMapperCore constructor(
 
         val groupData = cryptoCore.decryptDataWithKey(
             data = model.data,
-            key = groupKey
+            key = groupKey.data.content
         ).let {
             BaseRemoteModule.formatter.decodeFromString<UserGroupData>(it)
         }
@@ -56,6 +57,7 @@ class GroupDataMapperCore constructor(
             ownerUserId = model.ownerUserId,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion,
+            shouldRotateKeys = model.shouldRotateKeys,
             data = groupData,
             members = emptyList()
         )

@@ -105,18 +105,36 @@ class GroupsRemoteSource constructor(
             val memberKey = cryptoKEKRepo.getMemberKey(groupId, config.userId)
                 ?: throw NotFoundException("Member key not found")
 
+            val oldKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
 
             val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                data = groupKey,
+                data = groupKey.data.content,
+                // sign with owner private key
                 myPrivateKey = myKey.privateKey,
+                // encrypt with user public key
                 publicKey = codeData.ownerKey
             )
 
             val encryptedMemberKey = cryptoCore.encryptDataWithKeyPair(
-                data = memberKey,
+                data = memberKey.data.content,
+                // sign with owner private key
                 myPrivateKey = myKey.privateKey,
+                // encrypt with user public key
                 publicKey = codeData.ownerKey
             )
+
+            val encryptedOldKeys = oldKeys.map {
+                GroupMemberOldKeysData(
+                    version = it.version,
+                    encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
+                        data = it.data.content,
+                        // sign with owner private key
+                        myPrivateKey = myKey.privateKey,
+                        // encrypt with user public key
+                        publicKey = codeData.ownerKey
+                    )
+                )
+            }
 
             val payload = CreateGroupMemberFunctionData(
                 groupId = groupId,
@@ -124,11 +142,12 @@ class GroupsRemoteSource constructor(
                 userPublicKey = codeData.ownerKey,
                 encryptedGroupKey = encryptedGroupKey,
                 encryptedOwnerKey = encryptedMemberKey,
+                oldKeys = encryptedOldKeys,
                 memberData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
                         MemberModelData(codeData.ownerName, codeData.ownerImageBase64)
                     ),
-                    key = groupKey
+                    key = groupKey.data.content
                 )
             )
 

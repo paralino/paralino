@@ -40,7 +40,7 @@ class CreateGroupViewModel(
         viewModelScope.launch {
             groupFlow.value = when {
                 groupId.isNullOrBlank() -> null
-                else -> groupRepo.getGroupWithoutMembers(groupId)
+                else -> groupRepo.getGroupWithoutMembersLocally(groupId)
                     .map { Payload.Success(it) }
                     .firstOrNull()
             } ?: Payload.Error(NullPointerException("No such group"))

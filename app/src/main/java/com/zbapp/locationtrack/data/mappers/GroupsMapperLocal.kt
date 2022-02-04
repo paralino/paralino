@@ -19,6 +19,7 @@ class GroupsMapperLocal(
             ownerUserId = model.ownerUserId,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion,
+            shouldRotateKeys = model.shouldRotateKeys,
             data = model.data
         )
     }
@@ -29,6 +30,7 @@ class GroupsMapperLocal(
             ownerUserId = model.ownerUserId,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion,
+            shouldRotateKeys = model.shouldRotateKeys,
             data = model.data
         )
     }

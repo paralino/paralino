@@ -1,11 +1,15 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.crypto.CryptoKEKRepository
+import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
+import com.zbapp.core.models.mappers.GroupDataMapperCore
+import com.zbapp.core.models.mappers.MemberMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
+import com.zbapp.core.models.raw.GroupWithMemberRaw
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
@@ -15,7 +19,9 @@ class GroupRepository constructor(
     private val local: IGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val userRepository: UserRepository,
-    private val cryptoKEKRepo: CryptoKEKRepository
+    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val groupMapperCore: GroupDataMapperCore,
+    private val groupMemberMapperCore: MemberMapperCore
 ) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
@@ -25,7 +31,20 @@ class GroupRepository constructor(
                 remote.getAllGroups()
                     .also { cryptoKEKRepo.refreshAllKeys().first() }
             },
-            localUpdate = { local.recreateGroups(it) },
+            localUpdate = { groups ->
+                groups.map { group ->
+                    val remoteGroup = groupMapperCore.remote2Core(group.group)
+                        .copy(members = group.members.map {
+                            groupMemberMapperCore.remote2Core(
+                                it,
+                                group.group.ownerPublicKey
+                            )
+                        })
+                    updateGroupKeyIfNeeded(remoteGroup) ?: group
+                }.let {
+                    local.recreateGroups(it)
+                }
+            },
             remotePreference = RemotePreference.CACHE("groups", 10_000)
         )
     }
@@ -34,15 +53,11 @@ class GroupRepository constructor(
         return local.getAllGroups()
     }
 
-    fun getMyGroups(): Flow<List<UserGroup>> {
-        return getAllGroups().mapLatest { it.filter { it.isFromUser } }
-    }
-
     fun getGroupWithMembersLocally(id: String): Flow<UserGroup> {
         return local.getGroupWithMembers(id)
     }
 
-    fun getGroupWithoutMembers(id: String): Flow<UserGroup> {
+    fun getGroupWithoutMembersLocally(id: String): Flow<UserGroup> {
         return local.getGroupWithoutMembers(id)
     }
 
@@ -53,7 +68,17 @@ class GroupRepository constructor(
                 remote.getGroup(id)
                     .also { cryptoKEKRepo.refreshKeysForGroup(id).first() }
             },
-            localUpdate = { local.updateOrCreateGroup(it) },
+            localUpdate = { group ->
+                val remoteGroup = groupMapperCore.remote2Core(group.group)
+                    .copy(members = group.members.map {
+                        groupMemberMapperCore.remote2Core(
+                            it,
+                            group.group.ownerPublicKey
+                        )
+                    })
+                val updatedGroup = updateGroupKeyIfNeeded(remoteGroup) ?: group
+                local.updateOrCreateGroup(updatedGroup)
+            },
             remotePreference = RemotePreference.PREFER
         )
     }
@@ -122,6 +147,33 @@ class GroupRepository constructor(
             },
             remotePreference = RemotePreference.FORCE
         )
+            .onEach {
+                val group = local.getGroupWithMembers(member.groupId).first()
+                rotateGroupKeyAndRefresh(group).first().let {
+                    local.updateOrCreateGroup(it)
+                }
+            }
+    }
+
+    private suspend fun updateGroupKeyIfNeeded(remoteGroup: UserGroup): GroupWithMemberRaw? {
+        if (remoteGroup.ownerUserId != userRepository.cachedUserId) return null
+        if (!remoteGroup.shouldRotateKeys) return null
+
+        logg.tag("group_key").w("group key is deprecated - rotating: ${remoteGroup.id}")
+        return rotateGroupKeyAndRefresh(remoteGroup).first()
+    }
+
+    private suspend fun rotateGroupKeyAndRefresh(group: UserGroup): Flow<GroupWithMemberRaw> {
+        return cryptoKEKRepo.rotateGroupKey(
+            group = group,
+            myKey = userRepository.cachedUser!!.data!!.latestAsymmetricKey!!
+        )
+            .flatMapLatest {
+                getDataOnce(
+                    remote = { remote.getGroup(group.id) },
+                    remotePreference = RemotePreference.FORCE
+                )
+            }
     }
 
     suspend fun clear() {

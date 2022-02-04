@@ -27,9 +27,9 @@ class CryptoKeyLocalDataSource constructor(
         memberKeysDao.recreateAll(keys.map { keysMemberMapper.remote2Local(it) })
     }
 
-    override suspend fun recreateGroupKeyForGroup(groupId: String, key: GroupCryptoKeyDataRaw) {
+    override suspend fun recreateGroupKeyForGroup(groupId: String, keys: List<GroupCryptoKeyDataRaw>) {
         keysDao.deleteForGroup(groupId)
-        keysDao.createOrUpdate(keysMapper.remote2Local(key))
+        keysDao.createOrUpdate(*keys.map { keysMapper.remote2Local(it) }.toTypedArray())
     }
 
     override suspend fun recreateMemberKeysForGroup(

@@ -1,12 +1,15 @@
 package com.zbapp.core.crypto
 
 import com.zbapp.core.ICoroutineScopeProvider
+import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
+import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.*
+import javax.swing.GroupLayout
 
 
 class CryptoKEKRepository(
@@ -46,7 +49,7 @@ class CryptoKEKRepository(
         )
     }
 
-    fun refreshKeysForGroup(groupId: String): Flow<Pair<GroupCryptoKeyDataRaw, List<GroupMemberCryptoKeyDataRaw>>> {
+    fun refreshKeysForGroup(groupId: String): Flow<Pair<List<GroupCryptoKeyDataRaw>, List<GroupMemberCryptoKeyDataRaw>>> {
         return getDataOnce(
             remote = {
                 val groupKeys = remote.getGroupKeyForGroup(groupId)
@@ -73,12 +76,12 @@ class CryptoKEKRepository(
         return groupKeys.value.filter { it.groupId == groupId }.maxByOrNull { it.version }?.version
     }
 
-    suspend fun getLatestGroupKey(groupId: String): ByteArray? {
+    suspend fun getLatestGroupKey(groupId: String): DecryptedGroupKeyData? {
         val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return null
         return getGroupKey(groupId, ownerPublicKey)
     }
 
-    suspend fun getGroupKey(groupId: String, ownerPublicKey: String, keyVersion: Long? = null): ByteArray? {
+    suspend fun getGroupKey(groupId: String, ownerPublicKey: String, keyVersion: Long? = null): DecryptedGroupKeyData? {
         val keyRaw = groupKeys.value
             .filter { it.groupId == groupId }
             .let {
@@ -97,15 +100,31 @@ class CryptoKEKRepository(
             publicKey = ownerPublicKey
         )
 
-        return groupKey.content
+        return DecryptedGroupKeyData(keyRaw.version, groupKey)
     }
 
-    suspend fun getMemberKey(groupId: String, memberUserId: String): ByteArray? {
+    suspend fun getAllGroupKeys(groupId: String): List<DecryptedGroupKeyData> {
+        val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return emptyList()
+        val keys = groupKeys.value.filter { it.groupId == groupId }
+
+        return keys.map {
+            val groupKey = cryptoCore.decryptKeyWithKeyPair(
+                key = it.encryptedGroupKey,
+                myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
+                publicKey = ownerPublicKey
+            )
+
+            DecryptedGroupKeyData(it.version, groupKey)
+        }
+
+    }
+
+    suspend fun getMemberKey(groupId: String, memberUserId: String): DecryptedGroupKeyData? {
         val memberPublicKey = local.getMemberPublicKey(groupId, memberUserId) ?: return null
         return getMemberKey(groupId, memberUserId, memberPublicKey)
     }
 
-    suspend fun getMemberKey(groupId: String, memberUserId: String, memberPublicKey: String): ByteArray? {
+    suspend fun getMemberKey(groupId: String, memberUserId: String, memberPublicKey: String): DecryptedGroupKeyData? {
         val keyRaw = memberKeys.value
             .filter { it.groupId == groupId && it.ownerUserId == memberUserId }
             .maxByOrNull { it.version }
@@ -116,7 +135,7 @@ class CryptoKEKRepository(
             myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
             publicKey = memberPublicKey
         )
-        return memberKey.content
+        return DecryptedGroupKeyData(keyRaw.version, memberKey)
     }
 
     fun listenToGroupKey(groupId: String): Flow<GroupCryptoKeyDataRaw?> {
@@ -125,6 +144,22 @@ class CryptoKEKRepository(
 
     fun listenToMemberKey(groupId: String, memberUserId: String): Flow<GroupMemberCryptoKeyDataRaw?> {
         return memberKeys.map { it.firstOrNull { it.groupId == groupId && it.memberUserId == memberUserId } }
+    }
+
+    suspend fun rotateGroupKey(
+        group: UserGroup,
+        myKey: AsymmetricCryptoKeyData
+    ): Flow<Unit> {
+        return getDataOnce(
+            remote = {
+                remote.rotateGroupKeys(
+                    group = group,
+                    myKey = myKey
+                )
+                refreshKeysForGroup(group.id).first()
+            },
+            remotePreference = RemotePreference.FORCE
+        ).map { Unit }
     }
 
     suspend fun deleteGroupKeyForGroup(groupId: String) {
@@ -143,3 +178,8 @@ class CryptoKEKRepository(
         local.deleteAllKeys()
     }
 }
+
+data class DecryptedGroupKeyData(
+    val version: Long,
+    val data: Data
+)
