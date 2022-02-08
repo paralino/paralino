@@ -13,6 +13,7 @@ data class MemberDocumentRaw constructor(
     val ownerPublicKey: String,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
+    val shouldRotateKeys: Boolean,
 
     val data: String,
     val mutableData: String? = null
@@ -39,6 +40,7 @@ data class MemberDocumentRaw constructor(
                 ownerPublicKey = map["ownerPublicKey"] as String,
                 groupKeyVersion = map["groupKeyVersion"] as Long,
                 memberKeyVersion = map["memberKeyVersion"] as Long,
+                shouldRotateKeys = map["shouldRotateKeys"] as Boolean,
                 data = map["data"] as String,
                 mutableData = map["mutableData"] as? String,
             )

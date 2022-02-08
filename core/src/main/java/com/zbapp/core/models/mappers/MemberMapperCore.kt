@@ -56,6 +56,7 @@ class MemberMapperCore constructor(
             ownerPublicKey = model.publicKey,
             groupKeyVersion = cryptoKEKRepo.getLatestGroupKeyVersion(model.groupId)!!,
             memberKeyVersion = model.memberKeyVersion,
+            shouldRotateKeys = model.shouldRotateKeys,
             data = memberData,
             mutableData = locationData
         )
@@ -102,6 +103,7 @@ class MemberMapperCore constructor(
             publicKey = model.ownerPublicKey,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
+            shouldRotateKeys = model.shouldRotateKeys,
             data = memberData,
             mutableData = locationData
         )

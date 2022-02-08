@@ -21,6 +21,7 @@ class MemberMapperLocal(
             ownerPublicKey = model.ownerPublicKey,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
+            shouldRotateKeys = model.shouldRotateKeys,
             data = model.data,
             mutableData = model.mutableData
         )
@@ -34,6 +35,7 @@ class MemberMapperLocal(
             ownerPublicKey = model.ownerPublicKey,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
+            shouldRotateKeys = model.shouldRotateKeys,
             data = model.data,
             mutableData = model.mutableData
         )

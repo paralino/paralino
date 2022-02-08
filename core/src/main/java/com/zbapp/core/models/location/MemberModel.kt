@@ -10,6 +10,7 @@ data class MemberModel constructor(
     val publicKey: String,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
+    val shouldRotateKeys: Boolean,
     val data: MemberModelData,
     val mutableData: LocationDataModel? = null
 ) {
@@ -31,6 +32,7 @@ data class MemberModel constructor(
                 publicKey = "",
                 groupKeyVersion = 0,
                 memberKeyVersion = 0,
+                shouldRotateKeys = false,
                 data = MemberModelData(name, imageBase64),
                 mutableData = model
             )
