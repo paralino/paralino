@@ -156,7 +156,23 @@ class CryptoKEKRepository(
                     group = group,
                     myKey = myKey
                 )
-                refreshKeysForGroup(group.id).first()
+            },
+            remotePreference = RemotePreference.FORCE
+        ).map { Unit }
+    }
+
+    suspend fun rotateGroupMemberKey(
+        group: UserGroup,
+        myKey: AsymmetricCryptoKeyData
+    ): Flow<Unit> {
+        val groupKey = getLatestGroupKey(groupId = group.id)!!.data.content
+        return getDataOnce(
+            remote = {
+                remote.rotateMemberKeysForGroup(
+                    group = group,
+                    groupKey = groupKey,
+                    myKey = myKey
+                )
             },
             remotePreference = RemotePreference.FORCE
         ).map { Unit }

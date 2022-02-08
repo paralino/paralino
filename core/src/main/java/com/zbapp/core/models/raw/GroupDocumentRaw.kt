@@ -115,3 +115,26 @@ data class GroupKeysPayload(
     val userId: String,
     val encryptedGroupKey: String
 )
+
+
+@Serializable
+data class UpdateGroupMemberKeysFunctionData(
+    val groupId: String,
+    val userPublicKey: String,
+    val encryptedSenderKeys: List<GroupMemberKeyPayload>,
+    val memberData: List<GroupMemberDataPayload>
+)
+
+@Serializable
+data class GroupMemberKeyPayload(
+    val userId: String,
+    val encryptedSenderKey: String
+)
+
+@Serializable
+data class GroupMemberDataPayload(
+    val memberId: String,
+    val groupKeyVersion: Long,
+    val memberData: String,
+    val mutableMemberData: String
+)

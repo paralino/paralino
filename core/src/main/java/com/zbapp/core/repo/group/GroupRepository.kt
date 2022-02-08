@@ -40,7 +40,9 @@ class GroupRepository constructor(
                                 group.group.ownerPublicKey
                             )
                         })
-                    updateGroupKeyIfNeeded(remoteGroup) ?: group
+                    updateGroupKeyIfNeeded(remoteGroup)
+                        ?: updateGroupMemberKeyIfNeeded(remoteGroup)
+                        ?: group
                 }.let {
                     local.recreateGroups(it)
                 }
@@ -76,7 +78,9 @@ class GroupRepository constructor(
                             group.group.ownerPublicKey
                         )
                     })
-                val updatedGroup = updateGroupKeyIfNeeded(remoteGroup) ?: group
+                val updatedGroup = updateGroupKeyIfNeeded(remoteGroup)
+                    ?: updateGroupMemberKeyIfNeeded(remoteGroup)
+                    ?: group
                 local.updateOrCreateGroup(updatedGroup)
             },
             remotePreference = RemotePreference.PREFER
@@ -136,6 +140,7 @@ class GroupRepository constructor(
     }
 
     fun removeMember(member: MemberModel): Flow<Unit> {
+        // TODO differentiate between removing user and leaving group
         return getDataOnce(
             remote = {
                 val group = local.getGroupWithMembers(member.groupId).first()
@@ -149,31 +154,50 @@ class GroupRepository constructor(
         )
             .onEach {
                 val group = local.getGroupWithMembers(member.groupId).first()
-                rotateGroupKeyAndRefresh(group).first().let {
+                rotateGroupKeyAndRefresh(group).let {
                     local.updateOrCreateGroup(it)
                 }
             }
+    }
+
+    private suspend fun updateGroupMemberKeyIfNeeded(remoteGroup: UserGroup): GroupWithMemberRaw? {
+        val memberMeRemote = remoteGroup.members.firstOrNull { it.userId == userRepository.cachedUserId }
+
+        if(memberMeRemote?.shouldRotateKeys == true) {
+            logg.tag("tag_group_key_member").w("group member key is deprecated - rotating: ${remoteGroup.id} - ${memberMeRemote.userId}")
+            return rotateGroupMemberKeyAndRefresh(remoteGroup)
+        }
+
+        return null
     }
 
     private suspend fun updateGroupKeyIfNeeded(remoteGroup: UserGroup): GroupWithMemberRaw? {
         if (remoteGroup.ownerUserId != userRepository.cachedUserId) return null
         if (!remoteGroup.shouldRotateKeys) return null
 
-        logg.tag("group_key").w("group key is deprecated - rotating: ${remoteGroup.id}")
-        return rotateGroupKeyAndRefresh(remoteGroup).first()
+        logg.tag("tag_group_key").w("group key is deprecated - rotating: ${remoteGroup.id}")
+        return rotateGroupKeyAndRefresh(remoteGroup)
     }
 
-    private suspend fun rotateGroupKeyAndRefresh(group: UserGroup): Flow<GroupWithMemberRaw> {
-        return cryptoKEKRepo.rotateGroupKey(
-            group = group,
-            myKey = userRepository.cachedUser!!.data!!.latestAsymmetricKey!!
-        )
-            .flatMapLatest {
-                getDataOnce(
-                    remote = { remote.getGroup(group.id) },
-                    remotePreference = RemotePreference.FORCE
-                )
-            }
+    private suspend fun rotateGroupKeyAndRefresh(group: UserGroup): GroupWithMemberRaw {
+        val userKey = userRepository.cachedUser!!.data!!.latestAsymmetricKey!!
+        cryptoKEKRepo.rotateGroupKey(group = group, myKey = userKey).first()
+        cryptoKEKRepo.rotateGroupMemberKey(group = group, myKey = userKey).first()
+        cryptoKEKRepo.refreshKeysForGroup(groupId = group.id).first()
+        return getDataOnce(
+            remote = { remote.getGroup(group.id) },
+            remotePreference = RemotePreference.FORCE
+        ).first()
+    }
+
+    private suspend fun rotateGroupMemberKeyAndRefresh(group: UserGroup): GroupWithMemberRaw {
+        val userKey = userRepository.cachedUser!!.data!!.latestAsymmetricKey!!
+        cryptoKEKRepo.rotateGroupMemberKey(group = group, myKey = userKey).first()
+        cryptoKEKRepo.refreshKeysForGroup(groupId = group.id).first()
+        return getDataOnce(
+            remote = { remote.getGroup(group.id) },
+            remotePreference = RemotePreference.FORCE
+        ).first()
     }
 
     suspend fun clear() {

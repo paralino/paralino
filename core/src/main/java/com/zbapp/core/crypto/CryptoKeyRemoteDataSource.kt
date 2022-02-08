@@ -1,11 +1,9 @@
 package com.zbapp.core.crypto
 
+import com.zbapp.core.config
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
-import com.zbapp.core.models.raw.GroupKeysPayload
-import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
-import com.zbapp.core.models.raw.UpdateGroupKeysFunctionData
+import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
@@ -55,16 +53,63 @@ class CryptoKeyRemoteDataSource(
         }
     }
 
-    suspend fun recreateMemberKeysForGroup(
-        groupId: String,
-        keys: List<GroupMemberCryptoKeyDataRaw>
+    suspend fun rotateMemberKeysForGroup(
+        group: UserGroup,
+        groupKey: ByteArray,
+        myKey: AsymmetricCryptoKeyData
     ) {
         blocking {
-            val payload = mapOf(
-                "groupId" to groupId,
-                "keys" to keys.map { BaseRemoteModule.formatter.encodeToJsonElement(it) }
-            ).toJsonObject().toString()
-            functionsApi.runAndWait(remoteConfig.resourceIds.functionCreateGroupID, payload)
+
+            val newSenderKey = cryptoCore.getNewSymmetricKey().content
+
+            val memberData = group.members.filter { it.userId == config.userId }.map {
+                GroupMemberDataPayload(
+                    memberId = it.id,
+                    groupKeyVersion = group.keyVersion,
+                    memberData = cryptoCore.encryptDataWithKey(
+                        BaseRemoteModule.formatter.encodeToString(it.data),
+                        groupKey
+                    ),
+                    mutableMemberData = cryptoCore.encryptDataWithKey(
+                        BaseRemoteModule.formatter.encodeToString(it.mutableData),
+                        newSenderKey
+                    )
+                )
+            }
+
+            val keys = group.members.map {
+                GroupMemberKeyPayload(
+                    userId = it.userId,
+                    encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
+                        data = newSenderKey,
+                        // sign with owner private key
+                        myPrivateKey = myKey.privateKey,
+                        // encrypt with user public key
+                        publicKey = it.publicKey
+                    )
+                )
+
+            }
+
+            val payload = UpdateGroupMemberKeysFunctionData(
+                groupId = group.id,
+                userPublicKey = myKey.publicKey,
+                encryptedSenderKeys = keys,
+                memberData = memberData
+            )
+
+            val data = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionUpdateGroupMemberKeysID,
+                data = BaseRemoteModule.formatter.encodeToString(payload)
+            )
+
+            if (!data.isSuccess) {
+                throw BaseRemoteException.fromCode(
+                    null,
+                    "Unable to update group member keys",
+                    Exception(data.stderr)
+                )
+            }
         }
     }
 
@@ -72,13 +117,13 @@ class CryptoKeyRemoteDataSource(
         group: UserGroup,
         myKey: AsymmetricCryptoKeyData
     ) {
-        return blocking {
+        blocking {
 
             val groupKey = cryptoCore.getNewSymmetricKey().content
 
             val groupData = cryptoCore.encryptDataWithKey(
-                BaseRemoteModule.formatter.encodeToString(group.data),
-                groupKey
+                data = BaseRemoteModule.formatter.encodeToString(group.data),
+                key = groupKey
             )
 
             val keys = group.members.map {
