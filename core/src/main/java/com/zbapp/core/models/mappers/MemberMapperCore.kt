@@ -84,7 +84,9 @@ class MemberMapperCore constructor(
                 data = it,
                 key = memberKey?.data?.content ?: throw NotFoundException("Missing member key")
             )
-            BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(data)
+            data.takeIf { it.isNotBlank() }?.let {
+                BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
+            }
         }
 
         // data encrypted with group DEK
