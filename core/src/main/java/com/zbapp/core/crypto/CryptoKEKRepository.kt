@@ -72,6 +72,34 @@ class CryptoKEKRepository(
         refreshKeysForGroup(groupId).launchIn(scopeProvider.defaultScope)
     }
 
+    suspend fun hasGroupKey(groupId: String, vararg keyVersions: Long): Boolean {
+        val keys = groupKeys.value .filter { it.groupId == groupId }
+        return keyVersions.all { version ->
+            keys.any { it.version == version }
+        }
+    }
+
+    fun hasMemberKey(
+        groupId: String,
+        memberUserId: String,
+        keyVersion: Long
+    ): Boolean {
+        return memberKeys.value
+            .filter { it.groupId == groupId && it.memberUserId == memberUserId}
+            .any { it.version == keyVersion }
+    }
+
+    fun hasMemberKeys(
+        groupId: String,
+        keyVersion: List<Pair<String, Long>>
+    ): Boolean {
+        val keys = memberKeys.value.filter { it.groupId == groupId }
+        return keyVersion
+            .all { key ->
+                keys.any { it.memberUserId == key.first && it.version == key.second }
+            }
+    }
+
     fun getLatestGroupKeyVersion(groupId: String): Long? {
         return groupKeys.value.filter { it.groupId == groupId }.maxByOrNull { it.version }?.version
     }
