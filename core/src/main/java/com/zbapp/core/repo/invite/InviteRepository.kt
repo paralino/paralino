@@ -10,7 +10,9 @@ import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.core.utils.mapToPayload
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class InviteRepository(
     private val remote: InviteRemoteSource,
@@ -49,7 +51,7 @@ class InviteRepository(
             local = local.getInviteCodesForUser(config.userId),
             localUpdate = { local.replaceInviteCode(it) },
             remotePreference = RemotePreference.FORCE
-        ).mapToPayload()
+        ).map { it.filter { it.isStillValid() } }.mapToPayload()
     }
 
     fun getInviteByCode(code: String): Flow<Payload<PersonalCodeReadData>> {

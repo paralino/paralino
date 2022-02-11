@@ -64,6 +64,7 @@ class AcceptInviteViewModel(
 
     private fun loadInvite(code: String) {
         inviteRepo.getInviteByCode(code)
+                // TODO add better error handling
             .onEach { inviteCodeData.value = it.mapSuccess { loadedInviteEvent(it) } }
             .launchIn(viewModelScope)
     }

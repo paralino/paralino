@@ -41,7 +41,8 @@ class InviteRemoteSource constructor(
             functionId = remoteConfig.resourceIds.functionPersonalCodeReadID,
             code
         )
-        return poll {
+        return poll(canThrow = true) {
+            // TOOD improve checking for valid code better
             functionsApi.getExecution(remoteConfig.resourceIds.functionPersonalCodeReadID, id)
                 .takeIf { it.isSuccess }
                 ?.let {
