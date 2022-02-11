@@ -70,7 +70,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (data.isSuccess) {
-                getGroup(data.stdout)
+                getGroupWithMembers(data.stdout)
             } else {
                 throw BaseRemoteException.fromCode(
                     null,
@@ -157,7 +157,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (data.isSuccess) {
-                getGroup(groupId)
+                getGroupWithMembers(groupId)
             } else {
                 throw BaseRemoteException.fromCode(
                     code = null,
@@ -207,7 +207,7 @@ class GroupsRemoteSource constructor(
         }
     }
 
-    suspend fun getGroup(groupId: String): GroupWithMemberRaw {
+    suspend fun getGroupWithMembers(groupId: String): GroupWithMemberRaw {
         return blocking {
             val group = api.getDocument(remoteConfig.resourceIds.collectionGroupsID, groupId).parseGroup()
             val members = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersID, "groupId" to groupId).map { it.parseGroupMember() }
@@ -215,6 +215,12 @@ class GroupsRemoteSource constructor(
                 group = group,
                 members = members
             )
+        }
+    }
+
+    suspend fun getGroupOnly(groupId: String): GroupDocumentRaw {
+        return blocking {
+            api.getDocument(remoteConfig.resourceIds.collectionGroupsID, groupId).parseGroup()
         }
     }
 

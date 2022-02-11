@@ -1,6 +1,7 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.crypto.CryptoKEKRepository
+import com.zbapp.core.crypto.DecryptedGroupKeyData
 import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.invite.PersonalCodeReadData
@@ -67,7 +68,7 @@ class GroupRepository constructor(
         return subscribeToData(
             local = local.getGroupWithMembers(id),
             remote = {
-                remote.getGroup(id)
+                remote.getGroupWithMembers(id)
                     .also { cryptoKEKRepo.refreshKeysForGroup(id).first() }
             },
             localUpdate = { group ->
@@ -179,13 +180,28 @@ class GroupRepository constructor(
         return rotateGroupKeyAndRefresh(remoteGroup)
     }
 
-    private suspend fun rotateGroupKeyAndRefresh(group: UserGroup): GroupWithMemberRaw {
+    private suspend fun rotateGroupKeyAndRefresh(remoteGroup: UserGroup): GroupWithMemberRaw {
         val userKey = userRepository.cachedUser!!.data!!.latestAsymmetricKey!!
-        cryptoKEKRepo.rotateGroupKey(group = group, myKey = userKey).first()
-        cryptoKEKRepo.rotateGroupMemberKey(group = group, myKey = userKey).first()
-        cryptoKEKRepo.refreshKeysForGroup(groupId = group.id).first()
+
+        // 1. rotate group key
+        cryptoKEKRepo.rotateGroupKey(group = remoteGroup, myKey = userKey).first()
+
+        // 2. fetch new key(s) for that group
+        cryptoKEKRepo.refreshGroupKeysForGroup(groupId = remoteGroup.id).first()
+
+        // 3. rotate member keys
+        // new group key is required first since we are re-encrypting user data with it
+        cryptoKEKRepo.rotateGroupMemberKey(
+            group = remoteGroup,
+            myKey = userKey
+        ).first()
+
+        // 4. refresh member keys
+        cryptoKEKRepo.refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
+
+        // 5. finally refresh group again to get new data and states
         return getDataOnce(
-            remote = { remote.getGroup(group.id) },
+            remote = { remote.getGroupWithMembers(remoteGroup.id) },
             remotePreference = RemotePreference.FORCE
         ).first()
     }
@@ -195,7 +211,7 @@ class GroupRepository constructor(
         cryptoKEKRepo.rotateGroupMemberKey(group = group, myKey = userKey).first()
         cryptoKEKRepo.refreshKeysForGroup(groupId = group.id).first()
         return getDataOnce(
-            remote = { remote.getGroup(group.id) },
+            remote = { remote.getGroupWithMembers(group.id) },
             remotePreference = RemotePreference.FORCE
         ).first()
     }
