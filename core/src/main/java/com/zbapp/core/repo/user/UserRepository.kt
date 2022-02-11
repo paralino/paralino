@@ -1,5 +1,6 @@
 package com.zbapp.core.repo.user
 
+import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.config
 import com.zbapp.core.logg
 import com.zbapp.core.models.Payload
@@ -20,7 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
 
-class UserRepository(
+class UserRepository constructor(
+    private val scopeProvider: ICoroutineScopeProvider,
     private val local: IUserLocalDataSource,
     private val remote: UserRemoteSource,
     val mapper: IUserMapperCore
@@ -33,7 +35,7 @@ class UserRepository(
         .map<UserMe, Payload<UserMe>> { Payload.Success(it) }
         .catch { emit(Payload.Error(it)) }
         .stateIn(
-            scope = CoroutineScope(Dispatchers.Main),
+            scope = scopeProvider.defaultScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = Payload.Loading
         )
