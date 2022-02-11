@@ -49,6 +49,30 @@ class CryptoKEKRepository(
         )
     }
 
+    fun refreshAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
+        return getDataOnce(
+            remote = { remote.getAllGroupKeys() },
+            localUpdate = { local.recreateAllGroupKeys(it) },
+            remotePreference = RemotePreference.FORCE
+        )
+    }
+
+    fun refreshGroupKeysForGroup(groupId: String): Flow<List<GroupCryptoKeyDataRaw>> {
+        return getDataOnce(
+            remote = { remote.getGroupKeyForGroup(groupId) },
+            localUpdate = { local.recreateGroupKeyForGroup(groupId, it) },
+            remotePreference = RemotePreference.FORCE
+        )
+    }
+
+    fun refreshMemberKeysForGroup(groupId: String): Flow<List<GroupMemberCryptoKeyDataRaw>> {
+        return getDataOnce(
+            remote = { remote.getAllGroupMemberKeysForGroup(groupId) },
+            localUpdate = { local.recreateMemberKeysForGroup(groupId, it) },
+            remotePreference = RemotePreference.FORCE
+        )
+    }
+
     fun refreshKeysForGroup(groupId: String): Flow<Pair<List<GroupCryptoKeyDataRaw>, List<GroupMemberCryptoKeyDataRaw>>> {
         return getDataOnce(
             remote = {
@@ -73,7 +97,7 @@ class CryptoKEKRepository(
     }
 
     suspend fun hasGroupKey(groupId: String, vararg keyVersions: Long): Boolean {
-        val keys = groupKeys.value .filter { it.groupId == groupId }
+        val keys = groupKeys.value.filter { it.groupId == groupId }
         return keyVersions.all { version ->
             keys.any { it.version == version }
         }
