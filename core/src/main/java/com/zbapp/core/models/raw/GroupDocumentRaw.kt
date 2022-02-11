@@ -17,7 +17,6 @@ data class GroupDocumentRaw constructor(
     @OptIn(ExperimentalStdlibApi::class)
     fun toPostJson(): Map<String, Any> {
         return buildMap {
-            put("ownerUserId", ownerUserId)
             put("ownerPublicKey", ownerPublicKey)
             put("data", data)
         }
@@ -42,99 +41,4 @@ data class GroupDocumentRaw constructor(
 data class GroupWithMemberRaw constructor(
     val group: GroupDocumentRaw,
     val members: List<MemberDocumentRaw>
-)
-
-@Serializable
-data class GroupCryptoKeyDataRaw constructor(
-    @SerialName("\$id")
-    val id: String,
-    val groupId: String,
-    val memberUserId: String,
-    val version: Long,
-
-    /**
-     * group key encrypted with member public key, signed with owner private key
-     */
-    val encryptedGroupKey: String
-) {
-    companion object {
-        fun from(map: Map<String, Any>): GroupCryptoKeyDataRaw {
-            return GroupCryptoKeyDataRaw(
-                id = map["\$id"] as String,
-                groupId = map["groupId"] as String,
-                memberUserId = map["memberUserId"] as String,
-                version = map["version"] as Long,
-                encryptedGroupKey = map["encryptedGroupKey"] as String
-            )
-        }
-    }
-}
-
-@Serializable
-data class CreateGroupPostData constructor(
-    val userPublicKey: String,
-    val encryptedGroupKey: String,
-    val encryptedMemberKey: String,
-    val groupData: String,
-    val memberData: String
-)
-
-@Serializable
-data class CreateGroupMemberFunctionData constructor(
-    val groupId: String,
-    val userId: String,
-    val userPublicKey: String,
-    val encryptedGroupKey: String,
-    val encryptedOwnerKey: String,
-    val oldKeys: List<GroupMemberOldKeysData>,
-    val memberData: String
-)
-
-@Serializable
-data class GroupMemberOldKeysData constructor(
-    val version: Long,
-    val encryptedGroupKey: String,
-)
-
-@Serializable
-data class DeleteGroupMemberFunctionData constructor(
-    val groupId: String,
-    val userId: String
-)
-
-@Serializable
-data class UpdateGroupKeysFunctionData(
-    val groupId: String,
-    val userPublicKey: String,
-    val encryptedGroupKeys: List<GroupKeysPayload>,
-    val groupData: String
-)
-
-@Serializable
-data class GroupKeysPayload(
-    val userId: String,
-    val encryptedGroupKey: String
-)
-
-
-@Serializable
-data class UpdateGroupMemberKeysFunctionData(
-    val groupId: String,
-    val userPublicKey: String,
-    val encryptedSenderKeys: List<GroupMemberKeyPayload>,
-    val memberData: List<GroupMemberDataPayload>
-)
-
-@Serializable
-data class GroupMemberKeyPayload(
-    val userId: String,
-    val encryptedSenderKey: String
-)
-
-@Serializable
-data class GroupMemberDataPayload(
-    val memberId: String,
-    val groupKeyVersion: Long,
-    val memberData: String,
-    val mutableMemberData: String
 )
