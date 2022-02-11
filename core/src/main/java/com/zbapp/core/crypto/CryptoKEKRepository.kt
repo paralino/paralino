@@ -1,6 +1,7 @@
 package com.zbapp.core.crypto
 
 import com.zbapp.core.ICoroutineScopeProvider
+import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
@@ -190,30 +191,32 @@ class CryptoKEKRepository(
         return DecryptedGroupKeyData(keyRaw.version, memberKey)
     }
 
-    fun listenToGroupKey(groupId: String): Flow<GroupCryptoKeyDataRaw?> {
-        return groupKeys.map { it.firstOrNull { it.groupId == groupId } }
+    suspend fun rotateAllGroupKeys(remoteGroup: UserGroup) {
+        val userKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!
+
+        // 1. rotate group key
+        getDataOnce(
+            remote = { remote.rotateGroupKeys(group = remoteGroup, myKey = userKey) }
+        ).first()
+
+        // 2. fetch new key(s) for that group
+        refreshGroupKeysForGroup(groupId = remoteGroup.id).first()
+
+        // 3. rotate member keys
+        // new group key is required first since we are re-encrypting user data with it
+        rotateGroupMemberKey(group = remoteGroup, myKey = userKey).first()
+
+        // 4. refresh member keys
+        refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
     }
 
-    fun listenToMemberKey(groupId: String, memberUserId: String): Flow<GroupMemberCryptoKeyDataRaw?> {
-        return memberKeys.map { it.firstOrNull { it.groupId == groupId && it.memberUserId == memberUserId } }
+    suspend fun rotateAllMemberKeys(remoteGroup: UserGroup) {
+        val userKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!
+        rotateGroupMemberKey(group = remoteGroup, myKey = userKey).first()
+        refreshKeysForGroup(groupId = remoteGroup.id).first()
     }
 
-    suspend fun rotateGroupKey(
-        group: UserGroup,
-        myKey: AsymmetricCryptoKeyData
-    ): Flow<Unit> {
-        return getDataOnce(
-            remote = {
-                remote.rotateGroupKeys(
-                    group = group,
-                    myKey = myKey
-                )
-            },
-            remotePreference = RemotePreference.FORCE
-        ).map { Unit }
-    }
-
-    suspend fun rotateGroupMemberKey(
+    private suspend fun rotateGroupMemberKey(
         group: UserGroup,
         myKey: AsymmetricCryptoKeyData
     ): Flow<Unit> {
@@ -224,8 +227,7 @@ class CryptoKEKRepository(
                     groupKey = getLatestGroupKey(group.id)!!,
                     myKey = myKey
                 )
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         ).map { Unit }
     }
 
