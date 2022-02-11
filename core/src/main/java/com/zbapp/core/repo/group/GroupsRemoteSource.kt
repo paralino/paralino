@@ -157,7 +157,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (data.isSuccess) {
-                getGroup(data.stdout)
+                getGroup(groupId)
             } else {
                 throw BaseRemoteException.fromCode(
                     code = null,
