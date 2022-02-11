@@ -1,44 +1,52 @@
 package com.zbapp.remote.appwrite
 
-import com.zbapp.core.repo.user.IUserApi
-import com.zbapp.core.repo.user.SessionResponse
-import com.zbapp.core.repo.user.UserResponse
-import com.zbapp.remote.appwrite.AppWriteRemoteModule
+import com.zbapp.core.models.raw.UserMeDataRaw
+import com.zbapp.core.models.raw.UserMeRaw
+import com.zbapp.core.models.user.UserSession
+import com.zbapp.core.repo.api.IUserApi
+import io.appwrite.models.Session
+import io.appwrite.models.User
 
 class UserApi constructor(
     private val remoteModule: AppWriteRemoteModule
 ) : IUserApi {
 
-    override suspend fun signUp(userName: String?, email: String, password: String): UserResponse {
-        return remoteModule.execute { account.create(email, password, userName).body!!.string() }
+    override suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
+        return remoteModule.execute {
+            account.create(uniqueIdPlaceholder, email, password, userName).parseUser()
+        }
     }
 
-    override suspend fun login(email: String, password: String): SessionResponse {
-        return remoteModule.execute { account.createSession(email, password).body!!.string() }
+    override suspend fun login(email: String, password: String): UserSession {
+        return remoteModule.execute {
+            account.createSession(email, password).parseSession()
+        }
     }
 
-    override suspend fun createAnonymous(): SessionResponse {
-        return remoteModule.execute { account.createAnonymousSession().body!!.string() }
+    override suspend fun createAnonymous(): UserSession {
+        return remoteModule.execute { account.createAnonymousSession().parseSession() }
     }
 
-    override suspend fun getMe(): UserResponse {
-        return remoteModule.execute { account.get().body!!.string() }
+    override suspend fun getMe(): UserMeRaw {
+        return remoteModule.execute { account.get().parseUser() }
     }
 
-    override suspend fun updateName(name: String): UserResponse {
-        return remoteModule.execute { account.updateName(name).body!!.string() }
+    override suspend fun updateName(name: String): UserMeRaw {
+        return remoteModule.execute { account.updateName(name).parseUser() }
     }
 
-    override suspend fun updateUserData(data: Map<String, String>): UserResponse {
-        return remoteModule.execute { account.updatePrefs(data).body!!.string() }
+    override suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {
+        return remoteModule.execute { account.updatePrefs(data).parseUser() }
     }
 
-    override suspend fun changePassword(newPassword: String, oldPassword: String?): UserResponse {
-        return remoteModule.execute { account.updatePassword(newPassword, oldPassword).body!!.string() }
+    override suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw {
+        return remoteModule.execute {
+            account.updatePassword(newPassword, oldPassword).parseUser()
+        }
     }
 
-    override suspend fun updateEmail(email: String, password: String): UserResponse {
-        return remoteModule.execute { account.updateEmail(email, password).body!!.string() }
+    override suspend fun updateEmail(email: String, password: String): UserMeRaw {
+        return remoteModule.execute { account.updateEmail(email, password).parseUser() }
     }
 
     override suspend fun deleteAccount() {
@@ -47,6 +55,23 @@ class UserApi constructor(
 
     override suspend fun logout() {
         return remoteModule.execute { account.deleteSessions() }
+    }
+
+    private fun User.parseUser(): UserMeRaw {
+        return UserMeRaw(
+            id = this.id,
+            email = this.email,
+            registration = this.registration,
+            emailVerification = this.emailVerification,
+            data = UserMeDataRaw.parseData(this.prefs.data)
+        )
+    }
+
+    private fun Session.parseSession(): UserSession {
+        return UserSession(
+            id = this.id,
+            expire = this.expire,
+        )
     }
 
 }

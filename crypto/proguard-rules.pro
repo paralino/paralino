@@ -1,0 +1,2 @@
+-keep class com.cossacklabs.themis.**
+-keep class com.cossacklabs.themis.** {*;}

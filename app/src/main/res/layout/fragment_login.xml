@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:animateLayoutChanges="true"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/backgroundMain"
     android:paddingHorizontal="@dimen/activity_side_margin">
 
@@ -25,13 +25,12 @@
         android:layout_width="match_parent"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
         android:layout_marginTop="@dimen/activity_side_margin_small"
-        android:nextFocusDown="@id/etEmail"
         android:hint="@string/login_placeholder_username_or_random"
+        android:nextFocusDown="@id/etEmail"
         app:layout_constraintBottom_toTopOf="@id/etEmail"
         app:layout_constraintTop_toBottomOf="@id/ivLogo"
         app:layout_constraintVertical_bias="0.6"
-        app:layout_constraintVertical_chainStyle="packed"
-        >
+        app:layout_constraintVertical_chainStyle="packed">
 
         <com.google.android.material.textfield.TextInputEditText
             style="@style/TextStyle.Light"
@@ -39,10 +38,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"
-            android:textCursorDrawable="@null"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
-             />
+            android:textCursorDrawable="@null" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -51,12 +49,11 @@
         android:layout_width="match_parent"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
         android:layout_marginTop="@dimen/activity_side_margin_small"
+        android:hint="@string/login_placeholder_email"
         android:nextFocusDown="@id/etPassword"
         app:endIconMode="clear_text"
-        android:hint="@string/login_placeholder_email"
         app:layout_constraintBottom_toTopOf="@id/etPassword"
-        app:layout_constraintTop_toBottomOf="@id/etUsername"
-        >
+        app:layout_constraintTop_toBottomOf="@id/etUsername">
 
         <com.google.android.material.textfield.TextInputEditText
             style="@style/TextStyle.Light"
@@ -64,10 +61,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"
-            android:textCursorDrawable="@null"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
-             />
+            android:textCursorDrawable="@null" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -76,8 +72,8 @@
         android:layout_width="match_parent"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
         android:layout_marginTop="@dimen/activity_side_margin_small"
-        android:nextFocusDown="@id/bLogin"
         android:hint="@string/login_placeholder_password"
+        android:nextFocusDown="@id/bLogin"
         app:endIconMode="password_toggle"
         app:layout_constraintBottom_toTopOf="@id/tvForgotPassword"
         app:layout_constraintTop_toBottomOf="@id/etEmail">
@@ -88,10 +84,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"
-            android:textCursorDrawable="@null"
             android:imeOptions="actionDone"
             android:inputType="textPassword"
-             />
+            android:textCursorDrawable="@null" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -100,15 +95,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/activity_side_margin_small"
-        android:layout_marginBottom="@dimen/activity_side_margin"
-        android:text="@string/login_button_forgot_password"
-        android:textColor="@color/theme_high"
-        android:textSize="12sp"
-        android:visibility="gone"
         android:background="?selectableItemBackgroundBorderless"
+        android:text="@string/login_button_forgot_password"
+        android:textColor="@color/accentDark"
+        android:textSize="12sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/bLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etPassword"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvSignUpStepInfo"
+        style="@style/TextStyle.Light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_side_margin"
+        android:layout_marginEnd="@dimen/activity_side_margin_small"
+        android:gravity="center"
+        android:lines="2"
+        android:textColor="@color/theme_high"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/bLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="1"
+        app:layout_constraintTop_toBottomOf="@id/tvForgotPassword"
+        tools:text="@tools:sample/lorem"
         tools:visibility="visible" />
 
     <com.zbapp.locationtrack.ui.shared.ButtonWithProgress
@@ -116,13 +130,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
-        android:layout_marginTop="@dimen/activity_side_margin_large"
+        android:layout_marginTop="40dp"
+        app:layout_goneMarginTop="50dp"
         android:layout_marginBottom="@dimen/activity_side_margin_large"
-        app:text="@string/login_signup_switch_button_login"
         app:buttonTint="@color/accent"
         app:contentTint="@color/white"
         app:layout_constraintBottom_toTopOf="@id/tvSignUpLogin"
-        app:layout_constraintTop_toBottomOf="@id/tvForgotPassword" />
+        app:layout_constraintTop_toBottomOf="@id/tvForgotPassword"
+        app:text="@string/login_signup_switch_button_login" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvSignUpLogin"

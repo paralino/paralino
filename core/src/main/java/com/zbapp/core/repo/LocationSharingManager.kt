@@ -5,7 +5,6 @@ import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.*
-import java.lang.Exception
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 
@@ -58,7 +57,7 @@ class LocationSharingManager(
         if(endTimeUTC == null) {
             // invalid public sharing contract
             // endless sharing for other groups
-            if(this.groupId == UserGroup.publicSharing.id) return null
+            if(this.groupId == UserGroup.publicSharingId) return null
             else return this
         } else {
             val date = LocalDateTime.parse(endTimeUTC).toInstant(TimeZone.UTC)
@@ -69,7 +68,7 @@ class LocationSharingManager(
             } else {
                 // limit public sharing if needed
                 val maxPublic = now.plus(publicSharingMaxDurationMillis, DateTimeUnit.MILLISECOND)
-                if(this.groupId == UserGroup.publicSharing.id && date > maxPublic)
+                if(this.groupId == UserGroup.publicSharingId && date > maxPublic)
                     return this.copy(endTimeUTC = maxPublic.toLocalDateTime(TimeZone.UTC).toString())
 
                 return this

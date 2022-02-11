@@ -118,15 +118,15 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
             }
 
             list
-                .filter { it.data != null }
+                .filter { it.mutableData != null }
                 .forEach { model ->
                     val marker = markerCache.get(model.userId)
                     if (marker != null) {
-                        marker.position = GeoPoint(model.data!!.lat, model.data!!.lng)
+                        marker.position = GeoPoint(model.mutableData!!.lat, model.mutableData!!.lng)
                         if (marker.relatedObject?.toString() != model.imageBase64)
                             marker.icon = getPin(model.imageBase64)
                     } else {
-                        val newMarker = createMarker(model, model.data!!)
+                        val newMarker = createMarker(model, model.mutableData!!)
                         markerCache.put(model.userId, newMarker)
                     }
                 }

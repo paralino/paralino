@@ -15,18 +15,21 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.*
+import androidx.core.view.ViewCompat
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import androidx.core.view.postDelayed
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementProgressButtonBinding
 import com.zbapp.locationtrack.utils.ListItemType
-import com.zbapp.locationtrack.utils.extensions.viewBinding
 
-class ButtonWithProgress: ConstraintLayout {
+class ButtonWithProgress : ConstraintLayout {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         initAttributes(attrs)
     }
+
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
             : super(context, attrs, defStyleAttr) {
         initAttributes(attrs)
@@ -37,7 +40,7 @@ class ButtonWithProgress: ConstraintLayout {
         initAttributes(attrs)
     }
 
-    private val vb = ElementProgressButtonBinding.inflate(LayoutInflater.from(context), this)
+    private val vb = ElementProgressButtonBinding.inflate(LayoutInflater.from(context), this, true)
 
     var itemData: ButtonWithProgressData? = null
         set(value) {
@@ -51,16 +54,23 @@ class ButtonWithProgress: ConstraintLayout {
     }
 
     private fun initAttributes(attrs: AttributeSet?) {
-        if(attrs != null) {
+        if (attrs != null) {
             val attributes = context.obtainStyledAttributes(
                 attrs, R.styleable.ButtonWithProgress, 0, 0
             )
 
             val text = attributes.getString(R.styleable.ButtonWithProgress_text) ?: ""
             val icon = attributes.getDrawable(R.styleable.ButtonWithProgress_icon)
-            val tint = attributes.getColor(R.styleable.ButtonWithProgress_buttonTint, Color.TRANSPARENT)
-            val contentTint = attributes.getColor(R.styleable.ButtonWithProgress_contentTint, Color.BLACK)
-            itemData = ButtonWithProgressData(text = text, iconDrawable = icon, buttonTint = tint, contentTint = contentTint)
+            val tint =
+                attributes.getColor(R.styleable.ButtonWithProgress_buttonTint, Color.TRANSPARENT)
+            val contentTint =
+                attributes.getColor(R.styleable.ButtonWithProgress_contentTint, Color.BLACK)
+            itemData = ButtonWithProgressData(
+                text = text,
+                iconDrawable = icon,
+                buttonTint = tint,
+                contentTint = contentTint
+            )
             attributes.recycle()
         } else {
             itemData = ButtonWithProgressData(text = "")
@@ -76,7 +86,7 @@ class ButtonWithProgress: ConstraintLayout {
         data.applyTint(vb.buttonTitle, vb.buttonIcon, vb.buttonCheck, vb.buttonProgress)
 
         vb.btConfirm.isEnabled = data.enabled
-        vb.buttonIcon.alpha = if(data.enabled) 1f else 0.4f
+        vb.buttonIcon.alpha = if (data.enabled) 1f else 0.4f
 
         setLoading(false)
         setContent(data.text, data.infoText)
@@ -96,6 +106,12 @@ class ButtonWithProgress: ConstraintLayout {
         vb.tvButtonInfo.isVisible = infoText.isNotBlank()
     }
 
+    fun setInfo(infoText: String) {
+        vb.tvButtonInfo.isVisible = infoText.isNotBlank()
+        itemData?.infoText = infoText
+        vb.tvButtonInfo.text = infoText
+    }
+
     fun setText(@StringRes text: Int) {
         itemData?.text = context.getString(text)
         vb.buttonTitle.setText(text)
@@ -110,21 +126,21 @@ class ButtonWithProgress: ConstraintLayout {
     private fun setLoadingState(wasLoadingBefore: Boolean, withCheck: Boolean = false) {
         val data = itemData ?: return
 
-        if(data.loading || withCheck) {
+        if (data.loading || withCheck) {
             vb.btConfirm.isClickable = false
-            vb.buttonIcon.visibility = if(data.hasIcon) View.INVISIBLE else View.GONE
-            vb.buttonTitle.visibility = if(data.hasText) View.INVISIBLE else View.GONE
+            vb.buttonIcon.visibility = if (data.hasIcon) View.INVISIBLE else View.GONE
+            vb.buttonTitle.visibility = if (data.hasText) View.INVISIBLE else View.GONE
             vb.buttonProgress.isVisible = data.loading
             vb.buttonCheck.isVisible = !data.loading && withCheck && wasLoadingBefore
-            if(!data.loading && withCheck) {
-                if(wasLoadingBefore) {
+            if (!data.loading && withCheck) {
+                if (wasLoadingBefore) {
                     vb.buttonCheck.postDelayed(800) { restore() }
                 } else {
                     restore()
                 }
             }
-        } else  {
-            if(wasLoadingBefore) {
+        } else {
+            if (wasLoadingBefore) {
                 vb.buttonHolder.postDelayed(400) { restore() }
             } else {
                 restore()
@@ -143,8 +159,8 @@ class ButtonWithProgress: ConstraintLayout {
 
     fun brieflyShowCheckMark() {
         vb.btConfirm?.isClickable = false
-        vb.buttonIcon?.visibility = if(itemData?.hasIcon == true) View.INVISIBLE else View.GONE
-        vb.buttonTitle?.visibility = if(itemData?.hasText == true) View.INVISIBLE else View.GONE
+        vb.buttonIcon?.visibility = if (itemData?.hasIcon == true) View.INVISIBLE else View.GONE
+        vb.buttonTitle?.visibility = if (itemData?.hasText == true) View.INVISIBLE else View.GONE
         vb.buttonProgress?.isVisible = false
         vb.buttonCheck?.isVisible = true
         vb.buttonCheck?.postDelayed(800) {
@@ -164,13 +180,13 @@ data class ButtonWithProgressData constructor(
     @ColorInt val buttonTint: Int? = null,
     @ColorInt val contentTint: Int? = null,
     var id: String = text
-): ListItemType {
+) : ListItemType {
 
     val hasIcon: Boolean get() = (iconRes?.takeIf { it != 0 } ?: iconDrawable) != null
     val hasText: Boolean get() = text.isNotEmpty()
 
     fun applyTint(button: AppCompatButton) {
-        if(buttonTint == Color.TRANSPARENT){
+        if (buttonTint == Color.TRANSPARENT) {
             button.setBackgroundResource(R.color.transparent)
         } else {
             buttonTint?.let {
@@ -195,7 +211,7 @@ data class ButtonWithProgressData constructor(
     }
 
     fun applyIcon(imageView: ImageView) {
-        if(!hasIcon) return
+        if (!hasIcon) return
         iconRes?.takeIf { it != 0 }?.let {
             imageView.setImageResource(it)
         } ?: imageView.setImageDrawable(iconDrawable)

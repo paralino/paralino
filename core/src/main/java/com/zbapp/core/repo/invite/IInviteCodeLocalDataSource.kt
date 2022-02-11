@@ -1,12 +1,12 @@
 package com.zbapp.core.repo.invite
 
-import com.zbapp.core.models.invite.InviteCode
+import com.zbapp.core.models.invite.PersonalCodeData
 import kotlinx.coroutines.flow.Flow
 
 interface IInviteCodeLocalDataSource {
-    suspend fun replaceInviteCode(data: List<InviteCode>)
-    suspend fun addInviteCode(data: InviteCode)
-    fun getAllInviteCodes(): Flow<List<InviteCode>>
-    fun getInviteCodesForUser(ownerId: String): Flow<List<InviteCode>>
+    suspend fun replaceInviteCode(data: List<PersonalCodeData>)
+    suspend fun addInviteCode(data: PersonalCodeData)
+    fun getAllInviteCodes(): Flow<List<PersonalCodeData>>
+    fun getInviteCodesForUser(ownerId: String): Flow<List<PersonalCodeData>>
     suspend fun deleteInviteCode(id: String)
 }

@@ -2,8 +2,11 @@ package com.zbapp.locationtrack.ui.login
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.google.android.material.snackbar.Snackbar
 import com.zbapp.core.models.Payload
 import com.zbapp.core.repo.user.LoginManager
+import com.zbapp.core.repo.user.SignUpStep
+import com.zbapp.core.repo.user.SignUpStepException
 import com.zbapp.core.utils.ConflictException
 import com.zbapp.core.utils.NotFoundException
 import com.zbapp.core.utils.UnauthorizedException
@@ -12,7 +15,10 @@ import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.ui.shared.AppSnackbarData
 import com.zbapp.locationtrack.ui.shared.SingleLiveEvent
 import com.zbapp.locationtrack.ui.shared.errorStringRes
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 class LoginViewModel(
     app: Application,
@@ -21,7 +27,10 @@ class LoginViewModel(
 
     private val _loginScreenState = MutableLiveData(LoginState.LOGIN)
     val loginScreenState: LiveData<LoginState> = _loginScreenState.distinctUntilChanged()
-    
+
+    private val _loginInfoState = MutableLiveData("")
+    val loginInfoState: LiveData<String> = _loginInfoState.distinctUntilChanged()
+
     private val _loginStateValidation = SingleLiveEvent<List<LoginValidation>>()
     val loginStateValidation = _loginStateValidation
 
@@ -29,9 +38,14 @@ class LoginViewModel(
     val errorState = _errorState
 
 
-    fun loginOrSignUp(userName: String, email: String, password: String, confirmPassword: String = ""): LiveData<Payload<Unit>> {
+    fun loginOrSignUp(
+        userName: String,
+        email: String,
+        password: String,
+        confirmPassword: String = ""
+    ): LiveData<Payload<SignUpStep>> {
 
-        return when (loginScreenState.value) {
+        val loginFlow = when (loginScreenState.value) {
             LoginState.LOGIN -> {
                 val validation = LoginValidations.login(email, password)
                 updateValidationState(validation)
@@ -53,24 +67,29 @@ class LoginViewModel(
                 if (validation.isEmpty())
                     flow {
                         // not implemented yet
-                        emit(Unit)
+                        emit(SignUpStep.ALL_DONE)
                     }
                 else flow { throw ValidationException(validation.first()) }
             }
-            null -> flow { emit(Unit) }
+            null -> flow { emit(SignUpStep.ALL_DONE) }
         }
-            .map<Unit, Payload<Unit>> { Payload.Success(Unit) }
+
+        return loginFlow
+            .map<SignUpStep, Payload<SignUpStep>> {
+                _loginInfoState.value = getSignUpStepInfo(it)
+                Payload.Success(it)
+            }
             .onStart { emit(Payload.Loading) }
             .catch {
-                val error = when(it) {
-                    is ValidationException -> it.validation.description
-                    is NotFoundException -> R.string.error_user_not_found
-                    is ConflictException -> R.string.form_invalid_username_conflict_description
-                    is UnauthorizedException -> R.string.form_invalid_credentials_description
-                    else -> it.errorStringRes() ?: R.string.error_generic_snacbar
+                val error = when (it) {
+                    is ValidationException -> myApp.getString(it.validation.description)
+                    is SignUpStepException -> getSignUpStepError(it)
+                    else -> it.errorStringRes()?.let { myApp.getString(it) }
                 }
 
-                _errorState.value = AppSnackbarData(myApp.getString(error), null)
+                _loginInfoState.value = ""
+                _errorState.value =
+                    AppSnackbarData(error ?: myApp.getString(R.string.error_generic_snacbar), null, Snackbar.LENGTH_LONG)
 
                 emit(Payload.Error(it))
             }
@@ -80,6 +99,7 @@ class LoginViewModel(
     private fun updateValidationState(validation: List<LoginValidation>?) {
         _loginStateValidation.value = validation ?: emptyList()
     }
+
     fun isUserVerified(): Boolean {
         return loginManager.isVerified()
     }
@@ -101,6 +121,69 @@ class LoginViewModel(
             LoginState.FORGOT_PASSWORD -> _loginScreenState.postValue(LoginState.LOGIN)
             else -> {}
         }
+    }
+
+    private fun getSignUpStepInfo(step: SignUpStep): String {
+        val infoRes = when (step) {
+            SignUpStep.SIGNING_UP -> {
+                when (loginScreenState.value) {
+                    LoginState.LOGIN -> R.string.login_step_logIn
+                    LoginState.SIGNUP -> R.string.login_step_signUp
+                    else -> null
+                }
+            }
+            SignUpStep.GENERATING_KEYS -> R.string.login_step_encryption
+            SignUpStep.INIT_USER_DATA -> R.string.login_step_user_setup
+            SignUpStep.SAVE_USER -> R.string.login_step_user_setup
+            SignUpStep.ALL_DONE -> R.string.login_step_allDone
+        }
+        return infoRes?.let { myApp.getString(it) } ?: ""
+    }
+
+    private fun getSignUpStepError(error: SignUpStepException): String? {
+        val defaultRes: Int? = when (error.cause) {
+            is ConflictException -> R.string.form_invalid_username_conflict_description
+            is UnauthorizedException -> R.string.form_invalid_credentials_description
+            else -> error.cause?.errorStringRes()
+        }
+
+        if (defaultRes != null)
+            return myApp.getString(defaultRes)
+
+        val errorRes: Int? = when (error.step) {
+            SignUpStep.SIGNING_UP -> {
+                when (loginScreenState.value) {
+                    LoginState.LOGIN -> R.string.login_step_error_logIn
+                    LoginState.SIGNUP -> R.string.login_step_error_signUp
+                    else -> null
+                }
+            }
+            SignUpStep.GENERATING_KEYS -> {
+                when (loginScreenState.value) {
+                    LoginState.LOGIN -> R.string.login_step_error_encryption_logIn
+                    LoginState.SIGNUP -> R.string.login_step_error_encryption_signUp
+                    else -> null
+                }
+            }
+            // TODO ofer user an option to generate keys again
+            SignUpStep.INIT_USER_DATA -> {
+                when (loginScreenState.value) {
+                    LoginState.LOGIN -> R.string.login_step_error_user_setup_logIn
+                    LoginState.SIGNUP -> R.string.login_step_error_user_setup_signUp
+                    else -> null
+                }
+            }
+            SignUpStep.SAVE_USER -> {
+                when (loginScreenState.value) {
+                    LoginState.LOGIN -> R.string.login_step_error_user_save_logIn
+                    LoginState.SIGNUP -> R.string.login_step_error_user_save_signUp
+                    else -> null
+                }
+            }
+            SignUpStep.ALL_DONE -> null
+        }
+
+        return errorRes?.let { myApp.getString(it) }
     }
 
 

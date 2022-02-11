@@ -1,24 +1,22 @@
 package com.zbapp.locationtrack.data.mappers
 
-import com.zbapp.core.models.invite.InviteCode
-import com.zbapp.core.repo.base.IUserCrypto
-import com.zbapp.core.repo.base.decryptModel
-import com.zbapp.core.repo.base.encryptModel
+import com.zbapp.core.crypto.CryptoCore
+import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.locationtrack.data.models.invite.InviteCodeEntity
 
 class InviteCodeMapper(
-    private val crypto: IUserCrypto
-) : IDataMapperLocal<InviteCodeEntity, InviteCode> {
+    private val cryptoCore: CryptoCore
+) : IDataMapperLocal<InviteCodeEntity, PersonalCodeData> {
 
-    override suspend fun local2Remote(model: InviteCodeEntity): InviteCode {
-        return crypto.decryptModel<InviteCode>(model.data)!!
+    override suspend fun local2Remote(model: InviteCodeEntity): PersonalCodeData {
+        return cryptoCore.decryptModel(model.data, cryptoCore.loadUserPersonalKey().content)
     }
 
-    override suspend fun remote2Local(model: InviteCode): InviteCodeEntity {
+    override suspend fun remote2Local(model: PersonalCodeData): InviteCodeEntity {
         return InviteCodeEntity(
             id = model.id,
             ownerId = model.ownerId,
-            data = crypto.encryptModel(model) ?: ""
+            data = cryptoCore.encryptModel(model, cryptoCore.loadUserPersonalKey().content)
         )
     }
 

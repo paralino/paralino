@@ -13,7 +13,7 @@ class GroupDetailViewModel constructor(
     private val groupRepo: GroupRepository
 ): ViewModel() {
 
-    val groupDetails = groupRepo.getGroup(groupId)
+    val groupDetails = groupRepo.getGroupWithMembers(groupId)
             .map {
                 GroupDetailsUiModel(
                     id = groupId,

@@ -40,7 +40,7 @@ class CreateGroupViewModel(
         viewModelScope.launch {
             groupFlow.value = when {
                 groupId.isNullOrBlank() -> null
-                else -> groupRepo.getGroupWithoutMembers(groupId)
+                else -> groupRepo.getGroupWithoutMembersLocally(groupId)
                     .map { Payload.Success(it) }
                     .firstOrNull()
             } ?: Payload.Error(NullPointerException("No such group"))
@@ -52,10 +52,8 @@ class CreateGroupViewModel(
         val group = groupFlow.value.data
 
         return if (group != null) {
-            val newGroup = group.copy(
-                emoji = icon,
-                name = name
-            )
+            val newData = group.data.copy(name = name, emoji = icon)
+            val newGroup = group.copy(data = newData)
             groupRepo.updateGroup(newGroup)
         } else {
             groupRepo.createGroup(name, icon)

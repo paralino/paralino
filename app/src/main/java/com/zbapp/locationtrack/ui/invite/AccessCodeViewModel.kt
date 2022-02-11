@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.invite.InviteCode
+import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.mapSuccess
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.repo.group.GroupRepository
@@ -42,7 +42,7 @@ class AcceptInviteViewModel(
         args?.code?.let { loadInvite(code = it) }
         args?.groupId?.let {
             viewModelScope.launch {
-                currentGroup.value = groupRepo.getGroupLocally(it).firstOrNull()
+                currentGroup.value = groupRepo.getGroupWithMembersLocally(it).firstOrNull()
             }
         }
     }
@@ -53,9 +53,9 @@ class AcceptInviteViewModel(
         if (currentState is AcceptInviteEvent.InviteLoaded) {
             val groupId = currentGroup.value?.id
             if (groupId.isNullOrBlank()) {
-                inviteCodeData.value = Payload.Success(loadedInviteEvent(currentState.invite))
+                inviteCodeData.value = Payload.Success(loadedInviteEvent(currentState.personalCodeData))
             } else {
-                addMemberToGroup(groupId, currentState.invite)
+                addMemberToGroup(groupId, currentState.personalCodeData)
             }
         } else if (!code.isNullOrBlank()) {
             loadInvite(code)
@@ -64,12 +64,13 @@ class AcceptInviteViewModel(
 
     private fun loadInvite(code: String) {
         inviteRepo.getInviteByCode(code)
+                // TODO add better error handling
             .onEach { inviteCodeData.value = it.mapSuccess { loadedInviteEvent(it) } }
             .launchIn(viewModelScope)
     }
 
-    private fun addMemberToGroup(groupId: String, invite: InviteCode) {
-        groupRepo.addMemberByAccessCode(groupId, invite)
+    private fun addMemberToGroup(groupId: String, personalCodeData: PersonalCodeReadData) {
+        groupRepo.addMemberByAccessCode(groupId, personalCodeData)
             .mapToPayload { it }
             .onEach {
                 inviteCodeData.value = it.mapSuccess<GroupDocumentRaw, AcceptInviteEvent> {
@@ -79,16 +80,16 @@ class AcceptInviteViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun loadedInviteEvent(invite: InviteCode): AcceptInviteEvent.InviteLoaded {
+    private fun loadedInviteEvent(personalCodeData: PersonalCodeReadData): AcceptInviteEvent.InviteLoaded {
         return AcceptInviteEvent.InviteLoaded(
-            invite,
+            personalCodeData,
             InviteUiData(
-                code = invite.inviteCode,
-                name = invite.ownerName,
-                imageEmoji = invite.ownerImageBase64.takeIf { it.isNotBlank() } ?: Emojis.robot,
+                code = personalCodeData.code,
+                name = personalCodeData.ownerName,
+                imageEmoji = personalCodeData.ownerImageBase64?.takeIf { it.isNotBlank() } ?: Emojis.robot,
                 description = myApp.getString(
                     R.string.invite_connect_disclaimer_user,
-                    invite.ownerName,
+                    personalCodeData.ownerName,
                     currentGroup.value?.name ?: ""
                 ),
                 actionButtonText = myApp.getString(R.string.invite_connect_button_addToGroup),
@@ -106,7 +107,7 @@ class AcceptInviteViewModel(
         inviteCodeData.update {
             it.mapSuccess {
                 it.safeCast<AcceptInviteEvent.InviteLoaded>()?.let {
-                    loadedInviteEvent(it.invite)
+                    loadedInviteEvent(it.personalCodeData)
                 } ?: it
             }
         }
@@ -137,7 +138,7 @@ sealed interface AcceptInviteEvent {
     abstract val data: InviteUiData
 
     data class InviteEmpty(override val data: InviteUiData) : AcceptInviteEvent
-    data class InviteLoaded(val invite: InviteCode, override val data: InviteUiData) :
+    data class InviteLoaded(val personalCodeData: PersonalCodeReadData, override val data: InviteUiData) :
         AcceptInviteEvent
 
     data class InviteAccepted(override val data: InviteUiData) : AcceptInviteEvent

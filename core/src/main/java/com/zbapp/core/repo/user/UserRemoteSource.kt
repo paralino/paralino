@@ -2,47 +2,56 @@ package com.zbapp.core.repo.user
 
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserSession
+import com.zbapp.core.repo.api.IUserApi
 
 class UserRemoteSource constructor(
     private val api: IUserApi
 ) {
 
     suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
-        return executeUserOperation { api.signUp(userName, email, password) }
+        return api.signUp(userName, email, password)
     }
 
-    suspend fun signUpAncCreateSession(userName: String?, email: String, password: String): Pair<UserMeRaw, UserSession> {
+    suspend fun signUpAndCreateSession(
+        userName: String?,
+        email: String,
+        password: String
+    ): Pair<UserMeRaw, UserSession> {
         return signUp(userName, email, password).let {
             it to login(email, password)
         }
     }
 
     suspend fun login(email: String, password: String): UserSession {
-        return executeSessionOperation { api.login(email, password) }
+        return api.login(email, password)
     }
 
     suspend fun singUpAnonymously(): UserSession {
-        return executeSessionOperation { api.createAnonymous() }
+        return api.createAnonymous()
     }
 
     suspend fun getMe(): UserMeRaw {
-        return executeUserOperation { api.getMe() }
+        return api.getMe()
     }
 
     suspend fun updateName(name: String): UserMeRaw {
-        return executeUserOperation { api.updateName(name) }
+        return api.updateName(name)
     }
 
     suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw {
-        return executeUserOperation { api.changePassword(newPassword, oldPassword) }
+        return api.changePassword(newPassword, oldPassword)
     }
 
     suspend fun updateUserImage(imageBase64: String): UserMeRaw {
-        return executeUserOperation { api.updateUserData(mapOf("userImage" to imageBase64)) }
+        return api.updateUserData(mapOf("imageBase64" to imageBase64))
+    }
+
+    suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {
+        return api.updateUserData(data)
     }
 
     suspend fun updateEmail(email: String, password: String): UserMeRaw {
-        return executeUserOperation { api.updateEmail(email, password) }
+        return api.updateEmail(email, password)
     }
 
     suspend fun deleteAccount() {
@@ -51,14 +60,6 @@ class UserRemoteSource constructor(
 
     suspend fun logout() {
         api.logout()
-    }
-
-    private suspend fun executeUserOperation(action: suspend () -> String): UserMeRaw {
-        return IUserApi.getUserFromJson(action())
-    }
-
-    private suspend fun executeSessionOperation(action: suspend () -> String): UserSession {
-        return IUserApi.getSessionDataJson(action())
     }
 
 }

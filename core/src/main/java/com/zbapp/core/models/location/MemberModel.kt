@@ -1,19 +1,22 @@
 package com.zbapp.core.models.location
 
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 data class MemberModel constructor(
     val id: String,
     val groupId: String,
     val userId: String,
-
-    val name: String,
-    val imageBase64: String? = null,
-
-    val data: LocationDataModel? = null
+    val publicKey: String,
+    val groupKeyVersion: Long,
+    val memberKeyVersion: Long,
+    val shouldRotateKeys: Boolean,
+    val data: MemberModelData,
+    val mutableData: LocationDataModel? = null
 ) {
+
+    val name: String get() = data.name
+    val imageBase64: String? get() = data.imageBase64
 
     companion object {
         fun fromSystem(
@@ -23,12 +26,15 @@ data class MemberModel constructor(
             model: LocationDataModel
         ): MemberModel {
             return MemberModel(
-                id = UUID.randomUUID().toString(),
+                id = "",
                 groupId = "",
                 userId = userId,
-                name = name,
-                imageBase64 = imageBase64,
-                data = model
+                publicKey = "",
+                groupKeyVersion = 0,
+                memberKeyVersion = 0,
+                shouldRotateKeys = false,
+                data = MemberModelData(name, imageBase64),
+                mutableData = model
             )
         }
     }
@@ -36,7 +42,13 @@ data class MemberModel constructor(
 }
 
 @Serializable
-data class LocationDataModel(
+data class MemberModelData constructor(
+    val name: String,
+    val imageBase64: String? = null
+)
+
+@Serializable
+data class LocationDataModel constructor(
     val lat: Double,
     val lng: Double,
     val accuracy: Float = 0f,

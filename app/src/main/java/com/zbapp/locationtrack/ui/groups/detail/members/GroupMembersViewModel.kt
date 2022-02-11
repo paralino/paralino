@@ -24,7 +24,7 @@ class GroupMembersViewModel constructor(
     private val groupRepo: GroupRepository
 ) : AndroidViewModel(app) {
 
-    val groupMembers: LiveData<List<ListItemType>> = groupRepo.getGroupLocally(groupId)
+    val groupMembers: LiveData<List<ListItemType>> = groupRepo.getGroupWithMembersLocally(groupId)
         .map { group ->
             group.members
                 .sortedBy { it.name }
@@ -32,7 +32,7 @@ class GroupMembersViewModel constructor(
                 .map {
                     GroupMemberItemData(
                         member = it,
-                        canDelete = BuildConfig.internalTesting || (group.ownerId == config.userId && it.userId != config.userId)
+                        canDelete = BuildConfig.internalTesting || (group.ownerUserId == config.userId && it.userId != config.userId)
                     )
                 }
                 .ifEmpty {

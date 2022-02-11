@@ -40,6 +40,7 @@
             android:drawableStart="@drawable/ic_time"
             android:drawablePadding="8dp"
             android:gravity="center"
+            android:layout_marginTop="@dimen/activity_side_margin_large"
             android:paddingHorizontal="@dimen/activity_side_margin_small"
             android:paddingVertical="@dimen/activity_side_margin_small"
             android:textSize="14sp"

@@ -8,14 +8,17 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.BatteryManager
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import com.zbapp.locationtrack.BuildConfig
 
 
-val Context.batterLevel: Int get() {
-    val bm = getSystemService(BATTERY_SERVICE) as BatteryManager
-    return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-}
+val Context.batterLevel: Int
+    get() {
+        val bm = getSystemService(BATTERY_SERVICE) as BatteryManager
+        return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+    }
 
 fun Context.isDarkThemeOn(): Boolean {
     return resources.configuration.uiMode and
@@ -37,4 +40,9 @@ fun Context.share(data: String) {
 fun Context.copy(data: String, copyKey: String = BuildConfig.APPLICATION_ID + "_copyKey") {
     ContextCompat.getSystemService(this, ClipboardManager::class.java)
         ?.setPrimaryClip(ClipData.newPlainText(copyKey, data))
+}
+
+fun Context.hideKeyboardFrom(view: View) {
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
 }
