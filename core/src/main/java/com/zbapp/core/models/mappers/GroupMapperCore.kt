@@ -11,7 +11,7 @@ import com.zbapp.core.utils.NotFoundException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
-class GroupDataMapperCore constructor(
+class GroupMapperCore constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore,
     private val memberMapperCore: MemberMapperCore

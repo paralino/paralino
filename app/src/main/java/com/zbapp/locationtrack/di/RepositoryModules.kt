@@ -3,10 +3,7 @@ package com.zbapp.locationtrack.di
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.crypto.*
 import com.zbapp.core.models.BackendConfig
-import com.zbapp.core.models.mappers.GroupDataMapperCore
-import com.zbapp.core.models.mappers.IUserDataMapperCore
-import com.zbapp.core.models.mappers.IUserMapperCore
-import com.zbapp.core.models.mappers.MemberMapperCore
+import com.zbapp.core.models.mappers.*
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.repo.api.IUserApi
@@ -67,15 +64,15 @@ val cryptoModule = module {
 
 val mappersModule = module {
     single { UserDataMapper(get()) }
-    single { UserMapper(get(), get()) }
+    single { UserMapperLocal(get(), get()) }
     single { SharingContractsMapper }
     single { GroupsMapperLocal(get()) }
-    single { GroupDataMapperCore(get(), get(), get()) }
+    single { GroupMapperCore(get(), get(), get()) }
     single { MemberMapperCore(get(), get()) }
     single { MemberMapperLocal(get()) }
     single { InviteCodeMapper(get()) }
     single { GroupKeysMapper() }
-    single { GroupMemberKeysMapper() }
+    single { MemberKeysMapper() }
 }
 
 val remoteDataSourceModule = module {
@@ -101,9 +98,6 @@ val remoteDataSourceModule = module {
 
 val coreDependencyModules = module {
     single<ICoroutineScopeProvider> { androidApplication() as AppClass }
-
-    single<IUserMapperCore> { get<UserMapper>() }
-    single<IUserDataMapperCore> { get<UserDataMapper>() }
 
     single<IUserApi> { UserApi(get()) }
     single<IDocumentsApi> { DocumentsApi(get()) }

@@ -9,7 +9,7 @@ import com.zbapp.core.models.group.UserGroupData
 import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
-import com.zbapp.core.models.mappers.GroupDataMapperCore
+import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.api.IDocumentsApi
@@ -21,7 +21,7 @@ class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
-    private val mapper: GroupDataMapperCore,
+    private val mapper: GroupMapperCore,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository
 ) {

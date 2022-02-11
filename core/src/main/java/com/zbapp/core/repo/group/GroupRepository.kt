@@ -6,7 +6,7 @@ import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
-import com.zbapp.core.models.mappers.GroupDataMapperCore
+import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
 import com.zbapp.core.repo.base.BaseRepository
@@ -22,7 +22,7 @@ class GroupRepository constructor(
     private val remote: GroupsRemoteSource,
     private val userRepository: UserRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val groupMapperCore: GroupDataMapperCore
+    private val groupMapperCore: GroupMapperCore
 ) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {

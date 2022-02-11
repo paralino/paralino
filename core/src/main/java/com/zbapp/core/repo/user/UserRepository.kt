@@ -5,8 +5,6 @@ import com.zbapp.core.config
 import com.zbapp.core.logg
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
-import com.zbapp.core.models.mappers.IUserMapperCore
-import com.zbapp.core.models.mappers.decrypt
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
@@ -16,22 +14,18 @@ import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.utils.NotFoundException
 import com.zbapp.core.utils.UnauthorizedException
 import com.zbapp.core.utils.UnverifiedUserException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
 
 class UserRepository constructor(
     private val scopeProvider: ICoroutineScopeProvider,
     private val local: IUserLocalDataSource,
-    private val remote: UserRemoteSource,
-    val mapper: IUserMapperCore
+    private val remote: UserRemoteSource
 ) : BaseRepository() {
 
     val cachedUserId: String get() = config.userId
 
     val localUser: StateFlow<Payload<UserMe>> = local.getMe()
-        .decrypt(mapper)
         .map<UserMe, Payload<UserMe>> { Payload.Success(it) }
         .catch { emit(Payload.Error(it)) }
         .stateIn(

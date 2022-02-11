@@ -1,9 +1,10 @@
 package com.zbapp.locationtrack.data.mappers
 
+import com.zbapp.core.models.mappers.IDataMapperLocal
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.locationtrack.data.models.group.GroupMemberKeyEntity
 
-class GroupMemberKeysMapper: IDataMapperLocal<GroupMemberKeyEntity, GroupMemberCryptoKeyDataRaw> {
+class MemberKeysMapper: IDataMapperLocal<GroupMemberKeyEntity, GroupMemberCryptoKeyDataRaw> {
     override suspend fun local2Remote(model: GroupMemberKeyEntity): GroupMemberCryptoKeyDataRaw {
         return GroupMemberCryptoKeyDataRaw(
             id = model.id,

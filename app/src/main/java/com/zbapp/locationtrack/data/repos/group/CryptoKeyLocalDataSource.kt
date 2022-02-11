@@ -5,7 +5,7 @@ import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.utils.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.GroupKeysMapper
-import com.zbapp.locationtrack.data.mappers.GroupMemberKeysMapper
+import com.zbapp.locationtrack.data.mappers.MemberKeysMapper
 import com.zbapp.locationtrack.data.repos.location.MemberDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,7 +16,7 @@ class CryptoKeyLocalDataSource constructor(
     private val membersDao: MemberDao,
     private val memberKeysDao: GroupMemberKeysDao,
     private val keysMapper: GroupKeysMapper,
-    private val keysMemberMapper: GroupMemberKeysMapper
+    private val keysMemberMapper: MemberKeysMapper
 ): ICryptoKeyLocalDataSource {
 
     override suspend fun recreateAllGroupKeys(keys: List<GroupCryptoKeyDataRaw>) {

@@ -3,7 +3,7 @@ package com.zbapp.core.repo.user
 import com.zbapp.core.config
 import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.logg
-import com.zbapp.core.models.mappers.IUserDataMapperCore
+import com.zbapp.core.models.mappers.UserDataMapper
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.SymmetricCryptoKeyData
@@ -19,7 +19,7 @@ class LoginManager(
     val userRepo: UserRepository,
     val groupRepo: GroupRepository,
     val cryptoCore: CryptoCore,
-    val userDataMapper: IUserDataMapperCore
+    val userDataMapper: UserDataMapper
 ) {
 
     fun isLoggedIn(): Boolean {

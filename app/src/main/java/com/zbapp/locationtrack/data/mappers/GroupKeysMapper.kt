@@ -1,5 +1,6 @@
 package com.zbapp.locationtrack.data.mappers
 
+import com.zbapp.core.models.mappers.IDataMapperLocal
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.locationtrack.data.models.group.GroupKeyEntity
 

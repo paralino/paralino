@@ -1,6 +1,7 @@
 package com.zbapp.locationtrack.data.mappers
 
 import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.mappers.IDataMapperLocal
 import com.zbapp.core.models.mappers.MemberMapperCore
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.locationtrack.data.models.location.MemberEntity
