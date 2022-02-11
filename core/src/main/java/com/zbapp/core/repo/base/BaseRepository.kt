@@ -92,7 +92,7 @@ abstract class BaseRepository() {
     protected fun <T> getDataOnce(local: Flow<T>? = null,
                                   remote: (suspend () -> T)? = null,
                                   localUpdate: (suspend (T) -> Unit)? = null,
-                                  remotePreference: RemotePreference = RemotePreference.PREFER,
+                                  remotePreference: RemotePreference = RemotePreference.FORCE,
                                   delay: Long? = null): Flow<T> {
 
         return flow<T>{
