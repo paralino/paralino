@@ -55,7 +55,7 @@ class CryptoKeyRemoteDataSource(
 
     suspend fun rotateMemberKeysForGroup(
         group: UserGroup,
-        groupKey: ByteArray,
+        groupKey: DecryptedGroupKeyData,
         myKey: AsymmetricCryptoKeyData
     ) {
         blocking {
@@ -65,10 +65,10 @@ class CryptoKeyRemoteDataSource(
             val memberData = group.members.filter { it.userId == config.userId }.map {
                 GroupMemberDataPayload(
                     memberId = it.id,
-                    groupKeyVersion = group.keyVersion,
+                    groupKeyVersion = groupKey.version,
                     memberData = cryptoCore.encryptDataWithKey(
                         BaseRemoteModule.formatter.encodeToString(it.data),
-                        groupKey
+                        groupKey.data.content
                     ),
                     mutableMemberData = it.mutableData?.let {
                         cryptoCore.encryptDataWithKey(

@@ -217,12 +217,11 @@ class CryptoKEKRepository(
         group: UserGroup,
         myKey: AsymmetricCryptoKeyData
     ): Flow<Unit> {
-        val groupKey = getLatestGroupKey(groupId = group.id)!!.data.content
         return getDataOnce(
             remote = {
                 remote.rotateMemberKeysForGroup(
                     group = group,
-                    groupKey = groupKey,
+                    groupKey = getLatestGroupKey(group.id)!!,
                     myKey = myKey
                 )
             },
