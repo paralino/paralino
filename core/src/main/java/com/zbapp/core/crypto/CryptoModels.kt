@@ -11,6 +11,10 @@ data class DerivedPasswords(
     val backupPassword: String
 )
 
+data class DecryptedGroupKeyData(
+    val version: Long,
+    val data: Data
+)
 
 class Data(val content: ByteArray) {
     fun asString(hashProvider: ICryptoHashProvider): String {
