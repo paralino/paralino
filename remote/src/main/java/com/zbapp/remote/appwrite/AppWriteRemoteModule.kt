@@ -3,7 +3,7 @@ package com.zbapp.remote.appwrite
 import android.app.Application
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.utils.exceptions.BaseRemoteException
-import com.zbapp.core.utils.exceptions.ConnectionException
+import com.zbapp.core.utils.exceptions.RemoteConnectionException
 import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
@@ -60,7 +60,7 @@ class AppWriteRemoteModule(
                 )
             } ?: let {
                 if (exception is UnknownHostException) {
-                    ConnectionException(exception.message, code = null, exception)
+                    RemoteConnectionException(exception.message, code = null, exception)
                 } else exception
             }
         }

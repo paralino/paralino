@@ -16,7 +16,8 @@
     <string name="button_save">Save</string>
 
     <string name="alert_title_confirm">Please confirm</string>
-    <string name="error_server_unavailable">Unable to connect!</string>
+    <string name="error_no_connection_snackbar">Unable to connect\n**Check your internet connection.**</string>
+    <string name="error_server_unavailable">Unable to connect at the moment. Please try again shortly.</string>
     <string name="error_something_wrong">Something went wrong!</string>
     <string name="error_generic_snacbar">Ups, please try again.</string>
     <string name="error_user_not_found">User does not exist</string>
