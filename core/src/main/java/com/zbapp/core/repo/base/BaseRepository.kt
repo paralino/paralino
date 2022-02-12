@@ -1,15 +1,16 @@
 package com.zbapp.core.repo.base
 
+import com.zbapp.core.connectionStatus
 import com.zbapp.core.logg
+import com.zbapp.core.utils.IConnectionStatusProvider
+import com.zbapp.core.utils.exceptions.InternalConnectionException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 
 
 abstract class BaseRepository() {
 
-    open fun isOnline(): Boolean? = true
-    private val isOnline: Boolean get() = isOnline() == true
-
+    private val connection get() = connectionStatus
     private val cachedInfo = hashMapOf<String, Long>()
 
     /**
@@ -30,7 +31,6 @@ abstract class BaseRepository() {
         return local.onStart {
 
             val localValue = local.firstOrNull()
-            val remoteValid = remote != null && isOnline
 
             val cacheState = if(remotePreference is RemotePreference.CACHE) {
                 val started = cachedInfo[remotePreference.key] ?: 0
@@ -39,16 +39,15 @@ abstract class BaseRepository() {
 
             val startRemote = remotePreference is RemotePreference.FORCE || remotePreference is RemotePreference.PREFER || localValue == null || cacheState
 
-
             // emit local data first before remote
             if (localValue != null) {
                 emit(localValue)
             }
 
-            if (remoteValid && startRemote) {
+            if (startRemote && remote != null && connection.initAndGetStatus().isOnline) {
                 // remote is available
                 try {
-                    remote!!.invoke().let {
+                    remote.invoke().let {
                         if(remotePreference is RemotePreference.CACHE) {
                             cachedInfo[remotePreference.key] = System.currentTimeMillis()
                         }
@@ -63,7 +62,7 @@ abstract class BaseRepository() {
                 // remote is not available
                 if (localValue != null) {
                     if(remotePreference is RemotePreference.FORCE || ((remotePreference as? RemotePreference.CACHE)?.failOnError == true && cacheState))
-                        throw RemoteNotAvailableException("online: $isOnline, valid: $remoteValid, start: $startRemote")
+                        throw InternalConnectionException(connection.status, "status: ${connection.status}, valid: ${remote != null}, start: $startRemote")
                 } else {
                     error("Local and remote data unavailable")
                 }
@@ -107,8 +106,6 @@ abstract class BaseRepository() {
                 emit(localValue)
             }
 
-            val remoteValid = remote != null && isOnline
-
             val cacheState = if(remotePreference is RemotePreference.CACHE) {
                 val started = cachedInfo[remotePreference.key] ?: 0
                 System.currentTimeMillis() - started > remotePreference.timeMillis
@@ -116,10 +113,10 @@ abstract class BaseRepository() {
 
             val startRemote = remotePreference is RemotePreference.FORCE || remotePreference is RemotePreference.PREFER || localValue == null || cacheState
 
-            if (remoteValid && startRemote) {
+            if (startRemote && remote != null && connection.initAndGetStatus().isOnline) {
                 // remote is available
                 try {
-                    remote!!.invoke().let {
+                    remote.invoke().let {
 
                         if(remotePreference is RemotePreference.CACHE) {
                             cachedInfo[remotePreference.key] = System.currentTimeMillis()
@@ -136,7 +133,7 @@ abstract class BaseRepository() {
                 // remote is not available
                 if (localValue != null) {
                     if(remotePreference is RemotePreference.FORCE || ((remotePreference as? RemotePreference.CACHE)?.failOnError == true && cacheState))
-                        throw RemoteNotAvailableException("online: $isOnline, valid: $remoteValid, start: $startRemote")
+                        throw InternalConnectionException(connection.status, "status: ${connection.status}, valid: ${remote != null}, start: $startRemote")
                 } else {
                     error("Local and remote data unavailable")
                 }
@@ -157,9 +154,6 @@ abstract class BaseRepository() {
     }
 
 }
-
-class RemoteNotAvailableException(val status: String) : Exception("Remote is not available, status: $status")
-class NetworkNotAvailableException() : Exception()
 
 sealed class RemotePreference {
 
