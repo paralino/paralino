@@ -1,5 +1,6 @@
 package com.zbapp.core.utils
 
+import com.zbapp.core.utils.exceptions.TimeoutException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json

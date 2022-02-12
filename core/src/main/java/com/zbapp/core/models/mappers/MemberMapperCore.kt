@@ -7,7 +7,7 @@ import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.NotFoundException
+import com.zbapp.core.utils.exceptions.NotFoundException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 

@@ -15,6 +15,10 @@ import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.*
+import com.zbapp.core.utils.exceptions.BaseRemoteException
+import com.zbapp.core.utils.exceptions.NotFoundException
+import com.zbapp.core.utils.exceptions.PermissionDeniedException
+import com.zbapp.core.utils.extensions.blocking
 import kotlinx.serialization.encodeToString
 
 class GroupsRemoteSource constructor(
@@ -72,6 +76,7 @@ class GroupsRemoteSource constructor(
             if (data.isSuccess) {
                 getGroupWithMembers(data.stdout)
             } else {
+                // TODO throw better exception
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to create group",
@@ -159,6 +164,7 @@ class GroupsRemoteSource constructor(
             if (data.isSuccess) {
                 getGroupWithMembers(groupId)
             } else {
+                // TODO throw better exception
                 throw BaseRemoteException.fromCode(
                     code = null,
                     message = "Unable to create group",
@@ -185,6 +191,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (!data.isSuccess) {
+                // TODO throw better exception
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to delete group member",
@@ -232,6 +239,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (!data.isSuccess) {
+                // TODO throw better exception
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to delete group",

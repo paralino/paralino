@@ -3,8 +3,8 @@ package com.zbapp.locationtrack.data.repos.location
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.repo.location.ILocationLocalDataSource
-import com.zbapp.core.utils.NotFoundException
-import com.zbapp.core.utils.distinctFlowOfList
+import com.zbapp.core.utils.exceptions.NotFoundException
+import com.zbapp.core.utils.extensions.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.MemberMapperLocal
 import com.zbapp.locationtrack.data.repos.group.UserGroupDao
 import kotlinx.coroutines.flow.Flow

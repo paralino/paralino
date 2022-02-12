@@ -7,9 +7,9 @@ import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
-import com.zbapp.core.utils.BaseRemoteException
+import com.zbapp.core.utils.exceptions.BaseRemoteException
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.blocking
+import com.zbapp.core.utils.extensions.blocking
 import kotlinx.serialization.encodeToString
 
 class CryptoKeyRemoteDataSource(

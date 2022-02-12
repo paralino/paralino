@@ -7,7 +7,7 @@ import com.zbapp.core.models.user.SymmetricCryptoKeyData
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.models.user.UserMeData
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.blocking
+import com.zbapp.core.utils.extensions.blocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 

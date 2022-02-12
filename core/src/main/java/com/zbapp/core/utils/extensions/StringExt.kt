@@ -1,4 +1,4 @@
-package com.zbapp.core.utils
+package com.zbapp.core.utils.extensions
 
 fun randomString(length: Int = 32): String {
     val source = ('A'..'Z') + ('a'..'z') + ('0'..'9')

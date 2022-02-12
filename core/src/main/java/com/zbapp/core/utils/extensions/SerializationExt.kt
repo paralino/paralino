@@ -1,4 +1,4 @@
-package com.zbapp.core.utils
+package com.zbapp.core.utils.extensions
 
 import kotlinx.serialization.json.*
 

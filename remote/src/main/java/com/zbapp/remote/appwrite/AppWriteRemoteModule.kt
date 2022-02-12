@@ -2,8 +2,8 @@ package com.zbapp.remote.appwrite
 
 import android.app.Application
 import com.zbapp.core.models.BackendConfig
-import com.zbapp.core.utils.BaseRemoteException
-import com.zbapp.core.utils.ConnectionException
+import com.zbapp.core.utils.exceptions.BaseRemoteException
+import com.zbapp.core.utils.exceptions.ConnectionException
 import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account

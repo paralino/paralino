@@ -11,9 +11,9 @@ import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
-import com.zbapp.core.utils.NotFoundException
-import com.zbapp.core.utils.UnauthorizedException
-import com.zbapp.core.utils.UnverifiedUserException
+import com.zbapp.core.utils.exceptions.NotFoundException
+import com.zbapp.core.utils.exceptions.UnauthorizedException
+import com.zbapp.core.utils.exceptions.UnverifiedUserException
 import kotlinx.coroutines.flow.*
 
 

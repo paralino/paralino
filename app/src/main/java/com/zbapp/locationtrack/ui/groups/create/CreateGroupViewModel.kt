@@ -9,7 +9,7 @@ import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.mapSuccess
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.utils.mapToPayload
+import com.zbapp.core.utils.extensions.mapToPayload
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailsUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull

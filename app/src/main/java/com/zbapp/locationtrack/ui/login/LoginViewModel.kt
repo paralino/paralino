@@ -7,9 +7,8 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.repo.user.SignUpStep
 import com.zbapp.core.repo.user.SignUpStepException
-import com.zbapp.core.utils.ConflictException
-import com.zbapp.core.utils.NotFoundException
-import com.zbapp.core.utils.UnauthorizedException
+import com.zbapp.core.utils.exceptions.ConflictException
+import com.zbapp.core.utils.exceptions.UnauthorizedException
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.ui.shared.AppSnackbarData

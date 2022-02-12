@@ -1,7 +1,9 @@
 package com.zbapp.locationtrack.ui.shared
 
 import androidx.annotation.StringRes
-import com.zbapp.core.utils.*
+import com.zbapp.core.utils.exceptions.ConnectionException
+import com.zbapp.core.utils.exceptions.GenericServerException
+import com.zbapp.core.utils.exceptions.UnverifiedUserException
 import com.zbapp.locationtrack.R
 
 @StringRes

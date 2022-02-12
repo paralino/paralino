@@ -3,7 +3,7 @@ package com.zbapp.locationtrack.data.repos.group
 import com.zbapp.core.crypto.ICryptoKeyLocalDataSource
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
-import com.zbapp.core.utils.distinctFlowOfList
+import com.zbapp.core.utils.extensions.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.GroupKeysMapper
 import com.zbapp.locationtrack.data.mappers.MemberKeysMapper
 import com.zbapp.locationtrack.data.repos.location.MemberDao
