@@ -50,9 +50,10 @@ class AppClass : Application(), ICoroutineScopeProvider {
     private fun init() {
         instance = this
         context = applicationContext
-        connectionStatus = connectionStatusProvider
 
         KoinSetup.initKoin(this)
+
+        connectionStatus = connectionStatusProvider
         config = Config(context)
         initLogger()
 
