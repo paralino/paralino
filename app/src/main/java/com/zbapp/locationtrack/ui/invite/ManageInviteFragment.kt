@@ -76,7 +76,7 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
                     vb.rvInvites.simpleAdapter?.submitList(it.data)
                 }
                 is Payload.Error -> {
-                    snackBarError(vb.rvInvites, requireContext())
+                    snackBarError(vb.rvInvites, it.exception)
                 }
             }
         }
@@ -89,7 +89,7 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
                 Payload.Loading -> { }
                 is Payload.Success -> { /* do nothing */ }
                 is Payload.Error -> {
-                    snackBarError(vb.rvInvites, requireContext())
+                    snackBarError(vb.rvInvites, it.exception)
                 }
             }
         }
@@ -102,7 +102,7 @@ class ManageInviteFragment : BaseFragment(R.layout.fragment_invite_manage) {
                     // TODO add loading
                 }
                 is Payload.Error -> {
-                    snackBarError(vb.rvInvites, requireContext())
+                    snackBarError(vb.rvInvites, it.exception)
                 }
                 is Payload.Success -> {
                     // nothing?

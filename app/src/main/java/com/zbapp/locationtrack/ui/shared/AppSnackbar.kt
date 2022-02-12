@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.ContentViewCallback
 import com.google.android.material.snackbar.Snackbar
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ItemSnackbarBinding
+import com.zbapp.locationtrack.utils.extensions.attributedBold
 import com.zbapp.locationtrack.utils.extensions.fadeIn
 import com.zbapp.locationtrack.utils.extensions.fadeOut
 import com.zbapp.locationtrack.utils.extensions.viewBinding
@@ -106,16 +107,37 @@ class AppSnackbar (
 
 }
 
-fun snackBarSimple(anchorView: View?, content: String,  actionText: String? = null, actionClick : (() -> Unit)? = null) {
-    AppSnackbar.make(anchorView, AppSnackbarData(content, actionText), actionClick)?.show()
+fun snackBarSimple(
+    anchorView: View?,
+    content: String,
+    actionText: String? = null,
+    actionClick: (() -> Unit)? = null
+): AppSnackbar? {
+    val context = anchorView?.context ?: return null
+    return snackBarSimple(anchorView, content.attributedBold(context), actionText, actionClick)
 }
 
-fun snackBarSimple(anchorView: View?, content: SpannableString,  actionText: String? = null, actionClick : (() -> Unit)? = null) {
-    AppSnackbar.make(anchorView, AppSnackbarData(content, actionText), actionClick)?.show()
+fun snackBarSimple(
+    anchorView: View?,
+    content: SpannableString,
+    actionText: String? = null,
+    actionClick: (() -> Unit)? = null
+): AppSnackbar? {
+    return AppSnackbar.make(
+        anchorView,
+        AppSnackbarData(content, actionText),
+        actionClick
+    )?.also { it.show() }
 }
 
-fun snackBarError(anchorView: View?, context: Context) {
-    AppSnackbar.make(anchorView, AppSnackbarData(context.getString(R.string.error_generic_snacbar), null))?.show()
+fun snackBarError(
+    anchorView: View?,
+    error: Throwable? = null,
+    actionText: String? = null,
+    actionClick: (() -> Unit)? = null
+): AppSnackbar? {
+    val context = anchorView?.context ?: return null
+    return snackBarSimple(anchorView, context.errorString(error), actionText, actionClick)
 }
 
 internal fun View?.findSnackbarParent(): ViewGroup? {

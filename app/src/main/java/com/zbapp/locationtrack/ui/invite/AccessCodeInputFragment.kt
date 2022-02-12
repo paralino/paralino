@@ -111,7 +111,7 @@ class AccessCodeInputFragment : BottomSheetDialogFragment() {
 
                 }
                 is Payload.Error -> {
-                    snackBarError(vb.btConfirm, requireContext())
+                    snackBarError(vb.btConfirm, it.exception)
                 }
             }
         }

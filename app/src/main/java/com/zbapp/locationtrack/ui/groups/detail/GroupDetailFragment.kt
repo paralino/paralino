@@ -39,7 +39,7 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                         getString(R.string.group_details_section_members_title, it.data.memberCount)
                 }
                 is Payload.Error -> {
-                    snackBarError(vb.toolbar, requireContext())
+                    snackBarError(vb.toolbar, it.exception)
                 }
             }
         }
@@ -105,7 +105,7 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                     findNavController().popBackStack()
                 }
                 is Payload.Error -> {
-                    snackBarError(vb.toolbar, requireContext())
+                    snackBarError(vb.toolbar, it.exception)
                 }
             }
         }
