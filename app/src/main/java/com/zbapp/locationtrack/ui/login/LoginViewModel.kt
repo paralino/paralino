@@ -1,6 +1,7 @@
 package com.zbapp.locationtrack.ui.login
 
 import android.app.Application
+import android.text.SpannableString
 import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.zbapp.core.models.Payload
@@ -13,7 +14,8 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.ui.shared.AppSnackbarData
 import com.zbapp.locationtrack.ui.shared.SingleLiveEvent
-import com.zbapp.locationtrack.ui.shared.errorStringRes
+import com.zbapp.locationtrack.ui.shared.errorString
+import com.zbapp.locationtrack.utils.extensions.attributedBold
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -81,14 +83,14 @@ class LoginViewModel(
             .onStart { emit(Payload.Loading) }
             .catch {
                 val error = when (it) {
-                    is ValidationException -> myApp.getString(it.validation.description)
+                    is ValidationException -> myApp.attributedBold(it.validation.description)
                     is SignUpStepException -> getSignUpStepError(it)
-                    else -> it.errorStringRes()?.let { myApp.getString(it) }
+                    else -> myApp.errorString(it)
                 }
 
                 _loginInfoState.value = ""
                 _errorState.value =
-                    AppSnackbarData(error ?: myApp.getString(R.string.error_generic_snacbar), null, Snackbar.LENGTH_LONG)
+                    AppSnackbarData(error ?: myApp.attributedBold(R.string.error_generic_snacbar), null, Snackbar.LENGTH_LONG)
 
                 emit(Payload.Error(it))
             }
@@ -139,15 +141,15 @@ class LoginViewModel(
         return infoRes?.let { myApp.getString(it) } ?: ""
     }
 
-    private fun getSignUpStepError(error: SignUpStepException): String? {
-        val defaultRes: Int? = when (error.cause) {
-            is ConflictException -> R.string.form_invalid_username_conflict_description
-            is UnauthorizedException -> R.string.form_invalid_credentials_description
-            else -> error.cause?.errorStringRes()
+    private fun getSignUpStepError(error: SignUpStepException): SpannableString? {
+        val defaultRes: SpannableString? = when (error.cause) {
+            is ConflictException -> myApp.attributedBold(R.string.form_invalid_username_conflict_description)
+            is UnauthorizedException -> myApp.attributedBold(R.string.form_invalid_credentials_description)
+            else -> error.cause?.let { myApp.errorString(it) }
         }
 
         if (defaultRes != null)
-            return myApp.getString(defaultRes)
+            return defaultRes
 
         val errorRes: Int? = when (error.step) {
             SignUpStep.SIGNING_UP -> {
@@ -182,7 +184,7 @@ class LoginViewModel(
             SignUpStep.ALL_DONE -> null
         }
 
-        return errorRes?.let { myApp.getString(it) }
+        return errorRes?.let { myApp.attributedBold(it) }
     }
 
 
