@@ -9,7 +9,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.location.LocationDataModel
-import com.zbapp.locationtrack.data.config.randomString
+import com.zbapp.core.utils.extensions.randomString
 import com.zbapp.locationtrack.utils.extensions.batterLevel
 import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
 import com.zbapp.locationtrack.utils.extensions.toLocalString
