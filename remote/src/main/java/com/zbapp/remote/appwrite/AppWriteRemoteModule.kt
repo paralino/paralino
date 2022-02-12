@@ -27,7 +27,7 @@ class AppWriteRemoteModule(
 
     private val client: Client by lazy {
         Client(app, selfSigned = false)
-            .setEndpoint(config.serverUrl)
+            .setEndpoint(config.endpoint)
             .setProject(config.projectId)
             .setSelfSigned(status = false, okHttpClient(config.debug))
     }
