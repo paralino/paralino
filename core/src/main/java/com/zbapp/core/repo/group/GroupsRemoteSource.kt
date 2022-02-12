@@ -50,7 +50,7 @@ class GroupsRemoteSource constructor(
 
             val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
 
-            val payload = CreateGroupPostData(
+            val payload = CreateGroupPayload(
                 userPublicKey = myKey.publicKey,
                 encryptedGroupKey = encryptedGroupKey,
                 encryptedMemberKey = encryptedSenderKey,
@@ -124,7 +124,7 @@ class GroupsRemoteSource constructor(
             )
 
             val encryptedOldKeys = oldKeys.map {
-                GroupMemberOldKeysData(
+                GroupMemberOldKeyPayload(
                     version = it.version,
                     encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                         data = it.data.content,
@@ -136,7 +136,7 @@ class GroupsRemoteSource constructor(
                 )
             }
 
-            val payload = CreateGroupMemberFunctionData(
+            val payload = CreateGroupMemberPayload(
                 groupId = groupId,
                 userId = codeData.ownerId,
                 userPublicKey = codeData.ownerKey,
@@ -174,7 +174,7 @@ class GroupsRemoteSource constructor(
             if (member.userId == group.ownerUserId)
                 throw PermissionDeniedException("Owner can not be removed from the group")
 
-            val payload = DeleteGroupMemberFunctionData(
+            val payload = DeleteGroupMemberPayload(
                 groupId = group.id,
                 userId = member.userId
             )

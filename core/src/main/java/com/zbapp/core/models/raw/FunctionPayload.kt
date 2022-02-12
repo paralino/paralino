@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class CreateGroupPostData constructor(
+data class CreateGroupPayload constructor(
     val userPublicKey: String,
     val encryptedGroupKey: String,
     val encryptedMemberKey: String,
@@ -13,30 +13,30 @@ data class CreateGroupPostData constructor(
 )
 
 @Serializable
-data class CreateGroupMemberFunctionData constructor(
+data class CreateGroupMemberPayload constructor(
     val groupId: String,
     val userId: String,
     val userPublicKey: String,
     val encryptedGroupKey: String,
     val encryptedOwnerKey: String,
-    val oldKeys: List<GroupMemberOldKeysData>,
+    val oldKeys: List<GroupMemberOldKeyPayload>,
     val memberData: String
 )
 
 @Serializable
-data class GroupMemberOldKeysData constructor(
+data class GroupMemberOldKeyPayload constructor(
     val version: Long,
     val encryptedGroupKey: String,
 )
 
 @Serializable
-data class DeleteGroupMemberFunctionData constructor(
+data class DeleteGroupMemberPayload constructor(
     val groupId: String,
     val userId: String
 )
 
 @Serializable
-data class UpdateGroupKeysFunctionData(
+data class UpdateGroupKeysPayload(
     val groupId: String,
     val userPublicKey: String,
     val encryptedGroupKeys: List<GroupKeysPayload>,
@@ -51,7 +51,7 @@ data class GroupKeysPayload(
 
 
 @Serializable
-data class UpdateGroupMemberKeysFunctionData(
+data class UpdateGroupMemberKeysPayload(
     val groupId: String,
     val userPublicKey: String,
     val encryptedSenderKeys: List<GroupMemberKeyPayload>,

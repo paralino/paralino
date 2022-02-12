@@ -91,7 +91,7 @@ class CryptoKeyRemoteDataSource(
 
             }
 
-            val payload = UpdateGroupMemberKeysFunctionData(
+            val payload = UpdateGroupMemberKeysPayload(
                 groupId = group.id,
                 userPublicKey = myKey.publicKey,
                 encryptedSenderKeys = keys,
@@ -139,7 +139,7 @@ class CryptoKeyRemoteDataSource(
                 )
             }
 
-            val payload = UpdateGroupKeysFunctionData(
+            val payload = UpdateGroupKeysPayload(
                 groupId = group.id,
                 userPublicKey = myKey.publicKey,
                 encryptedGroupKeys = keys,
