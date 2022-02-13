@@ -7,6 +7,7 @@ import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.coroutines.flow.*
 
 
@@ -187,9 +188,7 @@ class CryptoKEKRepository(
         val userKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!
 
         // 1. rotate group key
-        getDataOnce(
-            remote = { remote.rotateGroupKeys(group = remoteGroup, myKey = userKey) }
-        ).first()
+        getDataOnce { remote.rotateGroupKeys(group = remoteGroup, myKey = userKey) }.first()
 
         // 2. fetch new key(s) for that group
         refreshGroupKeysForGroup(groupId = remoteGroup.id).first()
@@ -212,15 +211,13 @@ class CryptoKEKRepository(
         group: UserGroup,
         myKey: AsymmetricCryptoKeyData
     ): Flow<Unit> {
-        return getDataOnce(
-            remote = {
+        return getDataOnce {
                 remote.rotateMemberKeysForGroup(
                     group = group,
                     groupKey = getLatestGroupKey(group.id)!!,
                     myKey = myKey
                 )
-            }
-        ).map { Unit }
+            }.map { Unit }
     }
 
     suspend fun deleteGroupKeyForGroup(groupId: String) {

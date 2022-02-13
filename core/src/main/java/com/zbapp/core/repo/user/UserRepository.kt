@@ -10,7 +10,6 @@ import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.base.BaseRepository
-import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.utils.exceptions.NotFoundException
 import com.zbapp.core.utils.exceptions.UnauthorizedException
 import com.zbapp.core.utils.exceptions.UnverifiedUserException
@@ -39,8 +38,7 @@ class UserRepository constructor(
     fun login(email: String, password: String): Flow<UserSession> {
         return getDataOnce(
             remote = { remote.login(email, password) },
-            localUpdate = { config.token = it.id },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { config.token = it.id }
         )
     }
 
@@ -49,10 +47,7 @@ class UserRepository constructor(
         email: String,
         password: String
     ): Flow<Pair<UserMeRaw, UserSession>> {
-        return getDataOnce(
-            remote = { remote.signUpAndCreateSession(userName, email, password) },
-            remotePreference = RemotePreference.FORCE
-        )
+        return getDataOnce { remote.signUpAndCreateSession(userName, email, password) }
     }
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
@@ -72,8 +67,7 @@ class UserRepository constructor(
                 updateLocalUser(it.first)
                 config.token = it.second.id
                 config.emailConfirmed = true
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         ).map { Unit }
     }
 
@@ -82,10 +76,7 @@ class UserRepository constructor(
             return flow { throw Exception("Token is not available") }
         }
 
-        return getDataOnce(
-            remote = remote::getMe,
-            remotePreference = RemotePreference.FORCE
-        )
+        return getDataOnce { remote.getMe() }
             .catch {
                 if (it is NotFoundException) {
                     logg.v("User does not exist")
@@ -114,33 +105,27 @@ class UserRepository constructor(
     }
 
     fun uploadAndInitKeysAndData(data: UserMeDataRaw): Flow<UserMeRaw> {
-        return getDataOnce(
-            remote = { remote.updateUserData(data.toPostJson()) },
-            remotePreference = RemotePreference.FORCE
-        )
+        return getDataOnce { remote.updateUserData(data.toPostJson()) }
     }
 
     fun updateUserData(data: Map<String, Any>): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateUserData(data) },
-            localUpdate = { updateLocalUser(it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { updateLocalUser(it) }
         ).map { true }
     }
 
     fun editUsername(newName: String): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateName(newName) },
-            localUpdate = { updateLocalUser(it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { updateLocalUser(it) }
         ).map { true }
     }
 
     fun editUserImage(imageBase64: String): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateUserImage(imageBase64) },
-            localUpdate = { updateLocalUser(it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { updateLocalUser(it) }
         ).map { true }
     }
 
@@ -155,8 +140,7 @@ class UserRepository constructor(
             localUpdate = {
                 clear()
                 config.clear()
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         ).catch {
             // TODO maybe always log user out? Even if offline or some other error happens, log out locally
             // it will leave active session in the backend
@@ -174,8 +158,7 @@ class UserRepository constructor(
             localUpdate = {
                 clear()
                 config.clear()
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         ).catch {
             if (it is UnauthorizedException) {
                 clear()

@@ -26,7 +26,7 @@ class GroupRepository constructor(
 ) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
-        return subscribeToData(
+        return mergeDataWithRemote(
             local = local.getAllGroups(),
             remote = {
                 remote.getAllGroups()
@@ -51,15 +51,14 @@ class GroupRepository constructor(
     }
 
     fun getGroupWithMembers(id: String): Flow<UserGroup> {
-        return subscribeToData(
+        return mergeDataWithRemote(
             local = local.getGroupWithMembers(id),
             remote = {
                 remote.getGroupWithMembers(id)
                     .also { cryptoKEKRepo.refreshKeysForGroup(id).first() }
                     .let { handleGroupKeysUpdate(it) }
             },
-            localUpdate = { local.updateOrCreateGroup(it) },
-            remotePreference = RemotePreference.PREFER
+            localUpdate = { local.updateOrCreateGroup(it) }
         )
     }
 
@@ -74,16 +73,14 @@ class GroupRepository constructor(
                     myKey = userData.latestAsymmetricKey!!
                 ).also { cryptoKEKRepo.refreshKeysForGroup(it.group.id).first() }
             },
-            localUpdate = { local.updateOrCreateGroup(it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { local.updateOrCreateGroup(it) }
         ).map { Unit }
     }
 
     fun updateGroup(userGroup: UserGroup): Flow<Unit> {
         return getDataOnce(
             remote = { remote.updateGroup(userGroup) },
-            localUpdate = { local.updateGroupOnly(it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { local.updateGroupOnly(it) }
         ).map { Unit }
     }
 
@@ -93,8 +90,7 @@ class GroupRepository constructor(
             localUpdate = {
                 local.deleteGroup(id)
                 cryptoKEKRepo.deleteAllKeysForGroup(id)
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         )
     }
 
@@ -110,8 +106,7 @@ class GroupRepository constructor(
             localUpdate = {
                 local.updateOrCreateGroup(it)
                     .also { cryptoKEKRepo.refreshKeysForGroup(groupId).first() }
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         ).map { it.group }
     }
 
