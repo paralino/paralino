@@ -3,6 +3,7 @@ package com.zbapp.locationtrack.utils
 import android.app.Application
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.utils.ConnectionStatus
 import com.zbapp.core.utils.IConnectionStatusProvider
@@ -38,7 +39,8 @@ class ConnectionStatusProvider constructor(
                 try {
                     checkData.lastCheckTime = System.currentTimeMillis()
                     checkData.checkCount = 0
-                    !InetAddress.getByName(url).equals("")
+                    val uri = Uri.parse(url)
+                    !InetAddress.getByName(uri.host).equals("")
                 } catch (e: Exception) {
                     false
                 }
