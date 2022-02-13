@@ -17,15 +17,10 @@ fun Context.errorString(error: Throwable?): SpannableString {
             else getString(R.string.error_something_wrong)
         }
         is MissingCryptoKeyException -> {
-            if (error is MissingGroupKeyException) {
-                getString(R.string.error_crypto_key_missing, error.groupName)
-            } else if (error is MissingMemberKeyException) {
-                getString(
-                    R.string.error_crypto_key_missing,
-                    "${error.groupName} - ${error.memberName}"
-                )
-            } else {
-                getString(R.string.error_crypto_key_missing, "")
+            when (error) {
+                is MissingGroupKeyException -> getString(R.string.error_crypto_key_missing, "group")
+                is MissingMemberKeyException -> getString(R.string.error_crypto_key_missing, "member")
+                else -> getString(R.string.error_crypto_key_missing, "-")
             }
         }
         is EncryptionException -> getString(R.string.error_crypto_encryption_generic)

@@ -23,7 +23,7 @@
     <string name="error_generic_snacbar">Ups, please try again.</string>
     <string name="error_user_not_found">User does not exist</string>
 
-    <string name="error_crypto_key_missing">Encryption data is incomplete (**%s**), please try refreshing.</string>
+    <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
     <string name="error_crypto_key_missing_user">Your cryptographic keys are missing.</string>
     <string name="error_crypto_encryption_generic">Unable to encrypt data, please try again.</string>
     <string name="error_crypto_decryption_generic">Unable to decrypt data, please try again.</string>
