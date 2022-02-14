@@ -6,7 +6,7 @@ import com.zbapp.core.utils.exceptions.InternalConnectionException
 import kotlinx.coroutines.flow.*
 
 
-abstract class BaseRepository() {
+abstract class BaseRepository {
 
     private val connection get() = connectionStatus
     private val cachedInfo = hashMapOf<String, Long>()
@@ -74,22 +74,25 @@ abstract class BaseRepository() {
         remotePreference: RemotePreference,
         remote: (suspend () -> U)
     ): U? {
+
+        val isOnline = connection.initAndGetStatus().isOnline
+
         return when(remotePreference) {
             RemotePreference.FORCE -> {
-                if(!connection.status.isOnline)
+                if(!isOnline)
                     throwOfflineError()
                 remote.invoke()
             }
             RemotePreference.PREFER -> {
                 when {
-                    connection.status.isOnline -> remote.invoke()
+                    isOnline -> remote.invoke()
                     localValue == null -> throwOfflineError()
                     else -> null
                 }
             }
             RemotePreference.IGNORE -> {
                 if(localValue == null) {
-                    if(!connection.status.isOnline)
+                    if(!isOnline)
                         throwOfflineError()
                     remote.invoke()
                 } else null
@@ -97,13 +100,25 @@ abstract class BaseRepository() {
             is RemotePreference.CACHE -> {
                 val started = cachedInfo[remotePreference.key] ?: 0
                 val cacheIsDirty = System.currentTimeMillis() - started > remotePreference.timeMillis
-                if(cacheIsDirty || localValue == null) {
-                    if(remotePreference.failOnError && !connection.status.isOnline)
-                        throwOfflineError()
-                    else remote.invoke().also {
-                        cachedInfo[remotePreference.key] = System.currentTimeMillis()
+
+                val remoteData = when {
+                    localValue == null -> {
+                        if (!isOnline) throwOfflineError()
+                        remote.invoke()
                     }
-                } else null
+                    cacheIsDirty -> {
+                        when {
+                            remotePreference.failOnError && !isOnline -> throwOfflineError()
+                            isOnline -> remote.invoke()
+                            else -> null
+                        }
+                    }
+                    else -> null
+                }
+
+                remoteData?.also {
+                    cachedInfo[remotePreference.key] = System.currentTimeMillis()
+                }
             }
         }
     }
