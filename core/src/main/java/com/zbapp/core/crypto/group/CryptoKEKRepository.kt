@@ -1,22 +1,21 @@
-package com.zbapp.core.crypto
+package com.zbapp.core.crypto.group
 
 import com.zbapp.core.ICoroutineScopeProvider
+import com.zbapp.core.crypto.CryptoCore
+import com.zbapp.core.crypto.user.CryptoUserKeyRepository
+import com.zbapp.core.crypto.DecryptedGroupKeyData
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.base.BaseRepository
-import com.zbapp.core.repo.base.RemotePreference
-import com.zbapp.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.*
-import javax.swing.GroupLayout
-
 
 class CryptoKEKRepository(
     private val scopeProvider: ICoroutineScopeProvider,
     private val remote: CryptoKeyRemoteDataSource,
     private val local: ICryptoKeyLocalDataSource,
-    private val userRepo: UserRepository,
+    private val userKeyRepository: CryptoUserKeyRepository,
     private val cryptoCore: CryptoCore
 ) : BaseRepository() {
 
@@ -44,32 +43,28 @@ class CryptoKEKRepository(
             localUpdate = {
                 local.recreateAllGroupKeys(it.first)
                 local.recreateAllMemberKeys(it.second)
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         )
     }
 
     fun refreshAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
         return getDataOnce(
             remote = { remote.getAllGroupKeys() },
-            localUpdate = { local.recreateAllGroupKeys(it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { local.recreateAllGroupKeys(it) }
         )
     }
 
     fun refreshGroupKeysForGroup(groupId: String): Flow<List<GroupCryptoKeyDataRaw>> {
         return getDataOnce(
             remote = { remote.getGroupKeyForGroup(groupId) },
-            localUpdate = { local.recreateGroupKeyForGroup(groupId, it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { local.recreateGroupKeyForGroup(groupId, it) }
         )
     }
 
     fun refreshMemberKeysForGroup(groupId: String): Flow<List<GroupMemberCryptoKeyDataRaw>> {
         return getDataOnce(
             remote = { remote.getAllGroupMemberKeysForGroup(groupId) },
-            localUpdate = { local.recreateMemberKeysForGroup(groupId, it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { local.recreateMemberKeysForGroup(groupId, it) }
         )
     }
 
@@ -83,8 +78,7 @@ class CryptoKEKRepository(
             localUpdate = {
                 local.recreateGroupKeyForGroup(groupId, it.first)
                 local.recreateMemberKeysForGroup(groupId, it.second)
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         )
     }
 
@@ -148,7 +142,7 @@ class CryptoKEKRepository(
 
         val groupKey = cryptoCore.decryptKeyWithKeyPair(
             key = keyRaw.encryptedGroupKey,
-            myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
+            myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
             publicKey = ownerPublicKey
         )
 
@@ -162,13 +156,12 @@ class CryptoKEKRepository(
         return keys.map {
             val groupKey = cryptoCore.decryptKeyWithKeyPair(
                 key = it.encryptedGroupKey,
-                myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
+                myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
                 publicKey = ownerPublicKey
             )
 
             DecryptedGroupKeyData(it.version, groupKey)
         }
-
     }
 
     suspend fun getMemberKey(groupId: String, memberUserId: String): DecryptedGroupKeyData? {
@@ -184,49 +177,46 @@ class CryptoKEKRepository(
 
         val memberKey = cryptoCore.decryptKeyWithKeyPair(
             key = keyRaw.encryptedSenderKey,
-            myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
+            myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
             publicKey = memberPublicKey
         )
         return DecryptedGroupKeyData(keyRaw.version, memberKey)
     }
 
-    fun listenToGroupKey(groupId: String): Flow<GroupCryptoKeyDataRaw?> {
-        return groupKeys.map { it.firstOrNull { it.groupId == groupId } }
+    suspend fun rotateAllGroupKeys(remoteGroup: UserGroup) {
+        val userKey = userKeyRepository.latestKeyPair()
+
+        // 1. rotate group key
+        getDataOnce { remote.rotateGroupKeys(group = remoteGroup, myKey = userKey) }.first()
+
+        // 2. fetch new key(s) for that group
+        refreshGroupKeysForGroup(groupId = remoteGroup.id).first()
+
+        // 3. rotate member keys
+        // new group key is required first since we are re-encrypting user data with it
+        executeMemberKeyRotation(group = remoteGroup, myKey = userKey).first()
+
+        // 4. refresh member keys
+        refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
     }
 
-    fun listenToMemberKey(groupId: String, memberUserId: String): Flow<GroupMemberCryptoKeyDataRaw?> {
-        return memberKeys.map { it.firstOrNull { it.groupId == groupId && it.memberUserId == memberUserId } }
+    suspend fun rotateAllMemberKeys(remoteGroup: UserGroup) {
+        val userKey = userKeyRepository.latestKeyPair()
+        executeMemberKeyRotation(group = remoteGroup, myKey = userKey).first()
+        refreshKeysForGroup(groupId = remoteGroup.id).first()
     }
 
-    suspend fun rotateGroupKey(
+    private suspend fun executeMemberKeyRotation(
         group: UserGroup,
         myKey: AsymmetricCryptoKeyData
     ): Flow<Unit> {
-        return getDataOnce(
-            remote = {
-                remote.rotateGroupKeys(
-                    group = group,
-                    myKey = myKey
-                )
-            },
-            remotePreference = RemotePreference.FORCE
-        ).map { Unit }
-    }
-
-    suspend fun rotateGroupMemberKey(
-        group: UserGroup,
-        myKey: AsymmetricCryptoKeyData
-    ): Flow<Unit> {
-        return getDataOnce(
-            remote = {
+        return getDataOnce {
                 remote.rotateMemberKeysForGroup(
                     group = group,
                     groupKey = getLatestGroupKey(group.id)!!,
                     myKey = myKey
                 )
-            },
-            remotePreference = RemotePreference.FORCE
-        ).map { Unit }
+            }.map { Unit }
     }
 
     suspend fun deleteGroupKeyForGroup(groupId: String) {
@@ -245,8 +235,3 @@ class CryptoKEKRepository(
         local.deleteAllKeys()
     }
 }
-
-data class DecryptedGroupKeyData(
-    val version: Long,
-    val data: Data
-)

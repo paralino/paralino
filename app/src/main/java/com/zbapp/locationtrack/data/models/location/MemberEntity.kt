@@ -11,7 +11,7 @@ data class MemberEntity constructor(
     @PrimaryKey
     val id: String,
     val userId: String,
-    val groupId: String?,
+    val groupId: String,
     val ownerPublicKey: String,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,

@@ -107,7 +107,7 @@ class CreateGroupFragment : BottomSheetDialogFragment() {
                         dismissAllowingStateLoss()
                     }
                 } else if (it is Payload.Error) {
-                    snackBarError(vb.root, requireContext())
+                    snackBarError(vb.root, it.exception)
                 }
             }
         }

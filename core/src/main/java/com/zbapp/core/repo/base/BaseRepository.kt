@@ -1,74 +1,37 @@
 package com.zbapp.core.repo.base
 
+import com.zbapp.core.connectionStatus
 import com.zbapp.core.logg
-import kotlinx.coroutines.delay
+import com.zbapp.core.utils.exceptions.InternalConnectionException
 import kotlinx.coroutines.flow.*
 
 
-abstract class BaseRepository() {
+abstract class BaseRepository {
 
-    open fun isOnline(): Boolean? = true
-    private val isOnline: Boolean get() = isOnline() == true
-
+    private val connection get() = connectionStatus
     private val cachedInfo = hashMapOf<String, Long>()
 
     /**
-     * Will subscribe to local data flow, and also refresh the data from remote if available
+     * Will subscribe to local data flow, and also refresh the data from remote
      *
      * @param local - local data flow
-     * @param remote - remote data flow, optional
-     * @param localUpdate - function invoked when data is updated from remote, optional
+     * @param remote - remote data flow
+     * @param localUpdate - function invoked when data is updated from remote
      * @param remotePreference - flag indicating how execution will use remote data
-     * @param delay - optional milliseconds delay for remote data, can be used to simulate slow response
      */
-    protected fun <T, U> subscribeToData(local: Flow<T>,
-                                      remote: (suspend () -> U)? = null,
-                                      localUpdate: (suspend (U) -> Unit)? = null,
-                                      remotePreference: RemotePreference = RemotePreference.PREFER,
-                                      delay: Long? = null): Flow<T> {
-
+    protected fun <T, U> mergeDataWithRemote(
+        local: Flow<T>,
+        localUpdate: (suspend (U) -> Unit),
+        remotePreference: RemotePreference = RemotePreference.PREFER,
+        remote: (suspend () -> U)
+    ): Flow<T> {
         return local.onStart {
-
-            val localValue = local.firstOrNull()
-            val remoteValid = remote != null && isOnline
-
-            val cacheState = if(remotePreference is RemotePreference.CACHE) {
-                val started = cachedInfo[remotePreference.key] ?: 0
-                System.currentTimeMillis() - started > remotePreference.timeMillis
-            } else false
-
-            val startRemote = remotePreference is RemotePreference.FORCE || remotePreference is RemotePreference.PREFER || localValue == null || cacheState
-
-
-            // emit local data first before remote
-            if (localValue != null) {
-                emit(localValue)
-            }
-
-            if (remoteValid && startRemote) {
-                // remote is available
-                try {
-                    remote!!.invoke().let {
-                        if(remotePreference is RemotePreference.CACHE) {
-                            cachedInfo[remotePreference.key] = System.currentTimeMillis()
-                        }
-                        if (delay != null) delay(delay)
-                        // local update will invoke local flow, so we don't have to emit manually
-                        localUpdate?.invoke(it)
-                    }
-                } catch (e: Exception) {
-                    throw e
-                }
-            } else  {
-                // remote is not available
-                if (localValue != null) {
-                    if(remotePreference is RemotePreference.FORCE || ((remotePreference as? RemotePreference.CACHE)?.failOnError == true && cacheState))
-                        throw RemoteNotAvailableException("online: $isOnline, valid: $remoteValid, start: $startRemote")
-                } else {
-                    error("Local and remote data unavailable")
-                }
+            val localValue = local.firstOrNull()?.also { emit(it) }
+            triggerRemote(localValue, remotePreference, remote)?.let {
+                localUpdate.invoke(it)
             }
         }
+            // TODO check debounce issue
             // due to some bug, when local data is updated from remote it is emitted twice
             // so we just ignore values if they are published way to fast
             // find a better solution or maybe it will be fixed when FlowAPI reaches stable
@@ -81,71 +44,87 @@ abstract class BaseRepository() {
 
 
     /**
-     * Get data from local data flow, and also refresh the data from remote if available
+     * Get data from local data flow if available, and refresh the data from remote
      *
      * @param local - local data flow, optional
-     * @param remote - remote data flow, optional
+     * @param remote - remote data flow
      * @param localUpdate - function invoked when data is updated from remote, optional
-     * @param remotePreference - flag indicating how execution will user remote data
-     * @param delay - optional milliseconds delay for remote data, can be used to simulate slow response
+     * @param remotePreference - flag indicating how execution will use remote data
      */
-    protected fun <T> getDataOnce(local: Flow<T>? = null,
-                                  remote: (suspend () -> T)? = null,
-                                  localUpdate: (suspend (T) -> Unit)? = null,
-                                  remotePreference: RemotePreference = RemotePreference.FORCE,
-                                  delay: Long? = null): Flow<T> {
-
-        return flow<T>{
-
-            if (local == null && remote == null) {
-                error("No data source available")
+    protected fun <T> getDataOnce(
+        local: Flow<T>? = null,
+        localUpdate: (suspend (T) -> Unit)? = null,
+        remotePreference: RemotePreference = RemotePreference.FORCE,
+        remote: (suspend () -> T)
+    ): Flow<T> {
+        return flow<T> {
+            val localValue = local?.firstOrNull()?.also { emit(it) }
+            triggerRemote(localValue, remotePreference, remote)?.let {
+                localUpdate?.invoke(it)
+                emit(it)
             }
-
-            val localValue = local?.firstOrNull()
-
-            if (localValue != null) {
-                emit(localValue)
-            }
-
-            val remoteValid = remote != null && isOnline
-
-            val cacheState = if(remotePreference is RemotePreference.CACHE) {
-                val started = cachedInfo[remotePreference.key] ?: 0
-                System.currentTimeMillis() - started > remotePreference.timeMillis
-            } else false
-
-            val startRemote = remotePreference is RemotePreference.FORCE || remotePreference is RemotePreference.PREFER || localValue == null || cacheState
-
-            if (remoteValid && startRemote) {
-                // remote is available
-                try {
-                    remote!!.invoke().let {
-
-                        if(remotePreference is RemotePreference.CACHE) {
-                            cachedInfo[remotePreference.key] = System.currentTimeMillis()
-                        }
-
-                        if (delay != null) delay(delay)
-                        localUpdate?.invoke(it)
-                        emit(it)
-                    }
-                } catch (e: Exception) {
-                    throw e
-                }
-            } else {
-                // remote is not available
-                if (localValue != null) {
-                    if(remotePreference is RemotePreference.FORCE || ((remotePreference as? RemotePreference.CACHE)?.failOnError == true && cacheState))
-                        throw RemoteNotAvailableException("online: $isOnline, valid: $remoteValid, start: $startRemote")
-                } else {
-                    error("Local and remote data unavailable")
-                }
-            }
-
         }.catch {
             logg.e(it)
             throw it
         }
+    }
+
+    private suspend fun <T, U> triggerRemote(
+        localValue: T? = null,
+        remotePreference: RemotePreference,
+        remote: (suspend () -> U)
+    ): U? {
+
+        val isOnline = connection.initAndGetStatus().isOnline
+
+        return when(remotePreference) {
+            RemotePreference.FORCE -> {
+                if(!isOnline)
+                    throwOfflineError()
+                remote.invoke()
+            }
+            RemotePreference.PREFER -> {
+                when {
+                    isOnline -> remote.invoke()
+                    localValue == null -> throwOfflineError()
+                    else -> null
+                }
+            }
+            RemotePreference.IGNORE -> {
+                if(localValue == null) {
+                    if(!isOnline)
+                        throwOfflineError()
+                    remote.invoke()
+                } else null
+            }
+            is RemotePreference.CACHE -> {
+                val started = cachedInfo[remotePreference.key] ?: 0
+                val cacheIsDirty = System.currentTimeMillis() - started > remotePreference.timeMillis
+
+                val remoteData = when {
+                    localValue == null -> {
+                        if (!isOnline) throwOfflineError()
+                        remote.invoke()
+                    }
+                    cacheIsDirty -> {
+                        when {
+                            remotePreference.failOnError && !isOnline -> throwOfflineError()
+                            isOnline -> remote.invoke()
+                            else -> null
+                        }
+                    }
+                    else -> null
+                }
+
+                remoteData?.also {
+                    cachedInfo[remotePreference.key] = System.currentTimeMillis()
+                }
+            }
+        }
+    }
+
+    private fun throwOfflineError(): Nothing {
+        throw InternalConnectionException(connection.status, "Device is offline: ${connection.status}")
     }
 
     private suspend fun <T> Flow<T>.firstOrNull(): T? {
@@ -157,9 +136,6 @@ abstract class BaseRepository() {
     }
 
 }
-
-class RemoteNotAvailableException(val status: String) : Exception("Remote is not available, status: $status")
-class NetworkNotAvailableException() : Exception()
 
 sealed class RemotePreference {
 

@@ -2,11 +2,13 @@ package com.zbapp.locationtrack.di
 
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.crypto.*
+import com.zbapp.core.crypto.group.CryptoKEKRepository
+import com.zbapp.core.crypto.group.CryptoKeyRemoteDataSource
+import com.zbapp.core.crypto.group.ICryptoKeyLocalDataSource
+import com.zbapp.core.crypto.user.CryptoUserKeyRepository
+import com.zbapp.core.crypto.user.ICryptoUserKeyLocalDataSource
 import com.zbapp.core.models.BackendConfig
-import com.zbapp.core.models.mappers.GroupDataMapperCore
-import com.zbapp.core.models.mappers.IUserDataMapperCore
-import com.zbapp.core.models.mappers.IUserMapperCore
-import com.zbapp.core.models.mappers.MemberMapperCore
+import com.zbapp.core.models.mappers.*
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.repo.api.IUserApi
@@ -19,6 +21,7 @@ import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.core.repo.location.LocationRemoteSource
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.UserRemoteSource
+import com.zbapp.core.utils.IConnectionStatusProvider
 import com.zbapp.crpyto.CryptoFrameworkProvider
 import com.zbapp.crpyto.CryptoHashProvider
 import com.zbapp.crpyto.CryptoKeyProvider
@@ -31,7 +34,9 @@ import com.zbapp.locationtrack.data.repos.group.UserGroupLocalDataSource
 import com.zbapp.locationtrack.data.repos.invite.InviteLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.LocationLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSourceImpl
+import com.zbapp.locationtrack.data.repos.user.UserCryptoKeyLocalDataSource
 import com.zbapp.locationtrack.data.repos.user.UserLocalDataSource
+import com.zbapp.locationtrack.utils.ConnectionStatusProvider
 import com.zbapp.remote.appwrite.AppWriteRemoteModule
 import com.zbapp.remote.appwrite.DocumentsApi
 import com.zbapp.remote.appwrite.FunctionsApi
@@ -52,6 +57,7 @@ val daoModules = module {
     single { get<MainAppDatabase>().inviteDao() }
     single { get<MainAppDatabase>().groupKeysDao() }
     single { get<MainAppDatabase>().groupMemberKeysDao() }
+    single { get<MainAppDatabase>().userKeysDao() }
 }
 
 val cryptoModule = module {
@@ -63,19 +69,21 @@ val cryptoModule = module {
     single<ICryptoKeyProvider> { get<CryptoKeyProvider>() }
     single { CryptoCore(get(), get(), get()) }
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
+    single { CryptoUserKeyRepository(get(), get()) }
 }
 
 val mappersModule = module {
-    single { UserDataMapper(get()) }
-    single { UserMapper(get(), get()) }
+    single { UserMapperLocal(get(), get(), get()) }
+    single { UserMapperCore(get(), get()) }
     single { SharingContractsMapper }
     single { GroupsMapperLocal(get()) }
-    single { GroupDataMapperCore(get(), get()) }
+    single { GroupMapperCore(get(), get(), get()) }
     single { MemberMapperCore(get(), get()) }
     single { MemberMapperLocal(get()) }
-    single { InviteCodeMapper(get()) }
+    single { InviteCodeMapper(get(), get()) }
     single { GroupKeysMapper() }
-    single { GroupMemberKeysMapper() }
+    single { MemberKeysMapper() }
+    single { UserKeyMapper(get()) }
 }
 
 val remoteDataSourceModule = module {
@@ -101,9 +109,7 @@ val remoteDataSourceModule = module {
 
 val coreDependencyModules = module {
     single<ICoroutineScopeProvider> { androidApplication() as AppClass }
-
-    single<IUserMapperCore> { get<UserMapper>() }
-    single<IUserDataMapperCore> { get<UserDataMapper>() }
+    single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
 
     single<IUserApi> { UserApi(get()) }
     single<IDocumentsApi> { DocumentsApi(get()) }
@@ -111,8 +117,9 @@ val coreDependencyModules = module {
 
     single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }
-    single<IUserLocalDataSource> { UserLocalDataSource(get(), get()) }
+    single<IUserLocalDataSource> { UserLocalDataSource(get(), get(), get()) }
     single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get(), get(), get(), get(), get()) }
     single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get()) }
     single<IInviteCodeLocalDataSource> { InviteLocalDataSource(get(), get()) }
+    single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), get()) }
 }

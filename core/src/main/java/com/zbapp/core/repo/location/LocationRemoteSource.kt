@@ -4,7 +4,7 @@ import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.raw.LocationHistoryRaw
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.repo.api.IDocumentsApi
-import com.zbapp.core.utils.blocking
+import com.zbapp.core.utils.extensions.blocking
 
 class LocationRemoteSource constructor(
     private val api: IDocumentsApi,

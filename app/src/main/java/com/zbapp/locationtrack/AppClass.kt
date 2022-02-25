@@ -6,7 +6,9 @@ import android.app.Application
 import android.content.Context
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.config
+import com.zbapp.core.connectionStatus
 import com.zbapp.core.logg
+import com.zbapp.core.utils.IConnectionStatusProvider
 import com.zbapp.locationtrack.data.PreCheckControl
 import com.zbapp.locationtrack.data.config.Config
 import com.zbapp.locationtrack.di.KoinSetup
@@ -38,6 +40,7 @@ class AppClass : Application(), ICoroutineScopeProvider {
     override val defaultIOScope = CoroutineScope(Dispatchers.IO)
 
     private val launcher: PreCheckControl by inject()
+    private val connectionStatusProvider: IConnectionStatusProvider by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -49,7 +52,10 @@ class AppClass : Application(), ICoroutineScopeProvider {
         context = applicationContext
 
         KoinSetup.initKoin(this)
+
+        connectionStatus = connectionStatusProvider
         config = Config(context)
+        appConfig = config as Config
         initLogger()
 
         launcher.start()
@@ -80,3 +86,5 @@ class AppClass : Application(), ICoroutineScopeProvider {
     }
 
 }
+
+lateinit var appConfig: Config

@@ -1,39 +1,34 @@
 package com.zbapp.core.repo.user
 
+import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.config
 import com.zbapp.core.logg
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
-import com.zbapp.core.models.mappers.IUserMapperCore
-import com.zbapp.core.models.mappers.decrypt
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.base.BaseRepository
-import com.zbapp.core.repo.base.RemotePreference
-import com.zbapp.core.utils.NotFoundException
-import com.zbapp.core.utils.UnauthorizedException
-import com.zbapp.core.utils.UnverifiedUserException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.zbapp.core.utils.exceptions.NotFoundException
+import com.zbapp.core.utils.exceptions.UnauthorizedException
+import com.zbapp.core.utils.exceptions.UnverifiedUserException
 import kotlinx.coroutines.flow.*
 
 
-class UserRepository(
+class UserRepository constructor(
+    private val scopeProvider: ICoroutineScopeProvider,
     private val local: IUserLocalDataSource,
-    private val remote: UserRemoteSource,
-    val mapper: IUserMapperCore
+    private val remote: UserRemoteSource
 ) : BaseRepository() {
 
     val cachedUserId: String get() = config.userId
 
     val localUser: StateFlow<Payload<UserMe>> = local.getMe()
-        .decrypt(mapper)
         .map<UserMe, Payload<UserMe>> { Payload.Success(it) }
         .catch { emit(Payload.Error(it)) }
         .stateIn(
-            scope = CoroutineScope(Dispatchers.Main),
+            scope = scopeProvider.defaultScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = Payload.Loading
         )
@@ -43,8 +38,7 @@ class UserRepository(
     fun login(email: String, password: String): Flow<UserSession> {
         return getDataOnce(
             remote = { remote.login(email, password) },
-            localUpdate = { config.token = it.id },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { config.token = it.id }
         )
     }
 
@@ -53,10 +47,7 @@ class UserRepository(
         email: String,
         password: String
     ): Flow<Pair<UserMeRaw, UserSession>> {
-        return getDataOnce(
-            remote = { remote.signUpAndCreateSession(userName, email, password) },
-            remotePreference = RemotePreference.FORCE
-        )
+        return getDataOnce { remote.signUpAndCreateSession(userName, email, password) }
     }
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
@@ -76,8 +67,7 @@ class UserRepository(
                 updateLocalUser(it.first)
                 config.token = it.second.id
                 config.emailConfirmed = true
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         ).map { Unit }
     }
 
@@ -86,10 +76,7 @@ class UserRepository(
             return flow { throw Exception("Token is not available") }
         }
 
-        return getDataOnce(
-            remote = remote::getMe,
-            remotePreference = RemotePreference.FORCE
-        )
+        return getDataOnce { remote.getMe() }
             .catch {
                 if (it is NotFoundException) {
                     logg.v("User does not exist")
@@ -118,33 +105,27 @@ class UserRepository(
     }
 
     fun uploadAndInitKeysAndData(data: UserMeDataRaw): Flow<UserMeRaw> {
-        return getDataOnce(
-            remote = { remote.updateUserData(data.toPostJson()) },
-            remotePreference = RemotePreference.FORCE
-        )
+        return getDataOnce { remote.updateUserData(data.toPostJson()) }
     }
 
     fun updateUserData(data: Map<String, Any>): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateUserData(data) },
-            localUpdate = { updateLocalUser(it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { updateLocalUser(it) }
         ).map { true }
     }
 
     fun editUsername(newName: String): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateName(newName) },
-            localUpdate = { updateLocalUser(it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { updateLocalUser(it) }
         ).map { true }
     }
 
     fun editUserImage(imageBase64: String): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateUserImage(imageBase64) },
-            localUpdate = { updateLocalUser(it) },
-            remotePreference = RemotePreference.FORCE
+            localUpdate = { updateLocalUser(it) }
         ).map { true }
     }
 
@@ -159,8 +140,7 @@ class UserRepository(
             localUpdate = {
                 clear()
                 config.clear()
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         ).catch {
             // TODO maybe always log user out? Even if offline or some other error happens, log out locally
             // it will leave active session in the backend
@@ -178,8 +158,7 @@ class UserRepository(
             localUpdate = {
                 clear()
                 config.clear()
-            },
-            remotePreference = RemotePreference.FORCE
+            }
         ).catch {
             if (it is UnauthorizedException) {
                 clear()

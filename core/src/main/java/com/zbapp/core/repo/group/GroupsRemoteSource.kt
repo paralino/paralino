@@ -2,26 +2,28 @@ package com.zbapp.core.repo.group
 
 import com.zbapp.core.config
 import com.zbapp.core.crypto.CryptoCore
-import com.zbapp.core.crypto.CryptoKEKRepository
+import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
 import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
-import com.zbapp.core.models.mappers.GroupDataMapperCore
+import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.*
+import com.zbapp.core.utils.exceptions.*
+import com.zbapp.core.utils.extensions.blocking
 import kotlinx.serialization.encodeToString
 
 class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
-    private val mapper: GroupDataMapperCore,
+    private val mapper: GroupMapperCore,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository
 ) {
@@ -35,22 +37,24 @@ class GroupsRemoteSource constructor(
         return blocking {
 
             val groupKey = cryptoCore.getNewSymmetricKey().content
+            val memberSenderKey = cryptoCore.getNewSymmetricKey().content
+
             val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                 data = groupKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = myKey.publicKey
             )
 
-            val memberSenderKey = cryptoCore.getNewSymmetricKey().content
             val encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                 data = memberSenderKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = myKey.publicKey
             )
 
+
             val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
 
-            val payload = CreateGroupPostData(
+            val payload = CreateGroupPayload(
                 userPublicKey = myKey.publicKey,
                 encryptedGroupKey = encryptedGroupKey,
                 encryptedMemberKey = encryptedSenderKey,
@@ -72,6 +76,7 @@ class GroupsRemoteSource constructor(
             if (data.isSuccess) {
                 getGroupWithMembers(data.stdout)
             } else {
+                // TODO throw better exception
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to create group",
@@ -100,10 +105,10 @@ class GroupsRemoteSource constructor(
         return blocking {
 
             val groupKey = cryptoKEKRepo.getLatestGroupKey(groupId)
-                ?: throw NotFoundException("Group key not found")
+                ?: throw MissingGroupKeyException(groupId)
 
             val memberKey = cryptoKEKRepo.getMemberKey(groupId, config.userId)
-                ?: throw NotFoundException("Member key not found")
+                ?: throw MissingMemberKeyException(groupId, config.userId)
 
             val oldKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
 
@@ -124,7 +129,7 @@ class GroupsRemoteSource constructor(
             )
 
             val encryptedOldKeys = oldKeys.map {
-                GroupMemberOldKeysData(
+                GroupMemberOldKeyPayload(
                     version = it.version,
                     encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                         data = it.data.content,
@@ -136,7 +141,7 @@ class GroupsRemoteSource constructor(
                 )
             }
 
-            val payload = CreateGroupMemberFunctionData(
+            val payload = CreateGroupMemberPayload(
                 groupId = groupId,
                 userId = codeData.ownerId,
                 userPublicKey = codeData.ownerKey,
@@ -159,6 +164,7 @@ class GroupsRemoteSource constructor(
             if (data.isSuccess) {
                 getGroupWithMembers(groupId)
             } else {
+                // TODO throw better exception
                 throw BaseRemoteException.fromCode(
                     code = null,
                     message = "Unable to create group",
@@ -174,7 +180,7 @@ class GroupsRemoteSource constructor(
             if (member.userId == group.ownerUserId)
                 throw PermissionDeniedException("Owner can not be removed from the group")
 
-            val payload = DeleteGroupMemberFunctionData(
+            val payload = DeleteGroupMemberPayload(
                 groupId = group.id,
                 userId = member.userId
             )
@@ -185,6 +191,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (!data.isSuccess) {
+                // TODO throw better exception
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to delete group member",
@@ -232,6 +239,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (!data.isSuccess) {
+                // TODO throw better exception
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to delete group",

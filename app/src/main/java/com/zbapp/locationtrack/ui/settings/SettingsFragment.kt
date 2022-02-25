@@ -12,6 +12,7 @@ import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.databinding.FragmentSettingsBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
+import com.zbapp.locationtrack.ui.shared.snackBarError
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -33,7 +34,13 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
         binding.tvSettingAck.setOnClickListener { }
         binding.ivProfileEdit.setOnClickListener { }
         binding.tvLogout.setOnClickListener {
-            vm.logout().observe { Toast.makeText(requireContext(), "Logout: $it", Toast.LENGTH_SHORT).show() }
+            vm.logout().observe {
+                when(it) {
+                    Payload.Loading -> { }
+                    is Payload.Error -> snackBarError(binding.tvLogout, it.exception)
+                    is Payload.Success -> Toast.makeText(requireContext(), "Logged out", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         binding.tvDeleteAccount.setOnClickListener {

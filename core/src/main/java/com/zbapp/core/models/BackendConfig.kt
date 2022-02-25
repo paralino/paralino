@@ -5,6 +5,7 @@ data class BackendConfig constructor(
     val projectId: String,
     val debug: Boolean
 ) {
+    val endpoint = "$serverUrl/v1"
     val resourceIds = BackendResourceIDs
 }
 

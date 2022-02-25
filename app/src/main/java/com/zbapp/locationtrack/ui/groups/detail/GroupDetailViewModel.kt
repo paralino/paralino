@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.zbapp.core.models.Payload
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.utils.mapToPayload
+import com.zbapp.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.flow.map
 
 class GroupDetailViewModel constructor(

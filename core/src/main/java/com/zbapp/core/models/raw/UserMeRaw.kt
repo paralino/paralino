@@ -16,8 +16,8 @@ data class UserMeRaw constructor(
 data class UserMeDataRaw constructor(
     var imageBase64: String? = null,
     var userName: String? = null,
-    val privateKeyBackup: String? = null,
-    val asymmetricKeys: List<String>? = null
+    val privateKeyBackup: SymmetricKeyDataRaw? = null,
+    val asymmetricKeys: List<AsymmetricKeyDataRaw>? = null
 ) {
     fun toPostJson(): Map<String, Any> {
         return mutableMapOf<String, Any>().apply {
@@ -41,3 +41,6 @@ data class UserMeDataRaw constructor(
         }
     }
 }
+
+typealias AsymmetricKeyDataRaw = String
+typealias SymmetricKeyDataRaw = String

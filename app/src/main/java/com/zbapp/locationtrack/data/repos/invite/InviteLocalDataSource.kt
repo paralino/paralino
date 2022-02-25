@@ -2,7 +2,7 @@ package com.zbapp.locationtrack.data.repos.invite
 
 import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.core.repo.invite.IInviteCodeLocalDataSource
-import com.zbapp.core.utils.distinctFlowOfList
+import com.zbapp.core.utils.extensions.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.InviteCodeMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

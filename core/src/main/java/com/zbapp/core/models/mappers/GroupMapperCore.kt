@@ -1,18 +1,20 @@
 package com.zbapp.core.models.mappers
 
 import com.zbapp.core.crypto.CryptoCore
-import com.zbapp.core.crypto.CryptoKEKRepository
+import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
 import com.zbapp.core.models.raw.GroupDocumentRaw
+import com.zbapp.core.models.raw.GroupWithMemberRaw
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.NotFoundException
+import com.zbapp.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
-class GroupDataMapperCore constructor(
+class GroupMapperCore constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val cryptoCore: CryptoCore
+    private val cryptoCore: CryptoCore,
+    private val memberMapperCore: MemberMapperCore
 ) {
     suspend fun core2Remote(model: UserGroup): GroupDocumentRaw {
 
@@ -20,7 +22,7 @@ class GroupDataMapperCore constructor(
             groupId = model.id,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion
-        ) ?: throw NotFoundException("Missing group key")
+        ) ?: throw MissingGroupKeyException(model.id)
 
         val groupData = cryptoCore.encryptDataWithKey(
             data = BaseRemoteModule.formatter.encodeToString(model.data),
@@ -43,7 +45,7 @@ class GroupDataMapperCore constructor(
             groupId = model.id,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion
-        ) ?: throw NotFoundException("Missing group key")
+        ) ?: throw MissingGroupKeyException(model.id)
 
         val groupData = cryptoCore.decryptDataWithKey(
             data = model.data,
@@ -61,5 +63,15 @@ class GroupDataMapperCore constructor(
             data = groupData,
             members = emptyList()
         )
+    }
+
+    suspend fun remote2CoreWithMembers(model: GroupWithMemberRaw): UserGroup {
+        val members = model.members.map {
+            memberMapperCore.remote2Core(
+                model = it,
+                groupOwnerPublicKey = model.group.ownerPublicKey
+            )
+        }
+        return remote2Core(model.group).copy(members = members)
     }
 }

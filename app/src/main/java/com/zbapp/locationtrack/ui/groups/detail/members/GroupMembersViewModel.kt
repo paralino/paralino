@@ -8,7 +8,7 @@ import com.zbapp.core.config
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.utils.mapToPayload
+import com.zbapp.core.utils.extensions.mapToPayload
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.base.myApp

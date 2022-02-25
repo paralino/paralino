@@ -1,18 +1,18 @@
-package com.zbapp.core.crypto
+package com.zbapp.core.crypto.group
 
 import com.zbapp.core.config
+import com.zbapp.core.crypto.CryptoCore
+import com.zbapp.core.crypto.DecryptedGroupKeyData
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
-import com.zbapp.core.utils.BaseRemoteException
+import com.zbapp.core.utils.exceptions.BaseRemoteException
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.blocking
-import com.zbapp.core.utils.toJsonObject
+import com.zbapp.core.utils.extensions.blocking
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.encodeToJsonElement
 
 class CryptoKeyRemoteDataSource(
     private val api: IDocumentsApi,
@@ -93,23 +93,23 @@ class CryptoKeyRemoteDataSource(
 
             }
 
-            val payload = UpdateGroupMemberKeysFunctionData(
+            val payload = UpdateGroupMemberKeysPayload(
                 groupId = group.id,
                 userPublicKey = myKey.publicKey,
                 encryptedSenderKeys = keys,
                 memberData = memberData
             )
 
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionUpdateGroupMemberKeysID,
                 data = BaseRemoteModule.formatter.encodeToString(payload)
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to update group member keys",
-                    Exception(data.stderr)
+                    Exception(response.stderr)
                 )
             }
         }
@@ -121,54 +121,53 @@ class CryptoKeyRemoteDataSource(
     ) {
         blocking {
 
-            val groupKey = cryptoCore.getNewSymmetricKey().content
+            val newGroupKey = cryptoCore.getNewSymmetricKey().content
 
             val groupData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(group.data),
-                key = groupKey
+                key = newGroupKey
             )
 
             val keys = group.members.map {
                 GroupKeysPayload(
                     userId = it.userId,
                     encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                        data = groupKey,
+                        data = newGroupKey,
                         // sign with owner private key
                         myPrivateKey = myKey.privateKey,
                         // encrypt with user public key
                         publicKey = it.publicKey
                     )
                 )
-
             }
 
-            val payload = UpdateGroupKeysFunctionData(
+            val payload = UpdateGroupKeysPayload(
                 groupId = group.id,
                 userPublicKey = myKey.publicKey,
                 encryptedGroupKeys = keys,
                 groupData = groupData
             )
 
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionUpdateGroupKeysID,
                 data = BaseRemoteModule.formatter.encodeToString(payload)
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to update group keys",
-                    Exception(data.stderr)
+                    Exception(response.stderr)
                 )
             }
         }
     }
 
-    private suspend fun Map<String, Any>.parseGroupKey(): GroupCryptoKeyDataRaw {
+    private fun Map<String, Any>.parseGroupKey(): GroupCryptoKeyDataRaw {
         return GroupCryptoKeyDataRaw.from(this)
     }
 
-    private suspend fun Map<String, Any>.parseGroupMemberKey(): GroupMemberCryptoKeyDataRaw {
+    private fun Map<String, Any>.parseGroupMemberKey(): GroupMemberCryptoKeyDataRaw {
         return GroupMemberCryptoKeyDataRaw.from(this)
     }
 

@@ -8,7 +8,7 @@ import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.BaseRemoteModule
 import com.zbapp.core.utils.poll
-import com.zbapp.core.utils.toJsonArray
+import com.zbapp.core.utils.extensions.toJsonArray
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.decodeFromJsonElement

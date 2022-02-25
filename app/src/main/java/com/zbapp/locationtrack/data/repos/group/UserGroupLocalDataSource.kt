@@ -5,7 +5,7 @@ import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
 import com.zbapp.core.repo.group.IGroupLocalDataSource
 import com.zbapp.core.repo.location.ILocationLocalDataSource
-import com.zbapp.core.utils.distinctFlowOfList
+import com.zbapp.core.utils.extensions.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.GroupsMapperLocal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

@@ -1,13 +1,14 @@
 package com.zbapp.core.models.mappers
 
 import com.zbapp.core.crypto.CryptoCore
-import com.zbapp.core.crypto.CryptoKEKRepository
+import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.NotFoundException
+import com.zbapp.core.utils.exceptions.MissingGroupKeyException
+import com.zbapp.core.utils.exceptions.MissingMemberKeyException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
@@ -22,7 +23,7 @@ class MemberMapperCore constructor(
             groupId = model.groupId ?: model.id,
             memberUserId = model.userId,
             memberPublicKey = model.publicKey
-        ) ?: throw NotFoundException("Missing user key")
+        ) ?: throw MissingMemberKeyException(model.groupId, model.userId)
 
         val groupKey = model.groupId?.let {
             cryptoKEKRepo.getGroupKey(
@@ -30,7 +31,7 @@ class MemberMapperCore constructor(
                 ownerPublicKey = groupOwnerPublicKey,
                 // use latest group key
                 keyVersion = null
-            ) ?: throw NotFoundException("Missing group key")
+            ) ?: throw MissingGroupKeyException(model.id)
         } ?: memberKey
 
         // data encrypted with user senderKey DEK
@@ -65,24 +66,23 @@ class MemberMapperCore constructor(
     suspend fun remote2Core(model: MemberDocumentRaw, groupOwnerPublicKey: String): MemberModel {
 
         val memberKey = cryptoKEKRepo.getMemberKey(
-            groupId = model.groupId ?: model.id,
+            groupId = model.groupId,
             memberUserId = model.ownerUserId,
             memberPublicKey = model.ownerPublicKey
         )
 
-        val groupKey = model.groupId?.let {
-            cryptoKEKRepo.getGroupKey(
-                groupId = it,
-                ownerPublicKey = groupOwnerPublicKey,
-                keyVersion = model.groupKeyVersion
-            ) ?: throw NotFoundException("Missing group key")
-        } ?: memberKey ?: throw NotFoundException("Missing group key")
+        val groupKey = cryptoKEKRepo.getGroupKey(
+            groupId = model.groupId,
+            ownerPublicKey = groupOwnerPublicKey,
+            keyVersion = model.groupKeyVersion
+        ) ?: throw MissingGroupKeyException(model.groupId)
 
         // data encrypted with user senderKey DEK
         val locationData = model.mutableData?.takeIf { it.isNotBlank() }?.let {
             val data = cryptoCore.decryptDataWithKey(
                 data = it,
-                key = memberKey?.data?.content ?: throw NotFoundException("Missing member key")
+                key = memberKey?.data?.content
+                    ?: throw MissingMemberKeyException(model.groupId, model.ownerUserId)
             )
             data.takeIf { it.isNotBlank() }?.let {
                 BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
@@ -100,7 +100,7 @@ class MemberMapperCore constructor(
 
         return MemberModel(
             id = model.id,
-            groupId = model.groupId ?: model.id,
+            groupId = model.groupId,
             userId = model.ownerUserId,
             publicKey = model.ownerPublicKey,
             groupKeyVersion = model.groupKeyVersion,

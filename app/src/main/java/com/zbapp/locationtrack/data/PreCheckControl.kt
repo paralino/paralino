@@ -5,7 +5,7 @@ import com.zbapp.core.config
 import com.zbapp.core.logg
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.user.UserRepository
-import com.zbapp.core.utils.NotFoundException
+import com.zbapp.core.utils.exceptions.NotFoundException
 import com.zbapp.locationtrack.BuildConfig
 import kotlinx.coroutines.flow.*
 

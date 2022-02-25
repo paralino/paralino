@@ -19,22 +19,5 @@ data class UserMe constructor(
 @Serializable
 data class UserMeData constructor(
     var imageBase64: String? = null,
-    val userName: String = "",
-    val privateKeyBackup: SymmetricCryptoKeyData? = null,
-    val asymmetricKeys: List<AsymmetricCryptoKeyData>? = null
-) {
-    val latestAsymmetricKey get() = asymmetricKeys?.maxByOrNull { it.version }
-}
-
-@Serializable
-data class AsymmetricCryptoKeyData(
-    val privateKey: String,
-    val publicKey: String,
-    val version: Int
-)
-
-@Serializable
-data class SymmetricCryptoKeyData(
-    val encryptedKey: String,
-    val version: Int
+    val userName: String = ""
 )

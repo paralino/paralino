@@ -1,6 +1,7 @@
-package com.zbapp.core.utils
+package com.zbapp.core.utils.exceptions
 
 import com.zbapp.core.config
+import com.zbapp.core.utils.ConnectionStatus
 
 open class BaseRemoteException(
     message: String?,
@@ -18,20 +19,20 @@ open class BaseRemoteException(
                 }
                 404 -> NotFoundException(message, cause)
                 409 -> ConflictException(message, cause)
-                429, 503, 504 -> ConnectionException(message, code, cause)
+                429, 503, 504 -> RemoteConnectionException(message, code, cause)
                 else -> GenericServerException(message, code, cause)
             }
         }
     }
 }
 
-class ConnectionException(message: String?, code: Int?, cause: Throwable? = null): BaseRemoteException(message, cause, code)
+class InternalConnectionException(val status: ConnectionStatus, message: String? = null): BaseRemoteException(message, null, null)
+class RemoteConnectionException(message: String?, code: Int?, cause: Throwable? = null): BaseRemoteException(message, cause, code)
 class UnverifiedUserException(message: String?, cause: Throwable? = null): UnauthorizedException(message, cause)
 class PermissionDeniedException(message: String?, cause: Throwable? = null): UnauthorizedException(message, cause)
 open class UnauthorizedException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class InvalidRequestException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
-class NotFoundException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+open class NotFoundException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class GenericServerException(message: String?, code: Int?, cause: Throwable? = null) : BaseRemoteException(message, cause, code)
 class TimeoutException(message: String?, cause: Throwable? = null) : BaseRemoteException(message, cause)
-

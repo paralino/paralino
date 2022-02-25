@@ -83,7 +83,7 @@ class GroupMembersFragment : BaseFragment(R.layout.fragment_group_members) {
                 Payload.Loading -> {}
                 is Payload.Success -> {}
                 is Payload.Error -> {
-                    snackBarError(vb.rvMembers, requireContext())
+                    snackBarError(vb.rvMembers, it.exception)
                 }
             }
         }

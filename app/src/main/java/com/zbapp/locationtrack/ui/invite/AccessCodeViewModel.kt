@@ -14,7 +14,7 @@ import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.invite.InviteRepository
 import com.zbapp.core.utils.Emojis
-import com.zbapp.core.utils.mapToPayload
+import com.zbapp.core.utils.extensions.mapToPayload
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.utils.extensions.safeCast
