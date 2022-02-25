@@ -1,9 +1,10 @@
 package com.zbapp.locationtrack.ui.groups
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.SeekBar
-import androidx.navigation.fragment.findNavController
 import com.zbapp.core.utils.SharingDurationPreset
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentSharingStartBinding
@@ -14,10 +15,11 @@ import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.Duration
 
-class SharingStartFragment: BaseFragment(R.layout.fragment_sharing_start) {
+class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
 
     private val vb by viewBinding(FragmentSharingStartBinding::bind)
     private val vm: SharingViewModel by viewModel()
+    private var animating: Boolean = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,9 +35,30 @@ class SharingStartFragment: BaseFragment(R.layout.fragment_sharing_start) {
         vb.switchBattery.switchText.setText(R.string.groups_sharing_setting_battery_share)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setObservers() {
-        vb.ivClose.setOnClickListener {
-            findNavController().popBackStack()
+
+        vb.timeSeekBar.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                    if (!animating) {
+                        animating = true
+                        vb.progressBackground.isSelected = true
+                        vb.tvDuration.isSelected = true
+                        vb.progressFocus.animate().alpha(1f).setDuration(100).start()
+                        vb.bShareStart.animate().alpha(0f).setDuration(100).start()
+                    }
+                }
+                else -> {
+                    animating = false
+                    vb.progressBackground.isSelected = false
+                    vb.tvDuration.isSelected = false
+                    vb.progressFocus.animate().alpha(0f).setDuration(100).start()
+                    vb.bShareStart.animate().alpha(1f).setDuration(100).start()
+                }
+
+            }
+            false
         }
 
         vb.groupPicker.setOnClickListener {
@@ -46,7 +69,11 @@ class SharingStartFragment: BaseFragment(R.layout.fragment_sharing_start) {
 
         }
 
-        vb.timeSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+        vb.switchBattery.root.setOnClickListener {
+            vb.switchBattery.switchWidget.isChecked = !vb.switchBattery.switchWidget.isChecked
+        }
+
+        vb.timeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 vb.tvDuration.text = getTime(SharingDurationPreset.presets[progress])
             }
@@ -82,19 +109,24 @@ class SharingStartFragment: BaseFragment(R.layout.fragment_sharing_start) {
             return resources.getQuantityString(id, value.toInt(), value.toInt())
         }
 
-        return if(duration.toDays() >= 365) {
+        return if (duration.toDays() >= 365) {
             getPluralTime(R.plurals.groups_sharing_duration_type_years, duration.toDays() / 365)
-        } else if(duration.toDays() >= 30) {
+        } else if (duration.toDays() >= 30) {
             getPluralTime(R.plurals.groups_sharing_duration_type_months, duration.toDays() / 30)
-        } else if(duration.toDays() >= 1) {
+        } else if (duration.toDays() >= 1) {
             getPluralTime(R.plurals.groups_sharing_duration_type_days, duration.toDays())
-        } else if(duration.toHours() >= 1) {
+        } else if (duration.toHours() >= 1) {
             getPluralTime(R.plurals.groups_sharing_duration_type_hours, duration.toHours())
-        } else if(duration.toMinutes() > 1) {
+        } else if (duration.toMinutes() > 1) {
             getPluralTime(R.plurals.groups_sharing_duration_type_minutes, duration.toMinutes())
         } else {
             getString(R.string.groups_sharing_duration_type_infinite)
         }
+    }
+
+    override fun onDestroyView() {
+        animating = false
+        super.onDestroyView()
     }
 
 }
