@@ -2,8 +2,10 @@ package com.zbapp.core.repo.user
 
 import com.zbapp.core.config
 import com.zbapp.core.crypto.CryptoCore
+import com.zbapp.core.crypto.user.CryptoUserKeyRepository
+import com.zbapp.core.crypto.toData
 import com.zbapp.core.logg
-import com.zbapp.core.models.mappers.UserDataMapper
+import com.zbapp.core.models.mappers.UserMapperCore
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.SymmetricCryptoKeyData
@@ -19,7 +21,8 @@ class LoginManager(
     val userRepo: UserRepository,
     val groupRepo: GroupRepository,
     val cryptoCore: CryptoCore,
-    val userDataMapper: UserDataMapper
+    val userKeyRepository: CryptoUserKeyRepository,
+    val userMapper: UserMapperCore
 ) {
 
     fun isLoggedIn(): Boolean {
@@ -51,7 +54,7 @@ class LoginManager(
                 delay(500)
                 remoteData = prepareUserKeys(derivedPasswords.backupPassword, user.first.id, userName)
             } catch (e: Exception) {
-                cryptoCore.clearUserPersonalKey()
+                userKeyRepository.clearUserPersonalKey()
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
             }
 
@@ -61,7 +64,7 @@ class LoginManager(
                 delay(500)
                 updatedUser = userRepo.uploadAndInitKeysAndData(remoteData).first()
             } catch (e: Exception) {
-                cryptoCore.clearUserPersonalKey()
+                userKeyRepository.clearUserPersonalKey()
                 throw SignUpStepException(SignUpStep.INIT_USER_DATA, e)
             }
 
@@ -82,17 +85,18 @@ class LoginManager(
     }
 
     private suspend fun prepareUserKeys(password: String, userId: String, name: String): UserMeDataRaw {
-        val keys = cryptoCore.generateNewKeysForUser(password, userId, null)
-
-        cryptoCore.saveUserKeyLocally(keys.userPersonalKey)
-
-        val data = UserMeData(
-            userName = name,
-            privateKeyBackup = keys.symmetricCryptoKeyData,
-            asymmetricKeys = listOf(keys.asymmetricCryptoKeyData)
+        val keys = cryptoCore.generateNewKeysForUser(
+            backupPassword = password,
+            userId = userId,
+            privateKeyVersion = 1,
+            keyPairVersion = 1
         )
 
-        return userDataMapper.core2Remote(data)
+        userKeyRepository.personalKey = keys.userPersonalKey.toData()
+
+        val data = UserMeData(userName = name)
+
+        return userMapper.core2Remote(data, keys.symmetricCryptoKeyData, listOf(keys.asymmetricCryptoKeyData))
     }
 
     fun login(email: String, password: String): Flow<SignUpStep> {
@@ -124,9 +128,9 @@ class LoginManager(
             try {
                 delay(500)
                 val userKey = cryptoCore.signIn(derivedPasswords.backupPassword, user.id, data.encryptedKey)
-                cryptoCore.saveUserKeyLocally(userKey.content)
+                userKeyRepository.personalKey = userKey.content.toData()
             } catch (e: Exception) {
-                cryptoCore.clearUserPersonalKey()
+                userKeyRepository.clearUserPersonalKey()
                 throw SignUpStepException(SignUpStep.INIT_USER_DATA, e)
             }
 

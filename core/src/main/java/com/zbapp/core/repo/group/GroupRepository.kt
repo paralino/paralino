@@ -1,6 +1,7 @@
 package com.zbapp.core.repo.group
 
-import com.zbapp.core.crypto.CryptoKEKRepository
+import com.zbapp.core.crypto.group.CryptoKEKRepository
+import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.invite.PersonalCodeReadData
@@ -22,6 +23,7 @@ class GroupRepository constructor(
     private val remote: GroupsRemoteSource,
     private val userRepository: UserRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
+    private val userKeyRepo: CryptoUserKeyRepository,
     private val groupMapperCore: GroupMapperCore
 ) : BaseRepository() {
 
@@ -70,7 +72,7 @@ class GroupRepository constructor(
                     name = name,
                     image = emoji,
                     myData = MemberModelData(userData.userName, userData.imageBase64),
-                    myKey = userData.latestAsymmetricKey!!
+                    myKey = userKeyRepo.latestKeyPair()
                 ).also { cryptoKEKRepo.refreshKeysForGroup(it.group.id).first() }
             },
             localUpdate = { local.updateOrCreateGroup(it) }
@@ -100,7 +102,7 @@ class GroupRepository constructor(
                 remote.addUserToGroup(
                     groupId,
                     code,
-                    userRepository.cachedUser?.data?.latestAsymmetricKey!!
+                    userKeyRepo.latestKeyPair()
                 )
             },
             localUpdate = {

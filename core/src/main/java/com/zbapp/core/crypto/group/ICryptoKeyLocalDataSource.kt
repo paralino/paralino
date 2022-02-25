@@ -1,4 +1,4 @@
-package com.zbapp.core.crypto
+package com.zbapp.core.crypto.group
 
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw

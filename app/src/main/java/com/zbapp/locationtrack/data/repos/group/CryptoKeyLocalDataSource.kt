@@ -1,6 +1,6 @@
 package com.zbapp.locationtrack.data.repos.group
 
-import com.zbapp.core.crypto.ICryptoKeyLocalDataSource
+import com.zbapp.core.crypto.group.ICryptoKeyLocalDataSource
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.utils.extensions.distinctFlowOfList

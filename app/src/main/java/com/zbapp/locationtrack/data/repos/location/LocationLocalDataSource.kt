@@ -3,7 +3,7 @@ package com.zbapp.locationtrack.data.repos.location
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.raw.MemberDocumentRaw
 import com.zbapp.core.repo.location.ILocationLocalDataSource
-import com.zbapp.core.utils.exceptions.NotFoundException
+import com.zbapp.core.utils.exceptions.MissingGroupKeyException
 import com.zbapp.core.utils.extensions.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.MemberMapperLocal
 import com.zbapp.locationtrack.data.repos.group.UserGroupDao
@@ -43,7 +43,8 @@ class LocationLocalDataSource(
             .distinctFlowOfList()
             .map {
                 it.map {
-                    val key = it.groupId?.let { groupDao.getGroupPublicKeyOnce(it) } ?: ""
+                    val key = groupDao.getGroupPublicKeyOnce(it.groupId)
+                        ?: throw MissingGroupKeyException(it.groupId)
                     mapper.local2Core(it, key)
                 }
             }
@@ -55,7 +56,7 @@ class LocationLocalDataSource(
             .map {
                 val key = groupDao.getGroupPublicKeyOnce(groupId)
                 if(key == null && it.isNotEmpty())
-                    throw NotFoundException("Group key not found")
+                    throw MissingGroupKeyException(groupId)
                 it.map {
                     mapper.local2Core(it, key!!)
                 }

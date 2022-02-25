@@ -1,6 +1,7 @@
 package com.zbapp.core.repo.invite
 
 import com.zbapp.core.config
+import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.invite.PersonalCodeCreateData
 import com.zbapp.core.models.invite.PersonalCodeData
@@ -15,20 +16,23 @@ import kotlinx.coroutines.flow.map
 class InviteRepository(
     private val remote: InviteRemoteSource,
     private val local: IInviteCodeLocalDataSource,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
+    private val userKeyRepo: CryptoUserKeyRepository
 ) : BaseRepository() {
 
     fun createInviteCode(): Flow<Payload<PersonalCodeData>> {
         val user = userRepo.cachedUser
             ?: return flow { emit(Payload.Error(Throwable("User not valid"))) }
-        val invite = PersonalCodeCreateData(
-            ownerId = user.id,
-            ownerName = user.name,
-            ownerImageBase64 = user.data?.imageBase64 ?: "",
-            ownerKey = user.data?.latestAsymmetricKey?.publicKey!!
-        )
         return getDataOnce(
-            remote = { remote.createInviteCode(invite) },
+            remote = {
+                val invite = PersonalCodeCreateData(
+                    ownerId = user.id,
+                    ownerName = user.name,
+                    ownerImageBase64 = user.data?.imageBase64 ?: "",
+                    ownerKey = userKeyRepo.latestKeyPair().publicKey
+                )
+                remote.createInviteCode(invite)
+            },
             localUpdate = { local.addInviteCode(it) }
         ).mapToPayload()
     }

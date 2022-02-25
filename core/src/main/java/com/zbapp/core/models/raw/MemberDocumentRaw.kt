@@ -8,7 +8,7 @@ data class MemberDocumentRaw constructor(
     @SerialName("\$id")
     val id: String,
     val ownerUserId: String,
-    val groupId: String?,
+    val groupId: String,
 
     val ownerPublicKey: String,
     val groupKeyVersion: Long,
@@ -36,7 +36,7 @@ data class MemberDocumentRaw constructor(
             return MemberDocumentRaw(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
-                groupId = map["groupId"] as? String,
+                groupId = map["groupId"] as String,
                 ownerPublicKey = map["ownerPublicKey"] as String,
                 groupKeyVersion = map["groupKeyVersion"] as Long,
                 memberKeyVersion = map["memberKeyVersion"] as Long,

@@ -2,7 +2,7 @@ package com.zbapp.core.repo.group
 
 import com.zbapp.core.config
 import com.zbapp.core.crypto.CryptoCore
-import com.zbapp.core.crypto.CryptoKEKRepository
+import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
@@ -15,9 +15,7 @@ import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.*
-import com.zbapp.core.utils.exceptions.BaseRemoteException
-import com.zbapp.core.utils.exceptions.NotFoundException
-import com.zbapp.core.utils.exceptions.PermissionDeniedException
+import com.zbapp.core.utils.exceptions.*
 import com.zbapp.core.utils.extensions.blocking
 import kotlinx.serialization.encodeToString
 
@@ -39,18 +37,20 @@ class GroupsRemoteSource constructor(
         return blocking {
 
             val groupKey = cryptoCore.getNewSymmetricKey().content
+            val memberSenderKey = cryptoCore.getNewSymmetricKey().content
+
             val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                 data = groupKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = myKey.publicKey
             )
 
-            val memberSenderKey = cryptoCore.getNewSymmetricKey().content
             val encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                 data = memberSenderKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = myKey.publicKey
             )
+
 
             val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
 
@@ -105,10 +105,10 @@ class GroupsRemoteSource constructor(
         return blocking {
 
             val groupKey = cryptoKEKRepo.getLatestGroupKey(groupId)
-                ?: throw NotFoundException("Group key not found")
+                ?: throw MissingGroupKeyException(groupId)
 
             val memberKey = cryptoKEKRepo.getMemberKey(groupId, config.userId)
-                ?: throw NotFoundException("Member key not found")
+                ?: throw MissingMemberKeyException(groupId, config.userId)
 
             val oldKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
 

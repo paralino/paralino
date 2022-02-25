@@ -55,6 +55,7 @@ class AppClass : Application(), ICoroutineScopeProvider {
 
         connectionStatus = connectionStatusProvider
         config = Config(context)
+        appConfig = config as Config
         initLogger()
 
         launcher.start()
@@ -85,3 +86,5 @@ class AppClass : Application(), ICoroutineScopeProvider {
     }
 
 }
+
+lateinit var appConfig: Config

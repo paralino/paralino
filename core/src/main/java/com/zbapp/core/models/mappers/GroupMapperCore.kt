@@ -1,13 +1,13 @@
 package com.zbapp.core.models.mappers
 
 import com.zbapp.core.crypto.CryptoCore
-import com.zbapp.core.crypto.CryptoKEKRepository
+import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
 import com.zbapp.core.utils.BaseRemoteModule
-import com.zbapp.core.utils.exceptions.NotFoundException
+import com.zbapp.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
@@ -22,7 +22,7 @@ class GroupMapperCore constructor(
             groupId = model.id,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion
-        ) ?: throw NotFoundException("Missing group key")
+        ) ?: throw MissingGroupKeyException(model.id)
 
         val groupData = cryptoCore.encryptDataWithKey(
             data = BaseRemoteModule.formatter.encodeToString(model.data),
@@ -45,7 +45,7 @@ class GroupMapperCore constructor(
             groupId = model.id,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion
-        ) ?: throw NotFoundException("Missing group key")
+        ) ?: throw MissingGroupKeyException(model.id)
 
         val groupData = cryptoCore.decryptDataWithKey(
             data = model.data,

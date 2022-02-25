@@ -50,7 +50,7 @@ class Config(context: Context) : IConfig {
             secureSharedData.edit { putBoolean(keyEmailConfirmed, value) }
         }
 
-    override var userKey: String
+    var userKey: String
         get() = secureSharedData.getString(keyUserKey, "") ?: ""
         set(value) {
             secureSharedData.edit { putString(keyUserKey, value) }

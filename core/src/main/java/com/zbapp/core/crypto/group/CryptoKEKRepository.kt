@@ -1,21 +1,21 @@
-package com.zbapp.core.crypto
+package com.zbapp.core.crypto.group
 
 import com.zbapp.core.ICoroutineScopeProvider
+import com.zbapp.core.crypto.CryptoCore
+import com.zbapp.core.crypto.user.CryptoUserKeyRepository
+import com.zbapp.core.crypto.DecryptedGroupKeyData
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.base.BaseRepository
-import com.zbapp.core.repo.user.UserRepository
-import com.zbapp.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.coroutines.flow.*
-
 
 class CryptoKEKRepository(
     private val scopeProvider: ICoroutineScopeProvider,
     private val remote: CryptoKeyRemoteDataSource,
     private val local: ICryptoKeyLocalDataSource,
-    private val userRepo: UserRepository,
+    private val userKeyRepository: CryptoUserKeyRepository,
     private val cryptoCore: CryptoCore
 ) : BaseRepository() {
 
@@ -142,7 +142,7 @@ class CryptoKEKRepository(
 
         val groupKey = cryptoCore.decryptKeyWithKeyPair(
             key = keyRaw.encryptedGroupKey,
-            myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
+            myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
             publicKey = ownerPublicKey
         )
 
@@ -156,13 +156,12 @@ class CryptoKEKRepository(
         return keys.map {
             val groupKey = cryptoCore.decryptKeyWithKeyPair(
                 key = it.encryptedGroupKey,
-                myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
+                myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
                 publicKey = ownerPublicKey
             )
 
             DecryptedGroupKeyData(it.version, groupKey)
         }
-
     }
 
     suspend fun getMemberKey(groupId: String, memberUserId: String): DecryptedGroupKeyData? {
@@ -178,14 +177,14 @@ class CryptoKEKRepository(
 
         val memberKey = cryptoCore.decryptKeyWithKeyPair(
             key = keyRaw.encryptedSenderKey,
-            myPrivateKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!.privateKey,
+            myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
             publicKey = memberPublicKey
         )
         return DecryptedGroupKeyData(keyRaw.version, memberKey)
     }
 
     suspend fun rotateAllGroupKeys(remoteGroup: UserGroup) {
-        val userKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!
+        val userKey = userKeyRepository.latestKeyPair()
 
         // 1. rotate group key
         getDataOnce { remote.rotateGroupKeys(group = remoteGroup, myKey = userKey) }.first()
@@ -202,7 +201,7 @@ class CryptoKEKRepository(
     }
 
     suspend fun rotateAllMemberKeys(remoteGroup: UserGroup) {
-        val userKey = userRepo.cachedUser!!.data!!.latestAsymmetricKey!!
+        val userKey = userKeyRepository.latestKeyPair()
         executeMemberKeyRotation(group = remoteGroup, myKey = userKey).first()
         refreshKeysForGroup(groupId = remoteGroup.id).first()
     }

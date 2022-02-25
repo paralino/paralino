@@ -1,6 +1,8 @@
-package com.zbapp.core.crypto
+package com.zbapp.core.crypto.group
 
 import com.zbapp.core.config
+import com.zbapp.core.crypto.CryptoCore
+import com.zbapp.core.crypto.DecryptedGroupKeyData
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.raw.*
