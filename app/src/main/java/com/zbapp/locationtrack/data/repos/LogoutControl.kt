@@ -21,9 +21,6 @@ class LogoutControl(
     fun logout(): Flow<Boolean> {
         return userRepo.logout()
             .map { true }
-            .catch {
-                emit(false)
-            }
             .onEach {
                 groupsRepo.clear()
                 locationRepo.clear()
