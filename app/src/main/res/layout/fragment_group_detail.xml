@@ -17,6 +17,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:clipToPadding="false"
         android:overScrollMode="ifContentScrolls"
         android:paddingTop="@dimen/activity_side_margin_large"
         android:paddingBottom="@dimen/bottomBar_spacing"
@@ -154,4 +155,18 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/bShareStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_side_margin"
+        android:layout_marginBottom="@dimen/bottomBar_spacing"
+        android:backgroundTint="@color/fab_background_color"
+        android:enabled="true"
+        android:text="@string/groups_sharing_title"
+        app:icon="@drawable/ic_pin_sharing"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

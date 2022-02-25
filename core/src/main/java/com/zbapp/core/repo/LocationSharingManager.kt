@@ -23,6 +23,11 @@ class LocationSharingManager(
 
     val sharingStatus: Flow<Boolean> = allContractsFlow.map { it.isNotEmpty() }.distinctUntilChanged()
     suspend fun isSharingActive(): Boolean = sharingStatus.firstOrNull() ?: false
+    fun isSharingActiveForGroup(id: String): Flow<Boolean> {
+        return allContractsFlow.map {
+            it.any { it.groupId == id }
+        }.distinctUntilChanged()
+    }
 
 
     suspend fun startSharing(contract: LocationSharingContract) {

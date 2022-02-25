@@ -11,11 +11,13 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentGroupDetailBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
+import com.zbapp.locationtrack.ui.groups.SharingStartFragmentArgs
 import com.zbapp.locationtrack.ui.groups.create.CreateGroupFragmentArgs
 import com.zbapp.locationtrack.ui.groups.detail.members.GroupMembersFragmentArgs
 import com.zbapp.locationtrack.ui.invite.AccessCodeInputFragmentArgs
 import com.zbapp.locationtrack.ui.shared.DeeplinkManager
 import com.zbapp.locationtrack.ui.shared.snackBarError
+import com.zbapp.locationtrack.utils.extensions.backgroundTintRes
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -37,6 +39,14 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                     vb.tvGroupEmoji.text = it.data.image
                     vb.bMembers.text =
                         getString(R.string.group_details_section_members_title, it.data.memberCount)
+
+                    if(it.data.sharingActive) {
+                        vb.bShareStart.backgroundTintRes(R.color.highlightRed)
+                        vb.bShareStart.setText(R.string.location_banner_info_stop)
+                    } else {
+                        vb.bShareStart.backgroundTintRes(R.color.fab_background_color)
+                        vb.bShareStart.setText(R.string.groups_sharing_title)
+                    }
                 }
                 is Payload.Error -> {
                     snackBarError(vb.toolbar, it.exception)
@@ -65,8 +75,8 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
             navigateDefault(
                 R.id.groupMembersFragment,
                 GroupMembersFragmentArgs(
-                    args.groupId,
-                    vm.groupDetails.value?.data?.name ?: ""
+                    groupId = args.groupId,
+                    groupName = vm.groupDetails.value?.data?.name ?: ""
                 ).toBundle()
             )
         }
@@ -83,6 +93,17 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
 
         vb.mapHolder.setOnClickListener {
             mainActivity?.navigateDeeplink(DeeplinkManager.deeplinkMap)
+        }
+
+        vb.bShareStart.setOnClickListener {
+            if(vm.isSharingActive()) {
+                vm.stopSharing()
+            } else {
+                navigateDefault(
+                    R.id.sharingStartFragment,
+                    SharingStartFragmentArgs(args.groupId).toBundle()
+                )
+            }
         }
     }
 
