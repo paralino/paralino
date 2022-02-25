@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.widget.SeekBar
+import androidx.navigation.fragment.findNavController
 import com.zbapp.core.utils.SharingDurationPreset
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentSharingStartBinding
@@ -13,12 +14,13 @@ import com.zbapp.locationtrack.ui.dashboard.GroupItemData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.time.Duration
 
 class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
 
     private val vb by viewBinding(FragmentSharingStartBinding::bind)
-    private val vm: SharingViewModel by viewModel()
+    private val vm: SharingViewModel by viewModel { parametersOf(arguments?.let { SharingStartFragmentArgs.fromBundle(it) }) }
     private var animating: Boolean = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,7 +68,11 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
         }
 
         vb.bShareStart.setOnClickListener {
-
+            val duration = SharingDurationPreset.presets.getOrNull(vb.timeSeekBar.progress)
+                ?: SharingDurationPreset.day
+            vm.startSharing(duration).observe {
+                if(it) findNavController().popBackStack()
+            }
         }
 
         vb.switchBattery.root.setOnClickListener {
