@@ -7,13 +7,11 @@ import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.ui.dashboard.GroupItemData
-import com.zbapp.locationtrack.ui.dashboard.GroupListItem
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+
 
 class SharingViewModel(
     private val args: SharingStartFragmentArgs?,
