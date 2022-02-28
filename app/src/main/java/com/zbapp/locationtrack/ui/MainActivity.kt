@@ -3,59 +3,38 @@ package com.zbapp.locationtrack.ui
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.ui.shared.navigateDeeplink
-import com.zbapp.locationtrack.ui.shared.setupWithNavController
 
 class MainActivity : AppCompatActivity() {
 
-    private var currentNavController: LiveData<NavController>? = null
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (savedInstanceState == null) {
-            setupBottomNavigationBar()
-        }
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
         setupBottomNavigationBar()
-        currentNavController?.value?.restoreState(savedInstanceState.getBundle("nav_state"))
-    }
-
-    override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        super.onSaveInstanceState(savedInstanceState)
-        savedInstanceState.putBundle("nav_state", currentNavController?.value?.saveState())
     }
 
     private fun setupBottomNavigationBar() {
+
+        val navHostFragment = supportFragmentManager.findFragmentById(
+            R.id.nav_host_fragment
+        ) as NavHostFragment
+        navController = navHostFragment.navController
+
+        // Setup the bottom navigation view with navController
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNavigationView.selectedItemId = R.id.nav_graph_dashboard
-
-        val navGraphIds = listOf(R.navigation.nav_graph_dashboard, R.navigation.nav_graph_map, R.navigation.nav_graph_settings)
-
-        // Setup the bottom navigation view with a list of navigation graphs
-        val controller = bottomNavigationView.setupWithNavController(
-            navGraphIds = navGraphIds,
-            fragmentManager = supportFragmentManager,
-            containerId = R.id.nav_host_fragment,
-            intent = intent
-        )
-
-        // Whenever the selected controller changes, setup the action bar.
-//        controller.observe(this) { setupActionBarWithNavController(it) }
-        currentNavController = controller
+        bottomNavigationView.setupWithNavController(navController)
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return currentNavController?.value?.navigateUp() ?: false
+        return navController.navigateUp()
     }
 
     fun navigateDeeplink(deeplink: String) {
@@ -63,8 +42,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun navigateDeeplink(uri: Uri) {
-        val navGraphIds = listOf(R.navigation.nav_graph_dashboard, R.navigation.nav_graph_map, R.navigation.nav_graph_settings)
-        findViewById<BottomNavigationView>(R.id.bottomNav).navigateDeeplink(navGraphIds, supportFragmentManager, R.id.nav_host_fragment, uri)
+        navController.navigate(
+            uri,
+            navOptions {
+                restoreState = true
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+            }
+        )
     }
 
 }
