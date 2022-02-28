@@ -7,14 +7,15 @@ import kotlinx.coroutines.flow.*
 import kotlinx.datetime.*
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
+import kotlin.time.toTimeUnit
 
+@OptIn(ExperimentalTime::class)
 class LocationSharingManager(
     private val contractsDataSource: ISharingContractsLocalDataSource
 ) {
 
     companion object {
-        @OptIn(ExperimentalTime::class)
-        val publicSharingMaxDurationMillis: Long = DurationUnit.HOURS.toMillis(5)
+        val publicSharingMaxDurationMillis: Long = DurationUnit.HOURS.toTimeUnit().toMillis(5)
     }
 
     val allContractsFlow: Flow<List<LocationSharingContract>> =
