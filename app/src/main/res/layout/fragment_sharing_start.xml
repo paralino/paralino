@@ -69,6 +69,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvExtraHeader" />
 
+            <com.zbapp.locationtrack.ui.shared.list.ErrorListItemContainer
+                android:id="@+id/layoutErrors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/switchBattery"
+                />
+
             <View
                 android:id="@+id/progressFocus"
                 android:layout_width="match_parent"

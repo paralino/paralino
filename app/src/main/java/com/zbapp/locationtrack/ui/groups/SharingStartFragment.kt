@@ -12,6 +12,8 @@ import com.zbapp.locationtrack.databinding.FragmentSharingStartBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.dashboard.GroupItemData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
+import com.zbapp.locationtrack.ui.shared.list.ErrorItems
+import com.zbapp.locationtrack.ui.shared.list.ErrorListItem
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -88,9 +90,17 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
+        vb.layoutErrors.itemClick = {
+
+        }
+
         vm.selectedGroup.observe {
             vb.groupPicker.itemData = it
             vb.bShareStart.isEnabled = it.id.isNotBlank()
+        }
+
+        vm.locationStatus.observe {
+            vb.layoutErrors.itemData = ErrorItems(it)
         }
     }
 

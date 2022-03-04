@@ -35,7 +35,7 @@ val viewModelModules = module {
     viewModel { LoginViewModel(androidApplication(), get()) }
     viewModel { LoginCheckViewModel(androidApplication(), get()) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
-    viewModel { (args: SharingStartFragmentArgs?) -> SharingViewModel(args, get(), get()) }
+    viewModel { (args: SharingStartFragmentArgs?) -> SharingViewModel(androidApplication(), args, get(), get()) }
     viewModel { ManageInviteViewModel(androidApplication(), get()) }
     viewModel { (args: AccessCodeInputFragmentArgs?) -> AcceptInviteViewModel(androidApplication(), args, get(), get()) }
     viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get()) }
