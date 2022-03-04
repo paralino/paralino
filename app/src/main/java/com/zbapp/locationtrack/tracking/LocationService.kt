@@ -9,6 +9,7 @@ import com.zbapp.core.models.data
 import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.repo.NoValidContractsException
 import com.zbapp.core.repo.location.LocationRepository
+import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +49,13 @@ class LocationService : Service() {
     }
 
     private fun initTracking() {
+
+        (application as AppClass).locationStatus
+            .onEach {
+                notificationHandler.notify(this, it.toString())
+            }
+            .launchIn(serviceDefaultScope)
+
         locationRepository.sharingManager.sharingStatus
             .onEach {
                 logv("Location sharing status: $it")
