@@ -1,5 +1,6 @@
 package com.zbapp.core.repo
 
+import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
@@ -11,6 +12,7 @@ import kotlin.time.toTimeUnit
 
 @OptIn(ExperimentalTime::class)
 class LocationSharingManager(
+    scopeProvider: ICoroutineScopeProvider,
     private val contractsDataSource: ISharingContractsLocalDataSource
 ) {
 
@@ -18,12 +20,24 @@ class LocationSharingManager(
         val publicSharingMaxDurationMillis: Long = DurationUnit.HOURS.toTimeUnit().toMillis(5)
     }
 
-    val allContractsFlow: Flow<List<LocationSharingContract>> =
+    val allContractsFlow: StateFlow<List<LocationSharingContract>> =
         contractsDataSource.getAllContracts()
             .map { it.mapNotNull { it.asValidContract() } }
+            .stateIn(
+                scopeProvider.defaultScope,
+                SharingStarted.Lazily,
+                emptyList()
+            )
 
-    val sharingStatus: Flow<Boolean> = allContractsFlow.map { it.isNotEmpty() }.distinctUntilChanged()
-    suspend fun isSharingActive(): Boolean = sharingStatus.firstOrNull() ?: false
+    val sharingStatus: StateFlow<Boolean> = allContractsFlow.map { it.isNotEmpty() }
+        .stateIn(
+            scopeProvider.defaultScope,
+            SharingStarted.Lazily,
+            false
+        )
+
+    fun isSharingActive(): Boolean = sharingStatus.value
+
     fun isSharingActiveForGroup(id: String): Flow<Boolean> {
         return allContractsFlow.map {
             it.any { it.groupId == id }
