@@ -3,13 +3,16 @@ package com.zbapp.locationtrack.ui
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.collection.valueIterator
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.utils.extensions.safeCast
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +34,13 @@ class MainActivity : AppCompatActivity() {
         // Setup the bottom navigation view with navController
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNav)
         bottomNavigationView.setupWithNavController(navController)
+        bottomNavigationView.setOnItemReselectedListener { item ->
+            navController.graph.nodes.valueIterator().asSequence().firstOrNull {
+                it.id == item.itemId
+            }?.safeCast<NavGraph>()?.let {
+                navController.popBackStack(it.findStartDestination().id, false)
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
