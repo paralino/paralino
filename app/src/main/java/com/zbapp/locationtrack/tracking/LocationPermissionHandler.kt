@@ -12,15 +12,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import com.zbapp.locationtrack.AppClass
 
 class LocationPermissionHandler(
+    private val appClass: AppClass,
     private val context: Context,
     private val registry: ActivityResultRegistry
 ) : DefaultLifecycleObserver {
 
 
     constructor(fragment: Fragment) : this(
-        fragment.requireContext(),
+        fragment.requireActivity().application as AppClass,
+        fragment.requireActivity(),
         fragment.requireActivity().activityResultRegistry
     ) {
         fragment.lifecycle.addObserver(this)
@@ -34,17 +37,11 @@ class LocationPermissionHandler(
     private val requestStatusLiveData = MutableLiveData<LocationConditionStatus>()
     val requestStatus: LiveData<LocationConditionStatus> = requestStatusLiveData
 
-    private val statusLiveData = MutableLiveData<LocationConditionStatus>()
-    val status: LiveData<LocationConditionStatus> = statusLiveData
 
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     override fun onResume(owner: LifecycleOwner) {
         updateStatus()
     }
 
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     override fun onCreate(owner: LifecycleOwner) {
 
         locationPermissionLauncher = registry.register(
@@ -61,12 +58,12 @@ class LocationPermissionHandler(
     }
 
     fun updateRequestStatus() {
-        requestStatusLiveData.postValue(LocationConditionStatus.getLocationStatus(context))
+        requestStatusLiveData.postValue(LocationConditionStatus.getLocationStatus(appClass))
         updateStatus()
     }
 
     fun updateStatus() {
-        statusLiveData.postValue(LocationConditionStatus.getLocationStatus(context))
+        appClass.updateLocationStatus()
     }
 
 
@@ -74,20 +71,20 @@ class LocationPermissionHandler(
         needPermissionRationale = if (activityForRationale == null)
             false
         else
-            !ActivityCompat.shouldShowRequestPermissionRationale(
+            ActivityCompat.shouldShowRequestPermissionRationale(
                 activityForRationale,
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
 
         when {
-            LocationConditionStatus.hasLocationPermission(context) -> {
+            LocationConditionStatus.hasLocationPermission(appClass) -> {
                 updateRequestStatus()
                 return true
             }
             needPermissionRationale -> {
                 val intent = Intent().apply {
                     action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package", context.packageName, null)
+                    data = Uri.fromParts("package", appClass.packageName, null)
                 }
                 context.startActivity(intent)
                 return false
@@ -100,7 +97,7 @@ class LocationPermissionHandler(
     }
 
     fun askLocationService(): Boolean {
-        if (LocationConditionStatus.isLocationOn(context)) {
+        if (LocationConditionStatus.isLocationOn(appClass)) {
             updateRequestStatus()
             return true
         }
