@@ -30,7 +30,9 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
 
         binding.tvAppInfo.text = "v${BuildConfig.VERSION_NAME}"
 
-        binding.profileHeader.setOnClickListener { }
+        binding.profileHeader.setOnClickListener {
+            navigateDefault(R.id.loginFragment)
+        }
         binding.tvSettingAck.setOnClickListener { }
         binding.ivProfileEdit.setOnClickListener { }
         binding.tvLogout.setOnClickListener {
