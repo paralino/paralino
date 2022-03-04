@@ -29,7 +29,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { DashboardViewModel(androidApplication(), get(), get(), get(), get()) }
+    viewModel { DashboardViewModel(androidApplication(), get(), get(), get()) }
     viewModel { MapViewModel(get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { LoginViewModel(androidApplication(), get()) }

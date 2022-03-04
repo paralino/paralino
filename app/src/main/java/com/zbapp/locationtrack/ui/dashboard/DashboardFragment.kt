@@ -5,7 +5,6 @@ import android.view.View
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
-import com.zbapp.locationtrack.tracking.LocationService
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailFragmentArgs
@@ -14,9 +13,7 @@ import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItems
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
-import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpace
-import com.zbapp.locationtrack.ui.shared.list.ListItemEmptyState
-import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItem
+import com.zbapp.locationtrack.ui.shared.list.*
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import com.zbapp.locationtrack.utils.simpleAdapter
@@ -61,7 +58,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                         )
                     }
                 }.apply {
-                    onGroupActionClick = { vm.stopTracking() }
+                    onGroupActionClick = { vm.stopTracking(it.id) }
                 }
             }
             .addFactory { ListSubtitleItem(it) }
@@ -83,8 +80,8 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
     private fun setupObservers() {
 
         binding.bShare.setOnClickListener {
-            if (vm.isTrackingActive()) {
-                vm.stopTracking()
+            if (vm.isSharingActive()) {
+                vm.stopAllTracking()
             } else {
 //                permissionHandler.updateRequestStatus()
                 navigateDefault(R.id.sharingStartFragment)
@@ -95,10 +92,6 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             binding.rvDashboard.simpleAdapter?.submitList(it)
         }
 
-        permissionHandler.status.observe {
-            vm.locationStatus.value = it
-        }
-
         permissionHandler.requestStatus.observe {
             when {
                 !it.isPermissionAllowed -> {
@@ -106,10 +99,6 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                 }
                 !it.isGpsOn -> {
                     showNoLocationServicesWarning()
-                }
-                it.isOK() -> {
-                    vm.startTracking()
-                    LocationService.start(context ?: return@observe)
                 }
             }
         }
