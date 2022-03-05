@@ -18,7 +18,7 @@ class ErrorListItem(context: Context, attributeSet: AttributeSet? = null) :
 
     init {
         setFullWidth()
-        vb.root.clipToOutline = true
+        vb.errorItemParent.clipToOutline = true
     }
 
     override fun applyData(data: ErrorListItemType) {
