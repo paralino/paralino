@@ -9,10 +9,6 @@ import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailFragmentArgs
 import com.zbapp.locationtrack.ui.shared.DeeplinkManager
-import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
-import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
-import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItems
-import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
 import com.zbapp.locationtrack.ui.shared.list.*
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
 import com.zbapp.locationtrack.utils.extensions.viewBinding
@@ -44,8 +40,8 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             .addFactory {
                 ErrorListItem(it).withDataOnClickAction {
                     when (it) {
-                        ErrorListItemType.GPS -> showNoLocationServicesWarning()
-                        ErrorListItemType.PERMISSION -> showNoLocationPermissionWarning()
+                        ErrorListItemType.GPS -> permissionHandler.askLocationService()
+                        ErrorListItemType.PERMISSION -> permissionHandler.askLocationPermission()
                     }
                 }
             }
@@ -83,7 +79,6 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             if (vm.isSharingActive()) {
                 vm.stopAllTracking()
             } else {
-//                permissionHandler.updateRequestStatus()
                 navigateDefault(R.id.sharingStartFragment)
             }
         }
@@ -92,46 +87,6 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             binding.rvDashboard.simpleAdapter?.submitList(it)
         }
 
-        permissionHandler.requestStatus.observe {
-            when {
-                !it.isPermissionAllowed -> {
-                    showNoLocationPermissionWarning()
-                }
-                !it.isGpsOn -> {
-                    showNoLocationServicesWarning()
-                }
-            }
-        }
-
-    }
-
-    private fun showNoLocationPermissionWarning() {
-        BottomSheetDialog.show(
-            this, mutableListOf(
-                BottomSheetTitleData("Location permission"),
-                BottomSheetActionData("ok", R.string.button_ok),
-                BottomSheetItems.CANCEL
-            )
-        ) { _, bundle ->
-            if (BottomSheetDialog.getAction(bundle)?.id == "ok") {
-                permissionHandler.askLocationPermission(requireActivity())
-            }
-        }
-    }
-
-
-    private fun showNoLocationServicesWarning() {
-        BottomSheetDialog.show(
-            this, mutableListOf(
-                BottomSheetTitleData("Location gps"),
-                BottomSheetActionData("ok", R.string.button_ok),
-                BottomSheetItems.CANCEL
-            )
-        ) { _, bundle ->
-            if (BottomSheetDialog.getAction(bundle)?.id == "ok") {
-                permissionHandler.askLocationService()
-            }
-        }
     }
 
 }

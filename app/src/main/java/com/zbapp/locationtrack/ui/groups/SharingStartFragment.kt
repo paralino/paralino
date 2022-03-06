@@ -9,11 +9,13 @@ import androidx.navigation.fragment.findNavController
 import com.zbapp.core.utils.SharingDurationPreset
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentSharingStartBinding
+import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.dashboard.GroupItemData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.list.ErrorItems
 import com.zbapp.locationtrack.ui.shared.list.ErrorListItem
+import com.zbapp.locationtrack.ui.shared.list.ErrorListItemType
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -23,7 +25,13 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
 
     private val vb by viewBinding(FragmentSharingStartBinding::bind)
     private val vm: SharingViewModel by viewModel { parametersOf(arguments?.let { SharingStartFragmentArgs.fromBundle(it) }) }
+    private lateinit var permissionHandler: LocationPermissionHandler
     private var animating: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        permissionHandler = LocationPermissionHandler(this)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,7 +99,10 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
         })
 
         vb.layoutErrors.itemClick = {
-
+            when(it) {
+                ErrorListItemType.GPS -> permissionHandler.askLocationService()
+                ErrorListItemType.PERMISSION -> permissionHandler.askLocationPermission()
+            }
         }
 
         vm.selectedGroup.observe {

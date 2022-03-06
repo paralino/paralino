@@ -2,7 +2,6 @@ package com.zbapp.locationtrack.tracking
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -11,12 +10,18 @@ import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.snackbar.Snackbar
 import com.zbapp.locationtrack.AppClass
+import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.shared.AppSnackbar
+import com.zbapp.locationtrack.ui.shared.AppSnackbarData
+import com.zbapp.locationtrack.utils.extensions.attributedBold
 
 class LocationPermissionHandler(
     private val appClass: AppClass,
-    private val context: Context,
+    private val activity: Activity,
     private val registry: ActivityResultRegistry
 ) : DefaultLifecycleObserver {
 
@@ -29,81 +34,115 @@ class LocationPermissionHandler(
         fragment.lifecycle.addObserver(this)
     }
 
-    private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var locationPermissionLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var locationServiceLauncher: ActivityResultLauncher<Intent>
 
-    private var needPermissionRationale: Boolean = false
+    private var snackBar: AppSnackbar? = null
+    private var denied: Boolean = false
 
-    private val requestStatusLiveData = MutableLiveData<LocationConditionStatus>()
-    val requestStatus: LiveData<LocationConditionStatus> = requestStatusLiveData
-
-
-    override fun onResume(owner: LifecycleOwner) {
-        updateStatus()
-    }
 
     override fun onCreate(owner: LifecycleOwner) {
 
         locationPermissionLauncher = registry.register(
-            "key_location", owner, ActivityResultContracts.RequestPermission()
+            "key_location_${this.hashCode()}", owner, ActivityResultContracts.RequestMultiplePermissions()
         ) {
-            updateRequestStatus()
+            denied = it.none { it.value }
+            if (denied) {
+                showLocationDeniedInfo()
+            }
+            updateStatus()
         }
 
         locationServiceLauncher = registry.register(
-            "key_result_location", owner, ActivityResultContracts.StartActivityForResult()
+            "key_result_location_${this.hashCode()}", owner, ActivityResultContracts.StartActivityForResult()
         ) {
-            updateRequestStatus()
+            askLocationService()
         }
     }
 
-    fun updateRequestStatus() {
-        requestStatusLiveData.postValue(LocationConditionStatus.getLocationStatus(appClass))
+    override fun onResume(owner: LifecycleOwner) {
+        denied = false
         updateStatus()
     }
 
-    fun updateStatus() {
+    override fun onStop(owner: LifecycleOwner) {
+        snackBar?.dismiss()
+        snackBar = null
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        locationPermissionLauncher.unregister()
+        locationServiceLauncher.unregister()
+    }
+
+    private fun updateStatus() {
         appClass.updateLocationStatus()
     }
 
+    private fun shouldShowRationale(): Boolean {
+        return ActivityCompat.shouldShowRequestPermissionRationale(
+            activity,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    }
 
-    fun askLocationPermission(activityForRationale: Activity? = null): Boolean {
-        needPermissionRationale = if (activityForRationale == null)
-            false
-        else
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                activityForRationale,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-
+    fun askLocationPermission() {
         when {
             LocationConditionStatus.hasLocationPermission(appClass) -> {
-                updateRequestStatus()
-                return true
+                updateStatus()
             }
-            needPermissionRationale -> {
-                val intent = Intent().apply {
-                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package", appClass.packageName, null)
-                }
-                context.startActivity(intent)
-                return false
+            !shouldShowRationale() && denied -> {
+                showLocationDeniedInfo()
             }
             else -> {
-                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                return false
+                locationPermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
             }
         }
     }
 
-    fun askLocationService(): Boolean {
+    fun askLocationService() {
         if (LocationConditionStatus.isLocationOn(appClass)) {
-            updateRequestStatus()
-            return true
+            updateStatus()
+        } else {
+            showGPSOffInfo()
         }
+    }
 
-        locationServiceLauncher.launch(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-        return false
+    private fun showLocationDeniedInfo() {
+        snackBar = AppSnackbar.make(
+            activity.window.peekDecorView()?.findViewById(R.id.mainActivityRoot),
+            AppSnackbarData(
+                text = appClass.getString(R.string.error_location_permission_missing_sheet_message).attributedBold(appClass),
+                actionText = "Settings",
+                duration = Snackbar.LENGTH_INDEFINITE
+            )
+        ) {
+            snackBar?.dismiss()
+            val intent = Intent().apply {
+                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                data = Uri.fromParts("package", appClass.packageName, null)
+            }
+            activity.startActivity(intent)
+        }?.also { it.show() }
+    }
+
+    private fun showGPSOffInfo() {
+        snackBar = AppSnackbar.make(
+            activity.window.peekDecorView()?.findViewById(R.id.mainActivityRoot),
+            AppSnackbarData(
+                text = appClass.getString(R.string.error_location_service_missing_sheet_message).attributedBold(appClass),
+                actionText = "Settings",
+                duration = Snackbar.LENGTH_INDEFINITE
+            )
+        ) {
+            snackBar?.dismiss()
+            locationServiceLauncher.launch(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        }?.also { it.show() }
     }
 
 }

@@ -73,6 +73,7 @@
                 android:id="@+id/layoutErrors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_side_margin_large"
                 app:layout_constraintTop_toBottomOf="@id/switchBattery"
                 />
 
