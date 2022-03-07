@@ -99,7 +99,7 @@ class LocationInitHandler(
     }
 
     private var locationCallback = object: LocationCallback() {
-        override fun onLocationResult(location: LocationResult?) {
+        override fun onLocationResult(location: LocationResult) {
             location?.lastLocation?.let {
                 val value = LocationDataModel(
                     it.latitude, it.longitude, it.accuracy, it.time.toDateTimeUTC().toLocalString(), context.batterLevel
