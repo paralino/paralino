@@ -208,7 +208,7 @@ class GroupsRemoteSource constructor(
             groups.map { group ->
                 GroupWithMemberRaw(
                     group = group,
-                    members = members
+                    members = members.filter { it.groupId == group.id }
                 )
             }
         }
