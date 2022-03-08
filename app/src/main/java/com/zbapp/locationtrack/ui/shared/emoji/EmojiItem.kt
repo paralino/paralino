@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import com.zbapp.locationtrack.databinding.ElementEmojiBinding
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItemData
 import com.zbapp.locationtrack.utils.BaseRvItem
-import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import kotlinx.parcelize.Parcelize
 
@@ -14,10 +13,6 @@ class EmojiItem(context: Context, attributeSet: AttributeSet? = null)
     : BaseRvItem<EmojiItemData>(context, attributeSet) {
 
     val vb by viewBinding(ElementEmojiBinding::inflate)
-
-    init {
-        vb.tvGroupEmoji.clipToOutline = true
-    }
 
     override fun applyData(data: EmojiItemData) {
         vb.tvGroupEmoji.text = data.content

@@ -21,8 +21,8 @@ class EmojiPickerFragment: BottomSheetDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvBottomSheet.layoutManager = GridLayoutManager(requireContext(), 8)
-        binding.rvBottomSheet.updatePaddingRelative(start = 16.dp2px, end = 16.dp2px)
+        binding.rvBottomSheet.layoutManager = GridLayoutManager(requireContext(), 7)
+        binding.rvBottomSheet.updatePaddingRelative(start = 12.dp2px, end = 12.dp2px)
     }
 
 }
