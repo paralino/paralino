@@ -52,6 +52,11 @@ class LocationService : Service() {
 
         (application as AppClass).locationStatus
             .onEach {
+                if(it.isOK()) {
+                    locationInitHandler.startLocationUpdates()
+                } else {
+                    locationInitHandler.stopLocationUpdates()
+                }
                 notificationHandler.notify(this, it.toString())
             }
             .launchIn(serviceDefaultScope)
@@ -60,7 +65,7 @@ class LocationService : Service() {
             .onEach {
                 logv("Location sharing status: $it")
                 if (it) startTracking()
-                else stopAll()
+//                else stopAll()
             }
             .catch {
                 loge(it)
@@ -70,7 +75,6 @@ class LocationService : Service() {
     }
 
     private fun startTracking() {
-        locationInitHandler.startLocationUpdates(mainLooper)
         locationJob?.cancel()
         locationJob = locationInitHandler.currentLocation
             .onEach {

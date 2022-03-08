@@ -87,9 +87,10 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
             .onEach {
                 if(it) {
                     LocationService.start(this)
-                    locationInit.startLocationUpdates()
+                } else {
+                    locationInit.stopLocationUpdates()
+                    this.stopService(Intent(this, LocationService::class.java))
                 }
-                else locationInit.stopLocationUpdates()
             }
             .launchIn(defaultScope)
 

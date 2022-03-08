@@ -38,7 +38,7 @@
             android:name=".tracking.LocationService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="location" />
+            android:foregroundServiceType="location|dataSync" />
     </application>
 
 </manifest>
