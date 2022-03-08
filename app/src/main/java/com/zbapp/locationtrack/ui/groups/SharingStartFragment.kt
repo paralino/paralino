@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.widget.SeekBar
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.zbapp.core.utils.SharingDurationPreset
 import com.zbapp.locationtrack.R
@@ -14,8 +15,9 @@ import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.dashboard.GroupItemData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.list.ErrorItems
-import com.zbapp.locationtrack.ui.shared.list.ErrorListItem
 import com.zbapp.locationtrack.ui.shared.list.ErrorListItemType
+import com.zbapp.locationtrack.ui.shared.snackBarSimple
+import com.zbapp.locationtrack.utils.extensions.attributedBold
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -78,10 +80,25 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
         }
 
         vb.bShareStart.setOnClickListener {
-            val duration = SharingDurationPreset.presets.getOrNull(vb.timeSeekBar.progress)
-                ?: SharingDurationPreset.day
-            vm.startSharing(duration).observe {
-                if(it) findNavController().popBackStack()
+            when {
+                vm.selectedGroup.value?.id.isNullOrBlank() -> {
+                    snackBarSimple(vb.bShareStart, getString(R.string.invite_connect_alert_pickGroup))
+                }
+                vm.locationStatus.value?.isOK() == true -> {
+                    enableSharing()
+                }
+                else -> {
+                    val errorSection = ErrorItems(vm.locationStatus.value!!).list.map { getString(it.nameRes) }
+                        .joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.groups_sharing_potential_error_title)
+                        .setMessage(getString(R.string.groups_sharing_potential_error_message, errorSection).attributedBold(requireContext()))
+                        .setPositiveButton(R.string.groups_sharing_button_enable) { _, _ ->
+                            enableSharing()
+                        }
+                        .setNegativeButton(R.string.button_cancel, null)
+                        .show()
+                }
             }
         }
 
@@ -107,11 +124,26 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
 
         vm.selectedGroup.observe {
             vb.groupPicker.itemData = it
-            vb.bShareStart.isEnabled = it.id.isNotBlank()
         }
 
         vm.locationStatus.observe {
+            vb.bShareStart.setText(
+                if(it.isOK()) R.string.groups_sharing_button_start
+                else R.string.groups_sharing_button_enable
+            )
+            vb.bShareStart.setIconResource(
+                if(it.isOK()) R.drawable.ic_pin_sharing
+                else R.drawable.ic_pin_unknown
+            )
             vb.layoutErrors.itemData = ErrorItems(it)
+        }
+    }
+
+    private fun enableSharing() {
+        val duration = SharingDurationPreset.presets.getOrNull(vb.timeSeekBar.progress)
+            ?: SharingDurationPreset.day
+        vm.startSharing(duration).observe {
+            if(it) findNavController().popBackStack()
         }
     }
 

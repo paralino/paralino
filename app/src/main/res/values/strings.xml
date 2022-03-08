@@ -116,9 +116,12 @@
     <string name="groups_sharing_section_title_extra">Extra</string>
     <string name="groups_sharing_setting_battery_share">Include battery status</string>
     <string name="groups_sharing_button_start">Start sharing</string>
+    <string name="groups_sharing_button_enable">Enable sharing</string>
     <string name="groups_sharing_title">Share location</string>
+    <string name="groups_sharing_potential_error_title">Warning</string>
+    <string name="groups_sharing_potential_error_message">Sharing will start **automatically** once you resolve all the errors: \n\n%s\n</string>
 
-    <string name="groups_sharing_duration_type_infinite">Endless</string>
+    <string name="groups_sharing_duration_type_infinite">Always on</string>
 
     <string name="invite_create_button">CREATE PERSONAL ID</string>
     <string name="toast_copy_invite_code">ID copied</string>
