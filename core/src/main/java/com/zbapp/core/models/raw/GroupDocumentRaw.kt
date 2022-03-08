@@ -14,7 +14,6 @@ data class GroupDocumentRaw constructor(
     val data: String = ""
 ) {
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun toPostJson(): Map<String, Any> {
         return buildMap {
             put("ownerPublicKey", ownerPublicKey)

@@ -30,7 +30,8 @@ class CreateGroupViewModel(
                     id = group.id,
                     name = group.name,
                     image = group.emoji,
-                    memberCount = 0
+                    memberCount = 0,
+                    sharingActive = false
                 )
             }
         }

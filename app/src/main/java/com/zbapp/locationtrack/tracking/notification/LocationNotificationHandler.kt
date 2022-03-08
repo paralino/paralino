@@ -21,7 +21,7 @@ class LocationNotificationHandler (
         ContextCompat.getColor(context, R.color.theme_light)
     }
 
-    fun notify(context: Context): Notification {
+    fun notify(context: Context, extra: String = ""): Notification {
 
         val notificationManager = NotificationManagerCompat.from(context)
 
@@ -33,6 +33,8 @@ class LocationNotificationHandler (
 
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
             .setContentTitle(context.getString(R.string.notifications_active_location_title))
+            .setContentText(extra)
+            .setStyle(NotificationCompat.BigTextStyle())
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)

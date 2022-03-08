@@ -5,28 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.zbapp.locationtrack.ui.shared.RoundImageView
-        android:id="@+id/ivClose"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_margin="@dimen/activity_side_margin_small"
-        android:foreground="?selectableItemBackground"
-        android:padding="6dp"
-        android:src="@drawable/ic_close"
-        app:backgroundColor="@color/theme_light"
-        app:cornerRadius="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_close"
+        app:title="@string/groups_sharing_title"
+        app:titleCentered="true" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingTop="@dimen/activity_side_margin"
-        android:paddingBottom="@dimen/bottomBar_spacing"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/bottomBar_spacing_large"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivClose">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:paddingBottom="@dimen/activity_side_margin_large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -36,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_side_margin"
-                android:paddingVertical="8dp"
+                android:paddingVertical="12dp"
                 android:text="@string/groups_sharing_section_title_group"
                 android:textColor="@color/theme_medium"
                 android:textSize="12sp"
@@ -50,6 +47,56 @@
                 android:layout_height="match_parent"
                 app:layout_constraintTop_toBottomOf="@id/tvWith" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvExtraHeader"
+                style="@style/TextStyle.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_side_margin"
+                android:paddingTop="@dimen/activity_side_margin"
+                android:text="@string/groups_sharing_section_title_extra"
+                android:textColor="@color/theme_medium"
+                android:textSize="12sp"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/progressBackground" />
+
+            <include
+                android:id="@+id/switchBattery"
+                layout="@layout/element_switch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvExtraHeader" />
+
+            <com.zbapp.locationtrack.ui.shared.list.ErrorListItemContainer
+                android:id="@+id/layoutErrors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_side_margin_large"
+                app:layout_constraintTop_toBottomOf="@id/switchBattery"
+                />
+
+            <View
+                android:id="@+id/progressFocus"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:alpha="0"
+                android:background="@color/backgroundMain"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/progressBackground"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginHorizontal="@dimen/activity_side_margin_medium"
+                android:background="@drawable/shape_main_rounded_full"
+                android:backgroundTint="@color/theme_light"
+                android:stateListAnimator="@animator/elevation_animator_seekbar_background"
+                app:layout_constraintBottom_toBottomOf="@id/timeSeekBar"
+                app:layout_constraintTop_toTopOf="@id/timeSeekBar" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDurationHeader"
@@ -57,7 +104,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_side_margin"
-                android:paddingVertical="8dp"
+                android:paddingVertical="12dp"
                 android:text="@string/groups_sharing_section_title_duration"
                 android:textColor="@color/theme_medium"
                 android:textSize="12sp"
@@ -78,10 +125,11 @@
                 android:drawableTint="@color/accentDark"
                 android:includeFontPadding="false"
                 android:paddingVertical="4dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="14dp"
+                android:stateListAnimator="@animator/elevation_animator_seekbar_background"
                 android:textColor="@color/light_theme_light"
-                android:textSize="20sp"
+                android:textSize="32sp"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
@@ -89,50 +137,18 @@
                 app:layout_constraintTop_toBottomOf="@id/tvDurationHeader"
                 tools:text="8 hours" />
 
-            <FrameLayout
-                android:id="@+id/progressHolder"
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/timeSeekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/activity_side_margin"
-                android:layout_marginTop="@dimen/activity_side_margin_very_small"
-                android:background="@drawable/shape_main_rounded_full"
-                android:backgroundTint="@color/theme_light"
-                android:padding="8dp"
-                app:layout_constraintTop_toBottomOf="@id/tvDuration">
-
-                <androidx.appcompat.widget.AppCompatSeekBar
-                    android:id="@+id/timeSeekBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:progressBackgroundTint="@color/transparent"
-                    android:progressTint="@color/transparent"
-                    android:thumb="@drawable/shape_progress_thumb"
-                    tools:progress="0" />
-            </FrameLayout>
-
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvExtraHeader"
-                style="@style/TextStyle.Light"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_side_margin"
-                android:paddingTop="@dimen/activity_side_margin"
-                android:text="@string/groups_sharing_section_title_extra"
-                android:textColor="@color/theme_medium"
-                android:textSize="12sp"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/progressHolder" />
-
-            <include
-                android:id="@+id/switchBattery"
-                layout="@layout/element_switch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvExtraHeader" />
+                android:layout_marginTop="@dimen/activity_side_margin_medium"
+                android:elevation="6dp"
+                android:progressBackgroundTint="@color/transparent"
+                android:progressTint="@color/transparent"
+                android:thumb="@drawable/shape_progress_thumb"
+                android:thumbOffset="-2dp"
+                app:layout_constraintTop_toBottomOf="@id/tvDuration"
+                tools:progress="0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -145,7 +161,6 @@
         android:layout_marginHorizontal="@dimen/activity_side_margin"
         android:layout_marginBottom="@dimen/bottomBar_spacing"
         android:backgroundTint="@color/fab_background_color"
-        android:enabled="false"
         android:text="@string/groups_sharing_button_start"
         app:icon="@drawable/ic_pin_sharing"
         app:layout_constraintBottom_toBottomOf="parent"

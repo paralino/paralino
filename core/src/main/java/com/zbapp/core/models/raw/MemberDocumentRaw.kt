@@ -19,7 +19,6 @@ data class MemberDocumentRaw constructor(
     val mutableData: String? = null
 ) {
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun toPostJson(): Map<String, Any?> {
         return buildMap {
             put("ownerUserId", ownerUserId)

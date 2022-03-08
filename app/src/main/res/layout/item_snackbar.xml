@@ -21,7 +21,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvText"
-            style="@style/TextStyle.Light"
+            style="@style/TextStyle.Regular"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_side_margin"

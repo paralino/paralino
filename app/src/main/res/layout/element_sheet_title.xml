@@ -11,7 +11,7 @@
         style="@style/TextStyle.Light"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/secondaryTextColor"
+        android:textColor="?android:textColorSecondary"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
         android:layout_marginTop="@dimen/activity_side_margin"
         android:layout_marginBottom="@dimen/activity_side_margin_medium_large"

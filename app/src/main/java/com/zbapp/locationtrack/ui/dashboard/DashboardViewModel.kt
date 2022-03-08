@@ -1,58 +1,54 @@
 package com.zbapp.locationtrack.ui.dashboard
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.*
 import com.zbapp.core.logg
-import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.user.LoginManager
-import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.tracking.LocationConditionStatus
-import com.zbapp.locationtrack.tracking.LocationInitHandler
+import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.ui.shared.list.EmptyStateData
+import com.zbapp.locationtrack.ui.shared.list.ErrorListItemType
 import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpaceData
-import com.zbapp.locationtrack.ui.shared.list.ListItemEmptyState
 import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItemData
 import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
-import com.zbapp.locationtrack.utils.extensions.toUTCString
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
 class DashboardViewModel(
     app: Application,
-    val locationInit: LocationInitHandler,
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
     private val loginManager: LoginManager
 ) : AndroidViewModel(app) {
 
-    val locationStatus = MutableStateFlow(LocationConditionStatus.getLocationStatus(app))
+    val locationStatus = myApp.locationStatus
 
-    fun isTrackingActive(): Boolean {
-        return locationInit.isTracking
+    fun isSharingActive(): Boolean {
+        return locationSharing.isSharingActive()
     }
 
     fun startTracking() {
+//        viewModelScope.launch {
+//            val max = LocalDateTime.now().plusMinutes(2).toUTCString()
+//            locationSharing.startSharing(LocationSharingContract(UserGroup.personalTrackingId, max))
+//        }
+    }
+
+    fun stopAllTracking() {
         viewModelScope.launch {
-            val max = LocalDateTime.now().plusMinutes(2).toUTCString()
-            locationSharing.startSharing(LocationSharingContract(UserGroup.personalTrackingId, max))
+            locationSharing.stopAllSharing()
         }
     }
 
-    fun stopTracking() {
-        locationInit.stopLocationUpdates()
+    fun stopTracking(groupId: String) {
         viewModelScope.launch {
-            locationSharing.stopAllSharing()
+            locationSharing.stopSharing(groupId)
         }
     }
 
@@ -88,7 +84,7 @@ class DashboardViewModel(
         ) { location, groups, sharing ->
             val list = mutableListOf<ListItemType>()
 
-            if (locationSharing.isSharingActive()) {
+            if (isSharingActive()) {
                 if (!location.isGpsOn)
                     list.add(ErrorListItemType.GPS)
                 if (!location.isPermissionAllowed)

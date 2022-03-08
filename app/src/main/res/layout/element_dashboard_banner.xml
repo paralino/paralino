@@ -1,58 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginHorizontal="@dimen/activity_side_margin"
-    android:layout_marginVertical="@dimen/activity_side_margin_small"
-    android:background="@drawable/shape_main_rounded_background"
-    android:backgroundTint="@color/errorBannerBackground"
-    android:foreground="?selectableItemBackgroundBorderless"
-    android:elevation="0dp"
-    android:paddingVertical="@dimen/activity_side_margin_small"
-    >
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/ivBannerIcon"
-        android:layout_width="16dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/errorItemParent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        tools:src="@drawable/ic_location_off"
-        android:layout_marginStart="@dimen/activity_side_margin"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvBannerTitle"
-        style="@style/TextStyle.Regular"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_side_margin_small"
-        tools:text="@string/location_banner_sharing_active"
-        android:textSize="14sp"
-        android:textColor="@color/secondaryTextColor"
-        android:includeFontPadding="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ivBannerIcon"
-        app:layout_constraintTop_toTopOf="parent"
-         />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvBannerInfo"
-        style="@style/TextStyle.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/activity_side_margin_medium"
-        android:paddingVertical="@dimen/activity_side_margin_very_small"
-        android:text="@string/location_banner_fix"
-        android:textSize="13sp"
-        android:layout_marginEnd="@dimen/activity_side_margin_small"
+        android:layout_marginHorizontal="@dimen/activity_side_margin"
+        android:layout_marginVertical="@dimen/activity_side_margin_very_small"
         android:background="@drawable/shape_main_rounded_background"
-        android:textColor="@color/highlightRed"
+        android:backgroundTint="@color/errorBannerBackground"
+        android:elevation="0dp"
+        android:foreground="?selectableItemBackgroundBorderless"
+        android:paddingVertical="@dimen/activity_side_margin_small"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivBannerIcon"
+            android:layout_width="16dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_side_margin"
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_location_off" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvBannerTitle"
+            style="@style/TextStyle.Regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_side_margin_small"
+            android:includeFontPadding="false"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="14sp"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivBannerIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvBannerInfo"
+            app:layout_constraintHorizontal_bias="0"
+            tools:text="@string/location_banner_sharing_active" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvBannerInfo"
+            style="@style/TextStyle.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_side_margin_small"
+            android:background="@drawable/shape_main_rounded_background"
+            android:paddingHorizontal="@dimen/activity_side_margin_medium"
+            android:paddingVertical="@dimen/activity_side_margin_very_small"
+            android:text="@string/location_banner_fix"
+            android:textColor="@color/highlightRed"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

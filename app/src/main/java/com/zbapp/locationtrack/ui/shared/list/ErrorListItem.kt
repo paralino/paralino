@@ -1,12 +1,14 @@
-package com.zbapp.locationtrack.ui.dashboard
+package com.zbapp.locationtrack.ui.shared.list
 
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.databinding.ElementBannerContainerBinding
 import com.zbapp.locationtrack.databinding.ElementDashboardBannerBinding
-import com.zbapp.locationtrack.utils.BaseRvItem
-import com.zbapp.locationtrack.utils.ListItemType
+import com.zbapp.locationtrack.tracking.LocationConditionStatus
+import com.zbapp.locationtrack.utils.*
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 
 class ErrorListItem(context: Context, attributeSet: AttributeSet? = null) :
@@ -16,7 +18,7 @@ class ErrorListItem(context: Context, attributeSet: AttributeSet? = null) :
 
     init {
         setFullWidth()
-        vb.root.clipToOutline = true
+        vb.errorItemParent.clipToOutline = true
     }
 
     override fun applyData(data: ErrorListItemType) {
@@ -27,6 +29,39 @@ class ErrorListItem(context: Context, attributeSet: AttributeSet? = null) :
         data.endActionTextRes.takeIf { it != 0 }?.let { vb.tvBannerInfo.setText(it) }
     }
 
+}
+
+class ErrorListItemContainer(context: Context, attributeSet: AttributeSet? = null) :
+    BaseRvItem<ErrorItems>(context, attributeSet) {
+
+    val vb by viewBinding(ElementBannerContainerBinding::inflate)
+    var itemClick: ((ErrorListItemType) -> Unit)? = null
+
+    init {
+        setFullWidth()
+    }
+
+    override fun applyData(data: ErrorItems) {
+        vb.root.removeAllViews()
+        data.list.forEach { error ->
+            val item = ErrorListItem(context).apply {
+                itemData = error
+            }.withDataOnClickAction(itemClick)
+            vb.root.addView(item)
+        }
+    }
+
+}
+
+data class ErrorItems(
+    val list: List<ErrorListItemType>
+) {
+    constructor(status: LocationConditionStatus): this(
+        mutableListOf<ErrorListItemType>().apply {
+            if(!status.isPermissionAllowed) add(ErrorListItemType.PERMISSION)
+            if(!status.isGpsOn) add(ErrorListItemType.GPS)
+        }.toList()
+    )
 }
 
 enum class ErrorListItemType : ListItemType {

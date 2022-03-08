@@ -133,6 +133,7 @@ class GroupRepository constructor(
     }
 
     private suspend fun handleGroupKeysUpdate(group: GroupWithMemberRaw): GroupWithMemberRaw {
+        // TODO handle errors
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
         return updateGroupKeyAndRefresh(remoteGroup, force = false)
             ?: updateMemberKeyAndRefresh(remoteGroup)

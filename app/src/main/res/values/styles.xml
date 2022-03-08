@@ -15,10 +15,11 @@
         <item name="colorSecondaryVariant">@color/accentDark</item>
         <item name="colorOnSecondary">@color/theme_lightest</item>
 
+        <item name="colorControlNormal">?android:textColorPrimary</item>
         <item name="colorControlHighlight">@color/alpha_grey_highlight</item>
 
-        <item name="android:textColorPrimary">@color/theme_highest</item>
-        <item name="android:textColorSecondary">@color/theme_high</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
 
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>

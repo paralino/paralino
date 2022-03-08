@@ -22,6 +22,8 @@
     <string name="error_something_wrong_http">Something went wrong! [%d]</string>
     <string name="error_generic_snacbar">Ups, please try again.</string>
     <string name="error_user_not_found">User does not exist</string>
+    <string name="error_location_permission_missing_sheet_message">Location permission is **required** in order to successfully track and share your location with others.</string>
+    <string name="error_location_service_missing_sheet_message">Please enable **device location** in order to successfully locate your device.</string>
 
     <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
     <string name="error_crypto_key_missing_user">Your cryptographic keys are missing.</string>
@@ -45,8 +47,8 @@
     <string name="dashboard_info_logged_out">Log in to start sharing your location.</string>
     <string name="dashboard_info_no_groups">You don\'t have any groups yet.\nCreate one to start sharing your location.</string>
 
-    <string name="location_banner_error_gps_off">GPS is off</string>
-    <string name="location_banner_error_no_permission">Missing permission</string>
+    <string name="location_banner_error_gps_off">Device location is disabled</string>
+    <string name="location_banner_error_no_permission">Missing location permission</string>
 
     <string name="settings_profile_name_placeholder">Your name</string>
     <string name="settings_profile_username_placeholder">Your email</string>
@@ -114,8 +116,12 @@
     <string name="groups_sharing_section_title_extra">Extra</string>
     <string name="groups_sharing_setting_battery_share">Include battery status</string>
     <string name="groups_sharing_button_start">Start sharing</string>
+    <string name="groups_sharing_button_enable">Enable sharing</string>
+    <string name="groups_sharing_title">Share location</string>
+    <string name="groups_sharing_potential_error_title">Warning</string>
+    <string name="groups_sharing_potential_error_message">Sharing will start **automatically** once you resolve all the errors: \n\n%s\n</string>
 
-    <string name="groups_sharing_duration_type_infinite">Endless</string>
+    <string name="groups_sharing_duration_type_infinite">Always on</string>
 
     <string name="invite_create_button">CREATE PERSONAL ID</string>
     <string name="toast_copy_invite_code">ID copied</string>
