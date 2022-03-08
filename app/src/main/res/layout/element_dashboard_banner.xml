@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_side_margin_small"
             android:includeFontPadding="false"
-            android:textColor="@color/secondaryTextColor"
+            android:textColor="?android:textColorPrimary"
             android:textSize="14sp"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"

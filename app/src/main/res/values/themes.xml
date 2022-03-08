@@ -18,4 +18,7 @@
     <color name="theme_accentLightDark">@color/accentLight</color>
     <color name="theme_accentDarkVeryLight">@color/accentDark</color>
 
+    <color name="primaryTextColor">@color/textColorDark</color>
+    <color name="secondaryTextColor">@color/theme_medium</color>
+
 </resources>

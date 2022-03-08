@@ -13,6 +13,9 @@
     <color name="dark_theme_high">#DDDDDD</color>
     <color name="dark_theme_highest">#F1F1F1</color>
 
+    <color name="textColorDark">#383838</color>
+    <color name="textColorLight">#DDDDDD</color>
+
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
@@ -27,12 +30,10 @@
     <color name="accentVeryLight">#E0F2F1</color>
     <color name="accentDark">#00796B</color>
 
-    <color name="primaryTextColor">@color/theme_highest</color>
-    <color name="secondaryTextColor">@color/theme_high</color>
-
     <color name="alpha_grey_strong">#80000000</color>
     <color name="alpha_grey_mask">#55737373</color>
     <color name="alpha_grey_highlight">#20737373</color>
+    <color name="alpha_grey_highlight2">#10737373</color>
 
     <color name="secondaryColor">#f0f4c3</color>
     <color name="secondaryLightColor">#fffff6</color>

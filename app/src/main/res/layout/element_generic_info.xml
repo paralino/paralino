@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_side_margin_large"
         android:gravity="center"
-        android:textColor="@color/secondaryTextColor"
+        android:textColor="?android:textColorSecondary"
         android:lineSpacingExtra="2dp"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"

@@ -99,7 +99,6 @@
         android:gravity="start|center_vertical"
         android:lineSpacingExtra="5dp"
         android:maxLines="5"
-        android:textColor="@color/primaryTextColor"
         android:textSize="12sp"
         android:visibility="gone"
         app:layout_constrainedWidth="true"

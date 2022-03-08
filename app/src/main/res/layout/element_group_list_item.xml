@@ -36,7 +36,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvGroupName"
-            style="@style/TextStyle.Regular"
+            style="@style/TextStyle.Medium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_side_margin"
