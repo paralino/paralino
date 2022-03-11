@@ -67,6 +67,10 @@ class LocationLocalDataSource(
         return dao.memberCountInGroup(groupId)
     }
 
+    override suspend fun getUserMemberIds(userId: String, groupId: String): List<String> {
+        return dao.getUserMemberIds(userId, groupId)
+    }
+
     override suspend fun removeMember(id: String) {
         dao.removeMember(id)
     }

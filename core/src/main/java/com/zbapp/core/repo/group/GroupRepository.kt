@@ -64,6 +64,16 @@ class GroupRepository constructor(
         )
     }
 
+    fun refreshGroupWithMembers(id: String): Flow<GroupWithMemberRaw> {
+        return getDataOnce(
+            remote = {
+                remote.getGroupWithMembers(id)
+                // TODO refresh and handle keys
+            },
+            localUpdate = { local.updateOrCreateGroup(it) }
+        )
+    }
+
     fun createGroup(name: String, emoji: String): Flow<Unit> {
         return getDataOnce(
             remote = {
@@ -147,6 +157,8 @@ class GroupRepository constructor(
             logg.tag("tag_group_key_member").w("group member key is deprecated - rotating: ${remoteGroup.id} - ${memberMeRemote?.userId}")
             cryptoKEKRepo.rotateAllMemberKeys(remoteGroup)
             return getDataOnce(remote = { remote.getGroupWithMembers(remoteGroup.id) }).first()
+        } else {
+            logg.tag("tag_group_key_member").w("not rotating member keys: ${remoteGroup.id} - ${memberMeRemote?.userId}")
         }
 
         return null

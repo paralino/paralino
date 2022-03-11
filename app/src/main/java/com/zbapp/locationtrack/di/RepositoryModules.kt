@@ -88,7 +88,7 @@ val mappersModule = module {
 
 val remoteDataSourceModule = module {
     single { UserRemoteSource(get()) }
-    single { LocationRemoteSource(get(), get()) }
+    single { LocationRemoteSource(get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { InviteRemoteSource(get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get(), get(), get()) }

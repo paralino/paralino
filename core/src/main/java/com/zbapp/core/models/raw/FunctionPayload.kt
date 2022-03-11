@@ -71,3 +71,16 @@ data class GroupMemberDataPayload(
     val memberData: String,
     val mutableMemberData: String
 )
+
+@Serializable
+data class UpdateLocationFunctionData(
+    val data: List<LocationNodePayload>
+)
+
+@Serializable
+data class LocationNodePayload(
+    val memberId: String,
+    val groupId: String,
+    val mutableData: String?,
+    val memberKeyVersion: Long
+)

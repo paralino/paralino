@@ -34,11 +34,8 @@ interface MemberDao {
     @Query("SELECT COUNT(:groupId) FROM members")
     fun memberCountInGroup(groupId: String): Flow<Int>
 
-    @Query("SELECT groupId FROM members WHERE id = :id")
-    suspend fun getGroupIdForMember(id: String): String?
-
-    @Query("SELECT groupId FROM members WHERE userId = :id")
-    suspend fun getGroupIdsForUser(id: String): List<String>
+    @Query("SELECT id FROM members WHERE userId = :userId AND groupId = :groupId")
+    suspend fun getUserMemberIds(userId: String, groupId: String): List<String>
 
     @Query("SELECT ownerPublicKey FROM members WHERE groupId = :groupId AND userId = :userId")
     suspend fun getMemberPublicKeyOnce(groupId: String, userId: String): String?

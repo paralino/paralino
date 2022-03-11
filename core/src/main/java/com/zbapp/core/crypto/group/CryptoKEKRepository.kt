@@ -2,8 +2,9 @@ package com.zbapp.core.crypto.group
 
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.crypto.CryptoCore
-import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.crypto.DecryptedGroupKeyData
+import com.zbapp.core.crypto.user.CryptoUserKeyRepository
+import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
@@ -76,6 +77,7 @@ class CryptoKEKRepository(
                 groupKeys to memberKeys
             },
             localUpdate = {
+                logg.tag("tag_group_key_member").d("member key count for $groupId: ${it.second.size}")
                 local.recreateGroupKeyForGroup(groupId, it.first)
                 local.recreateMemberKeysForGroup(groupId, it.second)
             }
@@ -103,7 +105,7 @@ class CryptoKEKRepository(
         keyVersion: Long
     ): Boolean {
         return memberKeys.value
-            .filter { it.groupId == groupId && it.memberUserId == memberUserId}
+            .filter { it.groupId == groupId && it.memberUserId == memberUserId }
             .any { it.version == keyVersion }
     }
 
@@ -127,15 +129,19 @@ class CryptoKEKRepository(
         return getGroupKey(groupId, ownerPublicKey)
     }
 
-    suspend fun getGroupKey(groupId: String, ownerPublicKey: String, keyVersion: Long? = null): DecryptedGroupKeyData? {
+    suspend fun getGroupKey(
+        groupId: String,
+        ownerPublicKey: String,
+        keyVersion: Long? = null
+    ): DecryptedGroupKeyData? {
         val keyRaw = groupKeys.value
             .filter { it.groupId == groupId }
             .let {
-                if(keyVersion != null)
-                    // if key version is passed get matching key
+                if (keyVersion != null)
+                // if key version is passed get matching key
                     it.firstOrNull { it.version == keyVersion }
                 else
-                    // otherwise get latest key
+                // otherwise get latest key
                     it.maxByOrNull { it.version }
             }
             ?: return null
@@ -169,7 +175,12 @@ class CryptoKEKRepository(
         return getMemberKey(groupId, memberUserId, memberPublicKey)
     }
 
-    suspend fun getMemberKey(groupId: String, memberUserId: String, memberPublicKey: String): DecryptedGroupKeyData? {
+    suspend fun getMemberKey(
+        groupId: String,
+        memberUserId: String,
+        memberPublicKey: String
+    ): DecryptedGroupKeyData? {
+        logg.tag("tag_group_key_member").d("member key count: ${memberKeys.value.size}")
         val keyRaw = memberKeys.value
             .filter { it.groupId == groupId && it.ownerUserId == memberUserId }
             .maxByOrNull { it.version }
@@ -211,12 +222,12 @@ class CryptoKEKRepository(
         myKey: AsymmetricCryptoKeyData
     ): Flow<Unit> {
         return getDataOnce {
-                remote.rotateMemberKeysForGroup(
-                    group = group,
-                    groupKey = getLatestGroupKey(group.id)!!,
-                    myKey = myKey
-                )
-            }.map { Unit }
+            remote.rotateMemberKeysForGroup(
+                group = group,
+                groupKey = getLatestGroupKey(group.id)!!,
+                myKey = myKey
+            )
+        }.map { Unit }
     }
 
     suspend fun deleteGroupKeyForGroup(groupId: String) {
