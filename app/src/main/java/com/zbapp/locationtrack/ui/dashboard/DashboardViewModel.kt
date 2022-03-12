@@ -3,6 +3,7 @@ package com.zbapp.locationtrack.ui.dashboard
 import android.app.Application
 import androidx.lifecycle.*
 import com.zbapp.core.logg
+import com.zbapp.core.models.data
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.user.LoginManager
@@ -15,9 +16,7 @@ import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpaceData
 import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItemData
 import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class DashboardViewModel(
@@ -80,7 +79,7 @@ class DashboardViewModel(
         return combine(
             locationStatus,
             groupRepository.getAllGroups(),
-            locationSharing.allContractsFlow
+            locationSharing.allContractsFlow.map { it.data }.filterNotNull()
         ) { location, groups, sharing ->
             val list = mutableListOf<ListItemType>()
 

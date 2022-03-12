@@ -77,6 +77,7 @@ class LocationInitHandler(
 
 
     fun startLocationUpdates(looper: Looper = Looper.getMainLooper()) {
+        Logger.v("start location updates")
         val status = LocationConditionStatus.getLocationStatus(context)
         if(status.isOK()) {
             sessionId = randomString(20)
@@ -94,6 +95,7 @@ class LocationInitHandler(
 
 
     fun stopLocationUpdates() {
+        Logger.v("stopping all location updates")
         currentLocation.value = Payload.Error(LocationStoppedException())
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }

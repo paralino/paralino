@@ -21,6 +21,8 @@ class LocationNotificationHandler (
         ContextCompat.getColor(context, R.color.theme_light)
     }
 
+    // TODO add better description
+    // TODO show error message if there is no permission, gps is off, user is offline etc
     fun notify(context: Context, extra: String = ""): Notification {
 
         val notificationManager = NotificationManagerCompat.from(context)

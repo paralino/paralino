@@ -26,3 +26,23 @@ inline fun <reified T, R> Payload<T>.mapSuccess(action: (T) -> R): Payload<R> {
         Payload.Loading -> Payload.Loading
     }
 }
+
+sealed class Resource<out R> {
+
+    object NotInitialized : Resource<Nothing>()
+    data class Ready<out T>(val data: T) : Resource<T>()
+
+    override fun toString(): String {
+        return when (this) {
+            is Ready<*> -> "Ready[data=$data]"
+            is NotInitialized -> "NotInitialized"
+        }
+    }
+}
+
+fun <T: Any> T.toResource(): Resource<T> {
+    return Resource.Ready(this)
+}
+
+val <T> Resource<T>.data: T?
+    get() = (this as? Resource.Ready)?.data

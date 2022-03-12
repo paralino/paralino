@@ -1,8 +1,11 @@
 package com.zbapp.core.repo
 
 import com.zbapp.core.ICoroutineScopeProvider
+import com.zbapp.core.models.Resource
+import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
+import com.zbapp.core.models.toResource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.*
@@ -20,30 +23,36 @@ class LocationSharingManager(
         val publicSharingMaxDurationMillis: Long = DurationUnit.HOURS.toTimeUnit().toMillis(5)
     }
 
-    val allContractsFlow: StateFlow<List<LocationSharingContract>> =
+    val allContractsFlow: StateFlow<Resource<List<LocationSharingContract>>> =
         contractsDataSource.getAllContracts()
-            .map { it.mapNotNull { it.asValidContract() } }
+            .map { it.mapNotNull { it.asValidContract() }.toResource() }
             .stateIn(
                 scopeProvider.defaultScope,
                 SharingStarted.Lazily,
-                emptyList()
+                Resource.NotInitialized
             )
 
-    val sharingStatus: StateFlow<Boolean> = allContractsFlow.map { it.isNotEmpty() }
+    val sharingStatus: StateFlow<Resource<Boolean>> = allContractsFlow.map {
+        when(it) {
+            Resource.NotInitialized -> Resource.NotInitialized
+            is Resource.Ready -> Resource.Ready(!it.data.isNullOrEmpty())
+        }
+    }
         .stateIn(
             scopeProvider.defaultScope,
             SharingStarted.Lazily,
-            false
+            Resource.NotInitialized
         )
 
-    fun isSharingActive(): Boolean = sharingStatus.value
+    fun isSharingActive(): Boolean {
+        return sharingStatus.value.data == true
+    }
 
     fun isSharingActiveForGroup(id: String): Flow<Boolean> {
         return allContractsFlow.map {
-            it.any { it.groupId == id }
+            it.data?.any { it.groupId == id } ?: false
         }.distinctUntilChanged()
     }
-
 
     suspend fun startSharing(contract: LocationSharingContract) {
         contract.asValidContract()?.let {

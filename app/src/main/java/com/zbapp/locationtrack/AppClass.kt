@@ -15,6 +15,7 @@ import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.config
 import com.zbapp.core.connectionStatus
 import com.zbapp.core.logg
+import com.zbapp.core.models.data
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.utils.IConnectionStatusProvider
 import com.zbapp.locationtrack.data.PreCheckControl
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import logv
 import org.koin.android.ext.android.inject
 
 class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserver {
@@ -85,11 +87,10 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
         locationSharing.sharingStatus
             .onEach {
-                if(it) {
+                logv("Location sharing status changed: $it")
+                if(it.data == true) {
+                    logv("Location sharing contract ready, starting location service")
                     LocationService.start(this)
-                } else {
-                    locationInit.stopLocationUpdates()
-                    this.stopService(Intent(this, LocationService::class.java))
                 }
             }
             .launchIn(defaultScope)
