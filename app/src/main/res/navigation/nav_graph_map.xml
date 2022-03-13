@@ -13,6 +13,12 @@
         <deepLink
             android:id="@+id/deepLinkMap"
             app:uri=".*/map" />
+        <argument
+            android:name="groupId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"
+            />
     </fragment>
 
 </navigation>
