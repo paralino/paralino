@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_map" >
         <deepLink
             android:id="@+id/deepLinkMap"
-            app:uri=".*/map" />
+            app:uri=".*/map/{groupId}" />
         <argument
             android:name="groupId"
             app:argType="string"
