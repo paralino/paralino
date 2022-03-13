@@ -1,13 +1,19 @@
 package com.zbapp.core.utils
 
-import kotlin.math.min
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.toTimeUnit
 
+@OptIn(ExperimentalTime::class)
 object SharingDurationPreset {
 
     private const val second = 1_000L
     private const val minute = 60 * second
     const val hour = 60 * minute
     const val day = 24 * hour
+
+    const val backgroundAccessThreshold = 2 * day
+    val publicSharingMaxDurationMillis: Long = DurationUnit.HOURS.toTimeUnit().toMillis(5)
 
     val presets = listOf(
         15 * minute,

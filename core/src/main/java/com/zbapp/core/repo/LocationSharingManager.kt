@@ -3,25 +3,17 @@ package com.zbapp.core.repo
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.models.Resource
 import com.zbapp.core.models.data
-import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.models.toResource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import kotlinx.coroutines.flow.*
-import kotlinx.datetime.*
-import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
-import kotlin.time.toTimeUnit
 
 @OptIn(ExperimentalTime::class)
 class LocationSharingManager(
     scopeProvider: ICoroutineScopeProvider,
     private val contractsDataSource: ISharingContractsLocalDataSource
 ) {
-
-    companion object {
-        val publicSharingMaxDurationMillis: Long = DurationUnit.HOURS.toTimeUnit().toMillis(5)
-    }
 
     val allContractsFlow: StateFlow<Resource<List<LocationSharingContract>>> =
         contractsDataSource.getAllContracts()
@@ -79,30 +71,6 @@ class LocationSharingManager(
             ?.let { contractsDataSource.cancelContracts(it) }
 
         return valid
-    }
-
-    private fun LocationSharingContract.asValidContract(): LocationSharingContract? {
-
-        if(endTimeUTC == null) {
-            // invalid public sharing contract
-            // endless sharing for other groups
-            if(this.groupId == UserGroup.publicSharingId) return null
-            else return this
-        } else {
-            val date = LocalDateTime.parse(endTimeUTC).toInstant(TimeZone.UTC)
-            val now = Clock.System.now()
-            if(date <= now) {
-                // expired
-                return null
-            } else {
-                // limit public sharing if needed
-                val maxPublic = now.plus(publicSharingMaxDurationMillis, DateTimeUnit.MILLISECOND)
-                if(this.groupId == UserGroup.publicSharingId && date > maxPublic)
-                    return this.copy(endTimeUTC = maxPublic.toLocalDateTime(TimeZone.UTC).toString())
-
-                return this
-            }
-        }
     }
 
 }

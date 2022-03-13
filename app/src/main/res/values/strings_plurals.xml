@@ -21,5 +21,9 @@
         <item quantity="one">%d year</item>
         <item quantity="other">%d years</item>
     </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Sharing location to 1 group</item>
+        <item quantity="other">Sharing location to %d groups</item>
+    </plurals>
 
 </resources>

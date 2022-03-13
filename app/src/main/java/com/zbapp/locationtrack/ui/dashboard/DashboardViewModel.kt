@@ -84,11 +84,7 @@ class DashboardViewModel(
             val list = mutableListOf<ListItemType>()
 
             if (isSharingActive()) {
-                if (!location.isGpsOn)
-                    list.add(ErrorListItemType.GPS)
-                if (!location.isPermissionAllowed)
-                    list.add(ErrorListItemType.PERMISSION)
-
+                list.addAll(location.getPossibleErrors(forBackground = sharing.any { it.isLongTerm }))
                 if(!location.isOK()) {
                     list.add(ListItemEmptySpaceData(16.dp2px))
                 }

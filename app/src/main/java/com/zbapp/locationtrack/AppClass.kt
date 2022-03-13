@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.location.LocationManager
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.zbapp.core.ICoroutineScopeProvider
@@ -61,6 +62,8 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private val locationSharing: LocationSharingManager by inject()
     lateinit var locationStatus: MutableStateFlow<LocationConditionStatus>
 
+    val isForeground get() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+
     override fun onCreate() {
         super<Application>.onCreate()
         init()
@@ -90,7 +93,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
                 logv("Location sharing status changed: $it")
                 if(it.data == true) {
                     logv("Location sharing contract ready, starting location service")
-                    LocationService.start(this)
+                    LocationService.start(this, isForeground)
                 }
             }
             .launchIn(defaultScope)

@@ -23,6 +23,9 @@
     <string name="error_generic_snacbar">Ups, please try again.</string>
     <string name="error_user_not_found">User does not exist</string>
     <string name="error_location_permission_missing_sheet_message">Location permission is **required** in order to successfully track and share your location with others.</string>
+    <string name="error_location_precise_permission_missing_sheet_message">Please grant **precise location permission** in order to successfully track and share your location with others.</string>
+    <string name="error_location_background_permission_missing_sheet_message">Please allow **all the time** location access in order to **reliably and always** track and share your location with others.</string>
+    <string name="error_location_background_permission_missing_sheet_message_android11">Please grant **%s** location permission in order to **reliably and always** track and share your location with others.</string>
     <string name="error_location_service_missing_sheet_message">Please enable **device location** in order to successfully locate your device.</string>
 
     <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
@@ -30,7 +33,9 @@
     <string name="error_crypto_encryption_generic">Unable to encrypt data, please try again.</string>
     <string name="error_crypto_decryption_generic">Unable to decrypt data, please try again.</string>
 
-    <string name="notifications_active_location_title">Sharing location</string>
+    <string name="notifications_sharing_active_title">Sharing active</string>
+    <string name="notifications_sharing_error_title">Sharing on hold!</string>
+    <string name="notifications_sharing_error_message">Sharing is on hold because of the following errors:\n%s</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
 
     <string name="location_banner_sharing_active">Sharing location</string>
@@ -49,6 +54,8 @@
 
     <string name="location_banner_error_gps_off">Device location is disabled</string>
     <string name="location_banner_error_no_permission">Missing location permission</string>
+    <string name="location_banner_error_no_background_permission">Missing all time location permission</string>
+    <string name="location_banner_error_offline">Device is offline</string>
 
     <string name="settings_profile_name_placeholder">Your name</string>
     <string name="settings_profile_username_placeholder">Your email</string>
@@ -119,7 +126,9 @@
     <string name="groups_sharing_button_enable">Enable sharing</string>
     <string name="groups_sharing_title">Share location</string>
     <string name="groups_sharing_potential_error_title">Warning</string>
+    <string name="groups_sharing_potential_error_button_enable">Enable anyway</string>
     <string name="groups_sharing_potential_error_message">Sharing will start **automatically** once you resolve all the errors: \n\n%s\n</string>
+    <string name="groups_sharing_potential_error_background_location_message">Your location can not be shared if you restart your phone!\n\nPlease allow **all the time** location access for reliable sharing.</string>
 
     <string name="groups_sharing_duration_type_infinite">Always on</string>
 

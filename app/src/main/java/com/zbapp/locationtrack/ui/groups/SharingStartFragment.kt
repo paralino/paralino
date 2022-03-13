@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.zbapp.core.utils.SharingDurationPreset
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentSharingStartBinding
+import com.zbapp.locationtrack.tracking.LocationConditionStatus
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.dashboard.GroupItemData
@@ -30,6 +31,10 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
     private lateinit var permissionHandler: LocationPermissionHandler
     private var animating: Boolean = false
 
+    private val selectedPreset get() = SharingDurationPreset.presets.getOrNull(vb.timeSeekBar.progress)
+        ?: SharingDurationPreset.day
+    private val isLongTermSharing get() = selectedPreset >= SharingDurationPreset.backgroundAccessThreshold
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         permissionHandler = LocationPermissionHandler(this)
@@ -43,6 +48,7 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
     }
 
     private fun setUi() {
+        vb.progressFocus.isClickable = false
         vb.timeSeekBar.max = SharingDurationPreset.presets.size - 1
         vb.timeSeekBar.progress = 2
         vb.tvDuration.text = getTime(SharingDurationPreset.presets[vb.timeSeekBar.progress])
@@ -84,16 +90,28 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
                 vm.selectedGroup.value?.id.isNullOrBlank() -> {
                     snackBarSimple(vb.bShareStart, getString(R.string.invite_connect_alert_pickGroup))
                 }
-                vm.locationStatus.value?.isOK() == true -> {
+                vm.locationStatus.isOK(forAlwaysOnAccess = isLongTermSharing) -> {
                     enableSharing()
                 }
+                vm.locationStatus.isOK(forAlwaysOnAccess = false) && isLongTermSharing -> {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.groups_sharing_potential_error_title)
+                        .setMessage(getString(R.string.groups_sharing_potential_error_background_location_message).attributedBold(requireContext()))
+                        .setPositiveButton(R.string.button_ok) { _, _ ->
+                            permissionHandler.askBackgroundLocationPermission()
+                        }
+                        .setNegativeButton(R.string.button_skip) { _, _ ->
+                            enableSharing()
+                        }
+                        .show()
+                }
                 else -> {
-                    val errorSection = ErrorItems(vm.locationStatus.value!!).list.map { getString(it.nameRes) }
+                    val errorSection = ErrorItems(vm.locationStatus).list.map { getString(it.nameRes) }
                         .joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
                     AlertDialog.Builder(requireContext())
                         .setTitle(R.string.groups_sharing_potential_error_title)
                         .setMessage(getString(R.string.groups_sharing_potential_error_message, errorSection).attributedBold(requireContext()))
-                        .setPositiveButton(R.string.groups_sharing_button_enable) { _, _ ->
+                        .setPositiveButton(R.string.groups_sharing_potential_error_button_enable) { _, _ ->
                             enableSharing()
                         }
                         .setNegativeButton(R.string.button_cancel, null)
@@ -108,6 +126,7 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
 
         vb.timeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                setupSharingStartButton(vm.locationStatus)
                 vb.tvDuration.text = getTime(SharingDurationPreset.presets[progress])
             }
 
@@ -119,6 +138,7 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
             when(it) {
                 ErrorListItemType.GPS -> permissionHandler.askLocationService()
                 ErrorListItemType.PERMISSION -> permissionHandler.askLocationPermission()
+                ErrorListItemType.PERMISSION_BACKGROUND_LOCATION -> permissionHandler.askBackgroundLocationPermission()
             }
         }
 
@@ -126,23 +146,25 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
             vb.groupPicker.itemData = it
         }
 
-        vm.locationStatus.observe {
-            vb.bShareStart.setText(
-                if(it.isOK()) R.string.groups_sharing_button_start
-                else R.string.groups_sharing_button_enable
-            )
-            vb.bShareStart.setIconResource(
-                if(it.isOK()) R.drawable.ic_pin_sharing
-                else R.drawable.ic_pin_unknown
-            )
+        vm.locationStatusLiveData.observe {
+            setupSharingStartButton(it)
             vb.layoutErrors.itemData = ErrorItems(it)
         }
     }
 
+    private fun setupSharingStartButton(status: LocationConditionStatus) {
+        vb.bShareStart.setText(
+            if(status.isOK()) R.string.groups_sharing_button_start
+            else R.string.groups_sharing_button_enable
+        )
+        vb.bShareStart.setIconResource(
+            if(status.isOK(forAlwaysOnAccess = isLongTermSharing)) R.drawable.ic_pin_sharing
+            else R.drawable.ic_pin_unknown
+        )
+    }
+
     private fun enableSharing() {
-        val duration = SharingDurationPreset.presets.getOrNull(vb.timeSeekBar.progress)
-            ?: SharingDurationPreset.day
-        vm.startSharing(duration).observe {
+        vm.startSharing(selectedPreset).observe {
             if(it) findNavController().popBackStack()
         }
     }

@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
-import com.zbapp.core.models.Payload
 import com.zbapp.core.models.Resource
 import com.zbapp.core.models.data
 import com.zbapp.core.models.location.LocationDataModel
@@ -30,6 +29,8 @@ class LocationService : Service() {
     private val locationInitHandler: LocationInitHandler by inject()
     private val locationRepository: LocationRepository by inject()
 
+    private var launchedInForeground: Boolean = false
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -37,12 +38,13 @@ class LocationService : Service() {
     override fun onCreate() {
         super.onCreate()
         logv(this.hashCode().toString(), "Location service created")
-        startForeground(notificationHandler.notificationId, notificationHandler.notify(this))
+        startForeground(notificationHandler.notificationId, notificationHandler.notify(this, groupCount = 0, emptyList()))
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         logv(this.hashCode().toString(), "Location service started - action: ${intent.action}")
+        launchedInForeground = intent.getBooleanExtra(startedInForeground, false)
         isServiceActive = true
         serviceDefaultScope.coroutineContext.cancelChildren()
         initTracking()
@@ -59,17 +61,19 @@ class LocationService : Service() {
                 } else {
                     locationInitHandler.stopLocationUpdates()
                 }
-                notificationHandler.notify(this, it.toString())
+                updateNotification()
             }
             .launchIn(serviceDefaultScope)
 
-        locationRepository.sharingManager.sharingStatus
+        locationRepository.sharingManager.allContractsFlow
             .onEach {
                 logv(this.hashCode().toString(), "Location sharing status: $it")
-                if (it is Resource.Ready) {
-                    if(it.data)
+                if(it is Resource.Ready) {
+                    if(it.data.isNotEmpty()) {
                         startTracking()
-                    else stopAll()
+                    } else {
+                        stopAll()
+                    }
                 }
             }
             .catch {
@@ -79,12 +83,25 @@ class LocationService : Service() {
             .launchIn(serviceDefaultScope)
     }
 
+    private fun updateNotification() {
+        val errors = (application as AppClass).locationStatus.value.getPossibleErrors(
+            forBackground = !launchedInForeground
+        )
+        val count = locationRepository.sharingManager.allContractsFlow.value.data?.size ?: 0
+        notificationHandler.notify(this, count, errors)
+    }
+
     private fun startTracking() {
+        updateNotification()
         logv(this.hashCode().toString(), "Subscribing to location updates")
         locationInitHandler.currentLocation
             .onEach {
                 logv(this.hashCode().toString(), "Got location: $it")
-                it.data?.let { saveLocation(it) }
+                it.data?.let {
+                    launchedInForeground = true
+                    updateNotification()
+                    saveLocation(it)
+                }
             }
             .launchIn(serviceDefaultScope)
     }
@@ -119,9 +136,11 @@ class LocationService : Service() {
     companion object {
         @Volatile
         var isServiceActive = false
+        const val startedInForeground = "startedInForeground"
 
-        fun start(context: Context) {
+        fun start(context: Context, appForeground: Boolean) {
             val intent = Intent(context, LocationService::class.java)
+            intent.putExtra(startedInForeground, appForeground)
             ContextCompat.startForegroundService(context, intent)
         }
     }

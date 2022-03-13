@@ -42,6 +42,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                     when (it) {
                         ErrorListItemType.GPS -> permissionHandler.askLocationService()
                         ErrorListItemType.PERMISSION -> permissionHandler.askLocationPermission()
+                        ErrorListItemType.PERMISSION_BACKGROUND_LOCATION -> permissionHandler.askBackgroundLocationPermission()
                     }
                 }
             }

@@ -56,24 +56,23 @@ class ErrorListItemContainer(context: Context, attributeSet: AttributeSet? = nul
 data class ErrorItems(
     val list: List<ErrorListItemType>
 ) {
-    constructor(status: LocationConditionStatus): this(
-        mutableListOf<ErrorListItemType>().apply {
-            if(!status.isPermissionAllowed) add(ErrorListItemType.PERMISSION)
-            if(!status.isGpsOn) add(ErrorListItemType.GPS)
-        }.toList()
-    )
+    constructor(status: LocationConditionStatus): this(status.getPossibleErrors())
 }
 
 enum class ErrorListItemType : ListItemType {
 
     GPS,
     PERMISSION,
+    PERMISSION_BACKGROUND_LOCATION,
+    OFFLINE,
     EMAIL;
 
     val iconRes: Int
         get() = when (this) {
             GPS -> R.drawable.ic_location_off
             PERMISSION -> R.drawable.ic_app_settings
+            PERMISSION_BACKGROUND_LOCATION -> R.drawable.ic_app_settings
+            OFFLINE -> R.drawable.ic_location_off
             EMAIL -> R.drawable.ic_email
         }
 
@@ -81,6 +80,8 @@ enum class ErrorListItemType : ListItemType {
         get() = when (this) {
             GPS -> R.string.location_banner_error_gps_off
             PERMISSION -> R.string.location_banner_error_no_permission
+            PERMISSION_BACKGROUND_LOCATION -> R.string.location_banner_error_no_background_permission
+            OFFLINE -> R.string.location_banner_error_offline
             EMAIL -> R.string.info_email_confirm
         }
 
@@ -88,6 +89,8 @@ enum class ErrorListItemType : ListItemType {
         get() = when (this) {
             GPS -> R.string.location_banner_fix
             PERMISSION -> R.string.location_banner_fix
+            PERMISSION_BACKGROUND_LOCATION -> R.string.location_banner_fix
+            OFFLINE -> 0
             EMAIL -> 0
         }
 
