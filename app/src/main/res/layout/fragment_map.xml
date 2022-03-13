@@ -18,7 +18,7 @@
         android:layout_margin="@dimen/activity_side_margin"
         android:background="@drawable/shape_main_rounded_full"
         android:backgroundTint="@color/theme_background_section"
-        android:stateListAnimator="@animator/elevation_animator_seekbar_background"
+        android:elevation="6dp"
         app:layout_constrainedWidth="true"
         android:foreground="?selectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
