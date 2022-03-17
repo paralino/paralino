@@ -13,9 +13,9 @@ data class LocationSharingContract constructor(
 
     val isToGroup: Boolean = groupId.startsWith(groupPrefix)
     val isAlwaysOn: Boolean get() = endTimeUTC == null
-    val isLongTerm: Boolean get() = isAlwaysOn || endInMillis >= SharingDurationPreset.backgroundAccessThreshold
+    val isLongTerm: Boolean get() = isAlwaysOn || endsInMillis >= SharingDurationPreset.backgroundAccessThreshold
 
-    val endInMillis: Long get() {
+    val endsInMillis: Long get() {
         if (isAlwaysOn) return 0
         val now = Clock.System.now()
         val end = LocalDateTime.parse(endTimeUTC!!).toInstant(TimeZone.UTC)
@@ -23,8 +23,12 @@ data class LocationSharingContract constructor(
         return diff.inWholeMilliseconds
     }
 
-    fun asValidContract(): LocationSharingContract? {
+    val endTimeMillisUTC: Long? get() {
+        if (isAlwaysOn) return null
+        return LocalDateTime.parse(endTimeUTC!!).toInstant(TimeZone.UTC).toEpochMilliseconds()
+    }
 
+    fun asValidContract(): LocationSharingContract? {
         if(isAlwaysOn) {
             // invalid public sharing contract
             if(this.groupId == UserGroup.publicSharingId) return null

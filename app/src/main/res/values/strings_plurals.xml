@@ -25,5 +25,8 @@
         <item quantity="one">Sharing location to 1 group</item>
         <item quantity="other">Sharing location to %d groups</item>
     </plurals>
+    <plurals name="group_sharing_member_active_info">
+        <item quantity="other">%1$d (%2$d inactive)</item>
+    </plurals>
 
 </resources>

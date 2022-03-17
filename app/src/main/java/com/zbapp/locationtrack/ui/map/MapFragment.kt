@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.util.lruCache
+import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.location.LocationDataModel
@@ -124,6 +125,15 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
                     trackingGroupId = it.data.id
                     vb.tvGroupEmoji.text = it.data.emoji
                     vb.tvGroupName.text = it.data.name
+
+                    val inactiveMembers = it.data.members.count { it.mutableData == null }
+                    vb.tvGroupCount.text = resources.getQuantityString(
+                        R.plurals.group_sharing_member_active_info,
+                        inactiveMembers,
+                        it.data.members.size,
+                        inactiveMembers
+                    )
+
                     updateMarkers(it.data.members)
                 }
                 is Payload.Error -> {
@@ -131,6 +141,11 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
                 }
             }
             reDrawMarkers()
+        }
+
+        vm.getSharingTime().observe {
+            vb.tvShareTime.isVisible = !it.isNullOrBlank()
+            vb.tvShareTime.text = it ?: ""
         }
 
         vb.bGroupSelector.setOnClickListener {

@@ -21,6 +21,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="highlightRed">#F44336</color>
+    <color name="highlightGreen">@color/accent</color>
     <color name="lightRedError">#33F44336</color>
     <color name="highlightGold">#FFC107</color>
     <color name="accent">#26A69A</color>
