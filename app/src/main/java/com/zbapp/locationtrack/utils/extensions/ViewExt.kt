@@ -4,7 +4,10 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.PaintDrawable
 import android.util.TypedValue
@@ -53,6 +56,18 @@ fun View.backgroundTintRes(@ColorRes resource: Int) {
 
 fun AppCompatImageView.imageTintRes(@ColorRes resource: Int) {
     ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(ContextCompat.getColor(context, resource)))
+}
+
+fun View.getBitmapFromView(): Bitmap? {
+    val bitmap = Bitmap.createBitmap(
+        this.measuredWidth, this.measuredHeight,
+        Bitmap.Config.ARGB_8888
+    )
+    val canvas = Canvas(bitmap)
+    canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN)
+    this.background?.draw(canvas)
+    this.draw(canvas)
+    return bitmap
 }
 
 fun View.fadeIn(finalAlpha: Float = 1f, duration: Long = 300L, delay: Long = 0, withScaleFrom: Float? = null, finished: (() -> Unit)? = null) {

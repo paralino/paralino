@@ -10,6 +10,7 @@ import androidx.preference.PreferenceManager
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentMapBinding
@@ -171,21 +172,25 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
     private fun updateMarkers(list: List<MemberModel>) {
         synchronized(markerCache) {
             // remove markers not in current list
-            markerCache.snapshot().keys.subtract(list.map { it.id }).forEach {
+            markerCache.snapshot().keys.subtract(list.map { MapPinData.fromMember(it).toString() }).forEach {
                 markerCache.remove(it)
             }
 
             list
                 .filter { it.mutableData != null }
                 .forEach { model ->
-                    val marker = markerCache.get(model.id)
+                    val pinData = MapPinData.fromMember(model)
+                    val marker = markerCache.get(pinData.toString())
                     if (marker != null) {
                         marker.position = GeoPoint(model.mutableData!!.lat, model.mutableData!!.lng)
-                        if (marker.relatedObject?.toString() != model.imageBase64)
-                            marker.icon = getPin(model.imageBase64)
+                        if (marker.relatedObject != pinData) {
+                            val pin = getPin(model)
+                            marker.relatedObject = pin.first
+                            marker.icon = pin.second
+                        }
                     } else {
                         val newMarker = createMarker(model, model.mutableData!!)
-                        markerCache.put(model.id, newMarker)
+                        markerCache.put(pinData.toString(), newMarker)
                     }
                 }
         }
@@ -219,13 +224,15 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
 
     private fun createMarker(model: MemberModel, data: LocationDataModel): Marker {
         val marker = Marker(vb.mapView)
+        val pin = getPin(model)
+
         marker.id = model.id
-        marker.relatedObject = model.imageBase64
+        marker.relatedObject = pin.first
         marker.position = GeoPoint(data.lat, data.lng)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         marker.title = model.name
         marker.infoWindow = getInfoWindow()
-        marker.icon = getPin(model.imageBase64)
+        marker.icon = pin.second
         marker.setOnMarkerClickListener(::onMarkerClick)
         return marker
     }
@@ -234,9 +241,11 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
         return BasicInfoWindow(R.layout.element_map_pin_info, vb.mapView)
     }
 
-    private fun getPin(imageBase64: String?): BitmapDrawable {
-        val bitmap = MapPin.populateWithBase64(vb.mapView, imageBase64)
-        return BitmapDrawable(requireContext().resources, bitmap)
+    private fun getPin(model: MemberModel): Pair<MapPinData, BitmapDrawable> {
+        val pinView = MapUserMarkerView(vb.mapView.context)
+        val data = MapPinData.fromMember(model)
+        val bitmap = pinView.getPinForData(data)
+        return data to BitmapDrawable(requireContext().resources, bitmap)
     }
 
     fun onMarkerClick(marker: Marker, mapView: MapView?): Boolean {
