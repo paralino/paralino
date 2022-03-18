@@ -252,7 +252,7 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
         trackMarkerId = marker.id
         trackPositions = false
         vb.fabGroup.isSelected = false
-        vb.mapView.controller.animateTo(marker.position, vb.mapView.zoomLevelDouble, 100)
+        vb.mapView.controller.animateTo(marker.position, vb.mapView.zoomLevelDouble, 300)
         if (marker.isInfoWindowShown)
             marker.closeInfoWindow()
         else marker.showInfoWindow()
