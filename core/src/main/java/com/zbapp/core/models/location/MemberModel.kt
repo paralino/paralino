@@ -1,9 +1,7 @@
 package com.zbapp.core.models.location
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import com.zbapp.core.utils.extensions.fromUTCtoInstant
+import com.zbapp.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -26,10 +24,8 @@ data class MemberModel constructor(
 
     val isActive: Boolean
         get() {
-            val now = Clock.System.now()
-            val pinTime = LocalDateTime.parse(
-                mutableData?.timeUTC?.takeIf { it.isNotBlank() } ?: return false
-            ).toInstant(TimeZone.UTC)
+            val now = nowUTC()
+            val pinTime = mutableData?.timeUTC?.fromUTCtoInstant() ?: return false
             val activeThreshold = 10.toDuration(DurationUnit.SECONDS)
             val active = pinTime.plus(activeThreshold) > now
             return active
