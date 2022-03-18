@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".ui.map.MapFragment">
 
     <org.osmdroid.views.MapView
@@ -135,12 +136,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/activity_side_margin"
-        android:layout_marginBottom="@dimen/bottomBar_spacing"
+        android:layout_marginBottom="@dimen/activity_side_margin_small"
+        app:layout_goneMarginBottom="@dimen/bottomBar_spacing"
         android:src="@drawable/ic_circle_group"
         app:backgroundTint="@color/selected_item_color"
         app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/rvUsers"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/selected_pin_color" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/rvUsers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/bottomBar_spacing_small"
+        android:paddingBottom="@dimen/activity_side_margin_small"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

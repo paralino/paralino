@@ -25,6 +25,11 @@ class MapViewModel constructor(
 ) : AndroidViewModel(app) {
 
     private val groupIdData = MutableStateFlow(groupId ?: "")
+
+    val groupIdChange = groupIdData.filter { it.isNotBlank() }
+        .flatMapLatest { locationRepo.locationRefresh(it).mapToPayload { Unit } }
+        .asLiveData()
+
     val selectedGroup = MutableStateFlow<Payload<UserGroup>>(Payload.Loading)
     private var locationRefreshJob: Job? = null
 
@@ -41,7 +46,6 @@ class MapViewModel constructor(
         groupIdData
             .filter { it.isNotEmpty() }
             .flatMapLatest {
-                refreshLocations()
                 locationRepo.getLocationsForGroup(it)
             }
             .mapToPayload { it }
@@ -51,15 +55,6 @@ class MapViewModel constructor(
 
     fun switchGroup(groupId: String) {
         groupIdData.value = groupId
-    }
-
-    private fun refreshLocations() {
-        val groupId = groupIdData.value.takeIf { it.isNotBlank() } ?: return
-
-        locationRefreshJob?.cancel()
-        locationRefreshJob = locationRepo.locationRefresh(groupId)
-            .mapToPayload { Unit }
-            .launchIn(viewModelScope)
     }
 
     fun getMarkers(): LiveData<Payload<UserGroup>> {

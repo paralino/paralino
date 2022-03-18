@@ -4,9 +4,16 @@ import android.annotation.SuppressLint
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.widget.SimpleAdapter
 import androidx.core.util.lruCache
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.models.location.MemberModel
@@ -18,10 +25,15 @@ import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.dashboard.GroupItemData
 import com.zbapp.locationtrack.ui.groups.GroupPickerFragment
+import com.zbapp.locationtrack.ui.groups.detail.members.GroupMemberItemData
+import com.zbapp.locationtrack.ui.groups.detail.members.GroupMemberListItem
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.snackBarError
+import com.zbapp.locationtrack.utils.SimpleRvAdapter
 import com.zbapp.locationtrack.utils.extensions.isDarkThemeOn
+import com.zbapp.locationtrack.utils.extensions.safeCast
 import com.zbapp.locationtrack.utils.extensions.viewBinding
+import com.zbapp.locationtrack.utils.simpleAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import org.osmdroid.config.Configuration
@@ -99,10 +111,23 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
 
         vb.mapView.tileProvider.clearTileCache()
 
+        vb.rvUsers.adapter = SimpleRvAdapter()
+            .addFactory { GroupMemberListItem(forViewPager = true, it) }
+
+        vb.rvUsers.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                vb.rvUsers.simpleAdapter?.currentList?.getOrNull(position)?.safeCast<GroupMemberItemData>()?.let { member ->
+                    trackMarkerId = member.member.id
+                    markerCache.snapshot().values.firstOrNull { it.id == member.member.id }
+                }?.let { selectMarker(it) }
+            }
+        })
+
         vb.mapView.setOnTouchListener { _, _ ->
             trackPositions = false
             trackMarkerId = null
             vb.fabGroup.isSelected = false
+            vb.rvUsers.isVisible = false
             false
         }
 
@@ -149,10 +174,13 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
             vb.tvShareTime.text = it ?: ""
         }
 
+        vm.groupIdChange.observe {
+            // to keep location refresh alive
+        }
+
         vb.bGroupSelector.setOnClickListener {
             pickGroup()
         }
-
     }
 
     private fun pickGroup() {
@@ -175,6 +203,10 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
             markerCache.snapshot().keys.subtract(list.map { MapPinData.fromMember(it).toString() }).forEach {
                 markerCache.remove(it)
             }
+
+            vb.rvUsers.simpleAdapter?.submitList(
+                list.map { GroupMemberItemData(it, false, GroupMemberItemData.MemberUiType.MAP) }
+            )
 
             list
                 .filter { it.mutableData != null }
@@ -249,14 +281,24 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
     }
 
     fun onMarkerClick(marker: Marker, mapView: MapView?): Boolean {
-        trackMarkerId = marker.id
+        vb.rvUsers.isVisible = !marker.isInfoWindowShown
+        vb.rvUsers.simpleAdapter?.currentList?.indexOfFirst {
+            (it as? GroupMemberItemData)?.member?.id == marker.id
+        }?.takeIf { it >= 0 }?.let {
+            vb.rvUsers.currentItem = it
+        }
+        selectMarker(marker)
+        return false
+    }
+
+    private fun selectMarker(marker: Marker) {
         trackPositions = false
         vb.fabGroup.isSelected = false
+        trackMarkerId = marker.id
         vb.mapView.controller.animateTo(marker.position, vb.mapView.zoomLevelDouble, 300)
-        if (marker.isInfoWindowShown)
-            marker.closeInfoWindow()
-        else marker.showInfoWindow()
-        return false
+//        if (marker.isInfoWindowShown)
+//            marker.closeInfoWindow()
+//        else marker.showInfoWindow()
     }
 
     override fun onDestroy() {

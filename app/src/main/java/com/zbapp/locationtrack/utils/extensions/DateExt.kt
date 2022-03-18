@@ -39,6 +39,10 @@ fun LocalDateTime.fromLocalToUTC(): LocalDateTime {
     return this.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()
 }
 
+fun LocalDateTime.fromUTCtoUserLastPing(): String? {
+    return this.fromUTCtoLocal().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
+}
+
 fun LocalDateTime.fromUTCtoMapSharingTime(): String? {
     val local = this.fromUTCtoLocal()
     val now = LocalDateTime.now()
