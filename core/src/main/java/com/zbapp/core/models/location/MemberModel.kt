@@ -26,9 +26,8 @@ data class MemberModel constructor(
         get() {
             val now = nowUTC()
             val pinTime = mutableData?.timeUTC?.fromUTCtoInstant() ?: return false
-            val activeThreshold = 10.toDuration(DurationUnit.SECONDS)
-            val active = pinTime.plus(activeThreshold) > now
-            return active
+            val activeThreshold = 30.toDuration(DurationUnit.MINUTES)
+            return pinTime.plus(activeThreshold) > now
         }
 
     companion object {
