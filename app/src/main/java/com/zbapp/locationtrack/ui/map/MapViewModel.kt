@@ -12,7 +12,6 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.utils.extensions.fromUTCtoMapSharingTime
 import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -26,12 +25,11 @@ class MapViewModel constructor(
 
     private val groupIdData = MutableStateFlow(groupId ?: "")
 
-    val groupIdChange = groupIdData.filter { it.isNotBlank() }
+    val locationRefreshSubscription = groupIdData.filter { it.isNotBlank() }
         .flatMapLatest { locationRepo.locationRefresh(it).mapToPayload { Unit } }
         .asLiveData()
 
     val selectedGroup = MutableStateFlow<Payload<UserGroup>>(Payload.Loading)
-    private var locationRefreshJob: Job? = null
 
     init {
 
@@ -78,11 +76,6 @@ class MapViewModel constructor(
         return liveData {
             emit(groupRepo.getAllGroupsLocally().firstOrNull() ?: emptyList())
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        locationRefreshJob?.cancel()
     }
 
 }

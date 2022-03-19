@@ -40,7 +40,7 @@ fun LocalDateTime.fromLocalToUTC(): LocalDateTime {
 }
 
 fun LocalDateTime.fromUTCtoUserLastPing(): String? {
-    return this.fromUTCtoLocal().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
+    return this.fromUTCtoLocal().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
 }
 
 fun LocalDateTime.fromUTCtoMapSharingTime(): String? {

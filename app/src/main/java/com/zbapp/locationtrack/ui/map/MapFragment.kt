@@ -4,20 +4,13 @@ import android.annotation.SuppressLint
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.widget.SimpleAdapter
 import androidx.core.util.lruCache
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.PagerSnapHelper
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.models.location.MemberModel
-import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentMapBinding
@@ -45,6 +38,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.TilesOverlay
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
 import org.osmdroid.views.overlay.infowindow.InfoWindow
 
@@ -131,14 +125,8 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
             false
         }
 
-//        vb.mapView.overlays.add(
-//            MyLocationNewOverlay(GpsMyLocationProvider(context), vb.mapView).apply {
-//                enableFollowLocation()
-//                enableMyLocation()
-//            }
-//        )
-
-        vb.mapView.overlays.add(CopyrightOverlay(AppClass.context))
+        vb.mapView.overlays.add(CopyrightOverlay(AppClass.context).apply { setOffset(0, resources.getDimensionPixelSize(R.dimen.bottomBar_spacing_edge)) })
+        vb.mapView.overlays.add(RotationGestureOverlay(vb.mapView))
 
         vm.getMarkers().observe {
             when(it) {
@@ -153,12 +141,17 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
                     vb.tvGroupName.text = it.data.name
 
                     val inactiveMembers = it.data.members.count { it.mutableData == null }
-                    vb.tvGroupCount.text = resources.getQuantityString(
-                        R.plurals.group_sharing_member_active_info,
-                        inactiveMembers,
-                        it.data.members.size,
-                        inactiveMembers
-                    )
+                    if(inactiveMembers == 0) {
+                        // not using plural form for 0 since 0 is treated as "other" in some languages
+                        vb.tvGroupCount.text = "$inactiveMembers"
+                    } else {
+                        vb.tvGroupCount.text = resources.getQuantityString(
+                            R.plurals.group_sharing_member_active_info,
+                            inactiveMembers,
+                            it.data.members.size,
+                            inactiveMembers
+                        )
+                    }
 
                     updateMarkers(it.data.members)
                 }
@@ -174,8 +167,8 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
             vb.tvShareTime.text = it ?: ""
         }
 
-        vm.groupIdChange.observe {
-            // to keep location refresh alive
+        vm.locationRefreshSubscription.observe {
+            // to keep location refresh alive while ui is alive
         }
 
         vb.bGroupSelector.setOnClickListener {
@@ -296,9 +289,6 @@ class MapFragment : BaseFragment(R.layout.fragment_map) {
         vb.fabGroup.isSelected = false
         trackMarkerId = marker.id
         vb.mapView.controller.animateTo(marker.position, vb.mapView.zoomLevelDouble, 300)
-//        if (marker.isInfoWindowShown)
-//            marker.closeInfoWindow()
-//        else marker.showInfoWindow()
     }
 
     override fun onDestroy() {

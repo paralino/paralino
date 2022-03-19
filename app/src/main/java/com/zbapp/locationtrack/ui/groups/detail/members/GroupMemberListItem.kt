@@ -8,15 +8,20 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.utils.Emojis
+import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementMemberListItemBinding
 import com.zbapp.locationtrack.utils.BaseRvItem
 import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
 import com.zbapp.locationtrack.utils.extensions.fromUTCtoUserLastPing
 import com.zbapp.locationtrack.utils.extensions.toLocalDateTime
+import java.time.LocalDateTime
 
-class GroupMemberListItem constructor(private val forViewPager: Boolean, context: Context, attributeSet: AttributeSet? = null)
-    : BaseRvItem<GroupMemberItemData>(context, attributeSet) {
+class GroupMemberListItem constructor(
+    private val forViewPager: Boolean,
+    context: Context,
+    attributeSet: AttributeSet? = null
+) : BaseRvItem<GroupMemberItemData>(context, attributeSet) {
 
     constructor(context: Context, attributeSet: AttributeSet? = null)
             : this(forViewPager = false, context, attributeSet)
@@ -54,29 +59,35 @@ class GroupMemberListItem constructor(private val forViewPager: Boolean, context
     override fun applyData(data: GroupMemberItemData) {
         vb.container.clipToOutline = true
 
+        val userStatus = data.getUserStatus(context)
+        val lastPing = data.getLastPing(context)
         vb.bAction.isVisible = data.canDelete
         vb.tvBatteryInfo.isVisible = data.batterLevel != null
-        vb.tvUserTimeInfo.isVisible = !data.lastPing.isNullOrBlank()
-        vb.tvUserStatus.isVisible = data.userStatus.isNotBlank()
-        vb.bRemove.isVisible = data.canDelete == true && data.uiType == GroupMemberItemData.MemberUiType.EXPANDED
+        vb.tvUserTimeInfo.isVisible = !lastPing.isNullOrBlank()
+        vb.tvUserStatus.isVisible = userStatus.isNotBlank()
+        vb.bRemove.isVisible =
+            data.canDelete == true && data.uiType == GroupMemberItemData.MemberUiType.EXPANDED
 
         vb.tvBatteryInfo.text = data.batterLevel?.let { "$it%" } ?: "-"
-        vb.tvUserStatus.text = data.userStatus
-        vb.tvUserTimeInfo.text = data.lastPing ?: ""
+        vb.tvUserStatus.text = userStatus
+        vb.tvUserTimeInfo.text = lastPing ?: ""
 
         vb.tvUserEmoji.text = data.emoji
         vb.tvMemberName.text = data.name
 
-//        setState()
+        setState()
     }
 
     private fun setState() {
         val type = itemData?.uiType ?: GroupMemberItemData.MemberUiType.MAP
 
-        vb.bAction.animate().cancel()
-        vb.bAction.animate()
-            .rotation(if (type == GroupMemberItemData.MemberUiType.EXPANDED) 180f else 0f)
-            .start()
+        if (type != GroupMemberItemData.MemberUiType.MAP) {
+            vb.bAction.animate().cancel()
+            vb.bAction.animate()
+                .rotation(if (type == GroupMemberItemData.MemberUiType.EXPANDED) 180f else 0f)
+                .start()
+        }
+
         vb.bRemove.isVisible =
             itemData?.canDelete == true && type == GroupMemberItemData.MemberUiType.EXPANDED
         vb.container.elevation = when (type) {
@@ -97,9 +108,20 @@ data class GroupMemberItemData constructor(
     val name: String get() = member.name
     val emoji: String get() = member.imageBase64?.takeIf { it.isNotBlank() } ?: Emojis.robot
     val batterLevel: Int? get() = member.mutableData?.batteryLevel
-    val lastPing: String?
-        get() = member.mutableData?.timeUTC?.toLocalDateTime()?.fromUTCtoUserLastPing()
-    val userStatus: String get() = if (lastPing.isNullOrBlank()) "User is inactive" else ""
+    fun getLastPing(context: Context): String? {
+        return member.mutableData?.timeUTC?.toLocalDateTime()?.let {
+            if(it.isAfter(LocalDateTime.now().minusMinutes(2)))
+                context.getString(R.string.group_members_last_active_status_now)
+            else
+                context.getString(R.string.group_members_last_active_status_full, it.fromUTCtoUserLastPing())
+        }
+    }
+
+    fun getUserStatus(context: Context): String {
+        return if (getLastPing(context).isNullOrBlank())
+            context.getString(R.string.group_members_status_inactive)
+        else ""
+    }
 
     override fun getIdentifier(): String {
         return member.id
