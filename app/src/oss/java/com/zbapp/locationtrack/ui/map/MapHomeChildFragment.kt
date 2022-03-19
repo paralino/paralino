@@ -30,9 +30,6 @@ class MapHomeChildFragment: IMapHomeFragment(R.layout.layout_map_osmdroid) {
 
     private val markerCache = lruCache<String, Marker>(100)
 
-    override var onMapTouch: (() -> Boolean)? = null
-    override var onMarkerClick: ((String) -> Boolean)? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Configuration.getInstance().load(

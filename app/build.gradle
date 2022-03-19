@@ -45,13 +45,7 @@ android {
             props.load(new FileInputStream(propsFile))
             buildConfigField("String", "serverUrl", props['serverUrl'])
             buildConfigField("String", "serverKey", props['serverKey'])
-            buildConfigField("String", "keyCollectionGroups", props['keyCollectionGroups'])
-            buildConfigField("String", "keyCollectionLocations", props['keyCollectionLocations'])
-            buildConfigField("String", "keyCollectionInvites", props['keyCollectionInvites'])
-            buildConfigField("String", "keyFunctionInviteCreate", props['keyFunctionInviteCreate'])
-            buildConfigField("String", "keyFunctionInviteGetCode", props['keyFunctionInviteGetCode'])
-            buildConfigField("String", "keyFunctionInviteGetUrl", props['keyFunctionInviteGetUrl'])
-            buildConfigField("String", "keyFunctionInviteAcceptCode", props['keyFunctionInviteAcceptCode'])
+            buildConfigField("String", "mapboxAccessToken", props['MAPBOX_ACCESS_TOKEN'])
         }
 
         // room schema export
@@ -118,6 +112,21 @@ android {
 
 }
 
+repositories {
+    maven {
+        url 'https://api.mapbox.com/downloads/v2/releases/maven'
+        authentication {
+            basic(BasicAuthentication)
+        }
+        def props = new Properties()
+        props.load(new FileInputStream(rootProject.file('user.properties')))
+        credentials {
+            username = "mapbox"
+            password = props['MAPBOX_SECRET_TOKEN']
+        }
+    }
+}
+
 dependencies {
 
 
@@ -169,6 +178,7 @@ dependencies {
 //    googleImplementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     ossImplementation 'org.osmdroid:osmdroid-android:6.1.10'
+    googleImplementation 'com.mapbox.maps:android:10.3.0'
     // endregion
 
     // region 3rd party views
@@ -177,6 +187,4 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
 
     // endregion
-
-
 }

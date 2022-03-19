@@ -7,8 +7,8 @@ import com.zbapp.core.models.location.MemberModel
 
 abstract class IMapHomeFragment(layoutRes: Int): Fragment(layoutRes) {
 
-    abstract var onMapTouch: (() -> Boolean)?
-    abstract var onMarkerClick: ((String) -> Boolean)?
+    open var onMapTouch: (() -> Boolean)? = null
+    open var onMarkerClick: ((String) -> Boolean)? = null
 
     /**
      * focus and track all markers
