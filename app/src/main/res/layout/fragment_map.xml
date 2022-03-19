@@ -5,12 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:context=".ui.map.MapFragment">
+    tools:context=".ui.map.MapHomeRootFragment">
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/mapView"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentMap"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:name="com.zbapp.locationtrack.ui.map.MapHomeChildFragment"
+        android:tag="fragment_map">
+    </androidx.fragment.app.FragmentContainerView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bGroupSelector"
