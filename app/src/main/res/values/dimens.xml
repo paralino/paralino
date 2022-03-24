@@ -13,4 +13,6 @@
     <dimen name="bottomBar_spacing_edge">60dp</dimen>
     <dimen name="bottomBar_spacing_large">140dp</dimen>
 
+    <dimen name="map_north_margin">60dp</dimen>
+
 </resources>

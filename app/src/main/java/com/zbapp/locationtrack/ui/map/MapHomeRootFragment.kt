@@ -167,7 +167,6 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
         trackPositions = false
         vb.fabGroup.isSelected = false
         trackMarkerId = markerId
-        fragment.focusToMarker(markerId)
     }
 
 }

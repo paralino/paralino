@@ -5,7 +5,10 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.fragment.app.Fragment
 import com.zbapp.core.models.location.MemberModel
 
-abstract class IMapHomeFragment(layoutRes: Int): Fragment(layoutRes) {
+abstract class IMapHomeFragment : Fragment {
+
+    constructor() : super()
+    constructor(layoutRes: Int): super(layoutRes)
 
     open var onMapTouch: (() -> Boolean)? = null
     open var onMarkerClick: ((String) -> Boolean)? = null

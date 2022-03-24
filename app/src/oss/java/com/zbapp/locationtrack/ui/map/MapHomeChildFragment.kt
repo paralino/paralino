@@ -143,7 +143,7 @@ class MapHomeChildFragment: IMapHomeFragment(R.layout.layout_map_osmdroid) {
     }
 
     private fun onMarkerClick(marker: Marker, mapView: MapView?): Boolean {
-        return onMarkerClick?.invoke(marker.id) ?: false
+        return onMarkerClick?.invoke(marker.id)?.also { focusToMarker(marker.id) } ?: false
     }
 
     override fun focusToMarker(markerId: String) {
