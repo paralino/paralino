@@ -57,7 +57,9 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
 
         vb.fabGroup.setOnClickListener {
             trackPositions = true
+            trackMarkerId = null
             vb.fabGroup.isSelected = true
+            vb.rvUsers.isVisible = false
             fragment.reDrawMarkers()
         }
 
@@ -89,6 +91,7 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
                     if(trackingGroupId != it.data.id) {
                         trackPositions = true
                         vb.fabGroup.isSelected = true
+                        vb.rvUsers.isVisible = false
                     }
                     trackingGroupId = it.data.id
 
@@ -167,6 +170,7 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
         trackPositions = false
         vb.fabGroup.isSelected = false
         trackMarkerId = markerId
+        fragment.focusToMarker(markerId)
     }
 
 }
