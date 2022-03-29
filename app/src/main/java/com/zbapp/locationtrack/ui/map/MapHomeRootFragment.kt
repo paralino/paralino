@@ -36,14 +36,26 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
      */
     private var trackPositions: Boolean
         get() = fragment.trackPositions
-        set(value) { fragment.trackPositions = value }
+        set(value) {
+            fragment.trackPositions = value
+            vb.fabGroup.isSelected = value
+            if(value) {
+                trackMarkerId = null
+            }
+        }
 
     /**
      * id of specific marker to track and focus on
      */
     private var trackMarkerId: String?
         get() = fragment.trackMarkerId
-        set(value) { fragment.trackMarkerId = value }
+        set(value) {
+            fragment.trackMarkerId = value
+            vb.rvUsers.isVisible = !value.isNullOrBlank()
+            if(!value.isNullOrBlank()) {
+                trackPositions = false
+            }
+        }
 
     private var trackingGroupId: String? = null
 
@@ -57,9 +69,6 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
 
         vb.fabGroup.setOnClickListener {
             trackPositions = true
-            trackMarkerId = null
-            vb.fabGroup.isSelected = true
-            vb.rvUsers.isVisible = false
             fragment.reDrawMarkers()
         }
 
@@ -78,8 +87,6 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
         fragment.onMapTouch = {
             trackPositions = false
             trackMarkerId = null
-            vb.fabGroup.isSelected = false
-            vb.rvUsers.isVisible = false
             false
         }
 
@@ -90,8 +97,6 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
 
                     if(trackingGroupId != it.data.id) {
                         trackPositions = true
-                        vb.fabGroup.isSelected = true
-                        vb.rvUsers.isVisible = false
                     }
                     trackingGroupId = it.data.id
 
@@ -156,7 +161,6 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
     }
 
     private fun onMarkerClick(markerId: String): Boolean {
-        vb.rvUsers.isVisible = !vb.rvUsers.isVisible
         vb.rvUsers.simpleAdapter?.currentList?.indexOfFirst {
             (it as? GroupMemberItemData)?.member?.id == markerId
         }?.takeIf { it >= 0 }?.let {
@@ -167,8 +171,6 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
     }
 
     private fun selectMarker(markerId: String) {
-        trackPositions = false
-        vb.fabGroup.isSelected = false
         trackMarkerId = markerId
         fragment.focusToMarker(markerId)
     }
