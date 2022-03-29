@@ -1,6 +1,10 @@
 package com.zbapp.core.models.location
 
+import com.zbapp.core.utils.extensions.fromUTCtoInstant
+import com.zbapp.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @Serializable
 data class MemberModel constructor(
@@ -17,6 +21,14 @@ data class MemberModel constructor(
 
     val name: String get() = data.name
     val imageBase64: String? get() = data.imageBase64
+
+    val isActive: Boolean
+        get() {
+            val now = nowUTC()
+            val pinTime = mutableData?.timeUTC?.fromUTCtoInstant() ?: return false
+            val activeThreshold = 30.toDuration(DurationUnit.MINUTES)
+            return pinTime.plus(activeThreshold) > now
+        }
 
     companion object {
         fun fromSystem(

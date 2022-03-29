@@ -1,6 +1,8 @@
 package com.zbapp.core.repo.location
 
 import com.zbapp.core.config
+import com.zbapp.core.models.Payload
+import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.models.location.MemberGroupId
 import com.zbapp.core.models.location.MemberModel
@@ -20,18 +22,24 @@ class LocationRepository constructor(
     private val groupsRepos: GroupRepository
 ): BaseRepository() {
 
-    fun locationRefresh(groupId: String): Flow<Unit> {
-        return flow<Unit> {
+    fun locationRefresh(groupId: String): Flow<Payload<Unit>> {
+        return flow {
+            emit(Payload.Loading)
             do {
-                groupsRepos.refreshGroupWithMembers(groupId).first()
+                try {
+                    groupsRepos.refreshGroupWithMembers(groupId).first()
+                    emit(Payload.Success(Unit))
+                } catch (e: Exception) {
+                    emit(Payload.Error(e))
+                }
                 delay(6_000)
             }
             while (true)
         }
     }
 
-    fun getLocationsForGroup(groupId: String): Flow<List<MemberModel>> {
-        return local.getMembersForGroup(groupId)
+    fun getLocationsForGroup(groupId: String): Flow<UserGroup> {
+        return groupsRepos.getGroupWithMembersLocally(groupId)
     }
 
     fun pushLocation(data: LocationDataModel): Flow<Unit> {

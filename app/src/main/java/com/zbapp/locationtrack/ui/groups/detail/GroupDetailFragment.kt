@@ -92,7 +92,7 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
         }
 
         vb.mapHolder.setOnClickListener {
-            mainActivity?.navigateDeeplink(DeeplinkManager.deeplinkMap)
+            mainActivity?.navigateDeeplink(DeeplinkManager.deeplinkMap(args.groupId))
         }
 
         vb.bShareStart.setOnClickListener {

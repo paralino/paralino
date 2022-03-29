@@ -8,4 +8,8 @@ object DeeplinkManager {
     const val deeplinkInvite = "$host/settings/invite"
     const val deeplinkInviteAccept = "$host/invite/{code}"
 
+    fun deeplinkMap(groupId: String): String {
+        return "$host/map/$groupId"
+    }
+
 }

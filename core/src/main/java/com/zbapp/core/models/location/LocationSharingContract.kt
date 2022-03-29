@@ -2,6 +2,8 @@ package com.zbapp.core.models.location
 
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.utils.SharingDurationPreset
+import com.zbapp.core.utils.extensions.fromUTCtoInstant
+import com.zbapp.core.utils.extensions.nowUTC
 import kotlinx.datetime.*
 
 data class LocationSharingContract constructor(
@@ -13,26 +15,30 @@ data class LocationSharingContract constructor(
 
     val isToGroup: Boolean = groupId.startsWith(groupPrefix)
     val isAlwaysOn: Boolean get() = endTimeUTC == null
-    val isLongTerm: Boolean get() = isAlwaysOn || endInMillis >= SharingDurationPreset.backgroundAccessThreshold
+    val isLongTerm: Boolean get() = isAlwaysOn || endsInMillis >= SharingDurationPreset.backgroundAccessThreshold
 
-    val endInMillis: Long get() {
+    val endsInMillis: Long get() {
         if (isAlwaysOn) return 0
-        val now = Clock.System.now()
-        val end = LocalDateTime.parse(endTimeUTC!!).toInstant(TimeZone.UTC)
+        val now = nowUTC()
+        val end = endTimeUTC!!.fromUTCtoInstant() ?: return 0
         val diff = end - now
         return diff.inWholeMilliseconds
     }
 
-    fun asValidContract(): LocationSharingContract? {
+    val endTimeMillisUTC: Long? get() {
+        if (isAlwaysOn) return null
+        return endTimeUTC!!.fromUTCtoInstant()?.toEpochMilliseconds()
+    }
 
+    fun asValidContract(): LocationSharingContract? {
         if(isAlwaysOn) {
             // invalid public sharing contract
             if(this.groupId == UserGroup.publicSharingId) return null
             // endless sharing for other groups
             else return this
         } else {
-            val date = LocalDateTime.parse(endTimeUTC!!).toInstant(TimeZone.UTC)
-            val now = Clock.System.now()
+            val date = endTimeUTC!!.fromUTCtoInstant() ?: return null
+            val now = nowUTC()
             if(date <= now) {
                 // expired
                 return null
@@ -55,8 +61,7 @@ data class LocationSharingContract constructor(
 
         fun forDuration(durationMillis: Long): String? {
             if(durationMillis == 0L) return null
-            val now = Clock.System.now()
-            return now
+            return nowUTC()
                 .plus(durationMillis, DateTimeUnit.MILLISECOND)
                 .toLocalDateTime(TimeZone.UTC)
                 .toString()

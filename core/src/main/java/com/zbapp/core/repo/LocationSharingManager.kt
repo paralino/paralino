@@ -7,9 +7,7 @@ import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.models.toResource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import kotlinx.coroutines.flow.*
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class LocationSharingManager(
     scopeProvider: ICoroutineScopeProvider,
     private val contractsDataSource: ISharingContractsLocalDataSource
@@ -19,7 +17,7 @@ class LocationSharingManager(
         contractsDataSource.getAllContracts()
             .map { it.mapNotNull { it.asValidContract() }.toResource() }
             .stateIn(
-                scopeProvider.defaultScope,
+                scopeProvider.defaultIOScope,
                 SharingStarted.Lazily,
                 Resource.NotInitialized
             )
@@ -31,7 +29,7 @@ class LocationSharingManager(
         }
     }
         .stateIn(
-            scopeProvider.defaultScope,
+            scopeProvider.defaultIOScope,
             SharingStarted.Lazily,
             Resource.NotInitialized
         )

@@ -1,29 +1,53 @@
 package com.zbapp.locationtrack.ui.map
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import android.app.Application
+import androidx.lifecycle.*
+import com.zbapp.core.models.Payload
+import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.base.myApp
+import com.zbapp.locationtrack.utils.extensions.fromUTCtoMapSharingTime
+import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 
-class MapViewModel(
-    val locationRepository: LocationRepository
-) : ViewModel() {
+class MapViewModel constructor(
+    app: Application,
+    groupId: String?,
+    private val locationRepo: LocationRepository,
+    private val groupRepo: GroupRepository
+) : AndroidViewModel(app) {
 
-    private val groupIdData = MutableStateFlow("")
-    private var locationRefreshJob: Job? = null
+    private val groupIdData = MutableStateFlow(groupId ?: "")
+
+    val locationRefreshSubscription = groupIdData.filter { it.isNotBlank() }
+        .flatMapLatest { locationRepo.locationRefresh(it).mapToPayload { Unit } }
+        .asLiveData()
+
+    val selectedGroup = MutableStateFlow<Payload<UserGroup>>(Payload.Loading)
 
     init {
+
+        if (groupId.isNullOrBlank()) {
+            viewModelScope.launch {
+                groupRepo.getAllGroupsLocally().firstOrNull()?.firstOrNull()?.let {
+                    groupIdData.value = it.id
+                }
+            }
+        }
+
         groupIdData
-            .onEach { refreshLocations() }
+            .filter { it.isNotEmpty() }
+            .flatMapLatest {
+                locationRepo.getLocationsForGroup(it)
+            }
+            .mapToPayload { it }
+            .onEach { selectedGroup.value = it }
             .launchIn(viewModelScope)
     }
 
@@ -31,17 +55,27 @@ class MapViewModel(
         groupIdData.value = groupId
     }
 
-    private fun refreshLocations() {
-        val groupId = groupIdData.value.takeIf { it.isNotBlank() } ?: return
-
-        locationRefreshJob?.cancel()
-        locationRefreshJob = locationRepository.locationRefresh(groupId)
-            .mapToPayload { Unit }
-            .launchIn(viewModelScope)
+    fun getMarkers(): LiveData<Payload<UserGroup>> {
+        return selectedGroup.asLiveData()
     }
 
-    fun getMarkers(): LiveData<List<MemberModel>> {
-        return locationRepository.getLocationsForGroup(groupIdData.value).asLiveData()
+    fun getSharingTime(): LiveData<String?> {
+        return locationRepo.sharingManager.allContractsFlow.combine(groupIdData) { contracts, group ->
+            contracts.data?.firstOrNull { it.groupId == group }
+        }
+            .map {
+                it?.asValidContract()?.let {
+                    it.endTimeMillisUTC?.toDateTimeUTC()?.fromUTCtoMapSharingTime()
+                        ?: myApp.getString(R.string.groups_sharing_duration_type_infinite)
+                }
+            }
+            .asLiveData()
+    }
+
+    fun getAllGroups(): LiveData<List<UserGroup>> {
+        return liveData {
+            emit(groupRepo.getAllGroupsLocally().firstOrNull() ?: emptyList())
+        }
     }
 
 }

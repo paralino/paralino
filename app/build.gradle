@@ -11,13 +11,21 @@ android {
     compileSdkVersion 31
 
     variantFilter { variant ->
-        if(variant.buildType.name == 'release' && variant.getFlavors().get(0).name == 'internal') {
+
+        def names = variant.flavors*.name
+        if (names.contains("playStore") && names.contains("oss")) {
+            setIgnore(true)
+        }
+        if (names.contains("direct") && names.contains("google")) {
+            setIgnore(true)
+        }
+        if(variant.buildType.name == 'debug' && names.contains("playStore")) {
             variant.setIgnore(true)
         }
-        if(variant.buildType.name == 'debug' && variant.getFlavors().get(0).name == 'playStore') {
+        if(variant.buildType.name == 'debug' && names.contains("direct")) {
             variant.setIgnore(true)
         }
-        if(variant.buildType.name == 'debug' && variant.getFlavors().get(0).name == 'playStoreTest') {
+        if(variant.buildType.name == 'release' && variant.getFlavors().get(0).name == 'dev') {
             variant.setIgnore(true)
         }
     }
@@ -37,13 +45,7 @@ android {
             props.load(new FileInputStream(propsFile))
             buildConfigField("String", "serverUrl", props['serverUrl'])
             buildConfigField("String", "serverKey", props['serverKey'])
-            buildConfigField("String", "keyCollectionGroups", props['keyCollectionGroups'])
-            buildConfigField("String", "keyCollectionLocations", props['keyCollectionLocations'])
-            buildConfigField("String", "keyCollectionInvites", props['keyCollectionInvites'])
-            buildConfigField("String", "keyFunctionInviteCreate", props['keyFunctionInviteCreate'])
-            buildConfigField("String", "keyFunctionInviteGetCode", props['keyFunctionInviteGetCode'])
-            buildConfigField("String", "keyFunctionInviteGetUrl", props['keyFunctionInviteGetUrl'])
-            buildConfigField("String", "keyFunctionInviteAcceptCode", props['keyFunctionInviteAcceptCode'])
+            buildConfigField("String", "mapboxAccessToken", props['MAPBOX_ACCESS_TOKEN'])
         }
 
         // room schema export
@@ -60,37 +62,40 @@ android {
             shrinkResources true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            debuggable true
-        }
-    }
-
-    flavorDimensions "default"
-    productFlavors {
-        playStoreTest {
-            dimension "default"
-            versionCode 1
-            versionName "1.0.0"
-
-            buildConfigField("boolean", "internalTesting", "true")
-            buildConfigField("boolean", "forceLogToSystem", "false")
-        }
-        playStore {
-            dimension "default"
-            versionCode 1
-            versionName "1.0.0"
-
             buildConfigField("boolean", "internalTesting", "false")
             buildConfigField("boolean", "forceLogToSystem", "false")
         }
-        internal {
-            dimension "default"
-            versionCode 1
-
-            versionName "0.0.1"
+        debug {
+            debuggable true
             buildConfigField("boolean", "internalTesting", "true")
             buildConfigField("boolean", "forceLogToSystem", "true")
+        }
+    }
+
+    flavorDimensions "version", "source"
+    productFlavors {
+        playStore {
+            dimension "version"
+            versionCode 1
+            versionName "1.0.0"
+        }
+        direct {
+            dimension "version"
+            versionCode 1
+            versionName "0.0.1"
+        }
+        dev {
+            dimension "version"
+            versionCode 1
+            versionName "0.0.1"
+            versionNameSuffix "-dev"
+            applicationIdSuffix ".dev"
+        }
+        oss {
+            dimension "source"
+        }
+        google {
+            dimension "source"
         }
     }
 
@@ -105,6 +110,21 @@ android {
         viewBinding true
     }
 
+}
+
+repositories {
+    maven {
+        url 'https://api.mapbox.com/downloads/v2/releases/maven'
+        authentication {
+            basic(BasicAuthentication)
+        }
+        def props = new Properties()
+        props.load(new FileInputStream(rootProject.file('user.properties')))
+        credentials {
+            username = "mapbox"
+            password = props['MAPBOX_SECRET_TOKEN']
+        }
+    }
 }
 
 dependencies {
@@ -154,8 +174,11 @@ dependencies {
     // endregion
 
     // region utils
+    // TODO Replace to googleImplementation when LocationManager API is implemented
+//    googleImplementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
-    implementation 'org.osmdroid:osmdroid-android:6.1.10'
+    ossImplementation 'org.osmdroid:osmdroid-android:6.1.10'
+    googleImplementation 'com.mapbox.maps:android:10.4.0'
     // endregion
 
     // region 3rd party views
@@ -164,6 +187,4 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
 
     // endregion
-
-
 }

@@ -25,7 +25,7 @@ class LocationInitHandler(
 
     private var locationRequest: LocationRequest = LocationRequest.create().apply {
         interval = 6_000
-        fastestInterval = 5_000
+        fastestInterval = 3_000
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
