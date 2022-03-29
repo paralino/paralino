@@ -178,7 +178,7 @@ dependencies {
 //    googleImplementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     ossImplementation 'org.osmdroid:osmdroid-android:6.1.10'
-    googleImplementation 'com.mapbox.maps:android:10.3.0'
+    googleImplementation 'com.mapbox.maps:android:10.4.0'
     // endregion
 
     // region 3rd party views
