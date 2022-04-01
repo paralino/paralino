@@ -28,16 +28,14 @@ class CryptoKeyLocalDataSource constructor(
     }
 
     override suspend fun recreateGroupKeyForGroup(groupId: String, keys: List<GroupCryptoKeyDataRaw>) {
-        keysDao.deleteForGroup(groupId)
-        keysDao.createOrUpdate(*keys.map { keysMapper.remote2Local(it) }.toTypedArray())
+        keysDao.recreateForGroup(groupId, keys.map { keysMapper.remote2Local(it) })
     }
 
     override suspend fun recreateMemberKeysForGroup(
         groupId: String,
         keys: List<GroupMemberCryptoKeyDataRaw>
     ) {
-        memberKeysDao.deleteForGroup(groupId)
-        memberKeysDao.createOrUpdate(*keys.map { keysMemberMapper.remote2Local(it) }.toTypedArray())
+        memberKeysDao.recreateForGroup(groupId, keys.map { keysMemberMapper.remote2Local(it) })
     }
 
     override fun getAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
