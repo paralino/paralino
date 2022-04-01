@@ -53,7 +53,7 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                         vb.bShareStart.backgroundTintRes(R.color.highlightRed)
                         vb.bShareStart.setText(R.string.location_banner_info_stop)
                     } else {
-                        vb.bShareStart.backgroundTintRes(R.color.fab_background_color)
+                        vb.bShareStart.backgroundTintRes(R.color.accent)
                         vb.bShareStart.setText(R.string.groups_sharing_title)
                     }
                 }

@@ -163,7 +163,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/activity_side_margin"
         android:layout_marginBottom="@dimen/bottomBar_spacing"
-        android:backgroundTint="@color/fab_background_color"
+        android:backgroundTint="@color/accent"
         android:enabled="true"
         android:text="@string/groups_sharing_title"
         app:icon="@drawable/ic_pin_sharing"
