@@ -42,11 +42,11 @@ class GroupMemberListItem constructor(
         }
 
         vb.container.setOnClickListener {
-            itemData?.uiType =
-                itemData?.uiType?.toggle() ?: GroupMemberItemData.MemberUiType.EXPANDED
             if (itemData?.uiType == GroupMemberItemData.MemberUiType.MAP) {
                 performClick()
-            } else {
+            } else if(itemData?.canDelete == true) {
+                itemData?.uiType =
+                    itemData?.uiType?.toggle() ?: GroupMemberItemData.MemberUiType.COLLAPSED
                 setState()
             }
         }
