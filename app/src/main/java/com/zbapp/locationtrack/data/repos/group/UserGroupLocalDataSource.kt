@@ -34,15 +34,18 @@ class UserGroupLocalDataSource constructor(
 
     override fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
+            .filterNotNull()
             .map { mapper.local2Core(it) }
     }
 
     override fun getGroupWithMembers(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
-            .filterNotNull()
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
-                mapper.local2Core(group).copy(members = members)
+                if(group != null)
+                    mapper.local2Core(group).copy(members = members)
+                else null
             }
+            .filterNotNull()
     }
 
     override fun getAllGroups(): Flow<List<UserGroup>> {
