@@ -1,46 +1,50 @@
 package com.zbapp.locationtrack.ui.groups.detail
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.zbapp.core.models.Payload
+import com.zbapp.core.models.data
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
+import com.zbapp.core.utils.exceptions.NotFoundException
+import com.zbapp.core.utils.exceptions.PermissionDeniedException
 import com.zbapp.core.utils.extensions.mapToPayload
 import com.zbapp.locationtrack.ui.groups.SharingStartFragmentArgs
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class GroupDetailViewModel constructor(
     private val groupId: String,
     private val groupRepo: GroupRepository,
     private val locationSharingManager: LocationSharingManager
-): ViewModel() {
+) : ViewModel() {
 
     private val sharingStatus = locationSharingManager.isSharingActiveForGroup(groupId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     val groupDetails = combine(groupRepo.getGroupWithMembers(groupId), sharingStatus)
-            { group, sharingActive ->
-                GroupDetailsUiModel(
-                    id = groupId,
-                    name = group.name,
-                    image = group.emoji,
-                    memberCount = group.members.size,
-                    sharingActive = sharingActive
-                )
-            }
-            .mapToPayload { it }
-            .asLiveData()
+    { group, sharingActive ->
+        GroupDetailsUiModel(
+            id = groupId,
+            name = group.name,
+            image = group.emoji,
+            memberCount = group.members.size,
+            sharingActive = sharingActive,
+            isMyGroup = group.isCurrentUserOwner
+        )
+    }
+        .mapToPayload { it }
+        .stateIn(viewModelScope, SharingStarted.Lazily, Payload.Loading)
 
-    fun deleteGroup(): LiveData<Payload<Unit>> {
-        return groupRepo.deleteGroup(groupId)
-            .mapToPayload { it }
-            .asLiveData()
+    val groupDetailsLiveData = groupDetails.asLiveData().distinctUntilChanged()
+
+    fun leaveOrDeleteGroup(): LiveData<Payload<Unit>> {
+        return groupDetails.value.data?.let {
+            if (it.isMyGroup) {
+                groupRepo.deleteGroup(groupId)
+            } else {
+                groupRepo.leaveGroup(groupId)
+            }.mapToPayload { it }.asLiveData()
+        } ?: liveData { emit(Payload.Error(NotFoundException("Group not loaded"))) }
     }
 
     fun isSharingActive(): Boolean {
@@ -60,5 +64,6 @@ data class GroupDetailsUiModel(
     val name: String,
     val image: String,
     val memberCount: Int,
-    val sharingActive: Boolean
+    val sharingActive: Boolean,
+    val isMyGroup: Boolean
 )

@@ -51,12 +51,6 @@ class DashboardViewModel(
         }
     }
 
-    fun deleteGroup(id: String) {
-        groupRepository.deleteGroup(id)
-            .catch {  }
-            .launchIn(viewModelScope)
-    }
-
     fun getGroups(): LiveData<List<ListItemType>> {
 
         if(!loginManager.isLoggedIn()) {

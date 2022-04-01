@@ -52,7 +52,11 @@ class GroupMembersFragment : BaseFragment(R.layout.fragment_group_members) {
             .addFactory { ListItemEmptySpace(it) }
 
         vm.groupMembers.observe(viewLifecycleOwner) {
-            vb.rvMembers.simpleAdapter?.submitList(it)
+            vb.toolbar.menu.clear()
+            if(it.isMyGroup) {
+                vb.toolbar.inflateMenu(R.menu.group_members_menu)
+            }
+            vb.rvMembers.simpleAdapter?.submitList(it.members)
         }
     }
 

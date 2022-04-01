@@ -1,5 +1,6 @@
 package com.zbapp.core.models.group
 
+import com.zbapp.core.config
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.utils.Constants
 import kotlinx.serialization.Serializable
@@ -25,6 +26,7 @@ data class UserGroup constructor(
     }
 
     val isFromUser: Boolean get() = type == Constants.collectionGroupUser
+    val isCurrentUserOwner: Boolean get() = ownerUserId == config.userId
 
 }
 

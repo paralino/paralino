@@ -152,8 +152,11 @@
     <string name="group_details_section_members_title">Members **(%d)**</string>
     <string name="group_details_menu_edit">Edit</string>
     <string name="group_details_menu_delete">Delete group</string>
-    <string name="group_details_delete_group_alert_title">Are you sure you want delete this group?\nThis is irreversible and will remove all connection with members and remove all group data!</string>
+    <string name="group_details_menu_leave">Leave group</string>
+    <string name="group_details_delete_group_alert_title">Are you sure you want delete this group?\nThis is irreversible and will delete all group data and remove all connection with members!</string>
     <string name="group_details_delete_group_alert_button">Delete</string>
+    <string name="group_details_leave_group_alert_title">Are you sure you want leave this group?\nThis is irreversible and will delete all data you shared and remove all connection with members!</string>
+    <string name="group_details_leave_group_alert_button">Leave</string>
     <string name="group_details_add_member_button">Add new member</string>
     <string name="group_details_map_action_button">Open map</string>
 

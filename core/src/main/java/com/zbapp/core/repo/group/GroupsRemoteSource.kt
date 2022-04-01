@@ -174,15 +174,15 @@ class GroupsRemoteSource constructor(
         }
     }
 
-    suspend fun removeUserFromGroup(group: UserGroup, member: MemberModel) {
+    suspend fun removeUserFromGroup(group: UserGroup, memberUserId: String) {
         return blocking {
 
-            if (member.userId == group.ownerUserId)
+            if (memberUserId == group.ownerUserId)
                 throw PermissionDeniedException("Owner can not be removed from the group")
 
             val payload = DeleteGroupMemberPayload(
                 groupId = group.id,
-                userId = member.userId
+                userId = memberUserId
             )
 
             val data = functionsApi.runAndWait(

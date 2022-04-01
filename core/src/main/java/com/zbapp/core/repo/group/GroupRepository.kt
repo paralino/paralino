@@ -98,7 +98,22 @@ class GroupRepository constructor(
 
     fun deleteGroup(id: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.deleteGroup(id) },
+            remote = {
+                remote.deleteGroup(id)
+            },
+            localUpdate = {
+                local.deleteGroup(id)
+                cryptoKEKRepo.deleteAllKeysForGroup(id)
+            }
+        )
+    }
+
+    fun leaveGroup(id: String): Flow<Unit> {
+        return getDataOnce(
+            remote = {
+                val group = local.getGroupWithoutMembers(id).first()
+                remote.removeUserFromGroup(group, userRepository.cachedUserId)
+            },
             localUpdate = {
                 local.deleteGroup(id)
                 cryptoKEKRepo.deleteAllKeysForGroup(id)
@@ -123,11 +138,15 @@ class GroupRepository constructor(
     }
 
     fun removeMember(member: MemberModel): Flow<Unit> {
-        // TODO differentiate between removing user and leaving group
+
+        if(member.userId == userRepository.cachedUserId) {
+            return leaveGroup(member.groupId)
+        }
+
         return getDataOnce(
             remote = {
-                val group = local.getGroupWithMembers(member.groupId).first()
-                remote.removeUserFromGroup(group, member)
+                val group = local.getGroupWithoutMembers(member.groupId).first()
+                remote.removeUserFromGroup(group, member.userId)
             },
             localUpdate = {
                 local.removeMember(member.groupId, member.userId)
