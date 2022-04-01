@@ -4,6 +4,7 @@ import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.group.UserGroupWithMembers
 import com.zbapp.core.models.invite.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
@@ -44,7 +45,7 @@ class GroupRepository constructor(
         return local.getAllGroups()
     }
 
-    fun getGroupWithMembersLocally(id: String): Flow<UserGroup> {
+    fun getGroupWithMembersLocally(id: String): Flow<UserGroupWithMembers> {
         return local.getGroupWithMembers(id)
     }
 
@@ -52,7 +53,7 @@ class GroupRepository constructor(
         return local.getGroupWithoutMembers(id)
     }
 
-    fun getGroupWithMembers(id: String): Flow<UserGroup> {
+    fun getGroupWithMembers(id: String): Flow<UserGroupWithMembers> {
         return mergeDataWithRemote(
             local = local.getGroupWithMembers(id),
             remote = {
@@ -169,7 +170,7 @@ class GroupRepository constructor(
             ?: group
     }
 
-    private suspend fun updateMemberKeyAndRefresh(remoteGroup: UserGroup, force: Boolean = false): GroupWithMemberRaw? {
+    private suspend fun updateMemberKeyAndRefresh(remoteGroup: UserGroupWithMembers, force: Boolean = false): GroupWithMemberRaw? {
         val memberMeRemote = remoteGroup.members.firstOrNull { it.userId == userRepository.cachedUserId }
 
         if(memberMeRemote?.shouldRotateKeys == true || force) {
@@ -183,7 +184,7 @@ class GroupRepository constructor(
         return null
     }
 
-    private suspend fun updateGroupKeyAndRefresh(remoteGroup: UserGroup, force: Boolean = false): GroupWithMemberRaw? {
+    private suspend fun updateGroupKeyAndRefresh(remoteGroup: UserGroupWithMembers, force: Boolean = false): GroupWithMemberRaw? {
         if (remoteGroup.ownerUserId != userRepository.cachedUserId) return null
         if (!force && !remoteGroup.shouldRotateKeys) return null
 

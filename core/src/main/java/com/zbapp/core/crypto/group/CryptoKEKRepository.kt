@@ -6,6 +6,7 @@ import com.zbapp.core.crypto.DecryptedGroupKeyData
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.group.UserGroupWithMembers
 import com.zbapp.core.models.raw.GroupCryptoKeyDataRaw
 import com.zbapp.core.models.raw.GroupMemberCryptoKeyDataRaw
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
@@ -194,7 +195,7 @@ class CryptoKEKRepository(
         return DecryptedGroupKeyData(keyRaw.version, memberKey)
     }
 
-    suspend fun rotateAllGroupKeys(remoteGroup: UserGroup) {
+    suspend fun rotateAllGroupKeys(remoteGroup: UserGroupWithMembers) {
         val userKey = userKeyRepository.latestKeyPair()
 
         // 1. rotate group key
@@ -211,14 +212,14 @@ class CryptoKEKRepository(
         refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
     }
 
-    suspend fun rotateAllMemberKeys(remoteGroup: UserGroup) {
+    suspend fun rotateAllMemberKeys(remoteGroup: UserGroupWithMembers) {
         val userKey = userKeyRepository.latestKeyPair()
         executeMemberKeyRotation(group = remoteGroup, myKey = userKey).first()
         refreshKeysForGroup(groupId = remoteGroup.id).first()
     }
 
     private suspend fun executeMemberKeyRotation(
-        group: UserGroup,
+        group: UserGroupWithMembers,
         myKey: AsymmetricCryptoKeyData
     ): Flow<Unit> {
         return getDataOnce {

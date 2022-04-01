@@ -1,6 +1,7 @@
 package com.zbapp.core.repo.group
 
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.group.UserGroupWithMembers
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ interface IGroupLocalDataSource {
     suspend fun updateGroupOnly(group: GroupDocumentRaw)
 
     fun getGroupWithoutMembers(groupId: String): Flow<UserGroup>
-    fun getGroupWithMembers(groupId: String): Flow<UserGroup>
+    fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers>
     fun getAllGroups(): Flow<List<UserGroup>>
 
     suspend fun deleteGroup(groupId: String)

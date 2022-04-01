@@ -106,12 +106,12 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
                     val inactiveMembers = it.data.members.count { it.mutableData == null }
                     if(inactiveMembers == 0) {
                         // not using plural form for 0 since 0 is treated as "other" in some languages
-                        vb.tvGroupCount.text = "$inactiveMembers"
+                        vb.tvGroupCount.text = "${it.data.memberCount}"
                     } else {
                         vb.tvGroupCount.text = resources.getQuantityString(
                             R.plurals.group_sharing_member_active_info,
                             inactiveMembers,
-                            it.data.members.size,
+                            it.data.memberCount,
                             inactiveMembers
                         )
                     }

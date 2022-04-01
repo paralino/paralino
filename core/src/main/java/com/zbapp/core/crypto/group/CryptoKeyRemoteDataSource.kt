@@ -5,6 +5,7 @@ import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.crypto.DecryptedGroupKeyData
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.group.UserGroupWithMembers
 import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.repo.api.IDocumentsApi
@@ -54,7 +55,7 @@ class CryptoKeyRemoteDataSource(
     }
 
     suspend fun rotateMemberKeysForGroup(
-        group: UserGroup,
+        group: UserGroupWithMembers,
         groupKey: DecryptedGroupKeyData,
         myKey: AsymmetricCryptoKeyData
     ) {
@@ -116,7 +117,7 @@ class CryptoKeyRemoteDataSource(
     }
 
     suspend fun rotateGroupKeys(
-        group: UserGroup,
+        group: UserGroupWithMembers,
         myKey: AsymmetricCryptoKeyData
     ) {
         blocking {

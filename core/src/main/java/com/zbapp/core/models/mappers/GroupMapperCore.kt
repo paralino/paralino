@@ -4,6 +4,7 @@ import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
+import com.zbapp.core.models.group.UserGroupWithMembers
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
 import com.zbapp.core.utils.BaseRemoteModule
@@ -39,7 +40,7 @@ class GroupMapperCore constructor(
         )
     }
 
-    suspend fun remote2Core(model: GroupDocumentRaw): UserGroup {
+    suspend fun remote2Core(model: GroupDocumentRaw, memberCount: Int = 0): UserGroup {
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
@@ -61,17 +62,20 @@ class GroupMapperCore constructor(
             keyVersion = model.keyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
             data = groupData,
-            members = emptyList()
+            memberCount = memberCount
         )
     }
 
-    suspend fun remote2CoreWithMembers(model: GroupWithMemberRaw): UserGroup {
+    suspend fun remote2CoreWithMembers(model: GroupWithMemberRaw): UserGroupWithMembers {
         val members = model.members.map {
             memberMapperCore.remote2Core(
                 model = it,
                 groupOwnerPublicKey = model.group.ownerPublicKey
             )
         }
-        return remote2Core(model.group).copy(members = members)
+        return UserGroupWithMembers(
+            group = remote2Core(model.group, members.size),
+            members = members
+        )
     }
 }

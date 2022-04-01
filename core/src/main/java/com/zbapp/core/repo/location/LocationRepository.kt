@@ -3,6 +3,7 @@ package com.zbapp.core.repo.location
 import com.zbapp.core.config
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.group.UserGroupWithMembers
 import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.models.location.MemberGroupId
 import com.zbapp.core.models.location.MemberModel
@@ -38,7 +39,7 @@ class LocationRepository constructor(
         }
     }
 
-    fun getLocationsForGroup(groupId: String): Flow<UserGroup> {
+    fun getLocationsForGroup(groupId: String): Flow<UserGroupWithMembers> {
         return groupsRepos.getGroupWithMembersLocally(groupId)
     }
 

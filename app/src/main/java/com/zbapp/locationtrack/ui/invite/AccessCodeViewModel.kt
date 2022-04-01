@@ -42,7 +42,7 @@ class AcceptInviteViewModel(
         args?.code?.let { loadInvite(code = it) }
         args?.groupId?.let {
             viewModelScope.launch {
-                currentGroup.value = groupRepo.getGroupWithMembersLocally(it).firstOrNull()
+                currentGroup.value = groupRepo.getGroupWithoutMembersLocally(it).firstOrNull()
             }
         }
     }

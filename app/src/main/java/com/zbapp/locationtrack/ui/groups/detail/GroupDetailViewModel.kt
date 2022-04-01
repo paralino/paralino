@@ -27,7 +27,7 @@ class GroupDetailViewModel constructor(
             id = groupId,
             name = group.name,
             image = group.emoji,
-            memberCount = group.members.size,
+            memberCount = group.memberCount,
             sharingActive = sharingActive,
             isMyGroup = group.isCurrentUserOwner
         )

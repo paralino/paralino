@@ -13,7 +13,7 @@ data class UserGroup constructor(
     val keyVersion: Long,
     val shouldRotateKeys: Boolean,
     val data: UserGroupData = UserGroupData(),
-    val members: List<MemberModel> = emptyList()
+    val memberCount: Int
 ) {
 
     val name: String get() = data.name
@@ -36,5 +36,26 @@ data class UserGroupData constructor(
     val emoji: String = "",
     val type: String = ""
 ) {
+
+}
+
+data class UserGroupWithMembers(
+    val group: UserGroup,
+    val members: List<MemberModel>
+) {
+
+    val id: String get() = group.id
+    val ownerUserId: String get() = group.ownerUserId
+    val ownerPublicKey: String get() = group.ownerPublicKey
+    val keyVersion: Long get() = group.keyVersion
+    val shouldRotateKeys: Boolean get() = group.shouldRotateKeys
+    val data: UserGroupData get() = group.data
+    val memberCount: Int get() = members.size
+
+    val name: String get() = data.name
+    val emoji: String get() = data.emoji
+    val type: String get() = data.type
+
+    val isCurrentUserOwner: Boolean get() = group.isCurrentUserOwner
 
 }

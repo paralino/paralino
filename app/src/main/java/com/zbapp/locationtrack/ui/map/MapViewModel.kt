@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.group.UserGroupWithMembers
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.utils.extensions.mapToPayload
@@ -29,7 +30,7 @@ class MapViewModel constructor(
         .flatMapLatest { locationRepo.locationRefresh(it).mapToPayload { Unit } }
         .asLiveData()
 
-    val selectedGroup = MutableStateFlow<Payload<UserGroup>>(Payload.Loading)
+    val selectedGroup = MutableStateFlow<Payload<UserGroupWithMembers>>(Payload.Loading)
 
     init {
 
@@ -55,7 +56,7 @@ class MapViewModel constructor(
         groupIdData.value = groupId
     }
 
-    fun getMarkers(): LiveData<Payload<UserGroup>> {
+    fun getMarkers(): LiveData<Payload<UserGroupWithMembers>> {
         return selectedGroup.asLiveData()
     }
 
