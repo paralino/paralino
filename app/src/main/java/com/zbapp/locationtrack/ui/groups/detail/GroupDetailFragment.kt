@@ -39,7 +39,6 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                 is Payload.Success -> {
                     vb.tvGroupName.text = it.data.name
                     vb.tvGroupEmoji.text = it.data.image
-                    vb.bAddMember.isVisible = it.data.isMyGroup
                     vb.bMembers.text =
                         getString(R.string.group_details_section_members_title, it.data.memberCount).attributedBold(requireContext())
 
@@ -73,6 +72,16 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                     )
                     true
                 }
+                R.id.itemMemberAdd -> {
+                    navigateDefault(
+                        R.id.acceptInviteFragment,
+                        AccessCodeInputFragmentArgs(
+                            code = null,
+                            groupId = args.groupId
+                        ).toBundle()
+                    )
+                    true
+                }
                 R.id.itemGroupDelete -> {
                     askToDeleteGroup()
                     true
@@ -91,16 +100,6 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                 GroupMembersFragmentArgs(
                     groupId = args.groupId,
                     groupName = vm.groupDetails.value.data?.name ?: ""
-                ).toBundle()
-            )
-        }
-
-        vb.bAddMember.setOnClickListener {
-            navigateDefault(
-                R.id.acceptInviteFragment,
-                AccessCodeInputFragmentArgs(
-                    code = null,
-                    groupId = args.groupId
                 ).toBundle()
             )
         }
