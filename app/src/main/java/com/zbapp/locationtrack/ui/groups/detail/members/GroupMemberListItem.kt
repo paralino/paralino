@@ -28,7 +28,7 @@ class GroupMemberListItem constructor(
 
 
     private val vb = ElementMemberListItemBinding.inflate(LayoutInflater.from(context), this)
-    var onMemberDelete: ((GroupMemberItemData) -> Unit)? = null
+    var onMemberDelete: ((GroupMemberListItem) -> Unit)? = null
 
 
     init {
@@ -42,17 +42,11 @@ class GroupMemberListItem constructor(
         }
 
         vb.container.setOnClickListener {
-            if (itemData?.uiType == GroupMemberItemData.MemberUiType.MAP) {
-                performClick()
-            } else if(itemData?.canDelete == true) {
-                itemData?.uiType =
-                    itemData?.uiType?.toggle() ?: GroupMemberItemData.MemberUiType.COLLAPSED
-                setState()
-            }
+            toggleState()
         }
 
         vb.bRemove.setOnClickListener {
-            itemData?.let { onMemberDelete?.invoke(it) }
+            itemData?.let { onMemberDelete?.invoke(this) }
         }
     }
 
@@ -61,12 +55,17 @@ class GroupMemberListItem constructor(
 
         val userStatus = data.getUserStatus(context)
         val lastPing = data.getLastPing(context)
-        vb.bAction.isVisible = data.canDelete
+        vb.bAction.isVisible = data.actionItem != null
         vb.tvBatteryInfo.isVisible = data.batterLevel != null
         vb.tvUserTimeInfo.isVisible = !lastPing.isNullOrBlank()
         vb.tvUserStatus.isVisible = userStatus.isNotBlank()
+
         vb.bRemove.isVisible =
-            data.canDelete == true && data.uiType == GroupMemberItemData.MemberUiType.EXPANDED
+            data.actionItem != null && data.uiType == GroupMemberItemData.MemberUiType.EXPANDED
+        data.actionItem?.let {
+            vb.bRemove.setIconResource(it.actionIcon)
+            vb.bRemove.setText(it.actionText)
+        }
 
         vb.tvBatteryInfo.text = data.batterLevel?.let { "$it%" } ?: "-"
         vb.tvUserStatus.text = userStatus
@@ -78,22 +77,29 @@ class GroupMemberListItem constructor(
         setState()
     }
 
-    private fun setState() {
-        val type = itemData?.uiType ?: GroupMemberItemData.MemberUiType.MAP
+    fun toggleState() {
+        if(itemData?.actionItem != null) {
+            itemData?.uiType =
+                itemData?.uiType?.toggle() ?: GroupMemberItemData.MemberUiType.COLLAPSED
+            setState()
+        }
+    }
 
-        if (type != GroupMemberItemData.MemberUiType.MAP) {
+    private fun setState() {
+        val data = itemData ?: return
+
+        if (data.actionItem != null) {
             vb.bAction.animate().cancel()
             vb.bAction.animate()
-                .rotation(if (type == GroupMemberItemData.MemberUiType.EXPANDED) 180f else 0f)
+                .rotation(if (data.uiType == GroupMemberItemData.MemberUiType.EXPANDED) 180f else 0f)
                 .start()
         }
 
         vb.bRemove.isVisible =
-            itemData?.canDelete == true && type == GroupMemberItemData.MemberUiType.EXPANDED
-        vb.container.elevation = when (type) {
+            data.actionItem != null && data.uiType == GroupMemberItemData.MemberUiType.EXPANDED
+        vb.container.elevation = when (data.uiType) {
             GroupMemberItemData.MemberUiType.COLLAPSED -> 0f.dp2px
             GroupMemberItemData.MemberUiType.EXPANDED -> 8f.dp2px
-            GroupMemberItemData.MemberUiType.MAP -> 8f.dp2px
         }
     }
 
@@ -101,7 +107,7 @@ class GroupMemberListItem constructor(
 
 data class GroupMemberItemData constructor(
     val member: MemberModel,
-    val canDelete: Boolean,
+    val actionItem: MemberAction? = null,
     var uiType: MemberUiType = MemberUiType.COLLAPSED
 ) : ListItemType {
 
@@ -128,12 +134,25 @@ data class GroupMemberItemData constructor(
     }
 
     enum class MemberUiType {
-        EXPANDED, COLLAPSED, MAP;
+        EXPANDED, COLLAPSED;
 
         fun toggle() = when (this) {
             EXPANDED -> COLLAPSED
             COLLAPSED -> EXPANDED
-            MAP -> MAP
+        }
+    }
+
+    enum class MemberAction {
+        DELETE_MEMBER, DELETE_LOCATION;
+
+        val actionIcon: Int get() = when(this) {
+            DELETE_MEMBER -> R.drawable.ic_person_remove
+            DELETE_LOCATION -> R.drawable.ic_delete
+        }
+
+        val actionText: Int get() = when(this) {
+            DELETE_MEMBER -> R.string.group_members_item_remove_button
+            DELETE_LOCATION -> R.string.group_members_item_clear_location_button
         }
     }
 }

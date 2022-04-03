@@ -29,10 +29,12 @@ class GroupMembersViewModel constructor(
             val members = group.members
                 .sortedBy { it.name }
                 .sortedBy { it.userId == config.userId }
-                .map {
+                .map { member ->
                     GroupMemberItemData(
-                        member = it,
-                        canDelete =  (group.isCurrentUserOwner && it.userId != group.ownerUserId)
+                        member = member,
+                        actionItem = GroupMemberItemData.MemberAction.DELETE_MEMBER.takeIf {
+                            group.isCurrentUserOwner && member.userId != group.ownerUserId
+                        }
                     )
                 }
                 .ifEmpty {

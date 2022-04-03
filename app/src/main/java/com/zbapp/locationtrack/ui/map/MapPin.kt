@@ -58,7 +58,7 @@ class MapUserMarkerView : ConstraintLayout {
         // we are doing this instead of setting dimensions directly in xml because of better rendering
         // plus it is easier to design and preview bigger view
         val bigBitmap = getBitmapFromView()
-        val size = 40.dp2px
+        val size = if(data.active) 40.dp2px else 25.dp2px
         val small = Bitmap.createScaledBitmap(bigBitmap!!, size, size, false)
 
         // desaturate the pin if it is inactive

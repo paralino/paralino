@@ -6,6 +6,7 @@ import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.core.utils.exceptions.MissingGroupKeyException
 import com.zbapp.core.utils.extensions.distinctFlowOfList
 import com.zbapp.locationtrack.data.mappers.MemberMapperLocal
+import com.zbapp.locationtrack.data.models.location.MemberMutableDataUpdate
 import com.zbapp.locationtrack.data.repos.group.UserGroupDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -73,6 +74,10 @@ class LocationLocalDataSource(
 
     override suspend fun removeMember(id: String) {
         dao.removeMember(id)
+    }
+
+    override suspend fun clearMemberLocationData(memberId: String) {
+        dao.updateMemberMutableData(MemberMutableDataUpdate(memberId, mutableData = null))
     }
 
     override suspend fun clearAllMembersForUser(userId: String) {

@@ -45,7 +45,7 @@ class GroupMembersFragment : BaseFragment(R.layout.fragment_group_members) {
         vb.rvMembers.adapter = SimpleRvAdapter()
             .addFactory {
                 GroupMemberListItem(it).also {
-                    it.onMemberDelete = { askToRemoveMember(it.member) }
+                    it.onMemberDelete = { askToRemoveMember(it.itemData!!.member) }
                 }
             }
             .addFactory { ListItemEmptyState(it).withClickAction { addNewMember() } }

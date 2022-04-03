@@ -146,7 +146,8 @@
     <string name="invite_connect_alert_pickGroup">Please choose a group</string>
     <string name="invite_connect_title">To connect with others, enter their user ID</string>
 
-    <string name="group_members_item_remove_button">Remove</string>
+    <string name="group_members_item_remove_button">REMOVE</string>
+    <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
     <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>
     <string name="group_members_empty_info">This group is lonely!\nAdd someone to securely share your location with.</string>
     <string name="group_details_section_members_title">Members **(%d)**</string>

@@ -44,7 +44,7 @@ class LocationRemoteSource constructor(
     }
 
     suspend fun saveCurrentLocation(
-        data: LocationDataModel,
+        data: LocationDataModel?,
         ids: List<MemberGroupId>
     ) {
         blocking {
@@ -53,10 +53,12 @@ class LocationRemoteSource constructor(
                 val memberKey = cryptoKEKRepo.getMemberKey(it.groupId, config.userId)
                     ?: throw MissingMemberKeyException(it.groupId, config.userId)
 
-                val encryptedData = cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(data),
-                    key = memberKey.data.content
-                )
+                val encryptedData = data?.let {
+                    cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.formatter.encodeToString(it),
+                        key = memberKey.data.content
+                    )
+                }
 
                 LocationNodePayload(
                     memberId = it.memberId,

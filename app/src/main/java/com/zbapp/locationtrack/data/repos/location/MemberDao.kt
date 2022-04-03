@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.data.repos.location
 
 import androidx.room.*
 import com.zbapp.locationtrack.data.models.location.MemberEntity
+import com.zbapp.locationtrack.data.models.location.MemberMutableDataUpdate
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -42,6 +43,9 @@ interface MemberDao {
 
     @Query("DELETE FROM members WHERE id = :id")
     suspend fun removeMember(id: String)
+
+    @Update(onConflict = OnConflictStrategy.IGNORE, entity = MemberEntity::class)
+    suspend fun updateMemberMutableData(data: MemberMutableDataUpdate)
 
     @Query("DELETE FROM members WHERE userId = :userId")
     suspend fun clearAllMembersForUser(userId: String)
