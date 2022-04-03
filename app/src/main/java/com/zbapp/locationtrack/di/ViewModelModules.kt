@@ -30,7 +30,7 @@ import org.koin.dsl.module
 
 val viewModelModules = module {
     viewModel { DashboardViewModel(androidApplication(), get(), get(), get()) }
-    viewModel { (groupID: String?) -> MapViewModel(androidApplication(), groupID, get(), get()) }
+    viewModel { MapViewModel(androidApplication(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { LoginViewModel(androidApplication(), get()) }
     viewModel { LoginCheckViewModel(androidApplication(), get()) }

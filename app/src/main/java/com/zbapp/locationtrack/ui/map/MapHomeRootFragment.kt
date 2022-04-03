@@ -27,7 +27,7 @@ import org.koin.core.parameter.parametersOf
 class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
 
     private val args by lazy { arguments?.let { MapHomeRootFragmentArgs.fromBundle(it) } ?: MapHomeRootFragmentArgs() }
-    private val vm: MapViewModel by viewModel { parametersOf(args.groupId) }
+    private val vm: MapViewModel by viewModel()
     private val vb by viewBinding(FragmentMapBinding::bind)
     val fragment get() = vb.fragmentMap.getFragment<IMapHomeFragment>()
 
@@ -63,6 +63,8 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        vm.switchGroup(args.groupId ?: "")
 
         vb.fabGroup.isSelected = trackPositions
         vb.bGroupSelector.clipToOutline = true

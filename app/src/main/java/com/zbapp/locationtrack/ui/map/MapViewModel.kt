@@ -21,12 +21,11 @@ import kotlinx.coroutines.launch
 
 class MapViewModel constructor(
     app: Application,
-    groupId: String?,
     private val locationRepo: LocationRepository,
     private val groupRepo: GroupRepository
 ) : AndroidViewModel(app) {
 
-    private val groupIdData = MutableStateFlow(groupId ?: "")
+    private val groupIdData = MutableStateFlow("")
 
     val locationRefreshSubscription = groupIdData.filter { it.isNotBlank() }
         .flatMapLatest { locationRepo.locationRefresh(it).mapToPayload { Unit } }
@@ -35,17 +34,9 @@ class MapViewModel constructor(
     val selectedGroup = MutableStateFlow<Payload<MapUiModel>>(Payload.Loading)
 
     init {
-
-        if (groupId.isNullOrBlank()) {
-            viewModelScope.launch {
-                groupRepo.getAllGroupsLocally().firstOrNull()?.firstOrNull()?.let {
-                    groupIdData.value = it.id
-                }
-            }
-        }
-
+        // TODO handle no groups state
         groupIdData
-            .filter { it.isNotEmpty() }
+            .filter { it.isNotBlank() }
             .flatMapLatest {
                 locationRepo.getLocationsForGroup(it)
             }
@@ -72,7 +63,12 @@ class MapViewModel constructor(
     }
 
     fun switchGroup(groupId: String) {
-        groupIdData.value = groupId
+        if (groupId.isBlank()) {
+            viewModelScope.launch {
+                groupIdData.value =
+                    groupRepo.getAllGroupsLocally().firstOrNull()?.firstOrNull()?.id ?: ""
+            }
+        } else groupIdData.value = groupId
     }
 
     fun getMarkers(): LiveData<Payload<MapUiModel>> {
