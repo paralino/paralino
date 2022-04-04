@@ -6,12 +6,12 @@ import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupData
-import com.zbapp.core.models.invite.PersonalCodeReadData
-import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
+import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.user.asImageModel
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.*
@@ -30,7 +30,7 @@ class GroupsRemoteSource constructor(
 
     suspend fun createGroup(
         name: String,
-        image: String,
+        image: ImageModel,
         myData: MemberModelData,
         myKey: AsymmetricCryptoKeyData
     ): GroupWithMemberRaw {
@@ -150,7 +150,7 @@ class GroupsRemoteSource constructor(
                 oldKeys = encryptedOldKeys,
                 memberData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
-                        MemberModelData(codeData.ownerName, codeData.ownerImageBase64)
+                        MemberModelData(codeData.ownerName, codeData.ownerImageBase64?.asImageModel())
                     ),
                     key = groupKey.data.content
                 )

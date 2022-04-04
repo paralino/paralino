@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
+import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.user.ImageType
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.Emojis
@@ -23,7 +25,7 @@ class SharingViewModel(
     private val locationSharingManager: LocationSharingManager
 ): AndroidViewModel(app) {
 
-    private val selectedGroupLiveData = MutableLiveData(GroupItemData("", app.getString(R.string.invite_connect_button_pickGroup), Emojis.lightBulb, null))
+    private val selectedGroupLiveData = MutableLiveData(GroupItemData("", app.getString(R.string.invite_connect_button_pickGroup), ImageModel.emoji(Emojis.lightBulb), null))
     val selectedGroup: LiveData<GroupItemData> = selectedGroupLiveData
 
     val locationStatus get() = myApp.locationStatus.value

@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.user.ImageType
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementMemberListItemBinding
@@ -71,7 +73,7 @@ class GroupMemberListItem constructor(
         vb.tvUserStatus.text = userStatus
         vb.tvUserTimeInfo.text = lastPing ?: ""
 
-        vb.tvUserEmoji.text = data.emoji
+        vb.tvUserEmoji.text = data.image.getImageValue()
         vb.tvMemberName.text = data.name
 
         setState()
@@ -112,7 +114,7 @@ data class GroupMemberItemData constructor(
 ) : ListItemType {
 
     val name: String get() = member.name
-    val emoji: String get() = member.imageBase64?.takeIf { it.isNotBlank() } ?: Emojis.robot
+    val image: ImageModel get() = member.image?.takeIf { it.getImageValue() != null } ?: ImageModel.emoji(Emojis.robot)
     val batterLevel: Int? get() = member.mutableData?.batteryLevel
     fun getLastPing(context: Context): String? {
         return member.mutableData?.timeUTC?.toLocalDateTime()?.let {

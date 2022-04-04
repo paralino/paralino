@@ -38,7 +38,7 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                 Payload.Loading -> {}
                 is Payload.Success -> {
                     vb.tvGroupName.text = it.data.name
-                    vb.tvGroupEmoji.text = it.data.image
+                    vb.tvGroupEmoji.text = it.data.image.getImageValue()
                     vb.bMembers.text =
                         getString(R.string.group_details_section_members_title, it.data.memberCount).attributedBold(requireContext())
 

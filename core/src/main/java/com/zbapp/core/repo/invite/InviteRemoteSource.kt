@@ -2,8 +2,8 @@ package com.zbapp.core.repo.invite
 
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.invite.PersonalCodeData
-import com.zbapp.core.models.invite.PersonalCodeCreateData
-import com.zbapp.core.models.invite.PersonalCodeReadData
+import com.zbapp.core.models.raw.PersonalCodeCreateData
+import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.BaseRemoteModule

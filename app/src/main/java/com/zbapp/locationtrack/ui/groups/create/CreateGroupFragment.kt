@@ -57,7 +57,7 @@ class CreateGroupFragment : BottomSheetDialogFragment() {
                 is Payload.Success -> {
                     vb.title.itemData =
                         BottomSheetTitleData(requireContext().getString(R.string.group_edit_title))
-                    vb.tvGroupEmoji.text = it.data.image
+                    vb.tvGroupEmoji.text = it.data.image.getImageValue()
                     vb.etGroupName.editText?.setText(it.data.name)
                     vb.bCreate.setText(R.string.button_save)
                 }

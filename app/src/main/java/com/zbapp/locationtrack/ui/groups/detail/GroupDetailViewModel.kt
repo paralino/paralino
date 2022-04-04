@@ -3,12 +3,11 @@ package com.zbapp.locationtrack.ui.groups.detail
 import androidx.lifecycle.*
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
+import com.zbapp.core.models.user.ImageModel
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.exceptions.NotFoundException
-import com.zbapp.core.utils.exceptions.PermissionDeniedException
 import com.zbapp.core.utils.extensions.mapToPayload
-import com.zbapp.locationtrack.ui.groups.SharingStartFragmentArgs
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -26,7 +25,7 @@ class GroupDetailViewModel constructor(
         GroupDetailsUiModel(
             id = groupId,
             name = group.name,
-            image = group.emoji,
+            image = group.image,
             memberCount = group.memberCount,
             sharingActive = sharingActive,
             isMyGroup = group.isCurrentUserOwner
@@ -62,7 +61,7 @@ class GroupDetailViewModel constructor(
 data class GroupDetailsUiModel(
     val id: String,
     val name: String,
-    val image: String,
+    val image: ImageModel,
     val memberCount: Int,
     val sharingActive: Boolean,
     val isMyGroup: Boolean

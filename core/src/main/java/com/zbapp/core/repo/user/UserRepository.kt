@@ -7,6 +7,7 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
+import com.zbapp.core.models.user.ImageModel
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.base.BaseRepository
@@ -122,9 +123,9 @@ class UserRepository constructor(
         ).map { true }
     }
 
-    fun editUserImage(imageBase64: String): Flow<Boolean> {
+    fun editUserImage(image: ImageModel): Flow<Boolean> {
         return getDataOnce(
-            remote = { remote.updateUserImage(imageBase64) },
+            remote = { remote.updateUserImage(image) },
             localUpdate = { updateLocalUser(it) }
         ).map { true }
     }

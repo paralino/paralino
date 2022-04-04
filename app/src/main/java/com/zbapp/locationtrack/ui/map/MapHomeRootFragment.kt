@@ -6,7 +6,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
 import com.zbapp.core.models.Payload
-import com.zbapp.core.models.location.MemberModel
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentMapBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
@@ -21,7 +20,6 @@ import com.zbapp.locationtrack.utils.extensions.safeCast
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import com.zbapp.locationtrack.utils.simpleAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
 
 class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
@@ -119,7 +117,7 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
                     }
                     trackingGroupId = it.data.group.id
 
-                    vb.tvGroupEmoji.text = it.data.group.emoji
+                    vb.tvGroupEmoji.text = it.data.group.image.getImageValue()
                     vb.tvGroupName.text = it.data.group.name
 
                     val inactiveMembers = it.data.group.members.count { it.mutableData == null }

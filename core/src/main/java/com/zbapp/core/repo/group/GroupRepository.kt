@@ -5,12 +5,13 @@ import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupWithMembers
-import com.zbapp.core.models.invite.PersonalCodeReadData
+import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
+import com.zbapp.core.models.user.ImageModel
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
@@ -79,14 +80,14 @@ class GroupRepository constructor(
         )
     }
 
-    fun createGroup(name: String, emoji: String): Flow<Unit> {
+    fun createGroup(name: String, image: ImageModel): Flow<Unit> {
         return getDataOnce(
             remote = {
                 val userData = userRepository.cachedUser!!.data!!
                 remote.createGroup(
                     name = name,
-                    image = emoji,
-                    myData = MemberModelData(userData.userName, userData.imageBase64),
+                    image = image,
+                    myData = MemberModelData(userData.userName, userData.userImage),
                     myKey = userKeyRepo.latestKeyPair()
                 ).also { cryptoKEKRepo.refreshKeysForGroup(it.group.id).first() }
             },

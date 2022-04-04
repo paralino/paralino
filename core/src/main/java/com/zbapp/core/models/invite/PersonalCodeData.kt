@@ -1,5 +1,6 @@
 package com.zbapp.core.models.invite
 
+import com.zbapp.core.models.user.ImageModel
 import kotlinx.datetime.Clock
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -12,7 +13,7 @@ data class PersonalCodeData constructor(
 
     val ownerId: String,
     val ownerName: String,
-    val ownerImageBase64: String?,
+    val ownerImage: ImageModel? = null,
     val ownerKey: String,
     val validity: Long,
     val code: String,
@@ -26,19 +27,3 @@ data class PersonalCodeData constructor(
 
 }
 
-@Serializable
-data class PersonalCodeCreateData constructor(
-    val ownerId: String,
-    val ownerName: String,
-    val ownerImageBase64: String,
-    val ownerKey: String
-)
-
-@Serializable
-data class PersonalCodeReadData constructor(
-    val ownerId: String,
-    val ownerName: String,
-    val ownerImageBase64: String?,
-    val ownerKey: String,
-    val code: String,
-)

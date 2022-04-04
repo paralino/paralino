@@ -1,5 +1,6 @@
 package com.zbapp.core.models.location
 
+import com.zbapp.core.models.user.ImageModel
 import com.zbapp.core.utils.extensions.fromUTCtoInstant
 import com.zbapp.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
@@ -20,7 +21,7 @@ data class MemberModel constructor(
 ) {
 
     val name: String get() = data.name
-    val imageBase64: String? get() = data.imageBase64
+    val image: ImageModel? get() = data.image
 
     val isActive: Boolean
         get() {
@@ -34,7 +35,7 @@ data class MemberModel constructor(
         fun fromSystem(
             userId: String,
             name: String,
-            imageBase64: String?,
+            image: ImageModel?,
             model: LocationDataModel
         ): MemberModel {
             return MemberModel(
@@ -45,7 +46,7 @@ data class MemberModel constructor(
                 groupKeyVersion = 0,
                 memberKeyVersion = 0,
                 shouldRotateKeys = false,
-                data = MemberModelData(name, imageBase64),
+                data = MemberModelData(name, image),
                 mutableData = model
             )
         }
@@ -56,7 +57,7 @@ data class MemberModel constructor(
 @Serializable
 data class MemberModelData constructor(
     val name: String,
-    val imageBase64: String? = null
+    val image: ImageModel? = null
 )
 
 @Serializable

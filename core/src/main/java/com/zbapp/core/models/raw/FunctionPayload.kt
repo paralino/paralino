@@ -84,3 +84,20 @@ data class LocationNodePayload(
     val mutableData: String?,
     val memberKeyVersion: Long
 )
+
+@Serializable
+data class PersonalCodeCreateData constructor(
+    val ownerId: String,
+    val ownerName: String,
+    val ownerImageBase64: String,
+    val ownerKey: String
+)
+
+@Serializable
+data class PersonalCodeReadData constructor(
+    val ownerId: String,
+    val ownerName: String,
+    val ownerImageBase64: String?,
+    val ownerKey: String,
+    val code: String,
+)

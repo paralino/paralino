@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.user.ImageType
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementMapPinBinding
@@ -29,19 +31,25 @@ class MapUserMarkerView : ConstraintLayout {
 
     fun getPinForData(data: MapPinData): Bitmap? {
 
-        // TODO replace with different image types when implemented
-        val isEmoji = true
         // populate data to pin view
-        if (isEmoji) {
-            vb.ivPinImage.isVisible = false
-            vb.tvGroupEmoji.isVisible = true
-            vb.tvGroupEmoji.text = data.image
-        } else {
-            vb.ivPinImage.isVisible = true
-            vb.tvGroupEmoji.isVisible = false
-            val b = data.image.bitmapFromBase64()
-            if (b != null) vb.ivPinImage.setImageBitmap(b)
-            else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
+        when(data.image?.getImageType()) {
+            ImageType.emoji -> {
+                vb.ivPinImage.isVisible = false
+                vb.tvGroupEmoji.isVisible = true
+                vb.tvGroupEmoji.text = data.image.getImageValue()
+            }
+            ImageType.raw -> {
+                vb.ivPinImage.isVisible = true
+                vb.tvGroupEmoji.isVisible = false
+                val b = data.image.getImageValue()?.bitmapFromBase64()
+                if (b != null) vb.ivPinImage.setImageBitmap(b)
+                else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
+            }
+            else -> {
+                vb.ivPinImage.isVisible = false
+                vb.tvGroupEmoji.isVisible = true
+                vb.tvGroupEmoji.text = Emojis.robot
+            }
         }
 
         if (data.active) {
@@ -82,7 +90,7 @@ data class MapPinData constructor(
     val memberId: String,
     val focused: Boolean,
     val active: Boolean,
-    val image: String
+    val image: ImageModel?
 ) {
 
     companion object {
@@ -92,7 +100,7 @@ data class MapPinData constructor(
                 memberId = member.id,
                 focused = true,
                 active = member.isActive,
-                image = member.imageBase64 ?: Emojis.robot
+                image = member.image
             )
         }
     }

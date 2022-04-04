@@ -5,8 +5,8 @@ import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.core.view.isVisible
-import androidx.core.view.marginBottom
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.user.ImageModel
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementGroupListItemBinding
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItemData
@@ -37,7 +37,7 @@ class GroupListItem(context: Context, attributeSet: AttributeSet? = null) :
             GroupItemData.GroupUiType.PICKER -> 0
             else -> context.resources.getDimensionPixelSize(R.dimen.activity_side_margin_medium)
         }
-        vb.tvGroupEmoji.text = data.emoji
+        vb.tvGroupEmoji.text = data.image.getImageValue()
         vb.tvGroupName.text = data.name
         vb.tvGroupCount.isVisible = data.userCount != null
         vb.tvGroupCount.text = data.userCount?.toString() ?: "-"
@@ -53,13 +53,13 @@ class GroupListItem(context: Context, attributeSet: AttributeSet? = null) :
 data class GroupItemData constructor(
     val id: String,
     val name: String,
-    val emoji: String,
+    val image: ImageModel,
     val userCount: Int?,
     val uiType: GroupUiType = GroupUiType.INACTIVE
 ) : ListItemType, BottomSheetItemData {
 
     constructor(group: UserGroup, uiType: GroupUiType): this(
-        group.id, group.name, group.emoji, group.memberCount, uiType
+        group.id, group.name, group.image, group.memberCount, uiType
     )
 
     override fun getIdentifier(): String {
