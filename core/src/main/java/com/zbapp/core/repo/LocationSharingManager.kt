@@ -34,14 +34,18 @@ class LocationSharingManager(
             Resource.NotInitialized
         )
 
+    fun sharingStatusForGroup(id: String): Flow<Boolean> {
+        return allContractsFlow.map {
+            it.data?.any { it.groupId == id } ?: false
+        }.distinctUntilChanged()
+    }
+
     fun isSharingActive(): Boolean {
         return sharingStatus.value.data == true
     }
 
-    fun isSharingActiveForGroup(id: String): Flow<Boolean> {
-        return allContractsFlow.map {
-            it.data?.any { it.groupId == id } ?: false
-        }.distinctUntilChanged()
+    fun isSharingActiveForGroup(id: String): Boolean {
+        return allContractsFlow.value.data?.any { it.groupId == id } ?: false
     }
 
     suspend fun startSharing(contract: LocationSharingContract) {

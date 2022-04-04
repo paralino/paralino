@@ -18,7 +18,7 @@ class GroupDetailViewModel constructor(
     private val locationSharingManager: LocationSharingManager
 ) : ViewModel() {
 
-    private val sharingStatus = locationSharingManager.isSharingActiveForGroup(groupId)
+    private val sharingStatus = locationSharingManager.sharingStatusForGroup(groupId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     val groupDetails = combine(groupRepo.getGroupWithMembers(groupId), sharingStatus)

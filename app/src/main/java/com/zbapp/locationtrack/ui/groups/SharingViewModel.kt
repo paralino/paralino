@@ -56,7 +56,7 @@ class SharingViewModel(
                     LocationSharingContract(it, LocationSharingContract.forDuration(durationMillis))
                 )
                 val active = withTimeoutOrNull(2000) {
-                    locationSharingManager.isSharingActiveForGroup(it).filter { it }.firstOrNull()
+                    locationSharingManager.isSharingActiveForGroup(it)
                 } ?: false
                 emit(active)
             }

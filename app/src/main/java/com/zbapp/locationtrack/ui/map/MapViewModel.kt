@@ -7,6 +7,7 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupWithMembers
+import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.utils.extensions.mapToPayload
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 class MapViewModel constructor(
     app: Application,
     private val locationRepo: LocationRepository,
+    private val sharingManager: LocationSharingManager,
     private val groupRepo: GroupRepository
 ) : AndroidViewModel(app) {
 
@@ -46,7 +48,7 @@ class MapViewModel constructor(
                                 memberListData = group.members.map { member ->
                                     val actionItem =
                                         GroupMemberItemData.MemberAction.DELETE_LOCATION.takeIf {
-                                            member.userId == config.userId && member.mutableData != null
+                                            member.userId == config.userId && member.mutableData != null && !sharingManager.isSharingActiveForGroup(groupIdData.value)
                                         }
                                     GroupMemberItemData(
                                         member = member,
