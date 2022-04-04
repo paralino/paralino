@@ -59,6 +59,10 @@ class UserGroupLocalDataSource constructor(
             .map { it.sortedBy { it.name } }
     }
 
+    override fun getAllGroupIds(): Flow<List<String>> {
+        return dao.getAllGroupIds()
+    }
+
     override suspend fun deleteGroup(groupId: String) {
         dao.deleteGroup(groupId)
         memberLocal.clearAllMembersForGroup(groupId)

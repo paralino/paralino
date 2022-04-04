@@ -106,6 +106,10 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
         }
 
         vm.getMarkers().observe {
+
+            vb.bGroupSelector.isVisible = it is Payload.Success
+            vb.fabGroup.isVisible = it is Payload.Success
+
             when(it) {
                 Payload.Loading -> { }
                 is Payload.Success -> {

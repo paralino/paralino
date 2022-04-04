@@ -19,6 +19,9 @@ interface UserGroupDao {
     @Query("SELECT * FROM groups")
     fun getAllGroups(): Flow<List<UserGroupEntity>>
 
+    @Query("SELECT id FROM groups")
+    fun getAllGroupIds(): Flow<List<String>>
+
     @Query("SELECT * FROM groups WHERE id = :id")
     fun getGroup(id: String): Flow<UserGroupEntity?>
 

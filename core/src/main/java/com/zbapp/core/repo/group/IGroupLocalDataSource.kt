@@ -15,6 +15,7 @@ interface IGroupLocalDataSource {
     fun getGroupWithoutMembers(groupId: String): Flow<UserGroup>
     fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers>
     fun getAllGroups(): Flow<List<UserGroup>>
+    fun getAllGroupIds(): Flow<List<String>>
 
     suspend fun deleteGroup(groupId: String)
     suspend fun removeMember(groupId: String, userId: String)

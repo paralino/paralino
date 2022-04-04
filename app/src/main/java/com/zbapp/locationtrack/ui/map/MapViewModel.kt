@@ -34,39 +34,43 @@ class MapViewModel constructor(
     val selectedGroup = MutableStateFlow<Payload<MapUiModel>>(Payload.Loading)
 
     init {
-        // TODO handle no groups state
         groupIdData
-            .filter { it.isNotBlank() }
             .flatMapLatest {
-                locationRepo.getLocationsForGroup(it)
-            }
-            .map { group ->
-                MapUiModel(
-                    group = group,
-                    memberListData = group.members.map { member ->
-                        val actionItem = GroupMemberItemData.MemberAction.DELETE_LOCATION.takeIf {
-                            member.userId == config.userId && member.mutableData != null
+                if(it.isBlank()) {
+                    flowOf(Payload.Loading)
+                } else {
+                    locationRepo.getLocationsForGroup(it)
+                        .map { group ->
+                            MapUiModel(
+                                group = group,
+                                memberListData = group.members.map { member ->
+                                    val actionItem =
+                                        GroupMemberItemData.MemberAction.DELETE_LOCATION.takeIf {
+                                            member.userId == config.userId && member.mutableData != null
+                                        }
+                                    GroupMemberItemData(
+                                        member = member,
+                                        actionItem = actionItem,
+                                        uiType = selectedGroup.value.data?.memberListData?.firstOrNull { it.member.id == member.id }?.uiType
+                                            ?.takeIf { actionItem != null }
+                                            ?: GroupMemberItemData.MemberUiType.COLLAPSED
+                                    )
+                                }
+                            )
                         }
-                        GroupMemberItemData(
-                            member = member,
-                            actionItem = actionItem,
-                            uiType = selectedGroup.value.data?.memberListData?.firstOrNull { it.member.id == member.id }?.uiType
-                                ?.takeIf { actionItem != null }
-                                ?: GroupMemberItemData.MemberUiType.COLLAPSED
-                        )
-                    }
-                )
+                        .mapToPayload { it }
+                }
             }
-            .mapToPayload { it }
             .onEach { selectedGroup.value = it }
             .launchIn(viewModelScope)
     }
 
     fun switchGroup(groupId: String) {
+        selectedGroup.value = Payload.Loading
         if (groupId.isBlank()) {
             viewModelScope.launch {
                 groupIdData.value =
-                    groupRepo.getAllGroupsLocally().firstOrNull()?.firstOrNull()?.id ?: ""
+                    groupRepo.getAllGroupIds().firstOrNull()?.firstOrNull() ?: ""
             }
         } else groupIdData.value = groupId
     }

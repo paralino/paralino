@@ -45,6 +45,10 @@ class GroupRepository constructor(
         return local.getAllGroups()
     }
 
+    fun getAllGroupIds(): Flow<List<String>> {
+        return local.getAllGroupIds()
+    }
+
     fun getGroupWithMembersLocally(id: String): Flow<UserGroupWithMembers> {
         return local.getGroupWithMembers(id)
     }
