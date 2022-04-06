@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.user.ImageModel
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.data.mappers.ImageModelParceler
 import com.zbapp.locationtrack.databinding.ElementGroupListItemBinding
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetItemData
 import com.zbapp.locationtrack.utils.BaseRvItem
@@ -15,6 +16,7 @@ import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
 import com.zbapp.locationtrack.utils.extensions.safeCast
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.WriteWith
 
 class GroupListItem(context: Context, attributeSet: AttributeSet? = null) :
     BaseRvItem<GroupItemData>(context, attributeSet) {
@@ -53,7 +55,7 @@ class GroupListItem(context: Context, attributeSet: AttributeSet? = null) :
 data class GroupItemData constructor(
     val id: String,
     val name: String,
-    val image: ImageModel,
+    val image: @WriteWith<ImageModelParceler>() ImageModel,
     val userCount: Int?,
     val uiType: GroupUiType = GroupUiType.INACTIVE
 ) : ListItemType, BottomSheetItemData {
