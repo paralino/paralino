@@ -45,14 +45,18 @@ class GroupMembersFragment : BaseFragment(R.layout.fragment_group_members) {
         vb.rvMembers.adapter = SimpleRvAdapter()
             .addFactory {
                 GroupMemberListItem(it).also {
-                    it.onMemberDelete = { askToRemoveMember(it.member) }
+                    it.onMemberDelete = { askToRemoveMember(it.itemData!!.member) }
                 }
             }
             .addFactory { ListItemEmptyState(it).withClickAction { addNewMember() } }
             .addFactory { ListItemEmptySpace(it) }
 
         vm.groupMembers.observe(viewLifecycleOwner) {
-            vb.rvMembers.simpleAdapter?.submitList(it)
+            vb.toolbar.menu.clear()
+            if(it.isMyGroup) {
+                vb.toolbar.inflateMenu(R.menu.group_members_menu)
+            }
+            vb.rvMembers.simpleAdapter?.submitList(it.members)
         }
     }
 

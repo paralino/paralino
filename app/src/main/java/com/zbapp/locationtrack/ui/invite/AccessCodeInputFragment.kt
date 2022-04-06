@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
+import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentInviteAcceptBinding
 import com.zbapp.locationtrack.ui.dashboard.GroupItemData
@@ -103,7 +104,7 @@ class AccessCodeInputFragment : BottomSheetDialogFragment() {
                     vb.btConfirm.setContent(data.data.actionButtonText)
                     vb.tvGroupCount.text = data.data.groupCount?.toString() ?: "0"
                     vb.tvInviteName.text = data.data.name
-                    vb.tvInviteImage.text = data.data.imageEmoji
+                    vb.tvInviteImage.text = data.data.image?.getImageValue() ?: Emojis.robot
                     vb.tvInviteDescription.text = data.data.description
 
                     if (data is AcceptInviteEvent.InviteAccepted)

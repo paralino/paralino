@@ -1,6 +1,7 @@
 package com.zbapp.locationtrack.data.repos.group
 
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.group.UserGroupWithMembers
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
 import com.zbapp.core.repo.group.IGroupLocalDataSource
@@ -34,22 +35,32 @@ class UserGroupLocalDataSource constructor(
 
     override fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
-            .map { mapper.local2Core(it) }
+            .filterNotNull()
+            .map { mapper.local2Core(it, memberLocal.memberCountInGroup(groupId)) }
     }
 
-    override fun getGroupWithMembers(groupId: String): Flow<UserGroup> {
+    override fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
         return dao.getGroup(groupId)
-            .filterNotNull()
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
-                mapper.local2Core(group).copy(members = members)
+                if(group != null)
+                    UserGroupWithMembers(
+                        group = mapper.local2Core(group, members.size),
+                        members = members
+                    )
+                else null
             }
+            .filterNotNull()
     }
 
     override fun getAllGroups(): Flow<List<UserGroup>> {
         return dao.getAllGroups()
             .distinctFlowOfList()
-            .map { it.map { mapper.local2Core(it) } }
+            .map { it.map { mapper.local2Core(it, memberLocal.memberCountInGroup(it.id)) } }
             .map { it.sortedBy { it.name } }
+    }
+
+    override fun getAllGroupIds(): Flow<List<String>> {
+        return dao.getAllGroupIds()
     }
 
     override suspend fun deleteGroup(groupId: String) {

@@ -1,6 +1,7 @@
 package com.zbapp.core.repo.user
 
 import com.zbapp.core.models.raw.UserMeRaw
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.api.IUserApi
 
@@ -42,8 +43,8 @@ class UserRemoteSource constructor(
         return api.changePassword(newPassword, oldPassword)
     }
 
-    suspend fun updateUserImage(imageBase64: String): UserMeRaw {
-        return api.updateUserData(mapOf("imageBase64" to imageBase64))
+    suspend fun updateUserImage(image: ImageModel): UserMeRaw {
+        return api.updateUserData(mapOf("userImage" to image))
     }
 
     suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {

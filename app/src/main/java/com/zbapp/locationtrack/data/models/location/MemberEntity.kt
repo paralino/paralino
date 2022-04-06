@@ -1,6 +1,7 @@
 package com.zbapp.locationtrack.data.models.location
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
@@ -20,3 +21,11 @@ data class MemberEntity constructor(
     val mutableData: String? = null
 ) : Parcelable
 
+@Entity
+data class MemberMutableDataUpdate(
+    @ColumnInfo(name = "id")
+    val id: String,
+
+    @ColumnInfo(name = "mutableData")
+    val mutableData: String? = null,
+)

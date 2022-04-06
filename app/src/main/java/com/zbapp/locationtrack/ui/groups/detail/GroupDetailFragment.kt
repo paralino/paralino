@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.ui.groups.detail
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -17,6 +18,7 @@ import com.zbapp.locationtrack.ui.groups.detail.members.GroupMembersFragmentArgs
 import com.zbapp.locationtrack.ui.invite.AccessCodeInputFragmentArgs
 import com.zbapp.locationtrack.ui.shared.DeeplinkManager
 import com.zbapp.locationtrack.ui.shared.snackBarError
+import com.zbapp.locationtrack.utils.extensions.attributedBold
 import com.zbapp.locationtrack.utils.extensions.backgroundTintRes
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -31,20 +33,27 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        vm.groupDetails.observe {
+        vm.groupDetailsLiveData.observe {
             when (it) {
                 Payload.Loading -> {}
                 is Payload.Success -> {
                     vb.tvGroupName.text = it.data.name
-                    vb.tvGroupEmoji.text = it.data.image
+                    vb.tvGroupEmoji.text = it.data.image.getImageValue()
                     vb.bMembers.text =
-                        getString(R.string.group_details_section_members_title, it.data.memberCount)
+                        getString(R.string.group_details_section_members_title, it.data.memberCount).attributedBold(requireContext())
+
+                    vb.toolbar.menu.clear()
+                    if(it.data.isMyGroup) {
+                        vb.toolbar.inflateMenu(R.menu.group_detail_menu_owner)
+                    } else {
+                        vb.toolbar.inflateMenu(R.menu.group_detail_menu_member)
+                    }
 
                     if(it.data.sharingActive) {
                         vb.bShareStart.backgroundTintRes(R.color.highlightRed)
                         vb.bShareStart.setText(R.string.location_banner_info_stop)
                     } else {
-                        vb.bShareStart.backgroundTintRes(R.color.fab_background_color)
+                        vb.bShareStart.backgroundTintRes(R.color.accent)
                         vb.bShareStart.setText(R.string.groups_sharing_title)
                     }
                 }
@@ -63,8 +72,22 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                     )
                     true
                 }
+                R.id.itemMemberAdd -> {
+                    navigateDefault(
+                        R.id.acceptInviteFragment,
+                        AccessCodeInputFragmentArgs(
+                            code = null,
+                            groupId = args.groupId
+                        ).toBundle()
+                    )
+                    true
+                }
                 R.id.itemGroupDelete -> {
                     askToDeleteGroup()
+                    true
+                }
+                R.id.itemGroupLeave -> {
+                    askToLeaveGroup()
                     true
                 }
                 else -> false
@@ -76,17 +99,7 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
                 R.id.groupMembersFragment,
                 GroupMembersFragmentArgs(
                     groupId = args.groupId,
-                    groupName = vm.groupDetails.value?.data?.name ?: ""
-                ).toBundle()
-            )
-        }
-
-        vb.bAddMember.setOnClickListener {
-            navigateDefault(
-                R.id.acceptInviteFragment,
-                AccessCodeInputFragmentArgs(
-                    code = null,
-                    groupId = args.groupId
+                    groupName = vm.groupDetails.value.data?.name ?: ""
                 ).toBundle()
             )
         }
@@ -118,8 +131,19 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
             .show()
     }
 
+    private fun askToLeaveGroup() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.alert_title_confirm)
+            .setMessage(R.string.group_details_leave_group_alert_title)
+            .setPositiveButton(R.string.group_details_leave_group_alert_button) { _, _ ->
+                deleteGroup()
+            }
+            .setNegativeButton(R.string.button_cancel, null)
+            .show()
+    }
+
     private fun deleteGroup() {
-        vm.deleteGroup().observe(viewLifecycleOwner) {
+        vm.leaveOrDeleteGroup().observe(viewLifecycleOwner) {
             when (it) {
                 Payload.Loading -> {}
                 is Payload.Success -> {

@@ -10,8 +10,8 @@ class GroupsMapperLocal(
     private val coreMapper: GroupMapperCore
 ) : IDataMapperLocal<UserGroupEntity, GroupDocumentRaw> {
 
-    suspend fun local2Core(model: UserGroupEntity): UserGroup {
-        return coreMapper.remote2Core(local2Remote(model))
+    suspend fun local2Core(model: UserGroupEntity, memberCount: Int = 0): UserGroup {
+        return coreMapper.remote2Core(local2Remote(model), memberCount)
     }
 
     override suspend fun local2Remote(model: UserGroupEntity): GroupDocumentRaw {

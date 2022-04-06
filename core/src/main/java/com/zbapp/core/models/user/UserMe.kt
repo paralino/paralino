@@ -1,5 +1,6 @@
 package com.zbapp.core.models.user
 
+import com.zbapp.core.models.base.ImageModel
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,6 +19,6 @@ data class UserMe constructor(
 
 @Serializable
 data class UserMeData constructor(
-    var imageBase64: String? = null,
+    var userImage: ImageModel? = null,
     val userName: String = ""
 )

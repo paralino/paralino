@@ -3,9 +3,9 @@ package com.zbapp.core.repo.invite
 import com.zbapp.core.config
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.models.Payload
-import com.zbapp.core.models.invite.PersonalCodeCreateData
+import com.zbapp.core.models.raw.PersonalCodeCreateData
 import com.zbapp.core.models.invite.PersonalCodeData
-import com.zbapp.core.models.invite.PersonalCodeReadData
+import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.core.utils.extensions.mapToPayload
@@ -28,7 +28,7 @@ class InviteRepository(
                 val invite = PersonalCodeCreateData(
                     ownerId = user.id,
                     ownerName = user.name,
-                    ownerImageBase64 = user.data?.imageBase64 ?: "",
+                    ownerImageBase64 = user.data?.userImage?.image ?: "",
                     ownerKey = userKeyRepo.latestKeyPair().publicKey
                 )
                 remote.createInviteCode(invite)

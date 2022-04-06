@@ -4,12 +4,14 @@ import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.logg
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.invite.PersonalCodeReadData
+import com.zbapp.core.models.group.UserGroupWithMembers
+import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
@@ -44,7 +46,11 @@ class GroupRepository constructor(
         return local.getAllGroups()
     }
 
-    fun getGroupWithMembersLocally(id: String): Flow<UserGroup> {
+    fun getAllGroupIds(): Flow<List<String>> {
+        return local.getAllGroupIds()
+    }
+
+    fun getGroupWithMembersLocally(id: String): Flow<UserGroupWithMembers> {
         return local.getGroupWithMembers(id)
     }
 
@@ -52,7 +58,7 @@ class GroupRepository constructor(
         return local.getGroupWithoutMembers(id)
     }
 
-    fun getGroupWithMembers(id: String): Flow<UserGroup> {
+    fun getGroupWithMembers(id: String): Flow<UserGroupWithMembers> {
         return mergeDataWithRemote(
             local = local.getGroupWithMembers(id),
             remote = {
@@ -74,14 +80,14 @@ class GroupRepository constructor(
         )
     }
 
-    fun createGroup(name: String, emoji: String): Flow<Unit> {
+    fun createGroup(name: String, image: ImageModel): Flow<Unit> {
         return getDataOnce(
             remote = {
                 val userData = userRepository.cachedUser!!.data!!
                 remote.createGroup(
                     name = name,
-                    image = emoji,
-                    myData = MemberModelData(userData.userName, userData.imageBase64),
+                    image = image,
+                    myData = MemberModelData(userData.userName, userData.userImage),
                     myKey = userKeyRepo.latestKeyPair()
                 ).also { cryptoKEKRepo.refreshKeysForGroup(it.group.id).first() }
             },
@@ -98,7 +104,22 @@ class GroupRepository constructor(
 
     fun deleteGroup(id: String): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.deleteGroup(id) },
+            remote = {
+                remote.deleteGroup(id)
+            },
+            localUpdate = {
+                local.deleteGroup(id)
+                cryptoKEKRepo.deleteAllKeysForGroup(id)
+            }
+        )
+    }
+
+    fun leaveGroup(id: String): Flow<Unit> {
+        return getDataOnce(
+            remote = {
+                val group = local.getGroupWithoutMembers(id).first()
+                remote.removeUserFromGroup(group, userRepository.cachedUserId)
+            },
             localUpdate = {
                 local.deleteGroup(id)
                 cryptoKEKRepo.deleteAllKeysForGroup(id)
@@ -123,11 +144,15 @@ class GroupRepository constructor(
     }
 
     fun removeMember(member: MemberModel): Flow<Unit> {
-        // TODO differentiate between removing user and leaving group
+
+        if(member.userId == userRepository.cachedUserId) {
+            return leaveGroup(member.groupId)
+        }
+
         return getDataOnce(
             remote = {
-                val group = local.getGroupWithMembers(member.groupId).first()
-                remote.removeUserFromGroup(group, member)
+                val group = local.getGroupWithoutMembers(member.groupId).first()
+                remote.removeUserFromGroup(group, member.userId)
             },
             localUpdate = {
                 local.removeMember(member.groupId, member.userId)
@@ -150,7 +175,7 @@ class GroupRepository constructor(
             ?: group
     }
 
-    private suspend fun updateMemberKeyAndRefresh(remoteGroup: UserGroup, force: Boolean = false): GroupWithMemberRaw? {
+    private suspend fun updateMemberKeyAndRefresh(remoteGroup: UserGroupWithMembers, force: Boolean = false): GroupWithMemberRaw? {
         val memberMeRemote = remoteGroup.members.firstOrNull { it.userId == userRepository.cachedUserId }
 
         if(memberMeRemote?.shouldRotateKeys == true || force) {
@@ -164,7 +189,7 @@ class GroupRepository constructor(
         return null
     }
 
-    private suspend fun updateGroupKeyAndRefresh(remoteGroup: UserGroup, force: Boolean = false): GroupWithMemberRaw? {
+    private suspend fun updateGroupKeyAndRefresh(remoteGroup: UserGroupWithMembers, force: Boolean = false): GroupWithMemberRaw? {
         if (remoteGroup.ownerUserId != userRepository.cachedUserId) return null
         if (!force && !remoteGroup.shouldRotateKeys) return null
 

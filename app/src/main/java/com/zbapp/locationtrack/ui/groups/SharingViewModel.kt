@@ -4,13 +4,13 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.ui.dashboard.GroupItemData
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -23,7 +23,7 @@ class SharingViewModel(
     private val locationSharingManager: LocationSharingManager
 ): AndroidViewModel(app) {
 
-    private val selectedGroupLiveData = MutableLiveData(GroupItemData("", app.getString(R.string.invite_connect_button_pickGroup), Emojis.lightBulb, null))
+    private val selectedGroupLiveData = MutableLiveData(GroupItemData("", app.getString(R.string.invite_connect_button_pickGroup), ImageModel.emoji(Emojis.lightBulb), null))
     val selectedGroup: LiveData<GroupItemData> = selectedGroupLiveData
 
     val locationStatus get() = myApp.locationStatus.value
@@ -56,7 +56,7 @@ class SharingViewModel(
                     LocationSharingContract(it, LocationSharingContract.forDuration(durationMillis))
                 )
                 val active = withTimeoutOrNull(2000) {
-                    locationSharingManager.isSharingActiveForGroup(it).filter { it }.firstOrNull()
+                    locationSharingManager.isSharingActiveForGroup(it)
                 } ?: false
                 emit(active)
             }

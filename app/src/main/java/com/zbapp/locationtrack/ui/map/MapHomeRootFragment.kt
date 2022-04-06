@@ -6,7 +6,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
 import com.zbapp.core.models.Payload
-import com.zbapp.core.models.location.MemberModel
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentMapBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
@@ -21,13 +20,12 @@ import com.zbapp.locationtrack.utils.extensions.safeCast
 import com.zbapp.locationtrack.utils.extensions.viewBinding
 import com.zbapp.locationtrack.utils.simpleAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
 
 class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
 
     private val args by lazy { arguments?.let { MapHomeRootFragmentArgs.fromBundle(it) } ?: MapHomeRootFragmentArgs() }
-    private val vm: MapViewModel by viewModel { parametersOf(args.groupId) }
+    private val vm: MapViewModel by viewModel()
     private val vb by viewBinding(FragmentMapBinding::bind)
     val fragment get() = vb.fragmentMap.getFragment<IMapHomeFragment>()
 
@@ -64,6 +62,8 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        vm.switchGroup(args.groupId ?: "")
+
         vb.fabGroup.isSelected = trackPositions
         vb.bGroupSelector.clipToOutline = true
 
@@ -73,7 +73,20 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
         }
 
         vb.rvUsers.adapter = SimpleRvAdapter()
-            .addFactory { GroupMemberListItem(forViewPager = true, it) }
+            .addFactory {
+                GroupMemberListItem(forViewPager = true, it).also {
+                    it.onMemberDelete = {
+                        it.toggleState()
+                        vm.clearMyLocation().observe {
+                            when(it) {
+                                Payload.Loading -> {}
+                                is Payload.Error -> snackBarError(vb.fabGroup, it.exception)
+                                is Payload.Success -> {}
+                            }
+                        }
+                    }
+                }
+            }
 
         vb.rvUsers.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -91,32 +104,36 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
         }
 
         vm.getMarkers().observe {
+
+            vb.bGroupSelector.isVisible = it is Payload.Success
+            vb.fabGroup.isVisible = it is Payload.Success
+
             when(it) {
                 Payload.Loading -> { }
                 is Payload.Success -> {
 
-                    if(trackingGroupId != it.data.id) {
+                    if(trackingGroupId != it.data.group.id) {
                         trackPositions = true
                     }
-                    trackingGroupId = it.data.id
+                    trackingGroupId = it.data.group.id
 
-                    vb.tvGroupEmoji.text = it.data.emoji
-                    vb.tvGroupName.text = it.data.name
+                    vb.tvGroupEmoji.text = it.data.group.image.getImageValue()
+                    vb.tvGroupName.text = it.data.group.name
 
-                    val inactiveMembers = it.data.members.count { it.mutableData == null }
+                    val inactiveMembers = it.data.group.members.count { it.mutableData == null }
                     if(inactiveMembers == 0) {
                         // not using plural form for 0 since 0 is treated as "other" in some languages
-                        vb.tvGroupCount.text = "$inactiveMembers"
+                        vb.tvGroupCount.text = "${it.data.group.memberCount}"
                     } else {
                         vb.tvGroupCount.text = resources.getQuantityString(
                             R.plurals.group_sharing_member_active_info,
                             inactiveMembers,
-                            it.data.members.size,
+                            it.data.group.memberCount,
                             inactiveMembers
                         )
                     }
 
-                    updateMarkers(it.data.members)
+                    updateMarkers(it.data)
                 }
                 is Payload.Error -> {
                     snackBarError(vb.fabGroup, it.exception)
@@ -153,11 +170,9 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
         }
     }
 
-    private fun updateMarkers(list: List<MemberModel>) {
-        fragment.updateMarkers(list)
-        vb.rvUsers.simpleAdapter?.submitList(
-            list.map { GroupMemberItemData(it, false, GroupMemberItemData.MemberUiType.MAP) }
-        )
+    private fun updateMarkers(data: MapUiModel) {
+        fragment.updateMarkers(data.group.members)
+        vb.rvUsers.simpleAdapter?.submitList(data.memberListData)
     }
 
     private fun onMarkerClick(markerId: String): Boolean {

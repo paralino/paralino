@@ -2,10 +2,9 @@ package com.zbapp.core.repo.location
 
 import com.zbapp.core.config
 import com.zbapp.core.models.Payload
-import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.models.group.UserGroupWithMembers
 import com.zbapp.core.models.location.LocationDataModel
 import com.zbapp.core.models.location.MemberGroupId
-import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.NoValidContractsException
 import com.zbapp.core.repo.base.BaseRepository
@@ -20,7 +19,7 @@ class LocationRepository constructor(
     private val local: ILocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val groupsRepos: GroupRepository
-): BaseRepository() {
+) : BaseRepository() {
 
     fun locationRefresh(groupId: String): Flow<Payload<Unit>> {
         return flow {
@@ -33,12 +32,11 @@ class LocationRepository constructor(
                     emit(Payload.Error(e))
                 }
                 delay(6_000)
-            }
-            while (true)
+            } while (true)
         }
     }
 
-    fun getLocationsForGroup(groupId: String): Flow<UserGroup> {
+    fun getLocationsForGroup(groupId: String): Flow<UserGroupWithMembers> {
         return groupsRepos.getGroupWithMembersLocally(groupId)
     }
 
@@ -57,6 +55,24 @@ class LocationRepository constructor(
             }
 
             remote.saveCurrentLocation(data, mapped)
+        }
+    }
+
+    fun clearLocation(groupId: String): Flow<Unit> {
+        return getDataOnce(
+            localUpdate = {
+                local.clearMemberLocationData(local.getUserMemberIds(config.userId, groupId).first())
+            }
+        ) {
+            remote.saveCurrentLocation(
+                data = null,
+                ids = listOf(
+                    MemberGroupId(
+                        memberId = local.getUserMemberIds(config.userId, groupId).first(),
+                        groupId = groupId
+                    )
+                )
+            )
         }
     }
 

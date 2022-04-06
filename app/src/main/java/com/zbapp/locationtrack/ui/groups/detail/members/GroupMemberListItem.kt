@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementMemberListItemBinding
@@ -28,7 +29,7 @@ class GroupMemberListItem constructor(
 
 
     private val vb = ElementMemberListItemBinding.inflate(LayoutInflater.from(context), this)
-    var onMemberDelete: ((GroupMemberItemData) -> Unit)? = null
+    var onMemberDelete: ((GroupMemberListItem) -> Unit)? = null
 
 
     init {
@@ -42,17 +43,11 @@ class GroupMemberListItem constructor(
         }
 
         vb.container.setOnClickListener {
-            itemData?.uiType =
-                itemData?.uiType?.toggle() ?: GroupMemberItemData.MemberUiType.EXPANDED
-            if (itemData?.uiType == GroupMemberItemData.MemberUiType.MAP) {
-                performClick()
-            } else {
-                setState()
-            }
+            toggleState()
         }
 
         vb.bRemove.setOnClickListener {
-            itemData?.let { onMemberDelete?.invoke(it) }
+            itemData?.let { onMemberDelete?.invoke(this) }
         }
     }
 
@@ -61,39 +56,51 @@ class GroupMemberListItem constructor(
 
         val userStatus = data.getUserStatus(context)
         val lastPing = data.getLastPing(context)
-        vb.bAction.isVisible = data.canDelete
+        vb.bAction.isVisible = data.actionItem != null
         vb.tvBatteryInfo.isVisible = data.batterLevel != null
         vb.tvUserTimeInfo.isVisible = !lastPing.isNullOrBlank()
         vb.tvUserStatus.isVisible = userStatus.isNotBlank()
+
         vb.bRemove.isVisible =
-            data.canDelete == true && data.uiType == GroupMemberItemData.MemberUiType.EXPANDED
+            data.actionItem != null && data.uiType == GroupMemberItemData.MemberUiType.EXPANDED
+        data.actionItem?.let {
+            vb.bRemove.setIconResource(it.actionIcon)
+            vb.bRemove.setText(it.actionText)
+        }
 
         vb.tvBatteryInfo.text = data.batterLevel?.let { "$it%" } ?: "-"
         vb.tvUserStatus.text = userStatus
         vb.tvUserTimeInfo.text = lastPing ?: ""
 
-        vb.tvUserEmoji.text = data.emoji
+        vb.tvUserEmoji.text = data.image.getImageValue()
         vb.tvMemberName.text = data.name
 
         setState()
     }
 
-    private fun setState() {
-        val type = itemData?.uiType ?: GroupMemberItemData.MemberUiType.MAP
+    fun toggleState() {
+        if(itemData?.actionItem != null) {
+            itemData?.uiType =
+                itemData?.uiType?.toggle() ?: GroupMemberItemData.MemberUiType.COLLAPSED
+            setState()
+        }
+    }
 
-        if (type != GroupMemberItemData.MemberUiType.MAP) {
+    private fun setState() {
+        val data = itemData ?: return
+
+        if (data.actionItem != null) {
             vb.bAction.animate().cancel()
             vb.bAction.animate()
-                .rotation(if (type == GroupMemberItemData.MemberUiType.EXPANDED) 180f else 0f)
+                .rotation(if (data.uiType == GroupMemberItemData.MemberUiType.EXPANDED) 180f else 0f)
                 .start()
         }
 
         vb.bRemove.isVisible =
-            itemData?.canDelete == true && type == GroupMemberItemData.MemberUiType.EXPANDED
-        vb.container.elevation = when (type) {
+            data.actionItem != null && data.uiType == GroupMemberItemData.MemberUiType.EXPANDED
+        vb.container.elevation = when (data.uiType) {
             GroupMemberItemData.MemberUiType.COLLAPSED -> 0f.dp2px
             GroupMemberItemData.MemberUiType.EXPANDED -> 8f.dp2px
-            GroupMemberItemData.MemberUiType.MAP -> 8f.dp2px
         }
     }
 
@@ -101,12 +108,12 @@ class GroupMemberListItem constructor(
 
 data class GroupMemberItemData constructor(
     val member: MemberModel,
-    val canDelete: Boolean,
+    val actionItem: MemberAction? = null,
     var uiType: MemberUiType = MemberUiType.COLLAPSED
 ) : ListItemType {
 
     val name: String get() = member.name
-    val emoji: String get() = member.imageBase64?.takeIf { it.isNotBlank() } ?: Emojis.robot
+    val image: ImageModel get() = member.image?.takeIf { it.getImageValue() != null } ?: ImageModel.emoji(Emojis.robot)
     val batterLevel: Int? get() = member.mutableData?.batteryLevel
     fun getLastPing(context: Context): String? {
         return member.mutableData?.timeUTC?.toLocalDateTime()?.let {
@@ -128,12 +135,25 @@ data class GroupMemberItemData constructor(
     }
 
     enum class MemberUiType {
-        EXPANDED, COLLAPSED, MAP;
+        EXPANDED, COLLAPSED;
 
         fun toggle() = when (this) {
             EXPANDED -> COLLAPSED
             COLLAPSED -> EXPANDED
-            MAP -> MAP
+        }
+    }
+
+    enum class MemberAction {
+        DELETE_MEMBER, DELETE_LOCATION;
+
+        val actionIcon: Int get() = when(this) {
+            DELETE_MEMBER -> R.drawable.ic_person_remove
+            DELETE_LOCATION -> R.drawable.ic_delete
+        }
+
+        val actionText: Int get() = when(this) {
+            DELETE_MEMBER -> R.string.group_members_item_remove_button
+            DELETE_LOCATION -> R.string.group_members_item_clear_location_button
         }
     }
 }

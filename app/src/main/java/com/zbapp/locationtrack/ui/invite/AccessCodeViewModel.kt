@@ -8,9 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.invite.PersonalCodeReadData
+import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.models.mapSuccess
 import com.zbapp.core.models.raw.GroupDocumentRaw
+import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.models.base.asImageModel
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.invite.InviteRepository
 import com.zbapp.core.utils.Emojis
@@ -42,7 +44,7 @@ class AcceptInviteViewModel(
         args?.code?.let { loadInvite(code = it) }
         args?.groupId?.let {
             viewModelScope.launch {
-                currentGroup.value = groupRepo.getGroupWithMembersLocally(it).firstOrNull()
+                currentGroup.value = groupRepo.getGroupWithoutMembersLocally(it).firstOrNull()
             }
         }
     }
@@ -86,7 +88,7 @@ class AcceptInviteViewModel(
             InviteUiData(
                 code = personalCodeData.code,
                 name = personalCodeData.ownerName,
-                imageEmoji = personalCodeData.ownerImageBase64?.takeIf { it.isNotBlank() } ?: Emojis.robot,
+                image = personalCodeData.ownerImageBase64?.takeIf { it.isNotBlank() }?.asImageModel() ?: ImageModel.emoji(Emojis.robot),
                 description = myApp.getString(
                     R.string.invite_connect_disclaimer_user,
                     personalCodeData.ownerName,
@@ -126,7 +128,7 @@ class AcceptInviteViewModel(
     private fun emptyData() = InviteUiData(
         code = "",
         name = null,
-        imageEmoji = null,
+        image = null,
         description = null,
         actionButtonText = myApp.getString(R.string.button_next),
         groupCount = null
@@ -147,7 +149,7 @@ sealed interface AcceptInviteEvent {
 data class InviteUiData(
     val code: String,
     val name: String?,
-    val imageEmoji: String?,
+    val image: ImageModel?,
     val description: String?,
     val actionButtonText: String,
     val groupCount: Int?

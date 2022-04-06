@@ -13,6 +13,12 @@ interface GroupKeysDao {
         createOrUpdate(*data.toTypedArray())
     }
 
+    @Transaction
+    suspend fun recreateForGroup(groupId: String, data: List<GroupKeyEntity>) {
+        deleteForGroup(groupId)
+        createOrUpdate(*data.toTypedArray())
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createOrUpdate(vararg data: GroupKeyEntity)
 

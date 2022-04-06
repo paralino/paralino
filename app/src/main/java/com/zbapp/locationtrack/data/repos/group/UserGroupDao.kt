@@ -19,8 +19,11 @@ interface UserGroupDao {
     @Query("SELECT * FROM groups")
     fun getAllGroups(): Flow<List<UserGroupEntity>>
 
+    @Query("SELECT id FROM groups")
+    fun getAllGroupIds(): Flow<List<String>>
+
     @Query("SELECT * FROM groups WHERE id = :id")
-    fun getGroup(id: String): Flow<UserGroupEntity>
+    fun getGroup(id: String): Flow<UserGroupEntity?>
 
     @Query("SELECT ownerPublicKey FROM groups WHERE id = :groupId")
     suspend fun getGroupPublicKeyOnce(groupId: String): String?

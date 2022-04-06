@@ -8,6 +8,7 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.mapSuccess
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.extensions.mapToPayload
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailsUiModel
@@ -29,9 +30,10 @@ class CreateGroupViewModel(
                 GroupDetailsUiModel(
                     id = group.id,
                     name = group.name,
-                    image = group.emoji,
+                    image = group.image,
                     memberCount = 0,
-                    sharingActive = false
+                    sharingActive = false,
+                    isMyGroup = true
                 )
             }
         }
@@ -53,11 +55,11 @@ class CreateGroupViewModel(
         val group = groupFlow.value.data
 
         return if (group != null) {
-            val newData = group.data.copy(name = name, emoji = icon)
+            val newData = group.data.copy(name = name, image = ImageModel.emoji(icon))
             val newGroup = group.copy(data = newData)
             groupRepo.updateGroup(newGroup)
         } else {
-            groupRepo.createGroup(name, icon)
+            groupRepo.createGroup(name, ImageModel.emoji((icon)))
         }
             .mapToPayload<Unit, Unit>()
             .asLiveData()

@@ -2,12 +2,10 @@ package com.zbapp.core.models.mappers
 
 import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
+import com.zbapp.core.models.base.asImageModel
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
-import com.zbapp.core.models.user.AsymmetricCryptoKeyData
-import com.zbapp.core.models.user.SymmetricCryptoKeyData
-import com.zbapp.core.models.user.UserMe
-import com.zbapp.core.models.user.UserMeData
+import com.zbapp.core.models.user.*
 import com.zbapp.core.utils.BaseRemoteModule
 import kotlinx.serialization.encodeToString
 
@@ -29,7 +27,7 @@ class UserMapperCore(
     suspend fun remote2Core(model: UserMeDataRaw): UserMeData {
         val userKey = userKeyRepo.personalKey.content
         return UserMeData(
-            imageBase64 = model.imageBase64?.let { cryptoCore.decryptDataWithKey(it, userKey) },
+            userImage = model.userImage?.let { cryptoCore.decryptDataWithKey(it, userKey) }?.asImageModel(),
             userName = model.userName?.let { cryptoCore.decryptDataWithKey(it, userKey) } ?: ""
         )
     }
@@ -41,7 +39,7 @@ class UserMapperCore(
     ): UserMeDataRaw {
         val userKey = userKeyRepo.personalKey.content
         return UserMeDataRaw(
-            imageBase64 = model.imageBase64?.let { cryptoCore.encryptDataWithKey(it, userKey) },
+            userImage = model.userImage?.image?.let { cryptoCore.encryptDataWithKey(it, userKey) },
             userName = model.userName.let { cryptoCore.encryptDataWithKey(it, userKey) },
             privateKeyBackup = BaseRemoteModule.formatter.encodeToString(privateKey),
             asymmetricKeys = keyPairs.map { cryptoCore.encryptModel(it, userKey) }
