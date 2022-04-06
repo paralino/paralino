@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.core.view.isVisible
 import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.data.mappers.ImageModelParceler
 import com.zbapp.locationtrack.databinding.ElementGroupListItemBinding

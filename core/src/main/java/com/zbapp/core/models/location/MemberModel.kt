@@ -1,6 +1,6 @@
 package com.zbapp.core.models.location
 
-import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.utils.extensions.fromUTCtoInstant
 import com.zbapp.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable

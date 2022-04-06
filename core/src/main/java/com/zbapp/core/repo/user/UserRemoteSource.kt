@@ -1,7 +1,7 @@
 package com.zbapp.core.repo.user
 
 import com.zbapp.core.models.raw.UserMeRaw
-import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.api.IUserApi
 

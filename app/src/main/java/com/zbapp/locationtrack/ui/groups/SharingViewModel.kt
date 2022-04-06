@@ -4,15 +4,13 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.location.LocationSharingContract
-import com.zbapp.core.models.user.ImageModel
-import com.zbapp.core.models.user.ImageType
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.ui.dashboard.GroupItemData
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull

@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.zbapp.core.models.location.MemberModel
-import com.zbapp.core.models.user.ImageModel
-import com.zbapp.core.models.user.ImageType
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementMemberListItemBinding

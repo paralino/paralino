@@ -1,6 +1,6 @@
 package com.zbapp.core.models.invite
 
-import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.base.ImageModel
 import kotlinx.datetime.Clock
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

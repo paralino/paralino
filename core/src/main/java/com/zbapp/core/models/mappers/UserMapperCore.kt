@@ -2,6 +2,7 @@ package com.zbapp.core.models.mappers
 
 import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
+import com.zbapp.core.models.base.asImageModel
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.*

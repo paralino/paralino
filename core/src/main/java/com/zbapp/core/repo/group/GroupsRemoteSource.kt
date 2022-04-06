@@ -10,8 +10,8 @@ import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
-import com.zbapp.core.models.user.ImageModel
-import com.zbapp.core.models.user.asImageModel
+import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.models.base.asImageModel
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.*

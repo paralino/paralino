@@ -7,7 +7,7 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
-import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.base.BaseRepository

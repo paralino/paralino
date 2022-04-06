@@ -11,9 +11,8 @@ import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.models.mapSuccess
 import com.zbapp.core.models.raw.GroupDocumentRaw
-import com.zbapp.core.models.user.ImageModel
-import com.zbapp.core.models.user.ImageType
-import com.zbapp.core.models.user.asImageModel
+import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.models.base.asImageModel
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.invite.InviteRepository
 import com.zbapp.core.utils.Emojis

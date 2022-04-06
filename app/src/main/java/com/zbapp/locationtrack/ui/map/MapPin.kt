@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.zbapp.core.models.location.MemberModel
-import com.zbapp.core.models.user.ImageModel
-import com.zbapp.core.models.user.ImageType
+import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.models.base.ImageType
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementMapPinBinding

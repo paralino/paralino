@@ -3,7 +3,7 @@ package com.zbapp.locationtrack.ui.groups.detail
 import androidx.lifecycle.*
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
-import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.exceptions.NotFoundException

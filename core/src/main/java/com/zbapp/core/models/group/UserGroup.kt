@@ -2,7 +2,7 @@ package com.zbapp.core.models.group
 
 import com.zbapp.core.config
 import com.zbapp.core.models.location.MemberModel
-import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.utils.Constants
 import kotlinx.serialization.Serializable
 

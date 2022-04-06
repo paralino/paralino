@@ -1,7 +1,7 @@
 package com.zbapp.locationtrack.data.mappers
 
 import android.os.Parcel
-import com.zbapp.core.models.user.ImageModel
+import com.zbapp.core.models.base.ImageModel
 import kotlinx.parcelize.Parceler
 
 object ImageModelParceler : Parceler<ImageModel> {
