@@ -9,4 +9,5 @@ interface IInviteCodeLocalDataSource {
     fun getAllInviteCodes(): Flow<List<PersonalCodeData>>
     fun getInviteCodesForUser(ownerId: String): Flow<List<PersonalCodeData>>
     suspend fun deleteInviteCode(id: String)
+    suspend fun clear()
 }

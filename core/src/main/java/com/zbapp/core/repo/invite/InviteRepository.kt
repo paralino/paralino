@@ -64,4 +64,8 @@ class InviteRepository(
             localUpdate = { local.deleteInviteCode(id) }
         ) { remote.revokeInviteCode(id) }.mapToPayload()
     }
+
+    suspend fun clearLocally() {
+        local.clear()
+    }
 }

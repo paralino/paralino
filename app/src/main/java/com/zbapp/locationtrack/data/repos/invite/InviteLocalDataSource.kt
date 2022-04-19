@@ -35,4 +35,8 @@ class InviteLocalDataSource(
     override suspend fun deleteInviteCode(id: String) {
         dao.delete(id)
     }
+
+    override suspend fun clear() {
+        dao.clear()
+    }
 }
