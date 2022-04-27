@@ -173,12 +173,12 @@ dependencies {
     implementation "androidx.compose.runtime:runtime:$composeVersion"
     implementation "androidx.compose.ui:ui:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-tooling:$composeVersion"
+    implementation "androidx.navigation:navigation-compose:2.4.2"
 
 //    implementation "androidx.compose.material3:material3:1.0.0-alpha10"
 //    implementation "androidx.compose.foundation:foundation-layout:$composeVersion"
 //    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
 //    implementation "androidx.compose.ui:ui-tooling-preview:$composeVersion"
-//    implementation "androidx.navigation:navigation-compose:2.4.2"
 
     // endregion
 
