@@ -57,6 +57,10 @@
     <string name="location_banner_error_no_background_permission">Missing all time location permission</string>
     <string name="location_banner_error_offline">Device is offline</string>
 
+    <string name="settings_section_account_title">Account</string>
+    <string name="settings_account_edit_profile">Edit profile</string>
+    <string name="settings_account_edit_email">Change email</string>
+    <string name="settings_account_edit_password">Change password</string>
     <string name="settings_profile_name_placeholder">Your name</string>
     <string name="settings_profile_username_placeholder">Your email</string>
 
