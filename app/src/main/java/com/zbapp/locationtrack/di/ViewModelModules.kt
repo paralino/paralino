@@ -7,7 +7,7 @@ import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.locationtrack.data.PreCheckControl
-import com.zbapp.locationtrack.data.repos.LogoutControl
+import com.zbapp.core.domain.user.LogoutUseCase
 import com.zbapp.locationtrack.tracking.LocationInitHandler
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import com.zbapp.locationtrack.ui.dashboard.DashboardViewModel
@@ -43,7 +43,7 @@ val viewModelModules = module {
 }
 
 val utilModule = module {
-    factory { LogoutControl(get(), get(), get(), get(), get(), get()) }
+    factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
     single { PreCheckControl(get()) }
 }
 

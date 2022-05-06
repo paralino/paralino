@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.data.repos
+package com.zbapp.core.domain.user
 
 import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-class LogoutControl(
+class LogoutUseCase(
     private val userRepo: UserRepository,
     private val groupsRepo: GroupRepository,
     private val locationRepo: LocationRepository,
