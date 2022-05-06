@@ -61,6 +61,19 @@
     <string name="settings_account_edit_profile">Edit profile</string>
     <string name="settings_account_edit_email">Change email</string>
     <string name="settings_account_edit_password">Change password</string>
+
+    <string name="settings_account_logout_alert_title">Logout</string>
+    <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
+    <string name="settings_account_delete_alert_title">Delete account</string>
+    <string name="settings_account_delete_alert_message">Deleting your account will also delete all your data. Are you sure you want to continue?</string>
+    <string name="settings_account_delete_alert_confirm_title">Please confirm</string>
+    <string name="settings_account_delete_alert_confirm_message">There is no turning back, are you sure you want to delete you account?</string>
+    <string name="settings_account_delete_alert_confirm_button">Delete</string>
+    <string name="settings_account_delete_alert_cancel_button1">Cancel</string>
+    <string name="settings_account_delete_alert_cancel_button2">Never mind</string>
+    <string name="settings_account_delete_alert_cancel_button3">Abort</string>
+    <string name="settings_account_delete_alert_cancel_button4">Close</string>
+
     <string name="settings_profile_name_placeholder">Your name</string>
     <string name="settings_profile_username_placeholder">Your email</string>
 
@@ -79,6 +92,7 @@
     <string name="setting_title_libraries">Acknowledgments</string>
     <string name="setting_title_logout">Logout</string>
     <string name="setting_title_delete_account">Delete account</string>
+    <string name="setting_title_dangerZone">Danger zone</string>
 
     <string name="login_placeholder_server">Server url</string>
     <string name="login_placeholder_username">Username</string>

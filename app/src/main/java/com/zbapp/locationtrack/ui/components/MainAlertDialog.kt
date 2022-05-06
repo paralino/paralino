@@ -46,9 +46,11 @@ fun MainAlertDialog(
                 )
             },
             buttons = {
-                Column(modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .padding(bottom = 10.dp)) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                        .padding(bottom = 10.dp)
+                ) {
                     buttons.forEach { buttonData ->
                         TextButton(
                             onClick = { onAction(buttonData.id) },
@@ -70,3 +72,78 @@ data class AlertDialogButtonData(
     val id: String,
     val text: String
 )
+
+object MainAlertDialog {
+    object Buttons {
+        const val buttonOk = "ok"
+        const val buttonCancel = "cancel"
+    }
+
+    const val logout = "logout"
+    const val deleteAccount = "deleteAccount"
+    const val deleteAccountConfirm = "deleteAccountConfirm"
+
+
+    @Composable
+    fun Logout(onAction: (buttonId: String?) -> Unit) {
+        MainAlertDialog(
+            title = stringResource(id = R.string.settings_account_logout_alert_title),
+            message = stringResource(id = R.string.settings_account_logout_alert_message),
+            buttons = listOf(
+                AlertDialogButtonData(Buttons.buttonOk, stringResource(id = R.string.button_ok)),
+                AlertDialogButtonData(
+                    Buttons.buttonCancel,
+                    stringResource(id = R.string.button_cancel)
+                ),
+            ),
+            onAction = onAction
+        )
+    }
+
+    @Composable
+    fun DeleteAccount(onAction: (buttonId: String?) -> Unit) {
+        MainAlertDialog(
+            title = stringResource(id = R.string.settings_account_delete_alert_title),
+            message = stringResource(id = R.string.settings_account_delete_alert_message),
+            buttons = listOf(
+                AlertDialogButtonData(Buttons.buttonOk, stringResource(id = R.string.button_ok)),
+                AlertDialogButtonData(
+                    Buttons.buttonCancel,
+                    stringResource(id = R.string.button_cancel)
+                ),
+            ),
+            onAction = onAction
+        )
+    }
+
+    @Composable
+    fun DeleteAccountConfirm(onAction: (buttonId: String?) -> Unit) {
+        MainAlertDialog(
+            title = stringResource(id = R.string.settings_account_delete_alert_confirm_title),
+            message = stringResource(id = R.string.settings_account_delete_alert_confirm_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    Buttons.buttonCancel,
+                    stringResource(id = R.string.settings_account_delete_alert_cancel_button1)
+                ),
+                AlertDialogButtonData(
+                    Buttons.buttonCancel,
+                    stringResource(id = R.string.settings_account_delete_alert_cancel_button2)
+                ),
+                AlertDialogButtonData(
+                    Buttons.buttonOk,
+                    stringResource(id = R.string.settings_account_delete_alert_confirm_button)
+                ),
+                AlertDialogButtonData(
+                    Buttons.buttonCancel,
+                    stringResource(id = R.string.settings_account_delete_alert_cancel_button3)
+                ),
+                AlertDialogButtonData(
+                    Buttons.buttonCancel,
+                    stringResource(id = R.string.settings_account_delete_alert_cancel_button4)
+                ),
+            ).shuffled(),
+            onAction = onAction
+        )
+    }
+}
