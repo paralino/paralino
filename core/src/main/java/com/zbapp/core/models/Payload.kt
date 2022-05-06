@@ -18,6 +18,9 @@ sealed class Payload<out R> {
 val <T> Payload<T>.data: T?
     get() = (this as? Payload.Success)?.data
 
+val Payload<*>.exception: Throwable?
+    get() = (this as? Payload.Error)?.exception
+
 
 inline fun <reified T, R> Payload<T>.mapSuccess(action: (T) -> R): Payload<R> {
     return when(this){
