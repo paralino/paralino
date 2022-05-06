@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.ui
+package com.zbapp.locationtrack.ui.navigation
 
 sealed class AppScreen {
     val deeplinkScheme: String = "myApp"

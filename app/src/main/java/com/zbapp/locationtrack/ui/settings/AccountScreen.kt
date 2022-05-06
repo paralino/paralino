@@ -20,7 +20,7 @@ import androidx.navigation.NavController
 import com.zbapp.core.models.Payload
 import com.zbapp.core.presentation.settings.AccountScreenEvent
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.ui.AppScreen
+import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.shared.errorString
 import kotlinx.coroutines.flow.collect
 import org.koin.androidx.compose.getViewModel

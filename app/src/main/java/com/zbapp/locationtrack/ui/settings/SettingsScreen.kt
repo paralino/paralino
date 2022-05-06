@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,7 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.ui.AppScreen
+import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.theme.AppTheme
 import java.util.*
 
@@ -157,40 +156,6 @@ fun SettingsActionItem(
             text = name,
             style = MaterialTheme.typography.button,
             modifier = Modifier.padding(horizontal = 12.dp)
-        )
-    }
-}
-
-@Composable
-fun LoggedOutSettingsSection(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Login to share your location")
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-            onClick = { }
-        ) {
-            Icon(imageVector = Icons.Rounded.Login, contentDescription = null)
-            Spacer(Modifier.size(8.dp))
-            Text("Login")
-        }
-        Spacer(Modifier.size(20.dp))
-        Text("Have public tracking code?")
-        OutlinedTextField(
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            value = TextFieldValue("HJKI-LJZU"),
-            placeholder = {
-                Text(
-                    "hint",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
-            onValueChange = {},
-            shape = MaterialTheme.shapes.medium
         )
     }
 }

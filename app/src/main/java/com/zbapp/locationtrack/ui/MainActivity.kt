@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.valueIterator
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -16,21 +15,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.*
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.zbapp.core.config
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.ui.settings.AccountScreen
-import com.zbapp.locationtrack.ui.settings.LoggedOutSettingsSection
-import com.zbapp.locationtrack.ui.settings.SettingsScreen
+import com.zbapp.locationtrack.ui.login.LoggedOutScreen
+import com.zbapp.locationtrack.ui.navigation.AppScreen
+import com.zbapp.locationtrack.ui.navigation.MainNavHost
 import com.zbapp.locationtrack.ui.theme.AppTheme
 import com.zbapp.locationtrack.utils.extensions.safeCast
 
@@ -98,11 +97,6 @@ fun RootApp() {
             LoggedOutScreen()
         }
     }
-}
-
-@Composable
-fun LoggedOutScreen() {
-    LoggedOutSettingsSection()
 }
 
 @Composable
@@ -183,71 +177,6 @@ fun naviClick(navController: NavController, route: String, firstRoute: String) {
             launchSingleTop = true
             // Restore state when re-selecting previously selected item
             restoreState = true
-        }
-    }
-}
-
-@Composable
-fun MainNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(
-        navController = navController,
-        startDestination = AppScreen.DashboardRoot.routeSignature,
-        modifier = modifier
-    ) {
-        dashboardGraph(navController)
-        mapGraph(navController)
-        settingsGraph(navController)
-    }
-}
-
-fun NavGraphBuilder.dashboardGraph(navController: NavController) {
-    navigation(
-        startDestination = AppScreen.DashboardRoot.Dashboard.routeSignature,
-        route = AppScreen.DashboardRoot.routeSignature
-    ) {
-        composable(AppScreen.DashboardRoot.Dashboard.routeSignature) {
-            Text(
-                "Dashboard",
-                Modifier.clickable { navController.navigate(AppScreen.DashboardRoot.SharingStart.routeSignature) })
-        }
-        composable(AppScreen.DashboardRoot.GroupDetails.routeSignature) {
-            val groupId = it.arguments!!.getString(AppScreen.DashboardRoot.GroupDetails.argumentGroupId)
-            Text("Group details - $groupId")
-        }
-        composable(AppScreen.DashboardRoot.SharingStart.routeSignature) {
-            val groupId = it.arguments?.getString(AppScreen.DashboardRoot.GroupDetails.argumentGroupId)
-            Text("Share")
-        }
-    }
-}
-
-fun NavGraphBuilder.mapGraph(navController: NavController) {
-    navigation(
-        startDestination = AppScreen.MapRoot.MainMap.routeSignature,
-        route = AppScreen.MapRoot.routeSignature
-    ) {
-        composable(AppScreen.MapRoot.MainMap.routeSignature) {
-            Text("Map")
-        }
-    }
-}
-
-fun NavGraphBuilder.settingsGraph(navController: NavController) {
-    navigation(
-        startDestination = AppScreen.SettingsRoot.Settings.routeSignature,
-        route = AppScreen.SettingsRoot.routeSignature
-    ) {
-        composable(AppScreen.SettingsRoot.Settings.routeSignature) {
-            SettingsScreen(navController)
-        }
-        composable(AppScreen.SettingsRoot.ProfileDetails.routeSignature) {
-            AccountScreen(navController)
-        }
-        composable(AppScreen.SettingsRoot.InviteCodes.routeSignature) {
-            Text("Invites")
-        }
-        composable(AppScreen.Login.routeSignature) {
-            LoggedOutScreen()
         }
     }
 }
