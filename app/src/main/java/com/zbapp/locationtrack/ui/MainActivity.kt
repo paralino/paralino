@@ -28,7 +28,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.zbapp.core.config
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.settings.AccountScreen
 import com.zbapp.locationtrack.ui.settings.LoggedOutSettingsSection
+import com.zbapp.locationtrack.ui.settings.SettingsScreen
 import com.zbapp.locationtrack.ui.theme.AppTheme
 import com.zbapp.locationtrack.utils.extensions.safeCast
 
@@ -192,7 +194,6 @@ fun MainNavHost(navController: NavHostController, modifier: Modifier = Modifier)
         startDestination = AppScreen.DashboardRoot.routeSignature,
         modifier = modifier
     ) {
-
         dashboardGraph(navController)
         mapGraph(navController)
         settingsGraph(navController)
@@ -237,15 +238,16 @@ fun NavGraphBuilder.settingsGraph(navController: NavController) {
         route = AppScreen.SettingsRoot.routeSignature
     ) {
         composable(AppScreen.SettingsRoot.Settings.routeSignature) {
-            Text(
-                "Settings",
-                Modifier.clickable { navController.navigate(AppScreen.DashboardRoot.GroupDetails.route("group")) })
+            SettingsScreen(navController)
         }
         composable(AppScreen.SettingsRoot.ProfileDetails.routeSignature) {
-            Text("Profile")
+            AccountScreen(navController)
         }
         composable(AppScreen.SettingsRoot.InviteCodes.routeSignature) {
             Text("Invites")
+        }
+        composable(AppScreen.Login.routeSignature) {
+            LoggedOutScreen()
         }
     }
 }
