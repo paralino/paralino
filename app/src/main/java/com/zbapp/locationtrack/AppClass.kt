@@ -73,10 +73,10 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private fun init() {
         instance = this
         context = applicationContext
-        locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
 
         KoinSetup.initKoin(this)
 
+        locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
         connectionStatus = connectionStatusProvider
         config = Config(context)
         appConfig = config as Config
