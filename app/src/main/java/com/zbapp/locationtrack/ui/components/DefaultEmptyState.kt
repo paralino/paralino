@@ -23,7 +23,7 @@ fun DefaultEmptyState(
     icon: ImageVector? = null,
     buttonText: String? = null,
     buttonIcon: ImageVector? = null,
-    bigButton: Boolean = false,
+    bigButton: Boolean = true,
     onClick: (() -> Unit)? = null
 ) {
     Column(

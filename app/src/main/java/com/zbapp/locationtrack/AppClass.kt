@@ -18,6 +18,7 @@ import com.zbapp.core.connectionStatus
 import com.zbapp.core.logg
 import com.zbapp.core.models.data
 import com.zbapp.core.repo.LocationSharingManager
+import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.core.utils.IConnectionStatusProvider
 import com.zbapp.core.utils.ILocationStatusProvider
 import com.zbapp.core.utils.LocationConditionStatus
@@ -57,6 +58,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     override val defaultIOScope = CoroutineScope(Dispatchers.IO)
 
     private val launcher: PreCheckControl by inject()
+    private val userRepo: UserRepository by inject()
     private val connectionStatusProvider: IConnectionStatusProvider by inject()
 
     private val locationInit: LocationInitHandler by inject()
@@ -84,6 +86,10 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         initLogger()
+
+        userRepo.localUser
+            .onEach {  }
+            .launchIn(defaultScope)
 
         launcher.start()
             .catch { logg.d("Error with initial refresh: ${it.message}") }

@@ -7,6 +7,10 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.utils.extensions.attributedBold
 
 fun Context.errorString(error: Throwable?): SpannableString {
+    return errorStringClean(error).attributedBold(this)
+}
+
+fun Context.errorStringClean(error: Throwable?): String {
     return when (error) {
         is UnverifiedUserException -> getString(R.string.info_email_confirm)
         is RemoteConnectionException -> getString(R.string.error_server_unavailable)
@@ -26,5 +30,5 @@ fun Context.errorString(error: Throwable?): SpannableString {
         is EncryptionException -> getString(R.string.error_crypto_encryption_generic)
         is DecryptionException -> getString(R.string.error_crypto_decryption_generic)
         else -> getString(R.string.error_generic_snacbar)
-    }.attributedBold(this)
+    }
 }

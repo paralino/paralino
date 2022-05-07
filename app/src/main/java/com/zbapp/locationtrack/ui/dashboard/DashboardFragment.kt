@@ -77,17 +77,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
 
     private fun setupObservers() {
 
-        binding.bShare.setOnClickListener {
-            if (vm.isSharingActive()) {
-                vm.stopAllTracking()
-            } else {
-                navigateDefault(R.id.sharingStartFragment)
-            }
-        }
 
-        vm.getGroups().observe {
-            binding.rvDashboard.simpleAdapter?.submitList(it)
-        }
 
     }
 

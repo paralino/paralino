@@ -12,7 +12,7 @@ object AppColors {
     val lightSurface2 = Color(0xFFF0F2F5)
 
     val lightThemePrimary = Color(0xFF252525)
-    val lightThemeSecondary = Color(0xFF929292)
+    val lightThemeSecondary = Color(0xFFB4B4B4)
 
     val errorBackground = Color(0x33F44336)
     val redMain = Color(0xFFB3261E)

@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.zbapp.locationtrack.ui.dashboard.DashboardScreen
 import com.zbapp.locationtrack.ui.login.LoggedOutScreen
 import com.zbapp.locationtrack.ui.settings.AccountScreen
 import com.zbapp.locationtrack.ui.settings.SettingsScreen
@@ -34,9 +35,7 @@ fun NavGraphBuilder.dashboardGraph(navController: NavController) {
         route = AppScreen.DashboardRoot.routeSignature
     ) {
         composable(AppScreen.DashboardRoot.Dashboard.routeSignature) {
-            Text(
-                "Dashboard",
-                Modifier.clickable { navController.navigate(AppScreen.DashboardRoot.SharingStart.routeSignature) })
+            DashboardScreen(navController)
         }
         composable(AppScreen.DashboardRoot.GroupDetails.routeSignature) {
             val groupId = it.arguments!!.getString(AppScreen.DashboardRoot.GroupDetails.argumentGroupId)

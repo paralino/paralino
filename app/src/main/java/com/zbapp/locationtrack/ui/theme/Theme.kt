@@ -18,9 +18,9 @@ private val LightThemeColors = lightColors(
 	background = AppColors.lightBackground,
 	surface = AppColors.lightSurface,
 	primary = AppColors.lightThemePrimary,
-	secondary = AppColors.darkThemeSecondary,
+	secondary = AppColors.lightThemeSecondary,
 	error = AppColors.errorBackground,
-	primaryVariant = AppColors.lightThemePrimary,
+	primaryVariant = AppColors.darkSurface,
 	secondaryVariant = AppColors.lightThemeSecondary,
 	onPrimary = AppColors.lightBackground,
 	onSecondary = AppColors.lightSurface,
@@ -35,7 +35,7 @@ private val DarkThemeColors = darkColors(
 	primary = AppColors.darkThemePrimary,
 	secondary = AppColors.darkThemeSecondary,
 	error = AppColors.errorBackground,
-	primaryVariant = AppColors.darkThemePrimary,
+	primaryVariant = AppColors.lightSurface,
 	secondaryVariant = AppColors.darkThemeSecondary,
 	onPrimary = AppColors.darkBackground,
 	onSecondary = AppColors.darkSurface,
@@ -60,7 +60,7 @@ enum class ButtonStyle(
 	),
 	SMALL(
 		defaultModifier = Modifier,
-		paddingValues = PaddingValues(horizontal = 16.dp, vertical = 14.dp)
+		paddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
 	)
 }
 
