@@ -1,12 +1,15 @@
 package com.zbapp.locationtrack.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.ripple.*
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
@@ -46,6 +49,20 @@ private val shapes = Shapes(
 	medium = RoundedCornerShape(20.dp),
 	large = RoundedCornerShape(percent = 10)
 )
+
+enum class ButtonStyle(
+	val defaultModifier: Modifier,
+	val paddingValues: PaddingValues
+) {
+	BIG(
+		defaultModifier = Modifier.fillMaxWidth(),
+		paddingValues = PaddingValues(horizontal = 24.dp, vertical = 20.dp)
+	),
+	SMALL(
+		defaultModifier = Modifier,
+		paddingValues = PaddingValues(horizontal = 16.dp, vertical = 14.dp)
+	)
+}
 
 @Composable
 fun AppTheme(
