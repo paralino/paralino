@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.ui.dashboard
 
 import android.os.Bundle
 import android.view.View
+import com.zbapp.core.utils.ConditionErrorType
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentDashboardBinding
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
@@ -40,9 +41,9 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             .addFactory {
                 ErrorListItem(it).withDataOnClickAction {
                     when (it) {
-                        ErrorListItemType.GPS -> permissionHandler.askLocationService()
-                        ErrorListItemType.PERMISSION -> permissionHandler.askLocationPermission()
-                        ErrorListItemType.PERMISSION_BACKGROUND_LOCATION -> permissionHandler.askBackgroundLocationPermission()
+                        ConditionErrorType.GPS -> permissionHandler.askLocationService()
+                        ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
+                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
                     }
                 }
             }

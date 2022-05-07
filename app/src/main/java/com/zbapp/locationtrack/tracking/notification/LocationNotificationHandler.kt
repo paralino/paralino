@@ -7,9 +7,10 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
+import com.zbapp.core.utils.ConditionErrorType
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainActivity
-import com.zbapp.locationtrack.ui.shared.list.ErrorListItemType
+import com.zbapp.locationtrack.ui.shared.list.nameRes
 import com.zbapp.locationtrack.utils.extensions.attributedBold
 
 class LocationNotificationHandler(
@@ -22,7 +23,7 @@ class LocationNotificationHandler(
         ContextCompat.getColor(context, R.color.theme_light)
     }
 
-    fun notify(context: Context, groupCount: Int, errors: List<ErrorListItemType>): Notification {
+    fun notify(context: Context, groupCount: Int, errors: List<ConditionErrorType>): Notification {
 
         val notificationManager = NotificationManagerCompat.from(context)
 

@@ -22,6 +22,7 @@ import com.zbapp.core.repo.location.LocationRemoteSource
 import com.zbapp.core.repo.user.IUserLocalDataSource
 import com.zbapp.core.repo.user.UserRemoteSource
 import com.zbapp.core.utils.IConnectionStatusProvider
+import com.zbapp.core.utils.ILocationStatusProvider
 import com.zbapp.crpyto.CryptoFrameworkProvider
 import com.zbapp.crpyto.CryptoHashProvider
 import com.zbapp.crpyto.CryptoKeyProvider
@@ -37,6 +38,7 @@ import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSour
 import com.zbapp.locationtrack.data.repos.user.UserCryptoKeyLocalDataSource
 import com.zbapp.locationtrack.data.repos.user.UserLocalDataSource
 import com.zbapp.locationtrack.utils.ConnectionStatusProvider
+import com.zbapp.locationtrack.utils.LocationStatusProvider
 import com.zbapp.remote.appwrite.AppWriteRemoteModule
 import com.zbapp.remote.appwrite.DocumentsApi
 import com.zbapp.remote.appwrite.FunctionsApi
@@ -110,6 +112,7 @@ val remoteDataSourceModule = module {
 val coreDependencyModules = module {
     single<ICoroutineScopeProvider> { androidApplication() as AppClass }
     single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
+    single<ILocationStatusProvider> { LocationStatusProvider(androidApplication() as AppClass) }
 
     single<IUserApi> { UserApi(get()) }
     single<IDocumentsApi> { DocumentsApi(get()) }

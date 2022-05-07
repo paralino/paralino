@@ -26,8 +26,8 @@ class SharingViewModel(
     private val selectedGroupLiveData = MutableLiveData(GroupItemData("", app.getString(R.string.invite_connect_button_pickGroup), ImageModel.emoji(Emojis.lightBulb), null))
     val selectedGroup: LiveData<GroupItemData> = selectedGroupLiveData
 
-    val locationStatus get() = myApp.locationStatus.value
-    val locationStatusLiveData = myApp.locationStatus.asLiveData()
+    val locationStatus get() = myApp.locationStatus.status.value
+    val locationStatusLiveData = myApp.locationStatus.status.asLiveData()
 
     init {
         args?.groupId?.let {

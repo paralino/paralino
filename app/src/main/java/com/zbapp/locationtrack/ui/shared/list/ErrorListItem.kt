@@ -2,17 +2,18 @@ package com.zbapp.locationtrack.ui.shared.list
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.LinearLayout
 import androidx.core.view.isVisible
+import com.zbapp.core.utils.ConditionErrorType
+import com.zbapp.core.utils.LocationConditionStatus
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementBannerContainerBinding
 import com.zbapp.locationtrack.databinding.ElementDashboardBannerBinding
-import com.zbapp.locationtrack.tracking.LocationConditionStatus
-import com.zbapp.locationtrack.utils.*
+import com.zbapp.locationtrack.utils.BaseRvItem
 import com.zbapp.locationtrack.utils.extensions.viewBinding
+import com.zbapp.locationtrack.utils.withDataOnClickAction
 
 class ErrorListItem(context: Context, attributeSet: AttributeSet? = null) :
-    BaseRvItem<ErrorListItemType>(context, attributeSet) {
+    BaseRvItem<ConditionErrorType>(context, attributeSet) {
 
     val vb by viewBinding(ElementDashboardBannerBinding::inflate)
 
@@ -21,7 +22,7 @@ class ErrorListItem(context: Context, attributeSet: AttributeSet? = null) :
         vb.errorItemParent.clipToOutline = true
     }
 
-    override fun applyData(data: ErrorListItemType) {
+    override fun applyData(data: ConditionErrorType) {
         vb.ivBannerIcon.setImageResource(data.iconRes)
         vb.tvBannerTitle.setText(data.nameRes)
 
@@ -35,7 +36,7 @@ class ErrorListItemContainer(context: Context, attributeSet: AttributeSet? = nul
     BaseRvItem<ErrorItems>(context, attributeSet) {
 
     val vb by viewBinding(ElementBannerContainerBinding::inflate)
-    var itemClick: ((ErrorListItemType) -> Unit)? = null
+    var itemClick: ((ConditionErrorType) -> Unit)? = null
 
     init {
         setFullWidth()
@@ -54,48 +55,37 @@ class ErrorListItemContainer(context: Context, attributeSet: AttributeSet? = nul
 }
 
 data class ErrorItems(
-    val list: List<ErrorListItemType>
+    val list: List<ConditionErrorType>
 ) {
     constructor(status: LocationConditionStatus): this(status.getPossibleErrors())
 }
 
-enum class ErrorListItemType : ListItemType {
-
-    GPS,
-    PERMISSION,
-    PERMISSION_BACKGROUND_LOCATION,
-    OFFLINE,
-    EMAIL;
-
-    val iconRes: Int
-        get() = when (this) {
-            GPS -> R.drawable.ic_location_off
-            PERMISSION -> R.drawable.ic_app_settings
-            PERMISSION_BACKGROUND_LOCATION -> R.drawable.ic_app_settings
-            OFFLINE -> R.drawable.ic_location_off
-            EMAIL -> R.drawable.ic_email
-        }
-
-    val nameRes: Int
-        get() = when (this) {
-            GPS -> R.string.location_banner_error_gps_off
-            PERMISSION -> R.string.location_banner_error_no_permission
-            PERMISSION_BACKGROUND_LOCATION -> R.string.location_banner_error_no_background_permission
-            OFFLINE -> R.string.location_banner_error_offline
-            EMAIL -> R.string.info_email_confirm
-        }
-
-    val endActionTextRes: Int
-        get() = when (this) {
-            GPS -> R.string.location_banner_fix
-            PERMISSION -> R.string.location_banner_fix
-            PERMISSION_BACKGROUND_LOCATION -> R.string.location_banner_fix
-            OFFLINE -> 0
-            EMAIL -> 0
-        }
-
-    override fun getIdentifier(): String {
-        return this.name
+val ConditionErrorType.iconRes: Int
+    get() = when (this) {
+        ConditionErrorType.GPS -> R.drawable.ic_location_off
+        ConditionErrorType.PERMISSION_LOCATION -> R.drawable.ic_app_settings
+        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.drawable.ic_app_settings
+        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.drawable.ic_app_settings
+        ConditionErrorType.NETWORK -> R.drawable.ic_location_off
+        ConditionErrorType.EMAIL_VERIFICATION -> R.drawable.ic_email
     }
 
-}
+val ConditionErrorType.nameRes: Int
+    get() = when (this) {
+        ConditionErrorType.GPS -> R.string.location_banner_error_gps_off
+        ConditionErrorType.PERMISSION_LOCATION -> R.string.location_banner_error_no_permission
+        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.string.location_banner_error_no_permission
+        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.string.location_banner_error_no_background_permission
+        ConditionErrorType.NETWORK -> R.string.location_banner_error_offline
+        ConditionErrorType.EMAIL_VERIFICATION -> R.string.info_email_confirm
+    }
+
+val ConditionErrorType.endActionTextRes: Int
+    get() = when (this) {
+        ConditionErrorType.GPS -> R.string.location_banner_fix
+        ConditionErrorType.PERMISSION_LOCATION -> R.string.location_banner_fix
+        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.string.location_banner_fix
+        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.string.location_banner_fix
+        ConditionErrorType.NETWORK -> 0
+        ConditionErrorType.EMAIL_VERIFICATION -> 0
+    }

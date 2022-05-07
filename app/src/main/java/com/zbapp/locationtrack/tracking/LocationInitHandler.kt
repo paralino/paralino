@@ -1,5 +1,6 @@
 package com.zbapp.locationtrack.tracking
 
+import Logger
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
@@ -9,6 +10,8 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.location.LocationDataModel
+import com.zbapp.core.utils.LocationConditionStatus
+import com.zbapp.core.utils.LocationStatusException
 import com.zbapp.core.utils.extensions.randomString
 import com.zbapp.locationtrack.utils.extensions.batterLevel
 import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC

@@ -7,36 +7,32 @@ import com.zbapp.core.models.data
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.user.LoginManager
+import com.zbapp.core.utils.ConditionErrorType
+import com.zbapp.core.utils.ILocationStatusProvider
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.ui.shared.list.EmptyStateData
-import com.zbapp.locationtrack.ui.shared.list.ErrorListItemType
 import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpaceData
 import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItemData
-import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.dp2px
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class DashboardViewModel(
     app: Application,
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
-    private val loginManager: LoginManager
+    private val loginManager: LoginManager,
+    private val locationStatusProvider: ILocationStatusProvider
 ) : AndroidViewModel(app) {
 
-    val locationStatus = myApp.locationStatus
+    val locationStatus = locationStatusProvider.status
 
     fun isSharingActive(): Boolean {
         return locationSharing.isSharingActive()
-    }
-
-    fun startTracking() {
-//        viewModelScope.launch {
-//            val max = LocalDateTime.now().plusMinutes(2).toUTCString()
-//            locationSharing.startSharing(LocationSharingContract(UserGroup.personalTrackingId, max))
-//        }
     }
 
     fun stopAllTracking() {
@@ -51,7 +47,7 @@ class DashboardViewModel(
         }
     }
 
-    fun getGroups(): LiveData<List<ListItemType>> {
+    fun getGroups(): LiveData<List<Any>> {
 
         if(!loginManager.isLoggedIn()) {
             return liveData {
@@ -66,7 +62,7 @@ class DashboardViewModel(
             }
         } else if(!loginManager.isVerified()) {
             return liveData {
-                emit(listOf(ErrorListItemType.EMAIL))
+                emit(listOf(ConditionErrorType.EMAIL_VERIFICATION))
             }
         }
 
@@ -75,7 +71,7 @@ class DashboardViewModel(
             groupRepository.getAllGroups(),
             locationSharing.allContractsFlow.map { it.data }.filterNotNull()
         ) { location, groups, sharing ->
-            val list = mutableListOf<ListItemType>()
+            val list = mutableListOf<Any>()
 
             if (isSharingActive()) {
                 list.addAll(location.getPossibleErrors(forBackground = sharing.any { it.isLongTerm }))

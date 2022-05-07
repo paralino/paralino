@@ -19,18 +19,19 @@ import com.zbapp.core.logg
 import com.zbapp.core.models.data
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.utils.IConnectionStatusProvider
+import com.zbapp.core.utils.ILocationStatusProvider
+import com.zbapp.core.utils.LocationConditionStatus
 import com.zbapp.locationtrack.data.PreCheckControl
 import com.zbapp.locationtrack.data.config.Config
 import com.zbapp.locationtrack.di.KoinSetup
-import com.zbapp.locationtrack.tracking.LocationConditionStatus
 import com.zbapp.locationtrack.tracking.LocationInitHandler
 import com.zbapp.locationtrack.tracking.LocationService
+import com.zbapp.locationtrack.tracking.getLocationStatus
 import com.zbapp.locationtrack.utils.logger.DebugLogger
 import com.zbapp.locationtrack.utils.logger.LoggerKind
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -60,7 +61,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     private val locationInit: LocationInitHandler by inject()
     private val locationSharing: LocationSharingManager by inject()
-    lateinit var locationStatus: MutableStateFlow<LocationConditionStatus>
+    val locationStatus: ILocationStatusProvider by inject()
 
     val isForeground get() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
 
@@ -72,7 +73,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private fun init() {
         instance = this
         context = applicationContext
-        locationStatus = MutableStateFlow(LocationConditionStatus.getLocationStatus(this))
+        locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
 
         KoinSetup.initKoin(this)
 
@@ -115,7 +116,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     }
 
     fun updateLocationStatus() {
-        locationStatus.value = LocationConditionStatus.getLocationStatus(this)
+        locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
     }
 
     private val externalLogTree: LoggerKind by lazy {
