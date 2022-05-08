@@ -19,8 +19,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.NavController
 import com.zbapp.core.models.Payload
 import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.utils.ConditionErrorType
@@ -32,8 +30,7 @@ import com.zbapp.locationtrack.ui.components.DefaultEmptyState
 import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.components.ImageModelImage
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
-import com.zbapp.locationtrack.ui.shared.list.ErrorItems
-import com.zbapp.locationtrack.ui.shared.list.ErrorListItemContainer
+import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.extensions.getActivity
 import org.koin.androidx.compose.getViewModel
@@ -64,6 +61,7 @@ fun DashboardScreen(
         }
         is Payload.Success -> {
             val scrollState = rememberScrollState()
+            // TODO replace with lazy column
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -71,24 +69,14 @@ fun DashboardScreen(
                     .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
 
-                if (state.data.errors.isNotEmpty()) {
-                    AndroidView(
-                        factory = {
-                            ErrorListItemContainer(it).also {
-                                it.itemClick = {
-                                    when (it) {
-                                        ConditionErrorType.GPS -> permissionHandler.askLocationService()
-                                        ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
-                                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
-                                    }
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        update = {
-                            it.itemData = ErrorItems(state.data.errors)
+                state.data.errors.forEach {
+                    ConditionErrorItem(data = it) {
+                        when (it) {
+                            ConditionErrorType.GPS -> permissionHandler.askLocationService()
+                            ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
+                            ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
                         }
-                    )
+                    }
                 }
 
                 if (state.data.isWithoutGroups) {
