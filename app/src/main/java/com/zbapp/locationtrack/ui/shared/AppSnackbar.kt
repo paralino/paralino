@@ -44,7 +44,7 @@ class AppSnackbarView: ConstraintLayout, ContentViewCallback {
     }
 
     fun dataReady(data: AppSnackbarData) {
-        binding.tvText?.text = data.text
+        binding.tvText?.text = data.text.attributedBold(context)
         binding.bAction?.isVisible = !data.actionText.isNullOrBlank()
         binding.bAction?.text = data.actionText ?: ""
     }
@@ -59,17 +59,12 @@ class AppSnackbarView: ConstraintLayout, ContentViewCallback {
 }
 
 data class AppSnackbarData constructor(
-    val text: SpannableString,
+    val text: String,
     val actionText: String? = null,
     val duration: Int = if(actionText.isNullOrBlank()) Snackbar.LENGTH_SHORT else Snackbar.LENGTH_INDEFINITE,
     val id: String = text.toString()
 ){
-    constructor(
-        text: String,
-        actionText: String?,
-        duration: Int = if(actionText.isNullOrBlank()) Snackbar.LENGTH_SHORT else Snackbar.LENGTH_INDEFINITE,
-        id: String = text
-    ): this(SpannableString(text), actionText, duration, id)
+
 }
 
 class AppSnackbar (
@@ -113,16 +108,6 @@ fun snackBarSimple(
     actionText: String? = null,
     actionClick: (() -> Unit)? = null
 ): AppSnackbar? {
-    val context = anchorView?.context ?: return null
-    return snackBarSimple(anchorView, content.attributedBold(context), actionText, actionClick)
-}
-
-fun snackBarSimple(
-    anchorView: View?,
-    content: SpannableString,
-    actionText: String? = null,
-    actionClick: (() -> Unit)? = null
-): AppSnackbar? {
     return AppSnackbar.make(
         anchorView,
         AppSnackbarData(content, actionText),
@@ -137,7 +122,7 @@ fun snackBarError(
     actionClick: (() -> Unit)? = null
 ): AppSnackbar? {
     val context = anchorView?.context ?: return null
-    return snackBarSimple(anchorView, context.errorString(error), actionText, actionClick)
+    return snackBarSimple(anchorView, context.errorStringClean(error), actionText, actionClick)
 }
 
 internal fun View?.findSnackbarParent(): ViewGroup? {

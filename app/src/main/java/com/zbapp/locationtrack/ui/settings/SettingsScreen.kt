@@ -27,12 +27,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.navigation.AppScreen
+import com.zbapp.locationtrack.ui.rememberAppState
 import com.zbapp.locationtrack.ui.theme.AppTheme
 import java.util.*
 
 @Composable
-fun SettingsScreen(navController: NavController) {
+fun SettingsScreen(appState: MainAppState) {
 //    Surface {
     val scrollState = rememberScrollState()
     Column(
@@ -40,7 +42,7 @@ fun SettingsScreen(navController: NavController) {
             .verticalScroll(state = scrollState)
             .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
-        SettingSectionAccount(navController)
+        SettingSectionAccount(appState.navController)
         SettingSectionLocation()
         SettingSectionInfo()
     }
@@ -166,6 +168,6 @@ fun SettingsActionItem(
 @Composable
 fun MainPreview() {
     AppTheme {
-        SettingsScreen(rememberNavController())
+        SettingsScreen(rememberAppState())
     }
 }

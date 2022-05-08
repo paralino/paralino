@@ -11,6 +11,7 @@ import com.zbapp.locationtrack.ui.base.myApp
 import com.zbapp.locationtrack.ui.shared.AppSnackbarData
 import com.zbapp.locationtrack.ui.shared.SingleLiveEvent
 import com.zbapp.locationtrack.ui.shared.errorString
+import com.zbapp.locationtrack.ui.shared.errorStringClean
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -29,7 +30,7 @@ class LoginCheckViewModel(
             .map<Unit, Payload<Unit>> { Payload.Success(Unit) }
             .onStart { emit(Payload.Loading) }
             .catch {
-                _errorState.value = AppSnackbarData(myApp.errorString(it), null)
+                _errorState.value = AppSnackbarData(myApp.errorStringClean(it), null)
                 emit(Payload.Error(it))
             }
             .asLiveData()

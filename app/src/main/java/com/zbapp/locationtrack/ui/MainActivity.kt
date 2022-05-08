@@ -20,13 +20,13 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.zbapp.core.config
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.components.AppSnackbar
 import com.zbapp.locationtrack.ui.login.LoggedOutScreen
 import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.navigation.MainNavHost
@@ -102,17 +102,16 @@ fun RootApp() {
 @Composable
 fun MainAppScreen() {
 
-    val navController = rememberNavController()
-    val scaffoldState = rememberScaffoldState()
+    val appState = rememberAppState()
 
     Scaffold(
-        scaffoldState = scaffoldState,
+        scaffoldState = appState.scaffoldState,
         bottomBar = {
             BottomNavigation(
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 0.dp
             ) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
                 val unselectedColor = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.high)
 
@@ -120,7 +119,7 @@ fun MainAppScreen() {
                     selected = currentDestination?.hierarchy?.any { it.route == AppScreen.DashboardRoot.routeSignature } == true,
                     onClick = {
                         naviClick(
-                            navController = navController,
+                            navController = appState.navController,
                             route = AppScreen.DashboardRoot.routeSignature,
                             firstRoute = AppScreen.DashboardRoot.Dashboard.routeSignature
                         )
@@ -137,7 +136,7 @@ fun MainAppScreen() {
                     selected = currentDestination?.hierarchy?.any { it.route == AppScreen.MapRoot.routeSignature } == true,
                     onClick = {
                         naviClick(
-                            navController = navController,
+                            navController = appState.navController,
                             route = AppScreen.MapRoot.routeSignature,
                             firstRoute = AppScreen.MapRoot.MainMap.routeSignature
                         )
@@ -149,18 +148,27 @@ fun MainAppScreen() {
                     selected = currentDestination?.hierarchy?.any { it.route == AppScreen.SettingsRoot.routeSignature } == true,
                     onClick = {
                         naviClick(
-                            navController = navController,
+                            navController = appState.navController,
                             route = AppScreen.SettingsRoot.routeSignature,
                             firstRoute = AppScreen.SettingsRoot.Settings.routeSignature
                         )
                     },
-                    icon = { Icon(imageVector = Icons.Rounded.Settings, contentDescription = null) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = null
+                        )
+                    },
                     unselectedContentColor = unselectedColor
                 )
             }
-        }
+        },
+        snackbarHost = { AppSnackbar(it) }
     ) { innerPadding ->
-        MainNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
+        MainNavHost(
+            appState = appState,
+            modifier = Modifier.padding(innerPadding)
+        )
     }
 }
 

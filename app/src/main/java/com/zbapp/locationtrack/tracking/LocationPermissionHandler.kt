@@ -201,7 +201,7 @@ class LocationPermissionHandler(
         snackBar = AppSnackbar.make(
             activity.window.peekDecorView()?.findViewById(R.id.mainActivityRoot),
             AppSnackbarData(
-                text = appClass.getString(messageRes).attributedBold(appClass),
+                text = appClass.getString(messageRes),
                 actionText = "Settings",
                 duration = Snackbar.LENGTH_INDEFINITE
             )
@@ -230,7 +230,7 @@ class LocationPermissionHandler(
         snackBar = AppSnackbar.make(
             activity.window.peekDecorView()?.findViewById(R.id.mainActivityRoot),
             AppSnackbarData(
-                text = message.attributedBold(appClass),
+                text = message,
                 actionText = "Settings",
                 duration = Snackbar.LENGTH_INDEFINITE
             )
@@ -248,8 +248,7 @@ class LocationPermissionHandler(
         snackBar = AppSnackbar.make(
             activity.window.peekDecorView()?.findViewById(R.id.mainActivityRoot),
             AppSnackbarData(
-                text = appClass.getString(R.string.error_location_service_missing_sheet_message)
-                    .attributedBold(appClass),
+                text = appClass.getString(R.string.error_location_service_missing_sheet_message),
                 actionText = "Settings",
                 duration = Snackbar.LENGTH_INDEFINITE
             )

@@ -90,7 +90,7 @@ class LoginViewModel(
 
                 _loginInfoState.value = ""
                 _errorState.value =
-                    AppSnackbarData(error ?: myApp.attributedBold(R.string.error_generic_snacbar), null, Snackbar.LENGTH_LONG)
+                    AppSnackbarData(error?.toString() ?: myApp.getString(R.string.error_generic_snacbar), null, Snackbar.LENGTH_LONG)
 
                 emit(Payload.Error(it))
             }

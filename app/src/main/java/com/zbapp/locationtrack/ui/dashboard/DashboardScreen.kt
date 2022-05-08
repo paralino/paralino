@@ -27,6 +27,7 @@ import com.zbapp.core.utils.ConditionErrorType
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
+import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.DefaultEmptyState
 import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.components.ImageModelImage
@@ -39,7 +40,7 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun DashboardScreen(
-    navController: NavController,
+    appState: MainAppState,
     vm: DashboardViewModel = getViewModel()
 ) {
 

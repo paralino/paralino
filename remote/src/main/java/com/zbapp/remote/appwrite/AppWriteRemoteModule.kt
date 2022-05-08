@@ -34,7 +34,7 @@ class AppWriteRemoteModule(
 
     private fun okHttpClient(debug: Boolean): OkHttpClient {
         val interceptor = HttpLoggingInterceptor().apply {
-            level = if (debug) HttpLoggingInterceptor.Level.BASIC
+            level = if (debug) HttpLoggingInterceptor.Level.BODY
             else HttpLoggingInterceptor.Level.NONE
         }
         return OkHttpClient.Builder()
