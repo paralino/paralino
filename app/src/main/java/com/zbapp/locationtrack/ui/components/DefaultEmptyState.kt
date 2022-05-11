@@ -54,12 +54,9 @@ fun DefaultEmptyState(
             Spacer(modifier = Modifier.size(50.dp))
             FilledButton(
                 style = if (bigButton) ButtonStyle.BIG else ButtonStyle.SMALL,
+                icon = buttonIcon,
                 onClick = onClick ?: { }
             ) {
-                if (buttonIcon != null) {
-                    Icon(imageVector = buttonIcon, contentDescription = null)
-                    Spacer(Modifier.size(8.dp))
-                }
                 Text(buttonText)
             }
         }

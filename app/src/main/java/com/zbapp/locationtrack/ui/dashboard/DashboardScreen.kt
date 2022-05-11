@@ -113,12 +113,11 @@ fun DashboardScreen(
                     FilledButton(
                         style = ButtonStyle.SMALL,
                         modifier = Modifier.align(Alignment.CenterHorizontally),
+                        icon = Icons.Rounded.GroupAdd,
                         onClick = {
                             // TODO open group create
                         }
                     ) {
-                        Icon(Icons.Rounded.GroupAdd, null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.size(8.dp))
                         Text(text = stringResource(id = R.string.dashboard_groups_add_button))
                     }
 
