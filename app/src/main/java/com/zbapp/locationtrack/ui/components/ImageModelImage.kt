@@ -31,14 +31,14 @@ fun ImageModelImage(
         ImageType.emoji -> {
             val emoji = imageModel.getImageValue()!!
             Box(
-                modifier = modifier
+                modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .run {
                         if (useBackgroundForEmoji)
                             this
                                 .background(MaterialTheme.colors.surface)
                         else this
-                    }
+                    }.then(modifier)
             ) {
                 AndroidView(
                     factory = { EmojiItem(it) },
