@@ -1,0 +1,235 @@
+package com.zbapp.locationtrack.ui.groups.create
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.GroupAdd
+import androidx.compose.material.icons.rounded.Save
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.zbapp.core.models.Payload
+import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.presentation.groups.CreateGroupScreenEvent
+import com.zbapp.core.presentation.groups.CreateGroupState
+import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.MainAppState
+import com.zbapp.locationtrack.ui.components.DefaultEmptyState
+import com.zbapp.locationtrack.ui.components.FilledButton
+import com.zbapp.locationtrack.ui.components.ImageModelImage
+import com.zbapp.locationtrack.ui.shared.errorStringClean
+import com.zbapp.locationtrack.ui.theme.ButtonStyle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
+
+@Composable
+fun GroupCreateScreen(
+    appState: MainAppState,
+    groupId: String?,
+    vm: CreateGroupViewModel = getViewModel { parametersOf(groupId) }
+) {
+
+    val state by vm.uiState.collectAsState(initial = Payload.Loading)
+
+    val context = LocalContext.current
+    LaunchedEffect(key1 = context) {
+        vm.events.collect { event ->
+            when (event) {
+                is CreateGroupScreenEvent.Error -> {
+                    appState.showSnackbar(context.errorStringClean(event.error))
+                }
+                CreateGroupScreenEvent.GroupUpdated -> {
+                    appState.navController.popBackStack()
+                }
+                null -> {
+                    /* do nothing */
+                }
+            }
+        }
+    }
+
+    when (val finalState = state) {
+        Payload.Loading -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        is Payload.Error -> {
+            DefaultEmptyState(content = stringResource(id = R.string.group_load_error))
+        }
+        is Payload.Success -> {
+
+            // Shake group image when creating group if user didn't use it to draw attention
+            var rotation by remember { mutableStateOf(0f) }
+            var iconTapped by remember { mutableStateOf(false) }
+            if (finalState.data.isNewGroup) {
+                ShakeEffect(key = finalState, abort = iconTapped) {
+                    rotation = it
+                }
+            }
+
+            GroupCreateScreen(
+                state = finalState.data,
+                imageRotation = rotation,
+                onImageClick = {
+                    // TODO open image picker
+                    iconTapped = true
+                },
+                onCreateGroupClick = { image, name ->
+                    vm.createGroup(image, name)
+                }
+            )
+
+        }
+    }
+
+}
+
+@Composable
+fun GroupCreateScreen(
+    state: CreateGroupState,
+    imageRotation: Float = 0f,
+    onImageClick: () -> Unit,
+    onCreateGroupClick: (ImageModel, String) -> Unit
+) {
+
+    var groupName by remember { mutableStateOf(state.name) }
+    var groupImage: ImageModel = state.image
+    val focusManager = LocalFocusManager.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                focusManager.clearFocus()
+            }
+            .padding(40.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Spacer(modifier = Modifier.size(100.dp))
+
+        Box(
+            modifier = Modifier.size(100.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            ImageModelImage(
+                imageModel = state.image,
+                modifier = Modifier
+                    .size(100.dp)
+                    .rotate(imageRotation)
+                    .clickable(onClick = onImageClick)
+            )
+        }
+
+        Spacer(modifier = Modifier.size(40.dp))
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+            value = groupName,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions {
+                focusManager.clearFocus()
+            },
+            placeholder = {
+                Text(
+                    stringResource(id = R.string.group_create_name_placeholder),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            onValueChange = { groupName = it.take(5) },
+            shape = MaterialTheme.shapes.medium,
+            isError = state.hasError,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                backgroundColor = MaterialTheme.colors.surface,
+                unfocusedBorderColor = MaterialTheme.colors.surface,
+            )
+        )
+
+        Spacer(modifier = Modifier.size(100.dp))
+
+        FilledButton(
+            style = ButtonStyle.BIG,
+            icon = if (state.isNewGroup) Icons.Rounded.GroupAdd else Icons.Rounded.Save,
+            onClick = { onCreateGroupClick(groupImage, groupName) }
+        ) {
+            if (state.isNewGroup) {
+                Text(text = stringResource(id = R.string.group_create_button_text))
+            } else {
+                Text(text = stringResource(id = R.string.button_save))
+            }
+        }
+
+        AnimatedVisibility(visible = state.isLoading) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@Composable
+fun ShakeEffect(
+    key: Any,
+    abort: Boolean,
+    onValueChange: (Float) -> Unit
+) {
+    val shakeAnimation = remember { Animatable(0f) }
+    LaunchedEffect(key) {
+        delay(2000)
+
+        if (!abort) {
+            val shakeAmount = 8f
+            shakeAnimation.animateTo(
+                -shakeAmount,
+                animationSpec = tween(30, 0, easing = LinearOutSlowInEasing)
+            ) {
+                onValueChange(this.value)
+            }
+
+            shakeAnimation.animateTo(
+                shakeAmount, animationSpec = repeatable(
+                    iterations = 5,
+                    animation = tween(60, 0, easing = LinearEasing),
+                    repeatMode = RepeatMode.Reverse
+                )
+            ) {
+                onValueChange(this.value)
+            }
+
+            shakeAnimation.animateTo(
+                0f,
+                animationSpec = tween(30, 0, easing = LinearOutSlowInEasing)
+            ) {
+                onValueChange(this.value)
+            }
+        }
+    }
+}

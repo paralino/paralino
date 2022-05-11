@@ -6,9 +6,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.dashboard.DashboardScreen
+import com.zbapp.locationtrack.ui.groups.create.GroupCreateScreen
 import com.zbapp.locationtrack.ui.login.LoggedOutScreen
 import com.zbapp.locationtrack.ui.settings.AccountScreen
 import com.zbapp.locationtrack.ui.settings.SettingsScreen
@@ -42,6 +44,11 @@ fun NavGraphBuilder.dashboardGraph(appState: MainAppState) {
             val groupId =
                 it.arguments!!.getString(AppScreen.DashboardRoot.GroupDetails.argumentGroupId)
             Text("Group details - $groupId")
+        }
+        composable(AppScreen.DashboardRoot.GroupCreate.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.DashboardRoot.GroupCreate.argumentGroupId)
+            GroupCreateScreen(appState = appState, groupId = groupId)
         }
         composable(AppScreen.DashboardRoot.SharingStart.routeSignature) {
             val groupId =

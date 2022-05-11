@@ -29,6 +29,7 @@ import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.DefaultEmptyState
 import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.components.ImageModelImage
+import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
@@ -86,7 +87,7 @@ fun DashboardScreen(
                         buttonText = stringResource(id = R.string.dashboard_groups_add_button),
                         bigButton = true,
                         onClick = {
-                            // TODO open group create
+                            appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
                         }
                     )
                 } else {
@@ -97,6 +98,7 @@ fun DashboardScreen(
                             GroupListItem(data = it) {
                                 // TODO open group details
                             }
+                            Spacer(modifier = Modifier.size(8.dp))
                         }
                     }
 
@@ -105,7 +107,9 @@ fun DashboardScreen(
                         state.data.inactiveGroups.forEach {
                             GroupListItem(data = it) {
                                 // TODO open group details
+                                appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route(it.id))
                             }
+                            Spacer(modifier = Modifier.size(8.dp))
                         }
                     }
 
@@ -116,6 +120,7 @@ fun DashboardScreen(
                         icon = Icons.Rounded.GroupAdd,
                         onClick = {
                             // TODO open group create
+                            appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
                         }
                     ) {
                         Text(text = stringResource(id = R.string.dashboard_groups_add_button))

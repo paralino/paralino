@@ -1,5 +1,8 @@
 package com.zbapp.locationtrack.ui.navigation
 
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.navArgument
+
 sealed class AppScreen {
     val deeplinkScheme: String = "myApp"
     val deeplinkHost: String = "myApp"
@@ -31,6 +34,16 @@ sealed class AppScreen {
             override val routeSignature: String = "home-group/{$argumentGroupId}"
             fun route(groupId: String): String {
                 return "home-group/$groupId"
+            }
+        }
+
+        object GroupCreate : AppScreen() {
+            override val routeSignature: String = "group-create?$argumentGroupId={$argumentGroupId}"
+            val arguments: List<NamedNavArgument> = listOf(navArgument(argumentGroupId) { nullable = true })
+            fun route(groupId: String? = null): String {
+                if (groupId == null)
+                    return "group-create"
+                return "group-create?$argumentGroupId=$groupId"
             }
         }
     }
