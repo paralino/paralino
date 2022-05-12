@@ -39,7 +39,7 @@ class CreateGroupViewModel(
             groupFlow.value = value
             _uiState.update {
                 when {
-                    groupId.isNullOrBlank() ->  Payload.Success(CreateGroupState.empty())
+                    groupId.isNullOrBlank() -> Payload.Success(CreateGroupState.empty())
                     else -> value.mapSuccess { group ->
                         CreateGroupState(
                             isNewGroup = false,
@@ -82,7 +82,7 @@ class CreateGroupViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(CreateGroupScreenEvent.Error(data.exception))
                     }
-                    Payload.Loading -> { }
+                    Payload.Loading -> {}
                     is Payload.Success -> {
                         _eventChannel.send(CreateGroupScreenEvent.GroupUpdated)
                     }

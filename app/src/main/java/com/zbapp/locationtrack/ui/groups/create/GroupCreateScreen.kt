@@ -1,6 +1,5 @@
 package com.zbapp.locationtrack.ui.groups.create
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -29,6 +28,7 @@ import com.zbapp.core.presentation.groups.CreateGroupScreenEvent
 import com.zbapp.core.presentation.groups.CreateGroupState
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
+import com.zbapp.locationtrack.ui.components.AppButtonState
 import com.zbapp.locationtrack.ui.components.DefaultEmptyState
 import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.components.ImageModelImage
@@ -56,6 +56,7 @@ fun GroupCreateScreen(
                     appState.showSnackbar(context.errorStringClean(event.error))
                 }
                 CreateGroupScreenEvent.GroupUpdated -> {
+                    delay(400)
                     appState.navController.popBackStack()
                 }
                 null -> {
@@ -179,6 +180,7 @@ fun GroupCreateScreen(
 
         FilledButton(
             style = ButtonStyle.BIG,
+            state = AppButtonState.loadingStateWithCheck(state.isLoading),
             icon = if (state.isNewGroup) Icons.Rounded.GroupAdd else Icons.Rounded.Save,
             onClick = { onCreateGroupClick(groupImage, groupName) }
         ) {
@@ -187,10 +189,6 @@ fun GroupCreateScreen(
             } else {
                 Text(text = stringResource(id = R.string.button_save))
             }
-        }
-
-        AnimatedVisibility(visible = state.isLoading) {
-            CircularProgressIndicator()
         }
     }
 }
