@@ -12,6 +12,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 private val LightThemeColors = lightColors(
@@ -52,15 +53,27 @@ private val shapes = Shapes(
 
 enum class ButtonStyle(
 	val defaultModifier: Modifier,
-	val paddingValues: PaddingValues
+	val paddingValues: PaddingValues,
+	val iconSize: Dp,
+	val minContentHeight: Dp
 ) {
 	BIG(
 		defaultModifier = Modifier.fillMaxWidth(),
-		paddingValues = PaddingValues(horizontal = 24.dp, vertical = 20.dp)
+		paddingValues = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
+		iconSize = 16.dp,
+		minContentHeight = 20.dp,
 	),
 	SMALL(
 		defaultModifier = Modifier,
-		paddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
+		paddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+		iconSize = 16.dp,
+		minContentHeight = 20.dp
+	),
+	SMALL_ACTION(
+		defaultModifier = Modifier,
+		paddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+		iconSize = 12.dp,
+		minContentHeight = 14.dp
 	)
 }
 

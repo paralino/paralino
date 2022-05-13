@@ -79,11 +79,11 @@ fun FilledButton(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .alpha(contentAlpha)
-                        .defaultMinSize(minHeight = 20.dp)
+                        .defaultMinSize(minHeight = style.minContentHeight)
                 ) {
                     if (icon != null) {
-                        Icon(imageVector = icon, null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.size(8.dp))
+                        Icon(imageVector = icon, null, modifier = Modifier.size(style.iconSize))
+                        Spacer(Modifier.size(style.iconSize / 3))
                     }
                     content()
                 }
@@ -93,7 +93,7 @@ fun FilledButton(
                         color = MaterialTheme.colors.onPrimary,
                         strokeWidth = 2.dp,
                         modifier = Modifier
-                            .size(20.dp)
+                            .size(style.minContentHeight)
                             .alpha(loadingAlpha)
                     )
                 }
@@ -104,7 +104,7 @@ fun FilledButton(
                         contentDescription = null,
                         tint = MaterialTheme.colors.onPrimary,
                         modifier = Modifier
-                            .size(20.dp)
+                            .size(style.minContentHeight)
                             .alpha(checkAlpha)
                     )
                 }
