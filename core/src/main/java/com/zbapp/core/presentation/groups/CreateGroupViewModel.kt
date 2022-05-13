@@ -91,5 +91,10 @@ class CreateGroupViewModel(
             .launchIn(coroutineScope)
     }
 
+    fun updateImage(image: ImageModel) {
+        _uiState.update {
+            it.mapSuccess { it.copy(image = image) }
+        }
+    }
 
 }

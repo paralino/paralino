@@ -16,4 +16,5 @@ class CreateGroupViewModel(
     val events = coreVm.events
 
     fun createGroup(image: ImageModel, name: String) = coreVm.createGroup(image, name)
+    fun updateImage(image: ImageModel) = coreVm.updateImage(image)
 }

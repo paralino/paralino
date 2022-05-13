@@ -28,14 +28,13 @@ import com.zbapp.core.presentation.groups.CreateGroupScreenEvent
 import com.zbapp.core.presentation.groups.CreateGroupState
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
-import com.zbapp.locationtrack.ui.components.AppButtonState
-import com.zbapp.locationtrack.ui.components.DefaultEmptyState
-import com.zbapp.locationtrack.ui.components.FilledButton
-import com.zbapp.locationtrack.ui.components.ImageModelImage
+import com.zbapp.locationtrack.ui.components.*
 import com.zbapp.locationtrack.ui.shared.errorStringClean
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
+import com.zbapp.locationtrack.utils.extensions.safeCast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -80,28 +79,20 @@ fun GroupCreateScreen(
             DefaultEmptyState(content = stringResource(id = R.string.group_load_error))
         }
         is Payload.Success -> {
-
-            // Shake group image when creating group if user didn't use it to draw attention
-            var rotation by remember { mutableStateOf(0f) }
-            var iconTapped by remember { mutableStateOf(false) }
-            if (finalState.data.isNewGroup) {
-                ShakeEffect(key = finalState, abort = iconTapped) {
-                    rotation = it
-                }
-            }
-
             GroupCreateScreen(
                 state = finalState.data,
-                imageRotation = rotation,
                 onImageClick = {
-                    // TODO open image picker
-                    iconTapped = true
+                    appState.uiScope.launch {
+                        appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
+                            .safeCast<ImageModel>()?.let {
+                                vm.updateImage(it)
+                            }
+                    }
                 },
                 onCreateGroupClick = { image, name ->
                     vm.createGroup(image, name)
                 }
             )
-
         }
     }
 
@@ -110,14 +101,20 @@ fun GroupCreateScreen(
 @Composable
 fun GroupCreateScreen(
     state: CreateGroupState,
-    imageRotation: Float = 0f,
     onImageClick: () -> Unit,
     onCreateGroupClick: (ImageModel, String) -> Unit
 ) {
 
     var groupName by remember { mutableStateOf(state.name) }
-    var groupImage: ImageModel = state.image
+    var rotation by remember { mutableStateOf(0f) }
     val focusManager = LocalFocusManager.current
+
+    if (state.isNewGroup) {
+        // Shake group image when creating group if user didn't use it to draw attention
+        ShakeEffect {
+            rotation = it
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -144,8 +141,10 @@ fun GroupCreateScreen(
                 imageModel = state.image,
                 modifier = Modifier
                     .size(100.dp)
-                    .rotate(imageRotation)
-                    .clickable(onClick = onImageClick)
+                    .rotate(rotation)
+                    .clickable {
+                        onImageClick()
+                    }
             )
         }
 
@@ -182,7 +181,7 @@ fun GroupCreateScreen(
             style = ButtonStyle.BIG,
             state = AppButtonState.loadingStateWithCheck(state.isLoading),
             icon = if (state.isNewGroup) Icons.Rounded.GroupAdd else Icons.Rounded.Save,
-            onClick = { onCreateGroupClick(groupImage, groupName) }
+            onClick = { onCreateGroupClick(state.image, groupName) }
         ) {
             if (state.isNewGroup) {
                 Text(text = stringResource(id = R.string.group_create_button_text))
@@ -195,12 +194,11 @@ fun GroupCreateScreen(
 
 @Composable
 fun ShakeEffect(
-    key: Any,
-    abort: Boolean,
+    abort: Boolean = false,
     onValueChange: (Float) -> Unit
 ) {
     val shakeAnimation = remember { Animatable(0f) }
-    LaunchedEffect(key) {
+    LaunchedEffect(onValueChange) {
         delay(2000)
 
         if (!abort) {
