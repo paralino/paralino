@@ -1,23 +1,34 @@
 package com.zbapp.locationtrack.ui
 
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarResult
-import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.zbapp.locationtrack.ui.components.BottomSheetsScreen
 import com.zbapp.locationtrack.ui.shared.AppSnackbarData
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 class MainAppState(
     val scaffoldState: ScaffoldState,
+    val bottomSheetState: BottomSheetState,
     val navController: NavHostController,
     val uiScope: CoroutineScope
 ) {
+
+    fun showBottomSheet(bottomSheetsScreen: BottomSheetsScreen) {
+        bottomSheetState.currentBottomSheet.value = bottomSheetsScreen
+        uiScope.launch {
+            bottomSheetState.bottomSheetState.show()
+        }
+    }
+
+    suspend fun showBottomSheetForResult(bottomSheetsScreen: BottomSheetsScreen): Any {
+        showBottomSheet(bottomSheetsScreen)
+        return bottomSheetState.sheetResultChannel.receive()
+    }
 
     fun showSnackbar(text: String, duration: SnackbarDuration = SnackbarDuration.Short) {
         uiScope.launch {
@@ -50,15 +61,41 @@ class MainAppState(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun rememberAppState(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
+    bottomSheetState: BottomSheetState = rememberBottomSheet(),
     navController: NavHostController = rememberNavController(),
     uiScope: CoroutineScope = rememberCoroutineScope()
-) = remember(scaffoldState, navController) {
+) = remember(scaffoldState, navController, bottomSheetState) {
     MainAppState(
         scaffoldState = scaffoldState,
         navController = navController,
+        bottomSheetState = bottomSheetState,
         uiScope = uiScope
     )
 }
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun rememberBottomSheet(
+    bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
+    currentBottomSheet: MutableState<BottomSheetsScreen?> = remember {
+        mutableStateOf(null)
+    },
+    channel: Channel<Any> = Channel()
+) = remember {
+    BottomSheetState(
+        bottomSheetState = bottomSheetState,
+        currentBottomSheet = currentBottomSheet,
+        sheetResultChannel = channel
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+class BottomSheetState(
+    val bottomSheetState: ModalBottomSheetState,
+    val currentBottomSheet: MutableState<BottomSheetsScreen?>,
+    val sheetResultChannel: Channel<Any>
+)

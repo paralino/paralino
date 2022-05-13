@@ -47,7 +47,7 @@ private val DarkThemeColors = darkColors(
 private val shapes = Shapes(
 	small = RoundedCornerShape(percent = 30),
 	medium = RoundedCornerShape(20.dp),
-	large = RoundedCornerShape(percent = 10)
+	large = RoundedCornerShape(percent = 0)
 )
 
 enum class ButtonStyle(
