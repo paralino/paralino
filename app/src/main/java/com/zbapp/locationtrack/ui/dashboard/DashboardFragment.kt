@@ -10,10 +10,12 @@ import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailFragmentArgs
 import com.zbapp.locationtrack.ui.shared.DeeplinkManager
-import com.zbapp.locationtrack.ui.shared.list.*
+import com.zbapp.locationtrack.ui.shared.list.ErrorListItem
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpace
+import com.zbapp.locationtrack.ui.shared.list.ListItemEmptyState
+import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItem
 import com.zbapp.locationtrack.utils.SimpleRvAdapter
 import com.zbapp.locationtrack.utils.extensions.viewBinding
-import com.zbapp.locationtrack.utils.simpleAdapter
 import com.zbapp.locationtrack.utils.withClickAction
 import com.zbapp.locationtrack.utils.withDataOnClickAction
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -63,7 +65,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             .addFactory { ListItemEmptySpace(it) }
             .addFactory {
                 GroupAddItem(it).withClickAction {
-                    navigateDefault(R.id.createGroupFragment)
+//                    navigateDefault(R.id.createGroupFragment)
                 }
             }
             .addFactory {

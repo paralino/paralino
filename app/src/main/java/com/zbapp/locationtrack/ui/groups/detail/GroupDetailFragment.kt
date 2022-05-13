@@ -2,7 +2,6 @@ package com.zbapp.locationtrack.ui.groups.detail
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -13,7 +12,6 @@ import com.zbapp.locationtrack.databinding.FragmentGroupDetailBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
 import com.zbapp.locationtrack.ui.base.navigateDefault
 import com.zbapp.locationtrack.ui.groups.SharingStartFragmentArgs
-import com.zbapp.locationtrack.ui.groups.create.CreateGroupFragmentArgs
 import com.zbapp.locationtrack.ui.groups.detail.members.GroupMembersFragmentArgs
 import com.zbapp.locationtrack.ui.invite.AccessCodeInputFragmentArgs
 import com.zbapp.locationtrack.ui.shared.DeeplinkManager
@@ -66,10 +64,10 @@ class GroupDetailFragment : BaseFragment(R.layout.fragment_group_detail) {
         vb.toolbar.setOnMenuItemClickListener {
             return@setOnMenuItemClickListener when (it.itemId) {
                 R.id.itemGroupEdit -> {
-                    navigateDefault(
-                        R.id.createGroupFragment,
-                        CreateGroupFragmentArgs(args.groupId).toBundle()
-                    )
+//                    navigateDefault(
+//                        R.id.createGroupFragment,
+//                        CreateGroupFragmentArgs(args.groupId).toBundle()
+//                    )
                     true
                 }
                 R.id.itemMemberAdd -> {
