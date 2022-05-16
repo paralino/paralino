@@ -7,6 +7,7 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupWithMembers
+import com.zbapp.core.presentation.groups.MemberAction
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.location.LocationRepository
@@ -47,7 +48,7 @@ class MapViewModel constructor(
                                 group = group,
                                 memberListData = group.members.map { member ->
                                     val actionItem =
-                                        GroupMemberItemData.MemberAction.DELETE_LOCATION.takeIf {
+                                        MemberAction.DELETE_LOCATION.takeIf {
                                             member.userId == config.userId && member.mutableData != null && !sharingManager.isSharingActiveForGroup(groupIdData.value)
                                         }
                                     GroupMemberItemData(

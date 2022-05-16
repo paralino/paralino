@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import com.zbapp.core.config
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.location.MemberModel
+import com.zbapp.core.presentation.groups.MemberAction
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.extensions.mapToPayload
 import com.zbapp.locationtrack.BuildConfig
@@ -32,7 +33,7 @@ class GroupMembersViewModel constructor(
                 .map { member ->
                     GroupMemberItemData(
                         member = member,
-                        actionItem = GroupMemberItemData.MemberAction.DELETE_MEMBER.takeIf {
+                        actionItem = MemberAction.DELETE_MEMBER.takeIf {
                             group.isCurrentUserOwner && member.userId != group.ownerUserId
                         }
                     )

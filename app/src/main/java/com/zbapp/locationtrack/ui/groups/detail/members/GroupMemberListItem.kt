@@ -4,10 +4,17 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.DeleteForever
+import androidx.compose.material.icons.rounded.PersonRemove
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.presentation.groups.GroupMemberStatus
+import com.zbapp.core.presentation.groups.MemberAction
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementMemberListItemBinding
@@ -64,7 +71,7 @@ class GroupMemberListItem constructor(
         vb.bRemove.isVisible =
             data.actionItem != null && data.uiType == GroupMemberItemData.MemberUiType.EXPANDED
         data.actionItem?.let {
-            vb.bRemove.setIconResource(it.actionIcon)
+            vb.bRemove.setIconResource(it.actionIconRes)
             vb.bRemove.setText(it.actionText)
         }
 
@@ -115,6 +122,7 @@ data class GroupMemberItemData constructor(
     val name: String get() = member.name
     val image: ImageModel get() = member.image?.takeIf { it.getImageValue() != null } ?: ImageModel.emoji(Emojis.robot)
     val batterLevel: Int? get() = member.mutableData?.batteryLevel
+
     fun getLastPing(context: Context): String? {
         return member.mutableData?.timeUTC?.toLocalDateTime()?.let {
             if(it.isAfter(LocalDateTime.now().minusMinutes(2)))
@@ -143,17 +151,24 @@ data class GroupMemberItemData constructor(
         }
     }
 
-    enum class MemberAction {
-        DELETE_MEMBER, DELETE_LOCATION;
+}
 
-        val actionIcon: Int get() = when(this) {
-            DELETE_MEMBER -> R.drawable.ic_person_remove
-            DELETE_LOCATION -> R.drawable.ic_delete
-        }
+val MemberAction.actionIconRes: Int get() = when(this) {
+    MemberAction.DELETE_MEMBER -> R.drawable.ic_person_remove
+    MemberAction.DELETE_LOCATION -> R.drawable.ic_delete
+}
 
-        val actionText: Int get() = when(this) {
-            DELETE_MEMBER -> R.string.group_members_item_remove_button
-            DELETE_LOCATION -> R.string.group_members_item_clear_location_button
-        }
-    }
+val MemberAction.actionIcon: ImageVector get() = when(this) {
+    MemberAction.DELETE_MEMBER -> Icons.Rounded.PersonRemove
+    MemberAction.DELETE_LOCATION -> Icons.Rounded.Delete
+}
+
+val MemberAction.actionText: Int get() = when(this) {
+    MemberAction.DELETE_MEMBER -> R.string.group_members_item_remove_button
+    MemberAction.DELETE_LOCATION -> R.string.group_members_item_clear_location_button
+}
+
+val GroupMemberStatus.actionText: Int? get() = when(this) {
+    GroupMemberStatus.ACTIVE -> null
+    GroupMemberStatus.INACTIVE -> R.string.group_members_status_inactive
 }

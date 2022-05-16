@@ -39,7 +39,7 @@ fun LocalDateTime.fromLocalToUTC(): LocalDateTime {
     return this.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()
 }
 
-fun LocalDateTime.fromUTCtoUserLastPing(): String? {
+fun LocalDateTime.fromUTCtoUserLastPing(): String {
     return this.fromUTCtoLocal().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
 }
 
