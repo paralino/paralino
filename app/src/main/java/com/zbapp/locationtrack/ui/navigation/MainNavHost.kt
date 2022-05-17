@@ -12,6 +12,7 @@ import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.dashboard.DashboardScreen
 import com.zbapp.locationtrack.ui.groups.create.GroupCreateScreen
 import com.zbapp.locationtrack.ui.login.LoggedOutScreen
+import com.zbapp.locationtrack.ui.map.MapHomeScreen
 import com.zbapp.locationtrack.ui.settings.AccountScreen
 import com.zbapp.locationtrack.ui.settings.SettingsScreen
 
@@ -64,7 +65,9 @@ fun NavGraphBuilder.mapGraph(appState: MainAppState) {
         route = AppScreen.MapRoot.routeSignature
     ) {
         composable(AppScreen.MapRoot.MainMap.routeSignature) {
-            Text("Map")
+            val groupId =
+                it.arguments!!.getString(AppScreen.MapRoot.MainMap.argumentGroupId)
+            MapHomeScreen(appState = appState, groupId = groupId)
         }
     }
 }

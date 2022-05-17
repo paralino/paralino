@@ -4,6 +4,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,6 +51,11 @@ fun MapGroupPicker(
             .shadow(1.dp, RoundedCornerShape(height))
             .clip(RoundedCornerShape(height))
             .background(MaterialTheme.colors.background)
+            .border(
+                0.5.dp,
+                MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                RoundedCornerShape(height)
+            )
             .clickable { onClick() }
             .padding(2.dp)
             .animateContentSize(
@@ -119,7 +125,8 @@ fun MapGroupPicker(
                     }
                     Text(
                         text = text.annotatedBold(),
-                        style = MaterialTheme.typography.caption.copy(fontSize = 10.sp, fontWeight = FontWeight.Medium),
+                        style = MaterialTheme.typography.caption.copy(fontSize = 10.sp,
+                            fontWeight = FontWeight.Medium),
                         modifier = Modifier
                     )
                 }
