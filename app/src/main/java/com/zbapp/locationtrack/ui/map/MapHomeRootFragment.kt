@@ -9,7 +9,7 @@ import com.zbapp.core.models.Payload
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentMapBinding
 import com.zbapp.locationtrack.ui.base.BaseFragment
-import com.zbapp.locationtrack.ui.dashboard.GroupItemData
+import com.zbapp.locationtrack.ui.groups.GroupItemData
 import com.zbapp.locationtrack.ui.groups.GroupPickerFragment
 import com.zbapp.locationtrack.ui.groups.detail.members.GroupMemberItemData
 import com.zbapp.locationtrack.ui.groups.detail.members.GroupMemberListItem

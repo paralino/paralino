@@ -41,7 +41,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.zbapp.locationtrack.ui.dashboard.GroupListItem
+            <com.zbapp.locationtrack.ui.groups.GroupListItem
                 android:id="@+id/groupPicker"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

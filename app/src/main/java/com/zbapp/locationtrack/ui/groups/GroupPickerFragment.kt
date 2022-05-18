@@ -1,6 +1,5 @@
 package com.zbapp.locationtrack.ui.groups
 
-import com.zbapp.locationtrack.ui.dashboard.GroupListItem
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetActionData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.utils.SimpleRvAdapter

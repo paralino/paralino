@@ -14,7 +14,6 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentSharingStartBinding
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
 import com.zbapp.locationtrack.ui.base.BaseFragment
-import com.zbapp.locationtrack.ui.dashboard.GroupItemData
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.list.ErrorItems
 import com.zbapp.locationtrack.ui.shared.list.nameRes

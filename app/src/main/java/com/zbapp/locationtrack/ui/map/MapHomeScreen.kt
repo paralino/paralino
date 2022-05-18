@@ -27,6 +27,7 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.data
 import com.zbapp.core.models.group.UserGroup
+import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.presentation.groups.GroupMemberItemState
 import com.zbapp.core.presentation.groups.GroupMemberStatus
 import com.zbapp.core.presentation.groups.MemberAction

@@ -14,7 +14,7 @@ import com.zbapp.core.models.data
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.FragmentInviteAcceptBinding
-import com.zbapp.locationtrack.ui.dashboard.GroupItemData
+import com.zbapp.locationtrack.ui.groups.GroupItemData
 import com.zbapp.locationtrack.ui.groups.GroupPickerFragment
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetDialog
 import com.zbapp.locationtrack.ui.shared.bottomsheet.BottomSheetTitleData
