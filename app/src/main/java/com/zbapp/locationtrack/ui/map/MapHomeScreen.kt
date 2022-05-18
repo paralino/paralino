@@ -33,9 +33,12 @@ import com.zbapp.core.presentation.groups.GroupMemberStatus
 import com.zbapp.core.presentation.groups.MemberAction
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.ui.MainAppState
+import com.zbapp.locationtrack.ui.components.BottomSheetsScreen
 import com.zbapp.locationtrack.ui.groups.members.GroupMember
 import com.zbapp.locationtrack.ui.theme.AppColors
+import com.zbapp.locationtrack.utils.extensions.safeCast
 import com.zbapp.locationtrack.utils.extensions.toLocalDateTime
+import kotlinx.coroutines.launch
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.koin.androidx.compose.getViewModel
 
@@ -51,6 +54,7 @@ fun MapHomeScreen(
     var trackMarkerId: String? by remember { mutableStateOf(null) }
     val sharingTime: String? by vm.getSharingTime().asFlow().collectAsState(initial = null)
     val users by vm.getMarkers().asFlow().collectAsState(initial = Payload.Loading)
+    val groups by vm.getAllGroups().asFlow().collectAsState(initial = emptyList())
 
     ConstraintLayout(
         modifier = Modifier
@@ -100,12 +104,23 @@ fun MapHomeScreen(
                 top.linkTo(parent.top, margin = 8.dp)
                 centerHorizontallyTo(parent)
             },
-            groupName = "Robots in da house",
-            groupImage = ImageModel.emoji(Emojis.robot),
+            groupName = users.data?.group?.name ?: "Robotos",
+            groupImage = users.data?.group?.image ?: ImageModel.emoji(Emojis.robot),
             userCount = 5,
             inactiveUserCount = 2
         ) {
-            // TODO open group picker
+            appState.uiScope.launch {
+                appState.showBottomSheetForResult(
+                    BottomSheetsScreen.GroupPicker(
+                        // TODO move to viewmodel
+                        groups.map {
+                            GroupItemData(group = it, uiType = GroupItemData.GroupUiType.ACTIVE)
+                        }
+                    )
+                ).safeCast<GroupItemData>()?.let {
+                    vm.switchGroup(it.id)
+                }
+            }
         }
 
         // sharing time info
