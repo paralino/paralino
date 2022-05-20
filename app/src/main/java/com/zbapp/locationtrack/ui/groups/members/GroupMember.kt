@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
@@ -49,13 +50,15 @@ import java.time.LocalDateTime
 fun GroupMember(
     state: GroupMemberItemState,
     modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colors.surface,
+    onActionClick: (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colors.surface)
+            .background(backgroundColor)
             .clickable { onClick() }
             .padding(horizontal = 10.dp, vertical = 10.dp)
             .animateContentSize(
@@ -67,7 +70,7 @@ fun GroupMember(
     ) {
 
         val (image, center, expand, actions) = createRefs()
-        var expanded by rememberSaveable { mutableStateOf(false) }
+        var expanded by remember { mutableStateOf(false) }
 
         // image
         Column(modifier = Modifier
@@ -186,18 +189,22 @@ fun GroupMember(
                 width = Dimension.fillToConstraints
             }
         ) {
-
-            AnimatedVisibility(visible = expanded && state.actionItem != null) {
-                FilledButton(
-                    style = ButtonStyle.SMALL_ACTION,
-                    icon = state.actionItem!!.actionIcon,
-                    modifier = Modifier.padding(top = 10.dp),
-                    onClick = { }
-                ) {
-                    Text(
-                        text = stringResource(id = state.actionItem!!.actionText),
-                        style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
-                    )
+            if(state.actionItem != null) {
+                AnimatedVisibility(visible = expanded) {
+                    FilledButton(
+                        style = ButtonStyle.SMALL_ACTION,
+                        icon = state.actionItem!!.actionIcon,
+                        modifier = Modifier.padding(top = 10.dp),
+                        onClick = {
+                            expanded = !expanded
+                            onActionClick?.invoke()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = state.actionItem!!.actionText),
+                            style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
+                        )
+                    }
                 }
             }
         }
@@ -231,6 +238,7 @@ fun MemberPreview() {
 }
 
 val dummyMemberState = GroupMemberItemState(
+    id = "",
     actionItem = MemberAction.DELETE_MEMBER,
     name = "User name",
     image = ImageModel.emoji(Emojis.robot),

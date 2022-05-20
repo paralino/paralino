@@ -17,11 +17,11 @@ data class GroupItemData constructor(
     val id: String,
     val name: String,
     val image: ImageModel,
-    val userCount: Int?,
+    val userCount: Int,
     val uiType: GroupUiType = GroupUiType.INACTIVE
 ) {
 
-    constructor(group: UserGroup, uiType: GroupUiType): this(
+    constructor(group: UserGroup, uiType: GroupUiType = GroupUiType.PICKER): this(
         group.id, group.name, group.image, group.memberCount, uiType
     )
 

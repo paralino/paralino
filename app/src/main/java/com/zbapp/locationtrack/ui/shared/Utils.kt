@@ -1,7 +1,11 @@
 package com.zbapp.locationtrack.ui.shared
 
 import android.content.Context
+import android.content.res.Resources
 import android.text.SpannableString
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.zbapp.core.utils.exceptions.*
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.utils.extensions.attributedBold
@@ -11,24 +15,38 @@ fun Context.errorString(error: Throwable?): SpannableString {
 }
 
 fun Context.errorStringClean(error: Throwable?): String {
+    return error.errorString(this)
+}
+
+fun Throwable?.errorString(context: Context): String {
+    return this.errorString(context.resources)
+}
+
+fun Throwable?.errorString(resources: Resources): String {
+    val error = this
     return when (error) {
-        is UnverifiedUserException -> getString(R.string.info_email_confirm)
-        is RemoteConnectionException -> getString(R.string.error_server_unavailable)
-        is InternalConnectionException -> getString(R.string.error_no_connection_snackbar)
+        is UnverifiedUserException -> resources.getString(R.string.info_email_confirm)
+        is RemoteConnectionException -> resources.getString(R.string.error_server_unavailable)
+        is InternalConnectionException -> resources.getString(R.string.error_no_connection_snackbar)
         is BaseRemoteException -> {
             if (error.code != null)
-                getString(R.string.error_something_wrong_http, error.code)
-            else getString(R.string.error_something_wrong)
+                resources.getString(R.string.error_something_wrong_http, error.code)
+            else resources.getString(R.string.error_something_wrong)
         }
         is MissingCryptoKeyException -> {
             when (error) {
-                is MissingGroupKeyException -> getString(R.string.error_crypto_key_missing, "group")
-                is MissingMemberKeyException -> getString(R.string.error_crypto_key_missing, "member")
-                else -> getString(R.string.error_crypto_key_missing, "-")
+                is MissingGroupKeyException -> resources.getString(R.string.error_crypto_key_missing, "group")
+                is MissingMemberKeyException -> resources.getString(R.string.error_crypto_key_missing, "member")
+                else -> resources.getString(R.string.error_crypto_key_missing, "-")
             }
         }
-        is EncryptionException -> getString(R.string.error_crypto_encryption_generic)
-        is DecryptionException -> getString(R.string.error_crypto_decryption_generic)
-        else -> getString(R.string.error_generic_snacbar)
+        is EncryptionException -> resources.getString(R.string.error_crypto_encryption_generic)
+        is DecryptionException -> resources.getString(R.string.error_crypto_decryption_generic)
+        else -> resources.getString(R.string.error_generic_snacbar)
     }
+}
+
+@Composable
+fun Throwable?.errorString(): String {
+    return this.errorString(LocalContext.current)
 }

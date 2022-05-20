@@ -19,7 +19,7 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.MainAlertDialog
 import com.zbapp.locationtrack.ui.navigation.AppScreen
-import com.zbapp.locationtrack.ui.shared.errorStringClean
+import com.zbapp.locationtrack.ui.shared.errorString
 import kotlinx.coroutines.flow.collect
 import org.koin.androidx.compose.getViewModel
 
@@ -38,7 +38,7 @@ fun AccountScreen(
         viewModel.events.collect { event ->
             when (event) {
                 is AccountScreenEvent.Error -> {
-                    appState.showSnackbar(context.errorStringClean(event.error))
+                    appState.showSnackbar(event.error.errorString(context))
                 }
                 null -> {
                     /* do nothing */

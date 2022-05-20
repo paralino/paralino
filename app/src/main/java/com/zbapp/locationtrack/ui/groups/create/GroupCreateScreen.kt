@@ -29,7 +29,7 @@ import com.zbapp.core.presentation.groups.CreateGroupState
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.*
-import com.zbapp.locationtrack.ui.shared.errorStringClean
+import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.extensions.safeCast
 import kotlinx.coroutines.delay
@@ -52,7 +52,7 @@ fun GroupCreateScreen(
         vm.events.collect { event ->
             when (event) {
                 is CreateGroupScreenEvent.Error -> {
-                    appState.showSnackbar(context.errorStringClean(event.error))
+                    appState.showSnackbar(event.error.errorString(context))
                 }
                 CreateGroupScreenEvent.GroupUpdated -> {
                     delay(400)

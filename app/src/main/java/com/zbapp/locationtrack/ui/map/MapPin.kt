@@ -2,6 +2,7 @@ package com.zbapp.locationtrack.ui.map
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -9,6 +10,7 @@ import androidx.core.view.isVisible
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.base.ImageType
+import com.zbapp.core.presentation.map.MapMarkerState
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementMapPinBinding
@@ -83,6 +85,15 @@ class MapUserMarkerView : ConstraintLayout {
         return small
     }
 
+    companion object {
+        fun create(context: Context, model: MapMarkerState): Pair<MapPinData, BitmapDrawable> {
+            val pinView = MapUserMarkerView(context)
+            val data = MapPinData(model)
+            val bitmap = pinView.getPinForData(data)
+            return data to BitmapDrawable(context.resources, bitmap)
+        }
+    }
+
 }
 
 data class MapPinData constructor(
@@ -92,6 +103,14 @@ data class MapPinData constructor(
     val active: Boolean,
     val image: ImageModel?
 ) {
+
+    constructor(state: MapMarkerState): this(
+        groupId = state.groupId,
+        memberId = state.memberData.id,
+        focused = state.focused,
+        active = state.active,
+        image = state.image
+    )
 
     companion object {
         fun fromMember(member: MemberModel): MapPinData {

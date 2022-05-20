@@ -109,7 +109,7 @@ fun DashboardScreen(
                             GroupListItem(data = it) {
                                 // TODO open group details
                                 appState.navController.navigate(
-                                    AppScreen.DashboardRoot.GroupCreate.route(it.id)
+                                    AppScreen.MapRoot.MainMap.route(it.id)
                                 )
                             }
                             Spacer(modifier = Modifier.size(8.dp))

@@ -72,103 +72,103 @@ class MapHomeRootFragment : BaseFragment(R.layout.fragment_map) {
             fragment.reDrawMarkers()
         }
 
-        vb.rvUsers.adapter = SimpleRvAdapter()
-            .addFactory {
-                GroupMemberListItem(forViewPager = true, it).also {
-                    it.onMemberDelete = {
-                        it.toggleState()
-                        vm.clearMyLocation().observe {
-                            when(it) {
-                                Payload.Loading -> {}
-                                is Payload.Error -> snackBarError(vb.fabGroup, it.exception)
-                                is Payload.Success -> {}
-                            }
-                        }
-                    }
-                }
-            }
-
-        vb.rvUsers.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                vb.rvUsers.simpleAdapter?.currentList?.getOrNull(position)?.safeCast<GroupMemberItemData>()?.let { member ->
-                    selectMarker(member.member.id)
-                }
-            }
-        })
-
-        fragment.onMarkerClick = { onMarkerClick(it) }
-        fragment.onMapTouch = {
-            trackPositions = false
-            trackMarkerId = null
-            false
-        }
-
-        vm.getMarkers().observe {
-
-            vb.bGroupSelector.isVisible = it is Payload.Success
-            vb.fabGroup.isVisible = it is Payload.Success
-
-            when(it) {
-                Payload.Loading -> { }
-                is Payload.Success -> {
-
-                    if(trackingGroupId != it.data.group.id) {
-                        trackPositions = true
-                    }
-                    trackingGroupId = it.data.group.id
-
-                    vb.tvGroupEmoji.text = it.data.group.image.getImageValue()
-                    vb.tvGroupName.text = it.data.group.name
-
-                    val inactiveMembers = it.data.group.members.count { it.mutableData == null }
-                    if(inactiveMembers == 0) {
-                        // not using plural form for 0 since 0 is treated as "other" in some languages
-                        vb.tvGroupCount.text = "${it.data.group.memberCount}"
-                    } else {
-                        vb.tvGroupCount.text = resources.getQuantityString(
-                            R.plurals.group_sharing_member_active_info,
-                            inactiveMembers,
-                            it.data.group.memberCount,
-                            inactiveMembers
-                        )
-                    }
-
-                    updateMarkers(it.data)
-                }
-                is Payload.Error -> {
-                    snackBarError(vb.fabGroup, it.exception)
-                }
-            }
-            fragment.reDrawMarkers()
-        }
-
-        vm.getSharingTime().observe {
-            vb.tvShareTime.isVisible = !it.isNullOrBlank()
-            vb.tvShareTime.text = it ?: ""
-        }
-
-        vm.locationRefreshSubscription.observe {
-            // to keep location refresh alive while ui is alive
-        }
-
-        vb.bGroupSelector.setOnClickListener {
-            pickGroup()
-        }
+//        vb.rvUsers.adapter = SimpleRvAdapter()
+//            .addFactory {
+//                GroupMemberListItem(forViewPager = true, it).also {
+//                    it.onMemberDelete = {
+//                        it.toggleState()
+//                        vm.clearMyLocation().observe {
+//                            when(it) {
+//                                Payload.Loading -> {}
+//                                is Payload.Error -> snackBarError(vb.fabGroup, it.exception)
+//                                is Payload.Success -> {}
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//        vb.rvUsers.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+//            override fun onPageSelected(position: Int) {
+//                vb.rvUsers.simpleAdapter?.currentList?.getOrNull(position)?.safeCast<GroupMemberItemData>()?.let { member ->
+//                    selectMarker(member.member.id)
+//                }
+//            }
+//        })
+//
+//        fragment.onMarkerClick = { onMarkerClick(it) }
+//        fragment.onMapTouch = {
+//            trackPositions = false
+//            trackMarkerId = null
+//            false
+//        }
+//
+//        vm.getMarkers().observe {
+//
+//            vb.bGroupSelector.isVisible = it is Payload.Success
+//            vb.fabGroup.isVisible = it is Payload.Success
+//
+//            when(it) {
+//                Payload.Loading -> { }
+//                is Payload.Success -> {
+//
+//                    if(trackingGroupId != it.data.group.id) {
+//                        trackPositions = true
+//                    }
+//                    trackingGroupId = it.data.group.id
+//
+//                    vb.tvGroupEmoji.text = it.data.group.image.getImageValue()
+//                    vb.tvGroupName.text = it.data.group.name
+//
+//                    val inactiveMembers = it.data.group.members.count { it.mutableData == null }
+//                    if(inactiveMembers == 0) {
+//                        // not using plural form for 0 since 0 is treated as "other" in some languages
+//                        vb.tvGroupCount.text = "${it.data.group.memberCount}"
+//                    } else {
+//                        vb.tvGroupCount.text = resources.getQuantityString(
+//                            R.plurals.group_sharing_member_active_info,
+//                            inactiveMembers,
+//                            it.data.group.memberCount,
+//                            inactiveMembers
+//                        )
+//                    }
+//
+//                    updateMarkers(it.data)
+//                }
+//                is Payload.Error -> {
+//                    snackBarError(vb.fabGroup, it.exception)
+//                }
+//            }
+//            fragment.reDrawMarkers()
+//        }
+//
+//        vm.getSharingTime().observe {
+//            vb.tvShareTime.isVisible = !it.isNullOrBlank()
+//            vb.tvShareTime.text = it ?: ""
+//        }
+//
+//        vm.locationRefreshSubscription.observe {
+//            // to keep location refresh alive while ui is alive
+//        }
+//
+//        vb.bGroupSelector.setOnClickListener {
+//            pickGroup()
+//        }
     }
 
-    private fun pickGroup() {
-        vm.getAllGroups().observe { groups ->
-            BottomSheetDialog.show(
-                this,
-                GroupPickerFragment(),
-                groups.map { GroupItemData(it, GroupItemData.GroupUiType.PICKER) }.toMutableList()
-            ) { _, bundle ->
-                BottomSheetDialog.getAction(bundle)?.id?.let {
-                    vm.switchGroup(it)
-                }
-            }
-        }
-    }
+//    private fun pickGroup() {
+//        vm.getAllGroups().observe { groups ->
+//            BottomSheetDialog.show(
+//                this,
+//                GroupPickerFragment(),
+//                groups.map { GroupItemData(it, GroupItemData.GroupUiType.PICKER) }.toMutableList()
+//            ) { _, bundle ->
+//                BottomSheetDialog.getAction(bundle)?.id?.let {
+//                    vm.switchGroup(it)
+//                }
+//            }
+//        }
+//    }
 
     private fun updateMarkers(data: MapUiModel) {
         fragment.updateMarkers(data.group.members)
