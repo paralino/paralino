@@ -97,7 +97,7 @@ fun DashboardScreen(
                         SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_active))
                         state.data.activeGroups.forEach {
                             GroupListItem(data = it) {
-                                // TODO open group details
+                                appState.navController.navigate(AppScreen.DashboardRoot.GroupDetails.route(it.id))
                             }
                             Spacer(modifier = Modifier.size(8.dp))
                         }
@@ -107,24 +107,11 @@ fun DashboardScreen(
                         SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_inactive))
                         state.data.inactiveGroups.forEach {
                             GroupListItem(data = it) {
-                                // TODO open group details
-                                appState.navController.navigate(
-                                    AppScreen.MapRoot.MainMap.route(it.id)
-                                )
+                                appState.navController.navigate(AppScreen.DashboardRoot.GroupDetails.route(it.id))
                             }
                             Spacer(modifier = Modifier.size(8.dp))
                         }
                     }
-
-                    // TODO remove test views
-                    GroupMember(state = dummyMemberState) { }
-                    Spacer(modifier = Modifier.size(10.dp))
-                    MapGroupPicker(
-                        groupName = "Robots",
-                        groupImage = ImageModel.emoji(Emojis.robot),
-                        userCount = 5,
-                        inactiveUserCount = 2
-                    ) { }
 
                     Spacer(modifier = Modifier.size(100.dp))
                     FilledButton(
@@ -132,7 +119,6 @@ fun DashboardScreen(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         icon = Icons.Rounded.GroupAdd,
                         onClick = {
-                            // TODO open group create
                             appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
                         }
                     ) {

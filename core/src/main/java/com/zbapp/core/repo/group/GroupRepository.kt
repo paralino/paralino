@@ -3,15 +3,15 @@ package com.zbapp.core.repo.group
 import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.logg
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupWithMembers
-import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
-import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
@@ -144,23 +144,27 @@ class GroupRepository constructor(
     }
 
     fun removeMember(member: MemberModel): Flow<Unit> {
+        return removeMember(groupId = member.groupId, memberUserId = member.userId)
+    }
 
-        if(member.userId == userRepository.cachedUserId) {
-            return leaveGroup(member.groupId)
+    fun removeMember(groupId: String, memberUserId: String): Flow<Unit> {
+
+        if (memberUserId == userRepository.cachedUserId) {
+            return leaveGroup(groupId)
         }
 
         return getDataOnce(
             remote = {
-                val group = local.getGroupWithoutMembers(member.groupId).first()
-                remote.removeUserFromGroup(group, member.userId)
+                val group = local.getGroupWithoutMembers(groupId).first()
+                remote.removeUserFromGroup(group, memberUserId)
             },
             localUpdate = {
-                local.removeMember(member.groupId, member.userId)
-                cryptoKEKRepo.deleteKeysForUser(member.groupId, member.userId)
+                local.removeMember(groupId, memberUserId)
+                cryptoKEKRepo.deleteKeysForUser(groupId, memberUserId)
             }
         )
             .onEach {
-                val group = local.getGroupWithMembers(member.groupId).first()
+                val group = local.getGroupWithMembers(groupId).first()
                 updateGroupKeyAndRefresh(group, force = true)?.let {
                     local.updateOrCreateGroup(it)
                 }

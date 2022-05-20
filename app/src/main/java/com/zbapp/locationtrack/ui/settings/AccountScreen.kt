@@ -26,10 +26,10 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun AccountScreen(
     appState: MainAppState,
-    viewModel: SettingsViewModel = getViewModel()
+    viewModel: SettingsViewModel = getViewModel(),
 ) {
     val scrollState = rememberScrollState()
-    var showDialog by remember { mutableStateOf<String?>(null) }
+    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
     var showDangerZoneContent by remember { mutableStateOf(false) }
     val accountState by viewModel.userData.collectAsState(Payload.Loading)
 
@@ -48,30 +48,31 @@ fun AccountScreen(
     }
 
     when (showDialog) {
-        MainAlertDialog.logout -> {
-            MainAlertDialog.Logout {
+        is MainAlertDialog.Logout -> {
+            MainAlertDialog.Logout.Show {
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk) {
                     viewModel.logout()
                 }
             }
         }
-        MainAlertDialog.deleteAccount -> {
-            MainAlertDialog.DeleteAccount {
+        is MainAlertDialog.DeleteAccount -> {
+            MainAlertDialog.DeleteAccount.Show {
                 showDialog = when (it) {
-                    MainAlertDialog.Buttons.buttonOk -> MainAlertDialog.deleteAccountConfirm
+                    MainAlertDialog.Buttons.buttonOk -> MainAlertDialog.DeleteAccountConfirm
                     else -> null
                 }
             }
         }
-        MainAlertDialog.deleteAccountConfirm -> {
-            MainAlertDialog.DeleteAccountConfirm {
+        is MainAlertDialog.DeleteAccountConfirm -> {
+            MainAlertDialog.DeleteAccountConfirm.Show {
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk) {
                     viewModel.deleteAccount()
                 }
             }
         }
+        else -> {}
     }
 
     Column(
@@ -109,7 +110,7 @@ fun AccountScreen(
             name = stringResource(id = R.string.setting_title_logout),
             icon = Icons.Rounded.Logout
         ) {
-            showDialog = MainAlertDialog.logout
+            showDialog = MainAlertDialog.Logout
         }
 
         AnimatedVisibility(visible = showDangerZoneContent) {
@@ -119,7 +120,7 @@ fun AccountScreen(
                     name = stringResource(id = R.string.setting_title_delete_account),
                     icon = Icons.Rounded.DeleteForever
                 ) {
-                    showDialog = MainAlertDialog.deleteAccount
+                    showDialog = MainAlertDialog.DeleteAccount
                 }
             }
         }

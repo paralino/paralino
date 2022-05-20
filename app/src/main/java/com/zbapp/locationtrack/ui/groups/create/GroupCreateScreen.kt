@@ -42,7 +42,7 @@ import org.koin.core.parameter.parametersOf
 fun GroupCreateScreen(
     appState: MainAppState,
     groupId: String?,
-    vm: CreateGroupViewModel = getViewModel { parametersOf(groupId) }
+    vm: CreateGroupViewModel = getViewModel { parametersOf(groupId) },
 ) {
 
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
@@ -102,7 +102,7 @@ fun GroupCreateScreen(
 fun GroupCreateScreen(
     state: CreateGroupState,
     onImageClick: () -> Unit,
-    onCreateGroupClick: (ImageModel, String) -> Unit
+    onCreateGroupClick: (ImageModel, String) -> Unit,
 ) {
 
     var groupName by remember { mutableStateOf(state.name) }
@@ -166,7 +166,7 @@ fun GroupCreateScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            onValueChange = { groupName = it.take(5) },
+            onValueChange = { groupName = it.take(30) },
             shape = MaterialTheme.shapes.medium,
             isError = state.hasError,
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -195,7 +195,7 @@ fun GroupCreateScreen(
 @Composable
 fun ShakeEffect(
     abort: Boolean = false,
-    onValueChange: (Float) -> Unit
+    onValueChange: (Float) -> Unit,
 ) {
     val shakeAnimation = remember { Animatable(0f) }
     LaunchedEffect(onValueChange) {

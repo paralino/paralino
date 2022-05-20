@@ -104,9 +104,11 @@ fun MapHomeScreen(
                     mapViewState.reDrawMarkers(trackMarkerId, trackGroup)
                 }
 
-                AnimatedVisibility(visible = state is Payload.Success,
+                AnimatedVisibility(
+                    visible = state is Payload.Success,
                     enter = fadeIn(),
-                    exit = fadeOut()) {
+                    exit = fadeOut()
+                ) {
                     MapHomeScreenElements(
                         modifier = Modifier.fillMaxSize(),
                         state = data,

@@ -43,7 +43,7 @@ class MapHomeViewModel(
                 if (it.isBlank()) {
                     flowOf(Payload.Loading)
                 } else {
-                    combine(locationRepo.getLocationsForGroup(it), getSharingTime())
+                    combine(locationRepo.getLocationsForGroup(it), getSharingContract())
                     { group, sharingStatus ->
 
                         val memberData = group.members.map { member ->
@@ -97,7 +97,7 @@ class MapHomeViewModel(
     }
 
 
-    private fun getSharingTime(): Flow<LocationSharingContract?> {
+    private fun getSharingContract(): Flow<LocationSharingContract?> {
         return locationRepo.sharingManager.allContractsFlow.combine(groupIdData) { contracts, group ->
             contracts.data?.firstOrNull { it.groupId == group }?.asValidContract()
         }

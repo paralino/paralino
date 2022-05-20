@@ -30,6 +30,7 @@ import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.rememberAppState
 import com.zbapp.locationtrack.ui.theme.AppTheme
+import com.zbapp.locationtrack.utils.extensions.annotatedBold
 
 @Composable
 fun SettingsScreen(appState: MainAppState) {
@@ -114,11 +115,14 @@ fun SettingSectionInfo() {
 }
 
 @Composable
-fun SettingsSectionHeader(name: String) {
+fun SettingsSectionHeader(
+    modifier: Modifier = Modifier,
+    name: String
+) {
     Text(
-        text = name, //.uppercase(Locale.getDefault()),
+        text = name.annotatedBold(), //.uppercase(Locale.getDefault()),
         style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
-        modifier = Modifier
+        modifier = modifier
             .padding(
                 top = dimensionResource(id = R.dimen.activity_side_margin_medium_large),
                 bottom = dimensionResource(id = R.dimen.activity_side_margin_small)

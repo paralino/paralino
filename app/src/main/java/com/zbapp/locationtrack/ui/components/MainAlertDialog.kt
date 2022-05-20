@@ -26,7 +26,7 @@ fun MainAlertDialog(
             stringResource(id = R.string.button_ok)
         )
     ),
-    onAction: (buttonId: String?) -> Unit
+    onAction: (buttonId: String?) -> Unit,
 ) {
     AppTheme {
         AlertDialog(
@@ -70,80 +70,158 @@ fun MainAlertDialog(
 
 data class AlertDialogButtonData(
     val id: String,
-    val text: String
+    val text: String,
 )
 
-object MainAlertDialog {
+sealed interface MainAlertDialog {
     object Buttons {
         const val buttonOk = "ok"
         const val buttonCancel = "cancel"
     }
 
-    const val logout = "logout"
-    const val deleteAccount = "deleteAccount"
-    const val deleteAccountConfirm = "deleteAccountConfirm"
+    val key: String
 
 
-    @Composable
-    fun Logout(onAction: (buttonId: String?) -> Unit) {
-        MainAlertDialog(
-            title = stringResource(id = R.string.settings_account_logout_alert_title),
-            message = stringResource(id = R.string.settings_account_logout_alert_message),
-            buttons = listOf(
-                AlertDialogButtonData(Buttons.buttonOk, stringResource(id = R.string.button_ok)),
-                AlertDialogButtonData(
-                    Buttons.buttonCancel,
-                    stringResource(id = R.string.button_cancel)
+    object Logout : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.settings_account_logout_alert_title),
+                message = stringResource(id = R.string.settings_account_logout_alert_message),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.button_ok)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
                 ),
-            ),
-            onAction = onAction
-        )
+                onAction = onAction
+            )
+        }
     }
 
-    @Composable
-    fun DeleteAccount(onAction: (buttonId: String?) -> Unit) {
-        MainAlertDialog(
-            title = stringResource(id = R.string.settings_account_delete_alert_title),
-            message = stringResource(id = R.string.settings_account_delete_alert_message),
-            buttons = listOf(
-                AlertDialogButtonData(Buttons.buttonOk, stringResource(id = R.string.button_ok)),
-                AlertDialogButtonData(
-                    Buttons.buttonCancel,
-                    stringResource(id = R.string.button_cancel)
+    object DeleteAccount : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.settings_account_delete_alert_title),
+                message = stringResource(id = R.string.settings_account_delete_alert_message),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.button_ok)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
                 ),
-            ),
-            onAction = onAction
-        )
+                onAction = onAction
+            )
+        }
     }
 
-    @Composable
-    fun DeleteAccountConfirm(onAction: (buttonId: String?) -> Unit) {
-        MainAlertDialog(
-            title = stringResource(id = R.string.settings_account_delete_alert_confirm_title),
-            message = stringResource(id = R.string.settings_account_delete_alert_confirm_message),
-            buttons = listOf(
-                AlertDialogButtonData(
-                    Buttons.buttonCancel,
-                    stringResource(id = R.string.settings_account_delete_alert_cancel_button1)
+    object DeleteAccountConfirm : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.alert_title_confirm),
+                message = stringResource(id = R.string.settings_account_delete_alert_confirm_message),
+                buttons = listOf(
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.settings_account_delete_alert_cancel_button1)
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.settings_account_delete_alert_cancel_button2)
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.settings_account_delete_alert_confirm_button)
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.settings_account_delete_alert_cancel_button3)
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.settings_account_delete_alert_cancel_button4)
+                    ),
+                ).shuffled(),
+                onAction = onAction
+            )
+        }
+    }
+
+    object LeaveGroup : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.group_details_menu_leave),
+                message = stringResource(id = R.string.group_details_leave_group_alert_title),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_leave_group_alert_button)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
                 ),
-                AlertDialogButtonData(
-                    Buttons.buttonCancel,
-                    stringResource(id = R.string.settings_account_delete_alert_cancel_button2)
+                onAction = onAction
+            )
+        }
+    }
+
+    object DeleteGroup : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.group_details_menu_delete),
+                message = stringResource(id = R.string.group_details_delete_group_alert_title),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_delete_group_alert_button)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
                 ),
-                AlertDialogButtonData(
-                    Buttons.buttonOk,
-                    stringResource(id = R.string.settings_account_delete_alert_confirm_button)
+                onAction = onAction
+            )
+        }
+    }
+
+    data class DeleteGroupMember(
+        val memberUserId: String,
+        val memberName: String,
+    ) : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.alert_title_confirm),
+                message = stringResource(id = R.string.group_members_remove_alert_title, memberName),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_remove_member_alert_button)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
                 ),
-                AlertDialogButtonData(
-                    Buttons.buttonCancel,
-                    stringResource(id = R.string.settings_account_delete_alert_cancel_button3)
-                ),
-                AlertDialogButtonData(
-                    Buttons.buttonCancel,
-                    stringResource(id = R.string.settings_account_delete_alert_cancel_button4)
-                ),
-            ).shuffled(),
-            onAction = onAction
-        )
+                onAction = onAction
+            )
+        }
     }
 }

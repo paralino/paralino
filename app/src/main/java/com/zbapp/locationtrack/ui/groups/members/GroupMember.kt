@@ -11,16 +11,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.BatteryFull
-import androidx.compose.material.icons.rounded.ExpandLess
-import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
@@ -37,8 +35,6 @@ import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.components.ImageModelImage
-import com.zbapp.locationtrack.ui.groups.detail.members.actionIcon
-import com.zbapp.locationtrack.ui.groups.detail.members.actionText
 import com.zbapp.locationtrack.ui.theme.AppTheme
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.extensions.fromUTCtoUserLastPing
@@ -51,8 +47,10 @@ fun GroupMember(
     state: GroupMemberItemState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.surface,
+    forceExpandAction: Boolean = false,
+    collapseOnActionClick: Boolean = true,
     onActionClick: (() -> Unit)? = null,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -70,7 +68,7 @@ fun GroupMember(
     ) {
 
         val (image, center, expand, actions) = createRefs()
-        var expanded by remember { mutableStateOf(false) }
+        var expanded by remember(state, forceExpandAction) { mutableStateOf(forceExpandAction) }
 
         // image
         Column(modifier = Modifier
@@ -189,14 +187,15 @@ fun GroupMember(
                 width = Dimension.fillToConstraints
             }
         ) {
-            if(state.actionItem != null) {
+            if (state.actionItem != null) {
                 AnimatedVisibility(visible = expanded) {
                     FilledButton(
                         style = ButtonStyle.SMALL_ACTION,
                         icon = state.actionItem!!.actionIcon,
                         modifier = Modifier.padding(top = 10.dp),
                         onClick = {
-                            expanded = !expanded
+                            if (collapseOnActionClick)
+                                expanded = !expanded
                             onActionClick?.invoke()
                         }
                     ) {
@@ -224,6 +223,20 @@ fun GroupMemberItemState.getLastPingText(): String? {
     }
 }
 
+val MemberAction.actionIcon: ImageVector get() = when(this) {
+    MemberAction.DELETE_MEMBER -> Icons.Rounded.PersonRemove
+    MemberAction.DELETE_LOCATION -> Icons.Rounded.Delete
+}
+
+val MemberAction.actionText: Int get() = when(this) {
+    MemberAction.DELETE_MEMBER -> R.string.group_members_item_remove_button
+    MemberAction.DELETE_LOCATION -> R.string.group_members_item_clear_location_button
+}
+
+val GroupMemberStatus.actionText: Int? get() = when(this) {
+    GroupMemberStatus.ACTIVE -> null
+    GroupMemberStatus.INACTIVE -> R.string.group_members_status_inactive
+}
 
 @Preview(device = Devices.PIXEL_3A)
 @Composable
@@ -239,6 +252,7 @@ fun MemberPreview() {
 
 val dummyMemberState = GroupMemberItemState(
     id = "",
+    userId = "",
     actionItem = MemberAction.DELETE_MEMBER,
     name = "User name",
     image = ImageModel.emoji(Emojis.robot),

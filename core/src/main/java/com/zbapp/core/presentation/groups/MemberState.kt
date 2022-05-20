@@ -8,6 +8,7 @@ import javax.sound.midi.MetaMessage
 
 data class GroupMemberItemState constructor(
     val id: String,
+    val userId: String,
     val actionItem: MemberAction? = null,
     val name: String,
     val image: ImageModel?,
@@ -17,6 +18,7 @@ data class GroupMemberItemState constructor(
 ) {
     constructor(member: MemberModel): this(
         id = member.id,
+        userId = member.userId,
         actionItem = null,
         name = member.name,
         image = member.image,

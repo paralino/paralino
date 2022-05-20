@@ -1,0 +1,337 @@
+package com.zbapp.locationtrack.ui.groups.detail
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.PersonAdd
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.zbapp.core.models.Payload
+import com.zbapp.core.presentation.groups.GroupDetailScreenEvent
+import com.zbapp.core.presentation.groups.GroupDetailScreenState
+import com.zbapp.core.presentation.groups.GroupMemberItemState
+import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.MainAppState
+import com.zbapp.locationtrack.ui.components.DefaultEmptyState
+import com.zbapp.locationtrack.ui.components.ImageModelImage
+import com.zbapp.locationtrack.ui.components.MainAlertDialog
+import com.zbapp.locationtrack.ui.groups.members.GroupMember
+import com.zbapp.locationtrack.ui.navigation.AppScreen
+import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
+import com.zbapp.locationtrack.ui.shared.errorString
+import com.zbapp.locationtrack.ui.theme.AppColors
+import kotlinx.coroutines.flow.collect
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
+
+@Composable
+fun GroupDetailScreen(
+    appState: MainAppState,
+    groupId: String?,
+) {
+    if (groupId.isNullOrBlank()) {
+        DefaultEmptyState(content = stringResource(id = R.string.group_load_error))
+    } else {
+        GroupDetailScreen(appState = appState, groupId = groupId)
+    }
+}
+
+@Composable
+fun GroupDetailScreen(
+    appState: MainAppState,
+    groupId: String,
+    vm: GroupDetailViewModel = getViewModel { parametersOf(groupId) },
+) {
+
+    val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
+    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
+
+    val context = LocalContext.current
+    LaunchedEffect(key1 = context) {
+        vm.events.collect { event ->
+            when (event) {
+                is GroupDetailScreenEvent.Error -> {
+                    appState.showSnackbar(event.error.errorString(context))
+                }
+                GroupDetailScreenEvent.GroupDeleted -> {
+                    appState.navController.popBackStack()
+                }
+                GroupDetailScreenEvent.GroupMemberDeleted -> {}
+                null -> {
+                    /* do nothing */
+                }
+            }
+        }
+    }
+
+    when (val state = uiState) {
+        Payload.Loading -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        is Payload.Error -> {
+            DefaultEmptyState(content = stringResource(id = R.string.group_load_error))
+        }
+        is Payload.Success -> {
+
+            when (val dialog = showDialog) {
+                is MainAlertDialog.DeleteGroup -> {
+                    dialog.Show {
+                        showDialog = null
+                        if (it == MainAlertDialog.Buttons.buttonOk)
+                            vm.leaveOrDeleteGroup()
+                    }
+                }
+                is MainAlertDialog.LeaveGroup -> {
+                    dialog.Show {
+                        showDialog = null
+                        if (it == MainAlertDialog.Buttons.buttonOk)
+                            vm.leaveOrDeleteGroup()
+                    }
+                }
+                is MainAlertDialog.DeleteGroupMember -> {
+                    dialog.Show {
+                        showDialog = null
+                        if (it == MainAlertDialog.Buttons.buttonOk)
+                            vm.removeMember(dialog.memberUserId)
+                    }
+                }
+                else -> {}
+            }
+
+            GroupDetailScreen(
+                state = state.data,
+                onScreenClose = {
+                    appState.navController.popBackStack()
+                },
+                onGroupEdit = {
+                    appState.navController.navigate(
+                        AppScreen.DashboardRoot.GroupCreate.route(groupId)
+                    )
+                },
+                onAddGroupMember = {
+                    // TODO add member
+                },
+                onGroupDeleteOrLeave = {
+                    if (state.data.canEdit) {
+                        showDialog = MainAlertDialog.DeleteGroup
+                    } else {
+                        showDialog = MainAlertDialog.LeaveGroup
+                    }
+                },
+                onMemberDelete = {
+                    showDialog = MainAlertDialog.DeleteGroupMember(it.userId, it.name)
+                },
+                onOpenMap = {
+                    appState.navController.navigate(
+                        AppScreen.MapRoot.MainMap.route(groupId)
+                    )
+                }
+            )
+        }
+    }
+
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun GroupDetailScreen(
+    state: GroupDetailScreenState,
+    onScreenClose: () -> Unit,
+    onGroupEdit: () -> Unit,
+    onAddGroupMember: () -> Unit,
+    onGroupDeleteOrLeave: () -> Unit,
+    onMemberDelete: (GroupMemberItemState) -> Unit,
+    onOpenMap: () -> Unit,
+) {
+
+    var optionMenuExpanded by remember {
+        mutableStateOf(false)
+    }
+
+    // TODO add sharing status info
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                backgroundColor = MaterialTheme.colors.background,
+                elevation = 1.dp,
+                title = { },
+                navigationIcon = {
+                    IconButton(onClick = onScreenClose) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {
+                    if (state.canEdit) {
+                        IconButton(onClick = onAddGroupMember) {
+                            Icon(
+                                imageVector = Icons.Rounded.PersonAdd,
+                                contentDescription = null
+                            )
+                        }
+                        IconButton(onClick = onGroupEdit) {
+                            Icon(
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = null
+                            )
+                        }
+                    }
+
+                    IconButton(onClick = { optionMenuExpanded = true }) {
+                        Icon(
+                            imageVector = Icons.Rounded.MoreVert,
+                            contentDescription = null
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = optionMenuExpanded,
+                        onDismissRequest = { optionMenuExpanded = false }
+                    ) {
+                        DropdownMenuItem(onClick = onGroupDeleteOrLeave) {
+                            Text(
+                                text = if (state.canEdit) stringResource(id = R.string.group_details_menu_delete)
+                                else stringResource(id = R.string.group_details_menu_leave)
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(vertical = 40.dp, horizontal = 20.dp)
+        ) {
+
+            this.item(key = "main_header") {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    ImageModelImage(
+                        modifier = Modifier.size(140.dp),
+                        imageModel = state.image
+                    )
+
+                    Spacer(modifier = Modifier.size(10.dp))
+
+                    Text(
+                        text = state.name,
+                        style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold)
+                    )
+
+                    Spacer(modifier = Modifier.size(40.dp))
+
+                    val colorMatrix = remember {
+                        ColorMatrix(
+                            floatArrayOf(
+                                0.33f, 0.33f, 0.33f, 0f, 0f,
+                                0.33f, 0.33f, 0.33f, 0f, 0f,
+                                0.33f, 0.33f, 0.33f, 0f, 0f,
+                                0f, 0f, 0f, 1f, 0f
+                            )
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .clip(MaterialTheme.shapes.medium)
+                            .clickable { onOpenMap() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.image_map_wide_placeholder),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop,
+                            colorFilter = ColorFilter.colorMatrix(colorMatrix)
+                        )
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .background(AppColors.lightThemePrimary.copy(alpha = if (isSystemInDarkTheme()) 0.8f else 0.5f)))
+                        Text(
+                            text = stringResource(id = R.string.group_details_map_action_button),
+                            style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.SemiBold),
+                            color = AppColors.lightBackground
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.size(20.dp))
+                }
+            }
+
+            this.stickyHeader(key = "member_list_header") {
+                SettingsSectionHeader(
+                    name = stringResource(id = R.string.group_details_section_members_title,
+                        state.members.size)
+                )
+            }
+
+            this.itemsIndexed(
+                items = state.members,
+                key = { index, item -> item.id }
+            ) { index, item ->
+
+                if (index > 0)
+                    Spacer(modifier = Modifier.size(8.dp))
+
+                var expanded by remember {
+                    mutableStateOf(false)
+                }
+
+                GroupMember(
+                    modifier = Modifier.animateItemPlacement(),
+                    state = item,
+                    forceExpandAction = expanded,
+                    collapseOnActionClick = false,
+                    onClick = { expanded = !expanded },
+                    onActionClick = { onMemberDelete(item) }
+                )
+            }
+        }
+    }
+
+    AnimatedVisibility(state.loadingAction, enter = fadeIn(), exit = fadeOut()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colors.background.copy(alpha = 0.5f))
+                .clickable { },
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+
+}

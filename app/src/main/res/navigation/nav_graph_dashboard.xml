@@ -17,29 +17,6 @@
             app:nullable="true" />
     </fragment>
 
-    <fragment
-        android:id="@+id/groupDetailFragment"
-        android:name="com.zbapp.locationtrack.ui.groups.detail.GroupDetailFragment"
-        tools:layout="@layout/fragment_group_detail"
-        android:label="GroupDetailFragment">
-        <argument
-            android:name="groupId"
-            app:argType="string" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/groupMembersFragment"
-        android:name="com.zbapp.locationtrack.ui.groups.detail.members.GroupMembersFragment"
-        tools:layout="@layout/fragment_group_members"
-        android:label="GroupMembersFragment">
-        <argument
-            android:name="groupId"
-            app:argType="string" />
-        <argument
-            android:name="groupName"
-            app:argType="string" />
-    </fragment>
-
     <dialog
         android:id="@+id/acceptInviteFragment"
         android:name="com.zbapp.locationtrack.ui.invite.AccessCodeInputFragment"

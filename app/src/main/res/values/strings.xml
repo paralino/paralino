@@ -66,7 +66,6 @@
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
     <string name="settings_account_delete_alert_title">Delete account</string>
     <string name="settings_account_delete_alert_message">Deleting your account will also delete all your data. Are you sure you want to continue?</string>
-    <string name="settings_account_delete_alert_confirm_title">Please confirm</string>
     <string name="settings_account_delete_alert_confirm_message">There is no turning back, are you sure you want to delete you account?</string>
     <string name="settings_account_delete_alert_confirm_button">Delete</string>
     <string name="settings_account_delete_alert_cancel_button1">Cancel</string>
@@ -176,6 +175,7 @@
     <string name="group_details_delete_group_alert_button">Delete</string>
     <string name="group_details_leave_group_alert_title">Are you sure you want leave this group?\nThis is irreversible and will delete all data you shared and remove all connection with members!</string>
     <string name="group_details_leave_group_alert_button">Leave</string>
+    <string name="group_details_remove_member_alert_button">Remove</string>
     <string name="group_details_add_member_button">Add new member</string>
     <string name="group_details_map_action_button">Open map</string>
 
