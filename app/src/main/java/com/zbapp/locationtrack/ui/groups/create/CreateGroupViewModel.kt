@@ -14,6 +14,7 @@ class CreateGroupViewModel(
 
     val uiState = coreVm.uiState
     val events = coreVm.events
+    val groupNameLengthLimit = coreVm.groupNameLengthLimit
 
     fun createGroup(image: ImageModel, name: String) = coreVm.createGroup(image, name)
     fun updateImage(image: ImageModel) = coreVm.updateImage(image)

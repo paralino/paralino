@@ -27,6 +27,8 @@ class CreateGroupViewModel(
     private val _eventChannel = Channel<CreateGroupScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
+    val groupNameLengthLimit = 30
+
     init {
         coroutineScope.launch {
             val value = when {
@@ -56,7 +58,9 @@ class CreateGroupViewModel(
 
     fun createGroup(image: ImageModel, name: String) {
 
-        if (name.isBlank()) {
+        val filteredName = name.trim().replace("\n", " ")
+
+        if (filteredName.isBlank()) {
             _uiState.update {
                 it.mapSuccess { it.copy(hasError = true) }
             }
@@ -65,11 +69,11 @@ class CreateGroupViewModel(
 
         val group = groupFlow.value.data
         val groupUpdateFlow = if (group != null) {
-            val newData = group.data.copy(name = name, image = image)
+            val newData = group.data.copy(name = filteredName, image = image)
             val newGroup = group.copy(data = newData)
             groupRepo.updateGroup(newGroup)
         } else {
-            groupRepo.createGroup(name, image)
+            groupRepo.createGroup(filteredName, image)
         }
 
         groupUpdateFlow

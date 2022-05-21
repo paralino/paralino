@@ -81,6 +81,7 @@ fun GroupCreateScreen(
         is Payload.Success -> {
             GroupCreateScreen(
                 state = finalState.data,
+                nameLengthLimit = vm.groupNameLengthLimit,
                 onImageClick = {
                     appState.uiScope.launch {
                         appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
@@ -101,6 +102,7 @@ fun GroupCreateScreen(
 @Composable
 fun GroupCreateScreen(
     state: CreateGroupState,
+    nameLengthLimit: Int,
     onImageClick: () -> Unit,
     onCreateGroupClick: (ImageModel, String) -> Unit,
 ) {
@@ -166,7 +168,7 @@ fun GroupCreateScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            onValueChange = { groupName = it.take(30) },
+            onValueChange = { groupName = it.take(nameLengthLimit) },
             shape = MaterialTheme.shapes.medium,
             isError = state.hasError,
             colors = TextFieldDefaults.outlinedTextFieldColors(
