@@ -137,7 +137,7 @@ fun MainAppScreen() {
             bottomBar = {
                 BottomNavigation(
                     backgroundColor = MaterialTheme.colors.background,
-                    elevation = 0.dp
+                    elevation = 4.dp
                 ) {
                     BottomBarButtons(appState = appState)
                 }
