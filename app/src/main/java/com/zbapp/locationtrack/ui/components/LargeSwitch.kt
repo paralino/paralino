@@ -19,6 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 
+object LargeSwitchDefaults {
+    val minWidth = 160.dp
+    val minHeight = 120.dp
+}
+
 @Composable
 fun LargeSwitch(
     modifier: Modifier = Modifier,
@@ -35,7 +40,7 @@ fun LargeSwitch(
 
     ConstraintLayout(
         modifier = modifier
-            .defaultMinSize(minHeight = 120.dp, minWidth = 160.dp)
+            .defaultMinSize(minHeight = LargeSwitchDefaults.minHeight, minWidth = LargeSwitchDefaults.minWidth)
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
             .clickable { onClick(state) }

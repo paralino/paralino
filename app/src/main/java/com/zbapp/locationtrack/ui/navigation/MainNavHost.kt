@@ -16,6 +16,7 @@ import com.zbapp.locationtrack.ui.login.LoggedOutScreen
 import com.zbapp.locationtrack.ui.map.MapHomeScreen
 import com.zbapp.locationtrack.ui.settings.AccountScreen
 import com.zbapp.locationtrack.ui.settings.SettingsScreen
+import com.zbapp.locationtrack.ui.share.SharingStartScreen
 
 
 @Composable
@@ -55,7 +56,7 @@ fun NavGraphBuilder.dashboardGraph(appState: MainAppState) {
         composable(AppScreen.DashboardRoot.SharingStart.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.DashboardRoot.GroupDetails.argumentGroupId)
-            Text("Share")
+            SharingStartScreen(appState = appState, groupId = groupId)
         }
     }
 }
