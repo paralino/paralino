@@ -1,6 +1,8 @@
 package com.zbapp.locationtrack.utils.extensions
 
+import android.content.Context
 import android.text.format.DateFormat
+import com.zbapp.locationtrack.R
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -43,15 +45,20 @@ fun LocalDateTime.fromUTCtoUserLastPing(): String {
     return this.fromUTCtoLocal().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
 }
 
-fun LocalDateTime.fromUTCtoMapSharingTime(): String? {
+fun LocalDateTime.fromUTCtoMapSharingTime(context: Context, splitTimeToOneLine: Boolean = true): String? {
     val local = this.fromUTCtoLocal()
     val now = LocalDateTime.now()
     val sameYear = local.year == now.year
     val sameDay = sameYear && local.dayOfYear == now.dayOfYear
+    val isTomorrow = sameYear && local.dayOfYear == now.plusDays(1).dayOfYear
     val time = local.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
     return when {
         sameDay -> time
+        isTomorrow -> "${context.getString(R.string.date_name_tomorrow)}, $time"
         sameYear -> local.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMd"))) + ", $time"
-        else -> local.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMdyyyy"))) + "\n$time"
+        else -> {
+            val time = if(splitTimeToOneLine) "\n$time" else ", $time"
+            local.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMdyyyy"))) + time
+        }
     }
 }

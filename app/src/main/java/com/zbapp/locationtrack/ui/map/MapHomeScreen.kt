@@ -17,6 +17,7 @@ import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -219,7 +220,7 @@ fun MapHomeScreenElements(
                     text = state.sharingStatus!!.endTimeUTC
                         ?.isoToLocalDateTime()
                         ?.toJavaLocalDateTime()
-                        ?.fromUTCtoMapSharingTime()
+                        ?.fromUTCtoMapSharingTime(LocalContext.current)
                         ?: stringResource(id = R.string.groups_sharing_duration_type_infinite),
                     style = MaterialTheme.typography.caption.copy(fontSize = 10.sp)
                 )
