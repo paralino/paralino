@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.theme.AppTheme
+import com.zbapp.locationtrack.utils.extensions.annotatedBold
 
 @Composable
 fun MainAlertDialog(
@@ -40,7 +41,7 @@ fun MainAlertDialog(
             },
             text = {
                 Text(
-                    message,
+                    text = message.annotatedBold(),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -215,6 +216,49 @@ sealed interface MainAlertDialog {
                 buttons = listOf(
                     AlertDialogButtonData(Buttons.buttonOk,
                         stringResource(id = R.string.group_details_remove_member_alert_button)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
+    object SharingBackgroundLocationMissing : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.groups_sharing_potential_error_title),
+                message = stringResource(id = R.string.groups_sharing_potential_error_background_location_message),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.button_ok)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_skip)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
+    data class SharingErrors(val errorMessages: List<String>) : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            val errorContent = errorMessages.joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
+            MainAlertDialog(
+                title = stringResource(id = R.string.groups_sharing_potential_error_title),
+                message = stringResource(id = R.string.groups_sharing_potential_error_message, errorContent),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.groups_sharing_potential_error_button_enable)),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
