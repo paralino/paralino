@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.runtime.*
@@ -65,35 +66,54 @@ fun GroupCreateScreen(
         }
     }
 
-    when (val finalState = state) {
-        Payload.Loading -> {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-        is Payload.Error -> {
-            DefaultEmptyState(content = stringResource(id = R.string.group_load_error))
-        }
-        is Payload.Success -> {
-            GroupCreateScreen(
-                state = finalState.data,
-                nameLengthLimit = vm.groupNameLengthLimit,
-                onImageClick = {
-                    appState.uiScope.launch {
-                        appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
-                            .safeCast<ImageModel>()?.let {
-                                vm.updateImage(it)
-                            }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = MaterialTheme.colors.background,
+                elevation = 1.dp,
+                title = {  },
+                navigationIcon = {
+                    IconButton(onClick = { appState.navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = null
+                        )
                     }
-                },
-                onCreateGroupClick = { image, name ->
-                    vm.createGroup(image, name)
                 }
             )
+        }
+    ) {
+
+        when (val finalState = state) {
+            Payload.Loading -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            is Payload.Error -> {
+                DefaultEmptyState(content = stringResource(id = R.string.group_load_error))
+            }
+            is Payload.Success -> {
+                GroupCreateScreen(
+                    state = finalState.data,
+                    nameLengthLimit = vm.groupNameLengthLimit,
+                    onImageClick = {
+                        appState.uiScope.launch {
+                            appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
+                                .safeCast<ImageModel>()?.let {
+                                    vm.updateImage(it)
+                                }
+                        }
+                    },
+                    onCreateGroupClick = { image, name ->
+                        vm.createGroup(image, name)
+                    }
+                )
+            }
         }
     }
 
