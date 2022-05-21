@@ -158,9 +158,9 @@ fun GroupDetailScreen(
                     if (state.data.sharingStatus != null) {
                         vm.stopSharing()
                     } else {
-                        // TODO replace with sharing screen
-                        appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route(
-                            groupId))
+                        appState.navController.navigate(
+                            AppScreen.DashboardRoot.SharingStart.route(groupId)
+                        )
                     }
                 }
             )
@@ -185,8 +185,6 @@ fun GroupDetailScreen(
     var optionMenuExpanded by remember {
         mutableStateOf(false)
     }
-
-    // TODO add sharing status info
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
