@@ -7,12 +7,10 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.PersonAdd
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.Payload
+import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.presentation.groups.GroupDetailScreenEvent
 import com.zbapp.core.presentation.groups.GroupDetailScreenState
 import com.zbapp.core.presentation.groups.GroupMemberItemState
@@ -39,6 +39,9 @@ import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.theme.AppColors
+import com.zbapp.locationtrack.utils.extensions.annotatedBold
+import com.zbapp.locationtrack.utils.extensions.fromUTCtoMapSharingTime
+import com.zbapp.locationtrack.utils.extensions.toLocalDateTime
 import kotlinx.coroutines.flow.collect
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -150,6 +153,15 @@ fun GroupDetailScreen(
                     appState.navController.navigate(
                         AppScreen.MapRoot.MainMap.route(groupId)
                     )
+                },
+                onSharingAction = {
+                    if (state.data.sharingStatus != null) {
+                        vm.stopSharing()
+                    } else {
+                        // TODO replace with sharing screen
+                        appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route(
+                            groupId))
+                    }
                 }
             )
         }
@@ -167,6 +179,7 @@ fun GroupDetailScreen(
     onGroupDeleteOrLeave: () -> Unit,
     onMemberDelete: (GroupMemberItemState) -> Unit,
     onOpenMap: () -> Unit,
+    onSharingAction: () -> Unit,
 ) {
 
     var optionMenuExpanded by remember {
@@ -226,69 +239,44 @@ fun GroupDetailScreen(
                     }
                 }
             )
-        }
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                text = {
+                    if (state.sharingStatus != null) {
+                        Text(text = stringResource(id = R.string.location_banner_info_stop))
+                    } else {
+                        Text(text = stringResource(id = R.string.groups_sharing_button_start))
+                    }
+                },
+                icon = {
+                    if (state.sharingStatus != null) {
+                        Icon(imageVector = Icons.Rounded.StopCircle, contentDescription = null)
+                    } else {
+                        Icon(imageVector = Icons.Rounded.ShareLocation,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp))
+                    }
+                },
+                backgroundColor = MaterialTheme.colors.primary,
+                elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
+                onClick = onSharingAction
+            )
+        },
+        isFloatingActionButtonDocked = true
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 40.dp, horizontal = 20.dp)
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 100.dp)
         ) {
 
             this.item(key = "main_header") {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    ImageModelImage(
-                        modifier = Modifier.size(140.dp),
-                        imageModel = state.image
-                    )
-
-                    Spacer(modifier = Modifier.size(10.dp))
-
-                    Text(
-                        text = state.name,
-                        style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold)
-                    )
-
-                    Spacer(modifier = Modifier.size(40.dp))
-
-                    val colorMatrix = remember {
-                        ColorMatrix(
-                            floatArrayOf(
-                                0.33f, 0.33f, 0.33f, 0f, 0f,
-                                0.33f, 0.33f, 0.33f, 0f, 0f,
-                                0.33f, 0.33f, 0.33f, 0f, 0f,
-                                0f, 0f, 0f, 1f, 0f
-                            )
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp)
-                            .clip(MaterialTheme.shapes.medium)
-                            .clickable { onOpenMap() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.image_map_wide_placeholder),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop,
-                            colorFilter = ColorFilter.colorMatrix(colorMatrix)
-                        )
-                        Box(modifier = Modifier
-                            .fillMaxSize()
-                            .background(AppColors.lightThemePrimary.copy(alpha = if (isSystemInDarkTheme()) 0.8f else 0.5f)))
-                        Text(
-                            text = stringResource(id = R.string.group_details_map_action_button),
-                            style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.SemiBold),
-                            color = AppColors.lightBackground
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.size(20.dp))
-                }
+                GroupDetailsHeader(
+                    groupName = state.name,
+                    groupImage = state.image,
+                    sharingStatus = state.sharingStatus,
+                    onMapClick = onOpenMap
+                )
             }
 
             this.stickyHeader(key = "member_list_header") {
@@ -296,6 +284,7 @@ fun GroupDetailScreen(
                     name = stringResource(id = R.string.group_details_section_members_title,
                         state.members.size)
                 )
+                Spacer(modifier = Modifier.size(4.dp))
             }
 
             this.itemsIndexed(
@@ -334,4 +323,122 @@ fun GroupDetailScreen(
         }
     }
 
+}
+
+@Composable
+fun GroupDetailsHeader(
+    modifier: Modifier = Modifier,
+    groupName: String,
+    groupImage: ImageModel,
+    sharingStatus: LocationSharingContract?,
+    onMapClick: () -> Unit,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+
+        if (sharingStatus != null) {
+            Spacer(modifier = Modifier.size(10.dp))
+            GroupDetailSharingStatusElement(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                time = sharingStatus.endTimeUTC
+            )
+            Spacer(modifier = Modifier.size(30.dp))
+        } else {
+            Spacer(modifier = Modifier.size(40.dp))
+        }
+
+        ImageModelImage(
+            modifier = Modifier.size(140.dp),
+            imageModel = groupImage
+        )
+
+        Spacer(modifier = Modifier.size(10.dp))
+
+        Text(
+            text = groupName,
+            style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold)
+        )
+
+        Spacer(modifier = Modifier.size(40.dp))
+
+        GroupDetailsMapElement(onClick = onMapClick)
+
+        Spacer(modifier = Modifier.size(20.dp))
+    }
+}
+
+@Composable
+fun GroupDetailSharingStatusElement(
+    modifier: Modifier = Modifier,
+    time: String?,
+) {
+    val backgroundColor = MaterialTheme.colors.surface
+    val contentColor = contentColorFor(backgroundColor = backgroundColor)
+    Row(
+        modifier = modifier
+            .background(backgroundColor,
+                RoundedCornerShape(percent = 50))
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val sharingTime = time
+            ?.toLocalDateTime()
+            ?.fromUTCtoMapSharingTime(
+                LocalContext.current, splitTimeToOneLine = false
+            )
+            ?.let {
+                stringResource(id = R.string.group_details_sharing_status_time, it)
+            }
+            ?: stringResource(id = R.string.group_details_sharing_status_infinite)
+
+        Icon(imageVector = Icons.Rounded.AccessTime,
+            contentDescription = null,
+            modifier = Modifier.size(14.dp),
+            tint = contentColor)
+        Spacer(modifier = Modifier.size(4.dp))
+        Text(text = sharingTime.annotatedBold(),
+            style = MaterialTheme.typography.caption.copy(color = contentColor))
+    }
+}
+
+@Composable
+fun GroupDetailsMapElement(
+    onClick: () -> Unit,
+) {
+
+    val colorMatrix = remember {
+        ColorMatrix(
+            floatArrayOf(
+                0.33f, 0.33f, 0.33f, 0f, 0f,
+                0.33f, 0.33f, 0.33f, 0f, 0f,
+                0.33f, 0.33f, 0.33f, 0f, 0f,
+                0f, 0f, 0f, 1f, 0f
+            )
+        )
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.image_map_wide_placeholder),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            colorFilter = ColorFilter.colorMatrix(colorMatrix)
+        )
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.lightThemePrimary.copy(alpha = if (isSystemInDarkTheme()) 0.8f else 0.5f)))
+        Text(
+            text = stringResource(id = R.string.group_details_map_action_button),
+            style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.SemiBold),
+            color = AppColors.lightBackground
+        )
+    }
 }

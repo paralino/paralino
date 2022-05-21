@@ -6,6 +6,9 @@
     <string name="title_map">Map</string>
     <string name="title_settings">Settings</string>
 
+    <string name="date_name_today">Today</string>
+    <string name="date_name_tomorrow">Tomorrow</string>
+
     <string name="button_cancel">Cancel</string>
     <string name="button_ok">OK</string>
     <string name="button_done">Done</string>
@@ -178,6 +181,8 @@
     <string name="group_details_remove_member_alert_button">Remove</string>
     <string name="group_details_add_member_button">Add new member</string>
     <string name="group_details_map_action_button">Open map</string>
+    <string name="group_details_sharing_status_time">Sharing until: **%s**</string>
+    <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
 
     <string name="group_create_title">Create new group</string>
     <string name="group_edit_title">Edit group</string>

@@ -17,9 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.Payload
-import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.utils.ConditionErrorType
-import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.tracking.LocationPermissionHandler
@@ -27,9 +25,6 @@ import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.DefaultEmptyState
 import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.groups.GroupListItem
-import com.zbapp.locationtrack.ui.groups.members.GroupMember
-import com.zbapp.locationtrack.ui.groups.members.dummyMemberState
-import com.zbapp.locationtrack.ui.map.MapGroupPicker
 import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
