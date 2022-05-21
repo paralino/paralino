@@ -56,6 +56,7 @@ fun FilledButton(
     Button(
         modifier = style.defaultModifier.then(modifier),
         contentPadding = style.paddingValues,
+        shape = style.shape,
         onClick = {
             if (buttonState == AppButtonState.CONTENT)
                 onClick()
@@ -83,7 +84,7 @@ fun FilledButton(
                 ) {
                     if (icon != null) {
                         Icon(imageVector = icon, null, modifier = Modifier.size(style.iconSize))
-                        Spacer(Modifier.size(style.iconSize / 3))
+                        Spacer(Modifier.size(style.iconSpacing))
                     }
                     content()
                 }

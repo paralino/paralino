@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -46,7 +47,7 @@ private val DarkThemeColors = darkColors(
 )
 
 private val shapes = Shapes(
-	small = RoundedCornerShape(percent = 30),
+	small = RoundedCornerShape(percent = 25),
 	medium = RoundedCornerShape(20.dp),
 	large = RoundedCornerShape(percent = 0)
 )
@@ -54,24 +55,32 @@ private val shapes = Shapes(
 enum class ButtonStyle(
 	val defaultModifier: Modifier,
 	val paddingValues: PaddingValues,
+	val shape: Shape,
 	val iconSize: Dp,
+	val iconSpacing: Dp,
 	val minContentHeight: Dp
 ) {
 	BIG(
 		defaultModifier = Modifier.fillMaxWidth(),
-		paddingValues = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-		iconSize = 16.dp,
-		minContentHeight = 20.dp,
+		paddingValues = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+		shape = shapes.small,
+		iconSize = 18.dp,
+		iconSpacing = 8.dp,
+		minContentHeight = 24.dp,
 	),
 	SMALL(
 		defaultModifier = Modifier,
-		paddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
-		iconSize = 16.dp,
-		minContentHeight = 20.dp
+		paddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+		shape = RoundedCornerShape(percent = 50),
+		iconSize = 18.dp,
+		iconSpacing = 8.dp,
+		minContentHeight = 24.dp
 	),
 	SMALL_ACTION(
 		defaultModifier = Modifier,
 		paddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+		shape = RoundedCornerShape(percent = 50),
+		iconSpacing = 4.dp,
 		iconSize = 12.dp,
 		minContentHeight = 14.dp
 	)
