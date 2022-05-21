@@ -251,9 +251,7 @@ fun GroupDetailScreen(
                     if (state.sharingStatus != null) {
                         Icon(imageVector = Icons.Rounded.StopCircle, contentDescription = null)
                     } else {
-                        Icon(imageVector = Icons.Rounded.ShareLocation,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp))
+                        Icon(imageVector = Icons.Rounded.ShareLocation, contentDescription = null)
                     }
                 },
                 backgroundColor = MaterialTheme.colors.primary,
