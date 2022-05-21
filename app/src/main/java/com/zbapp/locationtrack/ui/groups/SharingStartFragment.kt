@@ -87,36 +87,36 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
 
         vb.bShareStart.setOnClickListener {
             when {
-                vm.selectedGroup.value?.id.isNullOrBlank() -> {
-                    snackBarSimple(vb.bShareStart, getString(R.string.invite_connect_alert_pickGroup))
-                }
-                vm.locationStatus.isOK(forAlwaysOnAccess = isLongTermSharing) -> {
-                    enableSharing()
-                }
-                vm.locationStatus.isOK(forAlwaysOnAccess = false) && isLongTermSharing -> {
-                    AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.groups_sharing_potential_error_title)
-                        .setMessage(getString(R.string.groups_sharing_potential_error_background_location_message).attributedBold(requireContext()))
-                        .setPositiveButton(R.string.button_ok) { _, _ ->
-                            permissionHandler.askBackgroundLocationPermission()
-                        }
-                        .setNegativeButton(R.string.button_skip) { _, _ ->
-                            enableSharing()
-                        }
-                        .show()
-                }
-                else -> {
-                    val errorSection = ErrorItems(vm.locationStatus).list.map { getString(it.nameRes) }
-                        .joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
-                    AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.groups_sharing_potential_error_title)
-                        .setMessage(getString(R.string.groups_sharing_potential_error_message, errorSection).attributedBold(requireContext()))
-                        .setPositiveButton(R.string.groups_sharing_potential_error_button_enable) { _, _ ->
-                            enableSharing()
-                        }
-                        .setNegativeButton(R.string.button_cancel, null)
-                        .show()
-                }
+//                vm.selectedGroup.value?.id.isNullOrBlank() -> {
+//                    snackBarSimple(vb.bShareStart, getString(R.string.invite_connect_alert_pickGroup))
+//                }
+//                vm.locationStatus.isOK(forAlwaysOnAccess = isLongTermSharing) -> {
+//                    enableSharing()
+//                }
+//                vm.locationStatus.isOK(forAlwaysOnAccess = false) && isLongTermSharing -> {
+//                    AlertDialog.Builder(requireContext())
+//                        .setTitle(R.string.groups_sharing_potential_error_title)
+//                        .setMessage(getString(R.string.groups_sharing_potential_error_background_location_message).attributedBold(requireContext()))
+//                        .setPositiveButton(R.string.button_ok) { _, _ ->
+//                            permissionHandler.askBackgroundLocationPermission()
+//                        }
+//                        .setNegativeButton(R.string.button_skip) { _, _ ->
+//                            enableSharing()
+//                        }
+//                        .show()
+//                }
+//                else -> {
+//                    val errorSection = ErrorItems(vm.locationStatus).list.map { getString(it.nameRes) }
+//                        .joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
+//                    AlertDialog.Builder(requireContext())
+//                        .setTitle(R.string.groups_sharing_potential_error_title)
+//                        .setMessage(getString(R.string.groups_sharing_potential_error_message, errorSection).attributedBold(requireContext()))
+//                        .setPositiveButton(R.string.groups_sharing_potential_error_button_enable) { _, _ ->
+//                            enableSharing()
+//                        }
+//                        .setNegativeButton(R.string.button_cancel, null)
+//                        .show()
+//                }
             }
         }
 
@@ -124,15 +124,15 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
             vb.switchBattery.switchWidget.isChecked = !vb.switchBattery.switchWidget.isChecked
         }
 
-        vb.timeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                setupSharingStartButton(vm.locationStatus)
-                vb.tvDuration.text = getTime(SharingDurationPreset.presets[progress])
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
+//        vb.timeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+//                setupSharingStartButton(vm.locationStatus)
+//                vb.tvDuration.text = getTime(SharingDurationPreset.presets[progress])
+//            }
+//
+//            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+//            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+//        })
 
         vb.layoutErrors.itemClick = {
             when(it) {
@@ -142,14 +142,14 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
             }
         }
 
-        vm.selectedGroup.observe {
-            vb.groupPicker.itemData = it
-        }
-
-        vm.locationStatusLiveData.observe {
-            setupSharingStartButton(it)
-            vb.layoutErrors.itemData = ErrorItems(it)
-        }
+//        vm.selectedGroup.observe {
+//            vb.groupPicker.itemData = it
+//        }
+//
+//        vm.locationStatusLiveData.observe {
+//            setupSharingStartButton(it)
+//            vb.layoutErrors.itemData = ErrorItems(it)
+//        }
     }
 
     private fun setupSharingStartButton(status: LocationConditionStatus) {
@@ -164,23 +164,23 @@ class SharingStartFragment : BaseFragment(R.layout.fragment_sharing_start) {
     }
 
     private fun enableSharing() {
-        vm.startSharing(selectedPreset).observe {
-            if(it) findNavController().popBackStack()
-        }
+//        vm.startSharing(selectedPreset).observe {
+//            if(it) findNavController().popBackStack()
+//        }
     }
 
     private fun pickGroup() {
-        vm.getAllGroups().observe { groups ->
-            BottomSheetDialog.show(
-                this,
-                GroupPickerFragment(),
-                groups.map { GroupItemData(it, GroupItemData.GroupUiType.PICKER) }.toMutableList()
-            ) { _, bundle ->
-                BottomSheetDialog.getAction(bundle)?.id?.let {
-                    vm.setSelectedGroup(it)
-                }
-            }
-        }
+//        vm.getAllGroups().observe { groups ->
+//            BottomSheetDialog.show(
+//                this,
+//                GroupPickerFragment(),
+//                groups.map { GroupItemData(it, GroupItemData.GroupUiType.PICKER) }.toMutableList()
+//            ) { _, bundle ->
+//                BottomSheetDialog.getAction(bundle)?.id?.let {
+//                    vm.setSelectedGroup(it)
+//                }
+//            }
+//        }
     }
 
     fun getTime(milis: Long): String {

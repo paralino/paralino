@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 class SharingStartViewModel(
+    groupId: String?,
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
     private val locationStatusProvider: ILocationStatusProvider,
@@ -30,6 +31,9 @@ class SharingStartViewModel(
     private val isLongTermSharing get() = selectedPreset >= SharingDurationPreset.backgroundAccessThreshold
 
     init {
+
+        groupId?.let { setSelectedGroup(it) }
+
         locationStatusProvider.status
             .onEach { status ->
                 _uiState.update {
@@ -52,36 +56,21 @@ class SharingStartViewModel(
         }
     }
 
-    fun startSharing(durationMillis: Long) {
+    fun startSharing() {
 
-        val group = _uiState.value.groupState ?: let {
+        if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = isLongTermSharing)) {
+            proceedWithSharing()
+            return
+        }
+
+        _uiState.value.groupState ?: let {
             coroutineScope.launch {
                 _eventChannel.send(SharingStartScreenEvent.SelectGroupInfo)
             }
             return
         }
 
-        if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = isLongTermSharing)) {
-            coroutineScope.launch {
-                _uiState.update { it.copy(loadingAction = true) }
-                sharingManager.startSharing(
-                    LocationSharingContract(groupId = group.id,
-                        LocationSharingContract.forDuration(durationMillis))
-                )
-                val active = withTimeoutOrNull(2000) {
-                    sharingManager.isSharingActiveForGroup(group.id)
-                } ?: false
-
-                _uiState.update { it.copy(loadingAction = false) }
-                coroutineScope.launch {
-                    if (active) {
-                        _eventChannel.send(SharingStartScreenEvent.Started)
-                    } else {
-                        _eventChannel.send(SharingStartScreenEvent.Error(Exception("Unable to start sharing")))
-                    }
-                }
-            }
-        } else if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = false) && isLongTermSharing) {
+        if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = false) && isLongTermSharing) {
             // only background location permission is missing
             coroutineScope.launch {
                 _eventChannel.send(SharingStartScreenEvent.LocationStatusInsufficient)
@@ -91,6 +80,36 @@ class SharingStartViewModel(
                 _eventChannel.send(SharingStartScreenEvent.LocationStatusInsufficient)
             }
         }
+    }
+
+    fun proceedWithSharing() {
+        val group = _uiState.value.groupState ?: let {
+            coroutineScope.launch {
+                _eventChannel.send(SharingStartScreenEvent.SelectGroupInfo)
+            }
+            return
+        }
+
+        coroutineScope.launch {
+            _uiState.update { it.copy(loadingAction = true) }
+            sharingManager.startSharing(
+                LocationSharingContract(groupId = group.id,
+                    LocationSharingContract.forDuration(selectedPreset))
+            )
+            val active = withTimeoutOrNull(2000) {
+                sharingManager.isSharingActiveForGroup(group.id)
+            } ?: false
+
+            _uiState.update { it.copy(loadingAction = false) }
+            coroutineScope.launch {
+                if (active) {
+                    _eventChannel.send(SharingStartScreenEvent.Started)
+                } else {
+                    _eventChannel.send(SharingStartScreenEvent.Error(Exception("Unable to start sharing")))
+                }
+            }
+        }
+
     }
 
     fun sharingDurationChanged(progress: Int) {

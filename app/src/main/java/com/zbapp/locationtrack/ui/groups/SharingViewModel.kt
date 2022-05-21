@@ -1,65 +1,39 @@
 package com.zbapp.locationtrack.ui.groups
 
 import android.app.Application
-import androidx.lifecycle.*
-import com.zbapp.core.models.group.UserGroup
-import com.zbapp.core.models.location.LocationSharingContract
-import com.zbapp.core.models.base.ImageModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.zbapp.core.presentation.share.SharingStartViewModel
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.utils.Emojis
-import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.ui.base.myApp
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
+import com.zbapp.core.utils.ILocationStatusProvider
 
 
-class SharingViewModel(
+class SharingViewModel constructor(
     app: Application,
-    private val args: SharingStartFragmentArgs?,
+    private val groupId: String?,
     private val groupRepo: GroupRepository,
-    private val locationSharingManager: LocationSharingManager
-): AndroidViewModel(app) {
+    private val locationSharingManager: LocationSharingManager,
+    private val locationStatusProvider: ILocationStatusProvider,
+) : AndroidViewModel(app) {
 
-    private val selectedGroupLiveData = MutableLiveData(GroupItemData("", app.getString(R.string.invite_connect_button_pickGroup), ImageModel.emoji(Emojis.lightBulb), null))
-    val selectedGroup: LiveData<GroupItemData> = selectedGroupLiveData
+    private val coreVm =
+        SharingStartViewModel(
+            groupId,
+            groupRepo,
+            locationSharingManager,
+            locationStatusProvider,
+            viewModelScope
+        )
 
-    val locationStatus get() = myApp.locationStatus.status.value
-    val locationStatusLiveData = myApp.locationStatus.status.asLiveData()
+    val uiState = coreVm.uiState
+    val events = coreVm.events
 
-    init {
-        args?.groupId?.let {
-            setSelectedGroup(it)
-        }
-    }
+    suspend fun getAllGroups() = coreVm.getAllGroups()
+    fun setSelectedGroup(groupId: String) = coreVm.setSelectedGroup(groupId)
 
-    fun getAllGroups(): LiveData<List<UserGroup>> {
-        return groupRepo.getAllGroupsLocally().asLiveData()
-    }
-
-    fun setSelectedGroup(groupId: String) {
-        viewModelScope.launch {
-            groupRepo.getAllGroupsLocally().firstOrNull()?.firstOrNull { it.id == groupId }?.let {
-                selectedGroupLiveData.postValue(
-                    GroupItemData(it, GroupItemData.GroupUiType.INACTIVE)
-                )
-            }
-        }
-    }
-
-    fun startSharing(durationMillis: Long): LiveData<Boolean> {
-        return selectedGroup.value?.id?.let {
-            liveData {
-                locationSharingManager.startSharing(
-                    LocationSharingContract(it, LocationSharingContract.forDuration(durationMillis))
-                )
-                val active = withTimeoutOrNull(2000) {
-                    locationSharingManager.isSharingActiveForGroup(it)
-                } ?: false
-                emit(active)
-            }
-        } ?: liveData { emit(false) }
-    }
+    fun startSharing() = coreVm.startSharing()
+    fun proceedWithSharing() = coreVm.proceedWithSharing()
+    fun sharingDurationChanged(progress: Int) = coreVm.sharingDurationChanged(progress)
 
 }
