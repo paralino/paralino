@@ -99,8 +99,14 @@ class SharingStartViewModel(
         coroutineScope.launch {
             _uiState.update { it.copy(loadingAction = true) }
             sharingManager.startSharing(
-                LocationSharingContract(groupId = group.id,
-                    LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis))
+                LocationSharingContract(
+                    groupId = group.id,
+                    endTimeUTC = LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
+                    shareBattery = _uiState.value.shareBattery,
+                    shareSpeed = _uiState.value.shareSpeed,
+                    shareElevation = _uiState.value.shareElevation,
+                    approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation }
+                )
             )
             val active = try {
                 poll(

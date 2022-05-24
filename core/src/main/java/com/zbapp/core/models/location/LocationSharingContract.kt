@@ -8,12 +8,13 @@ import kotlinx.datetime.*
 
 data class LocationSharingContract constructor(
     val groupId: String,
-    val endTimeUTC: String?
+    val endTimeUTC: String?,
+    val shareBattery: Boolean,
+    val shareSpeed: Boolean,
+    val shareElevation: Boolean,
+    val approximateLocationInMeters: Int?
 ) {
 
-    val objectId: String = groupId.replace(groupPrefix ,"").replace(userPrefix, "")
-
-    val isToGroup: Boolean = groupId.startsWith(groupPrefix)
     val isAlwaysOn: Boolean get() = endTimeUTC == null
     val isLongTerm: Boolean get() = isLongTerm(endsInMillis)
 
@@ -54,10 +55,6 @@ data class LocationSharingContract constructor(
     }
 
     companion object {
-        const val groupPrefix = "groupID:"
-        const val userPrefix = "userID:"
-        fun toUser(userId: String, endTimeUTC: String?) = LocationSharingContract("$userPrefix$userId", endTimeUTC)
-        fun toGroup(groupId: String, endTimeUTC: String?) = LocationSharingContract("$groupPrefix$groupId", endTimeUTC)
         fun isLongTerm(durationMillis: Long): Boolean {
             return durationMillis == 0L || durationMillis >= SharingDurationPreset.backgroundAccessThreshold
         }

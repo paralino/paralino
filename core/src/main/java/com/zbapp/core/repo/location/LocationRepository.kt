@@ -44,7 +44,7 @@ class LocationRepository constructor(
         return getDataOnce {
             if (!sharingManager.isSharingActive()) throw NoValidContractsException()
 
-            val ids = sharingManager.allValidContracts().map { it.objectId }
+            val ids = sharingManager.allValidContracts().map { it.groupId }
             val mapped = ids.map { groupId ->
                 MemberGroupId(
                     memberId = local.getUserMemberIds(config.userId, groupId)
