@@ -157,11 +157,13 @@ fun SharingStartScreen(
                     modifier = Modifier.fillMaxWidth(),
                     data = state.groupState!!
                 ) {
-                    appState.uiScope.launch {
-                        appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
-                            .safeCast<GroupItemData>()?.let {
-                                vm.setSelectedGroup(it.id)
-                            }
+                    if(groupId.isNullOrBlank()) {
+                        appState.uiScope.launch {
+                            appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
+                                .safeCast<GroupItemData>()?.let {
+                                    vm.setSelectedGroup(it.id)
+                                }
+                        }
                     }
                 }
             } else {
