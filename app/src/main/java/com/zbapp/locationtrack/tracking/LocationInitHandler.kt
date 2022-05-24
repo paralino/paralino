@@ -105,9 +105,15 @@ class LocationInitHandler(
 
     private var locationCallback = object: LocationCallback() {
         override fun onLocationResult(location: LocationResult) {
-            location?.lastLocation?.let {
+            location.lastLocation.let {
                 val value = LocationDataModel(
-                    it.latitude, it.longitude, it.accuracy, it.time.toDateTimeUTC().toLocalString(), context.batterLevel
+                    lat = it.latitude,
+                    lng = it.longitude,
+                    accuracy = it.accuracy,
+                    timeUTC = it.time.toDateTimeUTC().toLocalString(),
+                    batteryLevel = context.batterLevel,
+                    speed = it.speed,
+                    altitude = it.altitude.toFloat()
                 )
                 lastLocation.value = value
                 currentLocation.value = Payload.Success(value)

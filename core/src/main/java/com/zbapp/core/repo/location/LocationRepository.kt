@@ -44,17 +44,27 @@ class LocationRepository constructor(
         return getDataOnce {
             if (!sharingManager.isSharingActive()) throw NoValidContractsException()
 
-            val ids = sharingManager.allValidContracts().map { it.groupId }
-            val mapped = ids.map { groupId ->
+            val contracts = sharingManager.allValidContracts()
+            val mapped = contracts.map { contract ->
                 MemberGroupId(
-                    memberId = local.getUserMemberIds(config.userId, groupId)
+                    memberId = local.getUserMemberIds(config.userId, contract.groupId)
                         // TODO use current device id for multiple device support
                         .first(),
-                    groupId = groupId
+                    groupId = contract.groupId,
+                    // TODO share approximate location if selected
+                    data = LocationDataModel(
+                        timeUTC = data.timeUTC,
+                        lat = data.lat,
+                        lng = data.lng,
+                        accuracy = data.accuracy,
+                        batteryLevel = data.batteryLevel?.takeIf { contract.shareBattery },
+                        speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
+                        altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f }
+                    )
                 )
             }
 
-            remote.saveCurrentLocation(data, mapped)
+            remote.saveCurrentLocation(mapped)
         }
     }
 
@@ -65,11 +75,11 @@ class LocationRepository constructor(
             }
         ) {
             remote.saveCurrentLocation(
-                data = null,
                 ids = listOf(
                     MemberGroupId(
                         memberId = local.getUserMemberIds(config.userId, groupId).first(),
-                        groupId = groupId
+                        groupId = groupId,
+                        data = null
                     )
                 )
             )

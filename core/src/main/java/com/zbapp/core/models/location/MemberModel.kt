@@ -66,5 +66,7 @@ data class LocationDataModel constructor(
     val lng: Double,
     val accuracy: Float = 0f,
     val timeUTC: String? = null,
-    val batteryLevel: Int? = null
+    val batteryLevel: Int? = null,
+    val speed: Float? = null,
+    val altitude: Float? = null
 )
