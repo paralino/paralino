@@ -1,5 +1,6 @@
 package com.zbapp.locationtrack.ui.share
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
@@ -10,7 +11,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,10 +21,7 @@ import com.zbapp.core.presentation.share.SharingStartScreenEvent
 import com.zbapp.core.presentation.share.SharingStartScreenState
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
-import com.zbapp.locationtrack.ui.components.BottomSheetsScreen
-import com.zbapp.locationtrack.ui.components.FilledButton
-import com.zbapp.locationtrack.ui.components.LargeSwitch
-import com.zbapp.locationtrack.ui.components.MainAlertDialog
+import com.zbapp.locationtrack.ui.components.*
 import com.zbapp.locationtrack.ui.groups.GroupListItem
 import com.zbapp.locationtrack.ui.groups.SharingViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
@@ -38,6 +35,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
+import java.time.Duration
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -50,8 +48,36 @@ fun SharingStartScreen(
     val state by vm.uiState.collectAsState(initial = SharingStartScreenState())
 
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
-    var batterySwitchState by rememberSaveable { mutableStateOf(false) }
-    var locationSwitchState by rememberSaveable { mutableStateOf(false) }
+
+    val approxLocationSwitchState by rememberSeekbarState(
+        key = state,
+        LargeSeekbarSwitchState.SeekbarSwitchState(
+            seekbarState = LargeSeekbarSwitchState.Seekbar(
+                seekbarProgress = state.approximateLocationIndex + 1,
+                seekbarRange = IntRange(1, state.approximateLocationPresetsMeters.size)
+            ),
+            switchState = LargeSeekbarSwitchState.Switch(state.shareApproximateLocation)
+        )
+    )
+
+    val seekbarState by rememberSeekbarState(
+        key = state,
+        LargeSeekbarSwitchState.SeekbarSwitchState(
+            seekbarState = LargeSeekbarSwitchState.Seekbar(
+                seekbarProgress = state.sharingTimeIndex + 1,
+                seekbarRange = IntRange(1, state.sharingPresetsMillis.size)
+            ),
+            switchState = null
+        )
+    )
+
+    val shareBatteryState by rememberSeekbarState(
+        key = state,
+        LargeSeekbarSwitchState.SeekbarSwitchState(
+            seekbarState = null,
+            switchState = LargeSeekbarSwitchState.Switch(state.shareBattery)
+        )
+    )
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
@@ -186,33 +212,50 @@ fun SharingStartScreen(
                 Spacer(modifier = Modifier.size(10.dp))
             }
 
-            SettingsSectionHeader(name = stringResource(id = R.string.groups_sharing_section_title_duration))
-            // TODO add time slider
-            Spacer(modifier = Modifier.size(50.dp))
+            SettingsSectionHeader(name = stringResource(id = R.string.title_settings))
 
-            SettingsSectionHeader(name = stringResource(id = R.string.groups_sharing_section_title_extra))
+            LargeSeekbarSwitch(
+                modifier = Modifier.fillMaxWidth(),
+                icon = Icons.Rounded.AccessTime,
+                title = stringResource(id = R.string.groups_sharing_section_title_duration),
+                description = getTime(state.sharingTimeMillis, LocalContext.current),
+                focusDescription = true,
+                state = seekbarState,
+                onProgressChange = {
+                    vm.sharingDurationChanged(it - 1)
+                }
+            )
+
+            Spacer(modifier = Modifier.size(10.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                LargeSwitch(
-//                    modifier = Modifier.fillMaxWidth(0.45f),
+                LargeSeekbarSwitch(
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .fillMaxWidth(0.5f),
                     icon = Icons.Rounded.BatteryChargingFull,
                     title = stringResource(id = R.string.groups_sharing_setting_battery_share),
-                    state = batterySwitchState,
-                    onClick = { batterySwitchState = !batterySwitchState }
+                    description = null,
+                    state = shareBatteryState,
+                    onStateChange = {
+                        vm.turnOnBatterySharing(it)
+                    }
                 )
-
-                Spacer(modifier = Modifier.size(10.dp))
-                LargeSwitch(
-//                    modifier = Modifier.fillMaxWidth(0.45f),
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth(),
                     icon = Icons.Rounded.ShareLocation,
                     title = stringResource(id = R.string.groups_sharing_setting_approximate_location),
-                    // TODO add slider
-                    description = "500m",
-                    state = locationSwitchState,
-                    onClick = { locationSwitchState = !locationSwitchState }
+                    description = if (state.shareApproximateLocation) state.approximateLocationMeters.toString() else null,
+                    state = approxLocationSwitchState,
+                    onProgressChange = {
+                        vm.approximateLocationChanged(it - 1)
+                    },
+                    onStateChange = {
+                        vm.turnOnApproximateLocationSharing(it)
+                    }
                 )
             }
 
@@ -244,5 +287,27 @@ fun SharingStartScreen(
         ) {
             CircularProgressIndicator()
         }
+    }
+}
+
+fun getTime(milis: Long, context: Context): String {
+    val duration = Duration.ofMillis(milis)
+
+    fun getPluralTime(id: Int, value: Long): String {
+        return context.resources.getQuantityString(id, value.toInt(), value.toInt())
+    }
+
+    return if (duration.toDays() >= 365) {
+        getPluralTime(R.plurals.groups_sharing_duration_type_years, duration.toDays() / 365)
+    } else if (duration.toDays() >= 30) {
+        getPluralTime(R.plurals.groups_sharing_duration_type_months, duration.toDays() / 30)
+    } else if (duration.toDays() >= 1) {
+        getPluralTime(R.plurals.groups_sharing_duration_type_days, duration.toDays())
+    } else if (duration.toHours() >= 1) {
+        getPluralTime(R.plurals.groups_sharing_duration_type_hours, duration.toHours())
+    } else if (duration.toMinutes() > 1) {
+        getPluralTime(R.plurals.groups_sharing_duration_type_minutes, duration.toMinutes())
+    } else {
+        context.getString(R.string.groups_sharing_duration_type_infinite)
     }
 }

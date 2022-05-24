@@ -34,6 +34,11 @@ class SharingViewModel constructor(
 
     fun startSharing() = coreVm.startSharing()
     fun proceedWithSharing() = coreVm.proceedWithSharing()
-    fun sharingDurationChanged(progress: Int) = coreVm.sharingDurationChanged(progress)
+    fun sharingDurationChanged(index: Int) = coreVm.sharingDurationChanged(index)
+    fun approximateLocationChanged(index: Int) = coreVm.approximateLocationChanged(index)
+    fun turnOnApproximateLocationSharing(state: Boolean) =
+        coreVm.turnOnApproximateLocationSharing(state)
+
+    fun turnOnBatterySharing(state: Boolean) = coreVm.turnOnBatterySharing(state)
 
 }

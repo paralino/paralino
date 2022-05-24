@@ -7,11 +7,12 @@ import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.ILocationStatusProvider
 import com.zbapp.core.utils.SharingDurationPreset
+import com.zbapp.core.utils.exceptions.TimeoutException
+import com.zbapp.core.utils.poll
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 
 class SharingStartViewModel(
     groupId: String?,
@@ -21,13 +22,13 @@ class SharingStartViewModel(
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
-    private val _uiState = MutableStateFlow<SharingStartScreenState>(SharingStartScreenState())
+    private val _uiState = MutableStateFlow(SharingStartScreenState())
     val uiState: Flow<SharingStartScreenState> = _uiState
 
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
-    private var selectedPreset: Long = SharingDurationPreset.hour
+    private val selectedPreset: Long get() = _uiState.value.sharingTimeMillis
     private val isLongTermSharing get() = selectedPreset >= SharingDurationPreset.backgroundAccessThreshold
 
     init {
@@ -96,9 +97,17 @@ class SharingStartViewModel(
                 LocationSharingContract(groupId = group.id,
                     LocationSharingContract.forDuration(selectedPreset))
             )
-            val active = withTimeoutOrNull(2000) {
-                sharingManager.isSharingActiveForGroup(group.id)
-            } ?: false
+            val active = try {
+                poll(
+                    firstDelayMillis = 500,
+                    delay = 1000,
+                    timeout = 3000
+                ) {
+                    sharingManager.isSharingActiveForGroup(group.id).takeIf { it }
+                }
+            } catch (e: TimeoutException) {
+                false
+            }
 
             _uiState.update { it.copy(loadingAction = false) }
             coroutineScope.launch {
@@ -112,9 +121,34 @@ class SharingStartViewModel(
 
     }
 
-    fun sharingDurationChanged(progress: Int) {
-        selectedPreset =
-            SharingDurationPreset.presets.getOrNull(progress) ?: SharingDurationPreset.hour
+    fun turnOnApproximateLocationSharing(state: Boolean) {
+        _uiState.update {
+            it.copy(shareApproximateLocation = state)
+        }
+    }
+
+    fun turnOnBatterySharing(state: Boolean) {
+        _uiState.update {
+            it.copy(shareBattery = state)
+        }
+    }
+
+    fun approximateLocationChanged(index: Int) {
+        _uiState.update {
+            it.copy(
+                approximateLocationMeters = it.approximateLocationPresetsMeters.getOrNull(index)
+                    ?: it.approximateLocationMeters
+            )
+        }
+    }
+
+    fun sharingDurationChanged(index: Int) {
+        _uiState.update {
+            it.copy(
+                sharingTimeMillis = SharingDurationPreset.presets.getOrNull(index)
+                    ?: SharingDurationPreset.hour
+            )
+        }
     }
 
 }
