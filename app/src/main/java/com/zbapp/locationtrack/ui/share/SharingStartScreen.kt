@@ -1,6 +1,6 @@
 package com.zbapp.locationtrack.ui.share
 
-import android.content.Context
+import android.icu.text.DecimalFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
@@ -31,6 +31,7 @@ import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
 import com.zbapp.locationtrack.ui.shared.list.nameRes
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
+import com.zbapp.locationtrack.utils.extensions.quantityStringResource
 import com.zbapp.locationtrack.utils.extensions.safeCast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -230,7 +231,7 @@ fun SharingStartScreen(
                 modifier = Modifier.fillMaxWidth(),
                 icon = Icons.Rounded.AccessTime,
                 title = stringResource(id = R.string.groups_sharing_section_title_duration),
-                description = getTime(state.sharingTimeMillis, LocalContext.current),
+                description = getTime(state.sharingTimeMillis),
                 focusDescription = true,
                 state = seekbarState,
                 onProgressChange = {
@@ -260,7 +261,7 @@ fun SharingStartScreen(
                     modifier = Modifier.fillMaxWidth(),
                     icon = Icons.Rounded.ShareLocation,
                     title = stringResource(id = R.string.groups_sharing_setting_approximate_location),
-                    description = if (state.shareApproximateLocation) state.approximateLocationMeters.toString() else null,
+                    description = if (state.shareApproximateLocation) getDistance(meters = state.approximateLocationMeters) else null,
                     state = approxLocationSwitchState,
                     onProgressChange = {
                         vm.approximateLocationChanged(it - 1)
@@ -302,11 +303,13 @@ fun SharingStartScreen(
     }
 }
 
-fun getTime(milis: Long, context: Context): String {
+@Composable
+fun getTime(milis: Long): String {
     val duration = Duration.ofMillis(milis)
 
+    @Composable
     fun getPluralTime(id: Int, value: Long): String {
-        return context.resources.getQuantityString(id, value.toInt(), value.toInt())
+        return quantityStringResource(id, value.toInt(), value.toInt())
     }
 
     return if (duration.toDays() >= 365) {
@@ -320,6 +323,20 @@ fun getTime(milis: Long, context: Context): String {
     } else if (duration.toMinutes() > 1) {
         getPluralTime(R.plurals.groups_sharing_duration_type_minutes, duration.toMinutes())
     } else {
-        context.getString(R.string.groups_sharing_duration_type_infinite)
+        stringResource(R.string.groups_sharing_duration_type_infinite)
+    }
+}
+
+@Composable
+fun getDistance(meters: Int): String {
+    // TODO move to separate util
+    return if (meters < 1000) {
+        stringResource(id = R.string.placeholder_unit_meter, "$meters")
+    } else {
+        val value = DecimalFormat.getInstance().apply {
+            minimumFractionDigits = 0
+            maximumFractionDigits = 2
+        }.format(meters.toFloat() / 1000)
+        stringResource(id = R.string.placeholder_unit_km, value)
     }
 }

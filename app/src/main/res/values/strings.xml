@@ -195,4 +195,9 @@
     <string name="group_members_last_active_status_full">Last update: %s</string>
     <string name="group_members_status_inactive">INACTIVE</string>
 
+    <string name="unit_meter">m</string>
+    <string name="unit_km">km</string>
+    <string name="placeholder_unit_meter">%s m</string>
+    <string name="placeholder_unit_km">%s km</string>
+
 </resources>
