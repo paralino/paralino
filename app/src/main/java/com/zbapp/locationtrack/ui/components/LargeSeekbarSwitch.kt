@@ -134,7 +134,7 @@ fun LargeSeekbarSwitch(
                         MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                         RoundedCornerShape(8.dp)
                     )
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .background(backgroundColor)
                     .padding(8.dp),
                 tint = contentColor
