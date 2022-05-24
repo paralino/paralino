@@ -74,7 +74,7 @@ class SharingStartViewModel(
         if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = false) && isLongTermSharing) {
             // only background location permission is missing
             coroutineScope.launch {
-                _eventChannel.send(SharingStartScreenEvent.LocationStatusInsufficient)
+                _eventChannel.send(SharingStartScreenEvent.MissingBackgroundPermission)
             }
         } else {
             coroutineScope.launch {
