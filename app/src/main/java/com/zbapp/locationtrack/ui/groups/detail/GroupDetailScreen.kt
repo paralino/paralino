@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.location.LocationSharingContract
@@ -37,6 +38,7 @@ import com.zbapp.locationtrack.ui.components.MainAlertDialog
 import com.zbapp.locationtrack.ui.groups.members.GroupMember
 import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
+import com.zbapp.locationtrack.ui.share.getDistance
 import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.theme.AppColors
 import com.zbapp.locationtrack.utils.extensions.annotatedBold
@@ -337,7 +339,7 @@ fun GroupDetailsHeader(
             Spacer(modifier = Modifier.size(10.dp))
             GroupDetailSharingStatusElement(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                time = sharingStatus.endTimeUTC
+                contract = sharingStatus
             )
             Spacer(modifier = Modifier.size(30.dp))
         } else {
@@ -367,34 +369,86 @@ fun GroupDetailsHeader(
 @Composable
 fun GroupDetailSharingStatusElement(
     modifier: Modifier = Modifier,
-    time: String?,
+    contract: LocationSharingContract,
 ) {
     val backgroundColor = MaterialTheme.colors.surface
     val contentColor = contentColorFor(backgroundColor = backgroundColor)
-    Row(
-        modifier = modifier
-            .background(backgroundColor,
-                RoundedCornerShape(percent = 50))
-            .padding(horizontal = 8.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val sharingTime = time
-            ?.toLocalDateTime()
-            ?.fromUTCtoMapSharingTime(
-                LocalContext.current, splitTimeToOneLine = false
-            )
-            ?.let {
-                stringResource(id = R.string.group_details_sharing_status_time, it)
-            }
-            ?: stringResource(id = R.string.group_details_sharing_status_infinite)
+        Row(
+            modifier = Modifier
+                .background(backgroundColor,
+                    RoundedCornerShape(percent = 50))
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val sharingTime = contract.endTimeUTC
+                ?.toLocalDateTime()
+                ?.fromUTCtoMapSharingTime(
+                    LocalContext.current, splitTimeToOneLine = false
+                )
+                ?.let {
+                    stringResource(id = R.string.group_details_sharing_status_time, it)
+                }
+                ?: stringResource(id = R.string.group_details_sharing_status_infinite)
 
-        Icon(imageVector = Icons.Rounded.AccessTime,
-            contentDescription = null,
-            modifier = Modifier.size(14.dp),
-            tint = contentColor)
-        Spacer(modifier = Modifier.size(4.dp))
-        Text(text = sharingTime.annotatedBold(),
-            style = MaterialTheme.typography.caption.copy(color = contentColor))
+            Icon(imageVector = Icons.Rounded.AccessTime,
+                contentDescription = null,
+                modifier = Modifier.size(14.dp),
+                tint = contentColor)
+            Spacer(modifier = Modifier.size(4.dp))
+            Text(text = sharingTime.annotatedBold(),
+                style = MaterialTheme.typography.caption.copy(color = contentColor))
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (contract.shareBattery) {
+                Icon(
+                    imageVector = Icons.Rounded.BatteryChargingFull,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .size(18.dp)
+                )
+            }
+
+            if (contract.shareSpeed) {
+                Icon(
+                    imageVector = Icons.Rounded.Speed,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .size(18.dp)
+                )
+            }
+
+            if (contract.shareElevation) {
+                Icon(
+                    imageVector = Icons.Rounded.StackedLineChart,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .size(18.dp)
+                )
+            }
+
+            if (contract.approximateLocationInMeters != null) {
+                Icon(
+                    imageVector = Icons.Rounded.ShareLocation,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 5.dp, end = 2.dp)
+                        .padding(vertical = 5.dp)
+                        .size(18.dp)
+                )
+                Text(text = getDistance(meters = contract.approximateLocationInMeters!!).let { "($it)" },
+                    style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp))
+                Spacer(modifier = Modifier.size(5.dp))
+            }
+        }
+
     }
 }
 
