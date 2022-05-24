@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.zbapp.core.models.Payload
+import com.zbapp.core.models.data
 import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.presentation.share.SharingStartScreenEvent
 import com.zbapp.core.presentation.share.SharingStartScreenState
@@ -45,7 +47,11 @@ fun SharingStartScreen(
     vm: SharingViewModel = getViewModel { parametersOf(groupId) },
 ) {
 
-    val state by vm.uiState.collectAsState(initial = SharingStartScreenState())
+    val state by vm.uiState.collectAsState(
+        initial = SharingStartScreenState(
+            groupState = if (groupId.isNullOrBlank()) Payload.Success(null) else Payload.Loading
+        )
+    )
 
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
@@ -177,39 +183,45 @@ fun SharingStartScreen(
                 .padding(start = 20.dp, end = 20.dp, bottom = 100.dp),
         ) {
 
-            if (state.groupState != null) {
-                SettingsSectionHeader(name = stringResource(id = R.string.groups_sharing_section_title_group))
-                GroupListItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    data = state.groupState!!
-                ) {
-                    if(groupId.isNullOrBlank()) {
-                        appState.uiScope.launch {
-                            appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
-                                .safeCast<GroupItemData>()?.let {
-                                    vm.setSelectedGroup(it.id)
-                                }
+            AnimatedVisibility(visible = state.groupState.data != null) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    SettingsSectionHeader(name = stringResource(id = R.string.groups_sharing_section_title_group))
+                    GroupListItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        data = state.groupState.data!!
+                    ) {
+                        if (groupId.isNullOrBlank()) {
+                            appState.uiScope.launch {
+                                appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
+                                    .safeCast<GroupItemData>()?.let {
+                                        vm.setSelectedGroup(it.id)
+                                    }
+                            }
                         }
                     }
                 }
-            } else {
-                Spacer(modifier = Modifier.size(10.dp))
-                FilledButton(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    style = ButtonStyle.SMALL,
-                    icon = Icons.Rounded.Groups,
-                    onClick = {
-                        appState.uiScope.launch {
-                            appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
-                                .safeCast<GroupItemData>()?.let {
-                                    vm.setSelectedGroup(it.id)
-                                }
+            }
+
+            AnimatedVisibility(visible = state.groupState !is Payload.Loading && state.groupState.data == null) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(modifier = Modifier.size(20.dp))
+                    FilledButton(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        style = ButtonStyle.SMALL,
+                        icon = Icons.Rounded.Groups,
+                        onClick = {
+                            appState.uiScope.launch {
+                                appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
+                                    .safeCast<GroupItemData>()?.let {
+                                        vm.setSelectedGroup(it.id)
+                                    }
+                            }
                         }
+                    ) {
+                        Text(text = stringResource(id = R.string.invite_connect_button_pickGroup))
                     }
-                ) {
-                    Text(text = stringResource(id = R.string.invite_connect_button_pickGroup))
+                    Spacer(modifier = Modifier.size(20.dp))
                 }
-                Spacer(modifier = Modifier.size(10.dp))
             }
 
             SettingsSectionHeader(name = stringResource(id = R.string.title_settings))

@@ -1,5 +1,7 @@
 package com.zbapp.core.presentation.share
 
+import com.zbapp.core.models.Payload
+import com.zbapp.core.models.data
 import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.presentation.CoreViewModel
 import com.zbapp.core.presentation.dashboard.GroupItemData
@@ -22,14 +24,13 @@ class SharingStartViewModel(
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
-    private val _uiState = MutableStateFlow(SharingStartScreenState())
+    private val _uiState =
+        MutableStateFlow(SharingStartScreenState(groupState = if (groupId.isNullOrBlank()) Payload.Success(
+            null) else Payload.Loading))
     val uiState: Flow<SharingStartScreenState> = _uiState
 
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
-
-    private val selectedPreset: Long get() = _uiState.value.sharingTimeMillis
-    private val isLongTermSharing get() = selectedPreset >= SharingDurationPreset.backgroundAccessThreshold
 
     init {
 
@@ -38,7 +39,7 @@ class SharingStartViewModel(
         locationStatusProvider.status
             .onEach { status ->
                 _uiState.update {
-                    it.copy(errors = status.getPossibleErrors(isLongTermSharing))
+                    it.copy(errors = status.getPossibleErrors(it.isLongTerm))
                 }
             }
             .launchIn(coroutineScope)
@@ -52,26 +53,30 @@ class SharingStartViewModel(
     fun setSelectedGroup(groupId: String) {
         coroutineScope.launch {
             getAllGroups().firstOrNull { it.id == groupId }?.let { group ->
-                _uiState.update { it.copy(groupState = group) }
-            }
+                setSelectedGroup(group)
+            } ?: _uiState.update { it.copy(groupState = Payload.Success(null)) }
         }
+    }
+
+    fun setSelectedGroup(group: GroupItemData) {
+        _uiState.update { it.copy(groupState = Payload.Success(group)) }
     }
 
     fun startSharing() {
 
-        if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = isLongTermSharing)) {
+        if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = _uiState.value.isLongTerm)) {
             proceedWithSharing()
             return
         }
 
-        _uiState.value.groupState ?: let {
+        _uiState.value.groupState.data ?: let {
             coroutineScope.launch {
                 _eventChannel.send(SharingStartScreenEvent.SelectGroupInfo)
             }
             return
         }
 
-        if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = false) && isLongTermSharing) {
+        if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = false) && _uiState.value.isLongTerm) {
             // only background location permission is missing
             coroutineScope.launch {
                 _eventChannel.send(SharingStartScreenEvent.MissingBackgroundPermission)
@@ -84,7 +89,7 @@ class SharingStartViewModel(
     }
 
     fun proceedWithSharing() {
-        val group = _uiState.value.groupState ?: let {
+        val group = _uiState.value.groupState.data ?: let {
             coroutineScope.launch {
                 _eventChannel.send(SharingStartScreenEvent.SelectGroupInfo)
             }
@@ -95,7 +100,7 @@ class SharingStartViewModel(
             _uiState.update { it.copy(loadingAction = true) }
             sharingManager.startSharing(
                 LocationSharingContract(groupId = group.id,
-                    LocationSharingContract.forDuration(selectedPreset))
+                    LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis))
             )
             val active = try {
                 poll(
@@ -144,9 +149,12 @@ class SharingStartViewModel(
 
     fun sharingDurationChanged(index: Int) {
         _uiState.update {
+            val time = SharingDurationPreset.presets.getOrNull(index) ?: SharingDurationPreset.hour
             it.copy(
-                sharingTimeMillis = SharingDurationPreset.presets.getOrNull(index)
-                    ?: SharingDurationPreset.hour
+                sharingTimeMillis = time,
+                errors = locationStatusProvider.status.value.getPossibleErrors(
+                    LocationSharingContract.isLongTerm(time)
+                )
             )
         }
     }

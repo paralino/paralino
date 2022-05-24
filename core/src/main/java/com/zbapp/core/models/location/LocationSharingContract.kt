@@ -15,7 +15,7 @@ data class LocationSharingContract constructor(
 
     val isToGroup: Boolean = groupId.startsWith(groupPrefix)
     val isAlwaysOn: Boolean get() = endTimeUTC == null
-    val isLongTerm: Boolean get() = isAlwaysOn || endsInMillis >= SharingDurationPreset.backgroundAccessThreshold
+    val isLongTerm: Boolean get() = isLongTerm(endsInMillis)
 
     val endsInMillis: Long get() {
         if (isAlwaysOn) return 0
@@ -58,6 +58,9 @@ data class LocationSharingContract constructor(
         const val userPrefix = "userID:"
         fun toUser(userId: String, endTimeUTC: String?) = LocationSharingContract("$userPrefix$userId", endTimeUTC)
         fun toGroup(groupId: String, endTimeUTC: String?) = LocationSharingContract("$groupPrefix$groupId", endTimeUTC)
+        fun isLongTerm(durationMillis: Long): Boolean {
+            return durationMillis == 0L || durationMillis >= SharingDurationPreset.backgroundAccessThreshold
+        }
 
         fun forDuration(durationMillis: Long): String? {
             if(durationMillis == 0L) return null

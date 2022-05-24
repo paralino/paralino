@@ -1,11 +1,13 @@
 package com.zbapp.core.presentation.share
 
+import com.zbapp.core.models.Payload
+import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.utils.ConditionErrorType
 import com.zbapp.core.utils.SharingDurationPreset
 
 data class SharingStartScreenState constructor(
-    val groupState: GroupItemData? = null,
+    val groupState: Payload<GroupItemData?> = Payload.Loading,
     val sharingTimeMillis: Long = SharingDurationPreset.hour,
     val sharingPresetsMillis: List<Long> = SharingDurationPreset.presets,
     val approximateLocationMeters: Int = 200,
@@ -26,6 +28,8 @@ data class SharingStartScreenState constructor(
             ?: approximateLocationPresetsMeters.indexOfFirst { approximateLocationMeters < it }.takeIf { it >= 0 }
             ?: approximateLocationPresetsMeters.lastIndex
     }
+
+    val isLongTerm: Boolean get() = LocationSharingContract.isLongTerm(sharingTimeMillis)
 }
 
 sealed class SharingStartScreenEvent() {
