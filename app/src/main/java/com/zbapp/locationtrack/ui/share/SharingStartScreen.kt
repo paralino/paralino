@@ -86,6 +86,22 @@ fun SharingStartScreen(
         )
     )
 
+    val shareSpeedState by rememberSeekbarState(
+        key = state,
+        LargeSeekbarSwitchState.SeekbarSwitchState(
+            seekbarState = null,
+            switchState = LargeSeekbarSwitchState.Switch(state.shareSpeed)
+        )
+    )
+
+    val shareElevationState by rememberSeekbarState(
+        key = state,
+        LargeSeekbarSwitchState.SeekbarSwitchState(
+            seekbarState = null,
+            switchState = LargeSeekbarSwitchState.Switch(state.shareElevation)
+        )
+    )
+
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
         vm.events.collect { event ->
@@ -268,6 +284,36 @@ fun SharingStartScreen(
                     },
                     onStateChange = {
                         vm.turnOnApproximateLocationSharing(it)
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                LargeSeekbarSwitch(
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .fillMaxWidth(0.5f),
+                    icon = Icons.Rounded.Speed,
+                    title = stringResource(id = R.string.groups_sharing_setting_speed_share),
+                    description = null,
+                    state = shareSpeedState,
+                    onStateChange = {
+                        vm.turnOnSpeedSharing(it)
+                    }
+                )
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth(),
+                    icon = Icons.Rounded.StackedLineChart,
+                    title = stringResource(id = R.string.groups_sharing_setting_elevation_share),
+                    description = null,
+                    state = shareElevationState,
+                    onStateChange = {
+                        vm.turnOnElevationSharing(it)
                     }
                 )
             }

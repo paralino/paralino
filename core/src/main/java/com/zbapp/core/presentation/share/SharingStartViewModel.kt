@@ -159,4 +159,16 @@ class SharingStartViewModel(
         }
     }
 
+    fun turnOnSpeedSharing(state: Boolean) {
+        _uiState.update {
+            it.copy(shareSpeed = state)
+        }
+    }
+
+    fun turnOnElevationSharing(state: Boolean) {
+        _uiState.update {
+            it.copy(shareElevation = state)
+        }
+    }
+
 }

@@ -143,6 +143,8 @@
     <string name="groups_sharing_section_title_extra">Extra</string>
     <string name="groups_sharing_setting_battery_share">Battery level</string>
     <string name="groups_sharing_setting_approximate_location">Approximate location</string>
+    <string name="groups_sharing_setting_speed_share">Speed</string>
+    <string name="groups_sharing_setting_elevation_share">Elevation</string>
     <string name="groups_sharing_button_start">Start sharing</string>
     <string name="groups_sharing_button_enable">Enable sharing</string>
     <string name="groups_sharing_title">Share location</string>

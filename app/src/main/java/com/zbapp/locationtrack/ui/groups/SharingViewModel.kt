@@ -40,5 +40,7 @@ class SharingViewModel constructor(
         coreVm.turnOnApproximateLocationSharing(state)
 
     fun turnOnBatterySharing(state: Boolean) = coreVm.turnOnBatterySharing(state)
+    fun turnOnSpeedSharing(state: Boolean) = coreVm.turnOnSpeedSharing(state)
+    fun turnOnElevationSharing(state: Boolean) = coreVm.turnOnElevationSharing(state)
 
 }

@@ -14,6 +14,8 @@ data class SharingStartScreenState constructor(
     val approximateLocationPresetsMeters: List<Int> = listOf(100, 200, 300, 500, 1000, 2000, 5000, 10000),
     val shareApproximateLocation: Boolean = false,
     val shareBattery: Boolean = true,
+    val shareSpeed: Boolean = false,
+    val shareElevation: Boolean = false,
     val errors: List<ConditionErrorType> = emptyList(),
     val loadingAction: Boolean = false
 ) {
