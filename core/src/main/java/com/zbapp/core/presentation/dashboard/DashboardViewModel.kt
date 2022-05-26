@@ -45,7 +45,9 @@ class DashboardViewModel(
             DashboardScreenState(
                 activeGroups = active,
                 inactiveGroups = inactive,
-                errors = location.getPossibleErrors(forBackground = sharing.any { it.isLongTerm })
+                errors = sharing.takeIf { it.isNotEmpty() }?.let {
+                    location.getPossibleErrors(forBackground = it.any { it.isLongTerm })
+                } ?: emptyList()
             )
         }
             .mapToPayload { it }
