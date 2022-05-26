@@ -14,7 +14,7 @@ class SharingViewModel constructor(
     private val groupId: String?,
     private val groupRepo: GroupRepository,
     private val locationSharingManager: LocationSharingManager,
-    private val locationStatusProvider: ILocationStatusProvider,
+    val locationStatusProvider: ILocationStatusProvider,
 ) : AndroidViewModel(app) {
 
     private val coreVm =

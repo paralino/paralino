@@ -24,7 +24,9 @@ import com.zbapp.core.models.data
 import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.presentation.share.SharingStartScreenEvent
 import com.zbapp.core.presentation.share.SharingStartScreenState
+import com.zbapp.core.utils.ConditionErrorType
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.tracking.rememberLocationPermissionHandler
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.*
 import com.zbapp.locationtrack.ui.groups.GroupListItem
@@ -101,6 +103,11 @@ fun SharingStartScreen(
             seekbarState = null,
             switchState = LargeSeekbarSwitchState.Switch(state.shareElevation)
         )
+    )
+
+    val permissionHandler = rememberLocationPermissionHandler(
+        appState = appState,
+        locationStatusProvider = vm.locationStatusProvider
     )
 
     val context = LocalContext.current
@@ -323,14 +330,11 @@ fun SharingStartScreen(
 
             state.errors.forEach {
                 ConditionErrorItem(data = it) {
-                    // TODO add handling for errors
-//                    when(it) {
-//                        ConditionErrorType.GPS -> TODO()
-//                        ConditionErrorType.NETWORK -> TODO()
-//                        ConditionErrorType.PERMISSION_LOCATION -> TODO()
-//                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> TODO()
-//                        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> TODO()
-//                    }
+                    when (it) {
+                        ConditionErrorType.GPS -> permissionHandler.askLocationService()
+                        ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
+                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                    }
                 }
             }
 
