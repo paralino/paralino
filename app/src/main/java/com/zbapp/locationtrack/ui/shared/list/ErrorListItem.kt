@@ -1,8 +1,6 @@
 package com.zbapp.locationtrack.ui.shared.list
 
-import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.util.AttributeSet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -28,23 +26,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.view.isVisible
 import com.zbapp.core.utils.ConditionErrorType
-import com.zbapp.core.utils.LocationConditionStatus
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.databinding.ElementBannerContainerBinding
-import com.zbapp.locationtrack.databinding.ElementDashboardBannerBinding
 import com.zbapp.locationtrack.ui.theme.AppTheme
-import com.zbapp.locationtrack.utils.BaseRvItem
-import com.zbapp.locationtrack.utils.extensions.viewBinding
-import com.zbapp.locationtrack.utils.withDataOnClickAction
 
 
 @Composable
 fun ConditionErrorItem(
     modifier: Modifier = Modifier,
     data: ConditionErrorType,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -58,16 +49,8 @@ fun ConditionErrorItem(
 
         val (icon, text, action) = createRefs()
 
-        val iconVector: ImageVector = when (data) {
-            ConditionErrorType.GPS -> Icons.Rounded.LocationOff
-            ConditionErrorType.PERMISSION_LOCATION -> Icons.Rounded.PhonelinkSetup
-            ConditionErrorType.PERMISSION_LOCATION_PRECISE -> Icons.Rounded.PhonelinkSetup
-            ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> Icons.Rounded.PhonelinkSetup
-            ConditionErrorType.NETWORK -> Icons.Rounded.LocationOff
-            ConditionErrorType.EMAIL_VERIFICATION -> Icons.Rounded.Email
-        }
         Icon(
-            imageVector = iconVector,
+            imageVector = data.iconVector,
             modifier = Modifier
                 .size(16.dp)
                 .constrainAs(icon) {
@@ -129,62 +112,14 @@ fun ErrorItemPreview() {
     }
 }
 
-class ErrorListItem(context: Context, attributeSet: AttributeSet? = null) :
-    BaseRvItem<ConditionErrorType>(context, attributeSet) {
-
-    val vb by viewBinding(ElementDashboardBannerBinding::inflate)
-
-    init {
-        setFullWidth()
-        vb.errorItemParent.clipToOutline = true
-    }
-
-    override fun applyData(data: ConditionErrorType) {
-        vb.ivBannerIcon.setImageResource(data.iconRes)
-        vb.tvBannerTitle.setText(data.nameRes)
-
-        vb.tvBannerInfo.isVisible = data.endActionTextRes != 0
-        data.endActionTextRes.takeIf { it != 0 }?.let { vb.tvBannerInfo.setText(it) }
-    }
-
-}
-
-class ErrorListItemContainer(context: Context, attributeSet: AttributeSet? = null) :
-    BaseRvItem<ErrorItems>(context, attributeSet) {
-
-    val vb by viewBinding(ElementBannerContainerBinding::inflate)
-    var itemClick: ((ConditionErrorType) -> Unit)? = null
-
-    init {
-        setFullWidth()
-    }
-
-    override fun applyData(data: ErrorItems) {
-        vb.root.removeAllViews()
-        data.list.forEach { error ->
-            val item = ErrorListItem(context).apply {
-                itemData = error
-            }.withDataOnClickAction(itemClick)
-            vb.root.addView(item)
-        }
-    }
-
-}
-
-data class ErrorItems(
-    val list: List<ConditionErrorType>
-) {
-    constructor(status: LocationConditionStatus) : this(status.getPossibleErrors())
-}
-
-val ConditionErrorType.iconRes: Int
+val ConditionErrorType.iconVector: ImageVector
     get() = when (this) {
-        ConditionErrorType.GPS -> R.drawable.ic_location_off
-        ConditionErrorType.PERMISSION_LOCATION -> R.drawable.ic_app_settings
-        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.drawable.ic_app_settings
-        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.drawable.ic_app_settings
-        ConditionErrorType.NETWORK -> R.drawable.ic_location_off
-        ConditionErrorType.EMAIL_VERIFICATION -> R.drawable.ic_email
+        ConditionErrorType.GPS -> Icons.Rounded.LocationOff
+        ConditionErrorType.PERMISSION_LOCATION -> Icons.Rounded.PhonelinkSetup
+        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> Icons.Rounded.PhonelinkSetup
+        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> Icons.Rounded.PhonelinkSetup
+        ConditionErrorType.NETWORK -> Icons.Rounded.LocationOff
+        ConditionErrorType.EMAIL_VERIFICATION -> Icons.Rounded.Email
     }
 
 val ConditionErrorType.nameRes: Int

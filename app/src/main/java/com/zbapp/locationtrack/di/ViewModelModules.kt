@@ -11,8 +11,7 @@ import com.zbapp.locationtrack.data.PreCheckControl
 import com.zbapp.locationtrack.tracking.LocationInitHandler
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import com.zbapp.locationtrack.ui.dashboard.DashboardViewModel
-import com.zbapp.locationtrack.ui.groups.SharingStartFragmentArgs
-import com.zbapp.locationtrack.ui.groups.SharingViewModel
+import com.zbapp.locationtrack.ui.share.SharingViewModel
 import com.zbapp.locationtrack.ui.groups.create.CreateGroupViewModel
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailViewModel
 import com.zbapp.locationtrack.ui.invite.AcceptInviteViewModel

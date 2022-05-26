@@ -25,7 +25,6 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.*
 import com.zbapp.locationtrack.ui.groups.GroupListItem
-import com.zbapp.locationtrack.ui.groups.SharingViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem

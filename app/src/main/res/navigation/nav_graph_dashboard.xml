@@ -3,19 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_dashboard"
-    app:startDestination="@id/sharingStartFragment">
-
-    <fragment
-        android:id="@+id/sharingStartFragment"
-        android:name="com.zbapp.locationtrack.ui.groups.SharingStartFragment"
-        android:label="SharingStartFragment"
-        tools:layout="@layout/fragment_sharing_start">
-        <argument
-            android:name="groupId"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-    </fragment>
+    app:startDestination="@id/acceptInviteFragment">
 
     <dialog
         android:id="@+id/acceptInviteFragment"
