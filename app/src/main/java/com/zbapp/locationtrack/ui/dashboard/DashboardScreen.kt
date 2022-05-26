@@ -13,14 +13,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.Payload
 import com.zbapp.core.utils.ConditionErrorType
-import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.tracking.LocationPermissionHandler
+import com.zbapp.locationtrack.tracking.rememberLocationPermissionHandler
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.DefaultEmptyState
 import com.zbapp.locationtrack.ui.components.FilledButton
@@ -29,8 +27,8 @@ import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
-import com.zbapp.locationtrack.utils.extensions.getActivity
 import org.koin.androidx.compose.getViewModel
+
 
 @Composable
 fun DashboardScreen(
@@ -38,11 +36,9 @@ fun DashboardScreen(
     vm: DashboardViewModel = getViewModel(),
 ) {
 
-    val activity = LocalContext.current.getActivity()!!
-    val permissionHandler = LocationPermissionHandler(
-        activity.application as AppClass,
-        activity,
-        activity.activityResultRegistry
+    val permissionHandler = rememberLocationPermissionHandler(
+        appState = appState,
+        locationStatusProvider = vm.locationStatusProvider
     )
     val vmState by vm.uiState.collectAsState(Payload.Loading)
     val state = vmState
@@ -92,7 +88,9 @@ fun DashboardScreen(
                         SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_active))
                         state.data.activeGroups.forEach {
                             GroupListItem(data = it) {
-                                appState.navController.navigate(AppScreen.DashboardRoot.GroupDetails.route(it.id))
+                                appState.navController.navigate(
+                                    AppScreen.DashboardRoot.GroupDetails.route(it.id)
+                                )
                             }
                             Spacer(modifier = Modifier.size(8.dp))
                         }
@@ -102,7 +100,9 @@ fun DashboardScreen(
                         SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_inactive))
                         state.data.inactiveGroups.forEach {
                             GroupListItem(data = it) {
-                                appState.navController.navigate(AppScreen.DashboardRoot.GroupDetails.route(it.id))
+                                appState.navController.navigate(
+                                    AppScreen.DashboardRoot.GroupDetails.route(it.id)
+                                )
                             }
                             Spacer(modifier = Modifier.size(8.dp))
                         }
