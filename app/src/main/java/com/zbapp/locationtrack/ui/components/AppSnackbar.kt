@@ -35,7 +35,7 @@ fun AppSnackbar(
                 content = { Text(snackbarData.message.annotatedBold()) },
                 action = actionComposable,
                 actionOnNewLine = false,
-                shape = MaterialTheme.shapes.small,
+                shape = MaterialTheme.shapes.medium,
                 backgroundColor = MaterialTheme.colors.surface,
                 contentColor = MaterialTheme.colors.onSurface,
                 elevation = 1.dp
