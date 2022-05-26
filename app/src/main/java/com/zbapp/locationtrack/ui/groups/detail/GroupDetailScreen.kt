@@ -30,7 +30,9 @@ import com.zbapp.core.models.location.LocationSharingContract
 import com.zbapp.core.presentation.groups.GroupDetailScreenEvent
 import com.zbapp.core.presentation.groups.GroupDetailScreenState
 import com.zbapp.core.presentation.groups.GroupMemberItemState
+import com.zbapp.core.utils.ConditionErrorType
 import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.tracking.rememberLocationPermissionHandler
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.DefaultEmptyState
 import com.zbapp.locationtrack.ui.components.ImageModelImage
@@ -40,6 +42,7 @@ import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.share.getDistance
 import com.zbapp.locationtrack.ui.shared.errorString
+import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
 import com.zbapp.locationtrack.ui.theme.AppColors
 import com.zbapp.locationtrack.utils.extensions.annotatedBold
 import com.zbapp.locationtrack.utils.extensions.fromUTCtoMapSharingTime
@@ -105,6 +108,11 @@ fun GroupDetailScreen(
         }
         is Payload.Success -> {
 
+            val permissionHandler = rememberLocationPermissionHandler(
+                appState = appState,
+                locationStatusProvider = vm.locationStatusProvider
+            )
+
             when (val dialog = showDialog) {
                 is MainAlertDialog.DeleteGroup -> {
                     dialog.Show {
@@ -166,6 +174,13 @@ fun GroupDetailScreen(
                             AppScreen.DashboardRoot.SharingStart.route(groupId)
                         )
                     }
+                },
+                onErrorAction = {
+                    when (it) {
+                        ConditionErrorType.GPS -> permissionHandler.askLocationService()
+                        ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
+                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                    }
                 }
             )
         }
@@ -184,6 +199,7 @@ fun GroupDetailScreen(
     onMemberDelete: (GroupMemberItemState) -> Unit,
     onOpenMap: () -> Unit,
     onSharingAction: () -> Unit,
+    onErrorAction: (ConditionErrorType) -> Unit,
 ) {
 
     var optionMenuExpanded by remember {
@@ -267,14 +283,40 @@ fun GroupDetailScreen(
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = it.calculateBottomPadding() + 100.dp)
+            contentPadding = PaddingValues(
+                start = 20.dp,
+                end = 20.dp,
+                top = it.calculateTopPadding() + 20.dp,
+                bottom = it.calculateBottomPadding() + 100.dp
+            )
         ) {
+
+            state.errors.forEach {
+                this.item(key = "error_$it") {
+                    ConditionErrorItem(data = it) { onErrorAction(it) }
+                }
+            }
+
+            if (state.sharingStatus != null) {
+                if (state.errors.isNotEmpty())
+                    this.item { Spacer(modifier = Modifier.size(10.dp)) }
+                this.item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        GroupDetailSharingStatusElement(
+                            contract = state.sharingStatus!!
+                        )
+                    }
+                }
+                this.item { Spacer(modifier = Modifier.size(30.dp)) }
+            }
 
             this.item(key = "main_header") {
                 GroupDetailsHeader(
                     groupName = state.name,
                     groupImage = state.image,
-                    sharingStatus = state.sharingStatus,
                     onMapClick = onOpenMap
                 )
             }
@@ -330,23 +372,11 @@ fun GroupDetailsHeader(
     modifier: Modifier = Modifier,
     groupName: String,
     groupImage: ImageModel,
-    sharingStatus: LocationSharingContract?,
     onMapClick: () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-
-        if (sharingStatus != null) {
-            Spacer(modifier = Modifier.size(10.dp))
-            GroupDetailSharingStatusElement(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                contract = sharingStatus
-            )
-            Spacer(modifier = Modifier.size(30.dp))
-        } else {
-            Spacer(modifier = Modifier.size(40.dp))
-        }
 
         ImageModelImage(
             modifier = Modifier.size(140.dp),

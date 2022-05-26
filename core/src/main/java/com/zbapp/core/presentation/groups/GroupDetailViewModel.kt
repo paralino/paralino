@@ -7,6 +7,7 @@ import com.zbapp.core.models.mapSuccess
 import com.zbapp.core.presentation.CoreViewModel
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
+import com.zbapp.core.utils.ILocationStatusProvider
 import com.zbapp.core.utils.exceptions.NotFoundException
 import com.zbapp.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +19,7 @@ class GroupDetailViewModel(
     private val groupId: String,
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
+    private val locationStatusProvider: ILocationStatusProvider,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -30,10 +32,11 @@ class GroupDetailViewModel(
 
     init {
         combine(
+            locationStatusProvider.status,
             groupRepo.getGroupWithMembers(groupId),
             sharingManager.sharingContractForGroup(groupId)
         )
-        { group, sharingStatus ->
+        { locationStatus, group, sharingStatus ->
 
             val members = group.members
                 .sortedBy { it.name }
@@ -53,7 +56,10 @@ class GroupDetailViewModel(
                 name = group.name,
                 image = group.image,
                 sharingStatus = sharingStatus,
-                members = members
+                members = members,
+                errors = sharingStatus?.let {
+                    locationStatus.getPossibleErrors(forBackground = it.isLongTerm)
+                } ?: emptyList()
             )
         }
             .mapToPayload { it }

@@ -2,6 +2,7 @@ package com.zbapp.core.presentation.groups
 
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.location.LocationSharingContract
+import com.zbapp.core.utils.ConditionErrorType
 
 data class GroupDetailScreenState(
     val id: String,
@@ -10,7 +11,8 @@ data class GroupDetailScreenState(
     val name: String,
     val image: ImageModel,
     val sharingStatus: LocationSharingContract?,
-    val members: List<GroupMemberItemState>
+    val members: List<GroupMemberItemState>,
+    val errors: List<ConditionErrorType>
 ) {
 }
 
