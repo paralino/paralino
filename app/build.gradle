@@ -161,10 +161,10 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
 
     // region compose
-    def composeVersion = '1.1.1'
+    def composeVersion = '1.2.0-beta02'
     implementation 'androidx.activity:activity-compose:1.4.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.material:material:$composeVersion"
     implementation "androidx.compose.material:material-icons-core:$composeVersion"
@@ -174,7 +174,8 @@ dependencies {
     implementation "androidx.compose.ui:ui:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-tooling:$composeVersion"
     implementation "androidx.navigation:navigation-compose:2.4.2"
-    implementation "com.google.accompanist:accompanist-pager:0.23.1"
+    implementation "com.google.accompanist:accompanist-pager:0.24.9-beta"
+    implementation "com.google.accompanist:accompanist-permissions:0.24.9-beta"
 
 //    implementation "androidx.compose.material3:material3:1.0.0-alpha10"
 //    implementation "androidx.compose.foundation:foundation-layout:$composeVersion"
@@ -187,8 +188,8 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:2.4.2"
     implementation "androidx.fragment:fragment-ktx:1.4.1"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1"
     implementation "org.jetbrains.kotlinx:kotlinx-datetime:0.3.2"
 

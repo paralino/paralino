@@ -5,8 +5,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -33,13 +36,12 @@ import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.extensions.quantityStringResource
 import com.zbapp.locationtrack.utils.extensions.safeCast
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import java.time.Duration
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SharingStartScreen(
     appState: MainAppState,
@@ -103,7 +105,7 @@ fun SharingStartScreen(
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
-        vm.events.collect { event ->
+        vm.events.collectLatest { event ->
             when (event) {
                 is SharingStartScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
@@ -196,7 +198,7 @@ fun SharingStartScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .animateContentSize()
-                .padding(start = 20.dp, end = 20.dp, bottom = 100.dp),
+                .padding(start = 20.dp, end = 20.dp, bottom = it.calculateBottomPadding() + 100.dp),
         ) {
 
             AnimatedVisibility(visible = state.groupState.data != null) {

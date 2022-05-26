@@ -44,7 +44,9 @@ import com.zbapp.locationtrack.ui.theme.AppColors
 import com.zbapp.locationtrack.utils.extensions.annotatedBold
 import com.zbapp.locationtrack.utils.extensions.fromUTCtoMapSharingTime
 import com.zbapp.locationtrack.utils.extensions.toLocalDateTime
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -72,7 +74,7 @@ fun GroupDetailScreen(
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
-        vm.events.collect { event ->
+        vm.events.collectLatest { event ->
             when (event) {
                 is GroupDetailScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
@@ -265,7 +267,7 @@ fun GroupDetailScreen(
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 100.dp)
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = it.calculateBottomPadding() + 100.dp)
         ) {
 
             this.item(key = "main_header") {

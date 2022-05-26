@@ -63,7 +63,7 @@ fun MapHomeScreen(
     var trackMarkerId: String? by rememberSaveable(isSystemInDarkTheme()) { mutableStateOf(null) }
 
     LaunchedEffect(uiState.data?.groupId) {
-        vm.locationRefreshSubscription.collect { }
+        vm.locationRefreshSubscription.collect()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

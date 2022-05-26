@@ -21,6 +21,7 @@ import com.zbapp.locationtrack.ui.components.MainAlertDialog
 import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.shared.errorString
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -35,7 +36,7 @@ fun AccountScreen(
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
-        viewModel.events.collect { event ->
+        viewModel.events.collectLatest { event ->
             when (event) {
                 is AccountScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))

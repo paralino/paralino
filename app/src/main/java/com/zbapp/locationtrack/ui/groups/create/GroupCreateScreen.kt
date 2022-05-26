@@ -35,6 +35,7 @@ import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.extensions.safeCast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -50,7 +51,7 @@ fun GroupCreateScreen(
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
-        vm.events.collect { event ->
+        vm.events.collectLatest { event ->
             when (event) {
                 is CreateGroupScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
