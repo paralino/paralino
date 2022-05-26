@@ -1,194 +1,195 @@
 package com.zbapp.locationtrack.tracking
 
 import android.Manifest
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
+import com.google.accompanist.permissions.*
 import com.google.android.material.snackbar.Snackbar
+import com.zbapp.core.utils.ILocationStatusProvider
 import com.zbapp.core.utils.LocationConditionStatus
-import com.zbapp.locationtrack.AppClass
 import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.ui.shared.AppSnackbar
+import com.zbapp.locationtrack.ui.MainAppState
+import com.zbapp.locationtrack.ui.components.onAction
 import com.zbapp.locationtrack.ui.shared.AppSnackbarData
-import com.zbapp.locationtrack.utils.extensions.attributedBold
-
-class LocationPermissionHandler(
-    private val appClass: AppClass,
-    private val activity: Activity,
-    private val registry: ActivityResultRegistry
-) : DefaultLifecycleObserver {
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 
-    constructor(fragment: Fragment) : this(
-        fragment.requireActivity().application as AppClass,
-        fragment.requireActivity(),
-        fragment.requireActivity().activityResultRegistry
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun rememberLocationPermissionHandler(
+    appState: MainAppState,
+    locationStatusProvider: ILocationStatusProvider,
+): LocationPermissionHandlerState {
+
+    val context = LocalContext.current
+
+    val state = LocationPermissionHandlerState(
+        appState = appState,
+        context = context,
+        locationStatusProvider = locationStatusProvider
+    )
+
+    val gpsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
     ) {
-        fragment.lifecycle.addObserver(this)
+        state.askLocationService()
     }
 
-    private lateinit var locationPermissionLauncher: ActivityResultLauncher<Array<String>>
-    private lateinit var backgroundLocationPermissionLauncher: ActivityResultLauncher<String>
-    private lateinit var locationServiceLauncher: ActivityResultLauncher<Intent>
+    val locationPermissionsState = rememberMultiplePermissionsState(
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            listOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            )
+        } else {
+            listOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        }
+    ) {
+        state.locationRequestResult(it)
+    }
 
-    private var snackBar: AppSnackbar? = null
+    val backgroundLocationPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        rememberPermissionState(
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        ) {
+            state.backgroundLocationRequestResult(it)
+        }
+    } else {
+        null
+    }
+
+    DisposableEffect(state, gpsLauncher) {
+        state.gpsLauncher = gpsLauncher
+        onDispose { state.gpsLauncher = null }
+    }
+
+    DisposableEffect(state, locationPermissionsState) {
+        state.locationPermissionsState = locationPermissionsState
+        onDispose { state.locationPermissionsState = null }
+    }
+
+    DisposableEffect(state, backgroundLocationPermissionState) {
+        state.backgroundLocationPermissionState = backgroundLocationPermissionState
+        onDispose { state.backgroundLocationPermissionState = null }
+    }
+
+    return state
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+class LocationPermissionHandlerState constructor(
+    val appState: MainAppState,
+    val context: Context,
+    val locationStatusProvider: ILocationStatusProvider,
+) {
+    internal var locationPermissionsState: MultiplePermissionsState? = null
+    internal var backgroundLocationPermissionState: PermissionState? = null
+    internal var gpsLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null
+
     private var denied: Boolean = false
     private var backgroundDenied: Boolean = false
 
 
-    override fun onCreate(owner: LifecycleOwner) {
-
-        locationPermissionLauncher = registry.register(
-            "key_location_${this.hashCode()}",
-            owner,
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) {
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-                backgroundDenied = it.filter {
-                    it.key == Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                }.none { it.value }
-            }
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                denied = it.filter {
-                    it.key != Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                }.any { !it.value }
-            } else {
-                denied = it.any { !it.value }
-            }
-
-            if (denied) {
-                showLocationDeniedInfo()
-            }
-            updateStatus()
+    fun locationRequestResult(state: Map<String, Boolean>) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            backgroundDenied = state.filter {
+                it.key == Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            }.none { it.value }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            denied = state.filter {
+                it.key != Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            }.any { !it.value }
+        } else {
+            denied = state.any { !it.value }
         }
 
-        backgroundLocationPermissionLauncher = registry.register(
-            "key_background_location_${this.hashCode()}",
-            owner,
-            ActivityResultContracts.RequestPermission()
-        ) {
-            backgroundDenied = !it
-            if (!it) {
-                showBackgroundLocationDeniedInfo()
-            }
-            updateStatus()
+        if (denied) {
+            showLocationDeniedInfo()
+        } else if (backgroundDenied) {
+            showBackgroundLocationDeniedInfo()
         }
-
-        locationServiceLauncher = registry.register(
-            "key_result_location_${this.hashCode()}",
-            owner,
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            askLocationService()
-        }
-    }
-
-    override fun onResume(owner: LifecycleOwner) {
-        denied = false
-        backgroundDenied = false
         updateStatus()
     }
 
-    override fun onStop(owner: LifecycleOwner) {
-        snackBar?.dismiss()
-        snackBar = null
-    }
-
-    override fun onDestroy(owner: LifecycleOwner) {
-        locationPermissionLauncher.unregister()
-        backgroundLocationPermissionLauncher.unregister()
-        locationServiceLauncher.unregister()
-    }
-
-    private fun updateStatus() {
-        appClass.updateLocationStatus()
-    }
-
-    private fun shouldShowRationale(): Boolean {
-        return ActivityCompat.shouldShowRequestPermissionRationale(
-            activity,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-    }
-
-    private fun shouldShowBackgroundPermissionRationale(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                activity,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            )
-        } else {
-            return false
+    fun backgroundLocationRequestResult(state: Boolean) {
+        backgroundDenied = !state
+        if (!state) {
+            showBackgroundLocationDeniedInfo()
         }
+        updateStatus()
     }
 
     fun askLocationPermission() {
         when {
-            LocationConditionStatus.hasLocationPermission(appClass) -> {
+            locationPermissionsState?.allPermissionsGranted == true -> {
                 updateStatus()
             }
-            !shouldShowRationale() && denied -> {
+            locationPermissionsState?.shouldShowRationale?.not() == true && backgroundDenied -> {
                 showLocationDeniedInfo()
             }
             else -> {
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-                    locationPermissionLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                        )
-                    )
-                } else {
-                    locationPermissionLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
-                    )
-                }
+                locationPermissionsState?.launchMultiplePermissionRequest()
             }
         }
     }
 
     fun askBackgroundLocationPermission() {
         when {
-            LocationConditionStatus.hasBackgroundLocationPermission(appClass) -> {
+            backgroundLocationPermissionState?.status?.isGranted == true -> {
                 updateStatus()
             }
-            !shouldShowBackgroundPermissionRationale() && backgroundDenied -> {
+            backgroundLocationPermissionState?.status?.shouldShowRationale?.not() == true && backgroundDenied -> {
                 showBackgroundLocationDeniedInfo()
             }
             else -> {
                 if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-                    locationPermissionLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                        )
-                    )
+                    locationPermissionsState?.launchMultiplePermissionRequest()
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    backgroundLocationPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                    backgroundLocationPermissionState?.launchPermissionRequest()
                 }
             }
         }
     }
 
     fun askLocationService() {
-        if (LocationConditionStatus.isLocationOn(appClass)) {
+        if (LocationConditionStatus.isLocationOn(context)) {
             updateStatus()
         } else {
             showGPSOffInfo()
+        }
+    }
+
+    private fun updateStatus() {
+        locationStatusProvider.status.update { LocationConditionStatus.getLocationStatus(context) }
+    }
+
+    private fun showGPSOffInfo() {
+        appState.uiScope.launch {
+            appState.showSnackbar(
+                AppSnackbarData(
+                    text = context.getString(R.string.error_location_service_missing_sheet_message),
+                    actionText = "Settings",
+                    duration = Snackbar.LENGTH_LONG
+                )
+            ).onAction {
+                gpsLauncher?.launch(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
         }
     }
 
@@ -198,65 +199,50 @@ class LocationPermissionHandler(
             R.string.error_location_precise_permission_missing_sheet_message
         } else R.string.error_location_permission_missing_sheet_message
 
-        snackBar = AppSnackbar.make(
-            activity.window.peekDecorView()?.findViewById(R.id.mainActivityRoot),
-            AppSnackbarData(
-                text = appClass.getString(messageRes),
-                actionText = "Settings",
-                duration = Snackbar.LENGTH_INDEFINITE
-            )
-        ) {
-            snackBar?.dismiss()
-            val intent = Intent().apply {
-                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                data = Uri.fromParts("package", appClass.packageName, null)
+        appState.uiScope.launch {
+            appState.showSnackbar(
+                AppSnackbarData(
+                    text = context.getString(messageRes),
+                    actionText = "Settings",
+                    duration = Snackbar.LENGTH_LONG
+                )
+            ).onAction {
+                val intent = Intent().apply {
+                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+                context.startActivity(intent)
             }
-            activity.startActivity(intent)
-        }?.also { it.show() }
+        }
     }
 
     private fun showBackgroundLocationDeniedInfo() {
         val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            appClass.getString(
+            context.getString(
                 R.string.error_location_background_permission_missing_sheet_message_android11,
-                appClass.packageManager.backgroundPermissionOptionLabel
+                context.packageManager.backgroundPermissionOptionLabel
             )
         } else {
-            appClass.getString(
+            context.getString(
                 R.string.error_location_background_permission_missing_sheet_message,
             )
         }
 
-        snackBar = AppSnackbar.make(
-            activity.window.peekDecorView()?.findViewById(R.id.mainActivityRoot),
-            AppSnackbarData(
-                text = message,
-                actionText = "Settings",
-                duration = Snackbar.LENGTH_INDEFINITE
-            )
-        ) {
-            snackBar?.dismiss()
-            val intent = Intent().apply {
-                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                data = Uri.fromParts("package", appClass.packageName, null)
+        appState.uiScope.launch {
+            appState.showSnackbar(
+                AppSnackbarData(
+                    text = message,
+                    actionText = "Settings",
+                    duration = Snackbar.LENGTH_LONG
+                )
+            ).onAction {
+                val intent = Intent().apply {
+                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+                context.startActivity(intent)
             }
-            activity.startActivity(intent)
-        }?.also { it.show() }
-    }
-
-    private fun showGPSOffInfo() {
-        snackBar = AppSnackbar.make(
-            activity.window.peekDecorView()?.findViewById(R.id.mainActivityRoot),
-            AppSnackbarData(
-                text = appClass.getString(R.string.error_location_service_missing_sheet_message),
-                actionText = "Settings",
-                duration = Snackbar.LENGTH_INDEFINITE
-            )
-        ) {
-            snackBar?.dismiss()
-            locationServiceLauncher.launch(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-        }?.also { it.show() }
+        }
     }
 
 }
-
