@@ -15,7 +15,7 @@ import com.zbapp.locationtrack.ui.groups.create.CreateGroupViewModel
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailViewModel
 import com.zbapp.locationtrack.ui.invite.AcceptInviteViewModel
 import com.zbapp.locationtrack.ui.invite.AccessCodeInputFragmentArgs
-import com.zbapp.locationtrack.ui.invite.ManageInviteViewModel
+import com.zbapp.locationtrack.ui.invite.PersonalCodesViewModel
 import com.zbapp.locationtrack.ui.login.LoginViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsViewModel
@@ -32,7 +32,7 @@ val viewModelModules = module {
     viewModel { LoginViewModel(androidApplication(), get()) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { (args: String?) -> SharingViewModel(androidApplication(), args, get(), get(), get()) }
-    viewModel { ManageInviteViewModel(androidApplication(), get()) }
+    viewModel { PersonalCodesViewModel(androidApplication(), get()) }
     viewModel { (args: AccessCodeInputFragmentArgs?) -> AcceptInviteViewModel(androidApplication(), args, get(), get()) }
     viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get()) }
 }

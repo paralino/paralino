@@ -29,7 +29,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun PersonalCodeScreen(
     appState: MainAppState,
-    vm: ManageInviteViewModel = getViewModel(),
+    vm: PersonalCodesViewModel = getViewModel(),
 ) {
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)

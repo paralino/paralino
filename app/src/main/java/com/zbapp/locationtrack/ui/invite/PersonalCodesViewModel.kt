@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.zbapp.core.presentation.invite.PersonalCodeViewModel
 import com.zbapp.core.repo.invite.InviteRepository
 
-class ManageInviteViewModel(
+class PersonalCodesViewModel(
     app: Application,
     private val repo: InviteRepository,
 ) : AndroidViewModel(app) {
