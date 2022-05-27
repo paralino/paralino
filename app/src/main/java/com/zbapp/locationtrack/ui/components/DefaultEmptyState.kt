@@ -23,7 +23,8 @@ fun DefaultEmptyState(
     icon: ImageVector? = null,
     buttonText: String? = null,
     buttonIcon: ImageVector? = null,
-    bigButton: Boolean = true,
+    buttonStyle: ButtonStyle = ButtonStyle.BIG,
+    buttonState: AppButtonState = AppButtonState.CONTENT,
     onClick: (() -> Unit)? = null
 ) {
     Column(
@@ -53,7 +54,8 @@ fun DefaultEmptyState(
         if (buttonText != null) {
             Spacer(modifier = Modifier.size(50.dp))
             FilledButton(
-                style = if (bigButton) ButtonStyle.BIG else ButtonStyle.SMALL,
+                style = buttonStyle,
+                state = buttonState,
                 icon = buttonIcon,
                 onClick = onClick ?: { }
             ) {

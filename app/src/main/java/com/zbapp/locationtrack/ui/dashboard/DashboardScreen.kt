@@ -77,7 +77,6 @@ fun DashboardScreen(
                         content = stringResource(id = R.string.dashboard_info_no_groups),
                         icon = Icons.Rounded.Groups,
                         buttonText = stringResource(id = R.string.dashboard_groups_add_button),
-                        bigButton = true,
                         onClick = {
                             appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
                         }
