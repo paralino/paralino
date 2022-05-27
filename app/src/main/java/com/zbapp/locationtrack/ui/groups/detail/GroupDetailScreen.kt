@@ -149,7 +149,9 @@ fun GroupDetailScreen(
                     )
                 },
                 onAddGroupMember = {
-                    // TODO add member
+                    appState.navController.navigate(
+                        AppScreen.DashboardRoot.GroupMemberAdd.route(groupId = groupId)
+                    )
                 },
                 onGroupDeleteOrLeave = {
                     if (state.data.canEdit) {

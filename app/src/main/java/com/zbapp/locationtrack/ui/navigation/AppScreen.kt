@@ -39,11 +39,22 @@ sealed class AppScreen {
 
         object GroupCreate : AppScreen() {
             override val routeSignature: String = "group-create?$argumentGroupId={$argumentGroupId}"
-            val arguments: List<NamedNavArgument> = listOf(navArgument(argumentGroupId) { nullable = true })
             fun route(groupId: String? = null): String {
                 if (groupId == null)
                     return "group-create"
                 return "group-create?$argumentGroupId=$groupId"
+            }
+        }
+
+        object GroupMemberAdd : AppScreen() {
+            val argumentCode: String = "code"
+            override val routeSignature: String = "group-member-add?$argumentGroupId={$argumentGroupId}&$argumentCode={$argumentCode}"
+            fun route(groupId: String? = null, code: String? = null): String {
+                val args = arrayOf(groupId?.let { "$argumentGroupId=$groupId" }, code?.let { "$argumentCode=$code" })
+                    .filterNotNull().joinToString(separator = "&")
+                if (args.isEmpty())
+                    return "group-member-add"
+                return "group-member-add?$args"
             }
         }
     }

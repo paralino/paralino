@@ -10,6 +10,7 @@ import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.dashboard.DashboardScreen
 import com.zbapp.locationtrack.ui.groups.create.GroupCreateScreen
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailScreen
+import com.zbapp.locationtrack.ui.invite.input.MemberInviteScreen
 import com.zbapp.locationtrack.ui.invite.manage.PersonalCodeScreen
 import com.zbapp.locationtrack.ui.login.LoggedOutScreen
 import com.zbapp.locationtrack.ui.map.MapHomeScreen
@@ -52,9 +53,16 @@ fun NavGraphBuilder.dashboardGraph(appState: MainAppState) {
                 it.arguments?.getString(AppScreen.DashboardRoot.GroupCreate.argumentGroupId)
             GroupCreateScreen(appState = appState, groupId = groupId)
         }
+        composable(AppScreen.DashboardRoot.GroupMemberAdd.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.DashboardRoot.GroupMemberAdd.argumentGroupId)
+            val code =
+                it.arguments?.getString(AppScreen.DashboardRoot.GroupMemberAdd.argumentCode)
+            MemberInviteScreen(appState = appState, groupId = groupId, code = code)
+        }
         composable(AppScreen.DashboardRoot.SharingStart.routeSignature) {
             val groupId =
-                it.arguments?.getString(AppScreen.DashboardRoot.GroupDetails.argumentGroupId)
+                it.arguments?.getString(AppScreen.DashboardRoot.SharingStart.argumentGroupId)
             SharingStartScreen(appState = appState, groupId = groupId)
         }
     }
