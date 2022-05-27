@@ -270,7 +270,7 @@ sealed interface MainAlertDialog {
     }
 
     data class PersonalCodeDelete(
-        val code: String
+        val codeId: String
     ) : MainAlertDialog {
         override val key: String = this.javaClass.simpleName
 

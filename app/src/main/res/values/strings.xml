@@ -19,6 +19,7 @@
     <string name="button_save">Save</string>
 
     <string name="alert_title_confirm">Please confirm</string>
+    <string name="error_load_data_generic">Unable to complete the request.</string>
     <string name="error_no_connection_snackbar">Unable to connect\n**Check your internet connection.**</string>
     <string name="error_server_unavailable">Unable to connect at the moment, please try again shortly.</string>
     <string name="error_something_wrong">Something went wrong!</string>
