@@ -57,7 +57,7 @@ fun SettingSectionAccount(navController: NavController) {
     ) { navController.navigate(AppScreen.SettingsRoot.ProfileDetails.routeSignature) }
     SettingsActionItem(
         name = stringResource(id = R.string.settings_section_personal_code_title),
-        icon = Icons.Rounded.GridView
+        icon = Icons.Rounded.Key
     ) { navController.navigate(AppScreen.SettingsRoot.InviteCodes.routeSignature) }
 }
 
