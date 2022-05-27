@@ -55,6 +55,10 @@ fun SettingSectionAccount(navController: NavController) {
         name = stringResource(id = R.string.settings_section_account_title),
         icon = Icons.Rounded.AccountCircle
     ) { navController.navigate(AppScreen.SettingsRoot.ProfileDetails.routeSignature) }
+    SettingsActionItem(
+        name = stringResource(id = R.string.settings_section_personal_code_title),
+        icon = Icons.Rounded.GridView
+    ) { navController.navigate(AppScreen.SettingsRoot.InviteCodes.routeSignature) }
 }
 
 @Composable

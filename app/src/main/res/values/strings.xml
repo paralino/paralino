@@ -62,6 +62,7 @@
     <string name="location_banner_error_offline">Device is offline</string>
 
     <string name="settings_section_account_title">Account</string>
+    <string name="settings_section_personal_code_title">Personal code</string>
     <string name="settings_account_edit_profile">Edit profile</string>
     <string name="settings_account_edit_email">Change email</string>
     <string name="settings_account_edit_password">Change password</string>
