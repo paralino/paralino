@@ -21,8 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.locationtrack.databinding.ElementInviteCodeBinding
+import com.zbapp.locationtrack.ui.components.AppButtonState
 import com.zbapp.locationtrack.ui.components.AutoSizeText
+import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.theme.AppTheme
+import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.BaseRvItem
 import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
@@ -65,6 +68,7 @@ data class InviteCodeData(
 fun PersonalCodeItem(
     modifier: Modifier = Modifier,
     state: PersonalCodeData,
+    deleteLoading: Boolean,
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit,
@@ -75,6 +79,7 @@ fun PersonalCodeItem(
         validity = state.validity.toDateTimeUTC()
             .toLocalDate()
             .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
+        deleteLoading = deleteLoading,
         onCopy = onCopy,
         onShare = onShare,
         onDelete = onDelete
@@ -86,6 +91,7 @@ fun PersonalCodeItem(
     modifier: Modifier = Modifier,
     code: String,
     validity: String,
+    deleteLoading: Boolean,
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit,
@@ -144,13 +150,22 @@ fun PersonalCodeItem(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Rounded.Delete,
-                    tint = MaterialTheme.colors.onError,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
+            IconButton(
+                onClick = { if(!deleteLoading) onDelete() }
+            ) {
+                if(deleteLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        tint = MaterialTheme.colors.onError,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }
@@ -167,6 +182,7 @@ fun PersonalCodePreview() {
                     modifier = Modifier.fillMaxWidth(),
                     code = "XXXX-XXXX",
                     validity = "3 June 2022",
+                    deleteLoading = false,
                     onCopy = { },
                     onShare = { },
                     onDelete = { }
