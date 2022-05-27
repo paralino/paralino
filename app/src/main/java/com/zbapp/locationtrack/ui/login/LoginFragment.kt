@@ -105,8 +105,6 @@ class LoginFragment : BaseFragment(R.layout.fragment_login) {
                     delay(600)
                     if (vm.isUserVerified()) {
                         findNavController().popBackStack()
-                    } else {
-                        navigateDefault(R.id.toEmailConfirmInfo)
                     }
                 }
             }

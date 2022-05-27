@@ -11,16 +11,15 @@ import com.zbapp.locationtrack.data.PreCheckControl
 import com.zbapp.locationtrack.tracking.LocationInitHandler
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
 import com.zbapp.locationtrack.ui.dashboard.DashboardViewModel
-import com.zbapp.locationtrack.ui.share.SharingViewModel
 import com.zbapp.locationtrack.ui.groups.create.CreateGroupViewModel
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailViewModel
 import com.zbapp.locationtrack.ui.invite.AcceptInviteViewModel
 import com.zbapp.locationtrack.ui.invite.AccessCodeInputFragmentArgs
 import com.zbapp.locationtrack.ui.invite.ManageInviteViewModel
-import com.zbapp.locationtrack.ui.login.LoginCheckViewModel
 import com.zbapp.locationtrack.ui.login.LoginViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsViewModel
+import com.zbapp.locationtrack.ui.share.SharingViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -31,7 +30,6 @@ val viewModelModules = module {
     viewModel { MapViewModel(androidApplication(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { LoginViewModel(androidApplication(), get()) }
-    viewModel { LoginCheckViewModel(androidApplication(), get()) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { (args: String?) -> SharingViewModel(androidApplication(), args, get(), get(), get()) }
     viewModel { ManageInviteViewModel(androidApplication(), get()) }

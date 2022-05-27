@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_settings"
-    app:startDestination="@id/manageInviteFragment">
+    app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -13,30 +13,6 @@
         <deepLink
             android:id="@+id/deepLink"
             app:uri=".*/settings/login" />
-        <action
-            android:id="@+id/toEmailConfirmInfo"
-            app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true"
-            app:destination="@id/confirmEmailInfoFragment"
-            />
-    </fragment>
-
-    <fragment
-        android:id="@+id/confirmEmailInfoFragment"
-        android:name="com.zbapp.locationtrack.ui.login.ConfirmEmailInfoFragment"
-        android:label="ConfirmEmailInfoFragment"
-        tools:layout="@layout/fragment_generic_info"
-        />
-
-    <fragment
-        android:id="@+id/manageInviteFragment"
-        android:name="com.zbapp.locationtrack.ui.invite.ManageInviteFragment"
-        android:label="ManageInviteFragment"
-        tools:layout="@layout/fragment_invite_manage"
-        >
-        <deepLink
-            android:id="@+id/deepLink"
-            app:uri=".*/settings/invite" />
     </fragment>
 
     <dialog

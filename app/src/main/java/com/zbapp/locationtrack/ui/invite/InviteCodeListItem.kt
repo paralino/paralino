@@ -1,7 +1,5 @@
 package com.zbapp.locationtrack.ui.invite
 
-import android.content.Context
-import android.util.AttributeSet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,49 +18,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.invite.PersonalCodeData
-import com.zbapp.locationtrack.databinding.ElementInviteCodeBinding
-import com.zbapp.locationtrack.ui.components.AppButtonState
 import com.zbapp.locationtrack.ui.components.AutoSizeText
-import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.theme.AppTheme
-import com.zbapp.locationtrack.ui.theme.ButtonStyle
-import com.zbapp.locationtrack.utils.BaseRvItem
-import com.zbapp.locationtrack.utils.ListItemType
 import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
-import com.zbapp.locationtrack.utils.extensions.viewBinding
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-
-class InviteCodeListItem(context: Context, attributeSet: AttributeSet? = null) :
-    BaseRvItem<InviteCodeData>(context, attributeSet) {
-
-    private val vb by viewBinding(ElementInviteCodeBinding::inflate)
-    var onCopy: ((InviteCodeData) -> Unit)? = null
-    var onShare: ((InviteCodeData) -> Unit)? = null
-    var onDelete: ((InviteCodeData) -> Unit)? = null
-
-    init {
-        setFullWidth()
-        vb.bCopy.setOnClickListener { itemData?.let { onCopy?.invoke(it) } }
-        vb.bShare.setOnClickListener { itemData?.let { onShare?.invoke(it) } }
-        vb.bDelete.setOnClickListener { itemData?.let { onDelete?.invoke(it) } }
-    }
-
-    override fun applyData(data: InviteCodeData) {
-        vb.tvInviteCode.text = data.personalCodeData.code
-        vb.tvInviteCodeValidity.text = data.personalCodeData.validity.toDateTimeUTC()
-            .toLocalDate()
-            .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
-    }
-}
-
-data class InviteCodeData(
-    val personalCodeData: PersonalCodeData,
-) : ListItemType {
-    override fun getIdentifier(): String {
-        return personalCodeData.code
-    }
-}
 
 @Composable
 fun PersonalCodeItem(
