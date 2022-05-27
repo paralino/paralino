@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zbapp.core.models.invite.PersonalCodeData
 import com.zbapp.locationtrack.ui.components.AutoSizeText
 import com.zbapp.locationtrack.ui.theme.AppTheme
@@ -71,6 +72,7 @@ fun PersonalCodeItem(
             text = code.uppercase(),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
+            letterSpacing = 2.sp,
             maxLines = 1
         )
 
