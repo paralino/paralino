@@ -170,6 +170,8 @@
     <string name="invite_connect_button_pickGroup">Choose a group</string>
     <string name="invite_connect_alert_pickGroup">Please choose a group</string>
     <string name="invite_connect_title">To connect with others, enter their user ID</string>
+    <string name="invite_section_title_group">Group</string>
+    <string name="invite_section_title_user">User</string>
 
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
