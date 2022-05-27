@@ -1,9 +1,9 @@
-package com.zbapp.locationtrack.ui.invite
+package com.zbapp.locationtrack.ui.invite.manage
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.zbapp.core.presentation.invite.PersonalCodeViewModel
+import com.zbapp.core.presentation.invite.manage.PersonalCodeViewModel
 import com.zbapp.core.repo.invite.InviteRepository
 
 class PersonalCodesViewModel(

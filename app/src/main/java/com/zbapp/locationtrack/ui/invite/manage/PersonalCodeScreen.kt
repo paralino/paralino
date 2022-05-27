@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.ui.invite
+package com.zbapp.locationtrack.ui.invite.manage
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.Payload
-import com.zbapp.core.presentation.invite.PersonalCodeScreenEvent
+import com.zbapp.core.presentation.invite.manage.PersonalCodeScreenEvent
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.AppButtonState

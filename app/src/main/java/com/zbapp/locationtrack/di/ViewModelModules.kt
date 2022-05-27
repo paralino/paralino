@@ -15,7 +15,7 @@ import com.zbapp.locationtrack.ui.groups.create.CreateGroupViewModel
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailViewModel
 import com.zbapp.locationtrack.ui.invite.AcceptInviteViewModel
 import com.zbapp.locationtrack.ui.invite.AccessCodeInputFragmentArgs
-import com.zbapp.locationtrack.ui.invite.PersonalCodesViewModel
+import com.zbapp.locationtrack.ui.invite.manage.PersonalCodesViewModel
 import com.zbapp.locationtrack.ui.login.LoginViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsViewModel

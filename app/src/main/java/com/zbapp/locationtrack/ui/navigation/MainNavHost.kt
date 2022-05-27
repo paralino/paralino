@@ -1,18 +1,16 @@
 package com.zbapp.locationtrack.ui.navigation
 
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.dashboard.DashboardScreen
 import com.zbapp.locationtrack.ui.groups.create.GroupCreateScreen
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailScreen
-import com.zbapp.locationtrack.ui.invite.PersonalCodeScreen
+import com.zbapp.locationtrack.ui.invite.manage.PersonalCodeScreen
 import com.zbapp.locationtrack.ui.login.LoggedOutScreen
 import com.zbapp.locationtrack.ui.map.MapHomeScreen
 import com.zbapp.locationtrack.ui.settings.AccountScreen

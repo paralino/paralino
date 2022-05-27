@@ -1,4 +1,4 @@
-package com.zbapp.core.presentation.invite
+package com.zbapp.core.presentation.invite.manage
 
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.mapSuccess

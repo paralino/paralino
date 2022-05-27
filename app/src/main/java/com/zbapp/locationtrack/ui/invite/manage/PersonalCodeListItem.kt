@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.ui.invite
+package com.zbapp.locationtrack.ui.invite.manage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
