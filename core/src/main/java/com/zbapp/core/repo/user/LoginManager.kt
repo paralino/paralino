@@ -36,7 +36,7 @@ class LoginManager(
     fun signUp(userName: String, email: String, password: String): Flow<SignUpStep> {
         return flow {
 
-            emit(SignUpStep.SIGNING_UP)
+            emit(SignUpStep.STARTING)
             val derivedPasswords = cryptoCore.derivePassword(password)
             val user: Pair<UserMeRaw, UserSession>
             try {
@@ -45,7 +45,7 @@ class LoginManager(
                 // user name is saved encrypted to user preferences
                 user = userRepo.remoteSignUp(userName = null, email, derivedPasswords.loginPassword).first()
             } catch (e: Exception) {
-                throw SignUpStepException(SignUpStep.SIGNING_UP, e)
+                throw SignUpStepException(SignUpStep.STARTING, e)
             }
 
             emit(SignUpStep.GENERATING_KEYS)
@@ -102,7 +102,7 @@ class LoginManager(
     fun login(email: String, password: String): Flow<SignUpStep> {
         return flow {
 
-            emit(SignUpStep.SIGNING_UP)
+            emit(SignUpStep.STARTING)
             val derivedPasswords = cryptoCore.derivePassword(password)
             val session: UserSession
             val user: UserMeRaw
@@ -111,7 +111,7 @@ class LoginManager(
                 session = userRepo.login(email, derivedPasswords.loginPassword).first()
                 user = userRepo.getUserIfAvailable().first()
             } catch (e: Exception) {
-                throw SignUpStepException(SignUpStep.SIGNING_UP, e)
+                throw SignUpStepException(SignUpStep.STARTING, e)
             }
 
             emit(SignUpStep.GENERATING_KEYS)
@@ -161,11 +161,11 @@ class LoginManager(
 }
 
 enum class SignUpStep {
-    SIGNING_UP,
+    STARTING,
     GENERATING_KEYS,
     INIT_USER_DATA,
     SAVE_USER,
     ALL_DONE
 }
 
-class SignUpStepException(val step: SignUpStep, cause: Throwable) : Exception(cause)
+class SignUpStepException constructor(val step: SignUpStep, cause: Throwable) : Exception(cause)

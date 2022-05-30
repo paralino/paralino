@@ -126,7 +126,7 @@ class LoginViewModel(
 
     private fun getSignUpStepInfo(step: SignUpStep): String {
         val infoRes = when (step) {
-            SignUpStep.SIGNING_UP -> {
+            SignUpStep.STARTING -> {
                 when (loginScreenState.value) {
                     LoginState.LOGIN -> R.string.login_step_logIn
                     LoginState.SIGNUP -> R.string.login_step_signUp
@@ -152,7 +152,7 @@ class LoginViewModel(
             return defaultRes
 
         val errorRes: Int? = when (error.step) {
-            SignUpStep.SIGNING_UP -> {
+            SignUpStep.STARTING -> {
                 when (loginScreenState.value) {
                     LoginState.LOGIN -> R.string.login_step_error_logIn
                     LoginState.SIGNUP -> R.string.login_step_error_signUp
