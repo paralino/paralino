@@ -13,7 +13,9 @@ import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -26,6 +28,7 @@ import androidx.navigation.navOptions
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.zbapp.core.config
+import com.zbapp.core.models.Resource
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.components.AppSnackbar
 import com.zbapp.locationtrack.ui.components.SheetContent
@@ -35,6 +38,7 @@ import com.zbapp.locationtrack.ui.navigation.MainNavHost
 import com.zbapp.locationtrack.ui.theme.AppTheme
 import com.zbapp.locationtrack.utils.extensions.safeCast
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -89,15 +93,27 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun RootApp() {
+fun RootApp(
+    vm: MainViewModel = getViewModel()
+) {
     AppTheme {
-        // TODO replace with proper state
-        val userState = config.isTokenValid
+        val userState by vm.userState.collectAsState(initial = Resource.NotInitialized)
 
-        if (userState) {
-            MainAppScreen()
-        } else {
-            LoggedOutScreen()
+        when(val state = userState) {
+            Resource.NotInitialized -> {
+                AppTheme {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+            is Resource.Ready -> {
+                if (state.data) {
+                    MainAppScreen()
+                } else {
+                    LoggedOutScreen()
+                }
+            }
         }
     }
 }

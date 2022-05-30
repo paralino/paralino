@@ -10,6 +10,7 @@ import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.locationtrack.data.PreCheckControl
 import com.zbapp.locationtrack.tracking.LocationInitHandler
 import com.zbapp.locationtrack.tracking.notification.LocationNotificationHandler
+import com.zbapp.locationtrack.ui.MainViewModel
 import com.zbapp.locationtrack.ui.dashboard.DashboardViewModel
 import com.zbapp.locationtrack.ui.groups.create.CreateGroupViewModel
 import com.zbapp.locationtrack.ui.groups.detail.GroupDetailViewModel
@@ -34,6 +35,7 @@ val viewModelModules = module {
     viewModel { PersonalCodesViewModel(androidApplication(), get()) }
     viewModel { (groupId: String?, code: String?) -> MemberInviteViewModel(androidApplication(), groupId = groupId, code = code, get(), get()) }
     viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get()) }
+    viewModel { MainViewModel(get()) }
 }
 
 val utilModule = module {
