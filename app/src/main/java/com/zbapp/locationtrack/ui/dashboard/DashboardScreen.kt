@@ -9,13 +9,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.Payload
+import com.zbapp.core.presentation.dashboard.DashboardScreenEvent
 import com.zbapp.core.utils.ConditionErrorType
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.tracking.rememberLocationPermissionHandler
@@ -25,8 +28,10 @@ import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.groups.GroupListItem
 import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
+import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 
 
@@ -42,6 +47,20 @@ fun DashboardScreen(
     )
     val vmState by vm.uiState.collectAsState(Payload.Loading)
     val state = vmState
+
+    val context = LocalContext.current
+    LaunchedEffect(key1 = context) {
+        vm.events.collectLatest { event ->
+            when (event) {
+                is DashboardScreenEvent.Error -> {
+                    appState.showSnackbar(event.error.errorString(context))
+                }
+                null -> {
+                    /* do nothing */
+                }
+            }
+        }
+    }
 
     when (state) {
         is Payload.Error -> {

@@ -8,6 +8,7 @@ import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.ILocationStatusProvider
 import com.zbapp.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -15,11 +16,14 @@ class DashboardViewModel(
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
     private val locationStatusProvider: ILocationStatusProvider,
-    scope: CoroutineScope
+    scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
     private val _uiState = MutableStateFlow<Payload<DashboardScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<DashboardScreenState>> = _uiState
+
+    private val _eventChannel = Channel<DashboardScreenEvent?>()
+    val events = _eventChannel.receiveAsFlow()
 
     init {
         loadDashboard()
@@ -51,7 +55,12 @@ class DashboardViewModel(
             )
         }
             .mapToPayload { it }
-            .onEach { _uiState.value = it }
+            .onEach { result ->
+                _uiState.update { result }
+                if (result is Payload.Error) {
+                    _eventChannel.send(DashboardScreenEvent.Error(result.exception))
+                }
+            }
             .launchIn(coroutineScope)
     }
 

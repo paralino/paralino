@@ -14,12 +14,14 @@ class DashboardViewModel(
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
     private val loginManager: LoginManager,
-    val locationStatusProvider: ILocationStatusProvider
+    val locationStatusProvider: ILocationStatusProvider,
 ) : AndroidViewModel(app) {
 
-    private val coreVM = DashboardViewModel(locationSharing, groupRepository, locationStatusProvider, viewModelScope)
+    private val coreVM =
+        DashboardViewModel(locationSharing, groupRepository, locationStatusProvider, viewModelScope)
 
     val uiState = coreVM.uiState
+    val events = coreVM.events
 
     fun loadDashboard() = coreVM.loadDashboard()
 
