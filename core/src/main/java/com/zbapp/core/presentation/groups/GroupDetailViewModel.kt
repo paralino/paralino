@@ -63,7 +63,12 @@ class GroupDetailViewModel(
             )
         }
             .mapToPayload { it }
-            .onEach { result -> _uiState.update { result } }
+            .onEach { result ->
+                _uiState.update { result }
+                if(result is Payload.Error) {
+                    _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                }
+            }
             .launchIn(coroutineScope)
     }
 
