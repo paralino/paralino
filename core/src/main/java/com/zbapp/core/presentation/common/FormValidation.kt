@@ -4,17 +4,18 @@ sealed class FormValidation {
 
     object Email : FormValidation() {
         fun validate(email: String): FormValidationResult {
-            val emailValidationPattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
-                    "\\@" +
-                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
-                    "(" +
-                    "\\." +
-                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
-                    ")+"
+            val emailValidationPattern =
+                        "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                        "\\@" +
+                        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                        "(" +
+                        "\\." +
+                        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                        ")+"
 
             return FormValidationResult(
                 type = this,
-                result = Regex.fromLiteral(emailValidationPattern).matches(email)
+                result = Regex(emailValidationPattern).matches(email)
             )
         }
     }
