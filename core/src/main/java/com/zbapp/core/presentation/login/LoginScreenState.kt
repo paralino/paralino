@@ -1,12 +1,16 @@
 package com.zbapp.core.presentation.login
 
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.common.FormValidationResult
 import com.zbapp.core.repo.user.SignUpStep
 import com.zbapp.core.repo.user.SignUpStepException
+import com.zbapp.core.utils.Emojis
 
 data class LoginScreenState(
     val email: String = "",
     val password: String = "",
+    val userName: String = "",
+    val userImage: ImageModel = ImageModel.emoji(Emojis.robot),
     val hasEmailError: Boolean = false,
     val hasPasswordError: Boolean = false,
     val uiType: LoginScreenUiType = LoginScreenUiType.LOGIN,
@@ -24,7 +28,7 @@ sealed class LoginScreenEvent {
     data class SignUpError(val error: StepErrorType.SignUpErrorType): LoginScreenEvent()
     data class ForgotPasswordError(val exception: SignUpStepException): LoginScreenEvent()
     data class ValidationError(val validationResult: FormValidationResult): LoginScreenEvent()
-    object Success: LoginScreenEvent()
+    object UserReady: LoginScreenEvent()
 }
 
 

@@ -1,5 +1,6 @@
 package com.zbapp.core.presentation.login
 
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.CoreViewModel
 import com.zbapp.core.presentation.common.FormValidation
 import com.zbapp.core.repo.user.LoginManager
@@ -57,8 +58,13 @@ class LoginViewModel(
             }
         } else {
             loginManager.login(email = email, password = password)
-                .onEach { processStep(it) }
-                .catch { processSignUpError(it) }
+                .onEach { processStep(LoginScreenUiType.LOGIN, it) }
+                .catch {
+                    _uiState.update {
+                        it.copy(actionLoading = false)
+                    }
+                    processSignUpError(it)
+                }
                 .launchIn(coroutineScope)
         }
     }
@@ -87,8 +93,13 @@ class LoginViewModel(
             }
         } else {
             loginManager.signUp(userName = "", email = email, password = password)
-                .onEach { processStep(it) }
-                .catch { processSignUpError(it) }
+                .onEach { processStep(LoginScreenUiType.SIGNUP, it) }
+                .catch {
+                    _uiState.update {
+                        it.copy(actionLoading = false)
+                    }
+                    processSignUpError(it)
+                }
                 .launchIn(coroutineScope)
         }
     }
@@ -110,14 +121,14 @@ class LoginViewModel(
             }
         } else {
             coroutineScope.launch {
-                processStep(SignUpStep.STARTING)
+                processStep(LoginScreenUiType.FORGOT_PASSWORD, SignUpStep.STARTING)
                 delay(2000)
-                processStep(SignUpStep.ALL_DONE)
+                processStep(LoginScreenUiType.FORGOT_PASSWORD, SignUpStep.ALL_DONE)
             }
         }
     }
 
-    private suspend fun processStep(step: SignUpStep) {
+    private suspend fun processStep(type: LoginScreenUiType, step: SignUpStep) {
         _uiState.update {
             it.copy(
                 actionLoading = step != SignUpStep.ALL_DONE,
@@ -125,7 +136,7 @@ class LoginViewModel(
             )
         }
         if (step == SignUpStep.ALL_DONE) {
-            _eventChannel.send(LoginScreenEvent.Success)
+            _eventChannel.send(LoginScreenEvent.UserReady)
         }
     }
 
@@ -209,6 +220,22 @@ class LoginViewModel(
             else -> { /* do nothing */
             }
         }
+    }
+
+    fun onUserNameChange(name: String) {
+        _uiState.update { it.copy(userName = name) }
+    }
+
+    fun onUserImageChange(image: ImageModel) {
+        _uiState.update { it.copy(userImage = image) }
+    }
+
+    fun onEmailChange(email: String) {
+        _uiState.update { it.copy(email = email) }
+    }
+
+    fun onPasswordChange(password: String) {
+        _uiState.update { it.copy(password = password) }
     }
 
 }
