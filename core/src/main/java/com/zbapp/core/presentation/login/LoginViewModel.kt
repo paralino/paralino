@@ -42,8 +42,8 @@ class LoginViewModel(
 
         _uiState.update {
             it.copy(
-                hasPasswordError = passwordValidation.result,
-                hasEmailError = emailValidation.result
+                hasPasswordError = !passwordValidation.result,
+                hasEmailError = !emailValidation.result
             )
         }
 
@@ -72,8 +72,8 @@ class LoginViewModel(
 
         _uiState.update {
             it.copy(
-                hasPasswordError = passwordValidation.result,
-                hasEmailError = emailValidation.result
+                hasPasswordError = !passwordValidation.result,
+                hasEmailError = !emailValidation.result
             )
         }
 
@@ -100,7 +100,7 @@ class LoginViewModel(
         _uiState.update {
             it.copy(
                 hasPasswordError = false,
-                hasEmailError = emailValidation.result
+                hasEmailError = !emailValidation.result
             )
         }
 
