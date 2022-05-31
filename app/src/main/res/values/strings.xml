@@ -117,6 +117,7 @@
     <string name="login_step_encryption">Setting up encryption</string>
     <string name="login_step_allDone">Success!</string>
     <string name="login_step_user_setup">Preparing user</string>
+    <string name="login_step_generic_loading">Please wait…</string>
 
     <string name="login_step_error_signUp">Error while creating account</string>
     <string name="login_step_error_encryption_signUp">Error while setting up encryption</string>

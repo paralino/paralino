@@ -5,6 +5,9 @@ import android.text.SpannableString
 import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.zbapp.core.models.Payload
+import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.presentation.groups.CreateGroupViewModel
+import com.zbapp.core.presentation.login.LoginViewModel
 import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.repo.user.SignUpStep
 import com.zbapp.core.repo.user.SignUpStepException
@@ -25,6 +28,22 @@ class LoginViewModel(
     app: Application,
     private val loginManager: LoginManager
 ) : AndroidViewModel(app) {
+
+    private val coreVm = LoginViewModel(loginManager, viewModelScope)
+
+    val uiState = coreVm.uiState
+    val events = coreVm.events
+
+    fun proceed() = coreVm.proceed()
+
+    fun toggleLoginSignup() = coreVm.toggleLoginSignup()
+    fun toggleForgotPassword() = coreVm.toggleForgotPassword()
+
+    fun onUserNameChange(name: String) = coreVm.onUserNameChange(name)
+    fun onUserImageChange(image: ImageModel) = coreVm.onUserImageChange(image)
+    fun onEmailChange(email: String) = coreVm.onEmailChange(email)
+    fun onPasswordChange(password: String) = coreVm.onPasswordChange(password)
+
 
     private val _loginScreenState = MutableLiveData(LoginState.LOGIN)
     val loginScreenState: LiveData<LoginState> = _loginScreenState.distinctUntilChanged()
@@ -103,25 +122,6 @@ class LoginViewModel(
 
     fun isUserVerified(): Boolean {
         return loginManager.isVerified()
-    }
-
-    fun toggleLoginSignup() {
-        updateValidationState(null)
-        when (loginScreenState.value) {
-            LoginState.LOGIN -> _loginScreenState.postValue(LoginState.SIGNUP)
-            LoginState.SIGNUP -> _loginScreenState.postValue(LoginState.LOGIN)
-            LoginState.FORGOT_PASSWORD -> _loginScreenState.postValue(LoginState.LOGIN)
-            else -> {}
-        }
-    }
-
-    fun toggleForgotPassword() {
-        updateValidationState(null)
-        when (loginScreenState.value) {
-            LoginState.LOGIN -> _loginScreenState.postValue(LoginState.FORGOT_PASSWORD)
-            LoginState.FORGOT_PASSWORD -> _loginScreenState.postValue(LoginState.LOGIN)
-            else -> {}
-        }
     }
 
     private fun getSignUpStepInfo(step: SignUpStep): String {
