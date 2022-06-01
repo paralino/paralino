@@ -14,13 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.*
-import com.google.android.material.snackbar.Snackbar
 import com.zbapp.core.utils.ILocationStatusProvider
 import com.zbapp.core.utils.LocationConditionStatus
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.onAction
-import com.zbapp.locationtrack.ui.shared.AppSnackbarData
+import com.zbapp.locationtrack.ui.components.AppSnackbarData
+import com.zbapp.locationtrack.ui.components.SnackbarDuration
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -185,7 +185,7 @@ class LocationPermissionHandlerState constructor(
                 AppSnackbarData(
                     text = context.getString(R.string.error_location_service_missing_sheet_message),
                     actionText = "Settings",
-                    duration = Snackbar.LENGTH_LONG
+                    duration = SnackbarDuration.Long
                 )
             ).onAction {
                 gpsLauncher?.launch(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
@@ -204,7 +204,7 @@ class LocationPermissionHandlerState constructor(
                 AppSnackbarData(
                     text = context.getString(messageRes),
                     actionText = "Settings",
-                    duration = Snackbar.LENGTH_LONG
+                    duration = SnackbarDuration.Long
                 )
             ).onAction {
                 val intent = Intent().apply {
@@ -233,7 +233,7 @@ class LocationPermissionHandlerState constructor(
                 AppSnackbarData(
                     text = message,
                     actionText = "Settings",
-                    duration = Snackbar.LENGTH_LONG
+                    duration = SnackbarDuration.Long
                 )
             ).onAction {
                 val intent = Intent().apply {

@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.zbapp.locationtrack.ui.components.BottomSheetsScreen
-import com.zbapp.locationtrack.ui.shared.AppSnackbarData
+import com.zbapp.locationtrack.ui.components.AppSnackbarData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
@@ -53,8 +53,8 @@ class MainAppState(
             text = data.text,
             actionText = data.actionText,
             duration = when (data.duration) {
-                com.google.android.material.snackbar.Snackbar.LENGTH_LONG -> SnackbarDuration.Long
-                com.google.android.material.snackbar.Snackbar.LENGTH_INDEFINITE -> SnackbarDuration.Indefinite
+                com.zbapp.locationtrack.ui.components.SnackbarDuration.Long -> SnackbarDuration.Long
+                com.zbapp.locationtrack.ui.components.SnackbarDuration.Forever -> SnackbarDuration.Indefinite
                 else -> SnackbarDuration.Short
             }
         )

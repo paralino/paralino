@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import com.zbapp.core.utils.ConditionErrorType
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainActivity
-import com.zbapp.locationtrack.ui.shared.list.nameRes
+import com.zbapp.locationtrack.ui.components.nameRes
 import com.zbapp.locationtrack.utils.extensions.attributedBold
 
 class LocationNotificationHandler(

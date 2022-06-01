@@ -32,8 +32,8 @@ import com.zbapp.locationtrack.ui.components.*
 import com.zbapp.locationtrack.ui.groups.GroupListItem
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.shared.errorString
-import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
-import com.zbapp.locationtrack.ui.shared.list.nameRes
+import com.zbapp.locationtrack.ui.components.ConditionErrorItem
+import com.zbapp.locationtrack.ui.components.nameRes
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.extensions.quantityStringResource
 import com.zbapp.locationtrack.utils.extensions.safeCast

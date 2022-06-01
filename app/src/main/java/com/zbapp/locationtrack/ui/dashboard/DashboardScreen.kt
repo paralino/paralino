@@ -29,7 +29,7 @@ import com.zbapp.locationtrack.ui.groups.GroupListItem
 import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.shared.errorString
-import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
+import com.zbapp.locationtrack.ui.components.ConditionErrorItem
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel

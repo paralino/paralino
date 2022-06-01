@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.ui.shared.list
+package com.zbapp.locationtrack.ui.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background

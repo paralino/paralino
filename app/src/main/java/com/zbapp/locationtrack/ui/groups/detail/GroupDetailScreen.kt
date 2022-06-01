@@ -42,13 +42,11 @@ import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.share.getDistance
 import com.zbapp.locationtrack.ui.shared.errorString
-import com.zbapp.locationtrack.ui.shared.list.ConditionErrorItem
+import com.zbapp.locationtrack.ui.components.ConditionErrorItem
 import com.zbapp.locationtrack.ui.theme.AppColors
 import com.zbapp.locationtrack.utils.extensions.annotatedBold
 import com.zbapp.locationtrack.utils.extensions.fromUTCtoMapSharingTime
 import com.zbapp.locationtrack.utils.extensions.toLocalDateTime
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf

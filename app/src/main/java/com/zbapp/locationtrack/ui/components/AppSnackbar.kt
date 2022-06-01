@@ -55,3 +55,16 @@ fun SnackbarResult.onDismiss(action: () -> Unit): SnackbarResult {
         action()
     return this
 }
+
+data class AppSnackbarData constructor(
+    val text: String,
+    val actionText: String? = null,
+    val duration: SnackbarDuration = if (actionText.isNullOrBlank()) SnackbarDuration.Short else SnackbarDuration.Forever,
+    val id: String = text,
+)
+
+enum class SnackbarDuration {
+    Short,
+    Long,
+    Forever
+}
