@@ -1,5 +1,6 @@
 package com.zbapp.locationtrack.ui.login
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -32,10 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.common.FormValidation
-import com.zbapp.core.presentation.login.LoginScreenEvent
-import com.zbapp.core.presentation.login.LoginScreenState
-import com.zbapp.core.presentation.login.LoginScreenUiType
-import com.zbapp.core.repo.user.SignUpStep
+import com.zbapp.core.presentation.login.*
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.AppButtonState
@@ -68,26 +66,22 @@ fun LoginScreen(
                 is LoginScreenEvent.Error -> {
                     appState.showSnackbar(event.exception.errorString(context))
                 }
-                is LoginScreenEvent.ForgotPasswordError -> {
-                    appState.showSnackbar(event.exception.errorString(context))
-                }
                 is LoginScreenEvent.LoginError -> {
-
+                    val errorText = getErrorText(context, event.errorType)
+                    appState.showSnackbar(errorText)
                 }
-                is LoginScreenEvent.SignUpError -> {
-
+                is LoginScreenEvent.ValidationError -> {
+                    val errorText = getFormValidationErrorText(
+                        context = context,
+                        validation = event.validationResult.type
+                    )
+                    appState.showSnackbar(errorText)
                 }
                 LoginScreenEvent.UserReady -> {
                     appState.navController.navigate(AppScreen.DashboardRoot.routeSignature)
                 }
-                is LoginScreenEvent.ValidationError -> {
-                    when (event.validationResult.type) {
-                        FormValidation.Email -> appState.showSnackbar(context.getString(R.string.form_invalid_email_description))
-                        FormValidation.Password -> appState.showSnackbar(context.getString(R.string.form_invalid_password_length_description))
-                        FormValidation.PasswordConfirm -> appState.showSnackbar(context.getString(R.string.form_invalid_password_match_description))
-                    }
-                }
-                null -> { /* do nothing */
+                null -> {
+                    /* do nothing */
                 }
             }
         }
@@ -135,7 +129,7 @@ fun LoginScreen(
                         .height(TextFieldDefaults.MinHeight),
                     name = uiState.userName,
                     image = uiState.userImage,
-                    hasError = false,
+                    hasError = uiState.hasNameError,
                     onImageClick = {
                         appState.uiScope.launch {
                             appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
@@ -250,7 +244,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.size(12.dp))
 
-            val stepText = getStepText(uiState.signUpStep, uiState.uiType)
+            val stepText = getStepText(uiState.stepInfo)
 
             AnimatedVisibility(
                 visible = stepText.isNotBlank(),
@@ -263,7 +257,12 @@ fun LoginScreen(
                         .padding(top = 20.dp)
                         .animateContentSize()
                         .clip(RoundedCornerShape(8.dp))
-                        .background(AppColors.accent.copy(alpha = 0.1f))
+                        .background(
+                            if (uiState.stepInfo is SignUpStepInfo.Error)
+                                MaterialTheme.colors.error
+                            else
+                                AppColors.accent.copy(alpha = 0.1f)
+                        )
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                 )
             }
@@ -313,20 +312,39 @@ fun LoginScreen(
 }
 
 @Composable
-fun getStepText(signUpStep: SignUpStep?, uiType: LoginScreenUiType): String {
-    return when (signUpStep) {
-        SignUpStep.STARTING -> {
-            when (uiType) {
-                LoginScreenUiType.LOGIN -> stringResource(id = R.string.login_step_logIn)
-                LoginScreenUiType.SIGNUP -> stringResource(id = R.string.login_step_signUp)
-                LoginScreenUiType.FORGOT_PASSWORD -> stringResource(id = R.string.login_step_generic_loading)
-            }
-        }
-        SignUpStep.GENERATING_KEYS -> stringResource(id = R.string.login_step_encryption)
-        SignUpStep.INIT_USER_DATA -> stringResource(id = R.string.login_step_user_setup)
-        SignUpStep.SAVE_USER -> stringResource(id = R.string.login_step_user_setup)
-        SignUpStep.ALL_DONE -> stringResource(id = R.string.login_step_allDone)
+fun getStepText(stepInfo: SignUpStepInfo?): String {
+    return when (stepInfo) {
+        SignUpStepInfo.Info.START_LOGIN -> stringResource(id = R.string.login_step_logIn)
+        SignUpStepInfo.Info.START_SIGNUP -> stringResource(id = R.string.login_step_signUp)
+        SignUpStepInfo.Info.START_PASSWORD_RESET -> stringResource(id = R.string.login_step_generic_loading)
+        SignUpStepInfo.Info.CRYPTO_SETUP -> stringResource(id = R.string.login_step_encryption)
+        SignUpStepInfo.Info.USER_SETUP -> stringResource(id = R.string.login_step_user_setup)
+        SignUpStepInfo.Info.DONE -> stringResource(id = R.string.login_step_allDone)
+        SignUpStepInfo.Error.LOGIN -> stringResource(id = R.string.login_step_error_logIn)
+        SignUpStepInfo.Error.SIGN_UP -> stringResource(id = R.string.login_step_error_signUp)
+        SignUpStepInfo.Error.PASSWORD_RESET -> stringResource(id = R.string.error_something_wrong)
+        SignUpStepInfo.Error.CRYPTO -> stringResource(id = R.string.login_step_error_encryption_signUp)
+        SignUpStepInfo.Error.USER_DATA -> stringResource(id = R.string.login_step_error_user_setup)
         null -> ""
+    }
+}
+
+fun getErrorText(context: Context, error: SignUpErrorType): String {
+    return when (error) {
+        SignUpErrorType.ACCOUNT_CONFLICT -> context.getString(R.string.form_invalid_username_conflict_description)
+        SignUpErrorType.CREDENTIALS -> context.getString(R.string.form_invalid_credentials_description)
+        SignUpErrorType.LOGIN_CRYPTO -> context.getString(R.string.login_step_error_encryption_logIn)
+        SignUpErrorType.SIGNUP_CRYPTO -> context.getString(R.string.login_step_error_encryption_signUp)
+        SignUpErrorType.SIGNUP_DATA -> context.getString(R.string.login_step_error_user_setup_signUp)
+        is SignUpErrorType.SOURCE -> error.error.errorString(context)
+    }
+}
+
+fun getFormValidationErrorText(context: Context, validation: FormValidation): String {
+    return when (validation) {
+        FormValidation.Email -> context.getString(R.string.form_invalid_email_description)
+        FormValidation.Password -> context.getString(R.string.form_invalid_password_length_description)
+        FormValidation.PasswordConfirm -> context.getString(R.string.form_invalid_password_match_description)
     }
 }
 

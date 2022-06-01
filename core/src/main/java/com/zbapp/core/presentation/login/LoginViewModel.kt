@@ -7,6 +7,7 @@ import com.zbapp.core.repo.user.LoginManager
 import com.zbapp.core.repo.user.SignUpStep
 import com.zbapp.core.repo.user.SignUpStepException
 import com.zbapp.core.utils.exceptions.ConflictException
+import com.zbapp.core.utils.exceptions.CryptoException
 import com.zbapp.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -58,13 +59,8 @@ class LoginViewModel(
             }
         } else {
             loginManager.login(email = email, password = password)
-                .onEach { processStep(LoginScreenUiType.LOGIN, it) }
-                .catch {
-                    _uiState.update {
-                        it.copy(actionLoading = false)
-                    }
-                    processSignUpError(it)
-                }
+                .onEach { processStep(it) }
+                .catch { processSignUpError(it) }
                 .launchIn(coroutineScope)
         }
     }
@@ -93,13 +89,8 @@ class LoginViewModel(
             }
         } else {
             loginManager.signUp(userName = "", email = email, password = password)
-                .onEach { processStep(LoginScreenUiType.SIGNUP, it) }
-                .catch {
-                    _uiState.update {
-                        it.copy(actionLoading = false)
-                    }
-                    processSignUpError(it)
-                }
+                .onEach { processStep(it) }
+                .catch { processSignUpError(it) }
                 .launchIn(coroutineScope)
         }
     }
@@ -121,18 +112,28 @@ class LoginViewModel(
             }
         } else {
             coroutineScope.launch {
-                processStep(LoginScreenUiType.FORGOT_PASSWORD, SignUpStep.STARTING)
+                processStep(SignUpStep.STARTING)
                 delay(2000)
-                processStep(LoginScreenUiType.FORGOT_PASSWORD, SignUpStep.ALL_DONE)
+                processStep(SignUpStep.ALL_DONE)
             }
         }
     }
 
-    private suspend fun processStep(type: LoginScreenUiType, step: SignUpStep) {
+    private suspend fun processStep(step: SignUpStep) {
         _uiState.update {
             it.copy(
                 actionLoading = step != SignUpStep.ALL_DONE,
-                signUpStep = step
+                stepInfo = when (step) {
+                    SignUpStep.STARTING -> when (it.uiType) {
+                        LoginScreenUiType.LOGIN -> SignUpStepInfo.Info.START_LOGIN
+                        LoginScreenUiType.SIGNUP -> SignUpStepInfo.Info.START_SIGNUP
+                        LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Info.START_PASSWORD_RESET
+                    }
+                    SignUpStep.GENERATING_KEYS -> SignUpStepInfo.Info.CRYPTO_SETUP
+                    SignUpStep.INIT_USER_DATA -> SignUpStepInfo.Info.USER_SETUP
+                    SignUpStep.SAVE_USER -> SignUpStepInfo.Info.USER_SETUP
+                    SignUpStep.ALL_DONE -> SignUpStepInfo.Info.DONE
+                }
             )
         }
         if (step == SignUpStep.ALL_DONE) {
@@ -141,51 +142,70 @@ class LoginViewModel(
     }
 
     private suspend fun processSignUpError(error: Throwable) {
-        when (_uiState.value.uiType) {
-            LoginScreenUiType.LOGIN -> {
-                val errorType = if (error is SignUpStepException) {
-                    if (error.cause is UnauthorizedException) {
-                        StepErrorType.LoginErrorType.CREDENTIALS
-                    } else {
-                        when (error.step) {
-                            SignUpStep.STARTING -> StepErrorType.LoginErrorType.GENERIC
-                            SignUpStep.GENERATING_KEYS -> StepErrorType.LoginErrorType.CRYPTO_KEYS
-                            SignUpStep.INIT_USER_DATA -> StepErrorType.LoginErrorType.USER_DATA_INIT
-                            SignUpStep.SAVE_USER -> StepErrorType.LoginErrorType.USER_DATA_SAVE
-                            SignUpStep.ALL_DONE -> null
+        val uiType = _uiState.value.uiType
+        val step = (error as? SignUpStepException)?.step
+
+        val stepInfo = when (step) {
+            SignUpStep.STARTING -> when (uiType) {
+                LoginScreenUiType.LOGIN -> SignUpStepInfo.Error.LOGIN
+                LoginScreenUiType.SIGNUP -> SignUpStepInfo.Error.SIGN_UP
+                LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Error.PASSWORD_RESET
+            }
+            SignUpStep.GENERATING_KEYS -> SignUpStepInfo.Error.CRYPTO
+            SignUpStep.INIT_USER_DATA -> SignUpStepInfo.Error.USER_DATA
+            SignUpStep.SAVE_USER -> SignUpStepInfo.Error.USER_DATA
+            SignUpStep.ALL_DONE -> null
+            else -> null
+        }
+
+        _uiState.update { it.copy(stepInfo = stepInfo, actionLoading = false) }
+
+        // extra error handling
+        val errorType = when (error.cause) {
+            is ConflictException -> SignUpErrorType.ACCOUNT_CONFLICT
+            is UnauthorizedException -> SignUpErrorType.CREDENTIALS
+            is CryptoException -> {
+                when (step) {
+                    SignUpStep.GENERATING_KEYS,
+                    SignUpStep.INIT_USER_DATA,
+                    -> {
+                        when (uiType) {
+                            LoginScreenUiType.LOGIN -> SignUpErrorType.LOGIN_CRYPTO
+                            LoginScreenUiType.SIGNUP -> SignUpErrorType.SIGNUP_CRYPTO
+                            else -> null
                         }
                     }
-                } else {
-                    StepErrorType.LoginErrorType.SOURCE(error)
-                }
-                errorType?.let {
-                    _eventChannel.send(LoginScreenEvent.LoginError(it))
+                    else -> null
                 }
             }
-            LoginScreenUiType.SIGNUP -> {
-                val errorType = if (error is SignUpStepException) {
-                    if (error.cause is ConflictException) {
-                        StepErrorType.SignUpErrorType.CREDENTIALS
-                    } else {
-                        when (error.step) {
-                            SignUpStep.STARTING -> StepErrorType.SignUpErrorType.GENERIC
-                            SignUpStep.GENERATING_KEYS -> StepErrorType.SignUpErrorType.CRYPTO_KEYS
-                            SignUpStep.INIT_USER_DATA -> StepErrorType.SignUpErrorType.USER_DATA_INIT
-                            SignUpStep.SAVE_USER -> StepErrorType.SignUpErrorType.USER_DATA_SAVE
-                            SignUpStep.ALL_DONE -> null
+            else -> {
+                when (uiType) {
+                    LoginScreenUiType.SIGNUP -> {
+                        when (step) {
+                            SignUpStep.SAVE_USER, SignUpStep.INIT_USER_DATA -> {
+                                // TODO maybe handle better
+                                // account is created, but user data is not properly initialized
+                                // switch to login and/or (offer) to recreate keys
+                                toggleLoginSignup()
+                                SignUpErrorType.SIGNUP_DATA
+                            }
+                            else -> null
                         }
                     }
-                } else {
-                    StepErrorType.SignUpErrorType.SOURCE(error)
+                    else -> null
                 }
-                errorType?.let {
-                    _eventChannel.send(LoginScreenEvent.SignUpError(it))
-                }
-            }
-            LoginScreenUiType.FORGOT_PASSWORD -> {
-                // TODO add password reset errors
             }
         }
+
+        _eventChannel.send(
+            LoginScreenEvent.LoginError(
+                errorType
+                    ?: SignUpErrorType.SOURCE(
+                        (error as? SignUpStepException)?.cause ?: error
+                    )
+            )
+        )
+
     }
 
     private fun resetValidationState() {
@@ -200,9 +220,15 @@ class LoginViewModel(
 
         resetValidationState()
         when (_uiState.value.uiType) {
-            LoginScreenUiType.LOGIN -> _uiState.update { it.copy(uiType = LoginScreenUiType.SIGNUP) }
-            LoginScreenUiType.SIGNUP -> _uiState.update { it.copy(uiType = LoginScreenUiType.LOGIN) }
-            LoginScreenUiType.FORGOT_PASSWORD -> _uiState.update { it.copy(uiType = LoginScreenUiType.LOGIN) }
+            LoginScreenUiType.LOGIN -> _uiState.update {
+                it.copy(uiType = LoginScreenUiType.SIGNUP, stepInfo = null)
+            }
+            LoginScreenUiType.SIGNUP -> _uiState.update {
+                it.copy(uiType = LoginScreenUiType.LOGIN, stepInfo = null)
+            }
+            LoginScreenUiType.FORGOT_PASSWORD -> _uiState.update {
+                it.copy(uiType = LoginScreenUiType.LOGIN, stepInfo = null)
+            }
         }
     }
 
@@ -213,29 +239,35 @@ class LoginViewModel(
         resetValidationState()
         when (_uiState.value.uiType) {
             LoginScreenUiType.LOGIN -> _uiState.update {
-                it.copy(uiType = LoginScreenUiType.FORGOT_PASSWORD,
-                    password = "")
+                it.copy(uiType = LoginScreenUiType.FORGOT_PASSWORD, password = "", stepInfo = null)
             }
-            LoginScreenUiType.FORGOT_PASSWORD -> _uiState.update { it.copy(uiType = LoginScreenUiType.LOGIN) }
-            else -> { /* do nothing */
+            LoginScreenUiType.FORGOT_PASSWORD -> _uiState.update {
+                it.copy(uiType = LoginScreenUiType.LOGIN, stepInfo = null)
+            }
+            else -> {
+                /* do nothing */
             }
         }
     }
 
     fun onUserNameChange(name: String) {
-        _uiState.update { it.copy(userName = name) }
+        if (_uiState.value.actionLoading) return
+        _uiState.update { it.copy(userName = name, hasNameError = false, stepInfo = null) }
     }
 
     fun onUserImageChange(image: ImageModel) {
+        if (_uiState.value.actionLoading) return
         _uiState.update { it.copy(userImage = image) }
     }
 
     fun onEmailChange(email: String) {
-        _uiState.update { it.copy(email = email) }
+        if (_uiState.value.actionLoading) return
+        _uiState.update { it.copy(email = email, hasEmailError = false, stepInfo = null) }
     }
 
     fun onPasswordChange(password: String) {
-        _uiState.update { it.copy(password = password) }
+        if (_uiState.value.actionLoading) return
+        _uiState.update { it.copy(password = password, hasPasswordError = false, stepInfo = null) }
     }
 
 }

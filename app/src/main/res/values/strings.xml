@@ -121,6 +121,8 @@
 
     <string name="login_step_error_signUp">Error while creating account</string>
     <string name="login_step_error_encryption_signUp">Error while setting up encryption</string>
+    <string name="login_step_error_user_setup">Unable to prepare user data</string>
+
     <string name="login_step_error_user_setup_signUp">Unable to setup user data, try logging in with current credentials!</string>
     <string name="login_step_error_user_save_signUp">Error while saving user data, try logging in with current credentials!</string>
     <string name="login_step_error_logIn">Error while logging you in</string>
