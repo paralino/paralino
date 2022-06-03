@@ -7,6 +7,10 @@ import androidx.room.PrimaryKey
 data class SharingContractEntity(
     @PrimaryKey
     val groupId: String,
-    val endTimeUTC: String?
+    val endTimeUTC: String?,
+    val shareBattery: Boolean,
+    val shareSpeed: Boolean,
+    val shareElevation: Boolean,
+    val approximateLocationInMeters: Int?
 ) {
 }

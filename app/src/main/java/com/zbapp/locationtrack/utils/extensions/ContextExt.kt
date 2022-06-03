@@ -1,15 +1,13 @@
 package com.zbapp.locationtrack.utils.extensions
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
+import android.content.*
 import android.content.Context.BATTERY_SERVICE
-import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.BatteryManager
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.zbapp.locationtrack.BuildConfig
 
@@ -45,4 +43,10 @@ fun Context.copy(data: String, copyKey: String = BuildConfig.APPLICATION_ID + "_
 fun Context.hideKeyboardFrom(view: View) {
     val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+fun Context.getActivity(): AppCompatActivity? = when (this) {
+    is AppCompatActivity -> this
+    is ContextWrapper -> baseContext.getActivity()
+    else -> null
 }

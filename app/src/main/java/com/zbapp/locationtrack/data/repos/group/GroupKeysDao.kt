@@ -2,47 +2,96 @@ package com.zbapp.locationtrack.data.repos.group
 
 import androidx.room.*
 import com.zbapp.locationtrack.data.models.group.GroupKeyEntity
+import com.zbapp.locationtrack.data.models.group.GroupMemberKeyEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GroupKeysDao {
 
     @Transaction
-    suspend fun recreateAll(data: List<GroupKeyEntity>) {
-        clear()
+    suspend fun recreateAllKeys(groupKeys: List<GroupKeyEntity>, memberKeys: List<GroupMemberKeyEntity>) {
+        clearGroupKeys()
+        clearMemberKeys()
+        createOrUpdate(*groupKeys.toTypedArray())
+        createOrUpdate(*memberKeys.toTypedArray())
+    }
+
+    @Transaction
+    suspend fun recreateAllGroupKeys(data: List<GroupKeyEntity>) {
+        clearGroupKeys()
         createOrUpdate(*data.toTypedArray())
     }
 
     @Transaction
-    suspend fun recreateForGroup(groupId: String, data: List<GroupKeyEntity>) {
-        deleteForGroup(groupId)
+    suspend fun recreateAllGroupKeysForGroup(groupId: String, groupKeys: List<GroupKeyEntity>, memberKeys: List<GroupMemberKeyEntity>) {
+        deleteGroupKeysForGroup(groupId)
+        deleteMemberKeysForGroup(groupId)
+        createOrUpdate(*groupKeys.toTypedArray())
+        createOrUpdate(*memberKeys.toTypedArray())
+    }
+
+    @Transaction
+    suspend fun recreateGroupKeysForGroup(groupId: String, data: List<GroupKeyEntity>) {
+        deleteGroupKeysForGroup(groupId)
         createOrUpdate(*data.toTypedArray())
     }
+
+    @Transaction
+    suspend fun recreateAllMemberKeys(data: List<GroupMemberKeyEntity>) {
+        clearMemberKeys()
+        createOrUpdate(*data.toTypedArray())
+    }
+
+    @Transaction
+    suspend fun recreateMemberKeysForGroup(groupId: String, data: List<GroupMemberKeyEntity>) {
+        deleteMemberKeysForGroup(groupId)
+        createOrUpdate(*data.toTypedArray())
+    }
+
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createOrUpdate(vararg data: GroupKeyEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createOrUpdate(vararg data: GroupMemberKeyEntity)
+
+
 
     @Query("SELECT * FROM group_keys")
-    fun getAll(): Flow<List<GroupKeyEntity>>
+    fun getAllGroupKeys(): Flow<List<GroupKeyEntity>>
 
-    @Query("SELECT * FROM group_keys WHERE groupId = :groupId")
-    fun getForGroup(groupId: String): Flow<GroupKeyEntity>
+    @Query("SELECT * FROM group_member_keys")
+    fun getAllMemberKeys(): Flow<List<GroupMemberKeyEntity>>
 
-    @Query("SELECT * FROM group_keys WHERE groupId = :groupId")
-    fun getForGroupOnce(groupId: String): GroupKeyEntity?
 
 
     @Query("DELETE FROM group_keys WHERE groupId = :groupId")
-    suspend fun deleteForGroup(groupId: String)
+    suspend fun deleteGroupKeysForGroup(groupId: String)
 
-    @Query("DELETE FROM group_keys WHERE groupId = :groupId AND memberUserId = :userId")
+    @Query("DELETE FROM group_member_keys WHERE groupId = :groupId")
+    suspend fun deleteMemberKeysForGroup(groupId: String)
+
+    @Query("DELETE FROM group_member_keys WHERE groupId = :groupId AND memberUserId = :userId")
     suspend fun deleteUserFromGroup(groupId: String, userId: String)
 
-    @Query("DELETE FROM group_keys WHERE id = :id")
-    suspend fun delete(id: String)
+    @Transaction
+    suspend fun deleteAllKeysForGroup(groupId: String) {
+        deleteGroupKeysForGroup(groupId)
+        deleteMemberKeysForGroup(groupId)
+    }
+
+
+    @Query("DELETE FROM group_member_keys")
+    suspend fun clearMemberKeys()
 
     @Query("DELETE FROM group_keys")
-    suspend fun clear()
+    suspend fun clearGroupKeys()
+
+    @Transaction
+    suspend fun clear() {
+        clearGroupKeys()
+        clearMemberKeys()
+    }
 
 }

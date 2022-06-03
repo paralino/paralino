@@ -1,31 +1,23 @@
 package com.zbapp.locationtrack.ui.settings
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import com.zbapp.core.models.Payload
+import androidx.lifecycle.viewModelScope
+import com.zbapp.core.domain.user.LogoutUseCase
+import com.zbapp.core.presentation.settings.SettingsViewModel
 import com.zbapp.core.repo.user.UserRepository
-import com.zbapp.core.utils.extensions.mapToPayload
-import com.zbapp.locationtrack.data.repos.LogoutControl
-import kotlinx.coroutines.flow.catch
 
+// TODO remove when migrated to KMM
 class SettingsViewModel(
-    private val logoutControl: LogoutControl,
+    private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository
 ) : ViewModel() {
 
-    val userData = userRepo.localUser.asLiveData()
+    private val coreVm = SettingsViewModel(logoutControl, userRepo, viewModelScope)
 
-    fun logout(): LiveData<Payload<Unit>> {
-        return logoutControl.logout()
-            .mapToPayload{ Unit }
-            .asLiveData()
-    }
+    val userData = coreVm.accountState
+    val events = coreVm.events
 
-    fun deleteAccount(): LiveData<Boolean> {
-        return logoutControl.deleteAccount()
-            .catch { emit(false) }
-            .asLiveData()
-    }
+    fun logout() = coreVm.logout()
+
+    fun deleteAccount() = coreVm.deleteAccount()
 }

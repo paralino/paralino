@@ -2,13 +2,14 @@ package com.zbapp.locationtrack.ui.map
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.base.ImageType
+import com.zbapp.core.presentation.map.MapMarkerState
 import com.zbapp.core.utils.Emojis
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.databinding.ElementMapPinBinding
@@ -32,7 +33,7 @@ class MapUserMarkerView : ConstraintLayout {
     fun getPinForData(data: MapPinData): Bitmap? {
 
         // populate data to pin view
-        when(data.image?.getImageType()) {
+        when (data.image?.getImageType()) {
             ImageType.emoji -> {
                 vb.ivPinImage.isVisible = false
                 vb.tvGroupEmoji.isVisible = true
@@ -66,7 +67,7 @@ class MapUserMarkerView : ConstraintLayout {
         // we are doing this instead of setting dimensions directly in xml because of better rendering
         // plus it is easier to design and preview bigger view
         val bigBitmap = getBitmapFromView()
-        val size = if(data.active) 40.dp2px else 25.dp2px
+        val size = if (data.active) 40.dp2px else 25.dp2px
         val small = Bitmap.createScaledBitmap(bigBitmap!!, size, size, false)
 
         // desaturate the pin if it is inactive
@@ -83,6 +84,15 @@ class MapUserMarkerView : ConstraintLayout {
         return small
     }
 
+    companion object {
+        fun create(context: Context, model: MapMarkerState): Pair<MapPinData, BitmapDrawable> {
+            val pinView = MapUserMarkerView(context)
+            val data = MapPinData(model)
+            val bitmap = pinView.getPinForData(data)
+            return data to BitmapDrawable(context.resources, bitmap)
+        }
+    }
+
 }
 
 data class MapPinData constructor(
@@ -90,18 +100,14 @@ data class MapPinData constructor(
     val memberId: String,
     val focused: Boolean,
     val active: Boolean,
-    val image: ImageModel?
+    val image: ImageModel?,
 ) {
 
-    companion object {
-        fun fromMember(member: MemberModel): MapPinData {
-            return MapPinData(
-                groupId = member.groupId,
-                memberId = member.id,
-                focused = true,
-                active = member.isActive,
-                image = member.image
-            )
-        }
-    }
+    constructor(state: MapMarkerState) : this(
+        groupId = state.groupId,
+        memberId = state.memberData.id,
+        focused = state.focused,
+        active = state.active,
+        image = state.image
+    )
 }

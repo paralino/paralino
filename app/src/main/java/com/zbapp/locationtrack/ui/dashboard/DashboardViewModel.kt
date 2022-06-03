@@ -1,121 +1,30 @@
 package com.zbapp.locationtrack.ui.dashboard
 
 import android.app.Application
-import androidx.lifecycle.*
-import com.zbapp.core.logg
-import com.zbapp.core.models.data
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.zbapp.core.presentation.dashboard.DashboardViewModel
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.user.LoginManager
-import com.zbapp.locationtrack.AppClass
-import com.zbapp.locationtrack.R
-import com.zbapp.locationtrack.ui.base.myApp
-import com.zbapp.locationtrack.ui.shared.list.EmptyStateData
-import com.zbapp.locationtrack.ui.shared.list.ErrorListItemType
-import com.zbapp.locationtrack.ui.shared.list.ListItemEmptySpaceData
-import com.zbapp.locationtrack.ui.shared.list.ListSubtitleItemData
-import com.zbapp.locationtrack.utils.ListItemType
-import com.zbapp.locationtrack.utils.extensions.dp2px
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import com.zbapp.core.utils.ILocationStatusProvider
 
 class DashboardViewModel(
     app: Application,
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
-    private val loginManager: LoginManager
+    private val loginManager: LoginManager,
+    val locationStatusProvider: ILocationStatusProvider,
 ) : AndroidViewModel(app) {
 
-    val locationStatus = myApp.locationStatus
+    private val coreVM =
+        DashboardViewModel(locationSharing, groupRepository, locationStatusProvider, viewModelScope)
 
-    fun isSharingActive(): Boolean {
-        return locationSharing.isSharingActive()
-    }
+    val uiState = coreVM.uiState
+    val events = coreVM.events
 
-    fun startTracking() {
-//        viewModelScope.launch {
-//            val max = LocalDateTime.now().plusMinutes(2).toUTCString()
-//            locationSharing.startSharing(LocationSharingContract(UserGroup.personalTrackingId, max))
-//        }
-    }
+    fun loadDashboard() = coreVM.loadDashboard()
 
-    fun stopAllTracking() {
-        viewModelScope.launch {
-            locationSharing.stopAllSharing()
-        }
-    }
+    fun stopTracking(groupId: String) = coreVM.stopTracking(groupId)
 
-    fun stopTracking(groupId: String) {
-        viewModelScope.launch {
-            locationSharing.stopSharing(groupId)
-        }
-    }
-
-    fun getGroups(): LiveData<List<ListItemType>> {
-
-        if(!loginManager.isLoggedIn()) {
-            return liveData {
-                emit(listOf(
-                    ListItemEmptySpaceData(100.dp2px),
-                    EmptyStateData(
-                        iconRes = null,
-                        infoText = AppClass.context.getString(R.string.dashboard_info_logged_out),
-                        buttonText = AppClass.context.getString(R.string.login_button_login)
-                    )
-                ))
-            }
-        } else if(!loginManager.isVerified()) {
-            return liveData {
-                emit(listOf(ErrorListItemType.EMAIL))
-            }
-        }
-
-        return combine(
-            locationStatus,
-            groupRepository.getAllGroups(),
-            locationSharing.allContractsFlow.map { it.data }.filterNotNull()
-        ) { location, groups, sharing ->
-            val list = mutableListOf<ListItemType>()
-
-            if (isSharingActive()) {
-                list.addAll(location.getPossibleErrors(forBackground = sharing.any { it.isLongTerm }))
-                if(!location.isOK()) {
-                    list.add(ListItemEmptySpaceData(16.dp2px))
-                }
-            }
-
-            val active = groups.filter { group -> sharing.any { it.groupId == group.id } }.map { group ->
-                GroupItemData(group, uiType = GroupItemData.GroupUiType.ACTIVE)
-            }
-
-            val inactive = groups.filter { group -> sharing.none { it.groupId == group.id } }.map { group ->
-                GroupItemData(group, uiType = GroupItemData.GroupUiType.INACTIVE)
-            }
-
-            if(active.isEmpty() && inactive.isEmpty()) {
-                list.add(ListItemEmptySpaceData(100.dp2px))
-                list.add(
-                    EmptyStateData(
-                        iconRes = R.drawable.ic_groups,
-                        infoText = AppClass.context.getString(R.string.dashboard_info_no_groups)
-                    )
-                )
-            } else if(active.isEmpty()) {
-                list.addAll(inactive)
-            } else {
-                list.add(ListSubtitleItemData(AppClass.context.getString(R.string.dashboard_groups_section_active)))
-                list.addAll(active)
-                if(inactive.isNotEmpty()) {
-                    list.add(ListSubtitleItemData(AppClass.context.getString(R.string.dashboard_groups_section_inactive)))
-                    list.addAll(inactive)
-                }
-            }
-
-            list.add(GroupAddData())
-
-            list
-        }
-            .catch { logg.e("Error on dashboard", it) }
-            .asLiveData()
-    }
 }

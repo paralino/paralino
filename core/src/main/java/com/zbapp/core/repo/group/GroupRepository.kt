@@ -3,15 +3,15 @@ package com.zbapp.core.repo.group
 import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.logg
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupWithMembers
-import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
-import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
@@ -33,12 +33,16 @@ class GroupRepository constructor(
         return mergeDataWithRemote(
             local = local.getAllGroups(),
             remote = {
+                logg.tag("tag_crypto_key").w("refreshing all groups")
                 remote.getAllGroups()
                     .also { cryptoKEKRepo.refreshAllKeys().first() }
                     .let { it.map { handleGroupKeysUpdate(it) } }
             },
-            localUpdate = { local.recreateGroups(it) },
-            remotePreference = RemotePreference.CACHE("groups", 10_000)
+            localUpdate = {
+                logg.tag("tag_crypto_key_group").d("group and keys ready, updating groups")
+                local.recreateGroups(it)
+            },
+            remotePreference = RemotePreference.CACHE("groups", 3_000)
         )
     }
 
@@ -144,23 +148,27 @@ class GroupRepository constructor(
     }
 
     fun removeMember(member: MemberModel): Flow<Unit> {
+        return removeMember(groupId = member.groupId, memberUserId = member.userId)
+    }
 
-        if(member.userId == userRepository.cachedUserId) {
-            return leaveGroup(member.groupId)
+    fun removeMember(groupId: String, memberUserId: String): Flow<Unit> {
+
+        if (memberUserId == userRepository.cachedUserId) {
+            return leaveGroup(groupId)
         }
 
         return getDataOnce(
             remote = {
-                val group = local.getGroupWithoutMembers(member.groupId).first()
-                remote.removeUserFromGroup(group, member.userId)
+                val group = local.getGroupWithoutMembers(groupId).first()
+                remote.removeUserFromGroup(group, memberUserId)
             },
             localUpdate = {
-                local.removeMember(member.groupId, member.userId)
-                cryptoKEKRepo.deleteKeysForUser(member.groupId, member.userId)
+                local.removeMember(groupId, memberUserId)
+                cryptoKEKRepo.deleteKeysForUser(groupId, memberUserId)
             }
         )
             .onEach {
-                val group = local.getGroupWithMembers(member.groupId).first()
+                val group = local.getGroupWithMembers(groupId).first()
                 updateGroupKeyAndRefresh(group, force = true)?.let {
                     local.updateOrCreateGroup(it)
                 }
@@ -169,6 +177,7 @@ class GroupRepository constructor(
 
     private suspend fun handleGroupKeysUpdate(group: GroupWithMemberRaw): GroupWithMemberRaw {
         // TODO handle errors
+        logg.tag("tag_crypto_key_group").w("group and member keys updated")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
         return updateGroupKeyAndRefresh(remoteGroup, force = false)
             ?: updateMemberKeyAndRefresh(remoteGroup)
@@ -179,11 +188,11 @@ class GroupRepository constructor(
         val memberMeRemote = remoteGroup.members.firstOrNull { it.userId == userRepository.cachedUserId }
 
         if(memberMeRemote?.shouldRotateKeys == true || force) {
-            logg.tag("tag_group_key_member").w("group member key is deprecated - rotating: ${remoteGroup.id} - ${memberMeRemote?.userId}")
+            logg.tag("tag_crypto_key_group_member").w("group member key is deprecated - rotating: ${remoteGroup.id} - ${memberMeRemote?.userId}")
             cryptoKEKRepo.rotateAllMemberKeys(remoteGroup)
             return getDataOnce(remote = { remote.getGroupWithMembers(remoteGroup.id) }).first()
         } else {
-            logg.tag("tag_group_key_member").w("not rotating member keys: ${remoteGroup.id} - ${memberMeRemote?.userId}")
+            logg.tag("tag_crypto_key_group_member").w("not rotating member keys: ${remoteGroup.id} - ${memberMeRemote?.userId}")
         }
 
         return null
@@ -193,7 +202,7 @@ class GroupRepository constructor(
         if (remoteGroup.ownerUserId != userRepository.cachedUserId) return null
         if (!force && !remoteGroup.shouldRotateKeys) return null
 
-        logg.tag("tag_group_key").w("group key is deprecated - rotating: ${remoteGroup.id}")
+        logg.tag("tag_crypto_key_group").w("group key is deprecated - rotating: ${remoteGroup.id}")
         cryptoKEKRepo.rotateAllGroupKeys(remoteGroup)
         return getDataOnce(remote = { remote.getGroupWithMembers(remoteGroup.id) }).first()
     }

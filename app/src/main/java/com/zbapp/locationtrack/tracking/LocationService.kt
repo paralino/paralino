@@ -54,7 +54,7 @@ class LocationService : Service() {
     private fun initTracking() {
         logv(this.hashCode().toString(), "Subscribe to location and sharing status")
 
-        (application as AppClass).locationStatus
+        (application as AppClass).locationStatus.status
             .onEach {
                 if(it.isOK()) {
                     locationInitHandler.startLocationUpdates()
@@ -84,7 +84,7 @@ class LocationService : Service() {
     }
 
     private fun updateNotification() {
-        val errors = (application as AppClass).locationStatus.value.getPossibleErrors(
+        val errors = (application as AppClass).locationStatus.status.value.getPossibleErrors(
             forBackground = !launchedInForeground
         )
         val count = locationRepository.sharingManager.allContractsFlow.value.data?.size ?: 0

@@ -16,10 +16,11 @@ object BaseRemoteModule {
 suspend inline fun <reified T> poll(
     firstDelayMillis: Long = 2_000,
     delay: Long = 3_000,
+    timeout: Long = 15_000,
     canThrow: Boolean = false,
     crossinline action: suspend () -> T?
 ): T {
-    return withTimeoutOrNull(15_000) {
+    return withTimeoutOrNull(timeout) {
         delay(firstDelayMillis)
         var data: T?
         do {

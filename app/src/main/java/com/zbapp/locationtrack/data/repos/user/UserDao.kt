@@ -17,7 +17,7 @@ interface UserDao {
     suspend fun create(user: UserEntity): Long
 
     @Query("SELECT * FROM user_me")
-    fun get(): Flow<UserEntity>
+    fun get(): Flow<UserEntity?>
 
     @Query("SELECT * FROM user_me")
     suspend fun tryGetUser(): UserEntity?

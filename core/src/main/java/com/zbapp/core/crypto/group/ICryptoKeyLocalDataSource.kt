@@ -6,8 +6,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface ICryptoKeyLocalDataSource {
 
+    suspend fun recreateAllGroupKeys(groupKeys: List<GroupCryptoKeyDataRaw>, memberKeys: List<GroupMemberCryptoKeyDataRaw>)
     suspend fun recreateAllGroupKeys(keys: List<GroupCryptoKeyDataRaw>)
     suspend fun recreateAllMemberKeys(keys: List<GroupMemberCryptoKeyDataRaw>)
+    suspend fun recreateGroupKeyForGroup(groupId: String, groupKeys: List<GroupCryptoKeyDataRaw>, memberKeys: List<GroupMemberCryptoKeyDataRaw>)
     suspend fun recreateGroupKeyForGroup(groupId: String, keys: List<GroupCryptoKeyDataRaw>)
     suspend fun recreateMemberKeysForGroup(groupId: String, keys: List<GroupMemberCryptoKeyDataRaw>)
 

@@ -6,6 +6,9 @@
     <string name="title_map">Map</string>
     <string name="title_settings">Settings</string>
 
+    <string name="date_name_today">Today</string>
+    <string name="date_name_tomorrow">Tomorrow</string>
+
     <string name="button_cancel">Cancel</string>
     <string name="button_ok">OK</string>
     <string name="button_done">Done</string>
@@ -16,6 +19,7 @@
     <string name="button_save">Save</string>
 
     <string name="alert_title_confirm">Please confirm</string>
+    <string name="error_load_data_generic">Unable to complete the request.</string>
     <string name="error_no_connection_snackbar">Unable to connect\n**Check your internet connection.**</string>
     <string name="error_server_unavailable">Unable to connect at the moment, please try again shortly.</string>
     <string name="error_something_wrong">Something went wrong!</string>
@@ -57,6 +61,23 @@
     <string name="location_banner_error_no_background_permission">Missing all time location permission</string>
     <string name="location_banner_error_offline">Device is offline</string>
 
+    <string name="settings_section_account_title">Account</string>
+    <string name="settings_section_personal_code_title">Personal code</string>
+    <string name="settings_account_edit_profile">Edit profile</string>
+    <string name="settings_account_edit_email">Change email</string>
+    <string name="settings_account_edit_password">Change password</string>
+
+    <string name="settings_account_logout_alert_title">Logout</string>
+    <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
+    <string name="settings_account_delete_alert_title">Delete account</string>
+    <string name="settings_account_delete_alert_message">Deleting your account will also delete all your data. Are you sure you want to continue?</string>
+    <string name="settings_account_delete_alert_confirm_message">There is no turning back, are you sure you want to delete you account?</string>
+    <string name="settings_account_delete_alert_confirm_button">Delete</string>
+    <string name="settings_account_delete_alert_cancel_button1">Cancel</string>
+    <string name="settings_account_delete_alert_cancel_button2">Never mind</string>
+    <string name="settings_account_delete_alert_cancel_button3">Abort</string>
+    <string name="settings_account_delete_alert_cancel_button4">Close</string>
+
     <string name="settings_profile_name_placeholder">Your name</string>
     <string name="settings_profile_username_placeholder">Your email</string>
 
@@ -75,6 +96,7 @@
     <string name="setting_title_libraries">Acknowledgments</string>
     <string name="setting_title_logout">Logout</string>
     <string name="setting_title_delete_account">Delete account</string>
+    <string name="setting_title_dangerZone">Danger zone</string>
 
     <string name="login_placeholder_server">Server url</string>
     <string name="login_placeholder_username">Username</string>
@@ -95,9 +117,12 @@
     <string name="login_step_encryption">Setting up encryption</string>
     <string name="login_step_allDone">Success!</string>
     <string name="login_step_user_setup">Preparing user</string>
+    <string name="login_step_generic_loading">Please wait…</string>
 
     <string name="login_step_error_signUp">Error while creating account</string>
     <string name="login_step_error_encryption_signUp">Error while setting up encryption</string>
+    <string name="login_step_error_user_setup">Unable to prepare user data</string>
+
     <string name="login_step_error_user_setup_signUp">Unable to setup user data, try logging in with current credentials!</string>
     <string name="login_step_error_user_save_signUp">Error while saving user data, try logging in with current credentials!</string>
     <string name="login_step_error_logIn">Error while logging you in</string>
@@ -121,7 +146,10 @@
     <string name="groups_sharing_section_title_group">Group</string>
     <string name="groups_sharing_section_title_duration">Duration</string>
     <string name="groups_sharing_section_title_extra">Extra</string>
-    <string name="groups_sharing_setting_battery_share">Include battery status</string>
+    <string name="groups_sharing_setting_battery_share">Battery level</string>
+    <string name="groups_sharing_setting_approximate_location">Approximate location</string>
+    <string name="groups_sharing_setting_speed_share">Speed</string>
+    <string name="groups_sharing_setting_elevation_share">Elevation</string>
     <string name="groups_sharing_button_start">Start sharing</string>
     <string name="groups_sharing_button_enable">Enable sharing</string>
     <string name="groups_sharing_title">Share location</string>
@@ -145,6 +173,8 @@
     <string name="invite_connect_button_pickGroup">Choose a group</string>
     <string name="invite_connect_alert_pickGroup">Please choose a group</string>
     <string name="invite_connect_title">To connect with others, enter their user ID</string>
+    <string name="invite_section_title_group">Group</string>
+    <string name="invite_section_title_user">User</string>
 
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
@@ -158,16 +188,25 @@
     <string name="group_details_delete_group_alert_button">Delete</string>
     <string name="group_details_leave_group_alert_title">Are you sure you want leave this group?\nThis is irreversible and will delete all data you shared and remove all connection with members!</string>
     <string name="group_details_leave_group_alert_button">Leave</string>
+    <string name="group_details_remove_member_alert_button">Remove</string>
     <string name="group_details_add_member_button">Add new member</string>
     <string name="group_details_map_action_button">Open map</string>
+    <string name="group_details_sharing_status_time">Sharing until: **%s**</string>
+    <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
 
     <string name="group_create_title">Create new group</string>
     <string name="group_edit_title">Edit group</string>
+    <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>
-    <string name="group_create_button_text">Create</string>
+    <string name="group_create_button_text">Create group</string>
 
     <string name="group_members_last_active_status_now">Last update: just now</string>
     <string name="group_members_last_active_status_full">Last update: %s</string>
     <string name="group_members_status_inactive">INACTIVE</string>
+
+    <string name="unit_meter">m</string>
+    <string name="unit_km">km</string>
+    <string name="placeholder_unit_meter">%s m</string>
+    <string name="placeholder_unit_km">%s km</string>
 
 </resources>

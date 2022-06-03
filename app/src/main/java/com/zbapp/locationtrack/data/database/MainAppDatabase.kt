@@ -14,7 +14,6 @@ import com.zbapp.locationtrack.data.models.location.SharingContractEntity
 import com.zbapp.locationtrack.data.models.user.UserEntity
 import com.zbapp.locationtrack.data.models.user.UserKeyEntity
 import com.zbapp.locationtrack.data.repos.group.GroupKeysDao
-import com.zbapp.locationtrack.data.repos.group.GroupMemberKeysDao
 import com.zbapp.locationtrack.data.repos.group.UserGroupDao
 import com.zbapp.locationtrack.data.repos.invite.InviteCodeDao
 import com.zbapp.locationtrack.data.repos.location.MemberDao
@@ -51,11 +50,10 @@ abstract class MainAppDatabase : RoomDatabase() {
     abstract fun groupsDao(): UserGroupDao
     abstract fun inviteDao(): InviteCodeDao
     abstract fun groupKeysDao(): GroupKeysDao
-    abstract fun groupMemberKeysDao(): GroupMemberKeysDao
     abstract fun userKeysDao(): UserKeyDao
 
     companion object {
-        const val VERSION = 21
+        const val VERSION = 22
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {
