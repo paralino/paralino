@@ -101,7 +101,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        Spacer(modifier = Modifier.size(50.dp))
+        Spacer(modifier = Modifier.size(30.dp))
 
         Icon(
             imageVector = Icons.Rounded.PrivacyTip,
@@ -345,6 +345,7 @@ fun getFormValidationErrorText(context: Context, validation: FormValidation): St
         FormValidation.Email -> context.getString(R.string.form_invalid_email_description)
         FormValidation.Password -> context.getString(R.string.form_invalid_password_length_description)
         FormValidation.PasswordConfirm -> context.getString(R.string.form_invalid_password_match_description)
+        FormValidation.TextNotEmpty -> context.getString(R.string.form_invalid_name_description)
     }
 }
 
@@ -387,7 +388,7 @@ fun UserAccountEditSmallItem(
             },
             placeholder = {
                 Text(
-                    stringResource(id = R.string.login_placeholder_username_or_random),
+                    stringResource(id = R.string.login_placeholder_user_name),
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()
                 )

@@ -68,18 +68,25 @@ class LoginViewModel(
     private fun signUp() {
         val email = _uiState.value.email
         val password = _uiState.value.password
+        val name = _uiState.value.userName
 
         val emailValidation = FormValidation.Email.validate(email)
         val passwordValidation = FormValidation.Password.validate(password)
+        val userNameValidation = FormValidation.TextNotEmpty.validate(name)
 
         _uiState.update {
             it.copy(
                 hasPasswordError = !passwordValidation.result,
-                hasEmailError = !emailValidation.result
+                hasEmailError = !emailValidation.result,
+                hasNameError = !userNameValidation.result
             )
         }
 
-        if (!emailValidation.result) {
+        if (!userNameValidation.result) {
+            coroutineScope.launch {
+                _eventChannel.send(LoginScreenEvent.ValidationError(userNameValidation))
+            }
+        } else if (!emailValidation.result) {
             coroutineScope.launch {
                 _eventChannel.send(LoginScreenEvent.ValidationError(emailValidation))
             }
@@ -88,7 +95,12 @@ class LoginViewModel(
                 _eventChannel.send(LoginScreenEvent.ValidationError(passwordValidation))
             }
         } else {
-            loginManager.signUp(userName = "", email = email, password = password)
+            loginManager.signUp(
+                userName = name,
+                userImage = _uiState.value.userImage,
+                email = email,
+                password = password
+            )
                 .onEach { processStep(it) }
                 .catch { processSignUpError(it) }
                 .launchIn(coroutineScope)
@@ -210,7 +222,7 @@ class LoginViewModel(
 
     private fun resetValidationState() {
         _uiState.update {
-            it.copy(hasEmailError = false, hasPasswordError = false)
+            it.copy(hasEmailError = false, hasPasswordError = false, hasNameError = false)
         }
     }
 

@@ -99,8 +99,7 @@
     <string name="setting_title_dangerZone">Danger zone</string>
 
     <string name="login_placeholder_server">Server url</string>
-    <string name="login_placeholder_username">Username</string>
-    <string name="login_placeholder_username_or_random">Name (optional)</string>
+    <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>
     <string name="login_placeholder_email_username">Email*</string>
     <string name="login_placeholder_password">Password*</string>
@@ -138,6 +137,7 @@
     <string name="form_invalid_username_length_description">Your username has to be at least 6 characters long.</string>
     <string name="form_invalid_password_length_description">Your password has to be at least 8 characters long.</string>
     <string name="form_invalid_password_match_description">Passwords don\'t match.</string>
+    <string name="form_invalid_name_description">Your name is not valid.</string>
     <string name="form_invalid_server_url">Please enter a valid server url.</string>
     <string name="form_generic_validation">Please fill in all the details.</string>
 

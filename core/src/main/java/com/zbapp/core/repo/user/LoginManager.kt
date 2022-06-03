@@ -5,6 +5,7 @@ import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.crypto.toData
 import com.zbapp.core.logg
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.mappers.UserMapperCore
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
@@ -33,7 +34,12 @@ class LoginManager(
         return config.emailConfirmed
     }
 
-    fun signUp(userName: String, email: String, password: String): Flow<SignUpStep> {
+    fun signUp(
+        userName: String,
+        userImage: ImageModel,
+        email: String,
+        password: String
+    ): Flow<SignUpStep> {
         return flow {
 
             emit(SignUpStep.STARTING)
@@ -48,11 +54,14 @@ class LoginManager(
                 throw SignUpStepException(SignUpStep.STARTING, e)
             }
 
+            // TODO clear remote cookies in case of error down the line
+
             emit(SignUpStep.GENERATING_KEYS)
             val remoteData: UserMeDataRaw
             try {
                 delay(500)
-                remoteData = prepareUserKeys(derivedPasswords.backupPassword, user.first.id, userName)
+                val userData = UserMeData(userImage = userImage, userName = userName)
+                remoteData = prepareUserKeys(derivedPasswords.backupPassword, user.first.id, userData)
             } catch (e: Exception) {
                 userKeyRepository.clearUserPersonalKey()
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
@@ -84,7 +93,7 @@ class LoginManager(
             }
     }
 
-    private suspend fun prepareUserKeys(password: String, userId: String, name: String): UserMeDataRaw {
+    private suspend fun prepareUserKeys(password: String, userId: String, data: UserMeData): UserMeDataRaw {
         val keys = cryptoCore.generateNewKeysForUser(
             backupPassword = password,
             userId = userId,
@@ -93,8 +102,6 @@ class LoginManager(
         )
 
         userKeyRepository.personalKey = keys.userPersonalKey.toData()
-
-        val data = UserMeData(userName = name)
 
         return userMapper.core2Remote(data, keys.symmetricCryptoKeyData, listOf(keys.asymmetricCryptoKeyData))
     }
