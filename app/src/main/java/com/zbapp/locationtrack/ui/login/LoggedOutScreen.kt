@@ -10,37 +10,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.zbapp.locationtrack.ui.MainAppState
+import com.zbapp.locationtrack.ui.navigation.AppScreen
 
 @Composable
-fun LoggedOutScreen(modifier: Modifier = Modifier) {
+fun LoggedOutScreen(
+    appState: MainAppState,
+) {
     Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize().padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
     ) {
         Text("Login to share your location")
+        Spacer(Modifier.size(20.dp))
         Button(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-            onClick = { }
+            onClick = { appState.navController.navigate(AppScreen.AppStartRoot.Login.routeSignature) }
         ) {
             Icon(imageVector = Icons.Rounded.Login, contentDescription = null)
             Spacer(Modifier.size(8.dp))
             Text("Login")
         }
-        Spacer(Modifier.size(20.dp))
-        Text("Have public tracking code?")
-        OutlinedTextField(
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            value = TextFieldValue("HJKI-LJZU"),
-            placeholder = {
-                Text(
-                    "hint",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
-            onValueChange = {},
-            shape = MaterialTheme.shapes.medium
-        )
+        Spacer(Modifier.size(40.dp))
     }
 }

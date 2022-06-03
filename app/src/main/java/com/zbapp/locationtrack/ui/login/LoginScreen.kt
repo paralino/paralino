@@ -78,7 +78,7 @@ fun LoginScreen(
                     appState.showSnackbar(errorText)
                 }
                 LoginScreenEvent.UserReady -> {
-                    appState.navController.navigate(AppScreen.DashboardRoot.routeSignature)
+//                    appState.navController.navigate(AppScreen.DashboardRoot.routeSignature)
                 }
                 null -> {
                     /* do nothing */

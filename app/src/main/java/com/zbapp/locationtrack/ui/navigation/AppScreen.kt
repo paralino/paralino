@@ -10,8 +10,14 @@ sealed class AppScreen {
 
     abstract val routeSignature: String
 
-    object Login : AppScreen() {
-        override val routeSignature: String = "login"
+    object AppStartRoot : AppScreen() {
+        override val routeSignature: String = "appStart"
+        object Welcome : AppScreen() {
+            override val routeSignature: String = "welcome"
+        }
+        object Login : AppScreen() {
+            override val routeSignature: String = "login"
+        }
     }
 
     object DashboardRoot : AppScreen() {

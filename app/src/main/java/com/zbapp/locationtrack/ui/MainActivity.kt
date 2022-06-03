@@ -10,22 +10,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.zbapp.core.models.Resource
 import com.zbapp.locationtrack.ui.components.AppSnackbar
 import com.zbapp.locationtrack.ui.components.SheetContent
 import com.zbapp.locationtrack.ui.login.LoggedOutScreen
-import com.zbapp.locationtrack.ui.navigation.AppScreen
-import com.zbapp.locationtrack.ui.navigation.MainNavHost
+import com.zbapp.locationtrack.ui.navigation.*
 import com.zbapp.locationtrack.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -45,6 +44,7 @@ fun RootApp(
 ) {
     AppTheme {
         val userState by vm.userState.collectAsState(initial = Resource.NotInitialized)
+        val appState = rememberAppState()
 
         when(val state = userState) {
             Resource.NotInitialized -> {
@@ -56,9 +56,9 @@ fun RootApp(
             }
             is Resource.Ready -> {
                 if (state.data) {
-                    MainAppScreen()
+                    MainAppScreen(appState)
                 } else {
-                    LoggedOutScreen()
+                    AppStartScreen(appState)
                 }
             }
         }
@@ -67,10 +67,10 @@ fun RootApp(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MainAppScreen() {
-
-    val appState = rememberAppState()
-
+fun RootAppScreen(
+    appState: MainAppState,
+    content: @Composable () -> Unit
+) {
     ModalBottomSheetLayout(
         modifier = Modifier.fillMaxSize(),
         sheetBackgroundColor = MaterialTheme.colors.background,
@@ -94,6 +94,34 @@ fun MainAppScreen() {
             }
         }
     ) {
+        content()
+    }
+}
+
+@Composable
+fun AppStartScreen(appState: MainAppState) {
+    RootAppScreen(appState) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            scaffoldState = appState.scaffoldState,
+            snackbarHost = { AppSnackbar(it) }
+        ) { innerPadding ->
+            NavHost(
+                navController = appState.navController,
+                startDestination = AppScreen.AppStartRoot.routeSignature,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                loggedOutGraph(appState)
+            }
+        }
+    }
+}
+
+@Composable
+fun MainAppScreen(
+    appState: MainAppState
+) {
+    RootAppScreen(appState) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             scaffoldState = appState.scaffoldState,

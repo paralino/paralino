@@ -97,7 +97,7 @@ fun AccountScreen(
         SettingsActionItem(
             name = stringResource(id = R.string.settings_account_edit_profile),
             icon = Icons.Rounded.Person
-        ) { appState.navController.navigate(AppScreen.Login.routeSignature) }
+        ) { }
         SettingsActionItem(
             name = stringResource(id = R.string.settings_account_edit_email),
             icon = Icons.Rounded.Email
