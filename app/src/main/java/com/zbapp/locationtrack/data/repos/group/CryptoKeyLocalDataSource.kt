@@ -14,39 +14,63 @@ class CryptoKeyLocalDataSource constructor(
     private val keysDao: GroupKeysDao,
     private val groupDao: UserGroupDao,
     private val membersDao: MemberDao,
-    private val memberKeysDao: GroupMemberKeysDao,
     private val keysMapper: GroupKeysMapper,
-    private val keysMemberMapper: MemberKeysMapper
-): ICryptoKeyLocalDataSource {
+    private val keysMemberMapper: MemberKeysMapper,
+) : ICryptoKeyLocalDataSource {
+
+    override suspend fun recreateAllGroupKeys(
+        groupKeys: List<GroupCryptoKeyDataRaw>,
+        memberKeys: List<GroupMemberCryptoKeyDataRaw>,
+    ) {
+        keysDao.recreateAllKeys(
+            groupKeys = groupKeys.map { keysMapper.remote2Local(it) },
+            memberKeys = memberKeys.map { keysMemberMapper.remote2Local(it) }
+        )
+    }
 
     override suspend fun recreateAllGroupKeys(keys: List<GroupCryptoKeyDataRaw>) {
-        keysDao.recreateAll(keys.map { keysMapper.remote2Local(it) })
+        keysDao.recreateAllGroupKeys(keys.map { keysMapper.remote2Local(it) })
     }
 
     override suspend fun recreateAllMemberKeys(keys: List<GroupMemberCryptoKeyDataRaw>) {
-        memberKeysDao.recreateAll(keys.map { keysMemberMapper.remote2Local(it) })
+        keysDao.recreateAllMemberKeys(keys.map { keysMemberMapper.remote2Local(it) })
     }
 
-    override suspend fun recreateGroupKeyForGroup(groupId: String, keys: List<GroupCryptoKeyDataRaw>) {
-        keysDao.recreateForGroup(groupId, keys.map { keysMapper.remote2Local(it) })
+    override suspend fun recreateGroupKeyForGroup(
+        groupId: String,
+        groupKeys: List<GroupCryptoKeyDataRaw>,
+        memberKeys: List<GroupMemberCryptoKeyDataRaw>
+    ) {
+        keysDao.recreateAllGroupKeysForGroup(
+            groupId = groupId,
+            groupKeys = groupKeys.map { keysMapper.remote2Local(it) },
+            memberKeys = memberKeys.map { keysMemberMapper.remote2Local(it) }
+        )
+    }
+
+    override suspend fun recreateGroupKeyForGroup(
+        groupId: String,
+        keys: List<GroupCryptoKeyDataRaw>,
+    ) {
+        keysDao.recreateGroupKeysForGroup(groupId, keys.map { keysMapper.remote2Local(it) })
     }
 
     override suspend fun recreateMemberKeysForGroup(
         groupId: String,
-        keys: List<GroupMemberCryptoKeyDataRaw>
+        keys: List<GroupMemberCryptoKeyDataRaw>,
     ) {
-        memberKeysDao.recreateForGroup(groupId, keys.map { keysMemberMapper.remote2Local(it) })
+        keysDao.recreateMemberKeysForGroup(groupId, keys.map { keysMemberMapper.remote2Local(it) })
     }
 
     override fun getAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
-        return keysDao.getAll()
-            .distinctFlowOfList()
+        return keysDao.getAllGroupKeys()
+//            .distinctFlowOfList()
             .map { it.map { keysMapper.local2Remote(it) } }
     }
 
     override fun getAllMemberKeys(): Flow<List<GroupMemberCryptoKeyDataRaw>> {
-        return memberKeysDao.getAll()
-            .distinctFlowOfList()
+        return keysDao.getAllMemberKeys()
+//            .distinctFlowOfList()
             .map { it.map { keysMemberMapper.local2Remote(it) } }
     }
 
@@ -59,20 +83,18 @@ class CryptoKeyLocalDataSource constructor(
     }
 
     override suspend fun deleteGroupKeyForGroup(groupId: String) {
-        keysDao.deleteForGroup(groupId)
+        keysDao.deleteGroupKeysForGroup(groupId)
     }
 
     override suspend fun deleteAllKeysForGroup(groupId: String) {
-        keysDao.deleteForGroup(groupId)
-        memberKeysDao.deleteForGroup(groupId)
+        keysDao.deleteAllKeysForGroup(groupId)
     }
 
     override suspend fun deleteKeysForUser(groupId: String, userId: String) {
-        memberKeysDao.deleteUserFromGroup(groupId, userId)
+        keysDao.deleteUserFromGroup(groupId, userId)
     }
 
     override suspend fun deleteAllKeys() {
         keysDao.clear()
-        memberKeysDao.clear()
     }
 }

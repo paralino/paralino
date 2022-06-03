@@ -25,7 +25,7 @@ class MemberMapperCore constructor(
             memberPublicKey = model.publicKey
         ) ?: throw MissingMemberKeyException(model.groupId, model.userId)
 
-        val groupKey = model.groupId?.let {
+        val groupKey = model.groupId.let {
             cryptoKEKRepo.getGroupKey(
                 groupId = it,
                 ownerPublicKey = groupOwnerPublicKey,

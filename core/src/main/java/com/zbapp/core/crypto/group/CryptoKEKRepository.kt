@@ -21,30 +21,43 @@ class CryptoKEKRepository(
     private val cryptoCore: CryptoCore
 ) : BaseRepository() {
 
-    private val groupKeys = local.getAllGroupKeys()
-        .stateIn(
-            scope = scopeProvider.defaultScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
+    private var cachedGroupKeys = MutableStateFlow<List<GroupCryptoKeyDataRaw>>(emptyList())
+    private var cachedMemberKeys = MutableStateFlow<List<GroupMemberCryptoKeyDataRaw>>(emptyList())
 
-    private val memberKeys = local.getAllMemberKeys()
-        .stateIn(
-            scope = scopeProvider.defaultScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
+    suspend fun getGroupKeys(): List<GroupCryptoKeyDataRaw> {
+        return cachedGroupKeys.value.ifEmpty {
+            local.getAllGroupKeys()
+                .firstOrNull()
+                ?.also { cachedGroupKeys.value = it }
+                ?: emptyList()
+        }
+    }
+
+    suspend fun getMemberKeys(): List<GroupMemberCryptoKeyDataRaw> {
+        return cachedMemberKeys.value.ifEmpty {
+            local.getAllMemberKeys()
+                .firstOrNull()
+                ?.also { cachedMemberKeys.value = it }
+                ?: emptyList()
+        }
+    }
+
 
     fun refreshAllKeys(): Flow<Pair<List<GroupCryptoKeyDataRaw>, List<GroupMemberCryptoKeyDataRaw>>> {
         return getDataOnce(
             remote = {
+                logg.tag("tag_crypto_key").w("refreshing group keys")
                 val groupKeys = remote.getAllGroupKeys()
+                logg.tag("tag_crypto_key").w("refreshing member keys")
                 val memberKeys = remote.getAllGroupMemberKeys()
                 groupKeys to memberKeys
             },
             localUpdate = {
-                local.recreateAllGroupKeys(it.first)
-                local.recreateAllMemberKeys(it.second)
+                cachedGroupKeys.value = it.first
+                cachedMemberKeys.value = it.second
+                local.recreateAllGroupKeys(it.first, it.second)
+
+                logg.tag("tag_crypto_key").w("updated group and member keys")
             }
         )
     }
@@ -52,35 +65,60 @@ class CryptoKEKRepository(
     fun refreshAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
         return getDataOnce(
             remote = { remote.getAllGroupKeys() },
-            localUpdate = { local.recreateAllGroupKeys(it) }
+            localUpdate = {
+                cachedGroupKeys.value = it
+                local.recreateAllGroupKeys(it)
+            }
         )
     }
 
     fun refreshGroupKeysForGroup(groupId: String): Flow<List<GroupCryptoKeyDataRaw>> {
         return getDataOnce(
-            remote = { remote.getGroupKeyForGroup(groupId) },
-            localUpdate = { local.recreateGroupKeyForGroup(groupId, it) }
+            remote = {
+                logg.tag("tag_crypto_key_group").w("refreshing only group key")
+                remote.getGroupKeyForGroup(groupId)
+            },
+            localUpdate = {
+                logg.tag("tag_crypto_key_group").w("updated only group key")
+
+                cachedGroupKeys.value = emptyList()
+                local.recreateGroupKeyForGroup(groupId, it)
+            }
         )
     }
 
     fun refreshMemberKeysForGroup(groupId: String): Flow<List<GroupMemberCryptoKeyDataRaw>> {
         return getDataOnce(
-            remote = { remote.getAllGroupMemberKeysForGroup(groupId) },
-            localUpdate = { local.recreateMemberKeysForGroup(groupId, it) }
+            remote = {
+                logg.tag("tag_crypto_key_group_member").w("refreshing only group member key")
+                remote.getAllGroupMemberKeysForGroup(groupId)
+            },
+            localUpdate = {
+                logg.tag("tag_crypto_key_group_member").w("updated only group member key")
+
+                cachedMemberKeys.value = emptyList()
+                local.recreateMemberKeysForGroup(groupId, it)
+            }
         )
     }
 
     fun refreshKeysForGroup(groupId: String): Flow<Pair<List<GroupCryptoKeyDataRaw>, List<GroupMemberCryptoKeyDataRaw>>> {
         return getDataOnce(
             remote = {
+                logg.tag("tag_crypto_key_group").d("refreshing group key")
                 val groupKeys = remote.getGroupKeyForGroup(groupId)
+                logg.tag("tag_crypto_key_group").d("refreshing group member key")
                 val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
                 groupKeys to memberKeys
             },
             localUpdate = {
-                logg.tag("tag_group_key_member").d("member key count for $groupId: ${it.second.size}")
-                local.recreateGroupKeyForGroup(groupId, it.first)
-                local.recreateMemberKeysForGroup(groupId, it.second)
+                logg.tag("tag_crypto_key_group").d("member key count for $groupId: ${it.second.size}")
+
+                cachedGroupKeys.value = emptyList()
+                cachedMemberKeys.value = emptyList()
+                local.recreateGroupKeyForGroup(groupId, it.first, it.second)
+
+                logg.tag("tag_crypto_key_group").d("updated group and member keys for group")
             }
         )
     }
@@ -93,36 +131,8 @@ class CryptoKEKRepository(
         refreshKeysForGroup(groupId).launchIn(scopeProvider.defaultScope)
     }
 
-    suspend fun hasGroupKey(groupId: String, vararg keyVersions: Long): Boolean {
-        val keys = groupKeys.value.filter { it.groupId == groupId }
-        return keyVersions.all { version ->
-            keys.any { it.version == version }
-        }
-    }
-
-    fun hasMemberKey(
-        groupId: String,
-        memberUserId: String,
-        keyVersion: Long
-    ): Boolean {
-        return memberKeys.value
-            .filter { it.groupId == groupId && it.memberUserId == memberUserId }
-            .any { it.version == keyVersion }
-    }
-
-    fun hasMemberKeys(
-        groupId: String,
-        keyVersion: List<Pair<String, Long>>
-    ): Boolean {
-        val keys = memberKeys.value.filter { it.groupId == groupId }
-        return keyVersion
-            .all { key ->
-                keys.any { it.memberUserId == key.first && it.version == key.second }
-            }
-    }
-
-    fun getLatestGroupKeyVersion(groupId: String): Long? {
-        return groupKeys.value.filter { it.groupId == groupId }.maxByOrNull { it.version }?.version
+    suspend fun getLatestGroupKeyVersion(groupId: String): Long? {
+        return getGroupKeys().filter { it.groupId == groupId }.maxByOrNull { it.version }?.version
     }
 
     suspend fun getLatestGroupKey(groupId: String): DecryptedGroupKeyData? {
@@ -135,9 +145,11 @@ class CryptoKEKRepository(
         ownerPublicKey: String,
         keyVersion: Long? = null
     ): DecryptedGroupKeyData? {
-        val keyRaw = groupKeys.value
+        logg.tag("tag_crypto_key_group").d("group key count: ${cachedGroupKeys.value.size}")
+        val keyRaw = getGroupKeys()
             .filter { it.groupId == groupId }
             .let {
+                logg.tag("tag_crypto_key_group").d("group key count: ${it.size} for $groupId")
                 if (keyVersion != null)
                 // if key version is passed get matching key
                     it.firstOrNull { it.version == keyVersion }
@@ -158,7 +170,7 @@ class CryptoKEKRepository(
 
     suspend fun getAllGroupKeys(groupId: String): List<DecryptedGroupKeyData> {
         val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return emptyList()
-        val keys = groupKeys.value.filter { it.groupId == groupId }
+        val keys = getGroupKeys().filter { it.groupId == groupId }
 
         return keys.map {
             val groupKey = cryptoCore.decryptKeyWithKeyPair(
@@ -181,8 +193,8 @@ class CryptoKEKRepository(
         memberUserId: String,
         memberPublicKey: String
     ): DecryptedGroupKeyData? {
-        logg.tag("tag_group_key_member").d("member key count: ${memberKeys.value.size}")
-        val keyRaw = memberKeys.value
+        logg.tag("tag_crypto_key_group_member").d("member key count: ${cachedMemberKeys.value.size}")
+        val keyRaw = getMemberKeys()
             .filter { it.groupId == groupId && it.ownerUserId == memberUserId }
             .maxByOrNull { it.version }
             ?: return null
@@ -231,19 +243,20 @@ class CryptoKEKRepository(
         }.map { Unit }
     }
 
-    suspend fun deleteGroupKeyForGroup(groupId: String) {
-        local.deleteGroupKeyForGroup(groupId)
-    }
-
     suspend fun deleteAllKeysForGroup(groupId: String) {
+        cachedGroupKeys.value = cachedGroupKeys.value.filter { it.groupId != groupId }
+        cachedMemberKeys.value = cachedMemberKeys.value.filter { it.groupId != groupId }
         local.deleteAllKeysForGroup(groupId)
     }
 
     suspend fun deleteKeysForUser(groupId: String, userId: String) {
+        cachedMemberKeys.value = cachedMemberKeys.value.filter { it.memberUserId != groupId }
         local.deleteKeysForUser(groupId, userId)
     }
 
     suspend fun clearKeys() {
+        cachedMemberKeys.value = emptyList()
+        cachedGroupKeys.value = emptyList()
         local.deleteAllKeys()
     }
 }

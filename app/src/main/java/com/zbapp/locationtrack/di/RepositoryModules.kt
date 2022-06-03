@@ -58,7 +58,6 @@ val daoModules = module {
     single { get<MainAppDatabase>().groupsDao() }
     single { get<MainAppDatabase>().inviteDao() }
     single { get<MainAppDatabase>().groupKeysDao() }
-    single { get<MainAppDatabase>().groupMemberKeysDao() }
     single { get<MainAppDatabase>().userKeysDao() }
 }
 
@@ -121,7 +120,7 @@ val coreDependencyModules = module {
     single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }
     single<IUserLocalDataSource> { UserLocalDataSource(get(), get(), get()) }
-    single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get(), get(), get(), get(), get()) }
+    single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get(), get(), get(), get()) }
     single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get()) }
     single<IInviteCodeLocalDataSource> { InviteLocalDataSource(get(), get()) }
     single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), get()) }

@@ -33,12 +33,16 @@ class GroupRepository constructor(
         return mergeDataWithRemote(
             local = local.getAllGroups(),
             remote = {
+                logg.tag("tag_crypto_key").w("refreshing all groups")
                 remote.getAllGroups()
                     .also { cryptoKEKRepo.refreshAllKeys().first() }
                     .let { it.map { handleGroupKeysUpdate(it) } }
             },
-            localUpdate = { local.recreateGroups(it) },
-            remotePreference = RemotePreference.CACHE("groups", 10_000)
+            localUpdate = {
+                logg.tag("tag_crypto_key_group").d("group and keys ready, updating groups")
+                local.recreateGroups(it)
+            },
+            remotePreference = RemotePreference.CACHE("groups", 3_000)
         )
     }
 
@@ -173,6 +177,7 @@ class GroupRepository constructor(
 
     private suspend fun handleGroupKeysUpdate(group: GroupWithMemberRaw): GroupWithMemberRaw {
         // TODO handle errors
+        logg.tag("tag_crypto_key_group").w("group and member keys updated")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
         return updateGroupKeyAndRefresh(remoteGroup, force = false)
             ?: updateMemberKeyAndRefresh(remoteGroup)
@@ -183,11 +188,11 @@ class GroupRepository constructor(
         val memberMeRemote = remoteGroup.members.firstOrNull { it.userId == userRepository.cachedUserId }
 
         if(memberMeRemote?.shouldRotateKeys == true || force) {
-            logg.tag("tag_group_key_member").w("group member key is deprecated - rotating: ${remoteGroup.id} - ${memberMeRemote?.userId}")
+            logg.tag("tag_crypto_key_group_member").w("group member key is deprecated - rotating: ${remoteGroup.id} - ${memberMeRemote?.userId}")
             cryptoKEKRepo.rotateAllMemberKeys(remoteGroup)
             return getDataOnce(remote = { remote.getGroupWithMembers(remoteGroup.id) }).first()
         } else {
-            logg.tag("tag_group_key_member").w("not rotating member keys: ${remoteGroup.id} - ${memberMeRemote?.userId}")
+            logg.tag("tag_crypto_key_group_member").w("not rotating member keys: ${remoteGroup.id} - ${memberMeRemote?.userId}")
         }
 
         return null
@@ -197,7 +202,7 @@ class GroupRepository constructor(
         if (remoteGroup.ownerUserId != userRepository.cachedUserId) return null
         if (!force && !remoteGroup.shouldRotateKeys) return null
 
-        logg.tag("tag_group_key").w("group key is deprecated - rotating: ${remoteGroup.id}")
+        logg.tag("tag_crypto_key_group").w("group key is deprecated - rotating: ${remoteGroup.id}")
         cryptoKEKRepo.rotateAllGroupKeys(remoteGroup)
         return getDataOnce(remote = { remote.getGroupWithMembers(remoteGroup.id) }).first()
     }
