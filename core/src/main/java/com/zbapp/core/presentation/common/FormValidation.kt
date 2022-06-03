@@ -39,6 +39,12 @@ sealed class FormValidation {
         }
     }
 
+    object TextNotEmpty : FormValidation() {
+        fun validate(text: String): FormValidationResult {
+            return FormValidationResult(this, result = text.isNotBlank())
+        }
+    }
+
 }
 
 data class FormValidationResult(
