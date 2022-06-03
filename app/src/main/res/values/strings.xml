@@ -208,5 +208,11 @@
     <string name="unit_km">km</string>
     <string name="placeholder_unit_meter">%s m</string>
     <string name="placeholder_unit_km">%s km</string>
+    <string name="welcome_screen_info_1">end-to-end encrypted</string>
+    <string name="welcome_screen_info_2">open source</string>
+    <string name="welcome_screen_info_3">private</string>
+    <string name="welcome_screen_info_4">secure</string>
+    <string name="welcome_screen_info_app">location sharing</string>
+    <string name="welcome_screen_button_join">JOIN</string>
 
 </resources>
