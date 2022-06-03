@@ -2,10 +2,12 @@ package com.zbapp.core.presentation.settings
 
 import com.zbapp.core.domain.user.LogoutUseCase
 import com.zbapp.core.models.Payload
+import com.zbapp.core.models.Resource
 import com.zbapp.core.models.exception
 import com.zbapp.core.models.mapSuccess
 import com.zbapp.core.presentation.CoreViewModel
 import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.core.utils.exceptions.UnauthorizedException
 import com.zbapp.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -14,7 +16,7 @@ import kotlinx.coroutines.flow.*
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository,
-    scope: CoroutineScope
+    scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(Payload.Loading)
@@ -27,17 +29,26 @@ class SettingsViewModel(
         userRepo.localUser
             .onEach { userState ->
                 _accountState.update {
-                    userState.mapSuccess { user ->
-                        AccountScreenState(
-                            userState = UserState(
-                                name = user.name,
-                                userId = user.id,
-                                email = user.email,
-                                image = user.data?.userImage
-                            ),
-                            logoutState = null,
-                            deleteAccountState = null
-                        )
+                    when (userState) {
+                        Resource.NotInitialized -> it
+                        is Resource.Ready -> {
+                            if (userState.data != null) {
+                                Payload.Success(
+                                    AccountScreenState(
+                                        userState = UserState(
+                                            name = userState.data.name,
+                                            userId = userState.data.id,
+                                            email = userState.data.email,
+                                            image = userState.data.data?.userImage
+                                        ),
+                                        logoutState = null,
+                                        deleteAccountState = null
+                                    )
+                                )
+                            } else {
+                                Payload.Error(UnauthorizedException("User is not ready"))
+                            }
+                        }
                     }
                 }
             }

@@ -15,8 +15,8 @@ class UserLocalDataSource(
     private val keysLocal: ICryptoUserKeyLocalDataSource
 ): IUserLocalDataSource {
 
-    override fun getMe(): Flow<UserMe> {
-        return dao.get().map { mapper.local2Core(it) }
+    override fun getMe(): Flow<UserMe?> {
+        return dao.get().map { it?.let { mapper.local2Core(it) } }
     }
 
     override suspend fun update(data: UserMeRaw): UserMe {

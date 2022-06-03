@@ -48,10 +48,8 @@ fun RootApp(
 
         when(val state = userState) {
             Resource.NotInitialized -> {
-                AppTheme {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
             }
             is Resource.Ready -> {

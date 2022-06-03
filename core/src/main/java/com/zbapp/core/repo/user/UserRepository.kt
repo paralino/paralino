@@ -4,6 +4,7 @@ import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.config
 import com.zbapp.core.logg
 import com.zbapp.core.models.Payload
+import com.zbapp.core.models.Resource
 import com.zbapp.core.models.data
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
@@ -25,13 +26,13 @@ class UserRepository constructor(
 
     val cachedUserId: String get() = config.userId
 
-    val localUser: StateFlow<Payload<UserMe>> = local.getMe()
-        .map<UserMe, Payload<UserMe>> { Payload.Success(it) }
-        .catch { emit(Payload.Error(it)) }
+    val localUser: StateFlow<Resource<UserMe?>> = local.getMe()
+        .map<UserMe?, Resource<UserMe?>> { Resource.Ready(it) }
+        .catch { emit(Resource.NotInitialized) }
         .stateIn(
             scope = scopeProvider.defaultScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = Payload.Loading
+            initialValue = Resource.NotInitialized
         )
 
     val cachedUser: UserMe? get() = localUser.value.data
