@@ -50,7 +50,7 @@ class UserApi constructor(
     }
 
     override suspend fun deleteAccount() {
-        return remoteModule.execute { account.delete() }
+        return remoteModule.execute { account.updateStatus() }
     }
 
     override suspend fun logout() {

@@ -19,15 +19,14 @@ class InviteRemoteSource constructor(
     private val remoteConfig: BackendConfig,
 ) {
     suspend fun createInviteCode(data: PersonalCodeCreateData): PersonalCodeData {
-        val id = functionsApi.createExecution(
+        return functionsApi.runAndWait(
             functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
             data = BaseRemoteModule.formatter.encodeToString(data)
         )
-        return poll {
-            functionsApi.getExecution(remoteConfig.resourceIds.functionPersonalCodeCreateID, id)
-                .takeIf { it.isSuccess }
-                ?.let { getInviteCodes().firstOrNull { it.ownerId == data.ownerId } }
-        }
+            .takeIf { it.isSuccess }
+            ?.let {
+                getInviteCodes().firstOrNull { it.ownerId == data.ownerId }
+            }!!
     }
 
     suspend fun getInviteCodes(): List<PersonalCodeData> {
@@ -37,18 +36,14 @@ class InviteRemoteSource constructor(
     }
 
     suspend fun getInviteByCode(code: String): PersonalCodeReadData {
-        val id = functionsApi.createExecution(
+        return functionsApi.runAndWait(
             functionId = remoteConfig.resourceIds.functionPersonalCodeReadID,
-            code
+            data = code
         )
-        return poll(canThrow = true) {
-            // TOOD improve checking for valid code better
-            functionsApi.getExecution(remoteConfig.resourceIds.functionPersonalCodeReadID, id)
-                .takeIf { it.isSuccess }
-                ?.let {
-                    BaseRemoteModule.formatter.decodeFromString<PersonalCodeReadData>(it.stdout)
-                }
-        }
+            .takeIf { it.isSuccess }
+            ?.let {
+                BaseRemoteModule.formatter.decodeFromString<PersonalCodeReadData>(it.response)
+            }!!
     }
 
     suspend fun revokeInviteCode(id: String) {

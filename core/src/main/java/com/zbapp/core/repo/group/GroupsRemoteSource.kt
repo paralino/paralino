@@ -74,7 +74,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (data.isSuccess) {
-                getGroupWithMembers(data.stdout)
+                getGroupWithMembers(data.response)
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(

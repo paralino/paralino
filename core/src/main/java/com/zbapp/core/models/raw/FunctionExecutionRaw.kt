@@ -9,7 +9,7 @@ data class FunctionExecutionRaw(
     val id: String,
     val functionId: String,
     val status: String,
-    val stdout: String,
+    val response: String,
     val stderr: String
 ) {
 
@@ -23,7 +23,7 @@ data class FunctionExecutionRaw(
                 id = map["\$id"] as String,
                 functionId = map["functionId"] as String,
                 status = map["status"] as String,
-                stdout = map["stdout"] as String,
+                response = map["response"] as String,
                 stderr = map["stderr"] as String
             )
         }

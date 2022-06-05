@@ -10,7 +10,11 @@ class FunctionsApi constructor(
 
     override suspend fun createExecution(functionId: String, data: String?): String {
         return remoteModule.execute {
-            functions.createExecution(functionId, data).id
+            functions.createExecution(
+                functionId = functionId,
+                data = data,
+                async = true
+            ).id
         }
     }
 
@@ -24,7 +28,7 @@ class FunctionsApi constructor(
                     id = it.id,
                     functionId = it.functionId,
                     status = it.status,
-                    stdout = it.stdout,
+                    response = it.response,
                     stderr = it.stderr
                 )
             }
@@ -32,9 +36,20 @@ class FunctionsApi constructor(
     }
 
     override suspend fun runAndWait(functionId: String, data: String?): FunctionExecutionRaw {
-        val id = createExecution(functionId, data)
-        return poll {
-            getExecution(functionId, id).takeIf { it.isCompleted }
+        return remoteModule.execute {
+            functions.createExecution(
+                functionId = functionId,
+                data = data,
+                async = false
+            ).let {
+                FunctionExecutionRaw(
+                    id = it.id,
+                    functionId = it.functionId,
+                    status = it.status,
+                    response = it.response,
+                    stderr = it.stderr
+                )
+            }
         }
     }
 
