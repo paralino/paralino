@@ -2,7 +2,6 @@ package com.zbapp.remote.appwrite
 
 import com.zbapp.core.models.raw.FunctionExecutionRaw
 import com.zbapp.core.repo.api.IFunctionsApi
-import com.zbapp.core.utils.poll
 
 class FunctionsApi constructor(
     private val remoteModule: AppWriteRemoteModule

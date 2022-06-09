@@ -6,12 +6,12 @@ import com.zbapp.core.logg
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.group.UserGroup
 import com.zbapp.core.models.group.UserGroupWithMembers
+import com.zbapp.core.models.user.UserPersonalCodeData
 import com.zbapp.core.models.location.MemberModel
 import com.zbapp.core.models.location.MemberModelData
 import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.GroupDocumentRaw
 import com.zbapp.core.models.raw.GroupWithMemberRaw
-import com.zbapp.core.models.raw.PersonalCodeReadData
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.base.RemotePreference
 import com.zbapp.core.repo.user.UserRepository
@@ -131,7 +131,7 @@ class GroupRepository constructor(
         )
     }
 
-    fun addMemberByAccessCode(groupId: String, code: PersonalCodeReadData): Flow<GroupDocumentRaw> {
+    fun addMemberByAccessCode(groupId: String, code: UserPersonalCodeData): Flow<GroupDocumentRaw> {
         return getDataOnce(
             remote = {
                 remote.addUserToGroup(

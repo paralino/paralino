@@ -6,13 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.presentation.invite.input.MemberInviteViewModel
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.repo.invite.InviteRepository
+import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 
 class MemberInviteViewModel(
     app: Application,
     val groupId: String?,
     code: String?,
-    private val inviteRepo: InviteRepository,
+    private val codeRepo: PersonalCodesRepository,
     private val groupRepo: GroupRepository,
 ) : AndroidViewModel(app) {
 
@@ -20,7 +20,7 @@ class MemberInviteViewModel(
         groupId = groupId,
         code = code,
         groupRepo = groupRepo,
-        inviteRepo = inviteRepo,
+        codeRepo = codeRepo,
         scope = viewModelScope
     )
 

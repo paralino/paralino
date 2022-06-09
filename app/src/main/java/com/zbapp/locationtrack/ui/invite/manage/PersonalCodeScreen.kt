@@ -70,7 +70,7 @@ fun PersonalCodeScreen(
                     dialog.Show {
                         showDialog = null
                         if (it == MainAlertDialog.Buttons.buttonOk)
-                            vm.deleteInvite(dialog.codeId)
+                            vm.deletePersonalCode(dialog.codeId)
                     }
                 }
                 else -> {}
@@ -87,7 +87,7 @@ fun PersonalCodeScreen(
                         state = state.data.code!!,
                         deleteLoading = state.data.actionLoading,
                         onCopy = {
-                            context.copy(state.data.code!!.code)
+                            context.copy(state.data.code!!.data.code)
                             context.let {
                                 Toast.makeText(
                                     it,
@@ -97,7 +97,7 @@ fun PersonalCodeScreen(
                             }
                         },
                         onShare = {
-                            context.share(state.data.code!!.urlCode)
+                            context.share(state.data.code!!.data.code)
                         },
                         onDelete = {
                             showDialog = MainAlertDialog.PersonalCodeDelete(state.data.code!!.id)
@@ -111,7 +111,7 @@ fun PersonalCodeScreen(
                     content = stringResource(id = R.string.invite_manage_empty_description),
                     buttonText = stringResource(id = R.string.invite_create_button),
                     buttonState = if (state.data.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,
-                    onClick = { vm.createInviteCode() }
+                    onClick = { vm.createPersonalCode() }
                 )
             }
 

@@ -14,7 +14,7 @@ import com.zbapp.core.utils.LocationConditionStatus
 import com.zbapp.core.utils.LocationStatusException
 import com.zbapp.core.utils.extensions.randomString
 import com.zbapp.locationtrack.utils.extensions.batterLevel
-import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
+import com.zbapp.locationtrack.utils.extensions.millisToDateTimeUTC
 import com.zbapp.locationtrack.utils.extensions.toLocalString
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -110,7 +110,7 @@ class LocationInitHandler(
                     lat = it.latitude,
                     lng = it.longitude,
                     accuracy = it.accuracy,
-                    timeUTC = it.time.toDateTimeUTC().toLocalString(),
+                    timeUTC = it.time.millisToDateTimeUTC().toLocalString(),
                     batteryLevel = context.batterLevel,
                     speed = it.speed,
                     altitude = it.altitude.toFloat()

@@ -1,8 +1,7 @@
 package com.zbapp.core.presentation.invite.input
 
 import com.zbapp.core.models.base.ImageModel
-import com.zbapp.core.models.base.asImageModel
-import com.zbapp.core.models.raw.PersonalCodeReadData
+import com.zbapp.core.models.user.UserPersonalCodeData
 import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.utils.Emojis
 
@@ -19,7 +18,7 @@ sealed class MemberInviteScreenState() {
     ) : MemberInviteScreenState()
 
     data class Loaded constructor(
-        val codeReadData: PersonalCodeReadData,
+        val codeReadData: UserPersonalCodeData,
         val group: GroupItemData?,
         val canChangeGroup: Boolean,
         override val hasInputError: Boolean,
@@ -30,8 +29,7 @@ sealed class MemberInviteScreenState() {
         val userId: String get() = codeReadData.ownerId
         val userName: String get() = codeReadData.ownerName
         val userImage: ImageModel
-            get() = codeReadData.ownerImageBase64?.asImageModel()
-                ?: ImageModel.emoji(Emojis.robot)
+            get() = codeReadData.ownerImage ?: ImageModel.emoji(Emojis.robot)
     }
 }
 

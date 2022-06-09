@@ -34,5 +34,5 @@ suspend inline fun <reified T> poll(
                 delay(delay)
         } while (data == null)
         data
-    } ?: throw TimeoutException("Invite code request timed out")
+    } ?: throw TimeoutException("Polling request timed out")
 }

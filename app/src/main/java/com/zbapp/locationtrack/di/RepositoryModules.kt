@@ -14,8 +14,8 @@ import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.repo.api.IUserApi
 import com.zbapp.core.repo.group.GroupsRemoteSource
 import com.zbapp.core.repo.group.IGroupLocalDataSource
-import com.zbapp.core.repo.invite.IInviteCodeLocalDataSource
-import com.zbapp.core.repo.invite.InviteRemoteSource
+import com.zbapp.core.repo.personal_code.IPersonalCodelLocalDataSource
+import com.zbapp.core.repo.personal_code.PersonalCodesRemoteSource
 import com.zbapp.core.repo.location.ILocationLocalDataSource
 import com.zbapp.core.repo.location.ISharingContractsLocalDataSource
 import com.zbapp.core.repo.location.LocationRemoteSource
@@ -32,7 +32,7 @@ import com.zbapp.locationtrack.data.database.MainAppDatabase
 import com.zbapp.locationtrack.data.mappers.*
 import com.zbapp.locationtrack.data.repos.group.CryptoKeyLocalDataSource
 import com.zbapp.locationtrack.data.repos.group.UserGroupLocalDataSource
-import com.zbapp.locationtrack.data.repos.invite.InviteLocalDataSource
+import com.zbapp.locationtrack.data.repos.personal_code.PersonalCodeLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.LocationLocalDataSource
 import com.zbapp.locationtrack.data.repos.location.SharingContractsLocalDataSourceImpl
 import com.zbapp.locationtrack.data.repos.user.UserCryptoKeyLocalDataSource
@@ -56,7 +56,7 @@ val daoModules = module {
     single { get<MainAppDatabase>().sharingContractDao() }
     single { get<MainAppDatabase>().userDao() }
     single { get<MainAppDatabase>().groupsDao() }
-    single { get<MainAppDatabase>().inviteDao() }
+    single { get<MainAppDatabase>().personalCodeDao() }
     single { get<MainAppDatabase>().groupKeysDao() }
     single { get<MainAppDatabase>().userKeysDao() }
 }
@@ -81,17 +81,18 @@ val mappersModule = module {
     single { GroupMapperCore(get(), get(), get()) }
     single { MemberMapperCore(get(), get()) }
     single { MemberMapperLocal(get()) }
-    single { InviteCodeMapper(get(), get()) }
     single { GroupKeysMapper() }
     single { MemberKeysMapper() }
     single { UserKeyMapper(get()) }
+    single { PersonalCodeMapperCore(get(), get()) }
+    single { PersonalCodeMapperLocal(get()) }
 }
 
 val remoteDataSourceModule = module {
     single { UserRemoteSource(get()) }
     single { LocationRemoteSource(get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
-    single { InviteRemoteSource(get(), get(), get()) }
+    single { PersonalCodesRemoteSource(get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get(), get(), get()) }
     single {
         BackendConfig(
@@ -122,6 +123,6 @@ val coreDependencyModules = module {
     single<IUserLocalDataSource> { UserLocalDataSource(get(), get(), get()) }
     single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get(), get(), get(), get()) }
     single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get()) }
-    single<IInviteCodeLocalDataSource> { InviteLocalDataSource(get(), get()) }
+    single<IPersonalCodelLocalDataSource> { PersonalCodeLocalDataSource(get(), get()) }
     single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), get()) }
 }

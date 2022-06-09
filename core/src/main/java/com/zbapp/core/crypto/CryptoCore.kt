@@ -120,6 +120,22 @@ class CryptoCore(
         ).asBase64String(hashProvider)
     }
 
+    suspend fun encryptDataWithSimplePassword(data: String, password: String): String {
+        return serviceProvider.encryptDataWithPassword(
+            data = data.toData(hashProvider).content,
+            password = password,
+            context = null
+        ).asBase64String(hashProvider)
+    }
+
+    suspend fun decryptDataWithSimplePassword(data: String, password: String): String {
+        return serviceProvider.decryptDataWithPassword(
+            data = data.base64ToData(hashProvider).content,
+            password = password,
+            context = null
+        ).asString(hashProvider)
+    }
+
     suspend fun decryptDataWithKey(data: String, key: String): String {
         return decryptDataWithKey(data, key.base64ToData(hashProvider).content)
     }

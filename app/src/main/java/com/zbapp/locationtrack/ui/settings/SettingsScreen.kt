@@ -58,7 +58,7 @@ fun SettingSectionAccount(navController: NavController) {
     SettingsActionItem(
         name = stringResource(id = R.string.settings_section_personal_code_title),
         icon = Icons.Rounded.Key
-    ) { navController.navigate(AppScreen.SettingsRoot.InviteCodes.routeSignature) }
+    ) { navController.navigate(AppScreen.SettingsRoot.PersonalCodes.routeSignature) }
 }
 
 @Composable

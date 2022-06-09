@@ -85,28 +85,12 @@ sealed class AppScreen {
             override val routeSignature: String = "settings-main"
         }
 
-        object InviteCodes : AppScreen() {
-            override val routeSignature: String = "invites"
+        object PersonalCodes : AppScreen() {
+            override val routeSignature: String = "personal_codes"
         }
 
         object ProfileDetails : AppScreen() {
             override val routeSignature: String = "profile"
         }
-    }
-
-    companion object {
-//            fun fromRoute(route: String?): MainAppScreen =
-//                when (route?.substringBefore("/")) {
-//                    Dashboard::class.simpleName -> Dashboard
-//                    MainMap::class.simpleName -> MainMap(groupId = null)
-//                    Settings::class.simpleName -> Settings
-//                    InviteCodes::class.simpleName -> Settings
-//                    ProfileDetails::class.simpleName -> Settings
-//                    GroupDetails::class.simpleName -> Dashboard
-//                    SharingStart::class.simpleName -> Dashboard
-//
-//                    null -> Dashboard
-//                    else -> throw IllegalArgumentException("Route $route is not recognized.")
-//                }
     }
 }

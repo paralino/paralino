@@ -1,0 +1,77 @@
+package com.zbapp.core.repo.personal_code
+
+import com.zbapp.core.crypto.user.CryptoUserKeyRepository
+import com.zbapp.core.models.Payload
+import com.zbapp.core.models.user.UserPersonalCode
+import com.zbapp.core.models.user.UserPersonalCodeData
+import com.zbapp.core.repo.base.BaseRepository
+import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlin.random.Random
+
+class PersonalCodesRepository(
+    private val remote: PersonalCodesRemoteSource,
+    private val local: IPersonalCodelLocalDataSource,
+    private val userRepo: UserRepository,
+    private val userKeyRepo: CryptoUserKeyRepository,
+) : BaseRepository() {
+
+    fun createPersonalCode(): Flow<Payload<UserPersonalCode>> {
+        val user = userRepo.cachedUser
+            ?: return flow { emit(Payload.Error(Throwable("User not valid"))) }
+
+        return getDataOnce(
+            remote = {
+                val codeData = UserPersonalCodeData(
+                    ownerId = user.id,
+                    ownerName = user.data?.userName ?: "",
+                    ownerImage = user.data?.userImage,
+                    ownerPublicKey = userKeyRepo.latestKeyPair().publicKey,
+                    code = createPersonalCodeString()
+                )
+                remote.createNewPersonalCode(codeData)
+            },
+            localUpdate = { local.addPersonalCode(it) }
+        ).mapToPayload()
+    }
+
+    fun getMyPersonalCodes(): Flow<Payload<List<UserPersonalCode>>> {
+        return mergeDataWithRemote(
+            remote = { remote.getMyPersonalCodes() },
+            local = local.getPersonalCodes(),
+            localUpdate = { local.replacePersonalCodes(it) }
+        ).mapToPayload()
+    }
+
+    fun getUserInfoFromCode(code: String): Flow<Payload<UserPersonalCodeData>> {
+        return getDataOnce(
+            remote = { remote.getUserInfoFromCode(code) }
+        ).mapToPayload()
+    }
+
+    fun revokePersonalCode(id: String): Flow<Payload<Unit>> {
+        return getDataOnce(
+            localUpdate = { local.deletePersonalCode(id) }
+        ) { remote.revokePersonalCode(id) }.mapToPayload()
+    }
+
+    suspend fun clearLocally() {
+        local.clear()
+    }
+
+    private fun createPersonalCodeString(): String {
+        // without similar characters: 0,O,1,I
+        // code pattern XXXX-XXXX
+        val seed = "ABCDEFGHJKLMNPQRSTUVWXYZ2345789"
+        val sectionLength = 4
+        val sections = 2
+        val chars = CharArray(sectionLength * sections + sections - 1) {
+            if (it % (sectionLength + 1) == sectionLength) '-'
+            else seed[Random.nextInt(seed.length)]
+        }
+        return chars.concatToString()
+    }
+
+}

@@ -19,6 +19,10 @@ data class ImageModel(val image: String = "") {
         return getImageType()?.let { image.replaceFirst("${it.name}:", "") }
     }
 
+    fun takeIfValid(): ImageModel? {
+        return this.takeIf { it.getImageType() != null }
+    }
+
     companion object {
         fun emoji(emoji: String): ImageModel {
             return ImageModel(ImageType.emoji.createModel(emoji))
@@ -31,7 +35,7 @@ data class ImageModel(val image: String = "") {
 }
 
 fun String.asImageModel(): ImageModel? {
-    return ImageModel(this).takeIf { it.getImageType() != null }
+    return ImageModel(this).takeIfValid()
 }
 
 enum class ImageType {

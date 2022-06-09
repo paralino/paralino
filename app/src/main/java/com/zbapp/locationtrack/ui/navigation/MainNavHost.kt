@@ -93,7 +93,7 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         composable(AppScreen.SettingsRoot.ProfileDetails.routeSignature) {
             AccountScreen(appState)
         }
-        composable(AppScreen.SettingsRoot.InviteCodes.routeSignature) {
+        composable(AppScreen.SettingsRoot.PersonalCodes.routeSignature) {
             PersonalCodeScreen(appState)
         }
     }

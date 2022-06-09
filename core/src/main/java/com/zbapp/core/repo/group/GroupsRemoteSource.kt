@@ -11,7 +11,7 @@ import com.zbapp.core.models.mappers.GroupMapperCore
 import com.zbapp.core.models.raw.*
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.models.base.ImageModel
-import com.zbapp.core.models.base.asImageModel
+import com.zbapp.core.models.user.UserPersonalCodeData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.utils.*
@@ -99,7 +99,7 @@ class GroupsRemoteSource constructor(
 
     suspend fun addUserToGroup(
         groupId: String,
-        codeData: PersonalCodeReadData,
+        codeData: UserPersonalCodeData,
         myKey: AsymmetricCryptoKeyData
     ): GroupWithMemberRaw {
         return blocking {
@@ -117,7 +117,7 @@ class GroupsRemoteSource constructor(
                 // sign with owner private key
                 myPrivateKey = myKey.privateKey,
                 // encrypt with user public key
-                publicKey = codeData.ownerKey
+                publicKey = codeData.ownerPublicKey
             )
 
             val encryptedMemberKey = cryptoCore.encryptDataWithKeyPair(
@@ -125,7 +125,7 @@ class GroupsRemoteSource constructor(
                 // sign with owner private key
                 myPrivateKey = myKey.privateKey,
                 // encrypt with user public key
-                publicKey = codeData.ownerKey
+                publicKey = codeData.ownerPublicKey
             )
 
             val encryptedOldKeys = oldKeys.map {
@@ -136,7 +136,7 @@ class GroupsRemoteSource constructor(
                         // sign with owner private key
                         myPrivateKey = myKey.privateKey,
                         // encrypt with user public key
-                        publicKey = codeData.ownerKey
+                        publicKey = codeData.ownerPublicKey
                     )
                 )
             }
@@ -144,13 +144,13 @@ class GroupsRemoteSource constructor(
             val payload = CreateGroupMemberPayload(
                 groupId = groupId,
                 userId = codeData.ownerId,
-                userPublicKey = codeData.ownerKey,
+                userPublicKey = codeData.ownerPublicKey,
                 encryptedGroupKey = encryptedGroupKey,
                 encryptedOwnerKey = encryptedMemberKey,
                 oldKeys = encryptedOldKeys,
                 memberData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
-                        MemberModelData(codeData.ownerName, codeData.ownerImageBase64?.asImageModel())
+                        MemberModelData(codeData.ownerName, codeData.ownerImage)
                     ),
                     key = groupKey.data.content
                 )

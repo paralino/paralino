@@ -8,14 +8,14 @@ import androidx.room.TypeConverters
 import com.zbapp.locationtrack.data.models.group.GroupKeyEntity
 import com.zbapp.locationtrack.data.models.group.GroupMemberKeyEntity
 import com.zbapp.locationtrack.data.models.group.UserGroupEntity
-import com.zbapp.locationtrack.data.models.invite.InviteCodeEntity
+import com.zbapp.locationtrack.data.models.user.PersonalCodeEntity
 import com.zbapp.locationtrack.data.models.location.MemberEntity
 import com.zbapp.locationtrack.data.models.location.SharingContractEntity
 import com.zbapp.locationtrack.data.models.user.UserEntity
 import com.zbapp.locationtrack.data.models.user.UserKeyEntity
 import com.zbapp.locationtrack.data.repos.group.GroupKeysDao
 import com.zbapp.locationtrack.data.repos.group.UserGroupDao
-import com.zbapp.locationtrack.data.repos.invite.InviteCodeDao
+import com.zbapp.locationtrack.data.repos.personal_code.PersonalCodeDao
 import com.zbapp.locationtrack.data.repos.location.MemberDao
 import com.zbapp.locationtrack.data.repos.location.SharingContractsDao
 import com.zbapp.locationtrack.data.repos.user.UserDao
@@ -28,7 +28,7 @@ import com.zbapp.locationtrack.data.repos.user.UserKeyDao
         SharingContractEntity::class,
         UserEntity::class,
         UserGroupEntity::class,
-        InviteCodeEntity::class,
+        PersonalCodeEntity::class,
         GroupKeyEntity::class,
         GroupMemberKeyEntity::class,
         UserKeyEntity::class,
@@ -48,12 +48,12 @@ abstract class MainAppDatabase : RoomDatabase() {
     abstract fun sharingContractDao(): SharingContractsDao
     abstract fun userDao(): UserDao
     abstract fun groupsDao(): UserGroupDao
-    abstract fun inviteDao(): InviteCodeDao
+    abstract fun personalCodeDao(): PersonalCodeDao
     abstract fun groupKeysDao(): GroupKeysDao
     abstract fun userKeysDao(): UserKeyDao
 
     companion object {
-        const val VERSION = 22
+        const val VERSION = 23
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

@@ -18,17 +18,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zbapp.core.models.invite.PersonalCodeData
+import com.zbapp.core.models.user.UserPersonalCode
 import com.zbapp.locationtrack.ui.components.AutoSizeText
 import com.zbapp.locationtrack.ui.theme.AppTheme
-import com.zbapp.locationtrack.utils.extensions.toDateTimeUTC
+import com.zbapp.locationtrack.utils.extensions.unixToDateTimeUTC
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 @Composable
 fun PersonalCodeItem(
     modifier: Modifier = Modifier,
-    state: PersonalCodeData,
+    state: UserPersonalCode,
     deleteLoading: Boolean,
     onCopy: () -> Unit,
     onShare: () -> Unit,
@@ -36,8 +36,10 @@ fun PersonalCodeItem(
 ) {
     PersonalCodeItem(
         modifier = modifier,
-        code = state.code,
-        validity = state.validity.toDateTimeUTC()
+        code = state.data.code,
+        // TODO review date format
+        validity = state.validityUnix
+            .unixToDateTimeUTC()
             .toLocalDate()
             .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
         deleteLoading = deleteLoading,
@@ -113,9 +115,9 @@ fun PersonalCodeItem(
             }
             Spacer(modifier = Modifier.weight(1f))
             IconButton(
-                onClick = { if(!deleteLoading) onDelete() }
+                onClick = { if (!deleteLoading) onDelete() }
             ) {
-                if(deleteLoading) {
+                if (deleteLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
                         strokeWidth = 2.dp

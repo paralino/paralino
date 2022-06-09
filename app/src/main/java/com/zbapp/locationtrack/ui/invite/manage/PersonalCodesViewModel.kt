@@ -4,11 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.zbapp.core.presentation.invite.manage.PersonalCodeViewModel
-import com.zbapp.core.repo.invite.InviteRepository
+import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 
 class PersonalCodesViewModel(
     app: Application,
-    private val repo: InviteRepository,
+    private val repo: PersonalCodesRepository,
 ) : AndroidViewModel(app) {
 
     private val coreVm = PersonalCodeViewModel(repo, viewModelScope)
@@ -16,7 +16,7 @@ class PersonalCodesViewModel(
     val uiState = coreVm.uiState
     val events = coreVm.events
 
-    fun createInviteCode() = coreVm.createInviteCode()
-    fun deleteInvite(codeId: String) = coreVm.deleteInvite(codeId)
+    fun createPersonalCode() = coreVm.createPersonalCode()
+    fun deletePersonalCode(codeId: String) = coreVm.deletePersonalCode(codeId)
 
 }

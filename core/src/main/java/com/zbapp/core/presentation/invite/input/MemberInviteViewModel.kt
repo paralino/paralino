@@ -4,7 +4,7 @@ import com.zbapp.core.models.Payload
 import com.zbapp.core.presentation.CoreViewModel
 import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.repo.invite.InviteRepository
+import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 import com.zbapp.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class MemberInviteViewModel(
     val groupId: String?,
     code: String?,
-    private val inviteRepo: InviteRepository,
+    private val codeRepo: PersonalCodesRepository,
     private val groupRepo: GroupRepository,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
@@ -81,7 +81,7 @@ class MemberInviteViewModel(
     }
 
     private fun loadMemberData(code: String) {
-        inviteRepo.getInviteByCode(code)
+        codeRepo.getUserInfoFromCode(code)
             .onEach { result ->
                 when (result) {
                     Payload.Loading -> {

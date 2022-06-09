@@ -3,13 +3,13 @@ package com.zbapp.core.presentation.invite.manage
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.mapSuccess
 import com.zbapp.core.presentation.CoreViewModel
-import com.zbapp.core.repo.invite.InviteRepository
+import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 
 class PersonalCodeViewModel(
-    private val repo: InviteRepository,
+    private val repo: PersonalCodesRepository,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -20,7 +20,7 @@ class PersonalCodeViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        repo.getAllInviteCodes()
+        repo.getMyPersonalCodes()
             .onEach { result ->
                 _uiState.update {
                     result.mapSuccess {
@@ -35,8 +35,8 @@ class PersonalCodeViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun createInviteCode() {
-        repo.createInviteCode()
+    fun createPersonalCode() {
+        repo.createPersonalCode()
             .onEach { result ->
                 _uiState.update {
                     it.mapSuccess { it.copy(createLoading = result is Payload.Loading) }
@@ -54,8 +54,8 @@ class PersonalCodeViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun deleteInvite(codeId: String) {
-        repo.revokeInviteCode(codeId)
+    fun deletePersonalCode(codeId: String) {
+        repo.revokePersonalCode(codeId)
             .onEach { result ->
                 when (result) {
                     Payload.Loading -> {

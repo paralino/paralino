@@ -3,7 +3,7 @@ package com.zbapp.core.domain.user
 import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.repo.invite.InviteRepository
+import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +16,7 @@ class LogoutUseCase(
     private val locationRepo: LocationRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
-    private val inviteRepo: InviteRepository
+    private val codeRepo: PersonalCodesRepository
 ) {
 
     fun logout(): Flow<Boolean> {
@@ -27,7 +27,7 @@ class LogoutUseCase(
                 locationRepo.clear()
                 cryptoKEKRepo.clearKeys()
                 userKeyRepo.clearUserPersonalKey()
-                inviteRepo.clearLocally()
+                codeRepo.clearLocally()
             }
     }
 
@@ -39,7 +39,7 @@ class LogoutUseCase(
                 locationRepo.clear()
                 cryptoKEKRepo.clearKeys()
                 userKeyRepo.clearUserPersonalKey()
-                inviteRepo.clearLocally()
+                codeRepo.clearLocally()
             }
     }
 

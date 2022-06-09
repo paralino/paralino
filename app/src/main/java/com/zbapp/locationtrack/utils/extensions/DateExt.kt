@@ -12,12 +12,19 @@ fun LocalDateTime.toMillis(): Long {
     return this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
 
-fun Long.toDateTime(): ZonedDateTime {
+fun Long.millisToDateTime(): ZonedDateTime {
     return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault())
 }
 
-fun Long.toDateTimeUTC(): LocalDateTime {
-    return toDateTime().withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()
+fun Long.millisToDateTimeUTC(): LocalDateTime {
+    return millisToDateTime().withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()
+}
+
+fun Long.unixToDateTimeUTC(): LocalDateTime {
+    return Instant.ofEpochSecond(this)
+        .atZone(ZoneId.systemDefault())
+        .withZoneSameInstant(ZoneOffset.UTC)
+        .toLocalDateTime()
 }
 
 fun String.toLocalDateTime(): LocalDateTime {
