@@ -28,6 +28,7 @@ class FunctionsApi constructor(
                     id = it.id,
                     functionId = it.functionId,
                     status = it.status,
+                    statusCode = it.statusCode,
                     response = it.response,
                     stderr = it.stderr
                 )
@@ -46,6 +47,7 @@ class FunctionsApi constructor(
                     id = it.id,
                     functionId = it.functionId,
                     status = it.status,
+                    statusCode = it.statusCode,
                     response = it.response,
                     stderr = it.stderr
                 )
