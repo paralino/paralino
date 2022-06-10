@@ -204,7 +204,10 @@ fun GroupCreateScreen(
             style = ButtonStyle.BIG,
             state = AppButtonState.loadingStateWithCheck(state.isLoading),
             icon = if (state.isNewGroup) Icons.Rounded.GroupAdd else Icons.Rounded.Save,
-            onClick = { onCreateGroupClick(state.image, groupName) }
+            onClick = {
+                focusManager.clearFocus()
+                onCreateGroupClick(state.image, groupName)
+            }
         ) {
             if (state.isNewGroup) {
                 Text(text = stringResource(id = R.string.group_create_button_text))
