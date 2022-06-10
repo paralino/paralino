@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zbapp.locationtrack.ui.components.ImageModelImage
 
 @Composable
@@ -30,17 +31,17 @@ fun GroupListItem(
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .clickable { onClick() }
-            .padding(horizontal = 10.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ImageModelImage(
             imageModel = data.image,
             modifier = Modifier
-                .size(50.dp)
+                .size(72.dp)
                 .border(
                     0.5.dp,
                     MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                    RoundedCornerShape(8.dp)
+                    RoundedCornerShape(12.dp)
                 )
         )
 
@@ -50,7 +51,7 @@ fun GroupListItem(
         ) {
             Text(
                 text = data.name,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.h6,
                 modifier = Modifier
             )
 
