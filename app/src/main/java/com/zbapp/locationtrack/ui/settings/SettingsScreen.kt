@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.zbapp.locationtrack.BuildConfig
 import com.zbapp.locationtrack.R
@@ -147,23 +148,23 @@ fun SettingsActionItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .padding(horizontal = 10.dp, vertical = 10.dp),
+            .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier
-                .size(32.dp)
+                .size(46.dp)
                 .background(
                     MaterialTheme.colors.surface,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(12.dp)
                 )
-                .padding(8.dp)
+                .padding(12.dp)
         )
         Text(
             text = name,
-            style = MaterialTheme.typography.button,
+            style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
             modifier = Modifier.padding(horizontal = 12.dp)
         )
     }
