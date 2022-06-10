@@ -1,12 +1,18 @@
 package com.zbapp.core.repo.user
 
+import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.user.UserSession
+import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.repo.api.IUserApi
+import com.zbapp.core.utils.exceptions.BaseRemoteException
+import com.zbapp.core.utils.extensions.blocking
 
 class UserRemoteSource constructor(
-    private val api: IUserApi
+    private val api: IUserApi,
+    private val functionsApi: IFunctionsApi,
+    private val remoteConfig: BackendConfig,
 ) {
 
     suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
@@ -56,7 +62,20 @@ class UserRemoteSource constructor(
     }
 
     suspend fun deleteAccount() {
-        api.deleteAccount()
+        blocking {
+            val data = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionDeleteAccountAndData
+            )
+
+            if (!data.isSuccess) {
+                // TODO throw better exception
+                throw BaseRemoteException.fromCode(
+                    null,
+                    "Unable to delete user",
+                    Exception(data.stderr)
+                )
+            }
+        }
     }
 
     suspend fun logout() {

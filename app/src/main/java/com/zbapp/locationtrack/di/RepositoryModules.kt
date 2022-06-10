@@ -89,7 +89,7 @@ val mappersModule = module {
 }
 
 val remoteDataSourceModule = module {
-    single { UserRemoteSource(get()) }
+    single { UserRemoteSource(get(), get(), get()) }
     single { LocationRemoteSource(get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { PersonalCodesRemoteSource(get(), get(), get(), get()) }
