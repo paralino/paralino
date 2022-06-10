@@ -8,6 +8,7 @@ data class PersonalCodeEntity(
     @PrimaryKey
     val id: String,
     val keyId: String,
+    val ownerId: String,
     val encryptedCode: String,
     val encryptedCodeData: String,
     val validityUnix: Long

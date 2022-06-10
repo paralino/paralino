@@ -8,6 +8,7 @@ data class PersonalCodeRaw constructor(
     @SerialName("\$id")
     val id: String,
     val keyId: String,
+    val ownerId: String,
     val encryptedCode: String,
     val encryptedCodeData: String,
     val validityUnix: Long
@@ -15,6 +16,7 @@ data class PersonalCodeRaw constructor(
     fun toPostJson(): Map<String, Any> {
         return buildMap {
             put("keyId", keyId)
+            put("ownerId", ownerId)
             put("encryptedCode", encryptedCode)
             put("encryptedCodeData", encryptedCodeData)
             put("validityUnix", validityUnix)
@@ -27,6 +29,7 @@ data class PersonalCodeRaw constructor(
             return PersonalCodeRaw(
                 id = map["\$id"] as String,
                 keyId = map["keyId"] as String,
+                ownerId = map["ownerId"] as String,
                 encryptedCode = map["encryptedCode"] as String,
                 encryptedCodeData = map["encryptedCodeData"] as String,
                 validityUnix = map["validityUnix"] as Long,

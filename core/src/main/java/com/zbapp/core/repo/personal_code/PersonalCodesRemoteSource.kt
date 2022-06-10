@@ -1,27 +1,24 @@
 package com.zbapp.core.repo.personal_code
 
-import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.models.BackendConfig
-import com.zbapp.core.models.user.UserPersonalCode
-import com.zbapp.core.models.user.UserPersonalCodeData
 import com.zbapp.core.models.mappers.PersonalCodeMapperCore
 import com.zbapp.core.models.raw.PersonalCodeRaw
+import com.zbapp.core.models.user.UserPersonalCode
+import com.zbapp.core.models.user.UserPersonalCodeData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
-import com.zbapp.core.utils.BaseRemoteModule
 import com.zbapp.core.utils.extensions.nowUTC
-import kotlinx.serialization.decodeFromString
 import kotlin.time.Duration.Companion.days
 
 class PersonalCodesRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val docApi: IDocumentsApi,
     private val remoteConfig: BackendConfig,
-    private val personalCodeMapper: PersonalCodeMapperCore
+    private val personalCodeMapper: PersonalCodeMapperCore,
 ) {
 
     suspend fun createNewPersonalCode(
-        codeData: UserPersonalCodeData
+        codeData: UserPersonalCodeData,
     ): PersonalCodeRaw {
 
         val userCodeData = UserPersonalCode(

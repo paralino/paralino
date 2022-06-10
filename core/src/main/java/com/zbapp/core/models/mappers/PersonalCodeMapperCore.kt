@@ -57,6 +57,7 @@ class PersonalCodeMapperCore(
         return PersonalCodeRaw(
             id = model.id,
             keyId = derivedCode.loginPassword,
+            ownerId = model.data.ownerId,
             encryptedCodeData = cryptoCore.encryptDataWithSimplePassword(
                 data = BaseRemoteModule.formatter.encodeToString(model.data),
                 password = derivedCode.backupPassword
