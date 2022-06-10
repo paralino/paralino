@@ -248,7 +248,12 @@ fun GroupDetailScreen(
                         expanded = optionMenuExpanded,
                         onDismissRequest = { optionMenuExpanded = false }
                     ) {
-                        DropdownMenuItem(onClick = onGroupDeleteOrLeave) {
+                        DropdownMenuItem(
+                            onClick = {
+                                optionMenuExpanded = false
+                                onGroupDeleteOrLeave()
+                            }
+                        ) {
                             Text(
                                 text = if (state.canEdit) stringResource(id = R.string.group_details_menu_delete)
                                 else stringResource(id = R.string.group_details_menu_leave)
