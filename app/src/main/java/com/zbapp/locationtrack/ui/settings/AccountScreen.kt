@@ -86,7 +86,7 @@ fun AccountScreen(
             .verticalScroll(state = scrollState)
             .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
-        SettingsSectionHeader(name = stringResource(id = R.string.settings_section_account_title))
+        SettingsBigHeader(name = stringResource(id = R.string.settings_section_account_title))
 
         when (val state = accountState) {
             is Payload.Success -> {
