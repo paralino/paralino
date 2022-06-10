@@ -42,6 +42,7 @@ fun SettingsScreen(appState: MainAppState) {
             .verticalScroll(state = scrollState)
             .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
+        SettingsBigHeader(name = stringResource(id = R.string.title_settings))
         SettingSectionAccount(appState.navController)
         SettingSectionLocation()
         SettingSectionInfo()
@@ -117,6 +118,22 @@ fun SettingSectionInfo() {
             textAlign = TextAlign.Center
         )
     }
+}
+
+@Composable
+fun SettingsBigHeader(
+    modifier: Modifier = Modifier,
+    name: String
+) {
+    Text(
+        text = name.annotatedBold(),
+        style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Bold),
+        modifier = modifier
+            .padding(
+                top = dimensionResource(id = R.dimen.activity_side_margin_medium_large),
+                bottom = dimensionResource(id = R.dimen.activity_side_margin_medium_large)
+            )
+    )
 }
 
 @Composable
