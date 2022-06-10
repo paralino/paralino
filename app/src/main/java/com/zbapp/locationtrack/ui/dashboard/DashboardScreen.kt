@@ -30,6 +30,7 @@ import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.components.ConditionErrorItem
+import com.zbapp.locationtrack.ui.settings.SettingsBigHeader
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
@@ -62,82 +63,89 @@ fun DashboardScreen(
         }
     }
 
-    when (state) {
-        is Payload.Error -> {
-            DefaultEmptyState(content = stringResource(id = R.string.error_something_wrong))
-        }
-        Payload.Loading -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = 20.dp)
+    ) {
+
+        SettingsBigHeader(name = stringResource(id = R.string.title_dashboard))
+
+        when (state) {
+            is Payload.Error -> {
+                DefaultEmptyState(content = stringResource(id = R.string.error_something_wrong))
             }
-        }
-        is Payload.Success -> {
-            val scrollState = rememberScrollState()
-            // TODO replace with lazy column
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(state = scrollState)
-                    .padding(horizontal = 20.dp, vertical = 20.dp)
-            ) {
-
-                state.data.errors.forEach {
-                    ConditionErrorItem(data = it) {
-                        when (it) {
-                            ConditionErrorType.GPS -> permissionHandler.askLocationService()
-                            ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
-                            ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
-                        }
-                    }
+            Payload.Loading -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+            }
+            is Payload.Success -> {
+                val scrollState = rememberScrollState()
+                // TODO replace with lazy column
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(state = scrollState)
+                ) {
 
-                if (state.data.isWithoutGroups) {
-                    DefaultEmptyState(
-                        content = stringResource(id = R.string.dashboard_info_no_groups),
-                        icon = Icons.Rounded.Groups,
-                        buttonText = stringResource(id = R.string.dashboard_groups_add_button),
-                        onClick = {
-                            appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
-                        }
-                    )
-                } else {
-
-                    if (state.data.activeGroups.isNotEmpty()) {
-                        SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_active))
-                        state.data.activeGroups.forEach {
-                            GroupListItem(data = it) {
-                                appState.navController.navigate(
-                                    AppScreen.DashboardRoot.GroupDetails.route(it.id)
-                                )
+                    state.data.errors.forEach {
+                        ConditionErrorItem(data = it) {
+                            when (it) {
+                                ConditionErrorType.GPS -> permissionHandler.askLocationService()
+                                ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
+                                ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
                             }
-                            Spacer(modifier = Modifier.size(8.dp))
                         }
                     }
 
-                    if (state.data.inactiveGroups.isNotEmpty()) {
-                        SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_inactive))
-                        state.data.inactiveGroups.forEach {
-                            GroupListItem(data = it) {
-                                appState.navController.navigate(
-                                    AppScreen.DashboardRoot.GroupDetails.route(it.id)
-                                )
+                    if (state.data.isWithoutGroups) {
+                        DefaultEmptyState(
+                            content = stringResource(id = R.string.dashboard_info_no_groups),
+                            icon = Icons.Rounded.Groups,
+                            buttonText = stringResource(id = R.string.dashboard_groups_add_button),
+                            onClick = {
+                                appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
                             }
-                            Spacer(modifier = Modifier.size(8.dp))
-                        }
-                    }
+                        )
+                    } else {
 
-                    Spacer(modifier = Modifier.size(100.dp))
-                    FilledButton(
-                        style = ButtonStyle.SMALL,
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        icon = Icons.Rounded.GroupAdd,
-                        onClick = {
-                            appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
+                        if (state.data.activeGroups.isNotEmpty()) {
+                            SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_active))
+                            state.data.activeGroups.forEach {
+                                GroupListItem(data = it) {
+                                    appState.navController.navigate(
+                                        AppScreen.DashboardRoot.GroupDetails.route(it.id)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.size(8.dp))
+                            }
                         }
-                    ) {
-                        Text(text = stringResource(id = R.string.dashboard_groups_add_button))
-                    }
 
+                        if (state.data.inactiveGroups.isNotEmpty()) {
+                            SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_inactive))
+                            state.data.inactiveGroups.forEach {
+                                GroupListItem(data = it) {
+                                    appState.navController.navigate(
+                                        AppScreen.DashboardRoot.GroupDetails.route(it.id)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.size(8.dp))
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.size(100.dp))
+                        FilledButton(
+                            style = ButtonStyle.SMALL,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            icon = Icons.Rounded.GroupAdd,
+                            onClick = {
+                                appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
+                            }
+                        ) {
+                            Text(text = stringResource(id = R.string.dashboard_groups_add_button))
+                        }
+
+                    }
                 }
             }
         }
