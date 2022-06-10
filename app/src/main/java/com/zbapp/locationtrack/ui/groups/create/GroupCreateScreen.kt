@@ -203,7 +203,7 @@ fun GroupCreateScreen(
         FilledButton(
             style = ButtonStyle.BIG,
             state = AppButtonState.loadingStateWithCheck(state.isLoading),
-            icon = if (state.isNewGroup) Icons.Rounded.GroupAdd else Icons.Rounded.Save,
+            icon = if (state.isNewGroup) null else Icons.Rounded.Save,
             onClick = {
                 focusManager.clearFocus()
                 onCreateGroupClick(state.image, groupName)
