@@ -44,7 +44,7 @@ fun MapGroupPicker(
     inactiveUserCount: Int,
     onClick: () -> Unit,
 ) {
-    val height: Dp = remember { 40.dp }
+    val height: Dp = remember { 46.dp }
     ConstraintLayout(
         modifier = modifier
             .padding(horizontal = 30.dp)
@@ -57,7 +57,7 @@ fun MapGroupPicker(
                 RoundedCornerShape(height)
             )
             .clickable { onClick() }
-            .padding(2.dp)
+            .padding(4.dp)
             .animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioLowBouncy,
@@ -103,7 +103,7 @@ fun MapGroupPicker(
         ) {
             Text(
                 text = groupName,
-                style = MaterialTheme.typography.subtitle2.copy(fontWeight = FontWeight.Medium),
+                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Medium),
                 modifier = Modifier
             )
 
@@ -113,7 +113,7 @@ fun MapGroupPicker(
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                     Icon(
                         imageVector = Icons.Rounded.Group,
-                        modifier = Modifier.size(12.dp),
+                        modifier = Modifier.size(14.dp),
                         contentDescription = null
                     )
                     Spacer(Modifier.size(4.dp))
@@ -125,7 +125,7 @@ fun MapGroupPicker(
                     }
                     Text(
                         text = text.annotatedBold(),
-                        style = MaterialTheme.typography.caption.copy(fontSize = 10.sp,
+                        style = MaterialTheme.typography.caption.copy(fontSize = 12.sp,
                             fontWeight = FontWeight.Medium),
                         modifier = Modifier
                     )
@@ -138,9 +138,9 @@ fun MapGroupPicker(
             imageVector = Icons.Rounded.ExpandMore,
             contentDescription = null,
             modifier = Modifier
-                .size(18.dp)
+                .size(20.dp)
                 .constrainAs(expand) {
-                    end.linkTo(parent.end, margin = 8.dp)
+                    end.linkTo(parent.end, margin = 12.dp)
                     bottom.linkTo(image.bottom)
                     top.linkTo(image.top)
                 }
