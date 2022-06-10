@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.GroupWork
 import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -197,18 +198,19 @@ fun MapHomeScreenElements(
             visible = state.sharingStatus != null,
             modifier = Modifier
                 .constrainAs(shareTime) {
-                    start.linkTo(parent.start, margin = 8.dp)
-                    bottom.linkTo(userList.top, margin = 8.dp)
+                    start.linkTo(parent.start, margin = 16.dp)
+                    bottom.linkTo(groupTrack.bottom)
                 }
         ) {
             Row(
                 modifier = Modifier
                     .background(
-                        MaterialTheme.colors.secondary,
+                        MaterialTheme.colors.surface,
                         MaterialTheme.shapes.medium
                     )
-                    .padding(vertical = 2.dp)
-                    .padding(start = 4.dp, end = 6.dp)
+                    .padding(vertical = 4.dp)
+                    .padding(start = 4.dp, end = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Rounded.AccessTime,
