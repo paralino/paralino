@@ -235,14 +235,14 @@ fun MapHomeScreenElements(
                     end.linkTo(groupTrack.end)
                     bottom.linkTo(groupTrack.top, margin = 16.dp)
                 }
-                .size(30.dp),
+                .size(40.dp),
             onClick = { userListExpanded = !userListExpanded },
             backgroundColor = if (userListExpanded) AppColors.accent else MaterialTheme.colors.surface
         ) {
             Icon(
                 imageVector = Icons.Rounded.Groups,
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(20.dp),
                 tint = if (userListExpanded) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
             )
         }
@@ -254,14 +254,14 @@ fun MapHomeScreenElements(
                     end.linkTo(parent.end, margin = 8.dp)
                     bottom.linkTo(userList.top, margin = 16.dp)
                 }
-                .size(40.dp),
+                .size(50.dp),
             onClick = onTrackGroupClick,
             backgroundColor = if (isTrackingGroup) AppColors.accent else MaterialTheme.colors.surface
         ) {
             Icon(
                 imageVector = Icons.Rounded.GroupWork,
                 contentDescription = null,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(32.dp),
                 tint = if (isTrackingGroup) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
             )
         }
