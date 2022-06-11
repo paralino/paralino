@@ -68,6 +68,10 @@
     <string name="settings_account_edit_profile">Edit profile</string>
     <string name="settings_account_edit_email">Change email</string>
     <string name="settings_account_edit_password">Change password</string>
+    <string name="settings_account_edit_email_current_email">Current email: %s</string>
+    <string name="settings_account_edit_email_button">CHANGE EMAIL</string>
+    <string name="settings_account_edit_email_placeholder_email">New email*</string>
+    <string name="settings_account_edit_email_placeholder_password">Current password*</string>
 
     <string name="settings_account_logout_alert_title">Logout</string>
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
@@ -134,7 +138,7 @@
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
     <string name="form_invalid_username_description">Please try another username.</string>
     <string name="form_invalid_credentials_description">Please check your credentials and try again.</string>
-    <string name="form_invalid_username_conflict_description">Please use another email.</string>
+    <string name="form_invalid_email_conflict_description">Please use another email.</string>
     <string name="form_invalid_username_email_description">Your e-mail is not valid.</string>
     <string name="form_invalid_username_length_description">Your username has to be at least 6 characters long.</string>
     <string name="form_invalid_password_length_description">Your password has to be at least 8 characters long.</string>

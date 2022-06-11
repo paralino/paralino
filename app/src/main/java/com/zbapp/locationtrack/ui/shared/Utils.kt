@@ -6,6 +6,7 @@ import android.text.SpannableString
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.zbapp.core.presentation.common.FormValidation
 import com.zbapp.core.utils.exceptions.*
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.utils.extensions.attributedBold
@@ -49,4 +50,13 @@ fun Throwable?.errorString(resources: Resources): String {
 @Composable
 fun Throwable?.errorString(): String {
     return this.errorString(LocalContext.current)
+}
+
+fun getFormValidationErrorText(context: Context, validation: FormValidation): String {
+    return when (validation) {
+        FormValidation.Email -> context.getString(R.string.form_invalid_email_description)
+        FormValidation.Password -> context.getString(R.string.form_invalid_password_length_description)
+        FormValidation.PasswordConfirm -> context.getString(R.string.form_invalid_password_match_description)
+        FormValidation.TextNotEmpty -> context.getString(R.string.form_invalid_name_description)
+    }
 }

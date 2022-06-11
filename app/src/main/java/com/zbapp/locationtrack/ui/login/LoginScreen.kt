@@ -32,7 +32,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.base.ImageModel
-import com.zbapp.core.presentation.common.FormValidation
 import com.zbapp.core.presentation.login.*
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
@@ -40,8 +39,8 @@ import com.zbapp.locationtrack.ui.components.AppButtonState
 import com.zbapp.locationtrack.ui.components.BottomSheetsScreen
 import com.zbapp.locationtrack.ui.components.FilledButton
 import com.zbapp.locationtrack.ui.components.ImageModelImage
-import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.shared.errorString
+import com.zbapp.locationtrack.ui.shared.getFormValidationErrorText
 import com.zbapp.locationtrack.ui.theme.AppColors
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.extensions.safeCast
@@ -331,21 +330,12 @@ fun getStepText(stepInfo: SignUpStepInfo?): String {
 
 fun getErrorText(context: Context, error: SignUpErrorType): String {
     return when (error) {
-        SignUpErrorType.ACCOUNT_CONFLICT -> context.getString(R.string.form_invalid_username_conflict_description)
+        SignUpErrorType.ACCOUNT_CONFLICT -> context.getString(R.string.form_invalid_email_conflict_description)
         SignUpErrorType.CREDENTIALS -> context.getString(R.string.form_invalid_credentials_description)
         SignUpErrorType.LOGIN_CRYPTO -> context.getString(R.string.login_step_error_encryption_logIn)
         SignUpErrorType.SIGNUP_CRYPTO -> context.getString(R.string.login_step_error_encryption_signUp)
         SignUpErrorType.SIGNUP_DATA -> context.getString(R.string.login_step_error_user_setup_signUp)
         is SignUpErrorType.SOURCE -> error.error.errorString(context)
-    }
-}
-
-fun getFormValidationErrorText(context: Context, validation: FormValidation): String {
-    return when (validation) {
-        FormValidation.Email -> context.getString(R.string.form_invalid_email_description)
-        FormValidation.Password -> context.getString(R.string.form_invalid_password_length_description)
-        FormValidation.PasswordConfirm -> context.getString(R.string.form_invalid_password_match_description)
-        FormValidation.TextNotEmpty -> context.getString(R.string.form_invalid_name_description)
     }
 }
 
