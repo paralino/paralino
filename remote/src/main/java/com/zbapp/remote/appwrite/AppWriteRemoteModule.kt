@@ -54,9 +54,10 @@ class AppWriteRemoteModule(
         fun mapException(exception: Exception): Exception {
             return (exception as? AppwriteException)?.let {
                 BaseRemoteException.fromCode(
-                    it.code,
-                    it.message,
-                    it.cause ?: Throwable(it.response)
+                    code = it.code,
+                    message = it.message,
+                    cause = it.cause ?: Throwable(it.response),
+                    type = it.type,
                 )
             } ?: let {
                 if (exception is UnknownHostException) {

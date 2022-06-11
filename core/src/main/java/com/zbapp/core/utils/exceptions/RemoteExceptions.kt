@@ -3,13 +3,19 @@ package com.zbapp.core.utils.exceptions
 import com.zbapp.core.config
 import com.zbapp.core.utils.ConnectionStatus
 
-open class BaseRemoteException(
+open class BaseRemoteException constructor(
     message: String?,
     cause: Throwable?,
-    val code: Int? = null
+    val code: Int? = null,
+    val type: String? = null
 ) : Exception(message, cause) {
     companion object {
-        fun fromCode(code: Int?, message: String?, cause: Throwable?): BaseRemoteException {
+        fun fromCode(
+            code: Int?,
+            message: String?,
+            cause: Throwable?,
+            type: String? = null,
+        ): BaseRemoteException {
             return when (code) {
                 400 -> InvalidRequestException(message, cause)
                 401 -> UnauthorizedException(message, cause)
@@ -36,3 +42,5 @@ open class NotFoundException(message: String?, cause: Throwable? = null): BaseRe
 class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class GenericServerException(message: String?, code: Int?, cause: Throwable? = null) : BaseRemoteException(message, cause, code)
 class TimeoutException(message: String?, cause: Throwable? = null) : BaseRemoteException(message, cause)
+
+fun Throwable.asRemoteException() = this as? BaseRemoteException?
