@@ -294,4 +294,23 @@ sealed interface MainAlertDialog {
         }
     }
 
+    object SessionExpired : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.alert_sessionExpired_title),
+                message = stringResource(id = R.string.alert_sessionExpired_message),
+                buttons = listOf(
+                    AlertDialogButtonData(
+                        id = Buttons.buttonOk,
+                        text = stringResource(id = R.string.button_ok)
+                    )
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
 }
