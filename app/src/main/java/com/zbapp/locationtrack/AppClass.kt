@@ -15,6 +15,8 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.config
 import com.zbapp.core.connectionStatus
+import com.zbapp.core.domain.user.LogoutUseCase
+import com.zbapp.core.domain.user.UserSessionMonitor
 import com.zbapp.core.logg
 import com.zbapp.core.models.data
 import com.zbapp.core.repo.LocationSharingManager
@@ -36,6 +38,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import logv
 import org.koin.android.ext.android.inject
 
@@ -59,6 +62,8 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     private val launcher: PreCheckControl by inject()
     private val userRepo: UserRepository by inject()
+    private val sessionMonitor: UserSessionMonitor by inject()
+    private val logoutUseCase: LogoutUseCase by inject()
     private val connectionStatusProvider: IConnectionStatusProvider by inject()
 
     private val locationInit: LocationInitHandler by inject()
@@ -86,6 +91,12 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         initLogger()
+
+        sessionMonitor.listenForSessionExpired()
+            .onEach {
+                logoutUseCase.logoutLocally()
+            }
+            .launchIn(defaultScope)
 
         userRepo.localUser
             .onEach {  }

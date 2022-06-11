@@ -3,8 +3,8 @@ package com.zbapp.core.domain.user
 import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 import com.zbapp.core.repo.location.LocationRepository
+import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 import com.zbapp.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,18 +16,14 @@ class LogoutUseCase(
     private val locationRepo: LocationRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
-    private val codeRepo: PersonalCodesRepository
+    private val codeRepo: PersonalCodesRepository,
 ) {
 
     fun logout(): Flow<Boolean> {
         return userRepo.logout()
             .map { true }
             .onEach {
-                groupsRepo.clear()
-                locationRepo.clear()
-                cryptoKEKRepo.clearKeys()
-                userKeyRepo.clearUserPersonalKey()
-                codeRepo.clearLocally()
+                clearResources()
             }
     }
 
@@ -35,12 +31,21 @@ class LogoutUseCase(
         return userRepo.deleteAccount()
             .map { true }
             .onEach {
-                groupsRepo.clear()
-                locationRepo.clear()
-                cryptoKEKRepo.clearKeys()
-                userKeyRepo.clearUserPersonalKey()
-                codeRepo.clearLocally()
+                clearResources()
             }
+    }
+
+    suspend fun logoutLocally() {
+        userRepo.logoutLocally()
+        clearResources()
+    }
+
+    private suspend fun clearResources() {
+        groupsRepo.clear()
+        locationRepo.clear()
+        cryptoKEKRepo.clearKeys()
+        userKeyRepo.clearUserPersonalKey()
+        codeRepo.clearLocally()
     }
 
 }

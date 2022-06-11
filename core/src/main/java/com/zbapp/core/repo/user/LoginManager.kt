@@ -155,16 +155,6 @@ class LoginManager(
         }
     }
 
-    fun syncUserAndData(): Flow<Unit> {
-        return userRepo.refreshUserIfAvailable()
-            .flatMapLatest { syncData() }
-    }
-
-    fun syncData(): Flow<Unit> {
-        return groupRepo.getAllGroups()
-            .map { Unit }
-    }
-
 }
 
 enum class SignUpStep {

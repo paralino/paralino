@@ -2,13 +2,13 @@ package com.zbapp.core.repo.user
 
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.config
+import com.zbapp.core.domain.user.UserSessionMonitor
 import com.zbapp.core.logg
-import com.zbapp.core.models.Payload
 import com.zbapp.core.models.Resource
+import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.data
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
-import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.base.BaseRepository
@@ -21,7 +21,8 @@ import kotlinx.coroutines.flow.*
 class UserRepository constructor(
     private val scopeProvider: ICoroutineScopeProvider,
     private val local: IUserLocalDataSource,
-    private val remote: UserRemoteSource
+    private val remote: UserRemoteSource,
+    private val sessionMonitor: UserSessionMonitor,
 ) : BaseRepository() {
 
     val cachedUserId: String get() = config.userId
@@ -47,7 +48,7 @@ class UserRepository constructor(
     fun remoteSignUp(
         userName: String?,
         email: String,
-        password: String
+        password: String,
     ): Flow<Pair<UserMeRaw, UserSession>> {
         return getDataOnce { remote.signUpAndCreateSession(userName, email, password) }
     }
@@ -56,21 +57,7 @@ class UserRepository constructor(
         updateLocalUser(userMeRaw)
         config.token = userSession.id
         config.emailConfirmed = true
-    }
-
-    fun signUpAnonymously(): Flow<Unit> {
-        return getDataOnce(
-            remote = {
-                remote.singUpAnonymously().let {
-                    remote.getMe() to it
-                }
-            },
-            localUpdate = {
-                updateLocalUser(it.first)
-                config.token = it.second.id
-                config.emailConfirmed = true
-            }
-        ).map { Unit }
+        sessionMonitor.updateSessionState(sessionValid = true)
     }
 
     fun getUserIfAvailable(): Flow<UserMeRaw> {
@@ -80,21 +67,23 @@ class UserRepository constructor(
 
         return getDataOnce { remote.getMe() }
             .catch {
-                if (it is NotFoundException) {
+                if (it is UnauthorizedException) {
+                    logg.v("User session is not valid")
+                } else if (it is NotFoundException) {
                     logg.v("User does not exist")
-                    throw it
                 } else {
                     if (it is UnverifiedUserException)
                         config.emailConfirmed = false
                     logg.e("Error refreshing user")
-                    throw it
                 }
+                throw it
             }
     }
 
     fun refreshUserIfAvailable(): Flow<UserMeRaw> {
         return getUserIfAvailable()
             .onEach {
+                sessionMonitor.updateSessionState(sessionValid = true)
                 config.emailConfirmed = true
                 updateLocalUser(it)
             }
@@ -131,24 +120,22 @@ class UserRepository constructor(
         ).map { true }
     }
 
-
-    private suspend fun clear() {
+    suspend fun logoutLocally() {
         local.clear()
+        config.clear()
     }
 
     fun logout(): Flow<Unit> {
         return getDataOnce(
             remote = { remote.logout() },
             localUpdate = {
-                clear()
-                config.clear()
+                logoutLocally()
             }
         ).catch {
             // TODO maybe always log user out? Even if offline or some other error happens, log out locally
             // it will leave active session in the backend
             if (it is UnauthorizedException) {
-                clear()
-                config.clear()
+                logoutLocally()
                 emit(Unit)
             } else throw it
         }
@@ -158,13 +145,11 @@ class UserRepository constructor(
         return getDataOnce(
             remote = { remote.deleteAccount() },
             localUpdate = {
-                clear()
-                config.clear()
+                logoutLocally()
             }
         ).catch {
             if (it is UnauthorizedException) {
-                clear()
-                config.clear()
+                logoutLocally()
                 emit(Unit)
             } else throw it
         }
