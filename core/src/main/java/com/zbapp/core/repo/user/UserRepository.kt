@@ -60,6 +60,13 @@ class UserRepository constructor(
         sessionMonitor.updateSessionState(sessionValid = true)
     }
 
+    fun updateUserEmail(newEmail: String, password: String): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.updateEmail(newEmail, password) },
+            localUpdate = { updateLocalUser(it) }
+        ).map { Unit }
+    }
+
     fun getUserIfAvailable(): Flow<UserMeRaw> {
         if (!config.isTokenValid) {
             return flow { throw Exception("Token is not available") }
@@ -102,20 +109,6 @@ class UserRepository constructor(
     fun updateUserData(data: Map<String, Any>): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateUserData(data) },
-            localUpdate = { updateLocalUser(it) }
-        ).map { true }
-    }
-
-    fun editUsername(newName: String): Flow<Boolean> {
-        return getDataOnce(
-            remote = { remote.updateName(newName) },
-            localUpdate = { updateLocalUser(it) }
-        ).map { true }
-    }
-
-    fun editUserImage(image: ImageModel): Flow<Boolean> {
-        return getDataOnce(
-            remote = { remote.updateUserImage(image) },
             localUpdate = { updateLocalUser(it) }
         ).map { true }
     }
