@@ -2,10 +2,14 @@ package com.zbapp.core.repo.personal_code
 
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.models.Payload
+import com.zbapp.core.models.raw.PersonalCodeRaw
+import com.zbapp.core.models.user.UserMe
 import com.zbapp.core.models.user.UserPersonalCode
 import com.zbapp.core.models.user.UserPersonalCodeData
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.core.utils.exceptions.ConflictException
+import com.zbapp.core.utils.exceptions.asRemoteException
 import com.zbapp.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -24,17 +28,39 @@ class PersonalCodesRepository(
 
         return getDataOnce(
             remote = {
-                val codeData = UserPersonalCodeData(
-                    ownerId = user.id,
-                    ownerName = user.data?.userName ?: "",
-                    ownerImage = user.data?.userImage,
-                    ownerPublicKey = userKeyRepo.latestKeyPair().publicKey,
-                    code = createPersonalCodeString()
-                )
-                remote.createNewPersonalCode(codeData)
+                try {
+                    tryCreatingCode(user)
+                } catch (e: Exception) {
+                    if (e.asRemoteException() is ConflictException) {
+                        try {
+                            // in case of conflict try once more
+                            tryCreatingCode(user)
+                        } catch (e: Exception) {
+                            if (e.asRemoteException() is ConflictException) {
+                                // if there is conflict again, throw generic exception
+                                throw Exception("Please try again")
+                            } else {
+                                throw e
+                            }
+                        }
+                    } else {
+                        throw e
+                    }
+                }
             },
             localUpdate = { local.addPersonalCode(it) }
         ).mapToPayload()
+    }
+
+    private suspend fun tryCreatingCode(user: UserMe): PersonalCodeRaw {
+        val codeData = UserPersonalCodeData(
+            ownerId = user.id,
+            ownerName = user.data?.userName ?: "",
+            ownerImage = user.data?.userImage,
+            ownerPublicKey = userKeyRepo.latestKeyPair().publicKey,
+            code = createPersonalCodeString()
+        )
+        return remote.createNewPersonalCode(codeData)
     }
 
     fun getMyPersonalCodes(): Flow<Payload<List<UserPersonalCode>>> {
