@@ -106,7 +106,7 @@
     <string name="login_placeholder_email_username">Email*</string>
     <string name="login_placeholder_password">Password*</string>
     <string name="login_placeholder_password_confirm">Confirm password*</string>
-    <string name="login_signup_switch_button_login">or LOG IN</string>
+    <string name="login_signup_switch_button_login">Already have an account? Log in!</string>
     <string name="login_signup_switch_button_signup">or SIGN UP</string>
     <string name="login_button_forgot_password">Forgot password?</string>
     <string name="login_button_create_account">CREATE ACCOUNT</string>
