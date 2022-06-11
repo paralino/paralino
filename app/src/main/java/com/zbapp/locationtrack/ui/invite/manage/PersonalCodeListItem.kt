@@ -1,5 +1,8 @@
 package com.zbapp.locationtrack.ui.invite.manage
 
+import android.util.TypedValue
+import android.view.Gravity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,13 +16,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.widget.TextViewCompat
 import com.zbapp.core.models.user.UserPersonalCode
-import com.zbapp.locationtrack.ui.components.AutoSizeText
+import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.theme.AppTheme
 import com.zbapp.locationtrack.utils.extensions.unixToDateTimeUTC
 import java.time.format.DateTimeFormatter
@@ -66,16 +71,37 @@ fun PersonalCodeItem(
             .background(MaterialTheme.colors.surface)
             .padding(10.dp)
     ) {
-        AutoSizeText(
+
+        val textColor = MaterialTheme.colors.primary.toArgb()
+        AndroidView(
+            factory = {
+                AppCompatTextView(it)
+                    .apply {
+                        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                            this,
+                            12,
+                            100,
+                            2,
+                            TypedValue.COMPLEX_UNIT_SP
+                        )
+                        this.typeface = ResourcesCompat.getFont(it, R.font.font_montserrat_bold)
+                        this.maxHeight = 140.dp.value.toInt()
+                        this.minHeight = 20.dp.value.toInt()
+                        this.gravity = Gravity.CENTER
+                        this.letterSpacing = 0.1.sp.value
+                        this.setTextColor(textColor)
+                        this.maxLines = 1
+                        this.setLines(1)
+                    }
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+                .height(70.dp)
+                .padding(horizontal = 10.dp)
                 .align(Alignment.CenterHorizontally),
-            text = code.uppercase(),
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 2.sp,
-            maxLines = 1
+            update = {
+                it.text = code.uppercase()
+            }
         )
 
         Spacer(modifier = Modifier.size(40.dp))
