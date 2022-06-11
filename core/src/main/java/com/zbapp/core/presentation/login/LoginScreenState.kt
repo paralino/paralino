@@ -12,7 +12,7 @@ data class LoginScreenState(
     val hasNameError: Boolean = false,
     val hasEmailError: Boolean = false,
     val hasPasswordError: Boolean = false,
-    val uiType: LoginScreenUiType = LoginScreenUiType.LOGIN,
+    val uiType: LoginScreenUiType = LoginScreenUiType.SIGNUP,
     val actionLoading: Boolean = false,
     val stepInfo: SignUpStepInfo? = null,
 )
