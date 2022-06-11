@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.TextViewCompat
-import com.zbapp.core.models.user.UserPersonalCode
+import com.zbapp.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.theme.AppTheme
 import com.zbapp.locationtrack.utils.extensions.unixToDateTimeUTC
@@ -33,7 +33,7 @@ import java.time.format.FormatStyle
 @Composable
 fun PersonalCodeItem(
     modifier: Modifier = Modifier,
-    state: UserPersonalCode,
+    state: PersonalCodeScreenCodeData,
     deleteLoading: Boolean,
     onCopy: () -> Unit,
     onShare: () -> Unit,
@@ -41,7 +41,7 @@ fun PersonalCodeItem(
 ) {
     PersonalCodeItem(
         modifier = modifier,
-        code = state.data.code,
+        code = state.code,
         // TODO review date format
         validity = state.validityUnix
             .unixToDateTimeUTC()

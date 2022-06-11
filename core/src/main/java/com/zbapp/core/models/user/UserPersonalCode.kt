@@ -27,5 +27,10 @@ data class UserPersonalCodeData constructor(
     val ownerImage: ImageModel?,
     val ownerPublicKey: String,
     val code: String,
-)
+) {
+    val formattedCode get() = when {
+        code.length <= 5 -> code
+        else -> code.chunked(code.length / 2).joinToString(separator = "-")
+    }
+}
 

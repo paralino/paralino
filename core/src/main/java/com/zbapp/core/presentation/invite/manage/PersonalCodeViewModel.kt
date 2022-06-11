@@ -24,8 +24,15 @@ class PersonalCodeViewModel(
             .onEach { result ->
                 _uiState.update {
                     result.mapSuccess {
+                        val codeData = it.firstOrNull()?.let {
+                            PersonalCodeScreenCodeData(
+                                id = it.id,
+                                code = it.data.formattedCode,
+                                validityUnix = it.validityUnix
+                            )
+                        }
                         PersonalCodeScreenState(
-                            code = it.firstOrNull(),
+                            code = codeData,
                             createLoading = false,
                             actionLoading = false
                         )

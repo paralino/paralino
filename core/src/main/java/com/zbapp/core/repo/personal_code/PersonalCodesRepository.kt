@@ -13,6 +13,7 @@ import com.zbapp.core.utils.exceptions.asRemoteException
 import com.zbapp.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlin.random.Random
 
 class PersonalCodesRepository(
@@ -68,12 +69,18 @@ class PersonalCodesRepository(
             remote = { remote.getMyPersonalCodes() },
             local = local.getPersonalCodes(),
             localUpdate = { local.replacePersonalCodes(it) }
-        ).mapToPayload()
+        )
+            .map { it.filter { it.isStillValid() } }
+            .mapToPayload()
     }
 
     fun getUserInfoFromCode(code: String): Flow<Payload<UserPersonalCodeData>> {
+        val cleanedCode = code
+            .replace("-", "")
+            .replace(" ", "")
+            .uppercase()
         return getDataOnce(
-            remote = { remote.getUserInfoFromCode(code) }
+            remote = { remote.getUserInfoFromCode(cleanedCode) }
         ).mapToPayload()
     }
 
@@ -91,8 +98,8 @@ class PersonalCodesRepository(
         // without similar characters: 0,O,1,I
         // code pattern XXXX-XXXX
         val seed = "ABCDEFGHJKLMNPQRSTUVWXYZ2345789"
-        val sectionLength = 4
-        val sections = 2
+        val sectionLength = 8
+        val sections = 1
         val chars = CharArray(sectionLength * sections + sections - 1) {
             if (it % (sectionLength + 1) == sectionLength) '-'
             else seed[Random.nextInt(seed.length)]

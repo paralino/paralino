@@ -87,7 +87,7 @@ fun PersonalCodeScreen(
                         state = state.data.code!!,
                         deleteLoading = state.data.actionLoading,
                         onCopy = {
-                            context.copy(state.data.code!!.data.code)
+                            context.copy(state.data.code!!.code)
                             context.let {
                                 Toast.makeText(
                                     it,
@@ -97,7 +97,7 @@ fun PersonalCodeScreen(
                             }
                         },
                         onShare = {
-                            context.share(state.data.code!!.data.code)
+                            context.share(state.data.code!!.code)
                         },
                         onDelete = {
                             showDialog = MainAlertDialog.PersonalCodeDelete(state.data.code!!.id)

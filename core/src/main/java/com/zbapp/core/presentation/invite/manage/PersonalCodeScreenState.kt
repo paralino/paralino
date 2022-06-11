@@ -1,11 +1,15 @@
 package com.zbapp.core.presentation.invite.manage
 
-import com.zbapp.core.models.user.UserPersonalCode
-
 data class PersonalCodeScreenState(
-    val code: UserPersonalCode?,
+    val code: PersonalCodeScreenCodeData?,
     val createLoading: Boolean,
     val actionLoading: Boolean
+)
+
+data class PersonalCodeScreenCodeData(
+    val id: String,
+    val code: String,
+    val validityUnix: Long
 )
 
 sealed class PersonalCodeScreenEvent() {
