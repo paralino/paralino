@@ -1,6 +1,7 @@
 package com.zbapp.locationtrack.ui
 
 import androidx.lifecycle.ViewModel
+import com.zbapp.core.domain.user.UserSessionMonitor
 import com.zbapp.core.models.Resource
 import com.zbapp.core.models.data
 import com.zbapp.core.repo.user.UserRepository
@@ -9,7 +10,10 @@ import kotlinx.coroutines.flow.*
 
 class MainViewModel(
     private val userRepo: UserRepository,
+    private val sessionMonitor: UserSessionMonitor
 ) : ViewModel() {
+
+    val sessionExpiredFlow = sessionMonitor.listenForSessionExpired()
 
     private var oldUserState: Resource<Boolean> = Resource.NotInitialized
     val userState: Flow<Resource<Boolean>> = userRepo.localUser

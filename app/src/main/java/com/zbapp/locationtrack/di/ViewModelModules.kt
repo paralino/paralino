@@ -36,7 +36,7 @@ val viewModelModules = module {
     viewModel { PersonalCodesViewModel(androidApplication(), get()) }
     viewModel { (groupId: String?, code: String?) -> MemberInviteViewModel(androidApplication(), groupId = groupId, code = code, get(), get()) }
     viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get()) }
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel(get(), get()) }
 }
 
 val utilModule = module {

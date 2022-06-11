@@ -13,19 +13,22 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.zbapp.core.models.Resource
 import com.zbapp.locationtrack.ui.components.AppSnackbar
+import com.zbapp.locationtrack.ui.components.MainAlertDialog
 import com.zbapp.locationtrack.ui.components.SheetContent
-import com.zbapp.locationtrack.ui.login.LoggedOutScreen
-import com.zbapp.locationtrack.ui.navigation.*
+import com.zbapp.locationtrack.ui.navigation.AppScreen
+import com.zbapp.locationtrack.ui.navigation.MainNavHost
+import com.zbapp.locationtrack.ui.navigation.loggedOutGraph
 import com.zbapp.locationtrack.ui.theme.AppTheme
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -40,19 +43,37 @@ class MainActivity : AppCompatActivity() {
 
 @Composable
 fun RootApp(
-    vm: MainViewModel = getViewModel()
+    vm: MainViewModel = getViewModel(),
 ) {
     AppTheme {
         val userState by vm.userState.collectAsState(initial = Resource.NotInitialized)
+        var showDialog: MainAlertDialog? by remember {
+            mutableStateOf(null)
+        }
+
+        LaunchedEffect(LocalContext.current) {
+            vm.sessionExpiredFlow.collectLatest { showDialog = MainAlertDialog.SessionExpired }
+        }
+
         val appState = rememberAppState()
 
-        when(val state = userState) {
+        when (val state = userState) {
             Resource.NotInitialized -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
             is Resource.Ready -> {
+
+                when (val dialog = showDialog) {
+                    is MainAlertDialog.SessionExpired -> {
+                        dialog.Show {
+                            showDialog = null
+                        }
+                    }
+                    else -> {}
+                }
+
                 if (state.data) {
                     MainAppScreen(appState)
                 } else {
@@ -67,7 +88,7 @@ fun RootApp(
 @Composable
 fun RootAppScreen(
     appState: MainAppState,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     ModalBottomSheetLayout(
         modifier = Modifier.fillMaxSize(),
@@ -117,7 +138,7 @@ fun AppStartScreen(appState: MainAppState) {
 
 @Composable
 fun MainAppScreen(
-    appState: MainAppState
+    appState: MainAppState,
 ) {
     RootAppScreen(appState) {
         Scaffold(
@@ -143,7 +164,7 @@ fun MainAppScreen(
 
 @Composable
 fun RowScope.BottomBarButtons(
-    appState: MainAppState
+    appState: MainAppState,
 ) {
     val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
