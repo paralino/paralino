@@ -104,6 +104,7 @@ val remoteDataSourceModule = module {
     single {
         AppWriteRemoteModule(
             androidApplication(),
+            get(),
             get()
         )
     }

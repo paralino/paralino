@@ -46,7 +46,7 @@ class SettingsViewModel(
                                     )
                                 )
                             } else {
-                                Payload.Error(UnauthorizedException("User is not ready"))
+                                Payload.Error(UnauthorizedException(type = null, "User is not ready"))
                             }
                         }
                     }

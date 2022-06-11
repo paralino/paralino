@@ -1,6 +1,7 @@
 package com.zbapp.locationtrack.di
 
 import com.zbapp.core.domain.user.LogoutUseCase
+import com.zbapp.core.domain.user.UserSessionMonitor
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.personal_code.PersonalCodesRepository
@@ -41,6 +42,7 @@ val viewModelModules = module {
 val utilModule = module {
     factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
     single { PreCheckControl(get()) }
+    single { UserSessionMonitor() }
 }
 
 val locationModules = module {

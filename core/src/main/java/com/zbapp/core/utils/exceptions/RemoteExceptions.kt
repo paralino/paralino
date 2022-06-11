@@ -18,7 +18,7 @@ open class BaseRemoteException constructor(
         ): BaseRemoteException {
             return when (code) {
                 400 -> InvalidRequestException(message, cause)
-                401 -> UnauthorizedException(message, cause)
+                401 -> UnauthorizedException(type, message, cause)
                 403 -> {
                     if(!config.emailConfirmed) UnverifiedUserException(message, cause)
                     else PermissionDeniedException(message, cause)
@@ -34,9 +34,9 @@ open class BaseRemoteException constructor(
 
 class InternalConnectionException(val status: ConnectionStatus, message: String? = null): BaseRemoteException(message, null, null)
 class RemoteConnectionException(message: String?, code: Int?, cause: Throwable? = null): BaseRemoteException(message, cause, code)
-class UnverifiedUserException(message: String?, cause: Throwable? = null): UnauthorizedException(message, cause)
-class PermissionDeniedException(message: String?, cause: Throwable? = null): UnauthorizedException(message, cause)
-open class UnauthorizedException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class UnverifiedUserException(message: String?, cause: Throwable? = null): UnauthorizedException(null, message, cause)
+class PermissionDeniedException(message: String?, cause: Throwable? = null): UnauthorizedException(null, message, cause)
+open class UnauthorizedException(type: String?, message: String?, cause: Throwable? = null): BaseRemoteException(message, cause, type = type)
 class InvalidRequestException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 open class NotFoundException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)

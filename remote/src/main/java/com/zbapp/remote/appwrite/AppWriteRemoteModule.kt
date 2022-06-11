@@ -1,26 +1,27 @@
 package com.zbapp.remote.appwrite
 
 import android.app.Application
+import com.zbapp.core.domain.user.UserSessionMonitor
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.utils.exceptions.BaseRemoteException
 import com.zbapp.core.utils.exceptions.RemoteConnectionException
+import com.zbapp.core.utils.exceptions.UnauthorizedException
 import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
 import io.appwrite.services.Database
 import io.appwrite.services.Functions
-import io.appwrite.services.Teams
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.net.UnknownHostException
 
 class AppWriteRemoteModule(
     private val app: Application,
-    val config: BackendConfig
+    val config: BackendConfig,
+    val sessionMonitor: UserSessionMonitor,
 ) {
 
     internal val account: Account by lazy { Account(client) }
-    internal val teams: Teams by lazy { Teams(client) }
     internal val database: Database by lazy { Database(client) }
     internal val functions: Functions by lazy { Functions(client) }
     val uniqueIdPlaceholder = "unique()"
@@ -46,7 +47,12 @@ class AppWriteRemoteModule(
         try {
             return action(this)
         } catch (e: Exception) {
-            throw mapException(e)
+            throw mapException(e).also {
+                if (it is UnauthorizedException && it.type == "general_unauthorized_scope") {
+                    // user session is invalid
+                    sessionMonitor.updateSessionState(sessionValid = false)
+                }
+            }
         }
     }
 
