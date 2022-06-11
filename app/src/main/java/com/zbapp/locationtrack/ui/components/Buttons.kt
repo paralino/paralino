@@ -119,7 +119,7 @@ enum class AppButtonState {
 
     companion object {
         fun loadingState(isLoading: Boolean): AppButtonState {
-            return if (isLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT
+            return if (isLoading) AppButtonState.LOADING else AppButtonState.CONTENT
         }
 
         fun loadingStateWithCheck(isLoading: Boolean): AppButtonState {
