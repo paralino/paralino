@@ -91,6 +91,14 @@ sealed class AppScreen {
 
         object ProfileDetails : AppScreen() {
             override val routeSignature: String = "profile"
+
+            object ChangeEmail : AppScreen() {
+                override val routeSignature: String = "change-email"
+            }
+
+            object ChangePassword : AppScreen() {
+                override val routeSignature: String = "change-password"
+            }
         }
     }
 }

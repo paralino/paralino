@@ -24,6 +24,7 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.ImageModelImage
 import com.zbapp.locationtrack.ui.components.MainAlertDialog
+import com.zbapp.locationtrack.ui.navigation.AppScreen
 import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.utils.extensions.annotatedBold
 import kotlinx.coroutines.flow.collectLatest
@@ -108,7 +109,9 @@ fun AccountScreen(
         SettingsActionItem(
             name = stringResource(id = R.string.settings_account_edit_email),
             icon = Icons.Rounded.Email
-        ) {}
+        ) {
+            appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ChangeEmail.routeSignature)
+        }
         SettingsActionItem(
             name = stringResource(id = R.string.settings_account_edit_password),
             icon = Icons.Rounded.Password
