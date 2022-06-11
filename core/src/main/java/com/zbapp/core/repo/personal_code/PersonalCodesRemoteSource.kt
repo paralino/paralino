@@ -7,6 +7,7 @@ import com.zbapp.core.models.user.UserPersonalCode
 import com.zbapp.core.models.user.UserPersonalCodeData
 import com.zbapp.core.repo.api.IDocumentsApi
 import com.zbapp.core.repo.api.IFunctionsApi
+import com.zbapp.core.utils.exceptions.NotFoundException
 import com.zbapp.core.utils.extensions.nowUTC
 import kotlin.time.Duration.Companion.days
 
@@ -50,6 +51,10 @@ class PersonalCodesRemoteSource constructor(
             data = codeKeys.loginPassword
         )
             .takeIf { it.isSuccess }
+            ?.also {
+                if(it.response.isBlank())
+                    throw NotFoundException("Code not found")
+            }
             ?.let {
                 personalCodeMapper.remote2CoreRead(code, it.response)
             }!!

@@ -61,6 +61,9 @@ fun MemberInviteScreen(
                 is MemberInviteScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
                 }
+                MemberInviteScreenEvent.ErrorWrongCode -> {
+                    appState.showSnackbar(context.getString(R.string.invite_connect_alert_wrongCode))
+                }
                 MemberInviteScreenEvent.ErrorMissingGroup -> {
                     appState.showSnackbar(context.getString(R.string.invite_connect_alert_pickGroup))
                 }

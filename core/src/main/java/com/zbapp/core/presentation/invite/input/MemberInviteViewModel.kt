@@ -5,6 +5,8 @@ import com.zbapp.core.presentation.CoreViewModel
 import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.personal_code.PersonalCodesRepository
+import com.zbapp.core.utils.exceptions.NotFoundException
+import com.zbapp.core.utils.exceptions.asRemoteException
 import com.zbapp.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -101,7 +103,9 @@ class MemberInviteViewModel(
                                 hasInputError = false
                             )
                         }
-                        _eventChannel.send(MemberInviteScreenEvent.Error(result.exception))
+                        if(result.exception.asRemoteException() is NotFoundException)
+                            _eventChannel.send(MemberInviteScreenEvent.ErrorWrongCode)
+                        else _eventChannel.send(MemberInviteScreenEvent.Error(result.exception))
                     }
                     is Payload.Success -> {
                         _uiState.update {
