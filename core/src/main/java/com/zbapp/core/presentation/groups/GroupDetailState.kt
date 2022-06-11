@@ -19,5 +19,6 @@ data class GroupDetailScreenState(
 sealed class GroupDetailScreenEvent() {
     data class Error(val error: Throwable) : GroupDetailScreenEvent()
     object GroupDeleted : GroupDetailScreenEvent()
+    object GroupNotFound : GroupDetailScreenEvent()
     object GroupMemberDeleted : GroupDetailScreenEvent()
 }

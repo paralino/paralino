@@ -80,6 +80,9 @@ fun GroupDetailScreen(
                 is GroupDetailScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
                 }
+                GroupDetailScreenEvent.GroupNotFound -> {
+                    appState.showSnackbar(context.getString(R.string.group_load_error))
+                }
                 GroupDetailScreenEvent.GroupDeleted -> {
                     appState.navController.popBackStack()
                 }

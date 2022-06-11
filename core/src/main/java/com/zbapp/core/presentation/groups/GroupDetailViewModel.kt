@@ -9,6 +9,7 @@ import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.utils.ILocationStatusProvider
 import com.zbapp.core.utils.exceptions.NotFoundException
+import com.zbapp.core.utils.exceptions.asRemoteException
 import com.zbapp.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -66,7 +67,10 @@ class GroupDetailViewModel(
             .onEach { result ->
                 _uiState.update { result }
                 if(result is Payload.Error) {
-                    _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                    if(result.exception.asRemoteException() is NotFoundException)
+                        _eventChannel.send(GroupDetailScreenEvent.GroupNotFound)
+                    else
+                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                 }
             }
             .launchIn(coroutineScope)

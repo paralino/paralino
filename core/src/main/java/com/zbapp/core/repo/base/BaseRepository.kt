@@ -4,6 +4,7 @@ import com.zbapp.core.connectionStatus
 import com.zbapp.core.logg
 import com.zbapp.core.utils.exceptions.InternalConnectionException
 import kotlinx.coroutines.flow.*
+import java.rmi.Remote
 
 
 abstract class BaseRepository {
@@ -67,6 +68,17 @@ abstract class BaseRepository {
             logg.e(it)
             throw it
         }
+    }
+
+    suspend fun <T> triggerRemoteOnly(
+        localValue: T? = null,
+        remote: (suspend () -> T)
+    ): T {
+        return triggerRemote(
+            localValue = localValue,
+            remotePreference = RemotePreference.FORCE,
+            remote = remote
+        )!!
     }
 
     private suspend fun <T, U> triggerRemote(
