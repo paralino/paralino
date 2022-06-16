@@ -86,7 +86,6 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
         locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
         connectionStatus = connectionStatusProvider
         config = Config(context)
-        appConfig = config as Config
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
@@ -158,5 +157,3 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     }
 
 }
-
-lateinit var appConfig: Config

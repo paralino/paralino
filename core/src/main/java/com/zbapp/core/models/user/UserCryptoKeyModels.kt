@@ -3,14 +3,14 @@ package com.zbapp.core.models.user
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AsymmetricCryptoKeyData(
+data class AsymmetricCryptoKeyData constructor(
     val privateKey: String,
     val publicKey: String,
-    val version: Int
+    val version: Long
 )
 
 @Serializable
-data class SymmetricCryptoKeyData(
+data class SymmetricCryptoKeyData constructor(
     val encryptedKey: String,
-    val version: Int
+    val version: Long
 )

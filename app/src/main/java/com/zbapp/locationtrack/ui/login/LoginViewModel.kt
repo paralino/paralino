@@ -3,16 +3,18 @@ package com.zbapp.locationtrack.ui.login
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.zbapp.core.domain.user.CreateAccountUseCase
+import com.zbapp.core.domain.user.LoginUseCase
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.login.LoginViewModel
-import com.zbapp.core.repo.user.LoginManager
 
 class LoginViewModel(
     app: Application,
-    private val loginManager: LoginManager,
+    private val loginUseCase: LoginUseCase,
+    private val createAccountUseCase: CreateAccountUseCase,
 ) : AndroidViewModel(app) {
 
-    private val coreVm = LoginViewModel(loginManager, viewModelScope)
+    private val coreVm = LoginViewModel(loginUseCase, createAccountUseCase, viewModelScope)
 
     val uiState = coreVm.uiState
     val events = coreVm.events

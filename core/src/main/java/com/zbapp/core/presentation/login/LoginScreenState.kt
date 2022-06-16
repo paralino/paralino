@@ -47,3 +47,13 @@ sealed class SignUpErrorType {
     object SIGNUP_DATA : SignUpErrorType()
     data class SOURCE(val error: Throwable) : SignUpErrorType()
 }
+
+enum class SignUpStep {
+    STARTING,
+    GENERATING_KEYS,
+    INIT_USER_DATA,
+    SAVE_USER,
+    ALL_DONE
+}
+
+class SignUpStepException constructor(val step: SignUpStep, cause: Throwable) : Exception(cause)

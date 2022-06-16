@@ -8,23 +8,23 @@ import kotlinx.coroutines.flow.Flow
 interface UserKeyDao {
 
     @Transaction
-    suspend fun recreateAll(data: List<UserKeyEntity>) {
+    suspend fun recreateAll(data: UserKeyEntity) {
         clear()
-        createOrUpdate(*data.toTypedArray())
+        createOrUpdate(data)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createOrUpdate(vararg data: UserKeyEntity)
 
     @Query("SELECT * FROM user_keys")
-    fun getAll(): Flow<List<UserKeyEntity>>
+    suspend fun getKey(): UserKeyEntity?
 
     @Query("SELECT * FROM user_keys WHERE version = (SELECT max(version) FROM user_keys)")
     suspend fun getLatest(): UserKeyEntity?
 
 
     @Query("DELETE FROM user_keys WHERE id = :id")
-    suspend fun delete(id: Int)
+    suspend fun delete(id: String)
 
     @Query("DELETE FROM user_keys")
     suspend fun clear()

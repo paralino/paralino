@@ -1,10 +1,12 @@
 package com.zbapp.core.crypto
 
 
+import com.zbapp.core.models.raw.UserCryptoKeyRaw
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.core.models.user.SymmetricCryptoKeyData
 import com.zbapp.core.utils.BaseRemoteModule
 import com.zbapp.core.utils.extensions.blocking
+import com.zbapp.core.utils.extensions.nowUTC
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
@@ -12,7 +14,7 @@ import kotlinx.serialization.encodeToString
 class CryptoCore(
     val serviceProvider: ICryptoServiceProvider,
     val hashProvider: ICryptoHashProvider,
-    val keyProvider: ICryptoKeyProvider
+    val keyProvider: ICryptoKeyProvider,
 ) {
 
     fun getNewSymmetricKey(): Data {
@@ -26,26 +28,34 @@ class CryptoCore(
     suspend fun generateNewKeysForUser(
         backupPassword: String,
         userId: String,
-        privateKeyVersion: Int = 1,
-        keyPairVersion: Int = 1
+        keyVersion: Long = nowUTC().epochSeconds,
     ): GeneratedUserKeys {
-        val newPersonalKey = getNewSymmetricKey().content
+        val newPersonalKey = getNewSymmetricKey()
         val encryptedPersonalKey = serviceProvider.encryptDataWithPassword(
-            data = newPersonalKey,
+            data = newPersonalKey.content,
             password = backupPassword,
             context = userId.toData(hashProvider).content
         )
 
-        val symmetricData = SymmetricCryptoKeyData(
-            encryptedKey = encryptedPersonalKey.asBase64String(hashProvider),
-            version = privateKeyVersion
+        val newKeyPair = getNewAsymmetricKey()
+        val encryptedPrivateKey = encryptDataWithKey(
+            data = newKeyPair.privateKey.toData().asBase64String(hashProvider),
+            key = newPersonalKey.content
         )
-        val asymmetricData = generateNewAsymmetricUserKey(keyPairVersion)
 
-        return GeneratedUserKeys(newPersonalKey, symmetricData, asymmetricData)
+        val encryptedKeyData = UserCryptoKeyRaw(
+            "",
+            ownerUserId = userId,
+            encryptedSymmetricKey = encryptedPersonalKey.asBase64String(hashProvider),
+            encryptedPrivateKey = encryptedPrivateKey,
+            publicKey = newKeyPair.publicKey.toData().asBase64String(hashProvider),
+            version = keyVersion
+        )
+
+        return GeneratedUserKeys(newPersonalKey, encryptedKeyData)
     }
 
-    fun generateNewAsymmetricUserKey(version: Int = 1): AsymmetricCryptoKeyData {
+    fun generateNewAsymmetricUserKey(version: Long): AsymmetricCryptoKeyData {
         val newKeyPair = getNewAsymmetricKey()
 
         return AsymmetricCryptoKeyData(
@@ -59,7 +69,7 @@ class CryptoCore(
         oldBackupPassword: String,
         newBackupPassword: String,
         userId: String,
-        keyData: SymmetricCryptoKeyData
+        keyData: SymmetricCryptoKeyData,
     ): SymmetricCryptoKeyData {
         return blocking {
             val userKey = serviceProvider.decryptDataWithPassword(
@@ -83,7 +93,7 @@ class CryptoCore(
     suspend fun signIn(
         password: String,
         userId: String,
-        keyData: String
+        keyData: String,
     ): Data {
         return serviceProvider.decryptDataWithPassword(
             data = keyData.base64ToData(hashProvider).content,
@@ -152,15 +162,11 @@ class CryptoCore(
         ).asString(hashProvider)
     }
 
-    suspend fun decryptDataWithPassword(data: String, password: String): String {
-        return serviceProvider.decryptDataWithPassword(
-            data = data.base64ToData(hashProvider).content,
-            password = password,
-            context = null
-        ).asString(hashProvider)
-    }
-
-    suspend fun encryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String {
+    suspend fun encryptDataWithKeyPair(
+        data: String,
+        myPrivateKey: String,
+        publicKey: String,
+    ): String {
         return serviceProvider.encryptDataWithKeyPair(
             data = data.toData(hashProvider).content,
             myPrivateKey = myPrivateKey.base64ToData(hashProvider).content,
@@ -168,7 +174,11 @@ class CryptoCore(
         ).asBase64String(hashProvider)
     }
 
-    suspend fun encryptDataWithKeyPair(data: ByteArray, myPrivateKey: String, publicKey: String): String {
+    suspend fun encryptDataWithKeyPair(
+        data: ByteArray,
+        myPrivateKey: String,
+        publicKey: String,
+    ): String {
         return serviceProvider.encryptDataWithKeyPair(
             data = data,
             myPrivateKey = myPrivateKey.base64ToData(hashProvider).content,
@@ -176,7 +186,11 @@ class CryptoCore(
         ).asBase64String(hashProvider)
     }
 
-    suspend fun decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String {
+    suspend fun decryptDataWithKeyPair(
+        data: String,
+        myPrivateKey: String,
+        publicKey: String,
+    ): String {
         return serviceProvider.decryptDataWithKeyPair(
             data = data.base64ToData(hashProvider).content,
             myPrivateKey = myPrivateKey.base64ToData(hashProvider).content,
@@ -200,14 +214,14 @@ class CryptoCore(
 
         return DerivedPasswords(
             loginPassword = sourceHash.sliceArray(0 until 32).toData().asBase64String(hashProvider),
-            backupPassword = sourceHash.sliceArray(32 until 64).toData().asBase64String(hashProvider)
+            backupPassword = sourceHash.sliceArray(32 until 64).toData()
+                .asBase64String(hashProvider)
         )
     }
 
 }
 
 class GeneratedUserKeys(
-    val userPersonalKey: ByteArray,
-    val symmetricCryptoKeyData: SymmetricCryptoKeyData,
-    val asymmetricCryptoKeyData: AsymmetricCryptoKeyData
+    val userPersonalKey: Data,
+    val encryptedKeyData: UserCryptoKeyRaw,
 )

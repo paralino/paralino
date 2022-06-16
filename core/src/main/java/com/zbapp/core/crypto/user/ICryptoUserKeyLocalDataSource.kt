@@ -1,19 +1,18 @@
 package com.zbapp.core.crypto.user
 
-import com.zbapp.core.models.raw.AsymmetricKeyDataRaw
+import com.zbapp.core.models.raw.UserCryptoKeyRaw
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 
 interface ICryptoUserKeyLocalDataSource {
 
-    fun getUserKey(): String
-    fun saveUserKey(key: String)
-    fun clearUserKey()
+    fun getCachedUserKey(): String
 
-    suspend fun recreateAllKeyPairs(keys: List<AsymmetricKeyDataRaw>)
-    suspend fun saveKeyPair(key: AsymmetricKeyDataRaw)
-    suspend fun getAllKeyPairs(): List<AsymmetricCryptoKeyData>
-    suspend fun getLatestKeyPair(): AsymmetricCryptoKeyData?
+    suspend fun saveKey(key: UserCryptoKeyRaw, decryptedMainKey: String)
+
+    suspend fun getKeyPair(): AsymmetricCryptoKeyData?
+    suspend fun getMyKey(): UserCryptoKeyRaw?
 
     suspend fun clearAllKeys()
+    suspend fun deleteKey(id: String)
 
 }

@@ -1,11 +1,10 @@
 package com.zbapp.core.presentation.login
 
+import com.zbapp.core.domain.user.CreateAccountUseCase
+import com.zbapp.core.domain.user.LoginUseCase
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.CoreViewModel
 import com.zbapp.core.presentation.common.FormValidation
-import com.zbapp.core.repo.user.LoginManager
-import com.zbapp.core.repo.user.SignUpStep
-import com.zbapp.core.repo.user.SignUpStepException
 import com.zbapp.core.utils.exceptions.ConflictException
 import com.zbapp.core.utils.exceptions.CryptoException
 import com.zbapp.core.utils.exceptions.UnauthorizedException
@@ -16,7 +15,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val loginManager: LoginManager,
+    private val loginUseCase: LoginUseCase,
+    private val createAccountUseCase: CreateAccountUseCase,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -58,7 +58,7 @@ class LoginViewModel(
                 _eventChannel.send(LoginScreenEvent.ValidationError(passwordValidation))
             }
         } else {
-            loginManager.login(email = email, password = password)
+            loginUseCase.login(email = email, password = password)
                 .onEach { processStep(it) }
                 .catch { processSignUpError(it) }
                 .launchIn(coroutineScope)
@@ -95,7 +95,7 @@ class LoginViewModel(
                 _eventChannel.send(LoginScreenEvent.ValidationError(passwordValidation))
             }
         } else {
-            loginManager.signUp(
+            createAccountUseCase.signUp(
                 userName = name,
                 userImage = _uiState.value.userImage,
                 email = email,

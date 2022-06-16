@@ -5,9 +5,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "user_keys")
 data class UserKeyEntity constructor(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: String,
+    val ownerUserId: String,
+    val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
     val publicKey: String,
-    val version: Int
+    val version: Long
 )

@@ -1,13 +1,10 @@
 package com.zbapp.locationtrack.di
 
-import com.zbapp.core.domain.user.ChangeEmailUseCase
-import com.zbapp.core.domain.user.LogoutUseCase
-import com.zbapp.core.domain.user.UserSessionMonitor
+import com.zbapp.core.domain.user.*
 import com.zbapp.core.repo.LocationSharingManager
 import com.zbapp.core.repo.group.GroupRepository
-import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 import com.zbapp.core.repo.location.LocationRepository
-import com.zbapp.core.repo.user.LoginManager
+import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 import com.zbapp.core.repo.user.UserRepository
 import com.zbapp.locationtrack.data.PreCheckControl
 import com.zbapp.locationtrack.tracking.LocationInitHandler
@@ -29,10 +26,10 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { DashboardViewModel(androidApplication(), get(), get(), get(), get()) }
+    viewModel { DashboardViewModel(androidApplication(), get(), get(), get()) }
     viewModel { MapViewModel(androidApplication(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
-    viewModel { LoginViewModel(androidApplication(), get()) }
+    viewModel { LoginViewModel(androidApplication(), get(), get()) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { (args: String?) -> SharingViewModel(androidApplication(), args, get(), get(), get()) }
     viewModel { PersonalCodesViewModel(androidApplication(), get()) }
@@ -55,7 +52,8 @@ val locationModules = module {
 }
 
 val coreModule = module {
-    single { LoginManager(get(), get(), get(), get(), get()) }
+    single { LoginUseCase(get(), get(), get(), get()) }
+    single { CreateAccountUseCase(get(), get(), get(), get()) }
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get(), get()) }
     single { GroupRepository(get(), get(), get(), get(), get(), get()) }

@@ -44,7 +44,7 @@ class LogoutUseCase(
         groupsRepo.clear()
         locationRepo.clear()
         cryptoKEKRepo.clearKeys()
-        userKeyRepo.clearUserPersonalKey()
+        userKeyRepo.clearAll()
         codeRepo.clearLocally()
     }
 
