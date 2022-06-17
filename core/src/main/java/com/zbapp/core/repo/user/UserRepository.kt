@@ -10,6 +10,7 @@ import com.zbapp.core.models.data
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
+import com.zbapp.core.models.user.UserMeData
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.base.BaseRepository
 import com.zbapp.core.utils.exceptions.NotFoundException
@@ -110,7 +111,7 @@ class UserRepository constructor(
         return getDataOnce { remote.updateUserData(data.toPostJson()) }
     }
 
-    fun updateUserData(data: Map<String, Any>): Flow<Boolean> {
+    fun updateUserData(data: UserMeData): Flow<Boolean> {
         return getDataOnce(
             remote = { remote.updateUserData(data) },
             localUpdate = { updateLocalUser(it) }

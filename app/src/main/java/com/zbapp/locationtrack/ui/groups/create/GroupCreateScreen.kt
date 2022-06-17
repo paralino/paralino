@@ -1,17 +1,15 @@
 package com.zbapp.locationtrack.ui.groups.create
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,7 +20,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.Payload
 import com.zbapp.core.models.base.ImageModel
@@ -35,12 +32,12 @@ import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.extensions.safeCast
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun GroupCreateScreen(
     appState: MainAppState,

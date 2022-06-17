@@ -18,6 +18,7 @@ import com.zbapp.locationtrack.ui.invite.manage.PersonalCodesViewModel
 import com.zbapp.locationtrack.ui.login.LoginViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsViewModel
+import com.zbapp.locationtrack.ui.settings.editprofile.EditProfileViewModel
 import com.zbapp.locationtrack.ui.settings.emailchange.ChangeEmailViewModel
 import com.zbapp.locationtrack.ui.settings.passwordchange.ChangePasswordViewModel
 import com.zbapp.locationtrack.ui.share.SharingViewModel
@@ -39,6 +40,7 @@ val viewModelModules = module {
     viewModel { MainViewModel(get(), get()) }
     viewModel { ChangeEmailViewModel(get(), get()) }
     viewModel { ChangePasswordViewModel(get()) }
+    viewModel { EditProfileViewModel(get()) }
 }
 
 val utilModule = module {

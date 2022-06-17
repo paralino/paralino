@@ -3,6 +3,8 @@ package com.zbapp.core.repo.user
 import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.models.mappers.UserMapperCore
+import com.zbapp.core.models.user.UserMeData
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.repo.api.IUserApi
@@ -13,6 +15,7 @@ class UserRemoteSource constructor(
     private val api: IUserApi,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
+    private val userMapper: UserMapperCore
 ) {
 
     suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
@@ -41,16 +44,13 @@ class UserRemoteSource constructor(
         return api.getMe()
     }
 
-    suspend fun updateName(name: String): UserMeRaw {
-        return api.updateName(name)
-    }
-
     suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw {
         return api.changePassword(newPassword, oldPassword)
     }
 
-    suspend fun updateUserImage(image: ImageModel): UserMeRaw {
-        return api.updateUserData(mapOf("userImage" to image))
+    suspend fun updateUserData(data: UserMeData): UserMeRaw {
+        val payload = userMapper.core2Remote(data)
+        return api.updateUserData(payload.toPostJson())
     }
 
     suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {
