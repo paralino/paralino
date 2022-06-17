@@ -74,11 +74,16 @@ abstract class BaseRepository {
         localValue: T? = null,
         remote: (suspend () -> T)
     ): T {
-        return triggerRemote(
-            localValue = localValue,
-            remotePreference = RemotePreference.FORCE,
-            remote = remote
-        )!!
+        return try {
+            triggerRemote(
+                localValue = localValue,
+                remotePreference = RemotePreference.FORCE,
+                remote = remote
+            )!!
+        } catch (e: Exception) {
+            logg.e(e)
+            throw e
+        }
     }
 
     private suspend fun <T, U> triggerRemote(
