@@ -5,26 +5,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Visibility
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.presentation.settings.passwordchange.ChangePasswordScreenEvent
 import com.zbapp.core.presentation.settings.passwordchange.ChangePasswordScreenState
@@ -32,6 +21,7 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.AppButtonState
 import com.zbapp.locationtrack.ui.components.FilledButton
+import com.zbapp.locationtrack.ui.components.PasswordInputField
 import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.shared.getFormValidationErrorText
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
@@ -168,56 +158,4 @@ fun ChangePasswordScreen(
         }
     }
 
-}
-
-@Composable
-fun PasswordInputField(
-    modifier: Modifier = Modifier,
-    password: String,
-    hint: String,
-    hasError: Boolean,
-    focusManager: FocusManager = LocalFocusManager.current,
-    passwordHidden: MutableState<Boolean> = rememberSaveable { mutableStateOf(true) },
-    onInputChange: (String) -> Unit,
-) {
-    OutlinedTextField(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(TextFieldDefaults.MinHeight),
-        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start),
-        value = password,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Done,
-            keyboardType = KeyboardType.Password
-        ),
-        keyboardActions = KeyboardActions {
-            focusManager.clearFocus()
-        },
-        visualTransformation = if (passwordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
-        placeholder = {
-            Text(
-                text = hint,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        onValueChange = {
-            onInputChange(it)
-        },
-        shape = MaterialTheme.shapes.small,
-        isError = hasError,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            backgroundColor = MaterialTheme.colors.surface,
-            unfocusedBorderColor = MaterialTheme.colors.surface,
-        ),
-        trailingIcon = {
-            IconButton(onClick = { passwordHidden.value = !passwordHidden.value }) {
-                Icon(
-                    imageVector = if (passwordHidden.value) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
-                    contentDescription = null
-                )
-            }
-        }
-    )
 }

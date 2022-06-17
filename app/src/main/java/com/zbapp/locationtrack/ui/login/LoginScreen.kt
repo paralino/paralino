@@ -15,8 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PrivacyTip
-import androidx.compose.material.icons.rounded.Visibility
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,18 +25,13 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.login.*
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
-import com.zbapp.locationtrack.ui.components.AppButtonState
-import com.zbapp.locationtrack.ui.components.BottomSheetsScreen
-import com.zbapp.locationtrack.ui.components.FilledButton
-import com.zbapp.locationtrack.ui.components.ImageModelImage
+import com.zbapp.locationtrack.ui.components.*
 import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.shared.getFormValidationErrorText
 import com.zbapp.locationtrack.ui.theme.AppColors
@@ -56,7 +49,6 @@ fun LoginScreen(
 
     val uiState by vm.uiState.collectAsState(initial = LoginScreenState())
     val focusManager = LocalFocusManager.current
-    var passwordHidden by remember(uiState.uiType) { mutableStateOf(true) }
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
@@ -181,45 +173,12 @@ fun LoginScreen(
                 visible = uiState.uiType != LoginScreenUiType.FORGOT_PASSWORD,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(TextFieldDefaults.MinHeight),
-                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start),
-                    value = uiState.password,
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Password
-                    ),
-                    keyboardActions = KeyboardActions {
-                        focusManager.clearFocus()
-                    },
-                    visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
-                    placeholder = {
-                        Text(
-                            stringResource(id = R.string.login_placeholder_password),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    },
-                    onValueChange = {
-                        vm.onPasswordChange(it)
-                    },
-                    shape = MaterialTheme.shapes.small,
-                    isError = uiState.hasPasswordError,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        backgroundColor = MaterialTheme.colors.surface,
-                        unfocusedBorderColor = MaterialTheme.colors.surface,
-                    ),
-                    trailingIcon = {
-                        IconButton(onClick = { passwordHidden = !passwordHidden }) {
-                            Icon(
-                                imageVector = if (passwordHidden) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
-                                contentDescription = null
-                            )
-                        }
-                    }
+                PasswordInputField(
+                    password = uiState.password,
+                    hint = stringResource(id = R.string.login_placeholder_password),
+                    hasError = uiState.hasPasswordError,
+                    focusManager = focusManager,
+                    onInputChange = { vm.onPasswordChange(it) }
                 )
             }
 
