@@ -18,6 +18,7 @@ import com.zbapp.locationtrack.ui.map.MapHomeScreen
 import com.zbapp.locationtrack.ui.settings.AccountScreen
 import com.zbapp.locationtrack.ui.settings.SettingsScreen
 import com.zbapp.locationtrack.ui.settings.emailchange.ChangeEmailScreen
+import com.zbapp.locationtrack.ui.settings.passwordchange.ChangePasswordScreen
 import com.zbapp.locationtrack.ui.share.SharingStartScreen
 
 
@@ -99,6 +100,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.SettingsRoot.ProfileDetails.ChangeEmail.routeSignature) {
             ChangeEmailScreen(appState)
+        }
+        composable(AppScreen.SettingsRoot.ProfileDetails.ChangePassword.routeSignature) {
+            ChangePasswordScreen(appState)
         }
     }
 }

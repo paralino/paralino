@@ -115,7 +115,9 @@ fun AccountScreen(
         SettingsActionItem(
             name = stringResource(id = R.string.settings_account_edit_password),
             icon = Icons.Rounded.Password
-        ) {}
+        ) {
+            appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ChangePassword.routeSignature)
+        }
 
         SettingsActionItem(
             name = stringResource(id = R.string.setting_title_logout),

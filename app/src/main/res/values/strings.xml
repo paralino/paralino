@@ -72,6 +72,9 @@
     <string name="settings_account_edit_email_button">CHANGE EMAIL</string>
     <string name="settings_account_edit_email_placeholder_email">New email*</string>
     <string name="settings_account_edit_email_placeholder_password">Current password*</string>
+    <string name="settings_account_edit_password_button">CHANGE PASSWORD</string>
+    <string name="settings_account_edit_password_placeholder_password_new">New password*</string>
+    <string name="settings_account_edit_password_placeholder_password_confirm">Confirm password*</string>
 
     <string name="settings_account_logout_alert_title">Logout</string>
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
