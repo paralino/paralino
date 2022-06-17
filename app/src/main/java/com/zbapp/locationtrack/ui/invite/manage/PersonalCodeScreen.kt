@@ -20,6 +20,7 @@ import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.AppButtonState
 import com.zbapp.locationtrack.ui.components.DefaultEmptyState
 import com.zbapp.locationtrack.ui.components.MainAlertDialog
+import com.zbapp.locationtrack.ui.settings.SettingsBigHeader
 import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.utils.extensions.copy
 import com.zbapp.locationtrack.utils.extensions.share
@@ -82,6 +83,9 @@ fun PersonalCodeScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(20.dp)
                 ) {
+
+                    SettingsBigHeader(name = stringResource(id = R.string.settings_section_personal_code_title))
+
                     Spacer(modifier = Modifier.size(20.dp))
                     PersonalCodeItem(
                         state = state.data.code!!,
