@@ -67,6 +67,10 @@ class UserRepository constructor(
         ).map { Unit }
     }
 
+    suspend fun changePassword(oldPassword: String, newPassword: String) {
+        triggerRemoteOnly { remote.changePassword(newPassword = newPassword, oldPassword = oldPassword) }
+    }
+
     fun getUserIfAvailable(): Flow<UserMeRaw> {
         if (!config.isTokenValid) {
             return flow { throw Exception("Token is not available") }

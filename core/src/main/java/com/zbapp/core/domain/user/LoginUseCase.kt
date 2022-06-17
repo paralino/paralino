@@ -57,9 +57,11 @@ class LoginUseCase constructor(
                             keyData = it.encryptedSymmetricKey
                         )
 
-                        // check if keypair is valid
-                        keyMapper.mapKeyPair(it,
-                            personalKeyData.asBase64String(cryptoCore.hashProvider))
+                        // check if keypair is valid by decrypting
+                        keyMapper.mapKeyPair(
+                            it,
+                            personalKeyData.asBase64String(cryptoCore.hashProvider)
+                        )
 
                         // key is valid
                         GeneratedUserKeys(

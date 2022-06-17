@@ -16,4 +16,4 @@ class MissingMemberKeyException(
     val memberId: String
 ) : MissingCryptoKeyException("Missing member key for member ($memberId) in: ($groupId)")
 
-class MissingUserKeyException(val keyPair: Boolean) : MissingCryptoKeyException("Missing user ${if(keyPair) "key pair" else "private" } key")
+class MissingUserKeyException(val localCache: Boolean) : MissingCryptoKeyException("Missing main user key from ${if(localCache) "cache" else "storage" }")

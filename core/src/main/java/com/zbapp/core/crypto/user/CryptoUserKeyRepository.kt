@@ -18,7 +18,7 @@ class CryptoUserKeyRepository(
 
     val personalKey: Data
         get() {
-            return personalKeyOrNull ?: throw MissingUserKeyException(keyPair = false)
+            return personalKeyOrNull ?: throw MissingUserKeyException(localCache = true)
         }
 
     val personalKeyOrNull: Data?
@@ -29,7 +29,7 @@ class CryptoUserKeyRepository(
         }
 
     suspend fun latestKeyPair(): AsymmetricCryptoKeyData {
-        return local.getKeyPair() ?: throw MissingUserKeyException(keyPair = true)
+        return local.getKeyPair() ?: throw MissingUserKeyException(localCache = false)
     }
 
     suspend fun getRemoteKeys(): List<UserCryptoKeyRaw> {
@@ -38,6 +38,10 @@ class CryptoUserKeyRepository(
 
     suspend fun clearAll() {
         local.clearAllKeys()
+    }
+
+    suspend fun getLocalRawKey(): UserCryptoKeyRaw? {
+        return local.getMyKey()
     }
 
     suspend fun saveUserKeyLocally(keyRaw: UserCryptoKeyRaw, decryptedKey: Data) {

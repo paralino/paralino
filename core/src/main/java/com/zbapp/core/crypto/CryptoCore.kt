@@ -3,7 +3,6 @@ package com.zbapp.core.crypto
 
 import com.zbapp.core.models.raw.UserCryptoKeyRaw
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
-import com.zbapp.core.models.user.SymmetricCryptoKeyData
 import com.zbapp.core.utils.BaseRemoteModule
 import com.zbapp.core.utils.extensions.blocking
 import com.zbapp.core.utils.extensions.nowUTC
@@ -69,11 +68,11 @@ class CryptoCore(
         oldBackupPassword: String,
         newBackupPassword: String,
         userId: String,
-        keyData: SymmetricCryptoKeyData,
-    ): SymmetricCryptoKeyData {
+        encryptedKey: String,
+    ): String {
         return blocking {
             val userKey = serviceProvider.decryptDataWithPassword(
-                data = keyData.encryptedKey.base64ToData(hashProvider).content,
+                data = encryptedKey.base64ToData(hashProvider).content,
                 password = oldBackupPassword,
                 context = userId.toData(hashProvider).content
             )
@@ -82,10 +81,8 @@ class CryptoCore(
                 password = newBackupPassword,
                 context = userId.toData(hashProvider).content
             )
-            SymmetricCryptoKeyData(
-                encryptedKey = newEncryptedUserKey.asBase64String(hashProvider),
-                version = keyData.version + 1
-            )
+
+            newEncryptedUserKey.asBase64String(hashProvider)
         }
     }
 
