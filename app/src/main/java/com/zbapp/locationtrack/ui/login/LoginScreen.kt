@@ -9,23 +9,22 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.login.*
@@ -137,34 +136,13 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.size(8.dp))
 
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(TextFieldDefaults.MinHeight),
-                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start),
-                value = uiState.email,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,
-                    keyboardType = KeyboardType.Email),
-                keyboardActions = KeyboardActions {
-                    focusManager.moveFocus(FocusDirection.Next)
-                },
-                placeholder = {
-                    Text(
-                        stringResource(id = R.string.login_placeholder_email),
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                },
-                onValueChange = {
-                    vm.onEmailChange(it)
-                },
-                shape = MaterialTheme.shapes.small,
-                isError = uiState.hasEmailError,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = MaterialTheme.colors.surface,
-                    unfocusedBorderColor = MaterialTheme.colors.surface,
-                )
+            MainInputField(
+                text = uiState.email,
+                hint = stringResource(id = R.string.login_placeholder_email),
+                hasError = uiState.hasEmailError,
+                keyboardType = KeyboardType.Email,
+                imeAction = if(uiState.uiType == LoginScreenUiType.FORGOT_PASSWORD) ImeAction.Done else ImeAction.Next,
+                onInputChange = { vm.onEmailChange(it) }
             )
 
             Spacer(modifier = Modifier.size(8.dp))
@@ -308,8 +286,6 @@ fun UserAccountEditSmallItem(
     onTextChange: (String) -> Unit,
 ) {
 
-    val focusManager = LocalFocusManager.current
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -324,31 +300,16 @@ fun UserAccountEditSmallItem(
 
         Spacer(modifier = Modifier.size(8.dp))
 
-        OutlinedTextField(
+        MainInputField(
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f),
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start),
-            value = name,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions {
-                focusManager.moveFocus(FocusDirection.Down)
-            },
-            placeholder = {
-                Text(
-                    stringResource(id = R.string.login_placeholder_user_name),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
-            onValueChange = { onTextChange(it) },
-            shape = MaterialTheme.shapes.small,
-            isError = hasError,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = MaterialTheme.colors.surface,
-                unfocusedBorderColor = MaterialTheme.colors.surface,
-            )
+            text = name,
+            hint = stringResource(id = R.string.login_placeholder_user_name),
+            hasError = hasError,
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Next,
+            onInputChange = onTextChange
         )
     }
 }

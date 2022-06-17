@@ -27,6 +27,7 @@ import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
 import com.zbapp.locationtrack.ui.components.AppButtonState
 import com.zbapp.locationtrack.ui.components.FilledButton
+import com.zbapp.locationtrack.ui.components.MainInputField
 import com.zbapp.locationtrack.ui.components.PasswordInputField
 import com.zbapp.locationtrack.ui.shared.errorString
 import com.zbapp.locationtrack.ui.shared.getFormValidationErrorText
@@ -113,34 +114,13 @@ fun ChangeEmailScreen(
                 verticalArrangement = Arrangement.Center
             ) {
 
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(TextFieldDefaults.MinHeight),
-                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start),
-                    value = uiState.email,
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,
-                        keyboardType = KeyboardType.Email),
-                    keyboardActions = KeyboardActions {
-                        focusManager.moveFocus(FocusDirection.Next)
-                    },
-                    placeholder = {
-                        Text(
-                            stringResource(id = R.string.settings_account_edit_email_placeholder_email),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    },
-                    onValueChange = {
-                        vm.onEmailChange(it)
-                    },
-                    shape = MaterialTheme.shapes.small,
-                    isError = uiState.hasEmailError,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        backgroundColor = MaterialTheme.colors.surface,
-                        unfocusedBorderColor = MaterialTheme.colors.surface,
-                    )
+                MainInputField(
+                    text = uiState.email,
+                    hint = stringResource(id = R.string.settings_account_edit_email_placeholder_email),
+                    hasError = uiState.hasEmailError,
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
+                    onInputChange = { vm.onEmailChange(it) }
                 )
 
                 Spacer(modifier = Modifier.size(8.dp))

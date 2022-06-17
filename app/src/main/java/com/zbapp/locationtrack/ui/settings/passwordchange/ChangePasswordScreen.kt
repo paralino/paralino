@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.presentation.settings.passwordchange.ChangePasswordScreenEvent
 import com.zbapp.core.presentation.settings.passwordchange.ChangePasswordScreenState
@@ -111,6 +112,7 @@ fun ChangePasswordScreen(
                     password = uiState.oldPassword,
                     hint = stringResource(id = R.string.settings_account_edit_email_placeholder_password),
                     hasError = uiState.hasOldPasswordError,
+                    imeAction = ImeAction.Next,
                     focusManager = focusManager,
                     onInputChange = { vm.onOldPasswordChange(it) }
                 )
@@ -121,6 +123,7 @@ fun ChangePasswordScreen(
                     password = uiState.newPassword,
                     hint = stringResource(id = R.string.settings_account_edit_password_placeholder_password_new),
                     hasError = uiState.hasNewPasswordError,
+                    imeAction = ImeAction.Next,
                     focusManager = focusManager,
                     onInputChange = { vm.onNewPasswordChange(it) }
                 )

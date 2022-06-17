@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.models.Payload
@@ -173,29 +174,14 @@ fun GroupCreateScreen(
 
         Spacer(modifier = Modifier.size(40.dp))
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            value = groupName,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions {
-                focusManager.clearFocus()
-            },
-            placeholder = {
-                Text(
-                    stringResource(id = R.string.group_create_name_placeholder),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
-            onValueChange = { groupName = it.take(nameLengthLimit) },
-            shape = MaterialTheme.shapes.medium,
-            isError = state.hasError,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = MaterialTheme.colors.surface,
-                unfocusedBorderColor = MaterialTheme.colors.surface,
-            )
+        MainInputField(
+            text = groupName,
+            hint = stringResource(id = R.string.group_create_name_placeholder),
+            hasError = state.hasError,
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done,
+            focusManager = focusManager,
+            onInputChange = { groupName = it.take(nameLengthLimit) }
         )
 
         Spacer(modifier = Modifier.size(100.dp))

@@ -13,6 +13,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -28,6 +29,7 @@ fun PasswordInputField(
     password: String,
     hint: String,
     hasError: Boolean,
+    imeAction: ImeAction = ImeAction.Done,
     focusManager: FocusManager = LocalFocusManager.current,
     passwordHidden: MutableState<Boolean> = rememberSaveable { mutableStateOf(true) },
     onInputChange: (String) -> Unit,
@@ -40,11 +42,14 @@ fun PasswordInputField(
         value = password,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Done,
+            imeAction = imeAction,
             keyboardType = KeyboardType.Password
         ),
         keyboardActions = KeyboardActions {
-            focusManager.clearFocus()
+            if(imeAction == ImeAction.Next)
+                focusManager.moveFocus(FocusDirection.Next)
+            else
+                focusManager.clearFocus()
         },
         visualTransformation = if (passwordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
         placeholder = {

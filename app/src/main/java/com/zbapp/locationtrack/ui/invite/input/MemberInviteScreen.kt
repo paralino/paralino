@@ -6,8 +6,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -22,17 +20,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.zbapp.core.presentation.dashboard.GroupItemData
 import com.zbapp.core.presentation.invite.input.MemberInviteScreenEvent
 import com.zbapp.core.presentation.invite.input.MemberInviteScreenState
 import com.zbapp.locationtrack.R
 import com.zbapp.locationtrack.ui.MainAppState
-import com.zbapp.locationtrack.ui.components.AppButtonState
-import com.zbapp.locationtrack.ui.components.BottomSheetsScreen
-import com.zbapp.locationtrack.ui.components.FilledButton
-import com.zbapp.locationtrack.ui.components.ImageModelImage
+import com.zbapp.locationtrack.ui.components.*
 import com.zbapp.locationtrack.ui.groups.GroupListItem
 import com.zbapp.locationtrack.ui.settings.SettingsSectionHeader
 import com.zbapp.locationtrack.ui.shared.errorString
@@ -151,29 +146,14 @@ fun MemberInviteScreen(
             SettingsSectionHeader(name = stringResource(id = R.string.invite_section_title_user))
         }
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            value = state.code,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions {
-                focusManager.clearFocus()
-            },
-            placeholder = {
-                Text(
-                    stringResource(id = R.string.invite_connect_code_placeholder),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
-            onValueChange = onCodeChange,
-            shape = MaterialTheme.shapes.medium,
-            isError = state.hasInputError,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = MaterialTheme.colors.surface,
-                unfocusedBorderColor = MaterialTheme.colors.surface,
-            )
+        MainInputField(
+            text = state.code,
+            hint = stringResource(id = R.string.invite_connect_code_placeholder),
+            hasError = state.hasInputError,
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done,
+            focusManager = focusManager,
+            onInputChange = onCodeChange
         )
 
         when (state) {
