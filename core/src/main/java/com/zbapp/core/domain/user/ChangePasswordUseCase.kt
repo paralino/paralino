@@ -3,6 +3,7 @@ package com.zbapp.core.domain.user
 import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.core.utils.exceptions.DecryptionException
 import com.zbapp.core.utils.exceptions.MissingUserKeyException
 import com.zbapp.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
@@ -24,18 +25,22 @@ class ChangePasswordUseCase(
 
         val userId = userRepo.cachedUserId
 
-        return flow<Unit> {
+        return flow {
 
-            val oldKey = userKeyRepository.getLocalRawKey() ?: throw MissingUserKeyException(
-                localCache = false)
+            val oldKey = userKeyRepository.getLocalRawKey()
+                ?: throw MissingUserKeyException(localCache = false)
 
             // re-encrypt current key with new password
-            val newEncryptedKey = cryptoCore.reEncryptSymmetricKey(
-                oldBackupPassword = derivedOldPassword.backupPassword,
-                newBackupPassword = derivedNewPassword.backupPassword,
-                userId = userId,
-                encryptedKey = oldKey.encryptedSymmetricKey
-            )
+            val newEncryptedKey = try {
+                cryptoCore.reEncryptSymmetricKey(
+                    oldBackupPassword = derivedOldPassword.backupPassword,
+                    newBackupPassword = derivedNewPassword.backupPassword,
+                    userId = userId,
+                    encryptedKey = oldKey.encryptedSymmetricKey
+                )
+            } catch (e: Exception) {
+                throw DecryptionException("Can't change encryption key", e)
+            }
 
             // change version
             val newKey = oldKey.copy(

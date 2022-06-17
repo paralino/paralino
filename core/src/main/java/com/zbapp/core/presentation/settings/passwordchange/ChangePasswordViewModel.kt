@@ -4,6 +4,7 @@ import com.zbapp.core.domain.user.ChangePasswordUseCase
 import com.zbapp.core.models.Payload
 import com.zbapp.core.presentation.CoreViewModel
 import com.zbapp.core.presentation.common.FormValidation
+import com.zbapp.core.utils.exceptions.DecryptionException
 import com.zbapp.core.utils.exceptions.InvalidRequestException
 import com.zbapp.core.utils.exceptions.UnauthorizedException
 import com.zbapp.core.utils.exceptions.asRemoteException
@@ -63,8 +64,10 @@ class ChangePasswordViewModel(
                         is Payload.Error -> {
                             _uiState.update { it.copy(actionLoading = null) }
                             if (result.exception.asRemoteException() is InvalidRequestException) {
-                                _eventChannel.send(ChangePasswordScreenEvent.RemotePasswordError)
+                                _eventChannel.send(ChangePasswordScreenEvent.CredentialsError)
                             } else if (result.exception.asRemoteException() is UnauthorizedException) {
+                                _eventChannel.send(ChangePasswordScreenEvent.CredentialsError)
+                            } else if (result.exception is DecryptionException) {
                                 _eventChannel.send(ChangePasswordScreenEvent.CredentialsError)
                             } else {
                                 _eventChannel.send(ChangePasswordScreenEvent.Error(result.exception))

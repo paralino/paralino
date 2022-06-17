@@ -21,6 +21,7 @@ class LoginUseCase constructor(
     val cryptoCore: CryptoCore,
     val userKeyRepository: CryptoUserKeyRepository,
     val keyMapper: UserKeyMapperCore,
+    val logoutUseCase: LogoutUseCase,
 ) {
 
     fun login(email: String, password: String): Flow<SignUpStep> {
@@ -48,7 +49,7 @@ class LoginUseCase constructor(
                 delay(500)
                 val keys = userKeyRepository.getRemoteKeys()
 
-                val correctPersonalKey = keys.firstNotNullOfOrNull {
+                val correctPersonalKey = keys.reversed().firstNotNullOfOrNull {
                     try {
                         // try getting correct keys from encrypted data that matches password
                         val personalKeyData = cryptoCore.signIn(
@@ -119,8 +120,11 @@ class LoginUseCase constructor(
 
             emit(SignUpStep.SAVE_USER)
             try {
+                // TODO if data can not be decrypted user will not be save
+                // same situation as if key is missing above
                 userRepo.initLocallyAfterSignUp(user, session)
             } catch (e: Exception) {
+                logoutUseCase.logoutLocally()
                 throw SignUpStepException(SignUpStep.SAVE_USER, e)
             }
 

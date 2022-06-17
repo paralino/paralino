@@ -52,7 +52,7 @@ val locationModules = module {
 }
 
 val coreModule = module {
-    factory { LoginUseCase(get(), get(), get(), get()) }
+    factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
     factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
