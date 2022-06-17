@@ -19,6 +19,7 @@ import com.zbapp.locationtrack.ui.login.LoginViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsViewModel
 import com.zbapp.locationtrack.ui.settings.emailchange.ChangeEmailViewModel
+import com.zbapp.locationtrack.ui.settings.passwordchange.ChangePasswordViewModel
 import com.zbapp.locationtrack.ui.share.SharingViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -37,11 +38,10 @@ val viewModelModules = module {
     viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get()) }
     viewModel { MainViewModel(get(), get()) }
     viewModel { ChangeEmailViewModel(get(), get()) }
+    viewModel { ChangePasswordViewModel(get()) }
 }
 
 val utilModule = module {
-    factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
-    factory { ChangeEmailUseCase(get(), get()) }
     single { PreCheckControl(get()) }
     single { UserSessionMonitor() }
 }
@@ -52,8 +52,12 @@ val locationModules = module {
 }
 
 val coreModule = module {
-    single { LoginUseCase(get(), get(), get(), get()) }
-    single { CreateAccountUseCase(get(), get(), get(), get()) }
+    factory { LoginUseCase(get(), get(), get(), get()) }
+    factory { CreateAccountUseCase(get(), get(), get(), get()) }
+    factory { ChangePasswordUseCase(get(), get(), get()) }
+    factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
+    factory { ChangeEmailUseCase(get(), get()) }
+
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get(), get()) }
     single { GroupRepository(get(), get(), get(), get(), get(), get()) }
