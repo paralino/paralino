@@ -160,6 +160,22 @@ fun LoginScreen(
                 )
             }
 
+//            Spacer(modifier = Modifier.size(8.dp))
+
+            AnimatedVisibility(
+                visible = uiState.uiType == LoginScreenUiType.SIGNUP,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                PasswordInputField(
+                    modifier = Modifier.padding(top = 8.dp),
+                    password = uiState.passwordConfirm,
+                    hint = stringResource(id = R.string.login_placeholder_password_confirm),
+                    hasError = uiState.hasPasswordConfirmError,
+                    focusManager = focusManager,
+                    onInputChange = { vm.onPasswordConfirmChange(it) }
+                )
+            }
+
             AnimatedVisibility(
                 visible = uiState.uiType == LoginScreenUiType.LOGIN,
                 modifier = Modifier.align(Alignment.End)

@@ -4,14 +4,16 @@ import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.common.FormValidationResult
 import com.zbapp.core.utils.Emojis
 
-data class LoginScreenState(
+data class LoginScreenState constructor(
     val email: String = "",
     val password: String = "",
+    val passwordConfirm: String = "",
     val userName: String = "",
     val userImage: ImageModel = ImageModel.emoji(Emojis.robot),
     val hasNameError: Boolean = false,
     val hasEmailError: Boolean = false,
     val hasPasswordError: Boolean = false,
+    val hasPasswordConfirmError: Boolean = false,
     val uiType: LoginScreenUiType = LoginScreenUiType.SIGNUP,
     val actionLoading: Boolean = false,
     val stepInfo: SignUpStepInfo? = null,

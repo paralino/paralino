@@ -28,4 +28,5 @@ class LoginViewModel(
     fun onUserImageChange(image: ImageModel) = coreVm.onUserImageChange(image)
     fun onEmailChange(email: String) = coreVm.onEmailChange(email)
     fun onPasswordChange(password: String) = coreVm.onPasswordChange(password)
+    fun onPasswordConfirmChange(password: String) = coreVm.onPasswordConfirmChange(password)
 }

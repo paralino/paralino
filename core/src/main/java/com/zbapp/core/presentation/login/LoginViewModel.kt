@@ -68,15 +68,18 @@ class LoginViewModel(
     private fun signUp() {
         val email = _uiState.value.email
         val password = _uiState.value.password
+        val passwordConfirm = _uiState.value.passwordConfirm
         val name = _uiState.value.userName
 
         val emailValidation = FormValidation.Email.validate(email)
         val passwordValidation = FormValidation.Password.validate(password)
+        val passwordConfirmValidation = FormValidation.PasswordConfirm.validate(password, passwordConfirm)
         val userNameValidation = FormValidation.TextNotEmpty.validate(name)
 
         _uiState.update {
             it.copy(
                 hasPasswordError = !passwordValidation.result,
+                hasPasswordConfirmError = !passwordConfirmValidation.result,
                 hasEmailError = !emailValidation.result,
                 hasNameError = !userNameValidation.result
             )
@@ -93,6 +96,10 @@ class LoginViewModel(
         } else if (!passwordValidation.result) {
             coroutineScope.launch {
                 _eventChannel.send(LoginScreenEvent.ValidationError(passwordValidation))
+            }
+        } else if (!passwordConfirmValidation.result) {
+            coroutineScope.launch {
+                _eventChannel.send(LoginScreenEvent.ValidationError(passwordConfirmValidation))
             }
         } else {
             createAccountUseCase.signUp(
@@ -222,7 +229,7 @@ class LoginViewModel(
 
     private fun resetValidationState() {
         _uiState.update {
-            it.copy(hasEmailError = false, hasPasswordError = false, hasNameError = false)
+            it.copy(hasEmailError = false, hasPasswordError = false, hasPasswordConfirmError = false, hasNameError = false)
         }
     }
 
@@ -280,6 +287,11 @@ class LoginViewModel(
     fun onPasswordChange(password: String) {
         if (_uiState.value.actionLoading) return
         _uiState.update { it.copy(password = password, hasPasswordError = false, stepInfo = null) }
+    }
+
+    fun onPasswordConfirmChange(password: String) {
+        if (_uiState.value.actionLoading) return
+        _uiState.update { it.copy(passwordConfirm = password, hasPasswordConfirmError = false, stepInfo = null) }
     }
 
 }
