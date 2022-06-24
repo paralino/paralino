@@ -1,0 +1,83 @@
+package com.zbapp.locationtrack.ui.login.profilesetup
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.zbapp.core.models.base.ImageModel
+import com.zbapp.core.presentation.settings.editprofile.EditProfileScreenEvent
+import com.zbapp.core.presentation.settings.editprofile.EditProfileScreenState
+import com.zbapp.locationtrack.R
+import com.zbapp.locationtrack.ui.MainAppState
+import com.zbapp.locationtrack.ui.components.BottomSheetsScreen
+import com.zbapp.locationtrack.ui.settings.SettingsBigHeader
+import com.zbapp.locationtrack.ui.settings.editprofile.EditProfileScreen
+import com.zbapp.locationtrack.ui.settings.editprofile.EditProfileViewModel
+import com.zbapp.locationtrack.ui.shared.errorString
+import com.zbapp.locationtrack.ui.shared.getFormValidationErrorText
+import com.zbapp.locationtrack.utils.extensions.safeCast
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
+
+@Composable
+fun ProfileSetupScreen(
+    appState: MainAppState,
+    vm: EditProfileViewModel = getViewModel(),
+) {
+
+    val uiState by vm.uiState.collectAsState(initial = EditProfileScreenState())
+
+    val context = LocalContext.current
+    LaunchedEffect(key1 = context) {
+        vm.events.collectLatest { event ->
+            when (event) {
+                is EditProfileScreenEvent.Error -> {
+                    appState.showSnackbar(event.error.errorString(context))
+                }
+                is EditProfileScreenEvent.ValidationError -> {
+                    val errorText = getFormValidationErrorText(
+                        context = context,
+                        validation = event.validationResult.type
+                    )
+                    appState.showSnackbar(errorText)
+                }
+                EditProfileScreenEvent.ProfileUpdated -> {
+//                    appState.navController.popBackStack()
+                }
+                null -> {
+                    /* do nothing */
+                }
+            }
+        }
+    }
+
+    Column() {
+        SettingsBigHeader(
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .padding(top = 20.dp),
+            name = stringResource(id = R.string.welcome_account_edit_profile)
+        )
+        EditProfileScreen(
+            state = uiState,
+            onImageClick = {
+                appState.uiScope.launch {
+                    appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
+                        .safeCast<ImageModel>()?.let {
+                            vm.onImageChange(it)
+                        }
+                }
+            },
+            onNameChange = { vm.onNameChange(it) },
+            onCreateGroupClick = { vm.proceed() }
+        )
+    }
+
+}

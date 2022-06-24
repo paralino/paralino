@@ -119,12 +119,12 @@ fun EditProfileScreen(
             ) {
                 focusManager.clearFocus()
             }
-            .padding(40.dp),
+            .padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.size(100.dp))
+        Spacer(modifier = Modifier.fillMaxHeight(1f))
 
         Box(
             modifier = Modifier.size(100.dp),
@@ -140,7 +140,7 @@ fun EditProfileScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(40.dp))
+        Spacer(modifier = Modifier.size(20.dp))
 
         MainInputField(
             text = state.name,
@@ -152,7 +152,7 @@ fun EditProfileScreen(
             onInputChange = onNameChange
         )
 
-        Spacer(modifier = Modifier.size(100.dp))
+        Spacer(modifier = Modifier.size(80.dp))
 
         FilledButton(
             style = ButtonStyle.BIG,
@@ -168,5 +168,7 @@ fun EditProfileScreen(
         ) {
             Text(text = stringResource(id = R.string.button_save))
         }
+
+        Spacer(modifier = Modifier.fillMaxHeight(1f))
     }
 }
