@@ -15,6 +15,7 @@ import com.zbapp.locationtrack.ui.invite.manage.PersonalCodeScreen
 import com.zbapp.locationtrack.ui.login.LoggedOutScreen
 import com.zbapp.locationtrack.ui.login.LoginScreen
 import com.zbapp.locationtrack.ui.login.ProfileSetupScreen
+import com.zbapp.locationtrack.ui.login.recover.RecoverKeysScreen
 import com.zbapp.locationtrack.ui.map.MapHomeScreen
 import com.zbapp.locationtrack.ui.settings.AccountScreen
 import com.zbapp.locationtrack.ui.settings.SettingsScreen
@@ -128,6 +129,9 @@ fun NavGraphBuilder.loggedOutGraph(
         }
         composable(AppScreen.AppStartRoot.ProfileSetup.routeSignature) {
             ProfileSetupScreen(appState)
+        }
+        composable(AppScreen.AppStartRoot.AccountRecovery.routeSignature) {
+            RecoverKeysScreen(appState)
         }
     }
 }

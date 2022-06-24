@@ -76,12 +76,27 @@ fun RootApp(
                 }
 
                 when (state.data) {
-                    AppAccountState.ACCOUNT_RESET -> TODO()
-                    AppAccountState.NO_PROFILE -> AppStartScreen(appState,
-                        start = AppScreen.AppStartRoot.ProfileSetup)
-                    AppAccountState.NO_USER -> AppStartScreen(appState,
-                        start = AppScreen.AppStartRoot.Welcome)
-                    AppAccountState.USER_READY -> MainAppScreen(appState)
+                    AppAccountState.ACCOUNT_RESET -> {
+                        AppStartScreen(
+                            appState = appState,
+                            start = AppScreen.AppStartRoot.AccountRecovery
+                        )
+                    }
+                    AppAccountState.NO_PROFILE -> {
+                        AppStartScreen(
+                            appState = appState,
+                            start = AppScreen.AppStartRoot.ProfileSetup
+                        )
+                    }
+                    AppAccountState.NO_USER -> {
+                        AppStartScreen(
+                            appState = appState,
+                            start = AppScreen.AppStartRoot.Welcome
+                        )
+                    }
+                    AppAccountState.USER_READY -> {
+                        MainAppScreen(appState)
+                    }
                 }
             }
         }

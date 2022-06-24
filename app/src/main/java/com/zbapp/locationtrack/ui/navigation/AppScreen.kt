@@ -21,6 +21,9 @@ sealed class AppScreen {
         object ProfileSetup : AppScreen() {
             override val routeSignature: String = "setup-profile"
         }
+        object AccountRecovery : AppScreen() {
+            override val routeSignature: String = "recover-account"
+        }
     }
 
     object DashboardRoot : AppScreen() {
