@@ -227,4 +227,7 @@
 
     <string name="welcome_account_edit_profile">Complete your profile</string>
 
+    <string name="recover_account_alert_message_reset">Resetting your account will delete all your data!</string>
+    <string name="recover_account_alert_message_recover">Update and recover account?</string>
+
 </resources>
