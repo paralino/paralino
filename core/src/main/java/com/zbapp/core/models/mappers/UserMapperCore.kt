@@ -35,7 +35,7 @@ class UserMapperCore(
         val userKey = userKeyRepo.personalKey.content
         return UserMeDataRaw(
             userImage = model.userImage?.image?.let { cryptoCore.encryptDataWithKey(it, userKey) },
-            userName = model.userName.let { cryptoCore.encryptDataWithKey(it, userKey) }
+            userName = model.userName.takeIf { it.isNotBlank() }?.let { cryptoCore.encryptDataWithKey(it, userKey) }
         )
     }
 

@@ -15,6 +15,8 @@ data class UserMe constructor(
 ) {
 
     val name: String get() = data?.userName ?: ""
+
+    val hasValidData: Boolean get() = !data?.userName.isNullOrBlank() && data?.userImage?.takeIfValid() != null
 }
 
 @Serializable

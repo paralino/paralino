@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.zbapp.core.domain.user.UserSessionMonitor
 import com.zbapp.core.models.Resource
 import com.zbapp.core.models.data
+import com.zbapp.core.presentation.common.AppAccountState
 import com.zbapp.core.repo.user.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -15,13 +16,26 @@ class MainViewModel(
 
     val sessionExpiredFlow = sessionMonitor.listenForSessionExpired()
 
-    private var oldUserState: Resource<Boolean> = Resource.NotInitialized
-    val userState: Flow<Resource<Boolean>> = userRepo.localUser
+    private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
+    val userState: Flow<Resource<AppAccountState>> = userRepo.localUser
         .onStart { emit(Resource.NotInitialized) }
         .map {
             when (it) {
-                Resource.NotInitialized -> Resource.NotInitialized
-                is Resource.Ready -> Resource.Ready(data = it.data != null)
+                Resource.NotInitialized -> {
+                    Resource.NotInitialized
+                }
+                is Resource.Ready -> {
+                    val user = it.data
+                    when {
+                        user == null -> Resource.Ready(data = AppAccountState.NO_USER)
+                        !user.hasValidData -> {
+                            Resource.Ready(data = AppAccountState.NO_PROFILE)
+                        }
+                        else -> {
+                            Resource.Ready(data = AppAccountState.USER_READY)
+                        }
+                    }
+                }
             }
         }
         .conflate()
@@ -29,9 +43,9 @@ class MainViewModel(
             // TODO replace with better approach
             // now we are delaying when user state changes from true to false
             // so in case of login, navigation is delayed a bit
-            val wasUserNull = oldUserState.data == false
+            val wasUserNull = oldUserState.data is AppAccountState.NO_USER
             oldUserState = it
-            if (wasUserNull && it.data == true) {
+            if (wasUserNull && it.data is AppAccountState.USER_READY) {
                 delay(500)
             }
         }

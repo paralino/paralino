@@ -21,6 +21,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.zbapp.core.models.Resource
+import com.zbapp.core.presentation.common.AppAccountState
 import com.zbapp.locationtrack.ui.components.AppSnackbar
 import com.zbapp.locationtrack.ui.components.MainAlertDialog
 import com.zbapp.locationtrack.ui.components.SheetContent
@@ -74,10 +75,13 @@ fun RootApp(
                     else -> {}
                 }
 
-                if (state.data) {
-                    MainAppScreen(appState)
-                } else {
-                    AppStartScreen(appState)
+                when (state.data) {
+                    AppAccountState.ACCOUNT_RESET -> TODO()
+                    AppAccountState.NO_PROFILE -> AppStartScreen(appState,
+                        start = AppScreen.AppStartRoot.ProfileSetup)
+                    AppAccountState.NO_USER -> AppStartScreen(appState,
+                        start = AppScreen.AppStartRoot.Welcome)
+                    AppAccountState.USER_READY -> MainAppScreen(appState)
                 }
             }
         }
@@ -118,7 +122,10 @@ fun RootAppScreen(
 }
 
 @Composable
-fun AppStartScreen(appState: MainAppState) {
+fun AppStartScreen(
+    appState: MainAppState,
+    start: AppScreen,
+) {
     RootAppScreen(appState) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -130,7 +137,7 @@ fun AppStartScreen(appState: MainAppState) {
                 startDestination = AppScreen.AppStartRoot.routeSignature,
                 modifier = Modifier.padding(innerPadding)
             ) {
-                loggedOutGraph(appState)
+                loggedOutGraph(appState, start = start)
             }
         }
     }
