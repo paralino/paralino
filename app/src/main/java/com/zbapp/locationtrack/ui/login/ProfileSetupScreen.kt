@@ -1,4 +1,4 @@
-package com.zbapp.locationtrack.ui.login.profilesetup
+package com.zbapp.locationtrack.ui.login
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

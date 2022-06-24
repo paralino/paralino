@@ -14,7 +14,7 @@ import com.zbapp.locationtrack.ui.invite.input.MemberInviteScreen
 import com.zbapp.locationtrack.ui.invite.manage.PersonalCodeScreen
 import com.zbapp.locationtrack.ui.login.LoggedOutScreen
 import com.zbapp.locationtrack.ui.login.LoginScreen
-import com.zbapp.locationtrack.ui.login.profilesetup.ProfileSetupScreen
+import com.zbapp.locationtrack.ui.login.ProfileSetupScreen
 import com.zbapp.locationtrack.ui.map.MapHomeScreen
 import com.zbapp.locationtrack.ui.settings.AccountScreen
 import com.zbapp.locationtrack.ui.settings.SettingsScreen
