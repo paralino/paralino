@@ -112,6 +112,7 @@
     <string name="login_placeholder_email">Email*</string>
     <string name="login_placeholder_email_username">Email*</string>
     <string name="login_placeholder_password">Password*</string>
+    <string name="login_placeholder_password_old">Old password*</string>
     <string name="login_placeholder_password_confirm">Confirm password*</string>
     <string name="login_signup_switch_button_login">Already have an account? Log in!</string>
     <string name="login_signup_switch_button_signup">or CREATE ACCOUNT</string>
@@ -227,6 +228,10 @@
 
     <string name="welcome_account_edit_profile">Complete your profile</string>
 
+    <string name="recover_account_screen_title">Account recovery</string>
+    <string name="recover_account_button_recover">Update my key</string>
+    <string name="recover_account_button_reset">RESET ACCOUNT</string>
+    <string name="recover_account_button_check">Check password</string>
     <string name="recover_account_alert_message_reset">Resetting your account will delete all your data!</string>
     <string name="recover_account_alert_message_recover">Update and recover account?</string>
 
