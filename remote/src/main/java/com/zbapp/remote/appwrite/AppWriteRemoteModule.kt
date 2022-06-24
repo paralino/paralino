@@ -48,9 +48,12 @@ class AppWriteRemoteModule(
             return action(this)
         } catch (e: Exception) {
             throw mapException(e).also {
-                if (it is UnauthorizedException && it.type == "general_unauthorized_scope") {
-                    // user session is invalid
-                    sessionMonitor.updateSessionState(sessionValid = false)
+                when((it as? UnauthorizedException)?.type) {
+                    "general_unauthorized_scope", "user_blocked" -> {
+                        // user session is invalid
+                        sessionMonitor.updateSessionState(sessionValid = false)
+                    }
+                    else -> {}
                 }
             }
         }
