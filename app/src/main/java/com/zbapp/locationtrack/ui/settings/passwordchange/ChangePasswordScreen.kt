@@ -138,7 +138,7 @@ fun ChangePasswordScreen(
                     onInputChange = { vm.onConfirmPasswordChange(it) }
                 )
 
-                Spacer(modifier = Modifier.size(40.dp))
+                Spacer(modifier = Modifier.size(80.dp))
 
                 FilledButton(
                     style = ButtonStyle.BIG,

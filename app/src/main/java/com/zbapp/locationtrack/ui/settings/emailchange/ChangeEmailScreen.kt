@@ -129,7 +129,7 @@ fun ChangeEmailScreen(
                     onInputChange = { vm.onPasswordChange(it) }
                 )
 
-                Spacer(modifier = Modifier.size(40.dp))
+                Spacer(modifier = Modifier.size(80.dp))
 
                 FilledButton(
                     style = ButtonStyle.BIG,

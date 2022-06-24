@@ -147,12 +147,12 @@ fun GroupCreateScreen(
             ) {
                 focusManager.clearFocus()
             }
-            .padding(40.dp),
+            .padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.size(100.dp))
+        Spacer(modifier = Modifier.fillMaxHeight(1f))
 
         Box(
             modifier = Modifier.size(100.dp),
@@ -169,7 +169,7 @@ fun GroupCreateScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(40.dp))
+        Spacer(modifier = Modifier.size(20.dp))
 
         MainInputField(
             text = groupName,
@@ -181,7 +181,7 @@ fun GroupCreateScreen(
             onInputChange = { groupName = it.take(nameLengthLimit) }
         )
 
-        Spacer(modifier = Modifier.size(100.dp))
+        Spacer(modifier = Modifier.size(80.dp))
 
         FilledButton(
             style = ButtonStyle.BIG,
@@ -198,6 +198,8 @@ fun GroupCreateScreen(
                 Text(text = stringResource(id = R.string.button_save))
             }
         }
+
+        Spacer(modifier = Modifier.fillMaxHeight(1f))
     }
 }
 

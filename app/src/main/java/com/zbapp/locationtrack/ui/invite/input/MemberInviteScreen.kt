@@ -44,7 +44,7 @@ fun MemberInviteScreen(
     appState: MainAppState,
     groupId: String?,
     code: String?,
-    vm: MemberInviteViewModel = getViewModel { parametersOf(groupId, code) },
+    vm: MemberInviteViewModel = getViewModel { parametersOf(null, code) },
 ) {
 
     val state by vm.uiState.collectAsState(initial = MemberInviteScreenState.Empty())
@@ -158,7 +158,7 @@ fun MemberInviteScreen(
 
         when (state) {
             is MemberInviteScreenState.Empty -> {
-                Spacer(modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.size(40.dp))
                 FilledButton(
                     style = ButtonStyle.BIG,
                     state = AppButtonState.loadingStateWithCheck(state.actionLoading),
@@ -187,10 +187,10 @@ fun MemberInviteScreen(
                 }
 
                 if (state.group == null && state.canChangeGroup) {
-                    Spacer(modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.size(40.dp))
                     FilledButton(
                         modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
-                        style = ButtonStyle.SMALL_ACTION,
+                        style = ButtonStyle.SMALL,
                         icon = Icons.Rounded.Group,
                         onClick = onPickGroup
                     ) {
