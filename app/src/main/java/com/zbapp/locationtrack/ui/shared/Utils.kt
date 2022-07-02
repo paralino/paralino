@@ -38,6 +38,7 @@ fun Throwable?.errorString(resources: Resources): String {
             when (error) {
                 is MissingGroupKeyException -> resources.getString(R.string.error_crypto_key_missing, "group")
                 is MissingMemberKeyException -> resources.getString(R.string.error_crypto_key_missing, "member")
+                is MissingUserKeyException -> resources.getString(R.string.error_crypto_key_missing_user)
                 else -> resources.getString(R.string.error_crypto_key_missing, "-")
             }
         }

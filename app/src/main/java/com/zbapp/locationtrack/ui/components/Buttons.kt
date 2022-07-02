@@ -3,10 +3,7 @@ package com.zbapp.locationtrack.ui.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.runtime.*
@@ -22,10 +19,11 @@ import kotlinx.coroutines.delay
 fun FilledButton(
     modifier: Modifier = Modifier,
     style: ButtonStyle,
-    icon: ImageVector? = null,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    icon : ImageVector ? = null,
     state: AppButtonState = AppButtonState.CONTENT,
     onClick: () -> Unit,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) {
     var buttonState by remember { mutableStateOf(AppButtonState.CONTENT) }
     val oldState = buttonState
@@ -56,6 +54,7 @@ fun FilledButton(
     Button(
         modifier = style.defaultModifier.then(modifier),
         contentPadding = style.paddingValues,
+        colors = colors,
         shape = style.shape,
         onClick = {
             if (buttonState == AppButtonState.CONTENT)
