@@ -2,12 +2,13 @@ package com.zbapp.core.domain.user
 
 import com.zbapp.core.crypto.group.CryptoKEKRepository
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
+import com.zbapp.core.models.raw.UserCryptoKeyRaw
 import com.zbapp.core.repo.group.GroupRepository
 import com.zbapp.core.repo.location.LocationRepository
 import com.zbapp.core.repo.personal_code.PersonalCodesRepository
 import com.zbapp.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onEach
 
 class LogoutUseCase(
@@ -19,32 +20,48 @@ class LogoutUseCase(
     private val codeRepo: PersonalCodesRepository,
 ) {
 
-    fun logout(): Flow<Boolean> {
-        return userRepo.logout()
-            .map { true }
+    fun logout(): Flow<Unit> {
+        return userRepo.remoteLogout()
+            .catch { emit(Unit) }
             .onEach {
-                clearResources()
+                logoutLocally()
             }
     }
 
-    fun deleteAccount(): Flow<Boolean> {
+    fun deleteAccount(logoutOnError: Boolean = false): Flow<Unit> {
         return userRepo.deleteAccount()
-            .map { true }
+            .catch {
+                if (logoutOnError)
+                    emit(Unit)
+                else throw it
+            }
             .onEach {
-                clearResources()
+                logoutLocally()
+            }
+    }
+
+    fun resetAccount(keyToPersist: UserCryptoKeyRaw?, logoutOnError: Boolean = false): Flow<Unit> {
+        return userRepo.resetAccount(keyToPersist)
+            .catch {
+                if (logoutOnError)
+                    emit(Unit)
+                else throw it
+            }
+            .onEach {
+                logoutLocally()
             }
     }
 
     suspend fun logoutLocally() {
-        userRepo.logoutLocally()
         clearResources()
+        userRepo.logoutLocally()
     }
 
     private suspend fun clearResources() {
+        userKeyRepo.clearAll()
+        cryptoKEKRepo.clearKeys()
         groupsRepo.clear()
         locationRepo.clear()
-        cryptoKEKRepo.clearKeys()
-        userKeyRepo.clearAll()
         codeRepo.clearLocally()
     }
 

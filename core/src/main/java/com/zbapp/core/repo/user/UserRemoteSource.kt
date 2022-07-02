@@ -4,12 +4,15 @@ import com.zbapp.core.models.BackendConfig
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.mappers.UserMapperCore
+import com.zbapp.core.models.raw.UserCryptoKeyRaw
 import com.zbapp.core.models.user.UserMeData
 import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.repo.api.IFunctionsApi
 import com.zbapp.core.repo.api.IUserApi
+import com.zbapp.core.utils.BaseRemoteModule
 import com.zbapp.core.utils.exceptions.BaseRemoteException
 import com.zbapp.core.utils.extensions.blocking
+import kotlinx.serialization.encodeToString
 
 class UserRemoteSource constructor(
     private val api: IUserApi,
@@ -18,16 +21,15 @@ class UserRemoteSource constructor(
     private val userMapper: UserMapperCore
 ) {
 
-    suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
-        return api.signUp(userName, email, password)
+    suspend fun signUp(email: String, password: String): UserMeRaw {
+        return api.signUp(userName = null, email, password)
     }
 
     suspend fun signUpAndCreateSession(
-        userName: String?,
         email: String,
         password: String
     ): Pair<UserMeRaw, UserSession> {
-        return signUp(userName, email, password).let {
+        return signUp(email, password).let {
             it to login(email, password)
         }
     }
@@ -72,6 +74,24 @@ class UserRemoteSource constructor(
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to delete user",
+                    Exception(data.stderr)
+                )
+            }
+        }
+    }
+
+    suspend fun resetAccount(keyToPersist: UserCryptoKeyRaw?) {
+        blocking {
+            val data = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionResetAccount,
+                data = keyToPersist?.let { BaseRemoteModule.formatter.encodeToString(it) }
+            )
+
+            if (!data.isSuccess) {
+                // TODO throw better exception
+                throw BaseRemoteException.fromCode(
+                    null,
+                    "Unable to reset user",
                     Exception(data.stderr)
                 )
             }

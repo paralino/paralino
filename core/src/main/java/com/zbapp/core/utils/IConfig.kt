@@ -6,6 +6,7 @@ interface IConfig {
     var email: String
     var userId: String
     var emailConfirmed: Boolean
+    var temporaryBackupPassword: String
 
     val isTokenValid: Boolean
         get() = token.isNotBlank()

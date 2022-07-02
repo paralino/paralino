@@ -25,5 +25,6 @@ object BackendResourceIDs {
     const val functionUpdateGroupKeysID: String = "group_keys_update"
     const val functionUpdateGroupMemberKeysID: String = "group_member_keys_update"
     const val functionLocationUpdateID: String = "location_update"
-    const val functionDeleteAccountAndData: String = "user_data_delete"
+    const val functionDeleteAccountAndData: String = "user_account_delete"
+    const val functionResetAccount: String = "user_account_reset"
 }

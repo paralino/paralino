@@ -77,7 +77,7 @@ val cryptoModule = module {
 }
 
 val mappersModule = module {
-    single { UserMapperLocal(get(), get(), get()) }
+    single { UserMapperLocal(get()) }
     single { UserMapperCore(get(), get()) }
     single { SharingContractsMapper }
     single { GroupsMapperLocal(get()) }

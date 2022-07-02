@@ -2,11 +2,13 @@ package com.zbapp.core.repo.user
 
 import com.zbapp.core.ICoroutineScopeProvider
 import com.zbapp.core.config
+import com.zbapp.core.crypto.user.CryptoUserKeyRepository
 import com.zbapp.core.domain.user.UserSessionMonitor
 import com.zbapp.core.logg
 import com.zbapp.core.models.Resource
-import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.models.data
+import com.zbapp.core.models.mappers.UserMapperCore
+import com.zbapp.core.models.raw.UserCryptoKeyRaw
 import com.zbapp.core.models.raw.UserMeDataRaw
 import com.zbapp.core.models.raw.UserMeRaw
 import com.zbapp.core.models.user.UserMe
@@ -24,12 +26,34 @@ class UserRepository constructor(
     private val local: IUserLocalDataSource,
     private val remote: UserRemoteSource,
     private val sessionMonitor: UserSessionMonitor,
+    private val userKeyRepo: CryptoUserKeyRepository,
+    private val userMapper: UserMapperCore,
 ) : BaseRepository() {
 
     val cachedUserId: String get() = config.userId
 
-    val localUser: StateFlow<Resource<UserMe?>> = local.getMe()
-        .map<UserMe?, Resource<UserMe?>> { Resource.Ready(it) }
+    val localUser: StateFlow<Resource<UserMe?>> = combine(
+        local.getMeRaw(),
+        userKeyRepo.userKeyState()
+    ) { user, keyState ->
+        if (!keyState) {
+            Resource.NotInitialized
+        } else {
+            try {
+                Resource.Ready(user?.let { userMapper.remote2Core(it) })
+            } catch (e: Exception) {
+                Resource.NotInitialized
+            }
+        }
+    }
+        .stateIn(
+            scope = scopeProvider.defaultScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = Resource.NotInitialized
+        )
+
+    val localUserRaw: StateFlow<Resource<UserMeRaw?>> = local.getMeRaw()
+        .map<UserMeRaw?, Resource<UserMeRaw?>> { Resource.Ready(it) }
         .catch { emit(Resource.NotInitialized) }
         .stateIn(
             scope = scopeProvider.defaultScope,
@@ -39,19 +63,16 @@ class UserRepository constructor(
 
     val cachedUser: UserMe? get() = localUser.value.data
 
-    fun login(email: String, password: String): Flow<UserSession> {
-        return getDataOnce(
-            remote = { remote.login(email, password) },
-            localUpdate = { config.token = it.id }
-        )
+    suspend fun login(email: String, password: String): UserSession {
+        return triggerRemoteOnly { remote.login(email, password) }
+            .also { config.token = it.id }
     }
 
-    fun remoteSignUp(
-        userName: String?,
+    suspend fun remoteSignUp(
         email: String,
         password: String,
-    ): Flow<Pair<UserMeRaw, UserSession>> {
-        return getDataOnce { remote.signUpAndCreateSession(userName, email, password) }
+    ): Pair<UserMeRaw, UserSession> {
+        return triggerRemoteOnly { remote.signUpAndCreateSession(email, password) }
     }
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
@@ -69,32 +90,38 @@ class UserRepository constructor(
     }
 
     suspend fun changePassword(oldPassword: String, newPassword: String) {
-        triggerRemoteOnly { remote.changePassword(newPassword = newPassword, oldPassword = oldPassword) }
+        triggerRemoteOnly {
+            remote.changePassword(
+                newPassword = newPassword,
+                oldPassword = oldPassword
+            )
+        }
     }
 
-    fun getUserIfAvailable(): Flow<UserMeRaw> {
+    suspend fun getUserFromRemote(): UserMeRaw {
         if (!config.isTokenValid) {
-            return flow { throw Exception("Token is not available") }
+            throw Exception("Token is not available")
         }
 
-        return getDataOnce { remote.getMe() }
-            .catch {
-                if (it is UnauthorizedException) {
-                    logg.v("User session is not valid")
-                } else if (it is NotFoundException) {
-                    logg.v("User does not exist")
-                } else {
-                    if (it is UnverifiedUserException)
-                        config.emailConfirmed = false
-                    logg.e("Error refreshing user")
-                }
-                throw it
+        return try {
+            triggerRemoteOnly { remote.getMe() }
+        } catch (e: Exception) {
+            if (e is UnauthorizedException) {
+                logg.v("User session is not valid")
+            } else if (e is NotFoundException) {
+                logg.v("User does not exist")
+            } else {
+                if (e is UnverifiedUserException)
+                    config.emailConfirmed = false
+                logg.e("Error refreshing user")
             }
+            throw e
+        }
     }
 
-    fun refreshUserIfAvailable(): Flow<UserMeRaw> {
-        return getUserIfAvailable()
-            .onEach {
+    suspend fun refreshUserIfAvailable(): UserMeRaw {
+        return getUserFromRemote()
+            .also {
                 sessionMonitor.updateSessionState(sessionValid = true)
                 config.emailConfirmed = true
                 updateLocalUser(it)
@@ -107,8 +134,8 @@ class UserRepository constructor(
         local.update(data)
     }
 
-    fun uploadAndInitKeysAndData(data: UserMeDataRaw): Flow<UserMeRaw> {
-        return getDataOnce { remote.updateUserData(data.toPostJson()) }
+    suspend fun uploadAndInitKeysAndData(data: UserMeDataRaw): UserMeRaw {
+        return triggerRemoteOnly { remote.updateUserData(data.toPostJson()) }
     }
 
     fun updateUserData(data: UserMeData): Flow<Boolean> {
@@ -123,34 +150,20 @@ class UserRepository constructor(
         config.clear()
     }
 
-    fun logout(): Flow<Unit> {
-        return getDataOnce(
-            remote = { remote.logout() },
-            localUpdate = {
-                logoutLocally()
-            }
-        ).catch {
-            // TODO maybe always log user out? Even if offline or some other error happens, log out locally
-            // it will leave active session in the backend
-            if (it is UnauthorizedException) {
-                logoutLocally()
-                emit(Unit)
-            } else throw it
-        }
+    fun remoteLogout(): Flow<Unit> {
+        return getDataOnce { remote.logout() }
     }
 
     fun deleteAccount(): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.deleteAccount() },
-            localUpdate = {
-                logoutLocally()
-            }
-        ).catch {
-            if (it is UnauthorizedException) {
-                logoutLocally()
-                emit(Unit)
-            } else throw it
-        }
+            remote = { remote.deleteAccount() }
+        )
+    }
+
+    fun resetAccount(keyToPersist: UserCryptoKeyRaw?): Flow<Unit> {
+        return getDataOnce(
+            remote = { remote.resetAccount(keyToPersist) }
+        )
     }
 
 }

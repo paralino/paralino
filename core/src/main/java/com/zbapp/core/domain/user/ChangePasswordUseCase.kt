@@ -66,7 +66,6 @@ class ChangePasswordUseCase(
             try {
                 userKeyRepository.deleteKey(oldKey.id).first()
             } catch (e: Exception) {
-                // TODO review if it is good approach to leave old alive
                 // ignore if deleting fail, will be deleted on next login
             }
 

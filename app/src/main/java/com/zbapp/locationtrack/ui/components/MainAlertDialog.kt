@@ -313,4 +313,46 @@ sealed interface MainAlertDialog {
         }
     }
 
+    object RecoveryResetAccount : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.alert_title_confirm),
+                message = stringResource(id = R.string.recover_account_alert_message_reset),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.button_confirm)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
+    object RecoveryRecoverAccount : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.alert_title_confirm),
+                message = stringResource(id = R.string.recover_account_alert_message_recover),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.button_confirm)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
 }

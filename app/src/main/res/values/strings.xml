@@ -35,7 +35,7 @@
     <string name="error_location_service_missing_sheet_message">Please enable **device location** in order to successfully locate your device.</string>
 
     <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
-    <string name="error_crypto_key_missing_user">Your cryptographic keys are missing.</string>
+    <string name="error_crypto_key_missing_user">Your cryptographic keys are not properly configured.</string>
     <string name="error_crypto_encryption_generic">Unable to encrypt data, please try again.</string>
     <string name="error_crypto_decryption_generic">Unable to decrypt data, please try again.</string>
 
@@ -112,6 +112,7 @@
     <string name="login_placeholder_email">Email*</string>
     <string name="login_placeholder_email_username">Email*</string>
     <string name="login_placeholder_password">Password*</string>
+    <string name="login_placeholder_password_old">Old password*</string>
     <string name="login_placeholder_password_confirm">Confirm password*</string>
     <string name="login_signup_switch_button_login">Already have an account? Log in!</string>
     <string name="login_signup_switch_button_signup">or CREATE ACCOUNT</string>
@@ -226,5 +227,20 @@
     <string name="welcome_screen_button_join">JOIN</string>
 
     <string name="welcome_account_edit_profile">Complete your profile</string>
+
+    <string name="recover_account_screen_error">Unable to load account recovery</string>
+    <string name="recover_account_screen_title">Account recovery</string>
+    <string name="recover_account_button_recover">Recover account</string>
+    <string name="recover_account_button_reset">RESET ACCOUNT</string>
+    <string name="recover_account_button_check">Check</string>
+    <string name="recover_account_alert_message_reset">Resetting your account will delete all your data!\nYou will have to log in again.</string>
+    <string name="recover_account_alert_message_recover">Update and recover account?</string>
+    <string name="recover_account_step_password_correct">Key can be recovered 🙌</string>
+    <string name="recover_account_step_password_wrong">Password does not match</string>
+    <string name="recover_account_header_recover_possible">Your password does not match your decryption keys</string>
+    <string name="recover_account_caption_recover_possible">To recover you account, try recovering the key with old password.</string>
+    <string name="recover_account_header_recover_not_possible">Your account does not have matching keys! Please reset your account.</string>
+    <string name="recover_account_caption_recover_not_possible">If you can not recover the key, you can reset your account. **Resetting your account will delete all your data!**</string>
+    <string name="recover_account_caption_reset">**Resetting your account will delete all your data!**</string>
 
 </resources>

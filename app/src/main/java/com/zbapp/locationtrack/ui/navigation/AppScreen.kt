@@ -1,8 +1,5 @@
 package com.zbapp.locationtrack.ui.navigation
 
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.navArgument
-
 sealed class AppScreen {
     val deeplinkScheme: String = "myApp"
     val deeplinkHost: String = "myApp"
@@ -20,6 +17,9 @@ sealed class AppScreen {
         }
         object ProfileSetup : AppScreen() {
             override val routeSignature: String = "setup-profile"
+        }
+        object AccountRecovery : AppScreen() {
+            override val routeSignature: String = "recover-account"
         }
     }
 

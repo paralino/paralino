@@ -1,5 +1,6 @@
 package com.zbapp.core.domain.user
 
+import com.zbapp.core.config
 import com.zbapp.core.crypto.CryptoCore
 import com.zbapp.core.crypto.GeneratedUserKeys
 import com.zbapp.core.crypto.user.CryptoUserKeyRepository
@@ -10,6 +11,7 @@ import com.zbapp.core.models.user.UserSession
 import com.zbapp.core.presentation.login.SignUpStep
 import com.zbapp.core.presentation.login.SignUpStepException
 import com.zbapp.core.repo.user.UserRepository
+import com.zbapp.core.utils.exceptions.MissingUserKeyException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -34,8 +36,8 @@ class LoginUseCase constructor(
 
             try {
                 delay(500)
-                session = userRepo.login(email, derivedPasswords.loginPassword).first()
-                user = userRepo.getUserIfAvailable().first()
+                session = userRepo.login(email, derivedPasswords.loginPassword)
+                user = userRepo.getUserFromRemote()
             } catch (e: Exception) {
                 throw SignUpStepException(SignUpStep.STARTING, e)
             }
@@ -75,22 +77,11 @@ class LoginUseCase constructor(
                 }
 
                 if (correctPersonalKey == null) {
-                    if (keys.isNotEmpty()) {
-                        // TODO
-                        // data is corrupted, current user password does not match user key
-                        // user should either change password to old one to be able to decrypt data
-                        // or reset profile (equivalent to forgot password)
-                    }
-
-                    val newKey = cryptoCore.generateNewKeysForUser(
-                        backupPassword = derivedPasswords.backupPassword,
-                        userId = user.id
-                    )
-
-                    val remoteKey = userKeyRepository.uploadNewUserKey(newKey.encryptedKeyData)
-                    userKeyRepository.saveUserKeyLocally(remoteKey, newKey.userPersonalKey)
-
-                    keyData = newKey
+                    // data is corrupted, current user password does not match user key
+                    // this will trigger account recovery
+                    config.temporaryBackupPassword = derivedPasswords.backupPassword
+                    userRepo.initLocallyAfterSignUp(user, session)
+                    throw MissingUserKeyException(false)
                 } else {
                     keys.filter { it.id != correctPersonalKey.encryptedKeyData.id }.forEach {
                         try {
@@ -103,8 +94,13 @@ class LoginUseCase constructor(
                 }
 
             } catch (e: Exception) {
+                // this will trigger account recovery
+                config.temporaryBackupPassword = derivedPasswords.backupPassword
+                userRepo.initLocallyAfterSignUp(user, session)
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
             }
+
+            // at this point we have both user and user key
 
             emit(SignUpStep.INIT_USER_DATA)
             try {
@@ -113,19 +109,10 @@ class LoginUseCase constructor(
                     keyData.encryptedKeyData,
                     keyData.userPersonalKey
                 )
-            } catch (e: Exception) {
-                userKeyRepository.clearAll()
-                throw SignUpStepException(SignUpStep.INIT_USER_DATA, e)
-            }
-
-            emit(SignUpStep.SAVE_USER)
-            try {
-                // TODO if data can not be decrypted user will not be save
-                // same situation as if key is missing above
                 userRepo.initLocallyAfterSignUp(user, session)
             } catch (e: Exception) {
                 logoutUseCase.logoutLocally()
-                throw SignUpStepException(SignUpStep.SAVE_USER, e)
+                throw SignUpStepException(SignUpStep.INIT_USER_DATA, e)
             }
 
             emit(SignUpStep.ALL_DONE)
