@@ -32,7 +32,7 @@ val viewModelModules = module {
     viewModel { DashboardViewModel(androidApplication(), get(), get(), get()) }
     viewModel { MapViewModel(androidApplication(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
-    viewModel { LoginViewModel(androidApplication(), get(), get()) }
+    viewModel { LoginViewModel(androidApplication(), get(), get(), get()) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { (args: String?) ->
         SharingViewModel(androidApplication(),
@@ -71,6 +71,7 @@ val locationModules = module {
 val coreModule = module {
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
+    factory { ResetPasswordUseCase(get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
     factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
     factory { ChangeEmailUseCase(get(), get()) }

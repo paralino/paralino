@@ -36,6 +36,7 @@ import com.zbapp.locationtrack.ui.shared.getFormValidationErrorText
 import com.zbapp.locationtrack.ui.theme.AppColors
 import com.zbapp.locationtrack.ui.theme.ButtonStyle
 import com.zbapp.locationtrack.utils.extensions.safeCast
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -69,6 +70,11 @@ fun LoginScreen(
                 }
                 LoginScreenEvent.UserReady -> {
 //                    appState.navController.navigate(AppScreen.DashboardRoot.routeSignature)
+                }
+                LoginScreenEvent.PasswordResetDone -> {
+                    appState.showSnackbar(context.getString(R.string.login_info_password_reset_done))
+                    delay(500)
+                    appState.navController.popBackStack()
                 }
                 null -> {
                     /* do nothing */

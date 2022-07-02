@@ -2,11 +2,13 @@ package com.zbapp.core.presentation.login
 
 import com.zbapp.core.domain.user.CreateAccountUseCase
 import com.zbapp.core.domain.user.LoginUseCase
+import com.zbapp.core.domain.user.ResetPasswordUseCase
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.CoreViewModel
 import com.zbapp.core.presentation.common.FormValidation
 import com.zbapp.core.utils.exceptions.ConflictException
 import com.zbapp.core.utils.exceptions.CryptoException
+import com.zbapp.core.utils.exceptions.NotFoundException
 import com.zbapp.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -17,6 +19,7 @@ import kotlinx.coroutines.launch
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val createAccountUseCase: CreateAccountUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -130,11 +133,14 @@ class LoginViewModel(
                 _eventChannel.send(LoginScreenEvent.ValidationError(emailValidation))
             }
         } else {
-            coroutineScope.launch {
-                processStep(SignUpStep.STARTING)
-                delay(2000)
-                processStep(SignUpStep.ALL_DONE)
-            }
+            resetPasswordUseCase.initResetPassword(email)
+                .onEach {
+                    processStep(it)
+                }
+                .catch {
+                    processSignUpError(it)
+                }
+                .launchIn(coroutineScope)
         }
     }
 
@@ -156,7 +162,11 @@ class LoginViewModel(
             )
         }
         if (step == SignUpStep.ALL_DONE) {
-            _eventChannel.send(LoginScreenEvent.UserReady)
+            if(_uiState.value.uiType == LoginScreenUiType.FORGOT_PASSWORD) {
+                _eventChannel.send(LoginScreenEvent.PasswordResetDone)
+            } else {
+                _eventChannel.send(LoginScreenEvent.UserReady)
+            }
         }
     }
 

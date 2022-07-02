@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.zbapp.core.domain.user.CreateAccountUseCase
 import com.zbapp.core.domain.user.LoginUseCase
+import com.zbapp.core.domain.user.ResetPasswordUseCase
 import com.zbapp.core.models.base.ImageModel
 import com.zbapp.core.presentation.login.LoginViewModel
 
@@ -12,9 +13,10 @@ class LoginViewModel(
     app: Application,
     private val loginUseCase: LoginUseCase,
     private val createAccountUseCase: CreateAccountUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase,
 ) : AndroidViewModel(app) {
 
-    private val coreVm = LoginViewModel(loginUseCase, createAccountUseCase, viewModelScope)
+    private val coreVm = LoginViewModel(loginUseCase, createAccountUseCase, resetPasswordUseCase, viewModelScope)
 
     val uiState = coreVm.uiState
     val events = coreVm.events
