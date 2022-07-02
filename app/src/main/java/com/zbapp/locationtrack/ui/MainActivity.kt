@@ -20,8 +20,8 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.zbapp.core.domain.user.AppAccountState
 import com.zbapp.core.models.Resource
-import com.zbapp.core.presentation.common.AppAccountState
 import com.zbapp.locationtrack.ui.components.AppSnackbar
 import com.zbapp.locationtrack.ui.components.MainAlertDialog
 import com.zbapp.locationtrack.ui.components.SheetContent
@@ -76,25 +76,25 @@ fun RootApp(
                 }
 
                 when (state.data) {
-                    AppAccountState.ACCOUNT_RESET -> {
+                    is AppAccountState.ACCOUNT_RESET -> {
                         AppStartScreen(
                             appState = appState,
                             start = AppScreen.AppStartRoot.AccountRecovery
                         )
                     }
-                    AppAccountState.NO_PROFILE -> {
+                    is AppAccountState.NO_PROFILE -> {
                         AppStartScreen(
                             appState = appState,
                             start = AppScreen.AppStartRoot.ProfileSetup
                         )
                     }
-                    AppAccountState.NO_USER -> {
+                    is AppAccountState.NO_USER -> {
                         AppStartScreen(
                             appState = appState,
                             start = AppScreen.AppStartRoot.Welcome
                         )
                     }
-                    AppAccountState.USER_READY -> {
+                    is AppAccountState.USER_READY -> {
                         MainAppScreen(appState)
                     }
                 }

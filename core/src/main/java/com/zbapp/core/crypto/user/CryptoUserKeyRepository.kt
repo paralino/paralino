@@ -52,6 +52,10 @@ class CryptoUserKeyRepository(
         return triggerRemoteOnly { remote.createPersonalKey(keyRaw) }
     }
 
+    fun userKeyState(): Flow<Boolean> {
+        return local.userKeyState()
+    }
+
     fun deleteKey(id: String): Flow<Unit> {
         return getDataOnce(
             remote = { remote.deleteUserKey(id) },

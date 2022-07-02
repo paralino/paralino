@@ -130,7 +130,9 @@ fun NavGraphBuilder.loggedOutGraph(
         composable(AppScreen.AppStartRoot.ProfileSetup.routeSignature) {
             ProfileSetupScreen(appState)
         }
-        composable(AppScreen.AppStartRoot.AccountRecovery.routeSignature) {
+        composable(
+            AppScreen.AppStartRoot.AccountRecovery.routeSignature,
+        ) {
             RecoverKeysScreen(appState)
         }
     }

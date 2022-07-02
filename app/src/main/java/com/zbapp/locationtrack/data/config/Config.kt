@@ -15,6 +15,7 @@ class Config(context: Context) : IConfig {
         const val keyUserKey = "prefs.user.cryptKey"
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
+        const val keyTempPassword = "prefs.user.temp_password"
         const val keyEmailConfirmed = "prefs.profile.email.confirmed"
     }
 
@@ -48,6 +49,12 @@ class Config(context: Context) : IConfig {
         get() = secureSharedData.getBoolean(keyEmailConfirmed, false)
         set(value) {
             secureSharedData.edit { putBoolean(keyEmailConfirmed, value) }
+        }
+
+    override var temporaryBackupPassword: String
+        get() = secureSharedData.getString(keyTempPassword, "") ?: ""
+        set(value) {
+            secureSharedData.edit { putString(keyTempPassword, value) }
         }
 
     var userKey: String

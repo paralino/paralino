@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface IUserLocalDataSource {
 
     fun getMe(): Flow<UserMe?>
+    fun getMeRaw(): Flow<UserMeRaw?>
     suspend fun update(data: UserMeRaw): UserMe
     suspend fun clear()
 

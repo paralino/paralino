@@ -1,8 +1,5 @@
 package com.zbapp.locationtrack.ui.navigation
 
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.navArgument
-
 sealed class AppScreen {
     val deeplinkScheme: String = "myApp"
     val deeplinkHost: String = "myApp"

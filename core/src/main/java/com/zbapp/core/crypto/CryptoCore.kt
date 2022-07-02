@@ -76,9 +76,20 @@ class CryptoCore(
                 password = oldBackupPassword,
                 context = userId.toData(hashProvider).content
             )
+
+            reEncryptSymmetricKey(newBackupPassword, userId, userKey)
+        }
+    }
+
+    suspend fun reEncryptSymmetricKey(
+        backupPassword: String,
+        userId: String,
+        userKey: Data,
+    ): String {
+        return blocking {
             val newEncryptedUserKey = serviceProvider.encryptDataWithPassword(
                 data = userKey.content,
-                password = newBackupPassword,
+                password = backupPassword,
                 context = userId.toData(hashProvider).content
             )
 

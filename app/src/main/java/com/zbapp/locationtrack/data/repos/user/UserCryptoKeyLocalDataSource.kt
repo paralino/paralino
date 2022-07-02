@@ -5,6 +5,10 @@ import com.zbapp.core.models.raw.UserCryptoKeyRaw
 import com.zbapp.core.models.user.AsymmetricCryptoKeyData
 import com.zbapp.locationtrack.data.config.Config
 import com.zbapp.locationtrack.data.mappers.UserKeyMapperLocal
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 class UserCryptoKeyLocalDataSource constructor(
     private val dao: UserKeyDao,
@@ -27,6 +31,20 @@ class UserCryptoKeyLocalDataSource constructor(
 
     override suspend fun getMyKey(): UserCryptoKeyRaw? {
         return dao.getKey()?.let { userKeyMapper.local2Remote(it) }
+    }
+
+    override fun userKeyState(): Flow<Boolean> {
+        return dao.listenToKey()
+            .map {
+                try {
+                    userKeyMapper.mapKeyPair(it!!, getCachedUserKey())
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+            }
+            .catch { emit(false) }
+            .distinctUntilChanged()
     }
 
     override suspend fun clearAllKeys() {

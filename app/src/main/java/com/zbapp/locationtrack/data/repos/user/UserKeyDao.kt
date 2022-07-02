@@ -22,6 +22,9 @@ interface UserKeyDao {
     @Query("SELECT * FROM user_keys WHERE version = (SELECT max(version) FROM user_keys)")
     suspend fun getLatest(): UserKeyEntity?
 
+    @Query("SELECT * FROM user_keys")
+    fun listenToKey(): Flow<UserKeyEntity?>
+
 
     @Query("DELETE FROM user_keys WHERE id = :id")
     suspend fun delete(id: String)

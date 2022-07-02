@@ -202,10 +202,6 @@ class LoginViewModel(
                     LoginScreenUiType.SIGNUP -> {
                         when (step) {
                             SignUpStep.SAVE_USER, SignUpStep.INIT_USER_DATA -> {
-                                // TODO maybe handle better
-                                // account is created, but user data is not properly initialized
-                                // switch to login and/or (offer) to recreate keys
-                                toggleLoginSignup()
                                 SignUpErrorType.SIGNUP_DATA
                             }
                             else -> null
