@@ -98,6 +98,18 @@ class UserRepository constructor(
         }
     }
 
+    suspend fun initResetPassword(email: String) {
+        triggerRemoteOnly {
+            remote.initResetPassword(email)
+        }
+    }
+
+    suspend fun resetPassword(userId: String, secret: String, password: String) {
+        triggerRemoteOnly {
+            remote.resetPassword(userId, secret, password)
+        }
+    }
+
     suspend fun getUserFromRemote(): UserMeRaw {
         if (!config.isTokenValid) {
             throw Exception("Token is not available")

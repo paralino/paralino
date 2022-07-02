@@ -50,6 +50,14 @@ class UserRemoteSource constructor(
         return api.changePassword(newPassword, oldPassword)
     }
 
+    suspend fun initResetPassword(email: String) {
+        api.initResetPassword(email)
+    }
+
+    suspend fun resetPassword(userId: String, secret: String, password: String) {
+        api.resetPassword(userId, secret, password)
+    }
+
     suspend fun updateUserData(data: UserMeData): UserMeRaw {
         val payload = userMapper.core2Remote(data)
         return api.updateUserData(payload.toPostJson())
