@@ -11,6 +11,8 @@ interface IUserApi {
     suspend fun updateName(name: String): UserMeRaw
     suspend fun updateUserData(data: Map<String, Any>): UserMeRaw
     suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw
+    suspend fun initResetPassword(email: String)
+    suspend fun resetPassword(userId: String, secret: String, password: String)
     suspend fun updateEmail(email: String, password: String): UserMeRaw
     suspend fun deleteAccount()
     suspend fun logout()

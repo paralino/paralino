@@ -28,6 +28,7 @@ sealed class LoginScreenEvent {
     data class LoginError(val errorType: SignUpErrorType) : LoginScreenEvent()
     data class ValidationError(val validationResult: FormValidationResult) : LoginScreenEvent()
     object UserReady : LoginScreenEvent()
+    object PasswordResetDone : LoginScreenEvent()
 }
 
 

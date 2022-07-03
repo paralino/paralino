@@ -16,6 +16,7 @@ import com.zbapp.locationtrack.ui.groups.detail.GroupDetailViewModel
 import com.zbapp.locationtrack.ui.invite.input.MemberInviteViewModel
 import com.zbapp.locationtrack.ui.invite.manage.PersonalCodesViewModel
 import com.zbapp.locationtrack.ui.login.LoginViewModel
+import com.zbapp.locationtrack.ui.login.passwordreset.ResetPasswordViewModel
 import com.zbapp.locationtrack.ui.login.recover.RecoverKeysViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsViewModel
@@ -32,7 +33,7 @@ val viewModelModules = module {
     viewModel { DashboardViewModel(androidApplication(), get(), get(), get()) }
     viewModel { MapViewModel(androidApplication(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
-    viewModel { LoginViewModel(androidApplication(), get(), get()) }
+    viewModel { LoginViewModel(androidApplication(), get(), get(), get()) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { (args: String?) ->
         SharingViewModel(androidApplication(),
@@ -55,6 +56,7 @@ val viewModelModules = module {
     viewModel { ChangePasswordViewModel(get()) }
     viewModel { EditProfileViewModel(get()) }
     viewModel { RecoverKeysViewModel(get(), get()) }
+    viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
 }
 
 val utilModule = module {
@@ -71,6 +73,7 @@ val locationModules = module {
 val coreModule = module {
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
+    factory { ResetPasswordUseCase(get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
     factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
     factory { ChangeEmailUseCase(get(), get()) }

@@ -45,6 +45,18 @@ class UserApi constructor(
         }
     }
 
+    override suspend fun initResetPassword(email: String) {
+        remoteModule.execute {
+            account.createRecovery(email, remoteModule.config.serverUrl)
+        }
+    }
+
+    override suspend fun resetPassword(userId: String, secret: String, password: String) {
+        return remoteModule.execute {
+            account.updateRecovery(userId = userId, secret = secret, password = password, passwordAgain = password)
+        }
+    }
+
     override suspend fun updateEmail(email: String, password: String): UserMeRaw {
         return remoteModule.execute { account.updateEmail(email, password).parseUser() }
     }
