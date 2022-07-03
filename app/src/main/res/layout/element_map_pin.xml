@@ -35,7 +35,7 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.9" />
 
-        <com.zbapp.locationtrack.ui.shared.RoundImageView
+        <app.paralino.mobile.ui.shared.RoundImageView
             android:id="@+id/ivPinImage"
             android:layout_width="0dp"
             android:layout_height="0dp"

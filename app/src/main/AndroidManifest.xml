@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zbapp.locationtrack">
+    package="app.paralino.mobile">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name=".AppClass"
+        android:name="app.paralino.mobile.AppClass"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -22,7 +22,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name="app.paralino.mobile.ui.MainActivity"
             android:label="@string/app_name"
             android:exported="true"
             android:windowSoftInputMode="adjustResize"
@@ -34,13 +34,13 @@
         </activity>
 
         <service
-            android:name=".tracking.LocationService"
+            android:name="app.paralino.mobile.tracking.LocationService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location|dataSync" />
 
         <receiver
-            android:name=".tracking.LocationStartBroadcastReceiver"
+            android:name="app.paralino.mobile.tracking.LocationStartBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
