@@ -244,4 +244,7 @@
     <string name="recover_account_caption_recover_not_possible">If you can not recover the key, you can reset your account. **Resetting your account will delete all your data!**</string>
     <string name="recover_account_caption_reset">**Resetting your account will delete all your data!**</string>
 
+    <string name="reset_password_screen_title">Reset password</string>
+    <string name="reset_password_success_message">Please login again!</string>
+
 </resources>

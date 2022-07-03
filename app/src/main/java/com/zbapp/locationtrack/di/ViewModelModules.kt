@@ -16,6 +16,7 @@ import com.zbapp.locationtrack.ui.groups.detail.GroupDetailViewModel
 import com.zbapp.locationtrack.ui.invite.input.MemberInviteViewModel
 import com.zbapp.locationtrack.ui.invite.manage.PersonalCodesViewModel
 import com.zbapp.locationtrack.ui.login.LoginViewModel
+import com.zbapp.locationtrack.ui.login.passwordreset.ResetPasswordViewModel
 import com.zbapp.locationtrack.ui.login.recover.RecoverKeysViewModel
 import com.zbapp.locationtrack.ui.map.MapViewModel
 import com.zbapp.locationtrack.ui.settings.SettingsViewModel
@@ -55,6 +56,7 @@ val viewModelModules = module {
     viewModel { ChangePasswordViewModel(get()) }
     viewModel { EditProfileViewModel(get()) }
     viewModel { RecoverKeysViewModel(get(), get()) }
+    viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
 }
 
 val utilModule = module {

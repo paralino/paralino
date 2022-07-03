@@ -28,10 +28,12 @@ class ResetPasswordUseCase(
         }
     }
 
-    suspend fun resetPassword(userId: String, secret: String, password: String): Flow<Unit> {
+    fun resetPassword(userId: String, secret: String, password: String): Flow<SignUpStep> {
         return flow {
+            emit(SignUpStep.STARTING)
             userRepository.resetPassword(userId, secret, password)
-            emit(Unit)
+            delay(500)
+            emit(SignUpStep.ALL_DONE)
         }
     }
 
