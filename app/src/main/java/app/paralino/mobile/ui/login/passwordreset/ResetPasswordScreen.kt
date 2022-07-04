@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.navOptions
+import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenEvent
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenState
 import app.paralino.mobile.R
@@ -68,7 +69,7 @@ fun ResetPasswordScreen(
                     appState.showSnackbar(context.getString(R.string.reset_password_success_message))
                     delay(500)
                     appState.navController.navigate(
-                        AppScreen.AppStartRoot.Login.routeSignature,
+                        AppScreen.AppStartRoot.Login.route(LoginScreenUiType.LOGIN),
                         navOptions {
                             popUpTo(AppScreen.AppStartRoot.PasswordReset.routeSignature) {
                                 inclusive = true

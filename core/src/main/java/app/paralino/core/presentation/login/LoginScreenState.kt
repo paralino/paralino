@@ -14,10 +14,14 @@ data class LoginScreenState constructor(
     val hasEmailError: Boolean = false,
     val hasPasswordError: Boolean = false,
     val hasPasswordConfirmError: Boolean = false,
-    val uiType: LoginScreenUiType = LoginScreenUiType.SIGNUP,
+    val uiType: LoginScreenUiType = defaultStartScreen,
     val actionLoading: Boolean = false,
     val stepInfo: SignUpStepInfo? = null,
-)
+) {
+    companion object {
+        val defaultStartScreen = LoginScreenUiType.SIGNUP
+    }
+}
 
 enum class LoginScreenUiType {
     LOGIN, SIGNUP, FORGOT_PASSWORD

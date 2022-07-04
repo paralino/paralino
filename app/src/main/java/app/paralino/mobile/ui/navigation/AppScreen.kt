@@ -1,5 +1,7 @@
 package app.paralino.mobile.ui.navigation
 
+import app.paralino.core.presentation.login.LoginScreenUiType
+
 sealed class AppScreen {
     val deeplinkScheme: String = "myApp"
     val deeplinkHost: String = "myApp"
@@ -13,7 +15,15 @@ sealed class AppScreen {
             override val routeSignature: String = "welcome"
         }
         object Login : AppScreen() {
-            override val routeSignature: String = "login"
+
+            val argumentStartScreenType: String = "startScreenType"
+
+            override val routeSignature: String = "login?$argumentStartScreenType={$argumentStartScreenType}"
+            fun route(screenUiType: LoginScreenUiType? = null): String {
+                if (screenUiType == null)
+                    return "login"
+                return "login?$argumentStartScreenType=${screenUiType.name}"
+            }
         }
         object ProfileSetup : AppScreen() {
             override val routeSignature: String = "setup-profile"
