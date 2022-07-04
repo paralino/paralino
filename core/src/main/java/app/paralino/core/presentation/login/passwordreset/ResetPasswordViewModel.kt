@@ -4,10 +4,8 @@ import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
-import app.paralino.core.utils.exceptions.DecryptionException
-import app.paralino.core.utils.exceptions.InvalidRequestException
-import app.paralino.core.utils.exceptions.UnauthorizedException
-import app.paralino.core.utils.exceptions.asRemoteException
+import app.paralino.core.presentation.login.SignUpStep
+import app.paralino.core.utils.exceptions.*
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -62,10 +60,15 @@ class ResetPasswordViewModel constructor(
                         }
                         is Payload.Error -> {
                             _uiState.update { it.copy(actionLoading = null) }
-                            if (result.exception.asRemoteException() is InvalidRequestException) {
+                            val remoteError = result.exception.asRemoteException()
+                            if (remoteError is InvalidRequestException) {
                                 _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
-                            } else if (result.exception.asRemoteException() is UnauthorizedException) {
-                                _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
+                            } else if (remoteError is UnauthorizedException) {
+                                if(remoteError.type == BaseRemoteException.typeUserInvalidToken) {
+                                    _eventChannel.send(ResetPasswordScreenEvent.InvalidToken)
+                                } else {
+                                    _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
+                                }
                             } else if (result.exception is DecryptionException) {
                                 _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
                             } else {
@@ -73,9 +76,10 @@ class ResetPasswordViewModel constructor(
                             }
                         }
                         is Payload.Success -> {
-                            _uiState.update { it.copy(actionLoading = false) }
-                            delay(400)
-                            _eventChannel.send(ResetPasswordScreenEvent.PasswordChanged)
+                            if(result.data == SignUpStep.ALL_DONE) {
+                                _uiState.update { it.copy(actionLoading = false) }
+                                _eventChannel.send(ResetPasswordScreenEvent.PasswordChanged)
+                            }
                         }
                     }
                 }

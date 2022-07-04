@@ -1,6 +1,7 @@
 package app.paralino.mobile.di
 
 import app.paralino.core.domain.user.*
+import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
@@ -33,7 +34,7 @@ val viewModelModules = module {
     viewModel { DashboardViewModel(androidApplication(), get(), get(), get()) }
     viewModel { MapViewModel(androidApplication(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
-    viewModel { LoginViewModel(androidApplication(), get(), get(), get()) }
+    viewModel { (startScreenType: Any) -> LoginViewModel(androidApplication(), get(), get(), get(), startScreenType as LoginScreenUiType) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { (args: String?) ->
         SharingViewModel(androidApplication(),
@@ -73,7 +74,7 @@ val locationModules = module {
 val coreModule = module {
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
-    factory { ResetPasswordUseCase(get()) }
+    factory { ResetPasswordUseCase(get(), get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
     factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
     factory { ChangeEmailUseCase(get(), get()) }

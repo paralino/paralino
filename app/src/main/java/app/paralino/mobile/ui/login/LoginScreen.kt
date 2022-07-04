@@ -40,14 +40,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun LoginScreen(
     appState: MainAppState,
-    vm: LoginViewModel = getViewModel(),
+    startScreenUiType: LoginScreenUiType,
+    vm: LoginViewModel = getViewModel { parametersOf(startScreenUiType) },
 ) {
 
-    val uiState by vm.uiState.collectAsState(initial = LoginScreenState())
+    val uiState by vm.uiState.collectAsState(initial = LoginScreenState(uiType = startScreenUiType))
     val focusManager = LocalFocusManager.current
 
     val context = LocalContext.current

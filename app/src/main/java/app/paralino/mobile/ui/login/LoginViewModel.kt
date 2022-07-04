@@ -7,16 +7,18 @@ import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 
-class LoginViewModel(
+class LoginViewModel constructor(
     app: Application,
     private val loginUseCase: LoginUseCase,
     private val createAccountUseCase: CreateAccountUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
+    startScreenUiType: LoginScreenUiType
 ) : AndroidViewModel(app) {
 
-    private val coreVm = LoginViewModel(loginUseCase, createAccountUseCase, resetPasswordUseCase, viewModelScope)
+    private val coreVm = LoginViewModel(loginUseCase, createAccountUseCase, resetPasswordUseCase, startScreenUiType, viewModelScope)
 
     val uiState = coreVm.uiState
     val events = coreVm.events

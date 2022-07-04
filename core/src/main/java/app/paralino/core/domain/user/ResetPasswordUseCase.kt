@@ -1,5 +1,6 @@
 package app.paralino.core.domain.user
 
+import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.NotFoundException
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.flow
 
 class ResetPasswordUseCase(
     private val userRepository: UserRepository,
+    private val cryptoCore: CryptoCore
 ) {
 
     fun initResetPassword(email: String): Flow<SignUpStep> {
@@ -31,7 +33,8 @@ class ResetPasswordUseCase(
     fun resetPassword(userId: String, secret: String, password: String): Flow<SignUpStep> {
         return flow {
             emit(SignUpStep.STARTING)
-            userRepository.resetPassword(userId, secret, password)
+            val derivedPassword = cryptoCore.derivePassword(password)
+            userRepository.resetPassword(userId, secret, derivedPassword.loginPassword)
             delay(500)
             emit(SignUpStep.ALL_DONE)
         }

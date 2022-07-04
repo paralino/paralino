@@ -246,5 +246,6 @@
 
     <string name="reset_password_screen_title">Reset password</string>
     <string name="reset_password_success_message">Please login again!</string>
+    <string name="reset_password_error_token_message">Your password reset link expired, please request a new one.</string>
 
 </resources>

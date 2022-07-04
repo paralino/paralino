@@ -6,6 +6,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import app.paralino.core.presentation.login.LoginScreenState
+import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.mobile.ui.MainAppState
 import app.paralino.mobile.ui.dashboard.DashboardScreen
 import app.paralino.mobile.ui.groups.create.GroupCreateScreen
@@ -126,7 +128,10 @@ fun NavGraphBuilder.loggedOutGraph(
             LoggedOutScreen(appState)
         }
         composable(AppScreen.AppStartRoot.Login.routeSignature) {
-            LoginScreen(appState)
+            val startScreen = it.arguments?.getString(AppScreen.AppStartRoot.Login.argumentStartScreenType)
+                ?.let { screenName -> LoginScreenUiType.values().firstOrNull { it.name == screenName } }
+                ?: LoginScreenState.defaultStartScreen
+            LoginScreen(appState, startScreen)
         }
         composable(AppScreen.AppStartRoot.ProfileSetup.routeSignature) {
             ProfileSetupScreen(appState)
@@ -134,7 +139,7 @@ fun NavGraphBuilder.loggedOutGraph(
         composable(AppScreen.AppStartRoot.AccountRecovery.routeSignature) {
             RecoverKeysScreen(appState)
         }
-        composable(AppScreen.AppStartRoot.AccountRecovery.routeSignature) {
+        composable(AppScreen.AppStartRoot.PasswordReset.routeSignature) {
             // TODO add deeplinking
             ResetPasswordScreen(appState, userId = "", secret = "")
         }

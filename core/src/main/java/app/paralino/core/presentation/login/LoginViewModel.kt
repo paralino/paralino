@@ -14,14 +14,15 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class LoginViewModel(
+class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase,
     private val createAccountUseCase: CreateAccountUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
+    startScreenUiType: LoginScreenUiType,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
-    private val _uiState = MutableStateFlow(LoginScreenState())
+    private val _uiState = MutableStateFlow(LoginScreenState(uiType = startScreenUiType))
     val uiState: Flow<LoginScreenState> = _uiState
 
     private val _eventChannel = Channel<LoginScreenEvent?>()
