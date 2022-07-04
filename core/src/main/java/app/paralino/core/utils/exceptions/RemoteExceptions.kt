@@ -10,6 +10,9 @@ open class BaseRemoteException constructor(
     val type: String? = null
 ) : Exception(message, cause) {
     companion object {
+
+        const val typeUserInvalidToken = "user_invalid_token"
+
         fun fromCode(
             code: Int?,
             message: String?,

@@ -16,5 +16,6 @@ sealed class ResetPasswordScreenEvent {
         ResetPasswordScreenEvent()
 
     object CredentialsError : ResetPasswordScreenEvent()
+    object InvalidToken : ResetPasswordScreenEvent()
     object PasswordChanged : ResetPasswordScreenEvent()
 }
