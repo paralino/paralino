@@ -139,7 +139,7 @@ fun NavGraphBuilder.loggedOutGraph(
         composable(AppScreen.AppStartRoot.AccountRecovery.routeSignature) {
             RecoverKeysScreen(appState)
         }
-        composable(AppScreen.AppStartRoot.AccountRecovery.routeSignature) {
+        composable(AppScreen.AppStartRoot.PasswordReset.routeSignature) {
             // TODO add deeplinking
             ResetPasswordScreen(appState, userId = "", secret = "")
         }
