@@ -1,0 +1,16 @@
+package app.paralino.core.models.user
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class AsymmetricCryptoKeyData constructor(
+    val privateKey: String,
+    val publicKey: String,
+    val version: Long
+)
+
+@Serializable
+data class SymmetricCryptoKeyData constructor(
+    val encryptedKey: String,
+    val version: Long
+)

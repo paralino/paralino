@@ -1,0 +1,155 @@
+package app.paralino.mobile.ui.dashboard
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.GroupAdd
+import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import app.paralino.core.models.Payload
+import app.paralino.core.presentation.dashboard.DashboardScreenEvent
+import app.paralino.core.utils.ConditionErrorType
+import app.paralino.mobile.R
+import app.paralino.mobile.tracking.rememberLocationPermissionHandler
+import app.paralino.mobile.ui.MainAppState
+import app.paralino.mobile.ui.components.ConditionErrorItem
+import app.paralino.mobile.ui.components.DefaultEmptyState
+import app.paralino.mobile.ui.components.FilledButton
+import app.paralino.mobile.ui.groups.GroupListItem
+import app.paralino.mobile.ui.navigation.AppScreen
+import app.paralino.mobile.ui.settings.SettingsBigHeader
+import app.paralino.mobile.ui.settings.SettingsSectionHeader
+import app.paralino.mobile.ui.shared.errorString
+import app.paralino.mobile.ui.theme.ButtonStyle
+import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.compose.getViewModel
+
+
+@Composable
+fun DashboardScreen(
+    appState: MainAppState,
+    vm: DashboardViewModel = getViewModel(),
+) {
+
+    val permissionHandler = rememberLocationPermissionHandler(
+        appState = appState,
+        locationStatusProvider = vm.locationStatusProvider
+    )
+    val vmState by vm.uiState.collectAsState(Payload.Loading)
+    val state = vmState
+
+    val context = LocalContext.current
+    LaunchedEffect(key1 = context) {
+        vm.events.collectLatest { event ->
+            when (event) {
+                is DashboardScreenEvent.Error -> {
+                    appState.showSnackbar(event.error.errorString(context))
+                }
+                null -> {
+                    /* do nothing */
+                }
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = 20.dp)
+    ) {
+
+        SettingsBigHeader(name = stringResource(id = R.string.title_dashboard))
+
+        when (state) {
+            is Payload.Error -> {
+                DefaultEmptyState(content = stringResource(id = R.string.error_something_wrong))
+            }
+            Payload.Loading -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
+            is Payload.Success -> {
+                val scrollState = rememberScrollState()
+                // TODO replace with lazy column
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(state = scrollState)
+                ) {
+
+                    state.data.errors.forEach {
+                        ConditionErrorItem(data = it) {
+                            when (it) {
+                                ConditionErrorType.GPS -> permissionHandler.askLocationService()
+                                ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
+                                ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                            }
+                        }
+                    }
+
+                    if (state.data.isWithoutGroups) {
+                        DefaultEmptyState(
+                            content = stringResource(id = R.string.dashboard_info_no_groups),
+                            icon = Icons.Rounded.Groups,
+                            buttonText = stringResource(id = R.string.dashboard_groups_add_button),
+                            onClick = {
+                                appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
+                            }
+                        )
+                    } else {
+
+                        if (state.data.activeGroups.isNotEmpty()) {
+                            SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_active))
+                            state.data.activeGroups.forEach {
+                                GroupListItem(data = it) {
+                                    appState.navController.navigate(
+                                        AppScreen.DashboardRoot.GroupDetails.route(it.id)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.size(8.dp))
+                            }
+                        }
+
+                        if (state.data.inactiveGroups.isNotEmpty()) {
+                            SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_inactive))
+                            state.data.inactiveGroups.forEach {
+                                GroupListItem(data = it) {
+                                    appState.navController.navigate(
+                                        AppScreen.DashboardRoot.GroupDetails.route(it.id)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.size(8.dp))
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.size(100.dp))
+                        FilledButton(
+                            style = ButtonStyle.SMALL,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            icon = Icons.Rounded.GroupAdd,
+                            onClick = {
+                                appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
+                            }
+                        ) {
+                            Text(text = stringResource(id = R.string.dashboard_groups_add_button))
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+}

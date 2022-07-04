@@ -1,7 +1,7 @@
-include ':remote'
-include ':core'
+rootProject.name = "Paralino"
 include ':app'
-rootProject.name = "LocationTrack"
+include ':core'
+include ':remote'
 include ':crypto'
 include ':appwrite'
 project(':appwrite').projectDir = new File('appwrite-android/library')
