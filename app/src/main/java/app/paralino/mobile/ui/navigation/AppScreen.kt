@@ -3,36 +3,49 @@ package app.paralino.mobile.ui.navigation
 import app.paralino.core.presentation.login.LoginScreenUiType
 
 sealed class AppScreen {
-    val deeplinkScheme: String = "myApp"
-    val deeplinkHost: String = "myApp"
+
     val argumentGroupId: String = "groupId"
 
     abstract val routeSignature: String
 
     object AppStartRoot : AppScreen() {
         override val routeSignature: String = "appStart"
+
         object Welcome : AppScreen() {
             override val routeSignature: String = "welcome"
         }
+
         object Login : AppScreen() {
 
             val argumentStartScreenType: String = "startScreenType"
 
-            override val routeSignature: String = "login?$argumentStartScreenType={$argumentStartScreenType}"
+            override val routeSignature: String =
+                "login?$argumentStartScreenType={$argumentStartScreenType}"
+
             fun route(screenUiType: LoginScreenUiType? = null): String {
                 if (screenUiType == null)
                     return "login"
                 return "login?$argumentStartScreenType=${screenUiType.name}"
             }
         }
+
         object ProfileSetup : AppScreen() {
             override val routeSignature: String = "setup-profile"
         }
+
         object AccountRecovery : AppScreen() {
             override val routeSignature: String = "recover-account"
         }
+
         object PasswordReset : AppScreen() {
-            override val routeSignature: String = "reset-password"
+            val argumentUserId: String = Deeplink.PasswordReset.argumentUserId
+            val argumentSecret: String = Deeplink.PasswordReset.argumentSecret
+            val argumentExpire: String = Deeplink.PasswordReset.argumentExpire
+            override val routeSignature: String = Deeplink.PasswordReset.routeSignature()
+
+            fun route(deeplink: Deeplink.PasswordReset): String {
+                return deeplink.route()
+            }
         }
     }
 
@@ -70,10 +83,17 @@ sealed class AppScreen {
 
         object GroupMemberAdd : AppScreen() {
             val argumentCode: String = "code"
-            override val routeSignature: String = "group-member-add?$argumentGroupId={$argumentGroupId}&$argumentCode={$argumentCode}"
+            override val routeSignature: String =
+                "group-member-add?$argumentGroupId={$argumentGroupId}&$argumentCode={$argumentCode}"
+
             fun route(groupId: String? = null, code: String? = null): String {
-                val args = arrayOf(groupId?.let { "$argumentGroupId=$groupId" }, code?.let { "$argumentCode=$code" })
-                    .filterNotNull().joinToString(separator = "&")
+                val args = arrayOf(
+                    groupId?.let { "$argumentGroupId=$groupId" },
+                    code?.let { "$argumentCode=$code" }
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+
                 if (args.isEmpty())
                     return "group-member-add"
                 return "group-member-add?$args"

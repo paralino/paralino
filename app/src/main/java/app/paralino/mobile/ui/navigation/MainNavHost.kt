@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
@@ -139,9 +140,17 @@ fun NavGraphBuilder.loggedOutGraph(
         composable(AppScreen.AppStartRoot.AccountRecovery.routeSignature) {
             RecoverKeysScreen(appState)
         }
-        composable(AppScreen.AppStartRoot.PasswordReset.routeSignature) {
-            // TODO add deeplinking
-            ResetPasswordScreen(appState, userId = "", secret = "")
+        composable(
+            AppScreen.AppStartRoot.PasswordReset.routeSignature,
+            deepLinks = listOf(
+                navDeepLink {
+                    this.uriPattern = Deeplink.PasswordReset.uriPattern()
+                }
+            )
+        ) {
+            val userId = it.arguments?.getString(AppScreen.AppStartRoot.PasswordReset.argumentUserId)
+            val secret = it.arguments?.getString(AppScreen.AppStartRoot.PasswordReset.argumentSecret)
+            ResetPasswordScreen(appState, userId = userId!!, secret = secret!!)
         }
     }
 }
