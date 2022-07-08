@@ -3,11 +3,14 @@ package app.paralino.mobile.ui.dashboard
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.material.icons.rounded.Key
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -103,9 +106,8 @@ fun DashboardScreen(
                         DefaultEmptyState(
                             content = stringResource(id = R.string.dashboard_info_no_groups),
                             icon = Icons.Rounded.Groups,
-                            buttonText = stringResource(id = R.string.dashboard_groups_add_button),
-                            onClick = {
-                                appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
+                            buttons = {
+                                DashboardGroupJoinButtons(appState)
                             }
                         )
                     } else {
@@ -135,21 +137,41 @@ fun DashboardScreen(
                         }
 
                         Spacer(modifier = Modifier.size(100.dp))
-                        FilledButton(
-                            style = ButtonStyle.SMALL,
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            icon = Icons.Rounded.GroupAdd,
-                            onClick = {
-                                appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
-                            }
-                        ) {
-                            Text(text = stringResource(id = R.string.dashboard_groups_add_button))
-                        }
 
+                        DashboardGroupJoinButtons(appState)
                     }
                 }
             }
         }
     }
 
+}
+
+@Composable
+fun ColumnScope.DashboardGroupJoinButtons(appState: MainAppState) {
+    FilledButton(
+        style = ButtonStyle.SMALL,
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        icon = Icons.Rounded.GroupAdd,
+        onClick = {
+            appState.navController.navigate(AppScreen.DashboardRoot.GroupCreate.route())
+        }
+    ) {
+        Text(text = stringResource(id = R.string.dashboard_groups_add_button))
+    }
+
+    Spacer(modifier = Modifier.size(10.dp))
+
+    FilledButton(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        style = ButtonStyle.SMALL,
+        icon = Icons.Rounded.Key,
+        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+        onClick = {
+            appState.navController.navigate(AppScreen.SettingsRoot.PersonalCodes.routeSignature)
+        }
+    ) {
+        Text(text = stringResource(id = R.string.dashboard_groups_join_button))
+    }
 }

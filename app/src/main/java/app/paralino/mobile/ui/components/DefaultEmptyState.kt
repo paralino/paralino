@@ -25,7 +25,33 @@ fun DefaultEmptyState(
     buttonIcon: ImageVector? = null,
     buttonStyle: ButtonStyle = ButtonStyle.BIG,
     buttonState: AppButtonState = AppButtonState.CONTENT,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+) {
+    DefaultEmptyState(
+        modifier = modifier,
+        content = content,
+        icon = icon,
+        buttons = {
+            if (buttonText != null) {
+                FilledButton(
+                    style = buttonStyle,
+                    state = buttonState,
+                    icon = buttonIcon,
+                    onClick = onClick ?: { }
+                ) {
+                    Text(buttonText)
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun DefaultEmptyState(
+    modifier: Modifier = Modifier,
+    content: String,
+    icon: ImageVector? = null,
+    buttons: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -51,16 +77,8 @@ fun DefaultEmptyState(
             Text(text = content.annotatedBold(), textAlign = TextAlign.Center)
         }
 
-        if (buttonText != null) {
-            Spacer(modifier = Modifier.size(50.dp))
-            FilledButton(
-                style = buttonStyle,
-                state = buttonState,
-                icon = buttonIcon,
-                onClick = onClick ?: { }
-            ) {
-                Text(buttonText)
-            }
-        }
+        Spacer(modifier = Modifier.size(50.dp))
+
+        buttons()
     }
 }

@@ -20,6 +20,7 @@ fun FilledButton(
     modifier: Modifier = Modifier,
     style: ButtonStyle,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
+    elevation: ButtonElevation? = ButtonDefaults.elevation(),
     icon : ImageVector ? = null,
     state: AppButtonState = AppButtonState.CONTENT,
     onClick: () -> Unit,
@@ -55,6 +56,7 @@ fun FilledButton(
         modifier = style.defaultModifier.then(modifier),
         contentPadding = style.paddingValues,
         colors = colors,
+        elevation = elevation,
         shape = style.shape,
         onClick = {
             if (buttonState == AppButtonState.CONTENT)
