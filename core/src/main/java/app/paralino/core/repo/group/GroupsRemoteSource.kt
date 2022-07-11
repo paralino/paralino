@@ -4,6 +4,7 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.location.MemberModelData
@@ -90,6 +91,7 @@ class GroupsRemoteSource constructor(
         return blocking {
             val mapped = mapper.core2Remote(group)
             api.createOrUpdateDocument(
+                databaseType = BackendDatabaseType.DATA,
                 collectionId = remoteConfig.resourceIds.collectionGroupsID,
                 docId = mapped.id,
                 data = mapped.toPostJson()
@@ -203,8 +205,8 @@ class GroupsRemoteSource constructor(
 
     suspend fun getAllGroups(): List<GroupWithMemberRaw> {
         return blocking {
-            val groups = api.getDocuments(remoteConfig.resourceIds.collectionGroupsID).map { it.parseGroup() }
-            val members = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersID).map { it.parseGroupMember() }
+            val groups = api.getDocuments(databaseType = BackendDatabaseType.DATA, remoteConfig.resourceIds.collectionGroupsID).map { it.parseGroup() }
+            val members = api.getDocumentsFor(databaseType = BackendDatabaseType.DATA, remoteConfig.resourceIds.collectionGroupMembersID).map { it.parseGroupMember() }
             groups.map { group ->
                 GroupWithMemberRaw(
                     group = group,
@@ -216,8 +218,8 @@ class GroupsRemoteSource constructor(
 
     suspend fun getGroupWithMembers(groupId: String): GroupWithMemberRaw {
         return blocking {
-            val group = api.getDocument(remoteConfig.resourceIds.collectionGroupsID, groupId).parseGroup()
-            val members = api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersID, "groupId" to groupId).map { it.parseGroupMember() }
+            val group = api.getDocument(databaseType = BackendDatabaseType.DATA, remoteConfig.resourceIds.collectionGroupsID, groupId).parseGroup()
+            val members = api.getDocumentsFor(databaseType = BackendDatabaseType.DATA, remoteConfig.resourceIds.collectionGroupMembersID, "groupId" to groupId).map { it.parseGroupMember() }
             GroupWithMemberRaw(
                 group = group,
                 members = members
@@ -227,7 +229,7 @@ class GroupsRemoteSource constructor(
 
     suspend fun getGroupOnly(groupId: String): GroupDocumentRaw {
         return blocking {
-            api.getDocument(remoteConfig.resourceIds.collectionGroupsID, groupId).parseGroup()
+            api.getDocument(databaseType = BackendDatabaseType.DATA, remoteConfig.resourceIds.collectionGroupsID, groupId).parseGroup()
         }
     }
 

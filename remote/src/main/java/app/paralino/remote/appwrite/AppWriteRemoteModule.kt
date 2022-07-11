@@ -3,13 +3,14 @@ package app.paralino.remote.appwrite
 import android.app.Application
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
-import io.appwrite.services.Database
+import io.appwrite.services.Databases
 import io.appwrite.services.Functions
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -22,7 +23,8 @@ class AppWriteRemoteModule(
 ) {
 
     internal val account: Account by lazy { Account(client) }
-    internal val database: Database by lazy { Database(client) }
+    internal val databaseData: Databases by lazy { Databases(client, BackendDatabaseType.DATA.id) }
+    internal val databaseKeys: Databases by lazy { Databases(client, BackendDatabaseType.KEYS.id) }
     internal val functions: Functions by lazy { Functions(client) }
     val uniqueIdPlaceholder = "unique()"
 
@@ -31,6 +33,13 @@ class AppWriteRemoteModule(
             .setEndpoint(config.endpoint)
             .setProject(config.projectId)
             .setSelfSigned(status = false, okHttpClient(config.debug))
+    }
+
+    fun databaseForType(type: BackendDatabaseType): Databases {
+        return when(type) {
+            BackendDatabaseType.DATA -> databaseData
+            BackendDatabaseType.KEYS -> databaseKeys
+        }
     }
 
     private fun okHttpClient(debug: Boolean): OkHttpClient {
@@ -48,7 +57,7 @@ class AppWriteRemoteModule(
             return action(this)
         } catch (e: Exception) {
             throw mapException(e).also {
-                when((it as? UnauthorizedException)?.type) {
+                when ((it as? UnauthorizedException)?.type) {
                     "general_unauthorized_scope", "user_blocked" -> {
                         // user session is invalid
                         sessionMonitor.updateSessionState(sessionValid = false)

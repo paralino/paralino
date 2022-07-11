@@ -9,7 +9,15 @@ data class BackendConfig constructor(
     val resourceIds = BackendResourceIDs
 }
 
+enum class BackendDatabaseType(val id: String) {
+    DATA(id = BackendResourceIDs.databaseDataID),
+    KEYS(id = BackendResourceIDs.databaseKeysID)
+}
+
 object BackendResourceIDs {
+    const val databaseKeysID = "data_keys"
+    const val databaseDataID = "data_main"
+
     const val collectionGroupsID: String = "groups"
     const val collectionGroupMembersID: String = "group_members"
     const val collectionPersonalCodeID: String = "personal_ids"

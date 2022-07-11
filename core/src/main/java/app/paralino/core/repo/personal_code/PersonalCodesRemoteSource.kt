@@ -1,6 +1,7 @@
 package app.paralino.core.repo.personal_code
 
 import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.user.UserPersonalCode
@@ -31,6 +32,7 @@ class PersonalCodesRemoteSource constructor(
         val codePayload = personalCodeMapper.core2Remote(userCodeData)
 
         val doc = docApi.createOrUpdateDocument(
+            databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionPersonalCodeID,
             docId = null,
             data = codePayload.toPostJson()
@@ -40,7 +42,7 @@ class PersonalCodesRemoteSource constructor(
     }
 
     suspend fun getMyPersonalCodes(): List<PersonalCodeRaw> {
-        return docApi.getDocuments(remoteConfig.resourceIds.collectionPersonalCodeID)
+        return docApi.getDocuments(databaseType = BackendDatabaseType.DATA, remoteConfig.resourceIds.collectionPersonalCodeID)
             .map { PersonalCodeRaw.from(it) }
     }
 
@@ -61,7 +63,7 @@ class PersonalCodesRemoteSource constructor(
     }
 
     suspend fun revokePersonalCode(id: String) {
-        docApi.deleteDocument(remoteConfig.resourceIds.collectionPersonalCodeID, id)
+        docApi.deleteDocument(databaseType = BackendDatabaseType.DATA, remoteConfig.resourceIds.collectionPersonalCodeID, id)
     }
 
 }

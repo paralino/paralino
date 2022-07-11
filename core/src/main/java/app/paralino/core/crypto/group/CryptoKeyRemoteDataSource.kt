@@ -4,13 +4,14 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.DecryptedGroupKeyData
 import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.*
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.serialization.encodeToString
 
@@ -23,7 +24,7 @@ class CryptoKeyRemoteDataSource(
 
     suspend fun getAllGroupKeys(): List<GroupCryptoKeyDataRaw> {
         return blocking {
-            api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupKeysID)
+            api.getDocumentsFor(BackendDatabaseType.KEYS, remoteConfig.resourceIds.collectionGroupKeysID)
                 .map { it.parseGroupKey() }
         }
     }
@@ -31,6 +32,7 @@ class CryptoKeyRemoteDataSource(
     suspend fun getGroupKeyForGroup(groupId: String): List<GroupCryptoKeyDataRaw> {
         return blocking {
             api.getDocumentsFor(
+                databaseType = BackendDatabaseType.KEYS,
                 collectionId = remoteConfig.resourceIds.collectionGroupKeysID,
                 keyValue = arrayOf("groupId" to groupId)
             ).map { it.parseGroupKey() }
@@ -39,7 +41,7 @@ class CryptoKeyRemoteDataSource(
 
     suspend fun getAllGroupMemberKeys(): List<GroupMemberCryptoKeyDataRaw> {
         return blocking {
-            api.getDocumentsFor(remoteConfig.resourceIds.collectionGroupMembersKeysID)
+            api.getDocumentsFor(BackendDatabaseType.KEYS, remoteConfig.resourceIds.collectionGroupMembersKeysID)
                 .map { it.parseGroupMemberKey() }
         }
     }
@@ -47,6 +49,7 @@ class CryptoKeyRemoteDataSource(
     suspend fun getAllGroupMemberKeysForGroup(groupId: String): List<GroupMemberCryptoKeyDataRaw> {
         return blocking {
             api.getDocumentsFor(
+                BackendDatabaseType.KEYS,
                 remoteConfig.resourceIds.collectionGroupMembersKeysID,
                 "groupId" to groupId
             ).map { it.parseGroupMemberKey() }

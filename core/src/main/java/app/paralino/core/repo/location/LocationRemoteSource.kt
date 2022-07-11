@@ -4,6 +4,7 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.raw.LocationHistoryRaw
 import app.paralino.core.models.raw.LocationNodePayload
@@ -27,7 +28,7 @@ class LocationRemoteSource constructor(
 
     suspend fun getCurrentLocationsForGroup(groupId: String): List<MemberDocumentRaw> {
         return blocking {
-            api.getDocuments(remoteConfig.resourceIds.collectionGroupMembersID).map {
+            api.getDocuments(databaseType = BackendDatabaseType.DATA, remoteConfig.resourceIds.collectionGroupMembersID).map {
                 MemberDocumentRaw.from(it)
             }
         }
