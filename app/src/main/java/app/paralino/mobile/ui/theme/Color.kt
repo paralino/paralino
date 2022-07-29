@@ -28,3 +28,5 @@ object AppColors {
 //0xFF007499
 //26A69A
 //577CEE
+//354D92
+//001240
