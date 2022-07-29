@@ -96,7 +96,7 @@ fun LargeSeekbarSwitch(
                         .fillMaxHeight()
                         .width(swipeableState.offset.value.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(contentColor),
+                        .background(MaterialTheme.colors.primary),
                     contentAlignment = Alignment.CenterEnd
                 ) {
                     Icon(imageVector = Icons.Rounded.DragIndicator,

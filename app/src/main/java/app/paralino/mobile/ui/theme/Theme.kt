@@ -27,8 +27,8 @@ private val LightThemeColors = lightColors(
 	onPrimary = AppColors.lightBackground,
 	onSecondary = AppColors.lightSurface,
 	onError = AppColors.redMain,
-	onBackground = AppColors.lightThemePrimary,
-	onSurface = AppColors.lightThemePrimary
+	onBackground = AppColors.darkBackground,
+	onSurface = AppColors.darkBackground
 )
 
 private val DarkThemeColors = darkColors(
@@ -42,8 +42,8 @@ private val DarkThemeColors = darkColors(
 	onPrimary = AppColors.darkBackground,
 	onSecondary = AppColors.darkSurface,
 	onError = AppColors.redMain,
-	onBackground = AppColors.darkThemePrimary,
-	onSurface = AppColors.darkThemePrimary
+	onBackground = AppColors.lightBackground,
+	onSurface = AppColors.lightBackground
 )
 
 private val shapes = Shapes(
