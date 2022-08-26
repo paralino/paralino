@@ -11,6 +11,7 @@ object SharingDurationPreset {
     private const val minute = 60 * second
     const val hour = 60 * minute
     const val day = 24 * hour
+    const val infinite = 0L
 
     const val backgroundAccessThreshold = 2 * day
     val publicSharingMaxDurationMillis: Long = DurationUnit.HOURS.toTimeUnit().toMillis(5)
@@ -32,7 +33,7 @@ object SharingDurationPreset {
         15 * day,
         30 * day,
         365 * day,
-        0
+        infinite
     )
 
 }

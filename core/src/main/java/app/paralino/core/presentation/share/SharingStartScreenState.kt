@@ -8,7 +8,7 @@ import app.paralino.core.utils.SharingDurationPreset
 
 data class SharingStartScreenState constructor(
     val groupState: Payload<GroupItemData?> = Payload.Loading,
-    val sharingTimeMillis: Long = SharingDurationPreset.hour,
+    val sharingTimeMillis: Long = SharingDurationPreset.infinite,
     val sharingPresetsMillis: List<Long> = SharingDurationPreset.presets,
     val approximateLocationMeters: Int = 200,
     val approximateLocationPresetsMeters: List<Int> = listOf(100, 200, 300, 500, 1000, 2000, 5000, 10000),
