@@ -120,7 +120,7 @@ class LocationService : Service() {
 
     private fun stopAll() {
         logv(this.hashCode().toString(), "Stop all - location service")
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 

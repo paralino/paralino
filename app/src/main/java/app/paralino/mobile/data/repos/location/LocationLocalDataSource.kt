@@ -34,7 +34,7 @@ class LocationLocalDataSource(
         return dao.getLastLocationForUser(userId)
             .distinctUntilChanged()
             .map {
-                val key = it.groupId?.let { groupDao.getGroupPublicKeyOnce(it) } ?: ""
+                val key = it.groupId.let { groupDao.getGroupPublicKeyOnce(it) } ?: ""
                 mapper.local2Core(it, key)
             }
     }

@@ -64,8 +64,8 @@ fun LocalDateTime.fromUTCtoMapSharingTime(context: Context, splitTimeToOneLine: 
         isTomorrow -> "${context.getString(R.string.date_name_tomorrow)}, $time"
         sameYear -> local.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMd"))) + ", $time"
         else -> {
-            val time = if(splitTimeToOneLine) "\n$time" else ", $time"
-            local.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMdyyyy"))) + time
+            val timeFixed = if(splitTimeToOneLine) "\n$time" else ", $time"
+            local.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMdyyyy"))) + timeFixed
         }
     }
 }

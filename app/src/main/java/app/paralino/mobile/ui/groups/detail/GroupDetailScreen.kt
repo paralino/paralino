@@ -183,6 +183,7 @@ fun GroupDetailScreen(
                         ConditionErrorType.GPS -> permissionHandler.askLocationService()
                         ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
                         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                        else -> { /* TODO review or do nothing */ }
                     }
                 }
             )

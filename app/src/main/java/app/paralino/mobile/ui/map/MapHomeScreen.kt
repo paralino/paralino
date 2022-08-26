@@ -99,13 +99,14 @@ fun MapHomeScreen(
                 val markers by rememberUpdatedState(data.markers)
 
                 LaunchedEffect(markers) {
-                    mapViewState.updateMarkers(list = markers ?: emptyList())
+                    mapViewState.updateMarkers(list = markers)
                 }
 
                 LaunchedEffect(data, trackGroup) {
                     mapViewState.reDrawMarkers(trackMarkerId, trackGroup)
                 }
 
+                @Suppress("USELESS_IS_CHECK")
                 AnimatedVisibility(
                     visible = state is Payload.Success,
                     enter = fadeIn(),

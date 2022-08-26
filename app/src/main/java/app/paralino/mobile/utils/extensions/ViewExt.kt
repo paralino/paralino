@@ -79,13 +79,13 @@ fun View.fadeIn(finalAlpha: Float = 1f, duration: Long = 300L, delay: Long = 0, 
         .setDuration(duration)
         .setStartDelay(delay)
         .setListener(object: AnimatorListenerAdapter(){
-            override fun onAnimationCancel(animation: Animator?) {
+            override fun onAnimationCancel(animation: Animator) {
                 scaleX = originScaleX
                 scaleY = originScaleY
                 alpha = finalAlpha
             }
 
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 scaleX = originScaleX
                 scaleY = originScaleY
                 alpha = finalAlpha
@@ -120,13 +120,13 @@ fun View.fadeOut(toGone: Boolean = true, finalAlpha: Float = 0f, duration: Long 
         .setDuration(duration)
         .setStartDelay(delay)
         .setListener(object: AnimatorListenerAdapter(){
-            override fun onAnimationCancel(animation: Animator?) {
+            override fun onAnimationCancel(animation: Animator) {
                 scaleX = originScaleX
                 scaleY = originScaleY
                 alpha = originAlpha
             }
 
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 visibility = if(toGone) View.GONE else View.INVISIBLE
                 scaleX = originScaleX
                 scaleY = originScaleY

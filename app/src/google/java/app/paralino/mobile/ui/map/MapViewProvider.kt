@@ -1,6 +1,7 @@
 package app.paralino.mobile.ui.map
 
 import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.util.LruCache
 import android.view.Gravity
 import android.view.View
@@ -13,6 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import app.paralino.core.presentation.map.MapMarkerState
+import app.paralino.mobile.R
 import com.google.gson.JsonPrimitive
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Point
@@ -27,9 +30,6 @@ import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
 import com.mapbox.maps.plugin.scalebar.scalebar
-import app.paralino.core.presentation.map.MapMarkerState
-import app.paralino.mobile.BuildConfig
-import app.paralino.mobile.R
 
 @Composable
 fun rememberMapViewProviderState(
@@ -214,15 +214,12 @@ private class MapViewProviderState(
                     val camera = cameraForCoordinates(markers.map { it.point.point })
                     cameraAnimationsPlugin {
                         flyTo(camera, MapAnimationOptions.mapAnimationOptions {
-                            animatorListener(object : Animator.AnimatorListener {
-                                override fun onAnimationStart(animation: Animator?) {}
-                                override fun onAnimationRepeat(animation: Animator?) {}
-
-                                override fun onAnimationEnd(animation: Animator?) {
+                            animatorListener(object : AnimatorListenerAdapter() {
+                                override fun onAnimationEnd(animation: Animator) {
                                     resetMapMaxZoom()
                                 }
 
-                                override fun onAnimationCancel(animation: Animator?) {
+                                override fun onAnimationCancel(animation: Animator) {
                                     resetMapMaxZoom()
                                 }
                             })
