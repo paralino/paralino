@@ -1,0 +1,69 @@
+package app.paralino.android.data.database
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import app.paralino.android.data.models.group.GroupKeyEntity
+import app.paralino.android.data.models.group.GroupMemberKeyEntity
+import app.paralino.android.data.models.group.UserGroupEntity
+import app.paralino.android.data.models.user.PersonalCodeEntity
+import app.paralino.android.data.models.location.MemberEntity
+import app.paralino.android.data.models.location.SharingContractEntity
+import app.paralino.android.data.models.user.UserEntity
+import app.paralino.android.data.models.user.UserKeyEntity
+import app.paralino.android.data.repos.group.GroupKeysDao
+import app.paralino.android.data.repos.group.UserGroupDao
+import app.paralino.android.data.repos.personal_code.PersonalCodeDao
+import app.paralino.android.data.repos.location.MemberDao
+import app.paralino.android.data.repos.location.SharingContractsDao
+import app.paralino.android.data.repos.user.UserDao
+import app.paralino.android.data.repos.user.UserKeyDao
+
+
+@Database(
+    entities = [
+        MemberEntity::class,
+        SharingContractEntity::class,
+        UserEntity::class,
+        UserGroupEntity::class,
+        PersonalCodeEntity::class,
+        GroupKeyEntity::class,
+        GroupMemberKeyEntity::class,
+        UserKeyEntity::class,
+    ],
+    version = MainAppDatabase.VERSION
+)
+
+@TypeConverters(
+    LocalDateTimeConverter::class,
+    LocalTimeConverter::class,
+    LocalDateConverter::class,
+    ListOfStringsConverters::class
+)
+abstract class MainAppDatabase : RoomDatabase() {
+
+    abstract fun memberDao(): MemberDao
+    abstract fun sharingContractDao(): SharingContractsDao
+    abstract fun userDao(): UserDao
+    abstract fun groupsDao(): UserGroupDao
+    abstract fun personalCodeDao(): PersonalCodeDao
+    abstract fun groupKeysDao(): GroupKeysDao
+    abstract fun userKeysDao(): UserKeyDao
+
+    companion object {
+        const val VERSION = 26
+        const val DB_NAME = "app_main_db"
+
+        fun create(context: Context): MainAppDatabase {
+            return Room.databaseBuilder(
+                context, MainAppDatabase::class.java, DB_NAME
+            )
+//                .addMigrations(*migrations)
+                .fallbackToDestructiveMigration().build()
+        }
+
+    }
+
+}
