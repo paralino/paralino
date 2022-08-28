@@ -69,4 +69,6 @@ data class LocationDataModel constructor(
     val batteryLevel: Int? = null,
     val speed: Float? = null,
     val altitude: Float? = null
-)
+) {
+    val shouldShowApproximateCircle get() = accuracy > 10f
+}

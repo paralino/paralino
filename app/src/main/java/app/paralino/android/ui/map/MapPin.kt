@@ -7,16 +7,17 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.base.ImageType
-import app.paralino.core.presentation.map.MapMarkerState
-import app.paralino.core.utils.Emojis
 import app.paralino.android.R
 import app.paralino.android.databinding.ElementMapPinBinding
 import app.paralino.android.utils.extensions.bitmapFromBase64
 import app.paralino.android.utils.extensions.dp2px
 import app.paralino.android.utils.extensions.getBitmapFromView
 import app.paralino.android.utils.extensions.imageTintRes
+import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.ImageType
+import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.presentation.map.MapMarkerState
+import app.paralino.core.utils.Emojis
 
 class MapUserMarkerView : ConstraintLayout {
 
@@ -107,6 +108,7 @@ data class MapPinData constructor(
     val focused: Boolean,
     val active: Boolean,
     val image: ImageModel?,
+    val locationData: LocationDataModel,
 ) {
 
     constructor(state: MapMarkerState) : this(
@@ -114,6 +116,7 @@ data class MapPinData constructor(
         memberId = state.memberData.id,
         focused = state.focused,
         active = state.active,
-        image = state.image
+        image = state.image,
+        locationData = state.locationData
     )
 }
