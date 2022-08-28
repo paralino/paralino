@@ -13,6 +13,7 @@ data class MapHomeScreenState constructor(
     val inactiveUserCount: Int,
     val members: List<GroupMemberItemState>,
     val markers: List<MapMarkerState>,
+    val focusedMarkerId: String?,
     val sharingStatus: LocationSharingContract?
 )
 

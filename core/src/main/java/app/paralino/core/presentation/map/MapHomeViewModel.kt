@@ -31,6 +31,7 @@ class MapHomeViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     private val groupIdData = MutableStateFlow("")
+    private val focusedMarkerId = MutableStateFlow("")
 
     val locationRefreshSubscription = uiState.map { it.data }.filterNotNull()
         .flatMapLatest { locationRepo.locationRefresh(it.groupId).mapToPayload { Unit } }
@@ -42,8 +43,11 @@ class MapHomeViewModel(
                 if (it.isBlank()) {
                     flowOf(Payload.Loading)
                 } else {
-                    combine(locationRepo.getLocationsForGroup(it), getSharingContract())
-                    { group, sharingStatus ->
+                    combine(
+                        locationRepo.getLocationsForGroup(it),
+                        getSharingContract(),
+                        focusedMarkerId
+                    ) { group, sharingStatus, focusedMarkerId ->
 
                         val memberData = group.members.map { member ->
                             GroupMemberItemState(member).copy(
@@ -58,7 +62,7 @@ class MapHomeViewModel(
                             .map { member ->
                                 MapMarkerState(
                                     groupId = group.id,
-                                    focused = true,
+                                    focused = focusedMarkerId == member.id,
                                     active = member.isActive,
                                     image = member.image,
                                     memberData = GroupMemberItemState(member),
@@ -74,6 +78,7 @@ class MapHomeViewModel(
                             inactiveUserCount = group.memberCount - markers.size,
                             members = memberData,
                             markers = markers,
+                            focusedMarkerId = focusedMarkerId,
                             sharingStatus = sharingStatus
                         )
                     }
@@ -87,12 +92,16 @@ class MapHomeViewModel(
 
     fun switchGroup(groupId: String) {
         if (groupId.isBlank()) {
-        _uiState.value = Payload.Loading
+            _uiState.value = Payload.Loading
             coroutineScope.launch {
                 groupIdData.value =
                     groupRepo.getAllGroupIds().firstOrNull()?.firstOrNull() ?: ""
             }
         } else groupIdData.value = groupId
+    }
+
+    fun trackMarker(markerId: String?) {
+        focusedMarkerId.update { markerId ?: "" }
     }
 
 
@@ -103,7 +112,8 @@ class MapHomeViewModel(
     }
 
     suspend fun getAllGroups(): List<GroupItemData> {
-        return groupRepo.getAllGroupsLocally().firstOrNull()?.map { GroupItemData(it) } ?: emptyList()
+        return groupRepo.getAllGroupsLocally().firstOrNull()?.map { GroupItemData(it) }
+            ?: emptyList()
     }
 
     fun clearMyLocation() {
