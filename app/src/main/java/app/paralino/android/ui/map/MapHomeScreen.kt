@@ -25,15 +25,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
-import app.paralino.core.models.Payload
-import app.paralino.core.models.data
-import app.paralino.core.presentation.dashboard.GroupItemData
-import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.map.MapHomeScreenState
-import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.BottomSheetsScreen
@@ -41,6 +32,15 @@ import app.paralino.android.ui.groups.members.GroupMember
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.android.utils.extensions.safeCast
+import app.paralino.core.models.Payload
+import app.paralino.core.models.data
+import app.paralino.core.presentation.dashboard.GroupItemData
+import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.map.MapHomeScreenState
+import app.paralino.core.utils.extensions.isoToLocalDateTime
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.datetime.toJavaLocalDateTime
@@ -61,7 +61,6 @@ fun MapHomeScreen(
     }
 
     var trackGroup by rememberSaveable(isSystemInDarkTheme()) { mutableStateOf(true) }
-    var trackMarkerId: String? by rememberSaveable(isSystemInDarkTheme()) { mutableStateOf(null) }
 
     LaunchedEffect(uiState.data?.groupId) {
         vm.locationRefreshSubscription.collect()
@@ -76,11 +75,11 @@ fun MapHomeScreen(
                 mapViewState.initMap()
                 mapViewState.onMapTouch = {
                     trackGroup = false
-                    trackMarkerId = null
+                    vm.trackMarker(null)
                     false
                 }
                 mapViewState.onMarkerClick = {
-                    trackMarkerId = it
+                    vm.trackMarker(it)
                     trackGroup = false
                     true
                 }
@@ -103,7 +102,7 @@ fun MapHomeScreen(
                 }
 
                 LaunchedEffect(data, trackGroup) {
-                    mapViewState.reDrawMarkers(trackMarkerId, trackGroup)
+                    mapViewState.reDrawMarkers(data.focusedMarkerId, trackGroup)
                 }
 
                 @Suppress("USELESS_IS_CHECK")
@@ -116,7 +115,7 @@ fun MapHomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         state = data,
                         isTrackingGroup = trackGroup,
-                        trackingUserId = trackMarkerId,
+                        trackingUserId = data.focusedMarkerId,
                         onGroupPickerClick = {
                             appState.uiScope.launch {
                                 val groups = vm.getAllGroups()
@@ -129,14 +128,14 @@ fun MapHomeScreen(
                         },
                         onTrackGroupClick = {
                             trackGroup = !trackGroup
-                            trackMarkerId = null
+                            vm.trackMarker(null)
                         },
                         onClearMyLocationClick = {
                             vm.clearMyLocation()
                         },
                         onMemberClick = {
                             trackGroup = false
-                            trackMarkerId = it.id
+                            vm.trackMarker(it.id)
                             mapViewState.focusToMarker(it.id)
                         }
                     )

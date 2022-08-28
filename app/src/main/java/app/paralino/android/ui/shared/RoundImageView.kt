@@ -6,7 +6,9 @@ package app.paralino.android.ui.shared
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.annotation.ColorRes
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.ContextCompat
 import app.paralino.android.R
 import app.paralino.android.utils.extensions.setShapeBackgroundCircle
 import app.paralino.android.utils.extensions.setShapeBackgroundRectangle
@@ -50,6 +52,11 @@ class RoundImageView: AppCompatImageView {
 
     override fun setBackgroundColor(color: Int) {
         _backgroundColor = color
+        applyAttributes()
+    }
+
+    fun setBackgroundColorRes(@ColorRes colorRes: Int) {
+        _backgroundColor = ContextCompat.getColor(context, colorRes)
         applyAttributes()
     }
 

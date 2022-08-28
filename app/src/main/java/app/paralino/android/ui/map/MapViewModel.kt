@@ -22,6 +22,7 @@ class MapViewModel constructor(
     val locationRefreshSubscription = coreVM.locationRefreshSubscription
 
     fun switchGroup(groupId: String) = coreVM.switchGroup(groupId)
+    fun trackMarker(markerId: String?) = coreVM.trackMarker(markerId)
     suspend fun getAllGroups() = coreVM.getAllGroups()
     fun clearMyLocation() = coreVM.clearMyLocation()
 

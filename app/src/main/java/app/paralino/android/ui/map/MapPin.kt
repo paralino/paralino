@@ -7,16 +7,17 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.base.ImageType
-import app.paralino.core.presentation.map.MapMarkerState
-import app.paralino.core.utils.Emojis
 import app.paralino.android.R
 import app.paralino.android.databinding.ElementMapPinBinding
 import app.paralino.android.utils.extensions.bitmapFromBase64
 import app.paralino.android.utils.extensions.dp2px
 import app.paralino.android.utils.extensions.getBitmapFromView
 import app.paralino.android.utils.extensions.imageTintRes
+import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.ImageType
+import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.presentation.map.MapMarkerState
+import app.paralino.core.utils.Emojis
 
 class MapUserMarkerView : ConstraintLayout {
 
@@ -55,8 +56,10 @@ class MapUserMarkerView : ConstraintLayout {
 
         if (data.active) {
             vb.pinBackground.imageTintRes(R.color.accentDark)
+            vb.pinAnchor.setBackgroundColorRes(R.color.accentDark)
         } else {
             vb.pinBackground.imageTintRes(R.color.highlightGold)
+            vb.pinAnchor.setBackgroundColorRes(R.color.highlightGold)
         }
 
         // prepare layout
@@ -67,7 +70,11 @@ class MapUserMarkerView : ConstraintLayout {
         // we are doing this instead of setting dimensions directly in xml because of better rendering
         // plus it is easier to design and preview bigger view
         val bigBitmap = getBitmapFromView()
-        val size = if (data.active) 40.dp2px else 25.dp2px
+        val size = when {
+            data.focused -> 60.dp2px
+            data.active -> 40.dp2px
+            else -> 25.dp2px
+        }
         val small = Bitmap.createScaledBitmap(bigBitmap!!, size, size, false)
 
         // desaturate the pin if it is inactive
@@ -101,6 +108,7 @@ data class MapPinData constructor(
     val focused: Boolean,
     val active: Boolean,
     val image: ImageModel?,
+    val locationData: LocationDataModel,
 ) {
 
     constructor(state: MapMarkerState) : this(
@@ -108,6 +116,7 @@ data class MapPinData constructor(
         memberId = state.memberData.id,
         focused = state.focused,
         active = state.active,
-        image = state.image
+        image = state.image,
+        locationData = state.locationData
     )
 }

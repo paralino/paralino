@@ -112,8 +112,8 @@ class LocationInitHandler(
                     accuracy = it.accuracy,
                     timeUTC = it.time.millisToDateTimeUTC().toLocalString(),
                     batteryLevel = context.batterLevel,
-                    speed = it.speed,
-                    altitude = it.altitude.toFloat()
+                    speed = if(it.hasSpeed()) it.speed else null,
+                    altitude = if(it.hasAltitude()) it.altitude.toFloat() else null
                 )
                 lastLocation.value = value
                 currentLocation.value = Payload.Success(value)
