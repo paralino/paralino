@@ -39,12 +39,10 @@ import app.paralino.android.data.repos.location.LocationLocalDataSource
 import app.paralino.android.data.repos.location.SharingContractsLocalDataSourceImpl
 import app.paralino.android.data.repos.user.UserCryptoKeyLocalDataSource
 import app.paralino.android.data.repos.user.UserLocalDataSource
+import app.paralino.android.remote.appwrite.*
 import app.paralino.android.utils.ConnectionStatusProvider
 import app.paralino.android.utils.LocationStatusProvider
-import app.paralino.android.remote.appwrite.AppWriteRemoteModule
-import app.paralino.android.remote.appwrite.DocumentsApi
-import app.paralino.android.remote.appwrite.FunctionsApi
-import app.paralino.android.remote.appwrite.UserApi
+import app.paralino.core.repo.api.IRealtimeApi
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -122,6 +120,7 @@ val coreDependencyModules = module {
     single<IUserApi> { UserApi(get()) }
     single<IDocumentsApi> { DocumentsApi(get()) }
     single<IFunctionsApi> { FunctionsApi(get()) }
+    single<IRealtimeApi> { RealtimeApi(get()) }
 
     single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }

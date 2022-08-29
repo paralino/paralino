@@ -12,6 +12,7 @@ import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
 import io.appwrite.services.Databases
 import io.appwrite.services.Functions
+import io.appwrite.services.Realtime
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.net.UnknownHostException
@@ -26,6 +27,8 @@ class AppWriteRemoteModule(
     internal val databaseData: Databases by lazy { Databases(client, BackendDatabaseType.DATA.id) }
     internal val databaseKeys: Databases by lazy { Databases(client, BackendDatabaseType.KEYS.id) }
     internal val functions: Functions by lazy { Functions(client) }
+    internal val realtime: Realtime by lazy { Realtime(client) }
+
     val uniqueIdPlaceholder = "unique()"
 
     private val client: Client by lazy {
