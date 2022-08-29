@@ -12,4 +12,5 @@ lateinit var connectionStatus: IConnectionStatusProvider
 interface ICoroutineScopeProvider {
     val defaultScope: CoroutineScope
     val defaultIOScope: CoroutineScope
+    val userSessionIOScope: CoroutineScope
 }

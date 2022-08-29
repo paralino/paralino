@@ -7,6 +7,7 @@ import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
+import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupRepository
 import kotlinx.coroutines.delay
@@ -18,20 +19,26 @@ class LocationRepository constructor(
     val sharingManager: LocationSharingManager,
     private val local: ILocationLocalDataSource,
     private val remote: LocationRemoteSource,
-    private val groupsRepos: GroupRepository
+    private val groupsRepos: GroupRepository,
+    private val realtimeApi: IRealtimeApi,
+    private val locationPerformanceManager: LocationPerformanceManager,
 ) : BaseRepository() {
 
     fun locationRefresh(groupId: String): Flow<Payload<Unit>> {
-        return flow {
+
+//        realtimeApi.subscribe("databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents")
+
+        return flow<Payload<Unit>> {
             emit(Payload.Loading)
             do {
                 try {
+                    locationPerformanceManager.boostOnMap()
                     groupsRepos.refreshGroupWithMembers(groupId).first()
                     emit(Payload.Success(Unit))
                 } catch (e: Exception) {
                     emit(Payload.Error(e))
                 }
-                delay(6_000)
+                delay(4_000)
             } while (true)
         }
     }
@@ -71,7 +78,8 @@ class LocationRepository constructor(
     fun clearLocation(groupId: String): Flow<Unit> {
         return getDataOnce(
             localUpdate = {
-                local.clearMemberLocationData(local.getUserMemberIds(config.userId, groupId).first())
+                local.clearMemberLocationData(local.getUserMemberIds(config.userId, groupId)
+                    .first())
             }
         ) {
             remote.saveCurrentLocation(

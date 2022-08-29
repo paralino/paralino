@@ -35,6 +35,7 @@ import app.paralino.android.utils.logger.LoggerKind
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -58,6 +59,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     override val defaultScope = CoroutineScope(Dispatchers.Default + applicationJob)
     override val defaultIOScope = CoroutineScope(Dispatchers.IO)
+    override val userSessionIOScope = CoroutineScope(Dispatchers.IO)
 
     private val launcher: PreCheckControl by inject()
     private val userRepo: UserRepository by inject()
@@ -65,7 +67,6 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private val logoutUseCase: LogoutUseCase by inject()
     private val connectionStatusProvider: IConnectionStatusProvider by inject()
 
-    private val locationInit: LocationInitHandler by inject()
     private val locationSharing: LocationSharingManager by inject()
     val locationStatus: ILocationStatusProvider by inject()
 
@@ -92,6 +93,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
         sessionMonitor.listenForSessionExpired()
             .onEach {
+                userSessionIOScope.coroutineContext.cancelChildren()
                 logoutUseCase.logoutLocally()
             }
             .launchIn(defaultScope)
