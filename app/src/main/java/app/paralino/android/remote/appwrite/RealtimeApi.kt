@@ -15,7 +15,7 @@ class RealtimeApi constructor(
 
             val subscription = remoteModule.realtime.subscribe(
                 channels = channels,
-                payloadType = mapOf<String, Any>().javaClass
+                payloadType = mutableMapOf<String, Any>().javaClass
             ) {
                 this.trySend(it.payload)
             }
