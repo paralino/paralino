@@ -35,21 +35,24 @@ class LocationInitHandler constructor(
 
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
-    private var locationRequestLow: LocationRequest = LocationRequest.create().apply {
-        interval = 15.minutes.inWholeMilliseconds
-        fastestInterval = 2.minutes.inWholeMilliseconds
+    private val locationRequestLow: LocationRequest get() = LocationRequest.create().apply {
+        interval = 15 * 60 * 1000
+        fastestInterval = 4 * 60 * 1000
+//        smallestDisplacement = 200f
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
-    private var locationRequestBalanced: LocationRequest = LocationRequest.create().apply {
-        interval = 30000L
-        fastestInterval = 10000L
+    private val locationRequestBalanced: LocationRequest get() = LocationRequest.create().apply {
+        interval = 10 * 60 * 1000L
+        fastestInterval = 2 * 60 * 1000L
+//        smallestDisplacement = 50f
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
-    private var locationRequestHigh: LocationRequest = LocationRequest.create().apply {
-        interval = 2_000
-        fastestInterval = 1_000
+    private val locationRequestHigh: LocationRequest get() = LocationRequest.create().apply {
+        interval = 3_000
+        fastestInterval = 2_000
+//        smallestDisplacement = 10f
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
@@ -80,6 +83,7 @@ class LocationInitHandler constructor(
                         LocationPerformanceType.BALANCED -> locationRequestBalanced
                         LocationPerformanceType.LOW -> locationRequestLow
                     }
+
                     fusedLocationClient.requestLocationUpdates(
                         locationRequest,
                         locationCallback,
