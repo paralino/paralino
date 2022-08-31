@@ -1,19 +1,23 @@
 package app.paralino.core.repo.location
 
 import app.paralino.core.config
+import app.paralino.core.logg
+import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.Payload
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupRepository
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.isActive
 
 class LocationRepository constructor(
     val sharingManager: LocationSharingManager,
@@ -24,22 +28,36 @@ class LocationRepository constructor(
     private val locationPerformanceManager: LocationPerformanceManager,
 ) : BaseRepository() {
 
-    fun locationRefresh(groupId: String): Flow<Payload<Unit>> {
+    fun locationRefresh(groupId: String): Flow<Unit> {
 
-//        realtimeApi.subscribe("databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents")
-
-        return flow<Payload<Unit>> {
-            emit(Payload.Loading)
-            do {
+        val locationSubscriptionFlow = realtimeApi.subscribe("databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents")
+            .onStart {
+                groupsRepos.refreshGroupWithMembers(groupId)
+            }
+            .map {
                 try {
-                    locationPerformanceManager.boostOnMap()
-                    groupsRepos.refreshGroupWithMembers(groupId).first()
-                    emit(Payload.Success(Unit))
+                    val member = MemberDocumentRaw.from(it)
+                    local.createOrUpdateMembers(member)
+                    Payload.Success(member)
                 } catch (e: Exception) {
-                    emit(Payload.Error(e))
+                    logg.e("Error parsing member on map", e)
+                    Payload.Error(e)
                 }
+            }
+
+        val userMapFocusFlow = flow {
+            do {
+                locationPerformanceManager.boostOnMap()
+                emit("User is looking at map")
                 delay(4_000)
-            } while (true)
+            } while (currentCoroutineContext().isActive)
+        }
+
+        return combine(
+            locationSubscriptionFlow,
+            userMapFocusFlow
+        ) { _, _ ->
+            Unit
         }
     }
 
