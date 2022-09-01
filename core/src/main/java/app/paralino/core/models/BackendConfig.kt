@@ -15,12 +15,16 @@ enum class BackendDatabaseType(val id: String) {
 }
 
 object BackendResourceIDs {
+    const val databaseIdMaxLength = 36
+
     const val databaseKeysID = "data_keys"
     const val databaseDataID = "data_main"
 
     const val collectionGroupsID: String = "groups"
     const val collectionGroupMembersID: String = "group_members"
     const val collectionPersonalCodeID: String = "personal_ids"
+    const val collectionLocationFocusID: String = "location_focus"
+
     const val collectionGroupKeysID: String = "group_keys"
     const val collectionGroupMembersKeysID: String = "group_member_keys"
     const val collectionUserKeysID: String = "user_keys"

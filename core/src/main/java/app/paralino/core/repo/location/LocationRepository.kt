@@ -30,7 +30,12 @@ class LocationRepository constructor(
 
     fun locationRefresh(groupId: String): Flow<Unit> {
 
-        val locationSubscriptionFlow = realtimeApi.subscribe("databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents")
+        val event =
+            "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents"
+        val locationSubscriptionFlow = realtimeApi.subscribeWithFilter(
+            channel = event,
+            filters = listOf("$event.*.create", "$event.*.update")
+        )
             .onStart {
                 groupsRepos.refreshGroupWithMembers(groupId)
             }
@@ -46,12 +51,13 @@ class LocationRepository constructor(
             }
 
         val userMapFocusFlow = flow {
+            val group = groupsRepos.getGroupWithoutMembersLocally(groupId).first()
             do {
-                locationPerformanceManager.boostOnMap()
+                locationPerformanceManager.boostOnMap(groupId)
                 emit("User is looking at map")
                 delay(4_000)
             } while (currentCoroutineContext().isActive)
-        }
+        }.catch { emit("Error while boosting location") }
 
         return combine(
             locationSubscriptionFlow,

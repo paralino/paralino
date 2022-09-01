@@ -70,7 +70,7 @@ val utilModule = module {
 val locationModules = module {
     factory { LocationNotificationHandler(androidContext()) }
     single { LocationInitHandler(androidContext(), get(), get()) }
-    single { LocationPerformanceManager(get(), get()) }
+    single { LocationPerformanceManager(get(), get(), get(), get()) }
 }
 
 val coreModule = module {
