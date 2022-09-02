@@ -70,7 +70,7 @@ val utilModule = module {
 val locationModules = module {
     factory { LocationNotificationHandler(androidContext()) }
     single { LocationInitHandler(androidContext(), get(), get()) }
-    single { LocationPerformanceManager(get(), get(), get(), get()) }
+    single { LocationPerformanceManager(get(), get(), get(), get(), get()) }
 }
 
 val coreModule = module {
@@ -86,5 +86,5 @@ val coreModule = module {
     single { PersonalCodesRepository(get(), get(), get(), get()) }
     single { GroupRepository(get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
-    single { LocationRepository(get(), get(), get(), get(), get(), get()) }
+    single { LocationRepository(get(), get(), get(), get(), get()) }
 }
