@@ -33,8 +33,10 @@ class MapHomeViewModel(
     private val groupIdData = MutableStateFlow("")
     private val focusedMarkerId = MutableStateFlow("")
 
-    val locationRefreshSubscription = uiState.map { it.data }.filterNotNull()
-        .flatMapLatest { locationRepo.locationRefresh(it.groupId).mapToPayload { Unit } }
+    val locationRefreshSubscription = uiState.map { it.data?.groupId }
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { locationRepo.locationRefresh(it).mapToPayload { Unit } }
 
 
     init {

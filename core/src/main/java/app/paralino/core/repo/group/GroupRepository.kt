@@ -73,14 +73,11 @@ class GroupRepository constructor(
         )
     }
 
-    fun refreshGroupWithMembers(id: String): Flow<GroupWithMemberRaw> {
-        return getDataOnce(
-            remote = {
-                getRemoteGroupWithMembers(id)
-                // TODO refresh and handle keys
-            },
-            localUpdate = { local.updateOrCreateGroup(it) }
-        )
+    suspend fun refreshGroupWithMembers(id: String): GroupWithMemberRaw {
+        // TODO refresh and handle keys
+        return getRemoteGroupWithMembers(id).also {
+                local.updateOrCreateGroup(it)
+            }
     }
 
     private suspend fun getRemoteGroupWithMembers(groupId: String): GroupWithMemberRaw {

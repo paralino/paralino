@@ -32,6 +32,7 @@ import app.paralino.android.ui.groups.members.GroupMember
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.android.utils.extensions.safeCast
+import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.dashboard.GroupItemData
@@ -62,8 +63,11 @@ fun MapHomeScreen(
 
     var trackGroup by rememberSaveable(isSystemInDarkTheme()) { mutableStateOf(true) }
 
-    LaunchedEffect(uiState.data?.groupId) {
-        vm.locationRefreshSubscription.collect()
+    if(uiState is Payload.Success) {
+        LaunchedEffect(uiState.data?.groupId) {
+            logg.tag("location_performance").v("Map active for ${uiState.data?.groupId}")
+            vm.locationRefreshSubscription.collect()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -219,7 +223,7 @@ fun MapHomeScreenElements(
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = state.sharingStatus!!.endTimeUTC
+                    text = state.sharingStatus?.endTimeUTC
                         ?.isoToLocalDateTime()
                         ?.toJavaLocalDateTime()
                         ?.fromUTCtoMapSharingTime(LocalContext.current)

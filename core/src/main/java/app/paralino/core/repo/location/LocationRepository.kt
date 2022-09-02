@@ -1,7 +1,7 @@
 package app.paralino.core.repo.location
 
 import app.paralino.core.config
-import app.paralino.core.models.Payload
+import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.MemberGroupId
@@ -9,30 +9,30 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupRepository
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 
 class LocationRepository constructor(
     val sharingManager: LocationSharingManager,
     private val local: ILocationLocalDataSource,
     private val remote: LocationRemoteSource,
-    private val groupsRepos: GroupRepository
+    private val groupsRepos: GroupRepository,
+    private val locationPerformanceManager: LocationPerformanceManager,
 ) : BaseRepository() {
 
-    fun locationRefresh(groupId: String): Flow<Payload<Unit>> {
-        return flow {
-            emit(Payload.Loading)
-            do {
-                try {
-                    groupsRepos.refreshGroupWithMembers(groupId).first()
-                    emit(Payload.Success(Unit))
-                } catch (e: Exception) {
-                    emit(Payload.Error(e))
-                }
-                delay(6_000)
-            } while (true)
+    fun locationRefresh(groupId: String): Flow<Unit> {
+
+        val locationSubscriptionFlow = remote.listenForMembersLocationUpdates(groupId)
+            .onStart { groupsRepos.refreshGroupWithMembers(groupId) }
+            .onEach { local.createOrUpdateMembers(it) }
+            .catch { logg.e("Error parsing member on map", it) }
+
+        val userMapFocusFlow = locationPerformanceManager.boostOnMapFlow(groupId)
+
+        return combine(
+            locationSubscriptionFlow,
+            userMapFocusFlow
+        ) { _, _ ->
+            Unit
         }
     }
 
@@ -71,7 +71,8 @@ class LocationRepository constructor(
     fun clearLocation(groupId: String): Flow<Unit> {
         return getDataOnce(
             localUpdate = {
-                local.clearMemberLocationData(local.getUserMemberIds(config.userId, groupId).first())
+                local.clearMemberLocationData(local.getUserMemberIds(config.userId, groupId)
+                    .first())
             }
         ) {
             remote.saveCurrentLocation(
@@ -90,7 +91,6 @@ class LocationRepository constructor(
         sharingManager.stopAllSharing()
         local.clearAll()
     }
-
 
 }
 

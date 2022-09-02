@@ -8,5 +8,8 @@ data class LocationSettings(
 )
 
 enum class LocationPerformanceType {
-    HIGH, BALANCED, LOW
+    HIGH,
+    MEDIUM_HIGH,
+    BALANCED,
+    DEFAULT
 }

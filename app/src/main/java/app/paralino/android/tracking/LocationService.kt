@@ -12,6 +12,7 @@ import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.android.AppClass
 import app.paralino.android.tracking.notification.LocationNotificationHandler
+import app.paralino.core.repo.location.LocationPerformanceManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -28,6 +29,7 @@ class LocationService : Service() {
     private val notificationHandler: LocationNotificationHandler by inject()
     private val locationInitHandler: LocationInitHandler by inject()
     private val locationRepository: LocationRepository by inject()
+    private val locationPerformanceManager: LocationPerformanceManager by inject()
 
     private var launchedInForeground: Boolean = false
 
@@ -93,7 +95,9 @@ class LocationService : Service() {
 
     private fun startTracking() {
         updateNotification()
+
         logv(this.hashCode().toString(), "Subscribing to location updates")
+
         locationInitHandler.currentLocation
             .onEach {
                 logv(this.hashCode().toString(), "Got location: $it")
@@ -103,6 +107,9 @@ class LocationService : Service() {
                     saveLocation(it)
                 }
             }
+            .launchIn(serviceDefaultScope)
+
+        locationPerformanceManager.listenForActiveUsers()
             .launchIn(serviceDefaultScope)
     }
 
