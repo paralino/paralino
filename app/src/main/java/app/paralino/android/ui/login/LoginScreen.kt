@@ -7,6 +7,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -14,20 +16,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.AppButtonState
-import app.paralino.android.ui.components.FilledButton
-import app.paralino.android.ui.components.MainInputField
-import app.paralino.android.ui.components.PasswordInputField
+import app.paralino.android.ui.components.*
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppColors
@@ -47,6 +48,7 @@ fun LoginScreen(
 
     val uiState by vm.uiState.collectAsState(initial = LoginScreenState(uiType = startScreenUiType))
     val focusManager = LocalFocusManager.current
+    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
@@ -79,6 +81,17 @@ fun LoginScreen(
                 }
             }
         }
+    }
+
+    when (val dialog = showDialog) {
+        is MainAlertDialog.GuestAccountCreating -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk)
+                    vm.signUpAsGuest()
+            }
+        }
+        else -> {}
     }
 
     Column(
@@ -202,20 +215,41 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.size(40.dp))
 
-            FilledButton(
-                style = ButtonStyle.BIG,
-                state = AppButtonState.loadingState(uiState.actionLoading),
-                onClick = {
-                    focusManager.clearFocus()
-                    vm.proceed()
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                val text = when (uiState.uiType) {
-                    LoginScreenUiType.LOGIN -> stringResource(id = R.string.login_button_login)
-                    LoginScreenUiType.SIGNUP -> stringResource(id = R.string.login_button_create_account)
-                    LoginScreenUiType.FORGOT_PASSWORD -> stringResource(id = R.string.login_button_reset_password)
+                FilledButton(
+                    modifier = Modifier.weight(1f),
+                    style = ButtonStyle.BIG,
+                    state = AppButtonState.loadingState(uiState.actionLoading),
+                    onClick = {
+                        focusManager.clearFocus()
+                        vm.proceed()
+                    }
+                ) {
+                    val text = when (uiState.uiType) {
+                        LoginScreenUiType.LOGIN -> stringResource(id = R.string.login_button_login)
+                        LoginScreenUiType.SIGNUP -> stringResource(id = R.string.login_button_create_account)
+                        LoginScreenUiType.FORGOT_PASSWORD -> stringResource(id = R.string.login_button_reset_password)
+                    }
+                    Text(text = text)
                 }
-                Text(text = text)
+
+                AnimatedVisibility(visible = uiState.uiType == LoginScreenUiType.SIGNUP && !uiState.actionLoading) {
+                    IconButton(
+                        modifier = Modifier.padding(start = 12.dp, end = 8.dp),
+                        onClick = { showDialog = MainAlertDialog.GuestAccountCreating }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_incognito),
+                            contentDescription = null
+                        )
+                    }
+                }
+
             }
 
         }

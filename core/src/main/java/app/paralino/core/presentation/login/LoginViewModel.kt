@@ -83,7 +83,7 @@ class LoginViewModel constructor(
             )
         }
 
-       if (!emailValidation.result) {
+        if (!emailValidation.result) {
             coroutineScope.launch {
                 _eventChannel.send(LoginScreenEvent.ValidationError(emailValidation))
             }
@@ -104,6 +104,25 @@ class LoginViewModel constructor(
                 .catch { processSignUpError(it) }
                 .launchIn(coroutineScope)
         }
+    }
+
+    fun signUpAsGuest() {
+        _uiState.update {
+            it.copy(
+                email = "",
+                password = "",
+                passwordConfirm = "",
+                hasEmailError = false,
+                hasPasswordError = false,
+                hasPasswordConfirmError = false,
+                stepInfo = null
+            )
+        }
+
+        createAccountUseCase.signUpAsGuest()
+            .onEach { processStep(it) }
+            .catch { processSignUpError(it) }
+            .launchIn(coroutineScope)
     }
 
     private fun resetPassword() {

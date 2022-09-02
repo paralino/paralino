@@ -14,15 +14,22 @@ class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase,
     private val createAccountUseCase: CreateAccountUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
-    startScreenUiType: LoginScreenUiType
+    startScreenUiType: LoginScreenUiType,
 ) : AndroidViewModel(app) {
 
-    private val coreVm = LoginViewModel(loginUseCase, createAccountUseCase, resetPasswordUseCase, startScreenUiType, viewModelScope)
+    private val coreVm = LoginViewModel(
+        loginUseCase,
+        createAccountUseCase,
+        resetPasswordUseCase,
+        startScreenUiType,
+        viewModelScope
+    )
 
     val uiState = coreVm.uiState
     val events = coreVm.events
 
     fun proceed() = coreVm.proceed()
+    fun signUpAsGuest() = coreVm.signUpAsGuest()
 
     fun toggleLoginSignup() = coreVm.toggleLoginSignup()
     fun toggleForgotPassword() = coreVm.toggleForgotPassword()
