@@ -13,7 +13,8 @@ data class UserState constructor(
     val name: String,
     val userId: String,
     val email: String,
-    val image: ImageModel?
+    val image: ImageModel?,
+    val isGuestUser: Boolean
 )
 
 sealed class AccountScreenEvent() {

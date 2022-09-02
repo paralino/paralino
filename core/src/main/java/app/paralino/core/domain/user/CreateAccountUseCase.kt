@@ -6,6 +6,7 @@ import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserMeRaw
+import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
@@ -24,7 +25,7 @@ class CreateAccountUseCase constructor(
 ) {
 
     fun signUpAsGuest(): Flow<SignUpStep> {
-        val email = "${randomString(20)}@guest.paralino.app"
+        val email = "${randomString(20)}${UserMe.guestUserEmail}"
         val password = cryptoCore.keyProvider.createNewSymmetricKey().asString(cryptoCore.hashProvider)
         return signUp(email, password)
     }

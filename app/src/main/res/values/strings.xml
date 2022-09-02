@@ -76,6 +76,8 @@
     <string name="settings_account_edit_password_button">CHANGE PASSWORD</string>
     <string name="settings_account_edit_password_placeholder_password_new">New password*</string>
     <string name="settings_account_edit_password_placeholder_password_confirm">Confirm password*</string>
+    <string name="settings_account_guest_convert">Update account</string>
+    <string name="settings_account_guest_badge">Guest account</string>
 
     <string name="settings_account_logout_alert_title">Logout</string>
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
