@@ -1,16 +1,11 @@
 package app.paralino.core.presentation.login
 
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.common.FormValidationResult
-import app.paralino.core.utils.Emojis
 
 data class LoginScreenState constructor(
     val email: String = "",
     val password: String = "",
     val passwordConfirm: String = "",
-    val userName: String = "",
-    val userImage: ImageModel = ImageModel.emoji(Emojis.robot),
-    val hasNameError: Boolean = false,
     val hasEmailError: Boolean = false,
     val hasPasswordError: Boolean = false,
     val hasPasswordConfirmError: Boolean = false,

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,19 +22,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.login.*
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
+import app.paralino.android.ui.components.AppButtonState
+import app.paralino.android.ui.components.FilledButton
+import app.paralino.android.ui.components.MainInputField
+import app.paralino.android.ui.components.PasswordInputField
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.ButtonStyle
-import app.paralino.android.utils.extensions.safeCast
+import app.paralino.core.presentation.login.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -115,31 +114,6 @@ fun LoginScreen(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.Center
         ) {
-
-            AnimatedVisibility(
-                visible = uiState.uiType == LoginScreenUiType.SIGNUP,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                UserAccountEditSmallItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(TextFieldDefaults.MinHeight),
-                    name = uiState.userName,
-                    image = uiState.userImage,
-                    hasError = uiState.hasNameError,
-                    onImageClick = {
-                        appState.uiScope.launch {
-                            appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
-                                .safeCast<ImageModel>()?.let {
-                                    vm.onUserImageChange(it)
-                                }
-                        }
-                    },
-                    onTextChange = {
-                        vm.onUserNameChange(it)
-                    }
-                )
-            }
 
             Spacer(modifier = Modifier.size(8.dp))
 
@@ -296,43 +270,5 @@ fun getErrorText(context: Context, error: SignUpErrorType): String {
         SignUpErrorType.SIGNUP_CRYPTO -> context.getString(R.string.login_step_error_encryption_signUp)
         SignUpErrorType.SIGNUP_DATA -> context.getString(R.string.login_step_error_user_setup_signUp)
         is SignUpErrorType.SOURCE -> error.error.errorString(context)
-    }
-}
-
-@Composable
-fun UserAccountEditSmallItem(
-    modifier: Modifier = Modifier,
-    name: String,
-    image: ImageModel,
-    hasError: Boolean,
-    onImageClick: () -> Unit,
-    onTextChange: (String) -> Unit,
-) {
-
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ImageModelImage(
-            imageModel = image,
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(TextFieldDefaults.MinHeight)
-                .clickable { onImageClick() }
-        )
-
-        Spacer(modifier = Modifier.size(8.dp))
-
-        MainInputField(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f),
-            text = name,
-            hint = stringResource(id = R.string.login_placeholder_user_name),
-            hasError = hasError,
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Next,
-            onInputChange = onTextChange
-        )
     }
 }

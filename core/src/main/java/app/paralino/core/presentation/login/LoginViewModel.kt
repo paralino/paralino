@@ -3,7 +3,6 @@ package app.paralino.core.presentation.login
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.utils.exceptions.ConflictException
@@ -71,27 +70,20 @@ class LoginViewModel constructor(
         val email = _uiState.value.email
         val password = _uiState.value.password
         val passwordConfirm = _uiState.value.passwordConfirm
-        val name = _uiState.value.userName
 
         val emailValidation = FormValidation.Email.validate(email)
         val passwordValidation = FormValidation.Password.validate(password)
         val passwordConfirmValidation = FormValidation.PasswordConfirm.validate(password, passwordConfirm)
-        val userNameValidation = FormValidation.TextNotEmpty.validate(name)
 
         _uiState.update {
             it.copy(
                 hasPasswordError = !passwordValidation.result,
                 hasPasswordConfirmError = !passwordConfirmValidation.result,
-                hasEmailError = !emailValidation.result,
-                hasNameError = !userNameValidation.result
+                hasEmailError = !emailValidation.result
             )
         }
 
-        if (!userNameValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(LoginScreenEvent.ValidationError(userNameValidation))
-            }
-        } else if (!emailValidation.result) {
+       if (!emailValidation.result) {
             coroutineScope.launch {
                 _eventChannel.send(LoginScreenEvent.ValidationError(emailValidation))
             }
@@ -105,8 +97,6 @@ class LoginViewModel constructor(
             }
         } else {
             createAccountUseCase.signUp(
-                userName = name,
-                userImage = _uiState.value.userImage,
                 email = email,
                 password = password
             )
@@ -234,7 +224,7 @@ class LoginViewModel constructor(
 
     private fun resetValidationState() {
         _uiState.update {
-            it.copy(hasEmailError = false, hasPasswordError = false, hasPasswordConfirmError = false, hasNameError = false)
+            it.copy(hasEmailError = false, hasPasswordError = false, hasPasswordConfirmError = false)
         }
     }
 
@@ -272,16 +262,6 @@ class LoginViewModel constructor(
                 /* do nothing */
             }
         }
-    }
-
-    fun onUserNameChange(name: String) {
-        if (_uiState.value.actionLoading) return
-        _uiState.update { it.copy(userName = name, hasNameError = false, stepInfo = null) }
-    }
-
-    fun onUserImageChange(image: ImageModel) {
-        if (_uiState.value.actionLoading) return
-        _uiState.update { it.copy(userImage = image) }
     }
 
     fun onEmailChange(email: String) {
