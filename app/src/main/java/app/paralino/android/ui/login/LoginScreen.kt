@@ -7,10 +7,10 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +50,22 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
+    val signUpRegularSwitchState by rememberSeekbarState(
+        key = uiState.uiType,
+        LargeSeekbarSwitchState.SeekbarSwitchState(
+            seekbarState = null,
+            switchState = LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.SIGNUP)
+        )
+    )
+
+    val signUpGuestSwitchState by rememberSeekbarState(
+        key = uiState.uiType,
+        LargeSeekbarSwitchState.SeekbarSwitchState(
+            seekbarState = null,
+            switchState = LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.SIGNUP_GUEST)
+        )
+    )
+
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
         vm.events.collectLatest { event ->
@@ -88,7 +104,7 @@ fun LoginScreen(
             dialog.Show {
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk)
-                    vm.signUpAsGuest()
+                    vm.proceed()
             }
         }
         else -> {}
@@ -115,7 +131,7 @@ fun LoginScreen(
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
-                .size(200.dp)
+                .size(100.dp)
                 .scale(1.5f)
                 .align(alignment = Alignment.CenterHorizontally)
         )
@@ -130,62 +146,106 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.size(8.dp))
 
-            MainInputField(
-                text = uiState.email,
-                hint = stringResource(id = R.string.login_placeholder_email),
-                hasError = uiState.hasEmailError,
-                keyboardType = KeyboardType.Email,
-                imeAction = if (uiState.uiType == LoginScreenUiType.FORGOT_PASSWORD) ImeAction.Done else ImeAction.Next,
-                onInputChange = { vm.onEmailChange(it) }
-            )
-
-            Spacer(modifier = Modifier.size(8.dp))
-
             AnimatedVisibility(
-                visible = uiState.uiType != LoginScreenUiType.FORGOT_PASSWORD,
+                visible = uiState.uiType.isCreatingAccount,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                PasswordInputField(
-                    password = uiState.password,
-                    hint = stringResource(id = R.string.login_placeholder_password),
-                    hasError = uiState.hasPasswordError,
-                    focusManager = focusManager,
-                    onInputChange = { vm.onPasswordChange(it) }
-                )
-            }
-
-//            Spacer(modifier = Modifier.size(8.dp))
-
-            AnimatedVisibility(
-                visible = uiState.uiType == LoginScreenUiType.SIGNUP,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                PasswordInputField(
-                    modifier = Modifier.padding(top = 8.dp),
-                    password = uiState.passwordConfirm,
-                    hint = stringResource(id = R.string.login_placeholder_password_confirm),
-                    hasError = uiState.hasPasswordConfirmError,
-                    focusManager = focusManager,
-                    onInputChange = { vm.onPasswordConfirmChange(it) }
-                )
-            }
-
-            AnimatedVisibility(
-                visible = uiState.uiType == LoginScreenUiType.LOGIN,
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.login_button_forgot_password),
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(top = 4.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable {
-                            vm.toggleForgotPassword()
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    LargeSeekbarSwitch(
+                        modifier = Modifier
+                            .padding(end = 10.dp)
+                            .fillMaxWidth(0.5f),
+                        icon = Icons.Rounded.Person,
+                        title = stringResource(id = R.string.login_signup_account_type_regular),
+                        description = stringResource(id = R.string.login_signup_account_type_regular_info),
+                        focusDescription = false,
+                        state = signUpRegularSwitchState,
+                        onStateChange = {
+                            vm.setScreenUiType(LoginScreenUiType.SIGNUP)
                         }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                )
+                    )
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_incognito),
+                        title = stringResource(id = R.string.login_signup_account_type_guest),
+                        description = stringResource(id = R.string.login_signup_account_type_guest_info),
+                        focusDescription = false,
+                        state = signUpGuestSwitchState,
+                        onStateChange = {
+                            vm.setScreenUiType(LoginScreenUiType.SIGNUP_GUEST)
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.size(40.dp))
+
+            AnimatedVisibility(
+                visible = uiState.uiType != LoginScreenUiType.SIGNUP_GUEST,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+
+                    MainInputField(
+                        text = uiState.email,
+                        hint = stringResource(id = R.string.login_placeholder_email),
+                        hasError = uiState.hasEmailError,
+                        keyboardType = KeyboardType.Email,
+                        imeAction = if (uiState.uiType == LoginScreenUiType.FORGOT_PASSWORD) ImeAction.Done else ImeAction.Next,
+                        onInputChange = { vm.onEmailChange(it) }
+                    )
+
+                    Spacer(modifier = Modifier.size(8.dp))
+
+                    AnimatedVisibility(
+                        visible = uiState.uiType != LoginScreenUiType.FORGOT_PASSWORD,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        PasswordInputField(
+                            password = uiState.password,
+                            hint = stringResource(id = R.string.login_placeholder_password),
+                            hasError = uiState.hasPasswordError,
+                            focusManager = focusManager,
+                            onInputChange = { vm.onPasswordChange(it) }
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = uiState.uiType == LoginScreenUiType.SIGNUP,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        PasswordInputField(
+                            modifier = Modifier.padding(top = 8.dp),
+                            password = uiState.passwordConfirm,
+                            hint = stringResource(id = R.string.login_placeholder_password_confirm),
+                            hasError = uiState.hasPasswordConfirmError,
+                            focusManager = focusManager,
+                            onInputChange = { vm.onPasswordConfirmChange(it) }
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = uiState.uiType == LoginScreenUiType.LOGIN,
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.login_button_forgot_password),
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(top = 4.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable {
+                                    vm.toggleForgotPassword()
+                                }
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                        )
+                    }
+
+                }
             }
 
             Spacer(modifier = Modifier.size(12.dp))
@@ -215,50 +275,33 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.size(40.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                FilledButton(
-                    modifier = Modifier.weight(1f),
-                    style = ButtonStyle.BIG,
-                    state = AppButtonState.loadingState(uiState.actionLoading),
-                    onClick = {
-                        focusManager.clearFocus()
+            FilledButton(
+                style = ButtonStyle.BIG,
+                state = AppButtonState.loadingState(uiState.actionLoading),
+                onClick = {
+                    focusManager.clearFocus()
+                    if (uiState.uiType == LoginScreenUiType.SIGNUP_GUEST) {
+                        showDialog = MainAlertDialog.GuestAccountCreating
+                    } else {
                         vm.proceed()
                     }
-                ) {
-                    val text = when (uiState.uiType) {
-                        LoginScreenUiType.LOGIN -> stringResource(id = R.string.login_button_login)
-                        LoginScreenUiType.SIGNUP -> stringResource(id = R.string.login_button_create_account)
-                        LoginScreenUiType.FORGOT_PASSWORD -> stringResource(id = R.string.login_button_reset_password)
-                    }
-                    Text(text = text)
                 }
-
-                AnimatedVisibility(visible = uiState.uiType == LoginScreenUiType.SIGNUP && !uiState.actionLoading) {
-                    IconButton(
-                        modifier = Modifier.padding(start = 12.dp, end = 8.dp),
-                        onClick = { showDialog = MainAlertDialog.GuestAccountCreating }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(24.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_incognito),
-                            contentDescription = null
-                        )
-                    }
+            ) {
+                val text = when (uiState.uiType) {
+                    LoginScreenUiType.LOGIN -> stringResource(id = R.string.login_button_login)
+                    LoginScreenUiType.SIGNUP -> stringResource(id = R.string.login_button_create_account)
+                    LoginScreenUiType.SIGNUP_GUEST -> stringResource(id = R.string.login_button_create_guest_account)
+                    LoginScreenUiType.FORGOT_PASSWORD -> stringResource(id = R.string.login_button_reset_password)
                 }
-
+                Text(text = text)
             }
-
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
         val switchText = when (uiState.uiType) {
             LoginScreenUiType.LOGIN -> stringResource(id = R.string.login_signup_switch_button_signup)
-            LoginScreenUiType.SIGNUP -> stringResource(id = R.string.login_signup_switch_button_login)
+            LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> stringResource(id = R.string.login_signup_switch_button_login)
             LoginScreenUiType.FORGOT_PASSWORD -> stringResource(id = R.string.login_signup_switch_button_login)
         }
 
@@ -273,9 +316,7 @@ fun LoginScreen(
                 }
                 .padding(horizontal = 12.dp, vertical = 8.dp),
         )
-
     }
-
 }
 
 @Composable

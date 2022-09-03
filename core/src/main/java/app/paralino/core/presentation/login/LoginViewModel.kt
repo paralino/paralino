@@ -32,6 +32,7 @@ class LoginViewModel constructor(
         when (_uiState.value.uiType) {
             LoginScreenUiType.LOGIN -> login()
             LoginScreenUiType.SIGNUP -> signUp()
+            LoginScreenUiType.SIGNUP_GUEST -> signUpAsGuest()
             LoginScreenUiType.FORGOT_PASSWORD -> resetPassword()
         }
     }
@@ -106,7 +107,7 @@ class LoginViewModel constructor(
         }
     }
 
-    fun signUpAsGuest() {
+    private fun signUpAsGuest() {
         _uiState.update {
             it.copy(
                 email = "",
@@ -159,7 +160,7 @@ class LoginViewModel constructor(
                 stepInfo = when (step) {
                     SignUpStep.STARTING -> when (it.uiType) {
                         LoginScreenUiType.LOGIN -> SignUpStepInfo.Info.START_LOGIN
-                        LoginScreenUiType.SIGNUP -> SignUpStepInfo.Info.START_SIGNUP
+                        LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> SignUpStepInfo.Info.START_SIGNUP
                         LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Info.START_PASSWORD_RESET
                     }
                     SignUpStep.GENERATING_KEYS -> SignUpStepInfo.Info.CRYPTO_SETUP
@@ -185,7 +186,7 @@ class LoginViewModel constructor(
         val stepInfo = when (step) {
             SignUpStep.STARTING -> when (uiType) {
                 LoginScreenUiType.LOGIN -> SignUpStepInfo.Error.LOGIN
-                LoginScreenUiType.SIGNUP -> SignUpStepInfo.Error.SIGN_UP
+                LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> SignUpStepInfo.Error.SIGN_UP
                 LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Error.PASSWORD_RESET
             }
             SignUpStep.GENERATING_KEYS -> SignUpStepInfo.Error.CRYPTO
@@ -247,6 +248,20 @@ class LoginViewModel constructor(
         }
     }
 
+    fun setScreenUiType(type: LoginScreenUiType) {
+        if (_uiState.value.actionLoading)
+            return
+
+        if(type == _uiState.value.uiType)
+            return
+
+        resetValidationState()
+
+        _uiState.update {
+            it.copy(uiType = type, stepInfo = null)
+        }
+    }
+
     fun toggleLoginSignup() {
         if (_uiState.value.actionLoading)
             return
@@ -256,7 +271,7 @@ class LoginViewModel constructor(
             LoginScreenUiType.LOGIN -> _uiState.update {
                 it.copy(uiType = LoginScreenUiType.SIGNUP, stepInfo = null)
             }
-            LoginScreenUiType.SIGNUP -> _uiState.update {
+            LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> _uiState.update {
                 it.copy(uiType = LoginScreenUiType.LOGIN, stepInfo = null)
             }
             LoginScreenUiType.FORGOT_PASSWORD -> _uiState.update {
@@ -272,7 +287,7 @@ class LoginViewModel constructor(
         resetValidationState()
         when (_uiState.value.uiType) {
             LoginScreenUiType.LOGIN -> _uiState.update {
-                it.copy(uiType = LoginScreenUiType.FORGOT_PASSWORD, password = "", stepInfo = null)
+                it.copy(uiType = LoginScreenUiType.FORGOT_PASSWORD, password = "", passwordConfirm = "", stepInfo = null)
             }
             LoginScreenUiType.FORGOT_PASSWORD -> _uiState.update {
                 it.copy(uiType = LoginScreenUiType.LOGIN, stepInfo = null)

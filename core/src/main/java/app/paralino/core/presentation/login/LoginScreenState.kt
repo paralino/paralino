@@ -19,7 +19,9 @@ data class LoginScreenState constructor(
 }
 
 enum class LoginScreenUiType {
-    LOGIN, SIGNUP, FORGOT_PASSWORD
+    LOGIN, SIGNUP, SIGNUP_GUEST, FORGOT_PASSWORD;
+
+    val isCreatingAccount: Boolean get() = this == SIGNUP || this == SIGNUP_GUEST
 }
 
 sealed class LoginScreenEvent {

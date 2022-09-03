@@ -29,10 +29,10 @@ class LoginViewModel constructor(
     val events = coreVm.events
 
     fun proceed() = coreVm.proceed()
-    fun signUpAsGuest() = coreVm.signUpAsGuest()
 
     fun toggleLoginSignup() = coreVm.toggleLoginSignup()
     fun toggleForgotPassword() = coreVm.toggleForgotPassword()
+    fun setScreenUiType(type: LoginScreenUiType) = coreVm.setScreenUiType(type)
 
     fun onEmailChange(email: String) = coreVm.onEmailChange(email)
     fun onPasswordChange(password: String) = coreVm.onPasswordChange(password)
