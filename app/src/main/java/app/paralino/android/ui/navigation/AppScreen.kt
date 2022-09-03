@@ -139,6 +139,10 @@ sealed class AppScreen {
             object ChangePassword : AppScreen() {
                 override val routeSignature: String = "change-password"
             }
+
+            object ConvertAccount : AppScreen() {
+                override val routeSignature: String = "convert-account"
+            }
         }
     }
 }

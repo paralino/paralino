@@ -109,7 +109,7 @@ fun AccountScreen(
                     image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
                     isGuestUser = state.data.userState.isGuestUser,
                     onGuestAccountClick = {
-                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ChangeEmail.routeSignature)
+                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature)
                     }
                 )
 
@@ -123,9 +123,9 @@ fun AccountScreen(
                 if (state.data.userState.isGuestUser) {
                     SettingsActionItem(
                         name = stringResource(id = R.string.settings_account_guest_convert),
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_incognito)
+                        icon = Icons.Rounded.HowToReg
                     ) {
-                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ChangeEmail.routeSignature)
+                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature)
                     }
                 } else {
                     SettingsActionItem(

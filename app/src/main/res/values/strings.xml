@@ -76,8 +76,10 @@
     <string name="settings_account_edit_password_button">CHANGE PASSWORD</string>
     <string name="settings_account_edit_password_placeholder_password_new">New password*</string>
     <string name="settings_account_edit_password_placeholder_password_confirm">Confirm password*</string>
-    <string name="settings_account_guest_convert">Update account</string>
+    <string name="settings_account_guest_convert">Convert account</string>
     <string name="settings_account_guest_badge">Guest account</string>
+    <string name="settings_account_edit_guest_account_button">CONVERT ACCOUNT</string>
+    <string name="settings_account_edit_guest_account_info">When you add email and password to your account you will be able to login on another device or recover your account if your delete the app or lose your device.</string>
 
     <string name="settings_account_logout_alert_title">Logout</string>
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
