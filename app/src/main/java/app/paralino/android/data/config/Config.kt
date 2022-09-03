@@ -61,15 +61,15 @@ class Config(context: Context) : IConfig {
         }
 
     override var guestEmail: String
-        get() = persistentSharedData.getString(keyUserKey, "") ?: ""
+        get() = persistentSharedData.getString(keyEmailGuest, "") ?: ""
         set(value) {
-            persistentSharedData.edit { putString(keyUserKey, value) }
+            persistentSharedData.edit { putString(keyEmailGuest, value) }
         }
 
     override var guestPassword: String
-        get() = persistentSharedData.getString(keyUserKey, "") ?: ""
+        get() = persistentSharedData.getString(keyPasswordGuest, "") ?: ""
         set(value) {
-            persistentSharedData.edit { putString(keyUserKey, value) }
+            persistentSharedData.edit { putString(keyPasswordGuest, value) }
         }
 
     var userKey: String
