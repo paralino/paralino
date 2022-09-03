@@ -17,17 +17,25 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 
 class CreateAccountUseCase constructor(
     val userRepo: UserRepository,
     val cryptoCore: CryptoCore,
-    val userKeyRepository: CryptoUserKeyRepository
+    val userKeyRepository: CryptoUserKeyRepository,
 ) {
 
     fun signUpAsGuest(): Flow<SignUpStep> {
         val email = "${randomString(20)}${UserMe.guestUserEmail}"
-        val password = cryptoCore.keyProvider.createNewSymmetricKey().asString(cryptoCore.hashProvider)
+        val password =
+            cryptoCore.keyProvider.createNewSymmetricKey().asString(cryptoCore.hashProvider)
         return signUp(email, password)
+            .onEach {
+                if (it == SignUpStep.ALL_DONE) {
+                    config.guestEmail = email
+                    config.guestPassword = password
+                }
+            }
     }
 
     fun signUp(
