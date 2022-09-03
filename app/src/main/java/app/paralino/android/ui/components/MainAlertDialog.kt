@@ -378,4 +378,27 @@ sealed interface MainAlertDialog {
         }
     }
 
+    object GuestAccountRecover : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.login_signup_guest_recover_alert_title),
+                message = stringResource(id = R.string.login_signup_guest_recover_alert_message),
+                buttons = listOf(
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.login_signup_guest_recover_alert_confirm)
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
 }

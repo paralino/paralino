@@ -29,6 +29,9 @@ class LoginViewModel constructor(
     val events = coreVm.events
 
     fun proceed() = coreVm.proceed()
+    fun recoverGuestAccount() = coreVm.recoverGuestAccount()
+    fun dismissGuestAccount() = coreVm.dismissGuestAccount()
+    fun hideGuestAccountDialog() = coreVm.hideGuestAccountDialog()
 
     fun toggleLoginSignup() = coreVm.toggleLoginSignup()
     fun toggleForgotPassword() = coreVm.toggleForgotPassword()

@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.login
 
+import app.paralino.core.config
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
@@ -10,6 +11,7 @@ import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -21,7 +23,7 @@ class LoginViewModel constructor(
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
-    private val _uiState = MutableStateFlow(LoginScreenState(uiType = startScreenUiType))
+    private val _uiState = MutableStateFlow(LoginScreenState(uiType = startScreenUiType, hasGuestAccount = hasGuestAccount()))
     val uiState: Flow<LoginScreenState> = _uiState
 
     private val _eventChannel = Channel<LoginScreenEvent?>()
@@ -35,6 +37,28 @@ class LoginViewModel constructor(
             LoginScreenUiType.SIGNUP_GUEST -> signUpAsGuest()
             LoginScreenUiType.FORGOT_PASSWORD -> resetPassword()
         }
+    }
+
+    private fun hasGuestAccount(): Boolean {
+        val emailValidation = FormValidation.Email.validate(config.guestEmail)
+        val passwordValidation = FormValidation.Password.validate(config.guestPassword)
+        return emailValidation.result && passwordValidation.result
+    }
+
+    fun recoverGuestAccount() {
+        _uiState.update { it.copy(uiType = LoginScreenUiType.LOGIN, hasGuestAccount = false, email = "***", password = "***") }
+        loginUseCase.login(email = config.guestEmail, password = config.guestPassword)
+            .onEach { processStep(it) }
+            .catch {
+                if(it.cause is UnauthorizedException) {
+                    dismissGuestAccount()
+                }
+                processSignUpError(it, onRecoverGuest = true)
+                _uiState.update { it.copy(uiType = LoginScreenUiType.SIGNUP, email = "", password = "") }
+                delay(2000)
+                _uiState.update { it.copy(stepInfo = null) }
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun login() {
@@ -179,13 +203,16 @@ class LoginViewModel constructor(
         }
     }
 
-    private suspend fun processSignUpError(error: Throwable) {
+    private suspend fun processSignUpError(error: Throwable, onRecoverGuest: Boolean = false) {
         val uiType = _uiState.value.uiType
         val step = (error as? SignUpStepException)?.step
 
         val stepInfo = when (step) {
             SignUpStep.STARTING -> when (uiType) {
-                LoginScreenUiType.LOGIN -> SignUpStepInfo.Error.LOGIN
+                LoginScreenUiType.LOGIN -> {
+                    if(onRecoverGuest) SignUpStepInfo.Error.RECOVER_GUEST
+                    else SignUpStepInfo.Error.LOGIN
+                }
                 LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> SignUpStepInfo.Error.SIGN_UP
                 LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Error.PASSWORD_RESET
             }
@@ -201,7 +228,10 @@ class LoginViewModel constructor(
         // extra error handling
         val errorType = when (error.cause) {
             is ConflictException -> SignUpErrorType.ACCOUNT_CONFLICT
-            is UnauthorizedException -> SignUpErrorType.CREDENTIALS
+            is UnauthorizedException -> {
+                if(onRecoverGuest) SignUpErrorType.CREDENTIALS_GUEST
+                else SignUpErrorType.CREDENTIALS
+            }
             is CryptoException -> {
                 when (step) {
                     SignUpStep.GENERATING_KEYS,
@@ -311,6 +341,17 @@ class LoginViewModel constructor(
     fun onPasswordConfirmChange(password: String) {
         if (_uiState.value.actionLoading) return
         _uiState.update { it.copy(passwordConfirm = password, hasPasswordConfirmError = false, stepInfo = null) }
+    }
+
+    fun hideGuestAccountDialog() {
+        if (_uiState.value.actionLoading) return
+        _uiState.update { it.copy(hasGuestAccount = false) }
+    }
+
+    fun dismissGuestAccount() {
+        config.guestEmail = ""
+        config.guestPassword = ""
+        _uiState.update { it.copy(hasGuestAccount = false) }
     }
 
 }

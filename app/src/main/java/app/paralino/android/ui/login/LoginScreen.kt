@@ -50,6 +50,10 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
+    LaunchedEffect(key1 = vm) {
+        showDialog = if(uiState.hasGuestAccount) MainAlertDialog.GuestAccountRecover else null
+    }
+
     val signUpRegularSwitchState by rememberSeekbarState(
         key = uiState.uiType,
         LargeSeekbarSwitchState.SeekbarSwitchState(
@@ -105,6 +109,18 @@ fun LoginScreen(
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk)
                     vm.proceed()
+            }
+        }
+        is MainAlertDialog.GuestAccountRecover -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk)
+                    vm.recoverGuestAccount()
+                else if(it == MainAlertDialog.Buttons.buttonCancel) {
+                    vm.dismissGuestAccount()
+                } else {
+                    vm.hideGuestAccountDialog()
+                }
             }
         }
         else -> {}
@@ -333,6 +349,7 @@ fun getStepText(stepInfo: SignUpStepInfo?): String {
         SignUpStepInfo.Error.PASSWORD_RESET -> stringResource(id = R.string.error_something_wrong)
         SignUpStepInfo.Error.CRYPTO -> stringResource(id = R.string.login_step_error_encryption_signUp)
         SignUpStepInfo.Error.USER_DATA -> stringResource(id = R.string.login_step_error_user_setup)
+        SignUpStepInfo.Error.RECOVER_GUEST -> stringResource(id = R.string.login_step_error_recoverGuest)
         null -> ""
     }
 }
@@ -341,6 +358,7 @@ fun getErrorText(context: Context, error: SignUpErrorType): String {
     return when (error) {
         SignUpErrorType.ACCOUNT_CONFLICT -> context.getString(R.string.form_invalid_email_conflict_description)
         SignUpErrorType.CREDENTIALS -> context.getString(R.string.form_invalid_credentials_description)
+        SignUpErrorType.CREDENTIALS_GUEST -> context.getString(R.string.login_step_error_recoverGuest)
         SignUpErrorType.LOGIN_CRYPTO -> context.getString(R.string.login_step_error_encryption_logIn)
         SignUpErrorType.SIGNUP_CRYPTO -> context.getString(R.string.login_step_error_encryption_signUp)
         SignUpErrorType.SIGNUP_DATA -> context.getString(R.string.login_step_error_user_setup_signUp)

@@ -123,11 +123,14 @@
     <string name="login_signup_switch_button_signup">or CREATE ACCOUNT</string>
     <string name="login_button_forgot_password">Forgot password?</string>
     <string name="login_button_create_account">CREATE ACCOUNT</string>
-    <string name="login_button_create_guest_account">CREATE GUEST ACCOUNT</string>
+    <string name="login_button_create_guest_account">CONTINUE AS GUEST</string>
     <string name="login_button_login">LOG IN</string>
     <string name="login_button_reset_password">RESET PASSWORD</string>
     <string name="login_signup_guest_alert_title">Create guest account</string>
     <string name="login_signup_guest_alert_message">Guest account requires no email and password.\nYou will not be able to recover your account or login on another device.</string>
+    <string name="login_signup_guest_recover_alert_title">Recover guest account</string>
+    <string name="login_signup_guest_recover_alert_message">Guest account was found on this device.\nDo you want to try and recover it?</string>
+    <string name="login_signup_guest_recover_alert_confirm">Try recovering</string>
     <string name="login_signup_account_type_regular">Account</string>
     <string name="login_signup_account_type_regular_info">Email/password</string>
     <string name="login_signup_account_type_guest">Guest</string>
@@ -148,6 +151,7 @@
     <string name="login_step_error_user_setup_signUp">Unable to setup user data, try logging in with current credentials!</string>
     <string name="login_step_error_user_save_signUp">Error while saving user data, try logging in with current credentials!</string>
     <string name="login_step_error_logIn">Error while logging you in</string>
+    <string name="login_step_error_recoverGuest">Unable to recover guest account</string>
     <string name="login_step_error_encryption_logIn">Your encryption keys seems to be corrupted or non existent, please try again or reset your password (This will delete all your previous data)</string>
     <string name="login_step_error_user_setup_logIn">Your encryption keys seems to be corrupted, please try again or reset your password (This will delete all your previous data)</string>
     <string name="login_step_error_user_save_logIn">Unable to save user data, please try again!</string>

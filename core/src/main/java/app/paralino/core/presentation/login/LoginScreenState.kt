@@ -11,6 +11,7 @@ data class LoginScreenState constructor(
     val hasPasswordConfirmError: Boolean = false,
     val uiType: LoginScreenUiType = defaultStartScreen,
     val actionLoading: Boolean = false,
+    val hasGuestAccount: Boolean = false,
     val stepInfo: SignUpStepInfo? = null,
 ) {
     companion object {
@@ -39,13 +40,14 @@ sealed interface SignUpStepInfo {
     }
 
     enum class Error : SignUpStepInfo {
-        LOGIN, SIGN_UP, PASSWORD_RESET, CRYPTO, USER_DATA
+        LOGIN, SIGN_UP, PASSWORD_RESET, CRYPTO, USER_DATA, RECOVER_GUEST
     }
 }
 
 sealed class SignUpErrorType {
     object ACCOUNT_CONFLICT : SignUpErrorType()
     object CREDENTIALS : SignUpErrorType()
+    object CREDENTIALS_GUEST : SignUpErrorType()
     object LOGIN_CRYPTO : SignUpErrorType()
     object SIGNUP_CRYPTO : SignUpErrorType()
     object SIGNUP_DATA : SignUpErrorType()
