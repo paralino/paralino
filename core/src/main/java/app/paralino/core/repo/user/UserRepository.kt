@@ -15,6 +15,7 @@ import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.UnverifiedUserException
@@ -62,6 +63,15 @@ class UserRepository constructor(
         )
 
     val cachedUser: UserMe? get() = localUser.value.data
+
+    fun getAndRefreshUser(): Flow<Resource<UserMe?>> {
+        return mergeDataWithRemote(
+            local = localUser,
+            remote = { getUserFromRemote() },
+            localUpdate = { updateLocalUser(it) },
+            remotePreference = RemotePreference.CACHE("user_call", 10_000)
+        )
+    }
 
     suspend fun login(email: String, password: String): UserSession {
         return triggerRemoteOnly { remote.login(email, password) }

@@ -28,7 +28,7 @@ class SettingsViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        userRepo.localUser
+        userRepo.getAndRefreshUser()
             .onEach { userState ->
                 _accountState.update {
                     when (userState) {
