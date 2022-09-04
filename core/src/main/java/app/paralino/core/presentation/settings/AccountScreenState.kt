@@ -21,4 +21,5 @@ data class UserState constructor(
 
 sealed class AccountScreenEvent() {
     data class Error(val error: Throwable): AccountScreenEvent()
+    object EmailVerificationSent: AccountScreenEvent()
 }

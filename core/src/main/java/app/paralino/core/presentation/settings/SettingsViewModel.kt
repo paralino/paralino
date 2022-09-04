@@ -13,6 +13,7 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
@@ -42,7 +43,7 @@ class SettingsViewModel(
                                             email = userState.data.email,
                                             image = userState.data.data?.userImage,
                                             isGuestUser = userState.data.isGuestUser,
-                                            errorItem = if(!userState.data.emailVerification && !userState.data.isGuestUser)
+                                            errorItem = if(userState.data.needsEmailVerification)
                                                 ConditionErrorType.EMAIL_VERIFICATION
                                             else null
                                         ),
@@ -58,6 +59,17 @@ class SettingsViewModel(
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    fun sendEmailVerification() {
+        coroutineScope.launch {
+            try {
+                userRepo.initEmailVerification()
+                _eventChannel.send(AccountScreenEvent.EmailVerificationSent)
+            } catch (e: Exception) {
+                _eventChannel.send(AccountScreenEvent.Error(e))
+            }
+        }
     }
 
     fun logout() {

@@ -157,6 +157,14 @@ class UserRepository constructor(
         ).map { true }
     }
 
+    suspend fun initEmailVerification() {
+        triggerRemoteOnly { remote.initEmailVerification() }
+    }
+
+    suspend fun confirmEmail(userId: String, secret: String) {
+        triggerRemoteOnly { remote.confirmEmail(userId, secret) }
+    }
+
     suspend fun logoutLocally() {
         local.clear()
         config.clear()

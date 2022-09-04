@@ -55,6 +55,9 @@ fun AccountScreen(
                 is AccountScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
                 }
+                AccountScreenEvent.EmailVerificationSent -> {
+                    appState.showSnackbar(context.getString(R.string.info_email_check_instructions))
+                }
                 null -> {
                     /* do nothing */
                 }
@@ -62,7 +65,7 @@ fun AccountScreen(
         }
     }
 
-    when (showDialog) {
+    when (val dialog = showDialog) {
         is MainAlertDialog.Logout -> {
             MainAlertDialog.Logout.Show {
                 showDialog = null
@@ -84,6 +87,14 @@ fun AccountScreen(
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk) {
                     viewModel.deleteAccount()
+                }
+            }
+        }
+        is MainAlertDialog.VerifyEmail -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    viewModel.sendEmailVerification()
                 }
             }
         }
@@ -115,7 +126,10 @@ fun AccountScreen(
                         appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature)
                     },
                     onErrorItemClick = {
-
+                        when(it) {
+                           ConditionErrorType.EMAIL_VERIFICATION -> showDialog = MainAlertDialog.VerifyEmail(state.data.userState.email)
+                           else -> {}
+                        }
                     }
                 )
 

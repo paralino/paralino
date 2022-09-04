@@ -11,10 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.Key
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +26,7 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.ConditionErrorItem
 import app.paralino.android.ui.components.DefaultEmptyState
 import app.paralino.android.ui.components.FilledButton
+import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.groups.GroupListItem
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsBigHeader
@@ -52,6 +50,8 @@ fun DashboardScreen(
     val vmState by vm.uiState.collectAsState(Payload.Loading)
     val state = vmState
 
+    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
+
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
         vm.events.collectLatest { event ->
@@ -59,11 +59,26 @@ fun DashboardScreen(
                 is DashboardScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
                 }
+                DashboardScreenEvent.EmailVerificationSent -> {
+                    appState.showSnackbar(context.getString(R.string.info_email_check_instructions))
+                }
                 null -> {
                     /* do nothing */
                 }
             }
         }
+    }
+
+    when(val dialog = showDialog) {
+        is MainAlertDialog.VerifyEmail -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.sendEmailVerification()
+                }
+            }
+        }
+        else -> {}
     }
 
     Column(
@@ -98,6 +113,7 @@ fun DashboardScreen(
                                 ConditionErrorType.GPS -> permissionHandler.askLocationService()
                                 ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
                                 ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                                ConditionErrorType.EMAIL_VERIFICATION -> showDialog = MainAlertDialog.VerifyEmail(state.data.email)
                                 else -> { /* TODO review or do nothing */ }
                             }
                         }
