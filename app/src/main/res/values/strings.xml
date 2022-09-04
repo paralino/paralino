@@ -17,6 +17,7 @@
     <string name="button_next">Next</string>
     <string name="button_confirm">Confirm</string>
     <string name="button_save">Save</string>
+    <string name="button_verify">Verify</string>
 
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
@@ -168,7 +169,7 @@
     <string name="form_invalid_server_url">Please enter a valid server url.</string>
     <string name="form_generic_validation">Please fill in all the details.</string>
 
-    <string name="info_email_confirm">Please confirm your email address!</string>
+    <string name="info_email_confirm">Please verify your email address!</string>
 
     <string name="groups_sharing_section_title_group">Group</string>
     <string name="groups_sharing_section_title_duration">Duration</string>

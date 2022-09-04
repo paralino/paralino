@@ -2,6 +2,7 @@ package app.paralino.core.presentation.settings
 
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.utils.ConditionErrorType
 
 data class AccountScreenState constructor(
     val userState: UserState,
@@ -14,7 +15,8 @@ data class UserState constructor(
     val userId: String,
     val email: String,
     val image: ImageModel?,
-    val isGuestUser: Boolean
+    val isGuestUser: Boolean,
+    val errorItem: ConditionErrorType?,
 )
 
 sealed class AccountScreenEvent() {

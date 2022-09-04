@@ -7,6 +7,7 @@ import app.paralino.core.models.exception
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +41,10 @@ class SettingsViewModel(
                                             userId = userState.data.id,
                                             email = userState.data.email,
                                             image = userState.data.data?.userImage,
-                                            isGuestUser = userState.data.isGuestUser
+                                            isGuestUser = userState.data.isGuestUser,
+                                            errorItem = if(!userState.data.emailVerification && !userState.data.isGuestUser)
+                                                ConditionErrorType.EMAIL_VERIFICATION
+                                            else null
                                         ),
                                         logoutState = null,
                                         deleteAccountState = null

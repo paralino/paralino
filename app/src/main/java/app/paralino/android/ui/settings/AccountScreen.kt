@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.components.ConditionErrorItem
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.navigation.AppScreen
@@ -32,6 +33,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.AccountScreenEvent
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
@@ -108,8 +110,12 @@ fun AccountScreen(
                     userId = state.data.userState.userId,
                     image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
                     isGuestUser = state.data.userState.isGuestUser,
+                    errorItem = state.data.userState.errorItem,
                     onGuestAccountClick = {
                         appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature)
+                    },
+                    onErrorItemClick = {
+
                     }
                 )
 
@@ -183,6 +189,8 @@ fun AccountInfoHeader(
     userId: String,
     image: ImageModel,
     isGuestUser: Boolean,
+    errorItem: ConditionErrorType?,
+    onErrorItemClick: (ConditionErrorType) -> Unit,
     onGuestAccountClick: () -> Unit
 ) {
     Column(
@@ -245,6 +253,16 @@ fun AccountInfoHeader(
                 text = "ID: **$userId**".annotatedBold(),
                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
             )
+        }
+
+        Spacer(modifier = Modifier.size(10.dp))
+
+        if(errorItem != null) {
+            ConditionErrorItem(
+                data = errorItem
+            ) {
+                onErrorItemClick(errorItem)
+            }
         }
 
         Spacer(modifier = Modifier.size(20.dp))

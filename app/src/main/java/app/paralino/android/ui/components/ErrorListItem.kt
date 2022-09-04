@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -113,6 +114,7 @@ fun ErrorItemPreview() {
 }
 
 val ConditionErrorType.iconVector: ImageVector
+    @Composable
     get() = when (this) {
         ConditionErrorType.GPS -> Icons.Rounded.LocationOff
         ConditionErrorType.PERMISSION_LOCATION -> Icons.Rounded.PhonelinkSetup
@@ -120,6 +122,7 @@ val ConditionErrorType.iconVector: ImageVector
         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> Icons.Rounded.PhonelinkSetup
         ConditionErrorType.NETWORK -> Icons.Rounded.LocationOff
         ConditionErrorType.EMAIL_VERIFICATION -> Icons.Rounded.Email
+        ConditionErrorType.GUEST_ACCOUNT -> ImageVector.vectorResource(id = R.drawable.ic_incognito)
     }
 
 val ConditionErrorType.nameRes: Int
@@ -130,6 +133,7 @@ val ConditionErrorType.nameRes: Int
         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.string.location_banner_error_no_background_permission
         ConditionErrorType.NETWORK -> R.string.location_banner_error_offline
         ConditionErrorType.EMAIL_VERIFICATION -> R.string.info_email_confirm
+        ConditionErrorType.GUEST_ACCOUNT -> R.string.settings_account_guest_badge
     }
 
 val ConditionErrorType.endActionTextRes: Int
@@ -139,5 +143,6 @@ val ConditionErrorType.endActionTextRes: Int
         ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.string.location_banner_fix
         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.string.location_banner_fix
         ConditionErrorType.NETWORK -> 0
-        ConditionErrorType.EMAIL_VERIFICATION -> 0
+        ConditionErrorType.EMAIL_VERIFICATION -> R.string.button_verify
+        ConditionErrorType.GUEST_ACCOUNT -> R.string.location_banner_fix
     }
