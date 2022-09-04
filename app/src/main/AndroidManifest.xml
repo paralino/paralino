@@ -45,6 +45,7 @@
 
                 <data android:pathPrefix="/home" />
                 <data android:pathPrefix="/recover" />
+                <data android:pathPrefix="/verify" />
             </intent-filter>
         </activity>
 

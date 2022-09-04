@@ -8,7 +8,7 @@ import io.appwrite.models.Session
 import io.appwrite.models.User
 
 class UserApi constructor(
-    private val remoteModule: AppWriteRemoteModule
+    private val remoteModule: AppWriteRemoteModule,
 ) : IUserApi {
 
     override suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
@@ -47,13 +47,30 @@ class UserApi constructor(
 
     override suspend fun initResetPassword(email: String) {
         remoteModule.execute {
-            account.createRecovery(email, remoteModule.config.serverUrl)
+            account.createRecovery(email, remoteModule.config.resourceIds.passwordResetUrl)
         }
     }
 
     override suspend fun resetPassword(userId: String, secret: String, password: String) {
         return remoteModule.execute {
-            account.updateRecovery(userId = userId, secret = secret, password = password, passwordAgain = password)
+            account.updateRecovery(
+                userId = userId,
+                secret = secret,
+                password = password,
+                passwordAgain = password
+            )
+        }
+    }
+
+    override suspend fun initEmailVerification() {
+        return remoteModule.execute {
+            account.createVerification(remoteModule.config.resourceIds.emailConfirmationUrl)
+        }
+    }
+
+    override suspend fun confirmEmail(userId: String, secret: String) {
+        return remoteModule.execute {
+            account.updateVerification(userId = userId, secret = secret)
         }
     }
 
@@ -66,6 +83,8 @@ class UserApi constructor(
     }
 
     override suspend fun logout() {
+        // TODO when multiple devices are supported only log out current device
+//        return remoteModule.execute { account.deleteSession("current") }
         return remoteModule.execute { account.deleteSessions() }
     }
 
