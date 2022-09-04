@@ -17,7 +17,7 @@ class SettingsViewModel(
     val userData = coreVm.accountState
     val events = coreVm.events
 
+    fun sendEmailVerification() = coreVm.sendEmailVerification()
     fun logout() = coreVm.logout()
-
     fun deleteAccount() = coreVm.deleteAccount()
 }

@@ -3,8 +3,11 @@ package app.paralino.core.presentation.dashboard
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.settings.AccountScreenEvent
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +19,7 @@ class DashboardViewModel(
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
     private val locationStatusProvider: ILocationStatusProvider,
+    private val userRepo: UserRepository,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -31,10 +35,11 @@ class DashboardViewModel(
 
     fun loadDashboard() {
         combine(
+            userRepo.localUser,
             locationStatusProvider.status,
             groupRepository.getAllGroups(),
             locationSharing.allContractsFlow.map { it.data }.filterNotNull()
-        ) { location, groups, sharing ->
+        ) { user, location, groups, sharing ->
 
             val active =
                 groups.filter { group -> sharing.any { it.groupId == group.id } }.map { group ->
@@ -46,12 +51,25 @@ class DashboardViewModel(
                     GroupItemData(group, uiType = GroupItemData.GroupUiType.ACTIVE)
                 }
 
+            val errors = buildList {
+                sharing
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { location.getPossibleErrors(forBackground = it.any { it.isLongTerm }) }
+                    .let { it ?: emptyList() }
+                    .let {
+                        addAll(it)
+                    }
+
+                user.data?.needsEmailVerification?.takeIf { it }?.let {
+                    add(ConditionErrorType.EMAIL_VERIFICATION)
+                }
+            }
+
             DashboardScreenState(
+                email = user.data?.email ?: "",
                 activeGroups = active,
                 inactiveGroups = inactive,
-                errors = sharing.takeIf { it.isNotEmpty() }?.let {
-                    location.getPossibleErrors(forBackground = it.any { it.isLongTerm })
-                } ?: emptyList()
+                errors = errors
             )
         }
             .mapToPayload { it }
@@ -64,6 +82,16 @@ class DashboardViewModel(
             .launchIn(coroutineScope)
     }
 
+    fun sendEmailVerification() {
+        coroutineScope.launch {
+            try {
+                userRepo.initEmailVerification()
+                _eventChannel.send(DashboardScreenEvent.EmailVerificationSent)
+            } catch (e: Exception) {
+                _eventChannel.send(DashboardScreenEvent.Error(e))
+            }
+        }
+    }
 
     fun stopTracking(groupId: String) {
         coroutineScope.launch {

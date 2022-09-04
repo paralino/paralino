@@ -4,7 +4,8 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.utils.ConditionErrorType
 
-data class DashboardScreenState(
+data class DashboardScreenState constructor(
+    val email: String,
     val activeGroups: List<GroupItemData>,
     val inactiveGroups: List<GroupItemData>,
     val errors: List<ConditionErrorType>,
@@ -32,4 +33,5 @@ data class GroupItemData constructor(
 
 sealed class DashboardScreenEvent() {
     data class Error(val error: Throwable) : DashboardScreenEvent()
+    object EmailVerificationSent : DashboardScreenEvent()
 }

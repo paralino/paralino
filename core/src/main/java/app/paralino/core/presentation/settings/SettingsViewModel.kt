@@ -7,11 +7,13 @@ import app.paralino.core.models.exception
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
@@ -26,7 +28,7 @@ class SettingsViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        userRepo.localUser
+        userRepo.getAndRefreshUser()
             .onEach { userState ->
                 _accountState.update {
                     when (userState) {
@@ -40,7 +42,10 @@ class SettingsViewModel(
                                             userId = userState.data.id,
                                             email = userState.data.email,
                                             image = userState.data.data?.userImage,
-                                            isGuestUser = userState.data.isGuestUser
+                                            isGuestUser = userState.data.isGuestUser,
+                                            errorItem = if(userState.data.needsEmailVerification)
+                                                ConditionErrorType.EMAIL_VERIFICATION
+                                            else null
                                         ),
                                         logoutState = null,
                                         deleteAccountState = null
@@ -54,6 +59,17 @@ class SettingsViewModel(
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    fun sendEmailVerification() {
+        coroutineScope.launch {
+            try {
+                userRepo.initEmailVerification()
+                _eventChannel.send(AccountScreenEvent.EmailVerificationSent)
+            } catch (e: Exception) {
+                _eventChannel.send(AccountScreenEvent.Error(e))
+            }
+        }
     }
 
     fun logout() {

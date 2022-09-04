@@ -1,5 +1,7 @@
 package app.paralino.android.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -20,24 +22,50 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
-import app.paralino.core.domain.user.AppAccountState
-import app.paralino.core.models.Resource
+import app.paralino.android.R
 import app.paralino.android.ui.components.AppSnackbar
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.components.SheetContent
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.navigation.MainNavHost
 import app.paralino.android.ui.navigation.loggedOutGraph
+import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppTheme
+import app.paralino.core.domain.user.AppAccountState
+import app.paralino.core.models.Resource
+import app.paralino.core.presentation.MainScreenEvent
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
+    val vm: MainViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { RootApp() }
+        setContent { RootApp(vm) }
+        handleExtraDeeplink(intent?.data)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleExtraDeeplink(intent?.data)
+    }
+
+    private fun handleExtraDeeplink(deeplinkUri: Uri?) {
+        handleExtraDeeplink(Deeplink.parse(deeplinkUri?.toString()))
+    }
+
+    private fun handleExtraDeeplink(deeplink: Deeplink?) {
+        when (deeplink) {
+            is Deeplink.EmailVerify -> {
+                vm.verifyEmail(deeplink.userId, deeplink.secret)
+            }
+            else -> {}
+        }
     }
 
 }
@@ -47,16 +75,30 @@ fun RootApp(
     vm: MainViewModel = getViewModel(),
 ) {
     AppTheme {
+        val appState = rememberAppState()
         val userState by vm.userState.collectAsState(initial = Resource.NotInitialized)
         var showDialog: MainAlertDialog? by remember {
             mutableStateOf(null)
         }
 
+        val context = LocalContext.current
+        LaunchedEffect(context) {
+            vm.events.collectLatest { event ->
+                when (event) {
+                    MainScreenEvent.EmailVerified -> {
+                        appState.showSnackbar(context.getString(R.string.info_email_verified))
+                    }
+                    is MainScreenEvent.Error -> {
+                        appState.showSnackbar(event.error.errorString(context))
+                    }
+                    null -> {}
+                }
+            }
+        }
+
         LaunchedEffect(LocalContext.current) {
             vm.sessionExpiredFlow.collectLatest { showDialog = MainAlertDialog.SessionExpired }
         }
-
-        val appState = rememberAppState()
 
         when (val state = userState) {
             Resource.NotInitialized -> {

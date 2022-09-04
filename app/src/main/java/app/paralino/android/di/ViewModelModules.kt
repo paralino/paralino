@@ -33,7 +33,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { DashboardViewModel(androidApplication(), get(), get(), get()) }
+    viewModel { DashboardViewModel(androidApplication(), get(), get(), get(), get()) }
     viewModel { MapViewModel(androidApplication(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { (startScreenType: Any) -> LoginViewModel(androidApplication(), get(), get(), get(), startScreenType as LoginScreenUiType) }
@@ -54,7 +54,7 @@ val viewModelModules = module {
             get())
     }
     viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get()) }
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
     viewModel { ChangeEmailViewModel(get(), get()) }
     viewModel { ChangePasswordViewModel(get()) }
     viewModel { ConvertAccountViewModel(get()) }

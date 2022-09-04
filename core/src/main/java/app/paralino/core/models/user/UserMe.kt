@@ -18,6 +18,7 @@ data class UserMe constructor(
 
     val isGuestUser: Boolean get() = email.endsWith(guestUserEmail)
     val hasValidData: Boolean get() = !data?.userName.isNullOrBlank() && data?.userImage?.takeIfValid() != null
+    val needsEmailVerification: Boolean get() = !emailVerification && !isGuestUser
 
     companion object {
         const val guestUserEmail = "@guest.paralino.app"

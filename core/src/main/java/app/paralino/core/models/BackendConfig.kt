@@ -15,6 +15,10 @@ enum class BackendDatabaseType(val id: String) {
 }
 
 object BackendResourceIDs {
+
+    const val passwordResetUrl = "https://paralino.app/recover"
+    const val emailConfirmationUrl = "https://paralino.app/verify"
+
     const val databaseIdMaxLength = 36
 
     const val databaseKeysID = "data_keys"

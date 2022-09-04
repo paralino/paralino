@@ -401,4 +401,29 @@ sealed interface MainAlertDialog {
         }
     }
 
+    data class VerifyEmail(
+        val email: String
+    ) : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.info_email_confirm_alert_title),
+                message = stringResource(id = R.string.info_email_confirm_alert_message, email),
+                buttons = listOf(
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.info_email_confirm_alert_button_resend)
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
 }

@@ -13,6 +13,8 @@ interface IUserApi {
     suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw
     suspend fun initResetPassword(email: String)
     suspend fun resetPassword(userId: String, secret: String, password: String)
+    suspend fun initEmailVerification()
+    suspend fun confirmEmail(userId: String, secret: String)
     suspend fun updateEmail(email: String, password: String): UserMeRaw
     suspend fun deleteAccount()
     suspend fun logout()
