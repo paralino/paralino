@@ -39,7 +39,8 @@ class SettingsViewModel(
                                             name = userState.data.name,
                                             userId = userState.data.id,
                                             email = userState.data.email,
-                                            image = userState.data.data?.userImage
+                                            image = userState.data.data?.userImage,
+                                            isGuestUser = userState.data.isGuestUser
                                         ),
                                         logoutState = null,
                                         deleteAccountState = null

@@ -21,6 +21,7 @@ import app.paralino.android.ui.login.passwordreset.ResetPasswordViewModel
 import app.paralino.android.ui.login.recover.RecoverKeysViewModel
 import app.paralino.android.ui.map.MapViewModel
 import app.paralino.android.ui.settings.SettingsViewModel
+import app.paralino.android.ui.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.android.ui.settings.editprofile.EditProfileViewModel
 import app.paralino.android.ui.settings.emailchange.ChangeEmailViewModel
 import app.paralino.android.ui.settings.passwordchange.ChangePasswordViewModel
@@ -56,6 +57,7 @@ val viewModelModules = module {
     viewModel { MainViewModel(get(), get()) }
     viewModel { ChangeEmailViewModel(get(), get()) }
     viewModel { ChangePasswordViewModel(get()) }
+    viewModel { ConvertAccountViewModel(get()) }
     viewModel { EditProfileViewModel(get()) }
     viewModel { RecoverKeysViewModel(get(), get()) }
     viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
@@ -75,12 +77,13 @@ val locationModules = module {
 
 val coreModule = module {
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
-    factory { CreateAccountUseCase(get(), get(), get(), get()) }
+    factory { CreateAccountUseCase(get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
     factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
+    factory { ConvertAccountUseCase(get(), get()) }
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get(), get()) }

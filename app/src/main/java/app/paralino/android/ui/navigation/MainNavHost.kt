@@ -7,8 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
-import app.paralino.core.presentation.login.LoginScreenState
-import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.dashboard.DashboardScreen
 import app.paralino.android.ui.groups.create.GroupCreateScreen
@@ -23,10 +21,13 @@ import app.paralino.android.ui.login.recover.RecoverKeysScreen
 import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.settings.AccountScreen
 import app.paralino.android.ui.settings.SettingsScreen
+import app.paralino.android.ui.settings.convertaccount.ConvertAccountScreen
 import app.paralino.android.ui.settings.editprofile.EditProfileScreen
 import app.paralino.android.ui.settings.emailchange.ChangeEmailScreen
 import app.paralino.android.ui.settings.passwordchange.ChangePasswordScreen
 import app.paralino.android.ui.share.SharingStartScreen
+import app.paralino.core.presentation.login.LoginScreenState
+import app.paralino.core.presentation.login.LoginScreenUiType
 
 
 @Composable
@@ -113,6 +114,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.SettingsRoot.ProfileDetails.ChangePassword.routeSignature) {
             ChangePasswordScreen(appState)
+        }
+        composable(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature) {
+            ConvertAccountScreen(appState)
         }
     }
 }

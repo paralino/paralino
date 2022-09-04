@@ -5,30 +5,40 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.UserMeRaw
-import app.paralino.core.models.user.UserMeData
+import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
+import app.paralino.core.utils.extensions.randomString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 
 class CreateAccountUseCase constructor(
     val userRepo: UserRepository,
     val cryptoCore: CryptoCore,
     val userKeyRepository: CryptoUserKeyRepository,
-    val userMapper: UserMapperCore,
 ) {
 
+    fun signUpAsGuest(): Flow<SignUpStep> {
+        val email = "${randomString(20)}${UserMe.guestUserEmail}"
+        val password =
+            cryptoCore.keyProvider.createNewSymmetricKey().asString(cryptoCore.hashProvider)
+        return signUp(email, password)
+            .onEach {
+                if (it == SignUpStep.ALL_DONE) {
+                    config.guestEmail = email
+                    config.guestPassword = password
+                }
+            }
+    }
+
     fun signUp(
-        userName: String,
-        userImage: ImageModel,
         email: String,
         password: String,
     ): Flow<SignUpStep> {
@@ -66,19 +76,8 @@ class CreateAccountUseCase constructor(
             // user and user keys are ready
 
             emit(SignUpStep.INIT_USER_DATA)
-            try {
-                delay(500)
-                val userData = UserMeData(userImage = userImage, userName = userName)
-                val remoteData = userMapper.core2Remote(userData)
-                userRepo.uploadAndInitKeysAndData(remoteData).also {
-                    delay(500)
-                    userRepo.initLocallyAfterSignUp(it, session)
-                }
-            } catch (e: Exception) {
-                // ignore exception here
-                // if user data (name and photo) are missing, show screen to complete the profile after
-                userRepo.initLocallyAfterSignUp(user, session)
-            }
+            delay(500)
+            userRepo.initLocallyAfterSignUp(user, session)
 
             emit(SignUpStep.ALL_DONE)
         }

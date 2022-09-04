@@ -76,6 +76,10 @@
     <string name="settings_account_edit_password_button">CHANGE PASSWORD</string>
     <string name="settings_account_edit_password_placeholder_password_new">New password*</string>
     <string name="settings_account_edit_password_placeholder_password_confirm">Confirm password*</string>
+    <string name="settings_account_guest_convert">Convert account</string>
+    <string name="settings_account_guest_badge">Guest account</string>
+    <string name="settings_account_edit_guest_account_button">CONVERT ACCOUNT</string>
+    <string name="settings_account_edit_guest_account_info">When you add email and password to your account you will be able to login on another device or recover your account if your delete the app or lose your device.</string>
 
     <string name="settings_account_logout_alert_title">Logout</string>
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
@@ -119,8 +123,18 @@
     <string name="login_signup_switch_button_signup">or CREATE ACCOUNT</string>
     <string name="login_button_forgot_password">Forgot password?</string>
     <string name="login_button_create_account">CREATE ACCOUNT</string>
+    <string name="login_button_create_guest_account">CONTINUE AS GUEST</string>
     <string name="login_button_login">LOG IN</string>
     <string name="login_button_reset_password">RESET PASSWORD</string>
+    <string name="login_signup_guest_alert_title">Create guest account</string>
+    <string name="login_signup_guest_alert_message">Credentials for guest account are generated and stored securely on device.\n\n**WARNING:**\nYou will not be able to recover your account or login on another device!</string>
+    <string name="login_signup_guest_recover_alert_title">Recover guest account</string>
+    <string name="login_signup_guest_recover_alert_message">Guest account was found on this device.\nDo you want to try and recover it?</string>
+    <string name="login_signup_guest_recover_alert_confirm">Try recovering</string>
+    <string name="login_signup_account_type_regular">Account</string>
+    <string name="login_signup_account_type_regular_info">Email/password</string>
+    <string name="login_signup_account_type_guest">Guest</string>
+    <string name="login_signup_account_type_guest_info">Random</string>
 
     <string name="login_step_logIn">Logging you in</string>
     <string name="login_step_signUp">Creating account</string>
@@ -137,6 +151,7 @@
     <string name="login_step_error_user_setup_signUp">Unable to setup user data, try logging in with current credentials!</string>
     <string name="login_step_error_user_save_signUp">Error while saving user data, try logging in with current credentials!</string>
     <string name="login_step_error_logIn">Error while logging you in</string>
+    <string name="login_step_error_recoverGuest">Unable to recover guest account</string>
     <string name="login_step_error_encryption_logIn">Your encryption keys seems to be corrupted or non existent, please try again or reset your password (This will delete all your previous data)</string>
     <string name="login_step_error_user_setup_logIn">Your encryption keys seems to be corrupted, please try again or reset your password (This will delete all your previous data)</string>
     <string name="login_step_error_user_save_logIn">Unable to save user data, please try again!</string>

@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -122,6 +123,7 @@ fun SettingSectionInfo() {
 @Composable
 fun SettingsBigHeader(
     modifier: Modifier = Modifier,
+    bottomPadding: Dp = dimensionResource(id = R.dimen.activity_side_margin_medium_large),
     name: String
 ) {
     Text(
@@ -130,7 +132,7 @@ fun SettingsBigHeader(
         modifier = modifier
             .padding(
                 top = dimensionResource(id = R.dimen.activity_side_margin_medium_large),
-                bottom = dimensionResource(id = R.dimen.activity_side_margin_medium_large)
+                bottom = bottomPadding
             )
     )
 }

@@ -169,7 +169,10 @@ class UserRepository constructor(
     fun deleteAccount(): Flow<Unit> {
         return getDataOnce(
             remote = { remote.deleteAccount() }
-        )
+        ).onEach {
+            config.guestEmail = ""
+            config.guestPassword = ""
+        }
     }
 
     fun resetAccount(keyToPersist: UserCryptoKeyRaw?): Flow<Unit> {

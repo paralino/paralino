@@ -1,9 +1,9 @@
 package app.paralino.core.presentation.login
 
+import app.paralino.core.config
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.utils.exceptions.ConflictException
@@ -11,6 +11,7 @@ import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -22,7 +23,7 @@ class LoginViewModel constructor(
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
-    private val _uiState = MutableStateFlow(LoginScreenState(uiType = startScreenUiType))
+    private val _uiState = MutableStateFlow(LoginScreenState(uiType = startScreenUiType, hasGuestAccount = hasGuestAccount()))
     val uiState: Flow<LoginScreenState> = _uiState
 
     private val _eventChannel = Channel<LoginScreenEvent?>()
@@ -33,8 +34,31 @@ class LoginViewModel constructor(
         when (_uiState.value.uiType) {
             LoginScreenUiType.LOGIN -> login()
             LoginScreenUiType.SIGNUP -> signUp()
+            LoginScreenUiType.SIGNUP_GUEST -> signUpAsGuest()
             LoginScreenUiType.FORGOT_PASSWORD -> resetPassword()
         }
+    }
+
+    private fun hasGuestAccount(): Boolean {
+        val emailValidation = FormValidation.Email.validate(config.guestEmail)
+        val passwordValidation = FormValidation.Password.validate(config.guestPassword)
+        return emailValidation.result && passwordValidation.result
+    }
+
+    fun recoverGuestAccount() {
+        _uiState.update { it.copy(uiType = LoginScreenUiType.LOGIN, hasGuestAccount = false, email = "***", password = "***") }
+        loginUseCase.login(email = config.guestEmail, password = config.guestPassword)
+            .onEach { processStep(it) }
+            .catch {
+                if(it.cause is UnauthorizedException) {
+                    dismissGuestAccount()
+                }
+                processSignUpError(it, onRecoverGuest = true)
+                _uiState.update { it.copy(uiType = LoginScreenUiType.SIGNUP, email = "", password = "") }
+                delay(2000)
+                _uiState.update { it.copy(stepInfo = null) }
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun login() {
@@ -71,27 +95,20 @@ class LoginViewModel constructor(
         val email = _uiState.value.email
         val password = _uiState.value.password
         val passwordConfirm = _uiState.value.passwordConfirm
-        val name = _uiState.value.userName
 
         val emailValidation = FormValidation.Email.validate(email)
         val passwordValidation = FormValidation.Password.validate(password)
         val passwordConfirmValidation = FormValidation.PasswordConfirm.validate(password, passwordConfirm)
-        val userNameValidation = FormValidation.TextNotEmpty.validate(name)
 
         _uiState.update {
             it.copy(
                 hasPasswordError = !passwordValidation.result,
                 hasPasswordConfirmError = !passwordConfirmValidation.result,
-                hasEmailError = !emailValidation.result,
-                hasNameError = !userNameValidation.result
+                hasEmailError = !emailValidation.result
             )
         }
 
-        if (!userNameValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(LoginScreenEvent.ValidationError(userNameValidation))
-            }
-        } else if (!emailValidation.result) {
+        if (!emailValidation.result) {
             coroutineScope.launch {
                 _eventChannel.send(LoginScreenEvent.ValidationError(emailValidation))
             }
@@ -105,8 +122,6 @@ class LoginViewModel constructor(
             }
         } else {
             createAccountUseCase.signUp(
-                userName = name,
-                userImage = _uiState.value.userImage,
                 email = email,
                 password = password
             )
@@ -114,6 +129,25 @@ class LoginViewModel constructor(
                 .catch { processSignUpError(it) }
                 .launchIn(coroutineScope)
         }
+    }
+
+    private fun signUpAsGuest() {
+        _uiState.update {
+            it.copy(
+                email = "",
+                password = "",
+                passwordConfirm = "",
+                hasEmailError = false,
+                hasPasswordError = false,
+                hasPasswordConfirmError = false,
+                stepInfo = null
+            )
+        }
+
+        createAccountUseCase.signUpAsGuest()
+            .onEach { processStep(it) }
+            .catch { processSignUpError(it) }
+            .launchIn(coroutineScope)
     }
 
     private fun resetPassword() {
@@ -150,7 +184,7 @@ class LoginViewModel constructor(
                 stepInfo = when (step) {
                     SignUpStep.STARTING -> when (it.uiType) {
                         LoginScreenUiType.LOGIN -> SignUpStepInfo.Info.START_LOGIN
-                        LoginScreenUiType.SIGNUP -> SignUpStepInfo.Info.START_SIGNUP
+                        LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> SignUpStepInfo.Info.START_SIGNUP
                         LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Info.START_PASSWORD_RESET
                     }
                     SignUpStep.GENERATING_KEYS -> SignUpStepInfo.Info.CRYPTO_SETUP
@@ -169,14 +203,17 @@ class LoginViewModel constructor(
         }
     }
 
-    private suspend fun processSignUpError(error: Throwable) {
+    private suspend fun processSignUpError(error: Throwable, onRecoverGuest: Boolean = false) {
         val uiType = _uiState.value.uiType
         val step = (error as? SignUpStepException)?.step
 
         val stepInfo = when (step) {
             SignUpStep.STARTING -> when (uiType) {
-                LoginScreenUiType.LOGIN -> SignUpStepInfo.Error.LOGIN
-                LoginScreenUiType.SIGNUP -> SignUpStepInfo.Error.SIGN_UP
+                LoginScreenUiType.LOGIN -> {
+                    if(onRecoverGuest) SignUpStepInfo.Error.RECOVER_GUEST
+                    else SignUpStepInfo.Error.LOGIN
+                }
+                LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> SignUpStepInfo.Error.SIGN_UP
                 LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Error.PASSWORD_RESET
             }
             SignUpStep.GENERATING_KEYS -> SignUpStepInfo.Error.CRYPTO
@@ -191,7 +228,10 @@ class LoginViewModel constructor(
         // extra error handling
         val errorType = when (error.cause) {
             is ConflictException -> SignUpErrorType.ACCOUNT_CONFLICT
-            is UnauthorizedException -> SignUpErrorType.CREDENTIALS
+            is UnauthorizedException -> {
+                if(onRecoverGuest) SignUpErrorType.CREDENTIALS_GUEST
+                else SignUpErrorType.CREDENTIALS
+            }
             is CryptoException -> {
                 when (step) {
                     SignUpStep.GENERATING_KEYS,
@@ -234,7 +274,21 @@ class LoginViewModel constructor(
 
     private fun resetValidationState() {
         _uiState.update {
-            it.copy(hasEmailError = false, hasPasswordError = false, hasPasswordConfirmError = false, hasNameError = false)
+            it.copy(hasEmailError = false, hasPasswordError = false, hasPasswordConfirmError = false)
+        }
+    }
+
+    fun setScreenUiType(type: LoginScreenUiType) {
+        if (_uiState.value.actionLoading)
+            return
+
+        if(type == _uiState.value.uiType)
+            return
+
+        resetValidationState()
+
+        _uiState.update {
+            it.copy(uiType = type, stepInfo = null)
         }
     }
 
@@ -247,7 +301,7 @@ class LoginViewModel constructor(
             LoginScreenUiType.LOGIN -> _uiState.update {
                 it.copy(uiType = LoginScreenUiType.SIGNUP, stepInfo = null)
             }
-            LoginScreenUiType.SIGNUP -> _uiState.update {
+            LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> _uiState.update {
                 it.copy(uiType = LoginScreenUiType.LOGIN, stepInfo = null)
             }
             LoginScreenUiType.FORGOT_PASSWORD -> _uiState.update {
@@ -263,7 +317,7 @@ class LoginViewModel constructor(
         resetValidationState()
         when (_uiState.value.uiType) {
             LoginScreenUiType.LOGIN -> _uiState.update {
-                it.copy(uiType = LoginScreenUiType.FORGOT_PASSWORD, password = "", stepInfo = null)
+                it.copy(uiType = LoginScreenUiType.FORGOT_PASSWORD, password = "", passwordConfirm = "", stepInfo = null)
             }
             LoginScreenUiType.FORGOT_PASSWORD -> _uiState.update {
                 it.copy(uiType = LoginScreenUiType.LOGIN, stepInfo = null)
@@ -272,16 +326,6 @@ class LoginViewModel constructor(
                 /* do nothing */
             }
         }
-    }
-
-    fun onUserNameChange(name: String) {
-        if (_uiState.value.actionLoading) return
-        _uiState.update { it.copy(userName = name, hasNameError = false, stepInfo = null) }
-    }
-
-    fun onUserImageChange(image: ImageModel) {
-        if (_uiState.value.actionLoading) return
-        _uiState.update { it.copy(userImage = image) }
     }
 
     fun onEmailChange(email: String) {
@@ -297,6 +341,17 @@ class LoginViewModel constructor(
     fun onPasswordConfirmChange(password: String) {
         if (_uiState.value.actionLoading) return
         _uiState.update { it.copy(passwordConfirm = password, hasPasswordConfirmError = false, stepInfo = null) }
+    }
+
+    fun hideGuestAccountDialog() {
+        if (_uiState.value.actionLoading) return
+        _uiState.update { it.copy(hasGuestAccount = false) }
+    }
+
+    fun dismissGuestAccount() {
+        config.guestEmail = ""
+        config.guestPassword = ""
+        _uiState.update { it.copy(hasGuestAccount = false) }
     }
 
 }

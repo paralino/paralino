@@ -114,7 +114,7 @@ fun LargeSeekbarSwitch(
                     minWidth = LargeSwitchDefaults.minWidth
                 )
                 .fillMaxSize()
-                .padding(vertical = 16.dp),
+                .padding(top = 16.dp, bottom = 14.dp),
         ) {
 
             val (iconRef, textRef, indicatorRef) = createRefs()
@@ -154,7 +154,7 @@ fun LargeSeekbarSwitch(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.body2,
                     color = contentColor
                 )
                 if (!description.isNullOrBlank()) {

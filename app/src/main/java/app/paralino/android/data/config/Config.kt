@@ -17,13 +17,16 @@ class Config(context: Context) : IConfig {
         const val keyUserId = "prefs.profile.user_id"
         const val keyTempPassword = "prefs.user.temp_password"
         const val keyEmailConfirmed = "prefs.profile.email.confirmed"
+        const val keyEmailGuest = "prefs.profile.guest.email"
+        const val keyPasswordGuest = "prefs.profile.guest.password"
     }
-
-    private val sharedData =
-        PreferenceManager.getDefaultSharedPreferences(context)
 
     private val secureSharedData by lazy {
         EncryptedSharedPreferences(context, "shared_prefs_user", MasterKey(context))
+    }
+
+    private val persistentSharedData by lazy {
+        EncryptedSharedPreferences(context, "shared_prefs_app", MasterKey(context))
     }
 
 
@@ -57,6 +60,18 @@ class Config(context: Context) : IConfig {
             secureSharedData.edit { putString(keyTempPassword, value) }
         }
 
+    override var guestEmail: String
+        get() = persistentSharedData.getString(keyEmailGuest, "") ?: ""
+        set(value) {
+            persistentSharedData.edit { putString(keyEmailGuest, value) }
+        }
+
+    override var guestPassword: String
+        get() = persistentSharedData.getString(keyPasswordGuest, "") ?: ""
+        set(value) {
+            persistentSharedData.edit { putString(keyPasswordGuest, value) }
+        }
+
     var userKey: String
         get() = secureSharedData.getString(keyUserKey, "") ?: ""
         set(value) {
@@ -64,7 +79,6 @@ class Config(context: Context) : IConfig {
         }
 
     override fun clear() {
-        sharedData.edit { clear() }
         secureSharedData.edit { clear() }
     }
 
