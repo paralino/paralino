@@ -3,15 +3,16 @@ package app.paralino.android.ui.navigation
 import android.net.Uri
 import app.paralino.android.ui.navigation.DeeplinkHandler.host
 import app.paralino.android.ui.navigation.DeeplinkHandler.matches
+import app.paralino.android.ui.navigation.DeeplinkHandler.pathEmailVerify
 import app.paralino.android.ui.navigation.DeeplinkHandler.pathPasswordReset
 
 object DeeplinkHandler {
 
     val host = "paralino.app"
     private val linkHome = "home"
-    private val linkPasswordReset = "recover"
 
-    val pathPasswordReset = "$linkPasswordReset"
+    val pathPasswordReset = "recover"
+    val pathEmailVerify = "verify"
 
     fun cleanDeepLink(deeplink: String?): Uri? {
 
@@ -24,7 +25,8 @@ object DeeplinkHandler {
         if (!isValidDeeplink) return null
 
         val canUseDeeplink = arrayOf(
-            pathPasswordReset
+            pathPasswordReset,
+            pathEmailVerify
         ).any {
             data.path?.matches(it) ?: false
         }
@@ -87,6 +89,32 @@ sealed class Deeplink() {
         }
     }
 
+    data class EmailVerify(
+        override val deeplink: String,
+        val userId: String,
+        val secret: String,
+        val expireUnix: Long?,
+    ) : Deeplink() {
+
+        fun route(): String {
+            return "$pathEmailVerify?$argumentUserId=$argumentUserId&$argumentSecret=$argumentSecret&$argumentExpire=$argumentExpire"
+        }
+
+        companion object {
+            val argumentUserId: String = "userId"
+            val argumentSecret: String = "secret"
+            val argumentExpire: String = "expire"
+
+            fun uriPattern(): String {
+                return "https://${host}/${routeSignature()}"
+            }
+
+            fun routeSignature(): String {
+                return "$pathEmailVerify?$argumentUserId={$argumentUserId}&$argumentSecret={$argumentSecret}&$argumentExpire={$argumentExpire}"
+            }
+        }
+    }
+
     companion object {
         fun parse(deeplink: String?): Deeplink? {
             deeplink ?: return null
@@ -104,6 +132,16 @@ sealed class Deeplink() {
                         cleanDeeplink.getQueryParameter(PasswordReset.argumentExpire)?.toLong()
 
                     PasswordReset(deeplink, userId, secret, expireUnix)
+                }
+                path.matches(pathEmailVerify) -> {
+                    val userId =
+                        cleanDeeplink.getQueryParameter(PasswordReset.argumentUserId) ?: return null
+                    val secret =
+                        cleanDeeplink.getQueryParameter(PasswordReset.argumentSecret) ?: return null
+                    val expireUnix =
+                        cleanDeeplink.getQueryParameter(PasswordReset.argumentExpire)?.toLong()
+
+                    EmailVerify(deeplink, userId, secret, expireUnix)
                 }
                 else -> null
             }

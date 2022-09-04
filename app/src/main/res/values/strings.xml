@@ -173,6 +173,7 @@
     <string name="info_email_confirm_alert_title">Verify email</string>
     <string name="info_email_confirm_alert_message">Verify your email address to make sure you can login again to your account!\n\nYour email:\n**%s**</string>
     <string name="info_email_confirm_alert_button_resend">Resend verification link</string>
+    <string name="info_email_verified">Email verified successfully</string>
     <string name="info_email_check_instructions">Check your email for instructions</string>
 
     <string name="groups_sharing_section_title_group">Group</string>

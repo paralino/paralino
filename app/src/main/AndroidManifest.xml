@@ -25,6 +25,7 @@
             android:name="app.paralino.android.ui.MainActivity"
             android:label="@string/app_name"
             android:exported="true"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             >
             <intent-filter>
