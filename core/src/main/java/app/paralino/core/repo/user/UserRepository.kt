@@ -70,7 +70,7 @@ class UserRepository constructor(
             remote = { getUserFromRemote() },
             localUpdate = { updateLocalUser(it) },
             remotePreference = RemotePreference.CACHE("user_call", 10_000)
-        )
+        ).catch { emit(Resource.NotInitialized) }
     }
 
     suspend fun login(email: String, password: String): UserSession {
