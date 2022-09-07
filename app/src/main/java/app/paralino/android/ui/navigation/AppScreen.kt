@@ -122,7 +122,11 @@ sealed class AppScreen {
         }
 
         object PersonalCodes : AppScreen() {
-            override val routeSignature: String = "personal_codes"
+            val argumentCreateCode: String = "createCode"
+            override val routeSignature: String = "personal-codes?$argumentCreateCode={$argumentCreateCode}"
+            fun route(createCode: Boolean = false): String {
+                return "personal-codes?$argumentCreateCode=$createCode"
+            }
         }
 
         object ProfileDetails : AppScreen() {

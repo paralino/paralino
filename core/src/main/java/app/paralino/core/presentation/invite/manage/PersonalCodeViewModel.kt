@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.*
 
 class PersonalCodeViewModel(
     private val repo: PersonalCodesRepository,
+    createCode: Boolean,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -20,6 +21,7 @@ class PersonalCodeViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
+        var createCodeNow = createCode
         repo.getMyPersonalCodes()
             .onEach { result ->
                 _uiState.update {
@@ -31,6 +33,14 @@ class PersonalCodeViewModel(
                                 validityUnix = it.validityUnix
                             )
                         }
+
+                        // create code if no code is available
+                        if(createCodeNow) {
+                            createCodeNow = false
+                            if(codeData == null)
+                                createPersonalCode()
+                        }
+
                         PersonalCodeScreenState(
                             code = codeData,
                             createLoading = false,

@@ -186,7 +186,7 @@ fun ColumnScope.DashboardGroupJoinButtons(appState: MainAppState) {
         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
         onClick = {
-            appState.navController.navigate(AppScreen.SettingsRoot.PersonalCodes.routeSignature)
+            appState.navController.navigate(AppScreen.SettingsRoot.PersonalCodes.route(createCode = true))
         }
     ) {
         Text(text = stringResource(id = R.string.dashboard_groups_join_button))

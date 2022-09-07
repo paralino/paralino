@@ -6,12 +6,13 @@ import androidx.lifecycle.viewModelScope
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 
-class PersonalCodesViewModel(
+class PersonalCodesViewModel constructor(
     app: Application,
+    createCode: Boolean,
     private val repo: PersonalCodesRepository,
 ) : AndroidViewModel(app) {
 
-    private val coreVm = PersonalCodeViewModel(repo, viewModelScope)
+    private val coreVm = PersonalCodeViewModel(repo, createCode, viewModelScope)
 
     val uiState = coreVm.uiState
     val events = coreVm.events

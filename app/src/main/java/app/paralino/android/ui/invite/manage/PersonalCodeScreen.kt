@@ -26,11 +26,13 @@ import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.share
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun PersonalCodeScreen(
     appState: MainAppState,
-    vm: PersonalCodesViewModel = getViewModel(),
+    createCode: Boolean = false,
+    vm: PersonalCodesViewModel = getViewModel { parametersOf(createCode) },
 ) {
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
