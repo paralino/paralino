@@ -33,6 +33,7 @@ import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.presentation.login.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -322,7 +323,7 @@ fun LoginScreen(
         }
 
         Text(
-            text = switchText,
+            text = switchText.annotatedBold(),
             style = MaterialTheme.typography.button,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
