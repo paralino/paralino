@@ -44,7 +44,7 @@ fun MemberInviteScreen(
     appState: MainAppState,
     groupId: String?,
     code: String?,
-    vm: MemberInviteViewModel = getViewModel { parametersOf(null, code) },
+    vm: MemberInviteViewModel = getViewModel { parametersOf(groupId, code) },
 ) {
 
     val state by vm.uiState.collectAsState(initial = MemberInviteScreenState.Empty())
@@ -144,6 +144,12 @@ fun MemberInviteScreen(
 
         if (state is MemberInviteScreenState.Loaded) {
             SettingsSectionHeader(name = stringResource(id = R.string.invite_section_title_user))
+        } else {
+            Text(
+                modifier = Modifier.padding(bottom = 40.dp),
+                text = stringResource(id = R.string.invite_connect_title).annotatedBold(),
+                style = MaterialTheme.typography.h6
+            )
         }
 
         MainInputField(
@@ -180,10 +186,10 @@ fun MemberInviteScreen(
                 ) {
                     ImageModelImage(
                         imageModel = state.userImage,
-                        modifier = Modifier.size(100.dp)
+                        modifier = Modifier.size(70.dp)
                     )
                     Spacer(modifier = Modifier.size(10.dp))
-                    Text(text = state.userName, style = MaterialTheme.typography.h6)
+                    Text(text = state.userName, style = MaterialTheme.typography.h5)
                 }
 
                 if (state.group == null && state.canChangeGroup) {
@@ -218,7 +224,7 @@ fun MemberInviteScreen(
                             state.userName,
                             state.group!!.name
                         ).annotatedBold(),
-                        style = MaterialTheme.typography.caption
+                        style = MaterialTheme.typography.body2
                     )
                 }
 
