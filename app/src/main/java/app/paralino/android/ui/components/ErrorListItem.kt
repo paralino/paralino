@@ -82,7 +82,7 @@ fun ConditionErrorItem(
         if (data.endActionTextRes != 0) {
             Text(
                 text = stringResource(id = data.endActionTextRes),
-                color = MaterialTheme.colors.primary,
+                color = MaterialTheme.colors.onPrimary,
                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier
                     .constrainAs(action) {
@@ -90,7 +90,7 @@ fun ConditionErrorItem(
                         end.linkTo(parent.end)
                     }
                     .background(
-                        color = MaterialTheme.colors.surface,
+                        color = MaterialTheme.colors.primary,
                         shape = MaterialTheme.shapes.medium
                     )
                     .padding(vertical = 4.dp, horizontal = 12.dp)

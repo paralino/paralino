@@ -72,7 +72,7 @@ fun PersonalCodeItem(
             .padding(10.dp)
     ) {
 
-        val textColor = MaterialTheme.colors.primary.toArgb()
+        val textColor = MaterialTheme.colors.onSurface.toArgb()
         AndroidView(
             factory = {
                 AppCompatTextView(it)

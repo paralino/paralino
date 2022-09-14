@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -55,6 +53,7 @@ fun MainAlertDialog(
                     buttons.forEach { buttonData ->
                         TextButton(
                             onClick = { onAction(buttonData.id) },
+                            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.onSurface),
                             shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(16.dp),
                             modifier = Modifier

@@ -182,14 +182,14 @@ fun LargeSeekbarSwitch(
                     top.linkTo(iconRef.top)
                     bottom.linkTo(iconRef.bottom)
                 }
-                .size(28.dp)
+                .size(24.dp)
             ) {
                 if (state.switchState != null) {
                     if (state.switchState.checkState) {
                         Icon(modifier = Modifier
                             .fillMaxSize()
-                            .background(MaterialTheme.colors.surface, shape = CircleShape)
-                            .padding(4.dp),
+                            .background(MaterialTheme.colors.onPrimary, shape = CircleShape)
+                            .padding(1.dp),
                             imageVector = Icons.Rounded.CheckCircle,
                             contentDescription = null,
                             tint = MaterialTheme.colors.primary)
