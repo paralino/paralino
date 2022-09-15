@@ -216,7 +216,7 @@ fun LargeSeekbarSwitch(
                         Icon(modifier = Modifier
                             .fillMaxSize()
                             .background(backgroundColor, shape = CircleShape)
-                            .padding(4.dp),
+                            .padding(2.dp),
                             imageVector = Icons.Rounded.RadioButtonUnchecked,
                             contentDescription = null,
                             tint = contentColor.copy(alpha = ContentAlpha.disabled))
