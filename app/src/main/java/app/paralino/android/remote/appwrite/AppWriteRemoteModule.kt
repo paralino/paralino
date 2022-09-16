@@ -3,7 +3,6 @@ package app.paralino.android.remote.appwrite
 import android.app.Application
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -19,13 +18,12 @@ import java.net.UnknownHostException
 
 class AppWriteRemoteModule(
     private val app: Application,
-    val config: BackendConfig,
+    val backendConfig: BackendConfig,
     val sessionMonitor: UserSessionMonitor,
 ) {
 
     internal val account: Account by lazy { Account(client) }
-    internal val databaseData: Databases by lazy { Databases(client, BackendDatabaseType.DATA.id) }
-    internal val databaseKeys: Databases by lazy { Databases(client, BackendDatabaseType.KEYS.id) }
+    internal val database: Databases by lazy { Databases(client) }
     internal val functions: Functions by lazy { Functions(client) }
     internal val realtime: Realtime by lazy { Realtime(client) }
 
@@ -33,16 +31,9 @@ class AppWriteRemoteModule(
 
     private val client: Client by lazy {
         Client(app, selfSigned = false)
-            .setEndpoint(config.endpoint)
-            .setProject(config.projectId)
-            .setSelfSigned(status = false, okHttpClient(config.debug))
-    }
-
-    fun databaseForType(type: BackendDatabaseType): Databases {
-        return when(type) {
-            BackendDatabaseType.DATA -> databaseData
-            BackendDatabaseType.KEYS -> databaseKeys
-        }
+            .setEndpoint(backendConfig.endpoint)
+            .setProject(backendConfig.projectId)
+            .setSelfSigned(status = false, okHttpClient(backendConfig.debug))
     }
 
     private fun okHttpClient(debug: Boolean): OkHttpClient {

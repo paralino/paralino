@@ -4,8 +4,8 @@ import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.repo.api.IUserApi
+import io.appwrite.models.Account
 import io.appwrite.models.Session
-import io.appwrite.models.User
 
 class UserApi constructor(
     private val remoteModule: AppWriteRemoteModule,
@@ -47,7 +47,7 @@ class UserApi constructor(
 
     override suspend fun initResetPassword(email: String) {
         remoteModule.execute {
-            account.createRecovery(email, remoteModule.config.resourceIds.passwordResetUrl)
+            account.createRecovery(email, remoteModule.backendConfig.resourceIds.passwordResetUrl)
         }
     }
 
@@ -64,7 +64,7 @@ class UserApi constructor(
 
     override suspend fun initEmailVerification() {
         return remoteModule.execute {
-            account.createVerification(remoteModule.config.resourceIds.emailConfirmationUrl)
+            account.createVerification(remoteModule.backendConfig.resourceIds.emailConfirmationUrl)
         }
     }
 
@@ -88,7 +88,7 @@ class UserApi constructor(
         return remoteModule.execute { account.deleteSessions() }
     }
 
-    private fun User.parseUser(): UserMeRaw {
+    private fun Account.parseUser(): UserMeRaw {
         return UserMeRaw(
             id = this.id,
             email = this.email,

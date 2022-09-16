@@ -14,27 +14,21 @@ class DocumentsApi constructor(
         databaseType: BackendDatabaseType,
         collectionId: String,
         docId: String?,
-        data: Any,
-        read: List<String>?,
-        write: List<String>?
+        data: Any
     ): Map<String, Any> {
         if (docId.isNullOrBlank()) {
             return createDocument(
                 databaseType = databaseType,
                 collectionId = collectionId,
                 docId = docId,
-                data = data,
-                read = read,
-                write = write
+                data = data
             )
         } else {
             return updateDocument(
                 databaseType = databaseType,
                 collectionId = collectionId,
                 docId = docId,
-                data = data,
-                read = read,
-                write = write
+                data = data
             )
         }
     }
@@ -43,17 +37,14 @@ class DocumentsApi constructor(
         databaseType: BackendDatabaseType,
         collectionId: String,
         docId: String?,
-        data: Any,
-        read: List<String>?,
-        write: List<String>?
+        data: Any
     ): Map<String, Any> {
         return remoteModule.execute {
-            databaseForType(databaseType).createDocument(
+            database.createDocument(
+                databaseId = databaseType.id,
                 collectionId = collectionId,
                 documentId = docId ?: uniqueIdPlaceholder,
-                data = data,
-                read = read,
-                write = write
+                data = data
             ).parseDocument()
         }
     }
@@ -62,17 +53,14 @@ class DocumentsApi constructor(
         databaseType: BackendDatabaseType,
         collectionId: String,
         docId: String,
-        data: Any,
-        read: List<String>?,
-        write: List<String>?
+        data: Any
     ): Map<String, Any> {
         return remoteModule.execute {
-            databaseForType(databaseType).updateDocument(
+            database.updateDocument(
+                databaseId = databaseType.id,
                 collectionId = collectionId,
                 documentId = docId,
-                data = data,
-                read = read,
-                write = write
+                data = data
             ).parseDocument()
         }
     }
@@ -82,14 +70,23 @@ class DocumentsApi constructor(
         collectionId: String,
         documentId: String,
     ): Map<String, Any> {
-        return remoteModule.execute { databaseForType(databaseType).getDocument(collectionId, documentId).parseDocument() }
+        return remoteModule.execute {
+            database.getDocument(
+                databaseId = databaseType.id,
+                collectionId = collectionId,
+                documentId = documentId
+            ).parseDocument()
+        }
     }
 
     override suspend fun getDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
     ): List<Map<String, Any>> {
-        return remoteModule.execute { databaseForType(databaseType).listDocuments(collectionId).parseListOfDocuments() }
+        return remoteModule.execute {
+            database.listDocuments(databaseId = databaseType.id, collectionId = collectionId)
+                .parseListOfDocuments()
+        }
     }
 
     override suspend fun getDocumentsFor(
@@ -98,7 +95,8 @@ class DocumentsApi constructor(
         vararg keyValue: Pair<String, Any>,
     ): List<Map<String, Any>> {
         return remoteModule.execute {
-            databaseForType(databaseType).listDocuments(
+            database.listDocuments(
+                databaseId = databaseType.id,
                 collectionId = collectionId,
                 queries = keyValue.map { Query.equal(attribute = it.first, value = it.second) }
             ).parseListOfDocuments()
@@ -110,7 +108,13 @@ class DocumentsApi constructor(
         collectionId: String,
         documentId: String,
     ) {
-        remoteModule.execute { databaseForType(databaseType).deleteDocument(collectionId, documentId) }
+        remoteModule.execute {
+            database.deleteDocument(
+                databaseId = databaseType.id,
+                collectionId = collectionId,
+                documentId = documentId
+            )
+        }
     }
 
     private fun Document.parseDocument(): Map<String, Any> {

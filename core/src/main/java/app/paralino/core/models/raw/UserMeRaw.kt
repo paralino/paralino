@@ -7,7 +7,7 @@ data class UserMeRaw constructor(
     val id: String = "",
 
     val email: String = "",
-    val registration: Long = 0,
+    val registration: String = "",
     val emailVerification: Boolean = false,
     val data: UserMeDataRaw? = null,
 )
