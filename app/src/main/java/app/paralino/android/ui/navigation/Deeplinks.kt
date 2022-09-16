@@ -67,7 +67,7 @@ sealed class Deeplink() {
         override val deeplink: String,
         val userId: String,
         val secret: String,
-        val expireUnix: Long?,
+        val expire: String?,
     ) : Deeplink() {
 
         fun route(): String {
@@ -93,7 +93,7 @@ sealed class Deeplink() {
         override val deeplink: String,
         val userId: String,
         val secret: String,
-        val expireUnix: Long?,
+        val expire: String?,
     ) : Deeplink() {
 
         fun route(): String {
@@ -128,20 +128,18 @@ sealed class Deeplink() {
                         cleanDeeplink.getQueryParameter(PasswordReset.argumentUserId) ?: return null
                     val secret =
                         cleanDeeplink.getQueryParameter(PasswordReset.argumentSecret) ?: return null
-                    val expireUnix =
-                        cleanDeeplink.getQueryParameter(PasswordReset.argumentExpire)?.toLong()
+                    val expire = cleanDeeplink.getQueryParameter(PasswordReset.argumentExpire)
 
-                    PasswordReset(deeplink, userId, secret, expireUnix)
+                    PasswordReset(deeplink, userId, secret, expire)
                 }
                 path.matches(pathEmailVerify) -> {
                     val userId =
                         cleanDeeplink.getQueryParameter(PasswordReset.argumentUserId) ?: return null
                     val secret =
                         cleanDeeplink.getQueryParameter(PasswordReset.argumentSecret) ?: return null
-                    val expireUnix =
-                        cleanDeeplink.getQueryParameter(PasswordReset.argumentExpire)?.toLong()
+                    val expire = cleanDeeplink.getQueryParameter(PasswordReset.argumentExpire)
 
-                    EmailVerify(deeplink, userId, secret, expireUnix)
+                    EmailVerify(deeplink, userId, secret, expire)
                 }
                 else -> null
             }
