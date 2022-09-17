@@ -10,7 +10,7 @@ data class UserEntity(
     @PrimaryKey
     val id: String,
     val email: String = "",
-    val registration: Long = 0,
+    val registration: String = "",
     val emailVerification: Boolean = false,
     @Embedded(prefix = "user_data")
     val data: UserMeDataRaw?
