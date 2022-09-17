@@ -1,7 +1,6 @@
 package app.paralino.core.utils
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.lang.IllegalStateException
 
 interface ILocationStatusProvider {
     var status: MutableStateFlow<LocationConditionStatus>

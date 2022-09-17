@@ -3,6 +3,7 @@ package app.paralino.core.repo.base
 import app.paralino.core.connectionStatus
 import app.paralino.core.logg
 import app.paralino.core.utils.exceptions.InternalConnectionException
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.*
 
 
@@ -115,7 +116,7 @@ abstract class BaseRepository {
             }
             is RemotePreference.CACHE -> {
                 val started = cachedInfo[remotePreference.key] ?: 0
-                val cacheIsDirty = System.currentTimeMillis() - started > remotePreference.timeMillis
+                val cacheIsDirty = nowUTC().toEpochMilliseconds() - started > remotePreference.timeMillis
 
                 val remoteData = when {
                     localValue == null -> {
@@ -133,7 +134,7 @@ abstract class BaseRepository {
                 }
 
                 remoteData?.also {
-                    cachedInfo[remotePreference.key] = System.currentTimeMillis()
+                    cachedInfo[remotePreference.key] = nowUTC().toEpochMilliseconds()
                 }
             }
         }

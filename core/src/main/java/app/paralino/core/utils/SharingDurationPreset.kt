@@ -1,10 +1,5 @@
 package app.paralino.core.utils
 
-import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
-import kotlin.time.toTimeUnit
-
-@OptIn(ExperimentalTime::class)
 object SharingDurationPreset {
 
     private const val second = 1_000L
@@ -14,7 +9,7 @@ object SharingDurationPreset {
     const val infinite = 0L
 
     const val backgroundAccessThreshold = 2 * day
-    val publicSharingMaxDurationMillis: Long = DurationUnit.HOURS.toTimeUnit().toMillis(5)
+    val publicSharingMaxDurationMillis: Long = 5 * hour
 
     val presets = listOf(
         15 * minute,
