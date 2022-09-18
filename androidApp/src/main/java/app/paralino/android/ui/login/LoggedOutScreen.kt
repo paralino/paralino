@@ -3,6 +3,7 @@ package app.paralino.android.ui.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -44,10 +45,13 @@ fun LoggedOutScreen(
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
-                .size(200.dp)
-                .scale(1.5f)
+                .background(color = MaterialTheme.colors.primary, shape = CircleShape)
+                .size(150.dp)
+                .scale(1.3f)
                 .align(alignment = Alignment.CenterHorizontally)
         )
+
+        Spacer(Modifier.weight(1f))
 
         val infoTextStyle = MaterialTheme.typography.h3.copy(
             fontWeight = FontWeight.Thin,

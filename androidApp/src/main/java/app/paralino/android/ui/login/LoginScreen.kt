@@ -6,6 +6,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -148,8 +149,9 @@ fun LoginScreen(
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
-                .size(100.dp)
-                .scale(1.5f)
+                .background(color = MaterialTheme.colors.primary, shape = CircleShape)
+                .size(80.dp)
+                .scale(1.3f)
                 .align(alignment = Alignment.CenterHorizontally)
         )
 
