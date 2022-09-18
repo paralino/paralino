@@ -57,7 +57,7 @@ android {
     namespace = "app.paralino"
     compileSdk = 32
     defaultConfig {
-        minSdk = 26
+        minSdk = 29
         targetSdk = 32
     }
 }
