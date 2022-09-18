@@ -29,6 +29,10 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
 
+        <item name="android:navigationBarColor">@color/bottomBarColor</item>
+        <item name="android:navigationBarDividerColor">@color/bottomBarColor</item>
+        <item name="android:windowLightNavigationBar">@bool/app_windowLightNavigationBar</item>
+
     </style>
 
     <style name="AppTheme" parent="AppThemeBase">
