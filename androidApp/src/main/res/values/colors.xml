@@ -2,13 +2,13 @@
 <resources>
 
     <color name="light_theme_lightest">#FAFAFA</color>
-    <color name="light_theme_light">#E1E1E1</color>
+    <color name="light_theme_light">#B4B4B4</color>
     <color name="light_theme_medium">#929292</color>
     <color name="light_theme_high">#252525</color>
     <color name="light_theme_highest">#151515</color>
 
-    <color name="dark_theme_lightest">#0E0E0E</color>
-    <color name="dark_theme_light">#252525</color>
+    <color name="dark_theme_lightest">#080011</color>
+    <color name="dark_theme_light">#1D1129</color>
     <color name="dark_theme_medium">#737373</color>
     <color name="dark_theme_high">#DDDDDD</color>
     <color name="dark_theme_highest">#F1F1F1</color>

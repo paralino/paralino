@@ -24,13 +24,13 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@color/backgroundMain</item>
+        <item name="android:windowBackground">@color/theme_lightest</item>
         <item name="android:windowLightStatusBar">@bool/app_windowLightNavigationBar</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
 
-        <item name="android:navigationBarColor">@color/bottomBarColor</item>
-        <item name="android:navigationBarDividerColor">@color/bottomBarColor</item>
+        <item name="android:navigationBarColor">@color/theme_lightest</item>
+        <item name="android:navigationBarDividerColor">@color/theme_lightest</item>
         <item name="android:windowLightNavigationBar">@bool/app_windowLightNavigationBar</item>
 
     </style>
