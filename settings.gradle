@@ -1,5 +1,0 @@
-rootProject.name = "Paralino"
-include ':app'
-include ':core'
-include ':appwrite'
-project(':appwrite').projectDir = new File('appwrite-android/library')
