@@ -4,7 +4,9 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
+import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.raw.GroupPlaceRaw
+import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.serialization.decodeFromString
@@ -12,7 +14,8 @@ import kotlinx.serialization.encodeToString
 
 class PlaceMapper constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val cryptoCore: CryptoCore
+    private val cryptoCore: CryptoCore,
+    private val settingsMapper: PlaceSettingsMapper
 ) {
 
     suspend fun core2Remote(model: GroupPlace): GroupPlaceRaw {
@@ -62,6 +65,13 @@ class PlaceMapper constructor(
             keyVersion = model.keyVersion,
             private = model.private,
             data = placeData,
+        )
+    }
+
+    suspend fun remote2CoreWithSettings(model: GroupPlacesWithSettingsRaw): GroupPlaceWithSettings {
+        return GroupPlaceWithSettings(
+            place = remote2Core(model.place),
+            settings = settingsMapper.remote2Core(model.settings)
         )
     }
 

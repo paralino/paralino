@@ -8,12 +8,13 @@ data class GroupPlaceSettings constructor(
     val groupId: String,
     val placeId: String,
     val ownerUserId: String,
-    val ownerPublicKey: String,
     val keyVersion: Long,
-    val data: GroupPlaceSettingsData
+    val alertData: List<GroupPlaceSettingsData>,
 )
 
 @Serializable
 data class GroupPlaceSettingsData constructor(
-    val data: String
+    val memberId: String,
+    val enter: Boolean = true,
+    val exit: Boolean = true
 )
