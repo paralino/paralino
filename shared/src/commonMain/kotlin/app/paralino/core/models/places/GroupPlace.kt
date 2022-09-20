@@ -26,5 +26,5 @@ data class GroupPlaceData constructor(
 @Serializable
 data class GroupPlaceWithSettings constructor(
     val place: GroupPlace,
-    val settings: GroupPlaceSettings
+    val settings: GroupPlaceSettings?
 )
