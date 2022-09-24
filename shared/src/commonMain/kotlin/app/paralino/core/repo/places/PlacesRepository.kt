@@ -29,6 +29,10 @@ class PlacesRepository constructor(
         return local.getPlacesForGroup(groupId)
     }
 
+    fun getPlaceLocally(placeId: String): Flow<GroupPlace> {
+        return local.getPlaceWithoutSettings(placeId)
+    }
+
     fun getPlaceWithSettings(placeId: String): Flow<GroupPlaceWithSettings> {
         return mergeDataWithRemote(
             local = local.getPlaceWithSettings(placeId),
