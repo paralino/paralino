@@ -12,10 +12,10 @@ import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
-class PlaceMapper constructor(
+class PlaceMapperCore constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore,
-    private val settingsMapper: PlaceSettingsMapper
+    val settingsMapper: PlaceSettingsMapperCore
 ) {
 
     suspend fun core2Remote(model: GroupPlace): GroupPlaceRaw {
@@ -71,7 +71,7 @@ class PlaceMapper constructor(
     suspend fun remote2CoreWithSettings(model: GroupPlacesWithSettingsRaw): GroupPlaceWithSettings {
         return GroupPlaceWithSettings(
             place = remote2Core(model.place),
-            settings = settingsMapper.remote2Core(model.settings)
+            settings = model.settings?.let { settingsMapper.remote2Core(it) }
         )
     }
 

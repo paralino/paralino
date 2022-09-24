@@ -17,9 +17,22 @@ interface GroupPlacesDao {
     }
 
     @Transaction
-    suspend fun createOrUpdate(place: GroupPlaceEntity, settings: GroupPlaceSettingsEntity) {
+    suspend fun replacePlacesForGroup(groupId: String, places: List<GroupPlaceEntity>, settings: List<GroupPlaceSettingsEntity>) {
+        deletePlaceForGroupId(groupId)
+        deletePlaceSettingsForGroupId(groupId)
+        createOrUpdate(*places.toTypedArray())
+        createOrUpdate(*settings.toTypedArray())
+    }
+
+    @Transaction
+    suspend fun createOrUpdate(place: GroupPlaceEntity, settings: GroupPlaceSettingsEntity?) {
         createOrUpdate(place)
-        createOrUpdate(settings)
+
+        if(settings == null) {
+            deletePlaceSettingsForPlaceId(place.id)
+        } else {
+            createOrUpdate(settings)
+        }
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -40,10 +53,19 @@ interface GroupPlacesDao {
     @Query("SELECT * FROM place_settings WHERE placeId = :placeId")
     fun getSettingsForPlace(placeId: String): Flow<GroupPlaceSettingsEntity?>
 
+    @Query("SELECT * FROM group_places WHERE groupId = :groupId")
+    fun getPlacesForGroup(groupId: String): Flow<List<GroupPlaceEntity>>
+
     @Transaction
     suspend fun deletePlace(id: String) {
         deletePlaceOnly(id)
         deletePlaceSettingsForPlaceId(id)
+    }
+
+    @Transaction
+    suspend fun deletePlaceForGroup(groupId: String) {
+        deletePlaceForGroupId(groupId)
+        deletePlaceSettingsForGroupId(groupId)
     }
 
     @Query("DELETE FROM group_places WHERE id = :id")
@@ -51,6 +73,12 @@ interface GroupPlacesDao {
 
     @Query("DELETE FROM place_settings WHERE placeId = :placeId")
     suspend fun deletePlaceSettingsForPlaceId(placeId: String)
+
+    @Query("DELETE FROM group_places WHERE groupId = :groupId")
+    suspend fun deletePlaceForGroupId(groupId: String)
+
+    @Query("DELETE FROM place_settings WHERE groupId = :groupId")
+    suspend fun deletePlaceSettingsForGroupId(groupId: String)
 
     @Transaction
     suspend fun clearAll() {

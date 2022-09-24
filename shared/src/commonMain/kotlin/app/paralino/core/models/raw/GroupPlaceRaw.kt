@@ -17,8 +17,6 @@ data class GroupPlaceRaw constructor(
 
     fun toPostJson(): Map<String, Any> {
         return buildMap {
-            put("groupId", groupId)
-            put("ownerUserId", ownerUserId)
             put("private", private)
             put("data", data)
         }
@@ -43,5 +41,5 @@ data class GroupPlaceRaw constructor(
 @Serializable
 data class GroupPlacesWithSettingsRaw constructor(
     val place: GroupPlaceRaw,
-    val settings: GroupPlaceSettingRaw
+    val settings: GroupPlaceSettingRaw?
 )

@@ -20,14 +20,25 @@ class GroupPlacesLocalDataSource(
     override suspend fun recreatePlaces(places: List<GroupPlacesWithSettingsRaw>) {
         dao.replacePlaces(
             places = places.map { mapper.remote2Local(it.place) },
-            settings = places.map { settingsMapper.remote2Local(it.settings) }
+            settings = places.mapNotNull { it.settings?.let { settingsMapper.remote2Local(it) } }
         )
     }
 
     override suspend fun updateOrCreatePlace(place: GroupPlacesWithSettingsRaw) {
         dao.createOrUpdate(
             place = mapper.remote2Local(place.place),
-            settings = settingsMapper.remote2Local(place.settings)
+            settings = place.settings?.let { settingsMapper.remote2Local(it) }
+        )
+    }
+
+    override suspend fun recreatePlacesForGroup(
+        groupId: String,
+        places: List<GroupPlacesWithSettingsRaw>
+    ) {
+        dao.replacePlacesForGroup(
+            groupId = groupId,
+            places = places.map { mapper.remote2Local(it.place) },
+            settings = places.mapNotNull { it.settings?.let { settingsMapper.remote2Local(it) } }
         )
     }
 
@@ -61,6 +72,14 @@ class GroupPlacesLocalDataSource(
             .filterNotNull()
     }
 
+    override fun getPlacesForGroup(groupId: String): Flow<List<GroupPlace>> {
+        return dao.getPlacesForGroup(groupId)
+            .distinctFlowOfList()
+            .map {
+                it.map { mapper.local2Core(it) }
+            }
+    }
+
     override fun getAllPlaces(): Flow<List<GroupPlace>> {
         return dao.getAllPlaces()
             .distinctFlowOfList()
@@ -73,6 +92,10 @@ class GroupPlacesLocalDataSource(
         dao.deletePlace(placeId)
     }
 
+    override suspend fun deletePlaceForGroup(groupId: String) {
+        dao.deletePlaceForGroup(groupId)
+    }
+
     override suspend fun removeSetting(placeId: String, settingId: String) {
         dao.deletePlaceSettingsForPlaceId(placeId)
     }
@@ -80,5 +103,5 @@ class GroupPlacesLocalDataSource(
     override suspend fun clearAll() {
         dao.clearPlaces()
     }
-    
+
 }

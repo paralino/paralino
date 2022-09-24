@@ -8,7 +8,7 @@ import app.paralino.core.models.raw.GroupPlaceSettingRaw
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.decodeFromString
 
-class PlaceSettingsMapper constructor(
+class PlaceSettingsMapperCore constructor(
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeyRepository
 ) {

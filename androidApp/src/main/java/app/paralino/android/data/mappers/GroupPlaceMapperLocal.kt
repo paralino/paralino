@@ -2,12 +2,12 @@ package app.paralino.android.data.mappers
 
 import app.paralino.android.data.models.places.GroupPlaceEntity
 import app.paralino.core.models.mappers.IDataMapperLocal
-import app.paralino.core.models.mappers.PlaceMapper
+import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.raw.GroupPlaceRaw
 
 class GroupPlaceMapperLocal(
-    private val coreMapper: PlaceMapper
+    private val coreMapper: PlaceMapperCore
 ) : IDataMapperLocal<GroupPlaceEntity, GroupPlaceRaw> {
 
     suspend fun local2Core(model: GroupPlaceEntity): GroupPlace {

@@ -84,3 +84,12 @@ data class LocationNodePayload(
     val mutableData: String?,
     val memberKeyVersion: Long
 )
+
+@Serializable
+data class CreatePlacePayload(
+    val groupId: String,
+    val ownerPublicKey: String,
+    val keyVersion: Long,
+    val private: Boolean,
+    val data: String
+)
