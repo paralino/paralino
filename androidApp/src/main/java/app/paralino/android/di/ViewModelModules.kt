@@ -20,6 +20,7 @@ import app.paralino.android.ui.login.LoginViewModel
 import app.paralino.android.ui.login.passwordreset.ResetPasswordViewModel
 import app.paralino.android.ui.login.recover.RecoverKeysViewModel
 import app.paralino.android.ui.map.MapViewModel
+import app.paralino.android.ui.places.list.PlacesViewModel
 import app.paralino.android.ui.settings.SettingsViewModel
 import app.paralino.android.ui.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.android.ui.settings.editprofile.EditProfileViewModel
@@ -62,6 +63,7 @@ val viewModelModules = module {
     viewModel { EditProfileViewModel(get()) }
     viewModel { RecoverKeysViewModel(get(), get()) }
     viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
+    viewModel { (groupID: String) -> PlacesViewModel(groupID, get(), get()) }
 }
 
 val utilModule = module {

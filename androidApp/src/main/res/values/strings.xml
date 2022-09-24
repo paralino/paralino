@@ -238,6 +238,10 @@
     <string name="group_members_last_active_status_full">Last update: %s</string>
     <string name="group_members_status_inactive">INACTIVE</string>
 
+    <string name="places_list_add_button">New place</string>
+    <string name="places_list_screen_title">Places</string>
+    <string name="places_list_screen_empty_info">You don\'t have any places yet</string>
+
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
     <string name="placeholder_unit_meter">%s m</string>

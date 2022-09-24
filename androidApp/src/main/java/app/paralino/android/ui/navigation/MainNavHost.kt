@@ -19,6 +19,7 @@ import app.paralino.android.ui.login.ProfileSetupScreen
 import app.paralino.android.ui.login.passwordreset.ResetPasswordScreen
 import app.paralino.android.ui.login.recover.RecoverKeysScreen
 import app.paralino.android.ui.map.MapHomeScreen
+import app.paralino.android.ui.places.list.PlacesScreen
 import app.paralino.android.ui.settings.AccountScreen
 import app.paralino.android.ui.settings.SettingsScreen
 import app.paralino.android.ui.settings.convertaccount.ConvertAccountScreen
@@ -75,6 +76,11 @@ fun NavGraphBuilder.dashboardGraph(appState: MainAppState) {
             val groupId =
                 it.arguments?.getString(AppScreen.DashboardRoot.SharingStart.argumentGroupId)
             SharingStartScreen(appState = appState, groupId = groupId)
+        }
+        composable(AppScreen.DashboardRoot.PlacesList.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.DashboardRoot.PlacesList.argumentGroupId)!!
+            PlacesScreen(appState = appState, groupId = groupId)
         }
     }
 }

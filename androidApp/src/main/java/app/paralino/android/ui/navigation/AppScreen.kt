@@ -99,6 +99,42 @@ sealed class AppScreen {
                 return "group-member-add?$args"
             }
         }
+
+        object PlacesList : AppScreen() {
+            override val routeSignature: String = "places-list?$argumentGroupId={$argumentGroupId}"
+            fun route(groupId: String? = null): String {
+                if (groupId == null)
+                    return "places-list"
+                return "places-list?$argumentGroupId=$groupId"
+            }
+        }
+
+        object PlaceCreate : AppScreen() {
+            val argumentPlaceId: String = "placeId"
+            override val routeSignature: String = "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}"
+            fun route(groupId: String, placeId: String?): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    placeId?.let { "$argumentPlaceId=$placeId" }
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+                return "places-create?$args"
+            }
+        }
+
+        object PlaceDetail : AppScreen() {
+            val argumentPlaceId: String = "placeId"
+            override val routeSignature: String = "places-detail?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}"
+            fun route(groupId: String, placeId: String): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    "${argumentPlaceId}=$placeId"
+                )
+                    .joinToString(separator = "&")
+                return "places-detail?$args"
+            }
+        }
     }
 
     object MapRoot : AppScreen() {
