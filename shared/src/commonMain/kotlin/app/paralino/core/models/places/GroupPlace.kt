@@ -1,5 +1,6 @@
 package app.paralino.core.models.places
 
+import app.paralino.core.models.base.ImageModel
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -16,6 +17,7 @@ data class GroupPlace constructor(
 @Serializable
 data class GroupPlaceData constructor(
     val name: String,
+    val image: ImageModel,
     val lat: Float,
     val lng: Float,
     val radiusMeters: Int,
