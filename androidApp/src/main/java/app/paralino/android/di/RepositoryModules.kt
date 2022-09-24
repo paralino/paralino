@@ -37,6 +37,7 @@ import app.paralino.android.data.repos.group.UserGroupLocalDataSource
 import app.paralino.android.data.repos.personal_code.PersonalCodeLocalDataSource
 import app.paralino.android.data.repos.location.LocationLocalDataSource
 import app.paralino.android.data.repos.location.SharingContractsLocalDataSourceImpl
+import app.paralino.android.data.repos.places.GroupPlacesLocalDataSource
 import app.paralino.android.data.repos.user.UserCryptoKeyLocalDataSource
 import app.paralino.android.data.repos.user.UserLocalDataSource
 import app.paralino.android.remote.appwrite.*
@@ -44,6 +45,8 @@ import app.paralino.android.utils.ConnectionStatusProvider
 import app.paralino.android.utils.DeviceStatusProvider
 import app.paralino.android.utils.LocationStatusProvider
 import app.paralino.core.repo.api.IRealtimeApi
+import app.paralino.core.repo.places.IPlacesLocalDataSource
+import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.utils.IDeviceStatusProvider
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -61,6 +64,7 @@ val daoModules = module {
     single { get<MainAppDatabase>().personalCodeDao() }
     single { get<MainAppDatabase>().groupKeysDao() }
     single { get<MainAppDatabase>().userKeysDao() }
+    single { get<MainAppDatabase>().placesDao() }
 }
 
 val cryptoModule = module {
@@ -89,12 +93,17 @@ val mappersModule = module {
     single { UserKeyMapperCore(get()) }
     single { PersonalCodeMapperCore(get(), get()) }
     single { PersonalCodeMapperLocal(get()) }
+    single { PlaceSettingsMapperCore(get(), get()) }
+    single { PlaceMapperCore(get(), get(), get()) }
+    single { GroupPlaceMapperLocal(get()) }
+    single { GroupPlaceSettingsMapperLocal(get()) }
 }
 
 val remoteDataSourceModule = module {
     single { UserRemoteSource(get(), get(), get(), get()) }
     single { LocationRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
+    single { PlacesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { PersonalCodesRemoteSource(get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get(), get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get()) }
@@ -132,4 +141,5 @@ val coreDependencyModules = module {
     single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get()) }
     single<IPersonalCodelLocalDataSource> { PersonalCodeLocalDataSource(get(), get()) }
     single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), get(), config as Config) }
+    single<IPlacesLocalDataSource> { GroupPlacesLocalDataSource(get(), get(), get()) }
 }

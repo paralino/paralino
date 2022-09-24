@@ -44,8 +44,9 @@ class PlacesViewModel(
                 groupName = group.name,
                 places = placesState
             )
+            state
         }
-            .onEach { _uiState.update { it } }
+            .onEach { state -> _uiState.update { Payload.Success(state) } }
             .catch { _eventChannel.send(PlacesScreenEvent.Error(it)) }
             .launchIn(coroutineScope)
     }
