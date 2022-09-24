@@ -11,6 +11,6 @@ data class GroupPlaceEntity constructor(
     val ownerUserId: String,
     val ownerPublicKey: String,
     val keyVersion: Long,
-    val private: Boolean,
+    val privatePlace: Boolean,
     val data: String
 )
