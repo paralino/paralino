@@ -11,7 +11,6 @@ interface IMapViewProviderState {
 
     fun initMap()
 
-    fun updateMarkers(list: List<MapMarkerState>)
     fun reDrawMarkers(trackMarkerId: String?, trackPositions: Boolean)
     fun focusToMarker(markerId: String)
 }

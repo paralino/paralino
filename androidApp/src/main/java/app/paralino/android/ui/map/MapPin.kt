@@ -15,7 +15,6 @@ import app.paralino.android.utils.extensions.getBitmapFromView
 import app.paralino.android.utils.extensions.imageTintRes
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.presentation.map.MapMarkerState
 import app.paralino.core.utils.Emojis
 
@@ -92,9 +91,8 @@ class MapUserMarkerView : ConstraintLayout {
     }
 
     companion object {
-        fun create(context: Context, model: MapMarkerState): Pair<MapPinData, BitmapDrawable> {
+        fun create(context: Context, data: MapPinData): Pair<MapPinData, BitmapDrawable> {
             val pinView = MapUserMarkerView(context)
-            val data = MapPinData(model)
             val bitmap = pinView.getPinForData(data)
             return data to BitmapDrawable(context.resources, bitmap)
         }
@@ -108,7 +106,10 @@ data class MapPinData constructor(
     val focused: Boolean,
     val active: Boolean,
     val image: ImageModel?,
-    val locationData: LocationDataModel,
+    val lat: Double,
+    val lng: Double,
+    val accuracy: Float = 0f,
+    val shouldShowApproximateCircle: Boolean
 ) {
 
     constructor(state: MapMarkerState) : this(
@@ -117,6 +118,9 @@ data class MapPinData constructor(
         focused = state.focused,
         active = state.active,
         image = state.image,
-        locationData = state.locationData
+        lat = state.locationData.lat,
+        lng = state.locationData.lat,
+        accuracy = state.locationData.accuracy,
+        shouldShowApproximateCircle = state.locationData.shouldShowApproximateCircle
     )
 }

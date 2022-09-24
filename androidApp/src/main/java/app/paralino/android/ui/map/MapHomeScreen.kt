@@ -53,7 +53,7 @@ fun MapHomeScreen(
     groupId: String?,
     vm: MapViewModel = getViewModel(),
 ) {
-    val mapViewState = rememberMapViewProviderState(darkMode = isSystemInDarkTheme())
+    val mapViewState = rememberMapViewHomeState(darkMode = isSystemInDarkTheme())
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
     rememberSaveable(groupId, isSystemInDarkTheme()) {
