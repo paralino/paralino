@@ -241,6 +241,11 @@
     <string name="places_list_add_button">New place</string>
     <string name="places_list_screen_title">Places</string>
     <string name="places_list_screen_empty_info">You don\'t have any places yet</string>
+    <string name="places_create_screen_title">Create new place</string>
+    <string name="places_create_seekbar_info">Radius</string>
+    <string name="places_create_button_create">Create place</string>
+    <string name="places_create_error_no_place">Please add location by long pressing on the map</string>
+    <string name="places_create_location_hint">**TIP:** Long press on the map to add or adjust your place</string>
 
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>

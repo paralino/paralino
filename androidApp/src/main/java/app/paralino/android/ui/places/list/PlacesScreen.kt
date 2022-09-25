@@ -27,6 +27,7 @@ import app.paralino.android.ui.components.DefaultEmptyState
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.groups.detail.GroupDetailsMapElement
+import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppTheme
@@ -85,10 +86,10 @@ fun PlacesScreen(
                     appState.navController.popBackStack()
                 },
                 onPlaceClick = {
-
+                    appState.navController.navigate(AppScreen.DashboardRoot.PlaceCreate.route(groupId = groupId, placeId = it.id))
                 },
                 onCreatePlace = {
-
+                    appState.navController.navigate(AppScreen.DashboardRoot.PlaceCreate.route(groupId = groupId, placeId = null))
                 }
             )
         }
