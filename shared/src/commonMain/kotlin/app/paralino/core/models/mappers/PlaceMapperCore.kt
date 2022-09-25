@@ -21,10 +21,10 @@ class PlaceMapperCore constructor(
     suspend fun core2Remote(model: GroupPlace): GroupPlaceRaw {
 
         val groupKey = cryptoKEKRepo.getGroupKey(
-            groupId = model.id,
+            groupId = model.groupId,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion
-        ) ?: throw MissingGroupKeyException(model.id)
+        ) ?: throw MissingGroupKeyException(model.groupId)
 
         val placeData = cryptoCore.encryptDataWithKey(
             data = BaseRemoteModule.formatter.encodeToString(model.data),
@@ -45,10 +45,10 @@ class PlaceMapperCore constructor(
     suspend fun remote2Core(model: GroupPlaceRaw): GroupPlace {
 
         val groupKey = cryptoKEKRepo.getGroupKey(
-            groupId = model.id,
+            groupId = model.groupId,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion
-        ) ?: throw MissingGroupKeyException(model.id)
+        ) ?: throw MissingGroupKeyException(model.groupId)
 
         val placeData = cryptoCore.decryptDataWithKey(
             data = model.data,
