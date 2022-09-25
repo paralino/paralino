@@ -37,7 +37,7 @@ class CreatePlaceViewModel(
         coroutineScope.launch {
             val value = when {
                 placeId.isNullOrBlank() -> null
-                else -> placesRepo.getPlaceLocally(groupId)
+                else -> placesRepo.getPlaceLocally(placeId)
                     .map { Payload.Success(it) }
                     .firstOrNull()
             } ?: Payload.Error(NullPointerException("No such place"))
@@ -45,7 +45,7 @@ class CreatePlaceViewModel(
             placeFlow.update { value }
             _uiState.update {
                 when {
-                    placeId.isNullOrBlank() -> Payload.Success(CreatePlaceScreenState.empty(groupId))
+                    placeId.isNullOrBlank() -> Payload.Success(CreatePlaceScreenState.empty(groupId = groupId))
                     else -> value.mapSuccess { place ->
                         CreatePlaceScreenState(
                             groupId = groupId,
