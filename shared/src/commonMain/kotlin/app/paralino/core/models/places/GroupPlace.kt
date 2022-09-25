@@ -18,8 +18,8 @@ data class GroupPlace constructor(
 data class GroupPlaceData constructor(
     val name: String,
     val image: ImageModel,
-    val lat: Float,
-    val lng: Float,
+    val lat: Double,
+    val lng: Double,
     val radiusMeters: Int,
     val expiresAt: String,
     val type: String,

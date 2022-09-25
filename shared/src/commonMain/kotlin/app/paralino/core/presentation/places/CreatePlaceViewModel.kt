@@ -45,9 +45,10 @@ class CreatePlaceViewModel(
             placeFlow.update { value }
             _uiState.update {
                 when {
-                    placeId.isNullOrBlank() -> Payload.Success(CreatePlaceScreenState.empty())
+                    placeId.isNullOrBlank() -> Payload.Success(CreatePlaceScreenState.empty(groupId))
                     else -> value.mapSuccess { place ->
                         CreatePlaceScreenState(
+                            groupId = groupId,
                             isNewPlace = false,
                             name = place.data.name,
                             image = place.data.image,
@@ -56,6 +57,7 @@ class CreatePlaceViewModel(
                             lat = place.data.lat,
                             lng = place.data.lng,
                             radiusMeters = place.data.radiusMeters,
+                            currentStep = 0,
                             isLoading = false
                         )
                     }
@@ -70,7 +72,17 @@ class CreatePlaceViewModel(
 
         val filteredName = data.name.trim().replace("\n", " ")
 
+        if(data.lat == null || data.lng == null) {
+            coroutineScope.launch {
+                _eventChannel.send(CreatePlaceScreenEvent.MissingLocation)
+            }
+            return
+        }
+
         if (filteredName.isBlank()) {
+            coroutineScope.launch {
+                _eventChannel.send(CreatePlaceScreenEvent.MissingInfo)
+            }
             _uiState.update {
                 it.mapSuccess { it.copy(hasNameError = true) }
             }
@@ -137,9 +149,15 @@ class CreatePlaceViewModel(
         }
     }
 
-    fun updatePosition(lat: Float, lng: Float, radiusMeters: Int) {
+    fun updatePosition(lat: Double, lng: Double) {
         _uiState.update {
-            it.mapSuccess { it.copy(lat = lat, lng = lng, radiusMeters = radiusMeters) }
+            it.mapSuccess { it.copy(lat = lat, lng = lng) }
+        }
+    }
+
+    fun updateRadius(radiusMeters: Int) {
+        _uiState.update {
+            it.mapSuccess { it.copy(radiusMeters = radiusMeters) }
         }
     }
 
