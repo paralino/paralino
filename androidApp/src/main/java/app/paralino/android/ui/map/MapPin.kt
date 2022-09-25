@@ -16,6 +16,7 @@ import app.paralino.android.utils.extensions.imageTintRes
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.presentation.map.MapMarkerState
+import app.paralino.core.presentation.places.CreatePlaceScreenState
 import app.paralino.core.utils.Emojis
 
 class MapUserMarkerView : ConstraintLayout {
@@ -111,6 +112,18 @@ data class MapPinData constructor(
     val accuracy: Float = 0f,
     val shouldShowApproximateCircle: Boolean
 ) {
+
+    constructor(state: CreatePlaceScreenState) : this(
+        groupId = state.groupId,
+        memberId = "place_marker",
+        focused = true,
+        active = true,
+        image = state.image,
+        lat = state.lat ?: 0.0,
+        lng = state.lng ?: 0.0,
+        accuracy = state.radiusMeters.toFloat(),
+        shouldShowApproximateCircle = true
+    )
 
     constructor(state: MapMarkerState) : this(
         groupId = state.groupId,

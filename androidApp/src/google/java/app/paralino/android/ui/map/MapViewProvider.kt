@@ -93,7 +93,6 @@ open class MapViewProviderState constructor(
 
     override fun initMap() {
         mapView.apply {
-
             // disable telemetry by default
             attribution.getMapAttributionDelegate().telemetry()
                 .setUserTelemetryRequestState(enabled = false)
@@ -110,7 +109,13 @@ open class MapViewProviderState constructor(
             }
 
             scalebar.updateSettings { this.enabled = false }
+        }
 
+        initListeners()
+    }
+
+    protected fun initListeners() {
+        mapView.apply {
             getMapboxMap().apply {
                 addOnMapClickListener {
                     annotationsManager?.annotations?.forEach { it.isSelected = false }
@@ -164,11 +169,10 @@ open class MapViewProviderState constructor(
                 }
                 return@OnPolygonAnnotationClickListener true
             })
-
         }
     }
 
-    private fun updatePolygonsForMapSize() {
+    protected fun updatePolygonsForMapSize() {
         val currentCamera = mapView.getMapboxMap().cameraState.toCameraOptions()
         synchronized(markerCache) {
             markerCache.snapshot().forEach {
@@ -322,7 +326,7 @@ open class MapViewProviderState constructor(
         }
     }
 
-    private fun focusToMarker(annotation: PointAnnotation) {
+    protected open fun focusToMarker(annotation: PointAnnotation) {
         val cameraPosition = CameraOptions.Builder()
             .zoom(16.0)
             .center(annotation.point)
