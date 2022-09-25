@@ -129,17 +129,19 @@ fun PlacesScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = {
-                    Text(stringResource(id = R.string.places_list_add_button))
-                },
-                icon = {
-                    Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
-                },
-                backgroundColor = MaterialTheme.colors.primary,
-                elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
-                onClick = onCreatePlace
-            )
+            if(state.places.isNotEmpty()) {
+                ExtendedFloatingActionButton(
+                    text = {
+                        Text(stringResource(id = R.string.places_list_add_button))
+                    },
+                    icon = {
+                        Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
+                    },
+                    backgroundColor = MaterialTheme.colors.primary,
+                    elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
+                    onClick = onCreatePlace
+                )
+            }
         },
         isFloatingActionButtonDocked = true
     ) {
@@ -152,39 +154,42 @@ fun PlacesScreen(
                 end = 20.dp
             )
         ) {
+            if (state.places.isNotEmpty()) {
 
-            this.item(key = "main_header") {
-                SettingsBigHeader(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    name = stringResource(id = R.string.places_list_screen_title)
-                )
-            }
+                this.item(key = "main_header") {
+                    SettingsBigHeader(
+                        name = stringResource(id = R.string.places_list_screen_title)
+                    )
+                }
 
-            this.item(key = "map") {
-                // map
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(top = 30.dp),
-                    shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colors.background,
-                    border = BorderStroke(6.dp, MaterialTheme.colors.surface),
-                    elevation = 12.dp
-                ) {
+                this.item(key = "map") {
+                    // map
                     Surface(
-                        modifier = Modifier.fillMaxSize().padding(4.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .padding(top = 30.dp),
                         shape = MaterialTheme.shapes.medium,
                         color = MaterialTheme.colors.background,
+                        border = BorderStroke(6.dp, MaterialTheme.colors.surface),
+                        elevation = 12.dp
                     ) {
-                        AndroidView(
-                            modifier = Modifier.fillMaxSize(),
-                            factory = {
-                                mapViewState.initMap()
-                                mapViewState.mapAndroidView
-                            },
-                            update = { }
-                        )
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(4.dp),
+                            shape = MaterialTheme.shapes.medium,
+                            color = MaterialTheme.colors.background,
+                        ) {
+                            AndroidView(
+                                modifier = Modifier.fillMaxSize(),
+                                factory = {
+                                    mapViewState.initMap()
+                                    mapViewState.mapAndroidView
+                                },
+                                update = { }
+                            )
+                        }
                     }
                 }
             }
@@ -209,8 +214,11 @@ fun PlacesScreen(
                     DefaultEmptyState(
                         content = stringResource(id = R.string.places_list_screen_empty_info),
                         icon = Icons.Rounded.Home,
-                        buttonText = null
-                    ) { }
+                        buttonText = stringResource(id = R.string.places_create_button_create),
+                        buttonIcon = Icons.Rounded.Add
+                    ) {
+                        onCreatePlace()
+                    }
                 }
             }
         }
