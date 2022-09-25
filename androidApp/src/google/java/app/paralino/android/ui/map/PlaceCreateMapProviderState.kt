@@ -81,6 +81,15 @@ class MapViewPlaceCreateProviderState constructor(
             listOf(MapPinData(it))
         } ?: emptyList()
         setAndUpdateMarkers(pin)
+        if(pin.isNotEmpty())
+            recenterMap()
+    }
+
+    private fun recenterMap() {
+        synchronized(markerCache) {
+            val point = markerCache.snapshot().entries.firstOrNull()?.value ?: return
+            focusToMarker(point.point)
+        }
     }
 
     fun updateRadius(radiusMeters: Int) {

@@ -152,6 +152,7 @@ fun CreatePlaceScreen(
     val data by rememberUpdatedState(state)
 
     LaunchedEffect(data.lat, data.lng, data.image) {
+        delay(50)
         mapViewState.updateMarkers(state)
     }
 
