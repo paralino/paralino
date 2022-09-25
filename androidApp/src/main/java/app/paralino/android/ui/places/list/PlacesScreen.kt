@@ -1,9 +1,6 @@
 package app.paralino.android.ui.places.list
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -24,11 +21,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.DefaultEmptyState
 import app.paralino.android.ui.components.ImageModelImage
-import app.paralino.android.ui.groups.detail.GroupDetailsMapElement
+import app.paralino.android.ui.map.rememberMapViewPlacesOverviewState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
@@ -39,6 +37,7 @@ import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesScreenEvent
 import app.paralino.core.utils.Emojis
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -94,8 +93,6 @@ fun PlacesScreen(
             )
         }
     }
-
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -107,6 +104,12 @@ fun PlacesScreen(
     onCreatePlace: () -> Unit
 ) {
 
+    val mapViewState = rememberMapViewPlacesOverviewState(darkMode = isSystemInDarkTheme())
+
+    LaunchedEffect(state) {
+        delay(50)
+        mapViewState.updateMarkers(state.groupId, state.places)
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -140,12 +143,13 @@ fun PlacesScreen(
         },
         isFloatingActionButtonDocked = true
     ) {
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 top = it.calculateTopPadding(),
-                bottom = it.calculateBottomPadding() + 100.dp
+                bottom = it.calculateBottomPadding() + 100.dp,
+                start = 20.dp,
+                end = 20.dp
             )
         ) {
 
@@ -157,15 +161,31 @@ fun PlacesScreen(
             }
 
             this.item(key = "map") {
-                Box(
-                    modifier = Modifier.padding(20.dp)
+                // map
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(top = 30.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colors.background,
+                    border = BorderStroke(6.dp, MaterialTheme.colors.surface),
+                    elevation = 12.dp
                 ) {
-                    GroupDetailsMapElement(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(180.dp),
-                        onClick = { }
-                    )
+                    Surface(
+                        modifier = Modifier.fillMaxSize().padding(4.dp),
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colors.background,
+                    ) {
+                        AndroidView(
+                            modifier = Modifier.fillMaxSize(),
+                            factory = {
+                                mapViewState.initMap()
+                                mapViewState.mapAndroidView
+                            },
+                            update = { }
+                        )
+                    }
                 }
             }
 
@@ -178,9 +198,7 @@ fun PlacesScreen(
                     Spacer(modifier = Modifier.size(20.dp))
 
                 PlaceListItem(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .animateItemPlacement(),
+                    modifier = Modifier.animateItemPlacement(),
                     state = item,
                     onClick = { onPlaceClick(item) },
                 )

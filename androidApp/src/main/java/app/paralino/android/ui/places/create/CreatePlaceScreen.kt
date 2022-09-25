@@ -149,15 +149,13 @@ fun CreatePlaceScreen(
         )
     )
 
-    val data by rememberUpdatedState(state)
-
-    LaunchedEffect(data.lat, data.lng, data.image) {
+    LaunchedEffect(state.lat, state.lng, state.image) {
         delay(50)
         mapViewState.updateMarkers(state)
     }
 
-    LaunchedEffect(data.radiusMeters) {
-        mapViewState.updateRadius(data.radiusMeters)
+    LaunchedEffect(state.radiusMeters) {
+        mapViewState.updateRadius(state.radiusMeters)
     }
 
     Column(
