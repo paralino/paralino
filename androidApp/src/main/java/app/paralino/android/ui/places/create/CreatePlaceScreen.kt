@@ -249,7 +249,7 @@ fun CreatePlaceScreen(
             focusDescription = true,
             state = seekbarState,
             onProgressChange = {
-                onRadiusChanged((it - 1) * CreatePlaceScreenState.minRadiusMeters)
+                onRadiusChanged(it * CreatePlaceScreenState.minRadiusMeters)
             }
         )
 

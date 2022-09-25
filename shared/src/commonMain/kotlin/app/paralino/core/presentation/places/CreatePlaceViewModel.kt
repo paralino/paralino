@@ -57,7 +57,6 @@ class CreatePlaceViewModel(
                             lat = place.data.lat,
                             lng = place.data.lng,
                             radiusMeters = place.data.radiusMeters,
-                            currentStep = 0,
                             isLoading = false
                         )
                     }

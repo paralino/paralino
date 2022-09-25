@@ -2,8 +2,9 @@ package app.paralino.core.presentation.places
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.utils.Emojis
+import kotlin.math.min
 
-data class CreatePlaceScreenState(
+data class CreatePlaceScreenState constructor(
     val groupId: String,
     val isNewPlace: Boolean,
     val name: String,
@@ -12,11 +13,11 @@ data class CreatePlaceScreenState(
     val lat: Double?,
     val lng: Double?,
     val radiusMeters: Int,
-    val currentStep: Int,
     val hasNameError: Boolean,
     val isLoading: Boolean
 ) {
 
+    val currentStep: Int get() = (radiusMeters / minRadiusMeters)
     companion object {
 
         const val minRadiusMeters = 50
@@ -33,7 +34,6 @@ data class CreatePlaceScreenState(
                 lat = null,
                 lng = null,
                 radiusMeters = defaultRadiusMeters,
-                currentStep = defaultRadiusMeters / minRadiusMeters,
                 hasNameError = false,
                 isLoading = false
             )
