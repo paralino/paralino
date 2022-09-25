@@ -24,7 +24,7 @@ class PlacesViewModel(
     init {
         combine(
             groupRepo.getGroupWithoutMembersLocally(groupId),
-            placesRepo.getPlacesForGroupLocally(groupId)
+            placesRepo.getAndRefreshPlacesForGroup(groupId)
         ) { group, places ->
 
             val placesState = places.map {

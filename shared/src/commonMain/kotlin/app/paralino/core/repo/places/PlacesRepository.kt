@@ -43,6 +43,16 @@ class PlacesRepository constructor(
         )
     }
 
+    fun getAndRefreshPlacesForGroup(groupId: String): Flow<List<GroupPlace>> {
+        return mergeDataWithRemote(
+            local = local.getPlacesForGroup(groupId),
+            remote = {
+                remote.getPlacesForGroup(groupId)
+            },
+            localUpdate = { local.recreatePlacesForGroup(groupId, it) }
+        )
+    }
+
     suspend fun refreshAndGetPlacesForGroup(groupId: String): Flow<List<GroupPlacesWithSettingsRaw>> {
         return getDataOnce(localUpdate = { local.recreatePlacesForGroup(groupId, it) }) { remote.getPlacesForGroup(groupId) }
     }

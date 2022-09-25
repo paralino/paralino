@@ -13,7 +13,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +28,6 @@ import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.DefaultEmptyState
 import app.paralino.android.ui.components.ImageModelImage
-import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.groups.detail.GroupDetailsMapElement
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsBigHeader
@@ -48,9 +50,7 @@ fun PlacesScreen(
     vm: PlacesViewModel = getViewModel { parametersOf(groupId) },
 ) {
 
-
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
-    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
@@ -246,8 +246,8 @@ fun PlaceListItemPreview() {
                 name = "Home",
                 image = ImageModel.emoji(Emojis.group1.first()),
                 private = false,
-                lat = 0f,
-                lng = 0f,
+                lat = 0.0,
+                lng = 0.0,
                 radiusMeters = 1000
             )
         ) {}
@@ -265,8 +265,8 @@ fun PlacesScreenPreview() {
                 name = "Place $it",
                 image = ImageModel.emoji(Emojis.group1.random()),
                 private = false,
-                lat = 0f,
-                lng = 0f,
+                lat = 0.0,
+                lng = 0.0,
                 radiusMeters = 1000
             )
         }
