@@ -90,7 +90,7 @@ class MapViewPlacesOverviewProviderState constructor(
         synchronized(markerCache) {
             val markers = markerCache.snapshot().values
             mapView.getMapboxMap().apply {
-                val camera = cameraForCoordinates(markers.map { it.point.point }).let {
+                val camera = cameraForCoordinates(markers.flatMap { it.polygon?.points?.flatten() ?: emptyList() }).let {
                     it.toBuilder().zoom(it.zoom?.times(0.9)).build()
                 }
                 cameraAnimationsPlugin { flyTo(camera) }
