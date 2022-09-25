@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import app.paralino.android.ui.theme.AppColors
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -105,7 +106,7 @@ fun LargeSeekbarSwitch(
                         imageVector = Icons.Rounded.ChevronLeft,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = backgroundColor
+                        tint = AppColors.lightSurface
                     )
                     Image(
                         imageVector = Icons.Rounded.DragIndicator,
@@ -114,13 +115,13 @@ fun LargeSeekbarSwitch(
                             .width(10.dp)
                             .height(16.dp),
                         contentScale = ContentScale.Crop,
-                        colorFilter = ColorFilter.tint(backgroundColor)
+                        colorFilter = ColorFilter.tint(AppColors.lightSurface)
                     )
                     Icon(
                         imageVector = Icons.Rounded.ChevronRight,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = backgroundColor
+                        tint = AppColors.lightSurface
                     )
                 }
             }
