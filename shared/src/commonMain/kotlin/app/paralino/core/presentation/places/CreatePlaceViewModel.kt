@@ -1,8 +1,11 @@
 package app.paralino.core.presentation.places
 
+import app.paralino.core.config
 import app.paralino.core.models.Payload
+import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
@@ -25,6 +28,7 @@ class CreatePlaceViewModel(
 
 
     private val placeFlow = MutableStateFlow<Payload<GroupPlace>>(Payload.Loading)
+    private val groupFlow = MutableStateFlow<Resource<UserGroup>>(Resource.NotInitialized)
     private val _uiState = MutableStateFlow<Payload<CreatePlaceScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<CreatePlaceScreenState>> = _uiState
 
@@ -42,6 +46,12 @@ class CreatePlaceViewModel(
                     .firstOrNull()
             } ?: Payload.Error(NullPointerException("No such place"))
 
+            groupFlow.update {
+                Resource.Ready(
+                    groupRepo.getGroupWithoutMembersLocally(groupId).first()
+                )
+            }
+
             placeFlow.update { value }
             _uiState.update {
                 when {
@@ -57,7 +67,9 @@ class CreatePlaceViewModel(
                             lat = place.data.lat,
                             lng = place.data.lng,
                             radiusMeters = place.data.radiusMeters,
-                            isLoading = false
+                            canEdit = canEditPlace(),
+                            actionLoading = false,
+                            fullLoading = false
                         )
                     }
                 }
@@ -71,7 +83,7 @@ class CreatePlaceViewModel(
 
         val filteredName = data.name.trim().replace("\n", " ")
 
-        if(data.lat == null || data.lng == null) {
+        if (data.lat == null || data.lng == null) {
             coroutineScope.launch {
                 _eventChannel.send(CreatePlaceScreenEvent.MissingLocation)
             }
@@ -116,7 +128,7 @@ class CreatePlaceViewModel(
                 _uiState.update {
                     it.mapSuccess {
                         it.copy(
-                            isLoading = data is Payload.Loading,
+                            actionLoading = data is Payload.Loading,
                             hasNameError = false
                         )
                     }
@@ -134,6 +146,44 @@ class CreatePlaceViewModel(
             .launchIn(coroutineScope)
     }
 
+    fun deletePlace() {
+
+        val place = placeFlow.value.data
+
+        if (place == null) {
+            coroutineScope.launch {
+                _eventChannel.send(CreatePlaceScreenEvent.Error(Throwable("Missing place")))
+            }
+            return
+        }
+
+        if (canEditPlace()) {
+            placesRepo.deletePlace(place.id)
+                .mapToPayload { it }
+                .onEach { result ->
+                    when (result) {
+                        Payload.Loading -> {}
+                        is Payload.Success -> _eventChannel.send(CreatePlaceScreenEvent.PlaceDeleted)
+                        is Payload.Error -> _eventChannel.send(
+                            CreatePlaceScreenEvent.Error(result.exception)
+                        )
+                    }
+                    _uiState.update { it.mapSuccess { it.copy(fullLoading = result is Payload.Loading) } }
+                }
+                .launchIn(coroutineScope)
+        } else {
+            coroutineScope.launch {
+                _eventChannel.send(CreatePlaceScreenEvent.Error(Throwable("Missing permission")))
+            }
+        }
+    }
+
+    private fun canEditPlace(): Boolean {
+        val place = placeFlow.value.data ?: return false
+        val group = groupFlow.value.data ?: return false
+        return group.isCurrentUserOwner || place.ownerUserId == config.userId
+    }
+
     fun updateImage(image: ImageModel) {
         _uiState.update {
             it.mapSuccess { it.copy(image = image) }
@@ -141,7 +191,7 @@ class CreatePlaceViewModel(
     }
 
     fun updateName(name: String) {
-        if(name.trim().length > placeNameLengthLimit)
+        if (name.trim().length > placeNameLengthLimit)
             return
         _uiState.update {
             it.mapSuccess { it.copy(name = name, hasNameError = false) }

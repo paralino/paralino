@@ -20,6 +20,7 @@ class CreatePlaceViewModel(
     val events = coreVm.events
 
     fun createPlace() = coreVm.createPlace()
+    fun deletePlace() = coreVm.deletePlace()
     fun updateName(name: String) = coreVm.updateName(name)
     fun updateImage(image: ImageModel) = coreVm.updateImage(image)
     fun updatePosition(lat: Double, lng: Double) = coreVm.updatePosition(lat, lng)

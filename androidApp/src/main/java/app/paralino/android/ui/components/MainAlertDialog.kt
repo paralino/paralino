@@ -425,4 +425,25 @@ sealed interface MainAlertDialog {
         }
     }
 
+    object DeletePlace : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.place_list_menu_delete),
+                message = stringResource(id = R.string.place_list_delete_place_alert_title),
+                buttons = listOf(
+                    AlertDialogButtonData(Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_delete_group_alert_button)),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
 }

@@ -1,6 +1,10 @@
 package app.paralino.android.ui.places.create
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -8,7 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Adjust
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Height
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,6 +34,7 @@ import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
 import app.paralino.core.presentation.places.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.CreatePlaceScreenState
 import kotlinx.coroutines.delay
@@ -47,6 +52,8 @@ fun CreatePlaceScreen(
 ) {
 
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
+    var optionMenuExpanded by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
@@ -61,8 +68,11 @@ fun CreatePlaceScreen(
                 is CreatePlaceScreenEvent.MissingInfo -> {
                     appState.showSnackbar(context.getString(R.string.form_generic_validation))
                 }
-                CreatePlaceScreenEvent.PlaceUpdated -> {
+                is CreatePlaceScreenEvent.PlaceUpdated -> {
                     delay(400)
+                    appState.navController.popBackStack()
+                }
+                is CreatePlaceScreenEvent.PlaceDeleted -> {
                     appState.navController.popBackStack()
                 }
                 null -> {
@@ -70,6 +80,17 @@ fun CreatePlaceScreen(
                 }
             }
         }
+    }
+
+    when (val dialog = showDialog) {
+        is MainAlertDialog.DeletePlace -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk)
+                    vm.deletePlace()
+            }
+        }
+        else -> {}
     }
 
     Scaffold(
@@ -84,6 +105,30 @@ fun CreatePlaceScreen(
                             imageVector = Icons.Rounded.Close,
                             contentDescription = null
                         )
+                    }
+                },
+                actions = {
+                    if (state.data?.canEdit == true) {
+                        IconButton(onClick = { optionMenuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Rounded.MoreVert,
+                                contentDescription = null
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = optionMenuExpanded,
+                            onDismissRequest = { optionMenuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    optionMenuExpanded = false
+                                    showDialog = MainAlertDialog.DeletePlace
+                                }
+                            ) {
+                                Text(text = stringResource(id = R.string.place_list_menu_delete))
+                            }
+                        }
                     }
                 }
             )
@@ -121,6 +166,22 @@ fun CreatePlaceScreen(
                     onRadiusChanged = { vm.updateRadius(it) },
                     onCreatePlace = { vm.createPlace() },
                 )
+
+                AnimatedVisibility(
+                    finalState.data.fullLoading,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = MaterialTheme.colors.background.copy(alpha = 0.5f))
+                            .clickable { },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
     }
@@ -204,7 +265,9 @@ fun CreatePlaceScreen(
             elevation = 12.dp
         ) {
             Surface(
-                modifier = Modifier.fillMaxSize().padding(4.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colors.background,
             ) {
@@ -230,7 +293,9 @@ fun CreatePlaceScreen(
         }
 
         Text(
-            modifier = Modifier.padding(top = 10.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth(),
             style = MaterialTheme.typography.caption,
             textAlign = TextAlign.Center,
             text = stringResource(id = R.string.places_create_location_hint).annotatedBold()
@@ -257,7 +322,7 @@ fun CreatePlaceScreen(
         FilledButton(
             modifier = Modifier.padding(bottom = 30.dp),
             style = ButtonStyle.BIG,
-            state = AppButtonState.loadingStateWithCheck(state.isLoading),
+            state = AppButtonState.loadingStateWithCheck(state.actionLoading),
             icon = if (state.isNewPlace) null else Icons.Rounded.Save,
             onClick = { onCreatePlace() }
         ) {

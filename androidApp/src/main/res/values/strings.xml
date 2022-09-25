@@ -246,6 +246,8 @@
     <string name="places_create_button_create">Create place</string>
     <string name="places_create_error_no_place">Please add location by long pressing on the map</string>
     <string name="places_create_location_hint">**TIP:** Long press on the map to add or adjust your place</string>
+    <string name="place_list_menu_delete">Delete place</string>
+    <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
 
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
