@@ -98,7 +98,13 @@ fun CreatePlaceScreen(
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 1.dp,
-                title = { Text(stringResource(id = R.string.places_create_screen_title)) },
+                title = {
+                    if (state.data?.isNewPlace == true) {
+                        Text(stringResource(id = R.string.places_create_screen_title))
+                    } else if(state.data?.isNewPlace == false) {
+                        Text(stringResource(id = R.string.places_edit_screen_title))
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
