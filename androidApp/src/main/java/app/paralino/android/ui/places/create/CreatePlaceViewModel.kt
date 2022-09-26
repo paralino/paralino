@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.presentation.places.CreatePlaceViewModel
+import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 
 class CreatePlaceViewModel(
     private val groupId: String,

@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.places
+package app.paralino.core.presentation.places.create
 
 import app.paralino.core.config
 import app.paralino.core.models.Payload

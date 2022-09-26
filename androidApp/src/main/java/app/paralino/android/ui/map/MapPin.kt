@@ -16,7 +16,7 @@ import app.paralino.android.utils.extensions.imageTintRes
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.presentation.map.MapMarkerState
-import app.paralino.core.presentation.places.CreatePlaceScreenState
+import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.utils.Emojis
 

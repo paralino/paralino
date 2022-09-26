@@ -7,9 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
 import app.paralino.android.R
-import app.paralino.core.presentation.places.CreatePlaceScreenState
-import com.mapbox.android.gestures.MoveGestureDetector
-import com.mapbox.android.gestures.StandardScaleGestureDetector
+import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import com.mapbox.maps.MapView
 import com.mapbox.maps.plugin.annotation.AnnotationConfig
 import com.mapbox.maps.plugin.annotation.annotations

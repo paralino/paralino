@@ -35,8 +35,8 @@ import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
-import app.paralino.core.presentation.places.CreatePlaceScreenEvent
-import app.paralino.core.presentation.places.CreatePlaceScreenState
+import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
+import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
