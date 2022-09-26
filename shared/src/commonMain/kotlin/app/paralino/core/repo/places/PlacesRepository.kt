@@ -11,6 +11,7 @@ import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -39,7 +40,8 @@ class PlacesRepository constructor(
             remote = {
                 remote.getPlaceWithSettings(placeId)
             },
-            localUpdate = { local.updateOrCreatePlace(it) }
+            localUpdate = { local.updateOrCreatePlace(it) },
+            remotePreference = RemotePreference.CACHE(key = "place_detail", timeMillis = 5_000)
         )
     }
 
