@@ -1,6 +1,5 @@
 package app.paralino.core.presentation.places.create
 
-import app.paralino.core.config
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
@@ -67,7 +66,6 @@ class CreatePlaceViewModel(
                             lat = place.data.lat,
                             lng = place.data.lng,
                             radiusMeters = place.data.radiusMeters,
-                            canEdit = canEditPlace(),
                             actionLoading = false,
                             fullLoading = false
                         )
@@ -144,44 +142,6 @@ class CreatePlaceViewModel(
                 }
             }
             .launchIn(coroutineScope)
-    }
-
-    fun deletePlace() {
-
-        val place = placeFlow.value.data
-
-        if (place == null) {
-            coroutineScope.launch {
-                _eventChannel.send(CreatePlaceScreenEvent.Error(Throwable("Missing place")))
-            }
-            return
-        }
-
-        if (canEditPlace()) {
-            placesRepo.deletePlace(place.id)
-                .mapToPayload { it }
-                .onEach { result ->
-                    when (result) {
-                        Payload.Loading -> {}
-                        is Payload.Success -> _eventChannel.send(CreatePlaceScreenEvent.PlaceDeleted)
-                        is Payload.Error -> _eventChannel.send(
-                            CreatePlaceScreenEvent.Error(result.exception)
-                        )
-                    }
-                    _uiState.update { it.mapSuccess { it.copy(fullLoading = result is Payload.Loading) } }
-                }
-                .launchIn(coroutineScope)
-        } else {
-            coroutineScope.launch {
-                _eventChannel.send(CreatePlaceScreenEvent.Error(Throwable("Missing permission")))
-            }
-        }
-    }
-
-    private fun canEditPlace(): Boolean {
-        val place = placeFlow.value.data ?: return false
-        val group = groupFlow.value.data ?: return false
-        return group.isCurrentUserOwner || place.ownerUserId == config.userId
     }
 
     fun updateImage(image: ImageModel) {

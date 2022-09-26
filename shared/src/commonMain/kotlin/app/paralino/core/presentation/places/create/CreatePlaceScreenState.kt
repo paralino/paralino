@@ -13,7 +13,6 @@ data class CreatePlaceScreenState constructor(
     val lng: Double?,
     val radiusMeters: Int,
     val hasNameError: Boolean,
-    val canEdit: Boolean,
     val actionLoading: Boolean,
     val fullLoading: Boolean
 ) {
@@ -36,7 +35,6 @@ data class CreatePlaceScreenState constructor(
                 lng = null,
                 radiusMeters = defaultRadiusMeters,
                 hasNameError = false,
-                canEdit = false,
                 actionLoading = false,
                 fullLoading = false
             )
@@ -50,5 +48,4 @@ sealed class CreatePlaceScreenEvent() {
     object MissingInfo: CreatePlaceScreenEvent()
     object MissingLocation: CreatePlaceScreenEvent()
     object PlaceUpdated: CreatePlaceScreenEvent()
-    object PlaceDeleted: CreatePlaceScreenEvent()
 }

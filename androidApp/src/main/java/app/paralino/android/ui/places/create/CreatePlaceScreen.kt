@@ -12,9 +12,11 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Adjust
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Save
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,8 +54,6 @@ fun CreatePlaceScreen(
 ) {
 
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
-    var optionMenuExpanded by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
@@ -72,25 +72,11 @@ fun CreatePlaceScreen(
                     delay(400)
                     appState.navController.popBackStack()
                 }
-                is CreatePlaceScreenEvent.PlaceDeleted -> {
-                    appState.navController.popBackStack()
-                }
                 null -> {
                     /* do nothing */
                 }
             }
         }
-    }
-
-    when (val dialog = showDialog) {
-        is MainAlertDialog.DeletePlace -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
-                    vm.deletePlace()
-            }
-        }
-        else -> {}
     }
 
     Scaffold(
@@ -101,7 +87,7 @@ fun CreatePlaceScreen(
                 title = {
                     if (state.data?.isNewPlace == true) {
                         Text(stringResource(id = R.string.places_create_screen_title))
-                    } else if(state.data?.isNewPlace == false) {
+                    } else if (state.data?.isNewPlace == false) {
                         Text(stringResource(id = R.string.places_edit_screen_title))
                     }
                 },
@@ -111,30 +97,6 @@ fun CreatePlaceScreen(
                             imageVector = Icons.Rounded.Close,
                             contentDescription = null
                         )
-                    }
-                },
-                actions = {
-                    if (state.data?.canEdit == true) {
-                        IconButton(onClick = { optionMenuExpanded = true }) {
-                            Icon(
-                                imageVector = Icons.Rounded.MoreVert,
-                                contentDescription = null
-                            )
-                        }
-
-                        DropdownMenu(
-                            expanded = optionMenuExpanded,
-                            onDismissRequest = { optionMenuExpanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    optionMenuExpanded = false
-                                    showDialog = MainAlertDialog.DeletePlace
-                                }
-                            ) {
-                                Text(text = stringResource(id = R.string.place_list_menu_delete))
-                            }
-                        }
                     }
                 }
             )
