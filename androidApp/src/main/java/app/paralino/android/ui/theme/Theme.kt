@@ -3,6 +3,7 @@ package app.paralino.android.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.ripple.*
@@ -52,38 +53,47 @@ private val shapes = Shapes(
 	large = RoundedCornerShape(percent = 0)
 )
 
-enum class ButtonStyle(
-	val defaultModifier: Modifier,
-	val paddingValues: PaddingValues,
-	val shape: Shape,
-	val iconSize: Dp,
-	val iconSpacing: Dp,
+sealed interface ButtonStyle {
+
+	val defaultModifier: Modifier
+	val paddingValues: PaddingValues
+	val shape: Shape
+	val iconSize: Dp
+	val iconSpacing: Dp
 	val minContentHeight: Dp
-) {
-	BIG(
-		defaultModifier = Modifier.fillMaxWidth(),
-		paddingValues = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-		shape = shapes.small,
-		iconSize = 18.dp,
-		iconSpacing = 8.dp,
-		minContentHeight = 24.dp,
-	),
-	SMALL(
-		defaultModifier = Modifier,
-		paddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-		shape = RoundedCornerShape(percent = 50),
-		iconSize = 18.dp,
-		iconSpacing = 8.dp,
-		minContentHeight = 24.dp
-	),
-	SMALL_ACTION(
-		defaultModifier = Modifier,
-		paddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-		shape = RoundedCornerShape(percent = 50),
-		iconSpacing = 4.dp,
-		iconSize = 12.dp,
-		minContentHeight = 14.dp
-	)
+
+	companion object {
+		val BIG = BIG()
+		val SMALL = SMALL()
+		val SMALL_ACTION = SMALL_ACTION()
+	}
+
+	data class BIG(
+		override val defaultModifier: Modifier = Modifier.fillMaxWidth(),
+		override val paddingValues: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+		override val shape: CornerBasedShape = shapes.small,
+		override val iconSize: Dp = 18.dp,
+		override val iconSpacing: Dp = 8.dp,
+		override val minContentHeight: Dp = 24.dp,
+	): ButtonStyle
+
+	data class SMALL(
+		override val defaultModifier: Modifier = Modifier,
+		override val paddingValues: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+		override val shape: CornerBasedShape = RoundedCornerShape(percent = 50),
+		override val iconSize: Dp = 18.dp,
+		override val iconSpacing: Dp = 8.dp,
+		override val minContentHeight: Dp = 24.dp,
+	): ButtonStyle
+
+	data class SMALL_ACTION(
+		override val defaultModifier: Modifier = Modifier,
+		override val paddingValues: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+		override val shape: CornerBasedShape = RoundedCornerShape(percent = 50),
+		override val iconSize: Dp = 4.dp,
+		override val iconSpacing: Dp = 12.dp,
+		override val minContentHeight: Dp = 14.dp,
+	): ButtonStyle
 }
 
 @Composable
