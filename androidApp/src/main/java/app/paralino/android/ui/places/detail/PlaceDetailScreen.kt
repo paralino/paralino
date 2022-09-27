@@ -159,10 +159,10 @@ fun PlaceDetailScreen(
                     state = finalState.data,
                     paddingValues = it,
                     onEnterChange = {
-
+                        vm.toggleEnterSettings(it)
                     },
                     onExitChange = {
-
+                        vm.toggleExitSettings(it)
                     }
                 )
 
@@ -193,8 +193,8 @@ fun PlaceDetailScreen(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
     state: PlaceDetailScreenState,
-    onEnterChange: (Boolean) -> Unit,
-    onExitChange: (Boolean) -> Unit
+    onEnterChange: (String) -> Unit,
+    onExitChange: (String) -> Unit
 ) {
 
     val mapViewState = rememberMapViewPlaceCreateState(darkMode = isSystemInDarkTheme())
@@ -268,7 +268,7 @@ fun PlaceDetailScreen(
         ) { index, item ->
 
             if (index == 0)
-                Spacer(modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.size(40.dp))
 
             PlaceDetailUserListItem(
                 modifier = Modifier.animateItemPlacement(),

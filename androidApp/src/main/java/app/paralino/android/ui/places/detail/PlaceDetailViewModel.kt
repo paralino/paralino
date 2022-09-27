@@ -20,4 +20,6 @@ class PlaceDetailViewModel(
     val events = coreVm.events
 
     fun deletePlace() = coreVm.deletePlace()
+    fun toggleEnterSettings(memberId: String) = coreVm.toggleEnterSettings(memberId)
+    fun toggleExitSettings(memberId: String) = coreVm.toggleExitSettings(memberId)
 }

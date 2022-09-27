@@ -6,9 +6,8 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.mappers.PlaceMapperCore
-import app.paralino.core.models.places.GroupPlace
-import app.paralino.core.models.places.GroupPlaceData
-import app.paralino.core.models.places.GroupPlaceWithSettings
+import app.paralino.core.models.places.*
+import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
@@ -24,7 +23,7 @@ class PlacesRepository constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val mapper: PlaceMapperCore,
-): BaseRepository() {
+) : BaseRepository() {
 
     fun getPlacesForGroupLocally(groupId: String): Flow<List<GroupPlace>> {
         return local.getPlacesForGroup(groupId)
@@ -56,7 +55,9 @@ class PlacesRepository constructor(
     }
 
     suspend fun refreshAndGetPlacesForGroup(groupId: String): Flow<List<GroupPlacesWithSettingsRaw>> {
-        return getDataOnce(localUpdate = { local.recreatePlacesForGroup(groupId, it) }) { remote.getPlacesForGroup(groupId) }
+        return getDataOnce(localUpdate = {
+            local.recreatePlacesForGroup(groupId, it)
+        }) { remote.getPlacesForGroup(groupId) }
     }
 
     suspend fun refreshPlace(placeId: String): GroupPlacesWithSettingsRaw {
@@ -83,6 +84,44 @@ class PlacesRepository constructor(
         return getDataOnce(
             remote = { remote.updatePlace(place) },
             localUpdate = { local.updatePlaceOnly(it) }
+        ).map { Unit }
+    }
+
+    fun updatePlaceSettings(placeId: String, data: GroupPlaceSettingsData): Flow<Unit> {
+        return getDataOnce(
+            remote = {
+                val place = local.getPlaceWithSettings(placeId).first()
+                val currentSettings = place.settings
+
+                val settings = if (currentSettings != null) {
+                    val currentAlert =
+                        currentSettings.alertData.firstOrNull { it.memberId == data.memberId }
+
+                    val newAlerts = if (currentAlert != null) {
+                        currentSettings.alertData.toMutableList().apply {
+                            removeAll { it.memberId == data.memberId }
+                            add(data)
+                        }
+                    } else {
+                        currentSettings.alertData.toMutableList().apply { add(data) }
+                    }
+
+                    currentSettings.copy(alertData = newAlerts)
+                } else {
+                    GroupPlaceSettings(
+                        id = "",
+                        groupId = place.place.groupId,
+                        placeId = placeId,
+                        ownerUserId = userRepository.cachedUserId,
+                        keyVersion = 0,
+                        alertData = listOf(data)
+                    )
+                }
+                remote.updatePlaceSettings(settings)
+            },
+            localUpdate = {
+                local.updatePlaceSettings(it)
+            }
         ).map { Unit }
     }
 

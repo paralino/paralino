@@ -15,6 +15,8 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
+import app.paralino.core.utils.exceptions.NotFoundException
+import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.serialization.encodeToString
 
@@ -150,15 +152,39 @@ class PlacesRemoteSource(
 
     suspend fun updatePlaceSettings(
         data: GroupPlaceSettings
-    ): GroupPlaceRaw {
+    ): GroupPlaceSettingRaw {
         return blocking {
             val mapped = mapper.settingsMapper.core2Remote(data)
-            api.createDocument(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID,
-                docId = mapped.id,
-                data = mapped.toPostJson()
-            ).parsePlace()
+            if (data.id.isBlank()) {
+                api.createDocument(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID,
+                    docId = null,
+                    data = mapped.toPostJson()
+                ).parsePlaceSettings()
+            } else {
+                try {
+                    // first try to update document
+                    api.updateDocument(
+                        databaseType = BackendDatabaseType.DATA,
+                        collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID,
+                        docId = mapped.id,
+                        data = mapped.toPostJsonUpdate()
+                    ).parsePlaceSettings()
+                } catch (e: Exception) {
+                    if (e.asRemoteException() is NotFoundException) {
+                        // if document is not found, create it
+                        api.createDocument(
+                            databaseType = BackendDatabaseType.DATA,
+                            collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID,
+                            docId = null,
+                            data = mapped.toPostJson()
+                        ).parsePlaceSettings()
+                    } else {
+                        throw e
+                    }
+                }
+            }
         }
     }
 

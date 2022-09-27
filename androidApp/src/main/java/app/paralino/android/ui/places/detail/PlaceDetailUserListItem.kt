@@ -1,5 +1,6 @@
 package app.paralino.android.ui.places.detail
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,8 +35,8 @@ import app.paralino.android.R
 fun PlaceDetailUserListItem(
     modifier: Modifier = Modifier,
     state: PlaceSettingsState,
-    onEnterChange: (Boolean) -> Unit,
-    onExitChange: (Boolean) -> Unit,
+    onEnterChange: (String) -> Unit,
+    onExitChange: (String) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -67,14 +69,16 @@ fun PlaceDetailUserListItem(
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
         ) {
             PlaceSettingNotifyButton(
                 state = state.notifyEnter,
                 text = stringResource(id = R.string.place_detail_setting_button_notify_enter),
                 loading = state.loadingEnter,
             ) {
-                onEnterChange(it)
+                onEnterChange(state.memberId)
             }
 
             Spacer(modifier = Modifier.size(8.dp))
@@ -84,7 +88,7 @@ fun PlaceDetailUserListItem(
                 text = stringResource(id = R.string.place_detail_setting_button_notify_exit),
                 loading = state.loadingExit,
             ) {
-                onExitChange(it)
+                onExitChange(state.memberId)
             }
         }
     }
@@ -97,8 +101,9 @@ fun PlaceSettingNotifyButton(
     loading: Boolean,
     onChange: (Boolean) -> Unit
 ) {
+    val backgroundColor by animateColorAsState(targetValue = if (state) MaterialTheme.colors.primary else MaterialTheme.colors.secondary)
     val colors = ButtonDefaults.buttonColors(
-        backgroundColor = if(state) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+        backgroundColor = backgroundColor
     )
     FilledButton(
         style = ButtonStyle.SMALL_ACTION(
@@ -112,11 +117,11 @@ fun PlaceSettingNotifyButton(
             Icons.Rounded.NotificationsActive
         else
             Icons.Rounded.NotificationsOff,
-        elevation = ButtonDefaults.elevation(defaultElevation = if(state) 2.dp else 0.dp),
+        elevation = ButtonDefaults.elevation(defaultElevation = if (state) 2.dp else 0.dp),
         state = AppButtonState.loadingState(loading),
         colors = colors,
         onClick = {
-            if (loading)
+            if (!loading)
                 onChange(!state)
         }
     ) {

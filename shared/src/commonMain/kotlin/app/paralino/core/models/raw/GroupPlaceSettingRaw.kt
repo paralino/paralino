@@ -24,6 +24,13 @@ data class GroupPlaceSettingRaw(
         }
     }
 
+    fun toPostJsonUpdate(): Map<String, Any> {
+        return buildMap {
+            put("keyVersion", keyVersion)
+            put("alertData", alertData)
+        }
+    }
+
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): GroupPlaceSettingRaw {
@@ -32,7 +39,7 @@ data class GroupPlaceSettingRaw(
                 groupId = map["groupId"] as String,
                 placeId = map["placeId"] as String,
                 ownerUserId = map["ownerUserId"] as String,
-                keyVersion = (map["ownerUserId"] as Number).toLong(),
+                keyVersion = (map["keyVersion"] as Number).toLong(),
                 alertData = map["alertData"] as String
             )
         }

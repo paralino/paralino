@@ -7,6 +7,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
+import app.paralino.core.models.places.GroupPlaceSettingsData
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.group.GroupRepository
@@ -121,12 +122,64 @@ class PlaceDetailViewModel(
         return group.isCurrentUserOwner || place.place.ownerUserId == config.userId
     }
 
-    fun updateEnterSettings(memberId: String, notifyEnter: Boolean) {
-
+    fun toggleEnterSettings(memberId: String) {
+        toggleSetting(memberId, isEnter = true) { setting ->
+            GroupPlaceSettingsData(
+                memberId = setting.memberId,
+                enter = !setting.notifyEnter,
+                exit = setting.notifyExit
+            )
+        }
     }
 
-    fun updateExitSettings(memberId: String, notifyExit: Boolean) {
+    fun toggleExitSettings(memberId: String) {
+        toggleSetting(memberId, isEnter = false) { setting ->
+            GroupPlaceSettingsData(
+                memberId = setting.memberId,
+                enter = setting.notifyEnter,
+                exit = !setting.notifyExit
+            )
+        }
+    }
 
+    private fun toggleSetting(
+        memberId: String,
+        isEnter: Boolean,
+        updateSetting: (PlaceSettingsState) -> GroupPlaceSettingsData
+    ) {
+        val state = _uiState.value.data ?: return
+        if (state.fullLoading) return
+        if (state.settings.any { it.loading }) return
+
+        val setting = state.settings.firstOrNull { it.memberId == memberId } ?: return
+        val newSetting = updateSetting(setting)
+        placesRepo.updatePlaceSettings(state.placeId, newSetting)
+            .mapToPayload { it }
+            .debounce(100)
+            .onEach { result ->
+                _uiState.update {
+                    it.mapSuccess {
+                        val newList = it.settings.toMutableList().apply {
+                            removeAll { it.memberId == memberId }
+                            add(
+                                setting.copy(
+                                    loadingEnter = result is Payload.Loading && isEnter,
+                                    loadingExit = result is Payload.Loading && !isEnter
+                                )
+                            )
+                        }
+                        it.copy(settings = newList)
+                    }
+                }
+                when (result) {
+                    Payload.Loading -> {}
+                    is Payload.Success -> {}
+                    is Payload.Error -> {
+                        _eventChannel.send(PlaceDetailScreenEvent.Error(result.exception))
+                    }
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
 }
