@@ -66,6 +66,7 @@ class PlaceDetailViewModel(
             PlaceDetailScreenState(
                 groupId = groupId,
                 placeId = placeId,
+                groupName = group.name,
                 name = place.place.data.name,
                 image = place.place.data.image,
                 private = place.place.private,

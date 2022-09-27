@@ -272,8 +272,6 @@ fun MapHomeScreenElements(
             )
         }
 
-        snapshotFlow { }
-
         // user list
         Box(
             modifier = Modifier.constrainAs(userList) {

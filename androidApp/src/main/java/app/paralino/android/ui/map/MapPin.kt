@@ -17,6 +17,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.presentation.map.MapMarkerState
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
+import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.utils.Emojis
 
@@ -115,6 +116,18 @@ data class MapPinData constructor(
 ) {
 
     constructor(state: CreatePlaceScreenState) : this(
+        groupId = state.groupId,
+        memberId = "place_marker",
+        focused = true,
+        active = true,
+        image = state.image,
+        lat = state.lat ?: 0.0,
+        lng = state.lng ?: 0.0,
+        accuracy = state.radiusMeters.toFloat(),
+        shouldShowApproximateCircle = true
+    )
+
+    constructor(state: PlaceDetailScreenState) : this(
         groupId = state.groupId,
         memberId = "place_marker",
         focused = true,

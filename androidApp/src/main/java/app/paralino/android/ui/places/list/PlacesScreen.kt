@@ -85,7 +85,7 @@ fun PlacesScreen(
                     appState.navController.popBackStack()
                 },
                 onPlaceClick = {
-                    appState.navController.navigate(AppScreen.DashboardRoot.PlaceCreate.route(groupId = groupId, placeId = it.id))
+                    appState.navController.navigate(AppScreen.DashboardRoot.PlaceDetail.route(groupId = groupId, placeId = it.id))
                 },
                 onCreatePlace = {
                     appState.navController.navigate(AppScreen.DashboardRoot.PlaceCreate.route(groupId = groupId, placeId = null))
@@ -230,7 +230,7 @@ fun PlacesScreen(
 fun PlaceListItem(
     modifier: Modifier = Modifier,
     state: PlaceListItemData,
-    onClick: () -> Unit
+    onClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = modifier
@@ -238,8 +238,12 @@ fun PlaceListItem(
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
-            .clickable { onClick() }
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .let {
+                if(onClick != null)
+                    it.clickable { onClick() }
+                else it
+            }
+            .padding(horizontal = 5.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ImageModelImage(

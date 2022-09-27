@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
 import app.paralino.android.R
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
+import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import com.mapbox.maps.MapView
 import com.mapbox.maps.plugin.annotation.AnnotationConfig
 import com.mapbox.maps.plugin.annotation.annotations
@@ -72,6 +73,15 @@ class MapViewPlaceCreateProviderState constructor(
             }
         }
         initListeners()
+    }
+
+    fun updateMarkers(data: PlaceDetailScreenState) {
+        val pin = data.takeIf { it.lat != null && it.lng != null }?.let {
+            listOf(MapPinData(it))
+        } ?: emptyList()
+        setAndUpdateMarkers(pin)
+        if(pin.isNotEmpty())
+            recenterMap()
     }
 
     fun updateMarkers(data: CreatePlaceScreenState) {

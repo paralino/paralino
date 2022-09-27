@@ -5,6 +5,7 @@ import app.paralino.core.models.base.ImageModel
 data class PlaceDetailScreenState constructor(
     val groupId: String,
     val placeId: String,
+    val groupName: String,
     val name: String,
     val image: ImageModel,
     val private: Boolean,
