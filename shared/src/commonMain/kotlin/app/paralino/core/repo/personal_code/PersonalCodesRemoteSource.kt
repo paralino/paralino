@@ -31,10 +31,9 @@ class PersonalCodesRemoteSource constructor(
 
         val codePayload = personalCodeMapper.core2Remote(userCodeData)
 
-        val doc = docApi.createOrUpdateDocument(
+        val doc = docApi.createDocument(
             databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionPersonalCodeID,
-            docId = null,
             data = codePayload.toPostJson()
         )
 

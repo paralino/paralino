@@ -139,7 +139,7 @@ class PlacesRemoteSource(
     ): GroupPlaceRaw {
         return blocking {
             val mapped = mapper.core2Remote(data)
-            api.createOrUpdateDocument(
+            api.updateDocument(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = remoteConfig.resourceIds.collectionPlacesID,
                 docId = mapped.id,
@@ -153,7 +153,7 @@ class PlacesRemoteSource(
     ): GroupPlaceRaw {
         return blocking {
             val mapped = mapper.settingsMapper.core2Remote(data)
-            api.createOrUpdateDocument(
+            api.createDocument(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID,
                 docId = mapped.id,

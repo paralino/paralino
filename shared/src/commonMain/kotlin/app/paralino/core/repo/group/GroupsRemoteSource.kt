@@ -90,7 +90,7 @@ class GroupsRemoteSource constructor(
     suspend fun updateGroup(group: UserGroup): GroupDocumentRaw {
         return blocking {
             val mapped = mapper.core2Remote(group)
-            api.createOrUpdateDocument(
+            api.updateDocument(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = remoteConfig.resourceIds.collectionGroupsID,
                 docId = mapped.id,
