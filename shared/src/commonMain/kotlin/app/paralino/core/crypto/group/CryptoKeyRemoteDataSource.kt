@@ -6,6 +6,7 @@ import app.paralino.core.crypto.DecryptedGroupKeyData
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.raw.*
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.api.IDocumentsApi
@@ -120,6 +121,7 @@ class CryptoKeyRemoteDataSource(
 
     suspend fun rotateGroupKeys(
         group: UserGroupWithMembers,
+        places: List<GroupPlace>,
         myKey: AsymmetricCryptoKeyData
     ) {
         blocking {
@@ -130,6 +132,16 @@ class CryptoKeyRemoteDataSource(
                 data = BaseRemoteModule.formatter.encodeToString(group.data),
                 key = newGroupKey
             )
+
+            val placesData = places.map { place ->
+                GroupPlaceDataUpdatePayload(
+                    placeId = place.id,
+                    placeData = cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.formatter.encodeToString(place.data),
+                        key = newGroupKey
+                    )
+                )
+            }
 
             val keys = group.members.map {
                 GroupKeysPayload(
@@ -148,7 +160,8 @@ class CryptoKeyRemoteDataSource(
                 groupId = group.id,
                 userPublicKey = myKey.publicKey,
                 encryptedGroupKeys = keys,
-                groupData = groupData
+                groupData = groupData,
+                places = placesData
             )
 
             val response = functionsApi.runAndWait(

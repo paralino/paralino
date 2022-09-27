@@ -94,7 +94,7 @@ val coreModule = module {
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get(), get()) }
-    single { GroupRepository(get(), get(), get(), get(), get(), get()) }
+    single { GroupRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
     single { LocationRepository(get(), get(), get(), get(), get()) }
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }

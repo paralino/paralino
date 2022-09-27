@@ -14,6 +14,7 @@ import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupWithMemberRaw
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
+import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -26,6 +27,7 @@ class GroupRepository constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val groupMapperCore: GroupMapperCore,
+    private val placesRepo: PlacesRepository
 ) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
@@ -220,7 +222,9 @@ class GroupRepository constructor(
         if (!force && !remoteGroup.shouldRotateKeys) return null
 
         logg.tag("tag_crypto_key_group").w("group key is deprecated - rotating: ${remoteGroup.id}")
-        cryptoKEKRepo.rotateAllGroupKeys(remoteGroup)
+
+        val places = placesRepo.getPlacesForGroupLocally(remoteGroup.id).first()
+        cryptoKEKRepo.rotateAllGroupKeys(remoteGroup, places)
         return getDataOnce(remote = { getRemoteGroupWithMembers(remoteGroup.id) }).first()
     }
 
