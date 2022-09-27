@@ -39,7 +39,7 @@ fun PlaceDetailUserListItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
+            .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -67,7 +67,7 @@ fun PlaceDetailUserListItem(
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
         ) {
             PlaceSettingNotifyButton(
                 state = state.notifyEnter,
@@ -122,7 +122,7 @@ fun PlaceSettingNotifyButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
+            style = MaterialTheme.typography.subtitle2.copy(fontSize = 12.sp)
         )
     }
 }
