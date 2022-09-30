@@ -10,6 +10,6 @@ data class GroupPlaceSettingsEntity constructor(
     val groupId: String,
     val placeId: String,
     val ownerUserId: String,
-    val keyVersion: Long,
+    val memberId: String,
     val alertData: String
 )

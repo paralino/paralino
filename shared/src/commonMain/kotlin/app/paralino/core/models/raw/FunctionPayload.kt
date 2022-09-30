@@ -100,3 +100,9 @@ data class CreatePlacePayload(
     val private: Boolean,
     val data: String
 )
+
+@Serializable
+data class PlaceEventPayload(
+    val placeId: String,
+    val enter: Boolean
+)

@@ -87,7 +87,7 @@ class PlacesRepository constructor(
         ).map { Unit }
     }
 
-    fun updatePlaceSettings(placeId: String, data: GroupPlaceSettingsData): Flow<Unit> {
+    fun updatePlaceSettings(placeId: String, memberId: String, data: GroupPlaceSettingsData): Flow<Unit> {
         return getDataOnce(
             remote = {
                 val place = local.getPlaceWithSettings(placeId).first()
@@ -113,7 +113,7 @@ class PlacesRepository constructor(
                         groupId = place.place.groupId,
                         placeId = placeId,
                         ownerUserId = userRepository.cachedUserId,
-                        keyVersion = 0,
+                        memberId = memberId,
                         alertData = listOf(data)
                     )
                 }

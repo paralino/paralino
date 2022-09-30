@@ -54,6 +54,7 @@ class PlaceDetailViewModel(
                     groupId = groupId,
                     placeId = placeId,
                     memberId = member.id,
+                    memberUserId = member.userId,
                     name = member.name,
                     image = member.image ?: ImageModel.emoji(Emojis.robot),
                     // default to true for other members and false to current user
@@ -126,6 +127,7 @@ class PlaceDetailViewModel(
         toggleSetting(memberId, isEnter = true) { setting ->
             GroupPlaceSettingsData(
                 memberId = setting.memberId,
+                memberUserId = setting.memberId,
                 enter = !setting.notifyEnter,
                 exit = setting.notifyExit
             )
@@ -136,6 +138,7 @@ class PlaceDetailViewModel(
         toggleSetting(memberId, isEnter = false) { setting ->
             GroupPlaceSettingsData(
                 memberId = setting.memberId,
+                memberUserId = setting.memberUserId,
                 enter = setting.notifyEnter,
                 exit = !setting.notifyExit
             )
@@ -148,12 +151,15 @@ class PlaceDetailViewModel(
         updateSetting: (PlaceSettingsState) -> GroupPlaceSettingsData
     ) {
         val state = _uiState.value.data ?: return
+        val group = groupFlow.value.data ?: return
         if (state.fullLoading) return
         if (state.settings.any { it.loading }) return
 
         val setting = state.settings.firstOrNull { it.memberId == memberId } ?: return
         val newSetting = updateSetting(setting)
-        placesRepo.updatePlaceSettings(state.placeId, newSetting)
+        val currentMember = group.memberByUserId(config.userId)
+
+        placesRepo.updatePlaceSettings(state.placeId, currentMember.id, newSetting)
             .mapToPayload { it }
             .debounce(100)
             .onEach { result ->

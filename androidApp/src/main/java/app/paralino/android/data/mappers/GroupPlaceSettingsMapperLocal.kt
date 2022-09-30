@@ -20,7 +20,7 @@ class GroupPlaceSettingsMapperLocal(
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            memberId = model.memberId,
             alertData = model.alertData
         )
     }
@@ -31,7 +31,7 @@ class GroupPlaceSettingsMapperLocal(
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            memberId = model.memberId,
             alertData = model.alertData
         )
     }

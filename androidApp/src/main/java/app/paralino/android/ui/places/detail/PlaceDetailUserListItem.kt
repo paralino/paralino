@@ -141,6 +141,7 @@ fun PlaceListItemPreview() {
                 groupId = "",
                 placeId = "",
                 memberId = "",
+                memberUserId = "",
                 name = "Some user",
                 image = ImageModel.emoji(Emojis.group1.first()),
                 notifyEnter = false,

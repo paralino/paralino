@@ -59,4 +59,8 @@ data class UserGroupWithMembers(
 
     val isCurrentUserOwner: Boolean get() = group.isCurrentUserOwner
 
+    fun memberByUserId(userId: String): MemberModel {
+        return members.first { it.userId == userId }
+    }
+
 }

@@ -10,7 +10,7 @@ data class GroupPlaceSettingRaw(
     val groupId: String,
     val placeId: String,
     val ownerUserId: String,
-    val keyVersion: Long,
+    val memberId: String,
     val alertData: String
 ) {
 
@@ -19,14 +19,13 @@ data class GroupPlaceSettingRaw(
             put("groupId", groupId)
             put("placeId", placeId)
             put("ownerUserId", ownerUserId)
-            put("keyVersion", keyVersion)
+            put("memberId", memberId)
             put("alertData", alertData)
         }
     }
 
     fun toPostJsonUpdate(): Map<String, Any> {
         return buildMap {
-            put("keyVersion", keyVersion)
             put("alertData", alertData)
         }
     }
@@ -39,7 +38,7 @@ data class GroupPlaceSettingRaw(
                 groupId = map["groupId"] as String,
                 placeId = map["placeId"] as String,
                 ownerUserId = map["ownerUserId"] as String,
-                keyVersion = (map["keyVersion"] as Number).toLong(),
+                memberId = map["memberId"] as String,
                 alertData = map["alertData"] as String
             )
         }

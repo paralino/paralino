@@ -27,7 +27,7 @@ class PlaceSettingsMapperCore constructor(
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            memberId = model.memberId,
             alertData = alertData
         )
     }
@@ -44,7 +44,7 @@ class PlaceSettingsMapperCore constructor(
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            memberId = model.memberId,
             alertData = alertData
         )
     }
