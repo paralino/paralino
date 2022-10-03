@@ -17,12 +17,12 @@ data class CreatePlaceScreenState constructor(
     val fullLoading: Boolean
 ) {
 
-    val currentStep: Int get() = (radiusMeters / minRadiusMeters)
+    val currentStep: Int get() = (radiusMeters / minRadiusMeters) - 1
     companion object {
 
         const val minRadiusMeters = 50
         const val defaultRadiusMeters = 200
-        const val steps = 61
+        const val steps = 60
 
         fun empty(groupId: String): CreatePlaceScreenState {
             return CreatePlaceScreenState(

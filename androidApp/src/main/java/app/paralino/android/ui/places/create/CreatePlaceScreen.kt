@@ -3,10 +3,7 @@ package app.paralino.android.ui.places.create
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -80,6 +77,7 @@ fun CreatePlaceScreen(
     }
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
@@ -120,6 +118,9 @@ fun CreatePlaceScreen(
             }
             is Payload.Success -> {
                 CreatePlaceScreen(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it),
                     state = finalState.data,
                     onImageClick = {
                         appState.uiScope.launch {
@@ -158,6 +159,7 @@ fun CreatePlaceScreen(
 
 @Composable
 fun CreatePlaceScreen(
+    modifier: Modifier = Modifier,
     state: CreatePlaceScreenState,
     onImageClick: () -> Unit,
     onNameChange: (String) -> Unit,
@@ -188,7 +190,10 @@ fun CreatePlaceScreen(
     }
 
     Column(
-        modifier = Modifier.padding(horizontal = 20.dp)
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp)
     ) {
 
         Row(
