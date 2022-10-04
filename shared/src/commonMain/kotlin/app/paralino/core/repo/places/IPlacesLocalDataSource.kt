@@ -17,6 +17,7 @@ interface IPlacesLocalDataSource {
     fun getPlaceWithSettings(placeId: String): Flow<GroupPlaceWithSettings>
     fun getPlacesForGroup(groupId: String): Flow<List<GroupPlace>>
     fun getAllPlaces(): Flow<List<GroupPlace>>
+    suspend fun getPlaceWithoutSettingsOnce(placeId: String): GroupPlace?
 
     suspend fun deletePlace(placeId: String)
     suspend fun deletePlaceForGroup(groupId: String)

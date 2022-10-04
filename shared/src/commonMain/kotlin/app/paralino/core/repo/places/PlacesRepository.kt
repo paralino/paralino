@@ -1,14 +1,10 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.location.MemberModelData
-import app.paralino.core.models.mappers.PlaceMapperCore
+import app.paralino.core.logg
 import app.paralino.core.models.places.*
-import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
+import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.user.UserRepository
@@ -20,9 +16,8 @@ class PlacesRepository constructor(
     private val local: IPlacesLocalDataSource,
     private val remote: PlacesRemoteSource,
     private val userRepository: UserRepository,
-    private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
-    private val mapper: PlaceMapperCore,
+    private val locationSharingManager: LocationSharingManager
 ) : BaseRepository() {
 
     fun getPlacesForGroupLocally(groupId: String): Flow<List<GroupPlace>> {
@@ -54,10 +49,10 @@ class PlacesRepository constructor(
         )
     }
 
-    suspend fun refreshAndGetPlacesForGroup(groupId: String): Flow<List<GroupPlacesWithSettingsRaw>> {
-        return getDataOnce(localUpdate = {
-            local.recreatePlacesForGroup(groupId, it)
-        }) { remote.getPlacesForGroup(groupId) }
+    suspend fun refreshAllPlaces(): List<GroupPlacesWithSettingsRaw> {
+        return triggerRemoteOnly { remote.getAllPlaces() }.also {
+            local.recreatePlaces(it)
+        }
     }
 
     suspend fun refreshPlace(placeId: String): GroupPlacesWithSettingsRaw {
@@ -87,7 +82,11 @@ class PlacesRepository constructor(
         ).map { Unit }
     }
 
-    fun updatePlaceSettings(placeId: String, memberId: String, data: GroupPlaceSettingsData): Flow<Unit> {
+    fun updatePlaceSettings(
+        placeId: String,
+        memberId: String,
+        data: GroupPlaceSettingsData
+    ): Flow<Unit> {
         return getDataOnce(
             remote = {
                 val place = local.getPlaceWithSettings(placeId).first()
@@ -123,6 +122,44 @@ class PlacesRepository constructor(
                 local.updatePlaceSettings(it)
             }
         ).map { Unit }
+    }
+
+    suspend fun placesEnter(placesIds: List<String>) {
+        placesIds.forEach {
+            try {
+                placeEnter(it)
+            } catch (e: Exception) {
+                logg.e("Error notifying place enter", e)
+            }
+        }
+    }
+
+    suspend fun placesExit(placesIds: List<String>) {
+        placesIds.forEach {
+            try {
+                placeExit(it)
+            } catch (e: Exception) {
+                logg.e("Error notifying place exit", e)
+            }
+        }
+    }
+
+    suspend fun placeEnter(placeId: String) {
+        val place = local.getPlaceWithoutSettingsOnce(placeId) ?: return
+        if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) return
+
+        triggerRemoteOnly {
+            remote.notifyPlaceEnter(placeId)
+        }
+    }
+
+    suspend fun placeExit(placeId: String) {
+        val place = local.getPlaceWithoutSettingsOnce(placeId) ?: return
+        if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) return
+
+        triggerRemoteOnly {
+            remote.notifyPlaceExit(placeId)
+        }
     }
 
     fun deletePlace(id: String): Flow<Unit> {

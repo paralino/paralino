@@ -40,8 +40,8 @@ class LocationRepository constructor(
         return groupsRepos.getGroupWithMembersLocally(groupId)
     }
 
-    fun pushLocation(data: LocationDataModel): Flow<Unit> {
-        return getDataOnce {
+    suspend fun pushLocation(data: LocationDataModel) {
+        triggerRemoteOnly {
             if (!sharingManager.isSharingActive()) throw NoValidContractsException()
 
             val contracts = sharingManager.allValidContracts()
@@ -71,8 +71,9 @@ class LocationRepository constructor(
     fun clearLocation(groupId: String): Flow<Unit> {
         return getDataOnce(
             localUpdate = {
-                local.clearMemberLocationData(local.getUserMemberIds(config.userId, groupId)
-                    .first())
+                local.clearMemberLocationData(
+                    local.getUserMemberIds(config.userId, groupId).first()
+                )
             }
         ) {
             remote.saveCurrentLocation(

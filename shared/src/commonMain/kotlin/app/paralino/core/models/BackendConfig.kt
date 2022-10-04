@@ -47,4 +47,5 @@ object BackendResourceIDs {
     const val functionResetAccount: String = "user_account_reset"
     const val functionPlaceCreate: String = "place_create"
     const val functionPlaceDelete: String = "place_delete"
+    const val functionPlaceNotify: String = "place_notify"
 }

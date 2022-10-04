@@ -88,6 +88,10 @@ class GroupPlacesLocalDataSource(
             }
     }
 
+    override suspend fun getPlaceWithoutSettingsOnce(placeId: String): GroupPlace? {
+        return dao.getPlaceOnce(placeId)?.let { mapper.local2Core(it) }
+    }
+
     override suspend fun deletePlace(placeId: String) {
         dao.deletePlace(placeId)
     }

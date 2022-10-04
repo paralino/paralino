@@ -5,16 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
+import app.paralino.android.AppClass
+import app.paralino.android.tracking.notification.LocationNotificationHandler
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
-import app.paralino.core.repo.location.LocationRepository
-import app.paralino.android.AppClass
-import app.paralino.android.tracking.notification.LocationNotificationHandler
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.location.LocationRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import loge
@@ -28,6 +30,7 @@ class LocationService : Service() {
 
     private val notificationHandler: LocationNotificationHandler by inject()
     private val locationInitHandler: LocationInitHandler by inject()
+    private val locationSharingManager: LocationSharingManager by inject()
     private val locationRepository: LocationRepository by inject()
     private val locationPerformanceManager: LocationPerformanceManager by inject()
 
@@ -67,7 +70,7 @@ class LocationService : Service() {
             }
             .launchIn(serviceDefaultScope)
 
-        locationRepository.sharingManager.allContractsFlow
+        locationSharingManager.allContractsFlow
             .onEach {
                 logv(this.hashCode().toString(), "Location sharing status: $it")
                 if(it is Resource.Ready) {
@@ -89,7 +92,7 @@ class LocationService : Service() {
         val errors = (application as AppClass).locationStatus.status.value.getPossibleErrors(
             forBackground = !launchedInForeground
         )
-        val count = locationRepository.sharingManager.allContractsFlow.value.data?.size ?: 0
+        val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0
         notificationHandler.notify(this, count, errors)
     }
 
@@ -114,15 +117,16 @@ class LocationService : Service() {
     }
 
     private fun saveLocation(data: LocationDataModel) {
-        locationRepository.pushLocation(data)
-            .catch {
-                logw("Error saving saving location")
-                if (it is NoValidContractsException) {
-                    // We can stop service since all sharing contracts are expired
-                    stopAll()
-                }
+        flow {
+            locationRepository.pushLocation(data)
+            emit(Unit)
+        }.catch {
+            logw("Error saving saving location")
+            if (it is NoValidContractsException) {
+                // We can stop service since all sharing contracts are expired
+                stopAll()
             }
-            .launchIn(serviceDefaultScope)
+        }.launchIn(serviceDefaultScope)
     }
 
     private fun stopAll() {

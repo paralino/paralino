@@ -206,6 +206,44 @@ class PlacesRemoteSource(
         }
     }
 
+
+    suspend fun notifyPlaceEnter(placeId: String) {
+        notifyPlaceEvent(
+            PlaceEventPayload(
+                placeId = placeId,
+                enter = true
+            )
+        )
+    }
+
+    suspend fun notifyPlaceExit(placeId: String) {
+        notifyPlaceEvent(
+            PlaceEventPayload(
+                placeId = placeId,
+                enter = false
+            )
+        )
+    }
+
+    private suspend fun notifyPlaceEvent(payload: PlaceEventPayload) {
+        blocking {
+
+            val response = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionPlaceNotify,
+                data = BaseRemoteModule.formatter.encodeToString(payload)
+            )
+
+            if (!response.isSuccess) {
+                // TODO throw better exception
+                throw BaseRemoteException.fromCode(
+                    code = null,
+                    message = "Unable to update location",
+                    cause = Exception(response.stderr)
+                )
+            }
+        }
+    }
+
     private fun Map<String, Any>.parsePlace(): GroupPlaceRaw {
         return GroupPlaceRaw.from(this)
     }

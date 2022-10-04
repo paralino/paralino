@@ -50,6 +50,9 @@ interface GroupPlacesDao {
     @Query("SELECT * FROM group_places WHERE id = :id")
     fun getPlace(id: String): Flow<GroupPlaceEntity?>
 
+    @Query("SELECT * FROM group_places WHERE id = :id")
+    suspend fun getPlaceOnce(id: String): GroupPlaceEntity?
+
     @Query("SELECT * FROM place_settings WHERE placeId = :placeId")
     fun getSettingsForPlace(placeId: String): Flow<GroupPlaceSettingsEntity?>
 
