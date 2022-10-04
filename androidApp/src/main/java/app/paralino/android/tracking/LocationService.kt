@@ -112,7 +112,7 @@ class LocationService : Service() {
             }
             .launchIn(serviceDefaultScope)
 
-        locationPerformanceManager.listenForActiveUsers()
+        locationRepository.listenForEventsWhileSharing()
             .launchIn(serviceDefaultScope)
     }
 

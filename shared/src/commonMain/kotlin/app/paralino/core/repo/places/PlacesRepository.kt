@@ -3,6 +3,7 @@ package app.paralino.core.repo.places
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.places.*
+import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
@@ -80,6 +81,10 @@ class PlacesRepository constructor(
             remote = { remote.updatePlace(place) },
             localUpdate = { local.updatePlaceOnly(it) }
         ).map { Unit }
+    }
+
+    suspend fun updatePlaceLocally(place: GroupPlaceRaw) {
+        local.updatePlaceOnly(place)
     }
 
     fun updatePlaceSettings(

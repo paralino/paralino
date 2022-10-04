@@ -6,9 +6,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.location.LocationPerformanceType
-import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.IDocumentsApi
-import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.IDeviceStatusProvider
 import app.paralino.core.utils.exceptions.NotFoundException
@@ -23,9 +21,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class LocationPerformanceManager constructor(
-    private val realtimeApi: IRealtimeApi,
     private val documentApi: IDocumentsApi,
-    private val locationSharingManager: LocationSharingManager,
     val scope: ICoroutineScopeProvider,
     val deviceStatus: IDeviceStatusProvider,
 ) : BaseRepository() {
@@ -74,24 +70,10 @@ class LocationPerformanceManager constructor(
         }
     }
 
-
-    fun listenForActiveUsers(): Flow<Unit> {
-        val event =
-            "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionLocationFocusID}.documents"
-        return realtimeApi.subscribeWithFilter(
-            channel = event,
-            filters = listOf("$event.*.create", "$event.*.update")
-        )
-            .onEach {
-                val groupId = it.payload["groupId"] as String
-                if (locationSharingManager.isSharingActiveForGroup(groupId)) {
-                    logg.tag("location_performance").v("Location boost requested for $groupId")
-                    setPerformance(LocationPerformanceType.HIGH)
-                    schedulePerformanceReset()
-                }
-            }
-            .distinctUntilChanged()
-            .map { }
+    fun locationBoostRequested(groupId: String) {
+        logg.tag("location_performance").v("Location boost requested for $groupId")
+        setPerformance(LocationPerformanceType.HIGH)
+        schedulePerformanceReset()
     }
 
     private fun schedulePerformanceReset(resetDelay: Long = 12_000) {
