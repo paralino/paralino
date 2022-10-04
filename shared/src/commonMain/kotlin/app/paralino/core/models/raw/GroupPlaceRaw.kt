@@ -30,7 +30,7 @@ data class GroupPlaceRaw constructor(
                 groupId = map["groupId"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 ownerPublicKey = map["ownerPublicKey"] as String,
-                keyVersion = map["keyVersion"] as Long,
+                keyVersion = (map["keyVersion"] as Number).toLong(),
                 private = map["private"] as Boolean,
                 data = map["data"] as String,
             )
