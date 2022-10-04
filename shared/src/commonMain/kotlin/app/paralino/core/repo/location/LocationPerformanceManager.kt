@@ -83,7 +83,7 @@ class LocationPerformanceManager constructor(
             filters = listOf("$event.*.create", "$event.*.update")
         )
             .onEach {
-                val groupId = it["groupId"] as String
+                val groupId = it.payload["groupId"] as String
                 if (locationSharingManager.isSharingActiveForGroup(groupId)) {
                     logg.tag("location_performance").v("Location boost requested for $groupId")
                     setPerformance(LocationPerformanceType.HIGH)
