@@ -30,3 +30,10 @@ data class GroupPlaceWithSettings constructor(
     val place: GroupPlace,
     val settings: GroupPlaceSettings?
 )
+
+data class GroupPlaceGeofenceData constructor(
+    val placeId: String,
+    val lat: Double,
+    val lng: Double,
+    val radiusMeters: Int
+)

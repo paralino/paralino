@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import androidx.annotation.RequiresPermission
 import app.paralino.core.models.places.GroupPlace
+import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.repo.location.IGeofenceManager
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
@@ -25,15 +26,15 @@ class GeofenceManager(
     }
 
     @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
-    override fun registerGeofences(places: List<GroupPlace>) {
+    override fun registerGeofences(places: List<GroupPlaceGeofenceData>) {
         val geofencingClient = LocationServices.getGeofencingClient(application)
 
         val geofences = places.map { place ->
             createGeofence(
-                id = place.id,
-                lat = place.data.lat,
-                lng = place.data.lng,
-                radiusMeters = place.data.radiusMeters
+                id = place.placeId,
+                lat = place.lat,
+                lng = place.lng,
+                radiusMeters = place.radiusMeters
             )
         }
 
