@@ -9,6 +9,7 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.tracking.LocationInitHandler
+import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.android.tracking.notification.LocationNotificationHandler
 import app.paralino.android.ui.MainViewModel
 import app.paralino.android.ui.dashboard.DashboardViewModel
@@ -29,6 +30,7 @@ import app.paralino.android.ui.settings.editprofile.EditProfileViewModel
 import app.paralino.android.ui.settings.emailchange.ChangeEmailViewModel
 import app.paralino.android.ui.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.android.ui.share.SharingViewModel
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
 import org.koin.android.ext.koin.androidApplication
@@ -79,7 +81,8 @@ val utilModule = module {
 val locationModules = module {
     factory { LocationNotificationHandler(androidContext()) }
     single { LocationInitHandler(androidContext(), get(), get()) }
-    single { LocationPerformanceManager(get(), get(), get(), get(), get()) }
+    single { LocationPerformanceManager(get(), get(), get()) }
+    single<IGeofenceManager> { GeofenceManager(androidApplication()) }
 }
 
 val coreModule = module {
@@ -96,6 +99,6 @@ val coreModule = module {
     single { PersonalCodesRepository(get(), get(), get(), get()) }
     single { GroupRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
-    single { LocationRepository(get(), get(), get(), get(), get()) }
-    single { PlacesRepository(get(), get(), get(), get()) }
+    single { LocationRepository(get(), get(), get(), get(), get(), get(), get()) }
+    single { PlacesRepository(get(), get(), get(), get(), get()) }
 }
