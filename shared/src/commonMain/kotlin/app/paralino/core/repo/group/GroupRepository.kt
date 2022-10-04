@@ -38,11 +38,9 @@ class GroupRepository constructor(
                 remote.getAllGroups()
                     .also { cryptoKEKRepo.refreshAllKeys().first() }
                     .let { it.map { handleGroupKeysUpdate(it) } }
+                refreshAllGroupsWithPlaces()
             },
-            localUpdate = {
-                logg.tag("tag_crypto_key_group").d("group and keys ready, updating groups")
-                local.recreateGroups(it)
-            },
+            localUpdate = {},
             remotePreference = RemotePreference.CACHE("groups", 3_000)
         )
     }
@@ -75,11 +73,27 @@ class GroupRepository constructor(
         )
     }
 
+    suspend fun refreshAllGroupsWithPlaces() {
+        refreshAllGroups()
+        placesRepo.refreshAllPlaces()
+    }
+
+    suspend fun refreshAllGroups() {
+        triggerRemoteOnly {
+            logg.tag("tag_crypto_key").w("refreshing all groups")
+            remote.getAllGroups()
+                .also { cryptoKEKRepo.refreshAllKeys().first() }
+                .let { it.map { handleGroupKeysUpdate(it) } }
+        }
+            .also {
+                logg.tag("tag_crypto_key_group").d("group and keys ready, updating groups")
+                local.recreateGroups(it)
+            }
+    }
+
     suspend fun refreshGroupWithMembers(id: String): GroupWithMemberRaw {
         // TODO refresh and handle keys
-        return getRemoteGroupWithMembers(id).also {
-                local.updateOrCreateGroup(it)
-            }
+        return getRemoteGroupWithMembers(id).also { local.updateOrCreateGroup(it) }
     }
 
     private suspend fun getRemoteGroupWithMembers(groupId: String): GroupWithMemberRaw {
