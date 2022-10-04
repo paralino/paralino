@@ -158,7 +158,7 @@ data class MapPinData constructor(
         active = state.active,
         image = state.image,
         lat = state.locationData.lat,
-        lng = state.locationData.lat,
+        lng = state.locationData.lng,
         accuracy = state.locationData.accuracy,
         shouldShowApproximateCircle = state.locationData.shouldShowApproximateCircle
     )
