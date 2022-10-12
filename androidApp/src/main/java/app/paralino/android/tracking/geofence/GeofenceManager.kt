@@ -3,17 +3,20 @@ package app.paralino.android.tracking.geofence
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Intent
+import android.location.Location
 import androidx.annotation.RequiresPermission
-import app.paralino.core.models.places.GroupPlace
+import app.paralino.core.logg
+import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.repo.location.IGeofenceManager
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
+import kotlin.time.Duration.Companion.hours
 
 class GeofenceManager(
     private val application: Application
-): IGeofenceManager {
+) : IGeofenceManager {
 
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(application, GeofenceBroadcastReceiver::class.java)
@@ -43,7 +46,12 @@ class GeofenceManager(
             addGeofences(geofences)
         }.build()
 
-        geofencingClient.addGeofences(request, geofencePendingIntent)
+        geofencingClient.removeGeofences(geofencePendingIntent).addOnCompleteListener {
+            logg.tag("geofences").v("Previous geofences removed, creating new ones")
+            geofencingClient.addGeofences(request, geofencePendingIntent).addOnFailureListener {
+                logg.tag("geofences").w("Error creating geofence", it)
+            }
+        }
     }
 
     private fun createGeofence(id: String, lat: Double, lng: Double, radiusMeters: Int): Geofence {
@@ -54,14 +62,30 @@ class GeofenceManager(
                 lng,
                 radiusMeters.toFloat()
             )
-            .setExpirationDuration(-1)
+            .setExpirationDuration(24L.hours.inWholeMilliseconds)
             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
             .build()
+    }
+
+    override fun isLocationInGeofence(
+        data: LocationDataModel,
+        geofence: GroupPlaceGeofenceData
+    ): Boolean {
+        val result = FloatArray(1)
+        Location.distanceBetween(
+            data.lat, data.lng, geofence.lat, geofence.lng, result
+        )
+        return result.first() < geofence.radiusMeters
     }
 
     override fun deleteGeofences(placesIds: List<String>) {
         val geofencingClient = LocationServices.getGeofencingClient(application)
         geofencingClient.removeGeofences(placesIds)
+    }
+
+    override fun deleteAllGeofences() {
+        val geofencingClient = LocationServices.getGeofencingClient(application)
+        geofencingClient.removeGeofences(geofencePendingIntent)
     }
 
 }
