@@ -72,6 +72,7 @@ class LocationRepository constructor(
                 )
             }
 
+            placesRepo.processLocation(data)
             remote.saveCurrentLocation(mapped)
         }
     }

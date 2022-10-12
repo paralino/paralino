@@ -100,5 +100,5 @@ val coreModule = module {
     single { GroupRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
     single { LocationRepository(get(), get(), get(), get(), get(), get(), get()) }
-    single { PlacesRepository(get(), get(), get(), get(), get()) }
+    single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
 }
