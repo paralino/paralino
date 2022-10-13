@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.PendingIntent
 import android.content.Intent
 import android.location.Location
+import android.os.Build
 import androidx.annotation.RequiresPermission
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationDataModel
@@ -20,11 +21,16 @@ class GeofenceManager(
 
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(application, GeofenceBroadcastReceiver::class.java)
+
+        var flags = PendingIntent.FLAG_UPDATE_CURRENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            flags = flags or PendingIntent.FLAG_MUTABLE
+
         PendingIntent.getBroadcast(
             application,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            flags
         )
     }
 
