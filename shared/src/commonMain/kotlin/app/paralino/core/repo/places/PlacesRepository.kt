@@ -209,10 +209,15 @@ class PlacesRepository constructor(
             return
         }
 
-        triggerRemoteOnly {
-            remote.notifyPlaceEnter(placeId)
-        }
         placeActivity.set(placeId, nowUTC().epochSeconds to true)
+        try {
+            triggerRemoteOnly {
+                remote.notifyPlaceEnter(placeId)
+            }
+        } catch (e: Exception) {
+            placeActivity.remove(placeId)
+            throw e
+        }
     }
 
     suspend fun placeExit(placeId: String) {
@@ -233,8 +238,13 @@ class PlacesRepository constructor(
         }
 
         placeActivity.set(placeId, nowUTC().epochSeconds to false)
-        triggerRemoteOnly {
-            remote.notifyPlaceExit(placeId)
+        try {
+            triggerRemoteOnly {
+                remote.notifyPlaceExit(placeId)
+            }
+        } catch (e: Exception) {
+            placeActivity.remove(placeId)
+            throw e
         }
     }
 
