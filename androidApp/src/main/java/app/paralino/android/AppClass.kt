@@ -26,20 +26,18 @@ import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.data
-import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.LocationConditionStatus
-import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import logv
 import org.koin.android.ext.android.inject
 
@@ -64,8 +62,6 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     private val launcher: PreCheckControl by inject()
     private val userRepo: UserRepository by inject()
-    private val placesRepo: PlacesRepository by inject()
-    private val geofenceManager: IGeofenceManager by inject()
     private val sessionMonitor: UserSessionMonitor by inject()
     private val logoutUseCase: LogoutUseCase by inject()
     private val connectionStatusProvider: IConnectionStatusProvider by inject()
@@ -115,28 +111,6 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
                 if(it.data == true) {
                     logv("Location sharing contract ready, starting location service")
                     LocationService.start(this, isForeground)
-                }
-            }
-            .launchIn(defaultScope)
-
-        // Register geofences when they expire
-        placesRepo.getAllActivePlaces()
-            .map {
-                it.map {
-                    GroupPlaceGeofenceData(
-                        placeId = it.id,
-                        lat = it.data.lat,
-                        lng = it.data.lng,
-                        radiusMeters = it.data.radiusMeters
-                    )
-                }
-            }
-            .distinctFlowOfList()
-            .combine(locationStatus.status) { geofences, locationStatus ->
-                if(locationStatus.isOK(forAlwaysOnAccess = true)) {
-                    geofenceManager.registerGeofences(geofences)
-                } else {
-                    geofenceManager.deleteAllGeofences()
                 }
             }
             .launchIn(defaultScope)

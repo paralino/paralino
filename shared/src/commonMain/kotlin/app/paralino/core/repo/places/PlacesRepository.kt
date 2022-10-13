@@ -194,6 +194,8 @@ class PlacesRepository constructor(
 
     suspend fun placeEnter(placeId: String) {
 
+        logg.d("Try to notify place enter - $placeId")
+
         val placeActivityInfo = placeActivity.get(placeId)
         val timeDiff = (placeActivityInfo?.first ?: 0L).minus(nowUTC().epochSeconds).absoluteValue
 
@@ -209,6 +211,7 @@ class PlacesRepository constructor(
             return
         }
 
+        logg.d("Trigger notify place enter - $placeId")
         placeActivity.set(placeId, nowUTC().epochSeconds to true)
         try {
             triggerRemoteOnly {
@@ -221,6 +224,8 @@ class PlacesRepository constructor(
     }
 
     suspend fun placeExit(placeId: String) {
+
+        logg.d("Try to notify place exit - $placeId")
 
         val placeActivityInfo = placeActivity.get(placeId)
         val timeDiff = (placeActivityInfo?.first ?: 0L).minus(nowUTC().epochSeconds).absoluteValue
@@ -237,6 +242,7 @@ class PlacesRepository constructor(
             return
         }
 
+        logg.d("Trigger notify place exit - $placeId")
         placeActivity.set(placeId, nowUTC().epochSeconds to false)
         try {
             triggerRemoteOnly {

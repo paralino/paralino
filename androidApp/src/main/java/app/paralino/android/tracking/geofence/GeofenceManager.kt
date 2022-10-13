@@ -48,9 +48,13 @@ class GeofenceManager(
 
         geofencingClient.removeGeofences(geofencePendingIntent).addOnCompleteListener {
             logg.tag("geofences").v("Previous geofences removed, creating new ones")
-            geofencingClient.addGeofences(request, geofencePendingIntent).addOnFailureListener {
-                logg.tag("geofences").w("Error creating geofence", it)
-            }
+            geofencingClient.addGeofences(request, geofencePendingIntent)
+                .addOnFailureListener {
+                    logg.tag("geofences").w("Error creating geofence", it)
+                }
+                .addOnSuccessListener {
+                    logg.tag("geofences").d("Successfully created geofences")
+                }
         }
     }
 

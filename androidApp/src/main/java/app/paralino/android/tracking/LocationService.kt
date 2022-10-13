@@ -10,19 +10,23 @@ import app.paralino.android.tracking.notification.LocationNotificationHandler
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
-import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.utils.ILocationStatusProvider
+import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import loge
 import logv
 import logw
 import org.koin.android.ext.android.inject
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
+
 
 class LocationService : Service() {
 
@@ -32,7 +36,9 @@ class LocationService : Service() {
     private val locationInitHandler: LocationInitHandler by inject()
     private val locationSharingManager: LocationSharingManager by inject()
     private val locationRepository: LocationRepository by inject()
-    private val locationPerformanceManager: LocationPerformanceManager by inject()
+    private val locationStatus: ILocationStatusProvider by inject()
+    private val placesRepository: PlacesRepository by inject()
+    private val geofenceManager: IGeofenceManager by inject()
 
     private var launchedInForeground: Boolean = false
 
@@ -43,7 +49,10 @@ class LocationService : Service() {
     override fun onCreate() {
         super.onCreate()
         logv(this.hashCode().toString(), "Location service created")
-        startForeground(notificationHandler.notificationId, notificationHandler.notify(this, groupCount = 0, emptyList()))
+        startForeground(
+            notificationHandler.notificationId,
+            notificationHandler.notify(this, groupCount = 0, emptyList())
+        )
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -61,7 +70,7 @@ class LocationService : Service() {
 
         (application as AppClass).locationStatus.status
             .onEach {
-                if(it.isOK()) {
+                if (it.isOK()) {
                     locationInitHandler.startLocationUpdates()
                 } else {
                     locationInitHandler.stopLocationUpdates()
@@ -73,8 +82,8 @@ class LocationService : Service() {
         locationSharingManager.allContractsFlow
             .onEach {
                 logv(this.hashCode().toString(), "Location sharing status: $it")
-                if(it is Resource.Ready) {
-                    if(it.data.isNotEmpty()) {
+                if (it is Resource.Ready) {
+                    if (it.data.isNotEmpty()) {
                         startTracking()
                     } else {
                         stopAll()
@@ -86,6 +95,8 @@ class LocationService : Service() {
                 stopAll()
             }
             .launchIn(serviceDefaultScope)
+
+        listenForPlaces()
     }
 
     private fun updateNotification() {
@@ -127,6 +138,45 @@ class LocationService : Service() {
                 stopAll()
             }
         }.launchIn(serviceDefaultScope)
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private fun listenForPlaces() {
+
+        // timer to reregister places after certain time
+        val timer = flow {
+            while (currentCoroutineContext().isActive) {
+                emit(Unit)
+                delay(20L.hours.inWholeMilliseconds)
+            }
+        }
+
+        val places = placesRepository.getAllActivePlaces()
+            .map {
+                it.map {
+                    GroupPlaceGeofenceData(
+                        placeId = it.id,
+                        lat = it.data.lat,
+                        lng = it.data.lng,
+                        radiusMeters = it.data.radiusMeters
+                    )
+                }
+            }
+            .distinctFlowOfList()
+
+        combine(places, locationStatus.status, timer) { geofences, locationStatus, _ ->
+            if (locationStatus.isOK(forAlwaysOnAccess = true)) {
+                geofenceManager.registerGeofences(geofences)
+            } else {
+                geofenceManager.deleteAllGeofences()
+            }
+        }
+            .catch {
+                // delete all geofences when coroutine is canceled
+                if(it is CancellationException)
+                    geofenceManager.deleteAllGeofences()
+            }
+            .launchIn(serviceDefaultScope)
     }
 
     private fun stopAll() {
