@@ -2,11 +2,13 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.config
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMe
+import app.paralino.core.repo.user.IPushNotificationManager
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -16,6 +18,7 @@ class AppAccountStateMonitor(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val userMapper: UserMapperCore,
     private val logoutUseCase: LogoutUseCase,
+    private val pushManager: IPushNotificationManager
 ) {
 
     private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
@@ -74,6 +77,12 @@ class AppAccountStateMonitor(
                 }
             }
             .distinctUntilChanged()
+            .onEach {
+                if(it.data is AppAccountState.USER_READY) {
+                    logg.tag("push_notifications").v("User is ready, start push token registration")
+                    pushManager.syncPushToken()
+                }
+            }
 
 }
 

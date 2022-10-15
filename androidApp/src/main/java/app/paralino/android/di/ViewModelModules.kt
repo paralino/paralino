@@ -75,7 +75,7 @@ val viewModelModules = module {
 val utilModule = module {
     single { PreCheckControl(get()) }
     single { UserSessionMonitor() }
-    single { AppAccountStateMonitor(get(), get(), get(), get()) }
+    single { AppAccountStateMonitor(get(), get(), get(), get(), get()) }
 }
 
 val locationModules = module {
@@ -90,7 +90,7 @@ val coreModule = module {
     factory { CreateAccountUseCase(get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
-    factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
+    factory { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }

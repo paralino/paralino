@@ -31,13 +31,6 @@ class PreCheckControl(
 
             userRepository.refreshUserIfAvailable()
 
-            try {
-                userRepository.registerPushTokenIfNeeded()
-            } catch (e: Exception) {
-                // ignore here
-                logg.tag("initial_refresh").d("push token register fail")
-            }
-
             emit(DataSetupState.USER_READY)
         }.onEach { logg.tag("initial_refresh").d(it.name) }
     }

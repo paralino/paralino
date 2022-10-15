@@ -188,7 +188,7 @@ class UserRepository constructor(
 
     suspend fun registerPushToken(newToken: String) {
 
-        logg.tag("push_notifications").v("Start registering new push token")
+        logg.tag("push_notifications").v("Starting to register new push token")
         config.pushTokenUnsynced = newToken
 
         val currentUserData = cachedUser?.data ?: let {
@@ -205,7 +205,10 @@ class UserRepository constructor(
     }
 
     suspend fun registerPushTokenIfNeeded() {
-        val userData = cachedUser?.data ?: return
+        val userData = cachedUser?.data ?: let {
+            logg.tag("push_notifications").v("User not present, ignoring...")
+            return
+        }
         val unsyncedToken = config.pushTokenUnsynced
             .takeIf { it.isNotBlank() }
             ?.takeIf { it != userData.pushToken }
@@ -214,7 +217,7 @@ class UserRepository constructor(
                 return
             }
 
-        logg.tag("push_notifications").v("Found unsynced push token, registering...")
+        logg.tag("push_notifications").v("Found unsynced push token, syncing...")
         registerPushToken(unsyncedToken)
     }
 
