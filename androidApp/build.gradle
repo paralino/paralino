@@ -214,6 +214,12 @@ dependencies {
     googleImplementation 'com.mapbox.maps:android:10.8.0'
     googleImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
 
+    googleImplementation ("com.google.firebase:firebase-messaging-ktx:23.1.0") {
+        exclude group: 'com.google.firebase', module: 'firebase-core'
+        exclude group: 'com.google.firebase', module: 'firebase-analytics'
+        exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'
+    }
+
     implementation 'com.cossacklabs.com:themis:0.14.0'
 
     // TODO replace with vanilla library at some point
