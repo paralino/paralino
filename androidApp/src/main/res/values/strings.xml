@@ -44,6 +44,7 @@
     <string name="notifications_sharing_error_title">Sharing on hold!</string>
     <string name="notifications_sharing_error_message">Sharing is on hold because of the following errors:\n%s</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
+    <string name="notifications_channel_place_alert">Place alerts</string>
 
     <string name="location_banner_sharing_active">Sharing location</string>
     <string name="location_banner_sharing_start">Share</string>
@@ -251,6 +252,10 @@
     <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>
     <string name="place_detail_setting_button_notify_exit">Exit</string>
+
+    <string name="place_notification_enter">%s arrived at %s</string>
+    <string name="place_notification_exit">%s left %s</string>
+    <string name="place_notification_default">Your place have activity</string>
 
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>

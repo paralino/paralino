@@ -10,7 +10,8 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
-import app.paralino.android.tracking.notification.LocationNotificationHandler
+import app.paralino.android.notification.LocationNotificationHandler
+import app.paralino.android.notification.PlaceNotificationHandler
 import app.paralino.android.ui.MainViewModel
 import app.paralino.android.ui.dashboard.DashboardViewModel
 import app.paralino.android.ui.groups.create.CreateGroupViewModel
@@ -80,6 +81,7 @@ val utilModule = module {
 
 val locationModules = module {
     factory { LocationNotificationHandler(androidContext()) }
+    factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) }
     single { LocationInitHandler(androidContext(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), get()) }
     single<IGeofenceManager> { GeofenceManager(androidApplication()) }

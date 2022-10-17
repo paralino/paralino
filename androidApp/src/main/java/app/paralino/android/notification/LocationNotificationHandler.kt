@@ -1,4 +1,4 @@
-package app.paralino.android.tracking.notification
+package app.paralino.android.notification
 
 import android.app.*
 import android.content.Context

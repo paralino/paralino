@@ -8,6 +8,7 @@ import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
@@ -46,6 +47,10 @@ class LocationRepository constructor(
 
     fun getLocationsForGroup(groupId: String): Flow<UserGroupWithMembers> {
         return groupsRepos.getGroupWithMembersLocally(groupId)
+    }
+
+    fun getMembersByUserId(userid: String): Flow<List<MemberModel>> {
+        return local.getMemberModelsForUser(userid)
     }
 
     suspend fun pushLocation(data: LocationDataModel) {
