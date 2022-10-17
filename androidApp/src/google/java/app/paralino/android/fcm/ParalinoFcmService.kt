@@ -1,7 +1,7 @@
 package app.paralino.android.fcm
 
 import app.paralino.android.notification.PushNotificationHandler
-import app.paralino.core.repo.user.IPushNotificationManager
+import app.paralino.core.repo.user.IPushProviderManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import logv
@@ -9,7 +9,7 @@ import org.koin.android.ext.android.inject
 
 class ParalinoFcmService : FirebaseMessagingService() {
 
-    private val pushNotificationManager: IPushNotificationManager by inject()
+    private val pushNotificationManager: IPushProviderManager by inject()
     private val pushHandler: PushNotificationHandler by inject()
 
     override fun onNewToken(token: String) {

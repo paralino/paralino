@@ -1,6 +1,6 @@
 package app.paralino.core.repo.user
 
-interface IPushNotificationManager {
+interface IPushProviderManager {
     fun syncPushToken()
     suspend fun logout()
 }
