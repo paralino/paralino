@@ -35,7 +35,7 @@ class PlaceNotificationHandler(
 
             var placeName: String? = null
             var userName: String? = null
-            
+
             try {
                 placeName = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()?.data?.name
                 userName = locationRepo.getMembersByUserId(payload.memberUserId).firstOrNull()?.firstOrNull()?.name
