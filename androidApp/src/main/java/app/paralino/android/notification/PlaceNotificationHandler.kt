@@ -4,13 +4,13 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.Person
 import androidx.core.app.TaskStackBuilder
-import androidx.core.content.ContextCompat
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
+import app.paralino.android.ui.theme.AppColors
 import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
@@ -27,7 +27,7 @@ class PlaceNotificationHandler(
 
     private val channelId = "place_activity_channel"
     private val notificationColor: Int by lazy {
-        ContextCompat.getColor(context, R.color.theme_light)
+        AppColors.lightThemePrimary.toArgb()
     }
 
     fun process(payload: PlaceActivityNotificationPayload) {
@@ -38,8 +38,10 @@ class PlaceNotificationHandler(
 
             try {
                 placeName = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()?.data?.name
-                userName = locationRepo.getMembersByUserId(payload.memberUserId).firstOrNull()?.firstOrNull()?.name
-            } catch (e: Exception) { }
+                userName = locationRepo.getMembersByUserId(payload.memberUserId)
+                    .firstOrNull()?.firstOrNull()?.name
+            } catch (e: Exception) {
+            }
 
             val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
                 context.getString(R.string.place_notification_default)
@@ -72,7 +74,7 @@ class PlaceNotificationHandler(
             .setContentTitle(title)
             .setCategory(NotificationCompat.CATEGORY_SOCIAL)
             .setContentIntent(pendingIntent)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_notification_icon)
             .setOngoing(false)
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
