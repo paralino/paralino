@@ -127,7 +127,7 @@ class PlaceDetailViewModel(
         toggleSetting(memberId, isEnter = true) { setting ->
             GroupPlaceSettingsData(
                 memberId = setting.memberId,
-                memberUserId = setting.memberId,
+                memberUserId = setting.memberUserId,
                 enter = !setting.notifyEnter,
                 exit = setting.notifyExit
             )
