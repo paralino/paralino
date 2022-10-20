@@ -10,10 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -145,6 +142,9 @@ fun PlacesScreen(
         },
         isFloatingActionButtonDocked = true
     ) {
+        var userScroll by remember {
+            mutableStateOf(true)
+        }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
@@ -152,7 +152,8 @@ fun PlacesScreen(
                 bottom = it.calculateBottomPadding() + 100.dp,
                 start = 20.dp,
                 end = 20.dp
-            )
+            ),
+            userScrollEnabled = userScroll
         ) {
             if (state.places.isNotEmpty()) {
 
@@ -185,6 +186,13 @@ fun PlacesScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 factory = {
                                     mapViewState.initMap()
+                                    mapViewState.onMapTouchEnd = {
+                                        userScroll = true
+                                    }
+                                    mapViewState.onMapTouch = {
+                                        userScroll = false
+                                        false
+                                    }
                                     mapViewState.mapAndroidView
                                 },
                                 update = { }
@@ -239,7 +247,7 @@ fun PlaceListItem(
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .let {
-                if(onClick != null)
+                if (onClick != null)
                     it.clickable { onClick() }
                 else it
             }

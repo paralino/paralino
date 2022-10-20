@@ -204,6 +204,9 @@ fun PlaceDetailScreen(
         mapViewState.updateMarkers(state)
     }
 
+    var userScroll by remember {
+        mutableStateOf(true)
+    }
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(
@@ -211,7 +214,8 @@ fun PlaceDetailScreen(
             bottom = paddingValues.calculateBottomPadding(),
             start = 20.dp,
             end = 20.dp
-        )
+        ),
+        userScrollEnabled = userScroll
     ) {
         if (state.settings.isNotEmpty()) {
 
@@ -253,6 +257,13 @@ fun PlaceDetailScreen(
                             modifier = Modifier.fillMaxSize(),
                             factory = {
                                 mapViewState.initMap()
+                                mapViewState.onMapTouchEnd = {
+                                    userScroll = true
+                                }
+                                mapViewState.onMapTouch = {
+                                    userScroll = false
+                                    false
+                                }
                                 mapViewState.mapAndroidView
                             },
                             update = { }

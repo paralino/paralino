@@ -10,10 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Adjust
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Save
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -189,10 +186,14 @@ fun CreatePlaceScreen(
         mapViewState.updateRadius(state.radiusMeters)
     }
 
+    var userScroll by remember {
+        mutableStateOf(true)
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState(), enabled = userScroll)
             .padding(horizontal = 20.dp)
     ) {
 
@@ -252,7 +253,11 @@ fun CreatePlaceScreen(
                             onLocationChanged(lat, lng)
                             true
                         }
+                        mapViewState.onMapTouchEnd = {
+                            userScroll = true
+                        }
                         mapViewState.onMapTouch = {
+                            userScroll = false
                             false
                         }
                         mapViewState.onMarkerClick = {
@@ -290,6 +295,7 @@ fun CreatePlaceScreen(
             }
         )
 
+        Spacer(modifier = Modifier.height(40.dp))
         Spacer(modifier = Modifier.weight(1f))
 
         FilledButton(

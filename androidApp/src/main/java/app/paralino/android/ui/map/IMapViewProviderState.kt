@@ -7,6 +7,7 @@ interface IMapViewProviderState {
 
     val mapAndroidView: View
     var onMapTouch: (() -> Boolean)?
+    var onMapTouchEnd: (() -> Unit)?
     var onMarkerClick: ((String) -> Boolean)?
 
     fun initMap()
