@@ -273,14 +273,14 @@ fun PlaceDetailScreen(
             }
         }
 
+        this.item(key = "spacer") {
+            Spacer(modifier = Modifier.size(40.dp))
+        }
+
         this.itemsIndexed(
             items = state.settings,
             key = { index, item -> item.memberId }
         ) { index, item ->
-
-            if (index == 0)
-                Spacer(modifier = Modifier.size(40.dp))
-
             PlaceDetailUserListItem(
                 modifier = Modifier.animateItemPlacement(),
                 state = item,
