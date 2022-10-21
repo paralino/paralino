@@ -34,6 +34,7 @@
     <string name="error_location_background_permission_missing_sheet_message">Please allow **all the time** location access in order to **reliably and always** track and share your location with others.</string>
     <string name="error_location_background_permission_missing_sheet_message_android11">Please grant **%s** location permission in order to **reliably and always** track and share your location with others.</string>
     <string name="error_location_service_missing_sheet_message">Please enable **device location** in order to successfully locate your device.</string>
+    <string name="error_notification_permission_missing_sheet_message">Please enable **notifications** in order to receive **important** alerts for your places.</string>
 
     <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
     <string name="error_crypto_key_missing_user">Your cryptographic keys are not properly configured.</string>
@@ -44,6 +45,7 @@
     <string name="notifications_sharing_error_title">Sharing on hold!</string>
     <string name="notifications_sharing_error_message">Sharing is on hold because of the following errors:\n%s</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
+    <string name="notifications_channel_place_alert">Place alerts</string>
 
     <string name="location_banner_sharing_active">Sharing location</string>
     <string name="location_banner_sharing_start">Share</string>
@@ -61,8 +63,9 @@
     <string name="dashboard_info_no_groups">You don\'t have any groups yet.\nCreate one to start sharing your location.</string>
 
     <string name="location_banner_error_gps_off">Device location is disabled</string>
-    <string name="location_banner_error_no_permission">Missing location permission</string>
-    <string name="location_banner_error_no_background_permission">Missing all time location permission</string>
+    <string name="location_banner_error_no_permission_notifications">Missing notifications permission</string>
+    <string name="location_banner_error_no_permission_location">Missing location permission</string>
+    <string name="location_banner_error_no_permission_location_background">Missing all time location permission</string>
     <string name="location_banner_error_offline">Device is offline</string>
 
     <string name="settings_section_account_title">Account</string>
@@ -251,6 +254,10 @@
     <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>
     <string name="place_detail_setting_button_notify_exit">Exit</string>
+
+    <string name="place_notification_enter">%s arrived at %s</string>
+    <string name="place_notification_exit">%s left %s</string>
+    <string name="place_notification_default">Your place have activity</string>
 
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>

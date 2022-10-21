@@ -7,6 +7,8 @@ import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -19,6 +21,7 @@ import kotlinx.coroutines.launch
 class GroupDetailViewModel(
     private val groupId: String,
     private val groupRepo: GroupRepository,
+    private val placesRepo: PlacesRepository,
     private val sharingManager: LocationSharingManager,
     private val locationStatusProvider: ILocationStatusProvider,
     scope: CoroutineScope,
@@ -35,9 +38,10 @@ class GroupDetailViewModel(
         combine(
             locationStatusProvider.status,
             groupRepo.getGroupWithMembers(groupId),
+            placesRepo.hasAnyPlace(),
             sharingManager.sharingContractForGroup(groupId)
         )
-        { locationStatus, group, sharingStatus ->
+        { locationStatus, group, hasPlaces, sharingStatus ->
 
             val members = group.members
                 .sortedBy { it.name }
@@ -50,6 +54,16 @@ class GroupDetailViewModel(
                     )
                 }
 
+            val errors = buildList {
+                sharingStatus?.let {
+                    addAll(locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
+                }
+
+                if(hasPlaces && !locationStatus.isNotificationPermissionAllowed) {
+                    add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+                }
+            }
+
             GroupDetailScreenState(
                 id = groupId,
                 canEdit = group.isCurrentUserOwner,
@@ -58,9 +72,7 @@ class GroupDetailViewModel(
                 image = group.image,
                 sharingStatus = sharingStatus,
                 members = members,
-                errors = sharingStatus?.let {
-                    locationStatus.getPossibleErrors(forBackground = it.isLongTerm)
-                } ?: emptyList()
+                errors = errors
             )
         }
             .mapToPayload { it }

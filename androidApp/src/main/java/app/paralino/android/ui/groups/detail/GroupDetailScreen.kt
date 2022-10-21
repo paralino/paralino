@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -37,6 +38,7 @@ import app.paralino.core.presentation.groups.GroupDetailScreenState
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.android.R
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.DefaultEmptyState
@@ -116,7 +118,12 @@ fun GroupDetailScreen(
         }
         is Payload.Success -> {
 
-            val permissionHandler = rememberLocationPermissionHandler(
+            val locationPermissionHandler = rememberLocationPermissionHandler(
+                appState = appState,
+                locationStatusProvider = vm.locationStatusProvider
+            )
+
+            val notificationPermissionHandler = rememberNotificationsPermissionHandler(
                 appState = appState,
                 locationStatusProvider = vm.locationStatusProvider
             )
@@ -192,9 +199,10 @@ fun GroupDetailScreen(
                 },
                 onErrorAction = {
                     when (it) {
-                        ConditionErrorType.GPS -> permissionHandler.askLocationService()
-                        ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
-                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                        ConditionErrorType.GPS -> locationPermissionHandler.askLocationService()
+                        ConditionErrorType.PERMISSION_NOTIFICATIONS -> notificationPermissionHandler.askNotificationPermission()
+                        ConditionErrorType.PERMISSION_LOCATION -> locationPermissionHandler.askLocationPermission()
+                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> locationPermissionHandler.askBackgroundLocationPermission()
                         else -> { /* TODO review or do nothing */ }
                     }
                 }
@@ -325,16 +333,15 @@ fun GroupDetailScreen(
             )
         ) {
 
-            state.errors.forEach {
-                this.item(key = "error_$it") {
-                    ConditionErrorItem(data = it) { onErrorAction(it) }
-                }
+            this.items(items = state.errors, key = { "error_$it" }) {
+                ConditionErrorItem(data = it) { onErrorAction(it) }
             }
 
+            if (state.errors.isNotEmpty())
+                this.item { Spacer(modifier = Modifier.size(10.dp)) }
+
             if (state.sharingStatus != null) {
-                if (state.errors.isNotEmpty())
-                    this.item { Spacer(modifier = Modifier.size(10.dp)) }
-                this.item {
+                this.item(key = "sharing_status") {
                     Box(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center

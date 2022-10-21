@@ -40,6 +40,7 @@ import app.paralino.android.data.repos.location.SharingContractsLocalDataSourceI
 import app.paralino.android.data.repos.places.GroupPlacesLocalDataSource
 import app.paralino.android.data.repos.user.UserCryptoKeyLocalDataSource
 import app.paralino.android.data.repos.user.UserLocalDataSource
+import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.remote.appwrite.*
 import app.paralino.android.utils.ConnectionStatusProvider
 import app.paralino.android.utils.DeviceStatusProvider
@@ -47,6 +48,7 @@ import app.paralino.android.utils.LocationStatusProvider
 import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.places.IPlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
+import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.utils.IDeviceStatusProvider
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -128,6 +130,7 @@ val coreDependencyModules = module {
     single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
     single<ILocationStatusProvider> { LocationStatusProvider(androidApplication() as AppClass) }
     single<IDeviceStatusProvider> { DeviceStatusProvider(androidApplication() as AppClass) }
+    single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
 
     single<IUserApi> { UserApi(get()) }
     single<IDocumentsApi> { DocumentsApi(get()) }

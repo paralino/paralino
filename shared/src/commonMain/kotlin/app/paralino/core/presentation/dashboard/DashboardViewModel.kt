@@ -6,6 +6,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.settings.AccountScreenEvent
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.ILocationStatusProvider
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 class DashboardViewModel(
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
+    private val placesRepo: PlacesRepository,
     private val locationStatusProvider: ILocationStatusProvider,
     private val userRepo: UserRepository,
     scope: CoroutineScope,
@@ -38,8 +40,9 @@ class DashboardViewModel(
             userRepo.localUser,
             locationStatusProvider.status,
             groupRepository.getAllGroups(),
+            placesRepo.hasAnyPlace(),
             locationSharing.allContractsFlow.map { it.data }.filterNotNull()
-        ) { user, location, groups, sharing ->
+        ) { user, location, groups, hasPlace, sharing ->
 
             val active =
                 groups.filter { group -> sharing.any { it.groupId == group.id } }.map { group ->
@@ -59,6 +62,10 @@ class DashboardViewModel(
                     .let {
                         addAll(it)
                     }
+
+                if(hasPlace && !location.isNotificationPermissionAllowed) {
+                    add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+                }
 
                 user.data?.needsEmailVerification?.takeIf { it }?.let {
                     add(ConditionErrorType.EMAIL_VERIFICATION)

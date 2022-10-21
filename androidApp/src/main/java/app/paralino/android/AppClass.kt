@@ -120,7 +120,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     private fun initLogger() {
         logg = Logger
-        if (!app.paralino.android.BuildConfig.forceLogToSystem) {
+        if (!BuildConfig.forceLogToSystem) {
             Logger.setLogger(externalLogTree)
         } else {
             Logger.setLogger(DebugLogger(getString(R.string.app_name)))
@@ -128,7 +128,12 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     }
 
     override fun onStart(owner: LifecycleOwner) {
+        logg.tag("app_state").v("App is in foreground")
         updateLocationStatus()
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        logg.tag("app_state").v("App is in background")
     }
 
     fun updateLocationStatus() {

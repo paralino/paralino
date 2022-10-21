@@ -4,6 +4,8 @@ import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.ILocationStatusProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -12,6 +14,7 @@ class PlacesViewModel(
     groupId: String,
     private val placesRepo: PlacesRepository,
     private val groupRepo: GroupRepository,
+    private val locationStatusProvider: ILocationStatusProvider,
     scope: CoroutineScope
 ) : CoreViewModel(scope) {
 
@@ -24,8 +27,9 @@ class PlacesViewModel(
     init {
         combine(
             groupRepo.getGroupWithoutMembersLocally(groupId),
-            placesRepo.getAndRefreshPlacesForGroup(groupId)
-        ) { group, places ->
+            placesRepo.getAndRefreshPlacesForGroup(groupId),
+            locationStatusProvider.status
+        ) { group, places, status ->
 
             val placesState = places.map {
                 PlaceListItemData(
@@ -39,10 +43,17 @@ class PlacesViewModel(
                 )
             }
 
+            val errors = if(places.isNotEmpty() && !status.isNotificationPermissionAllowed) {
+                listOf(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+            } else {
+                emptyList()
+            }
+
             val state = PlacesListScreenState(
                 groupId = groupId,
                 groupName = group.name,
-                places = placesState
+                places = placesState,
+                errors = errors
             )
             state
         }

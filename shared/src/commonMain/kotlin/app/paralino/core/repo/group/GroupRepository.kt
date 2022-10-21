@@ -34,10 +34,7 @@ class GroupRepository constructor(
         return mergeDataWithRemote(
             local = local.getAllGroups(),
             remote = {
-                logg.tag("tag_crypto_key").w("refreshing all groups")
-                remote.getAllGroups()
-                    .also { cryptoKEKRepo.refreshAllKeys().first() }
-                    .let { it.map { handleGroupKeysUpdate(it) } }
+                logg.tag("tag_crypto_key").w("refreshing all groups and places")
                 refreshAllGroupsWithPlaces()
             },
             localUpdate = {},

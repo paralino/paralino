@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
 import app.paralino.android.AppClass
-import app.paralino.android.tracking.notification.LocationNotificationHandler
+import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel

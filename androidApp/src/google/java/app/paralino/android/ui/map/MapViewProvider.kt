@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
@@ -89,6 +90,7 @@ open class MapViewProviderState constructor(
         get() = mapView
 
     override var onMapTouch: (() -> Boolean)? = null
+    override var onMapTouchEnd: (() -> Unit)? = null
     override var onMarkerClick: ((String) -> Boolean)? = null
 
     override fun initMap() {
@@ -136,7 +138,9 @@ open class MapViewProviderState constructor(
                 addOnMoveListener(
                     object : OnMoveListener {
                         override fun onMove(detector: MoveGestureDetector) = false
-                        override fun onMoveEnd(detector: MoveGestureDetector) {}
+                        override fun onMoveEnd(detector: MoveGestureDetector) {
+                            onMapTouchEnd?.invoke()
+                        }
 
                         override fun onMoveBegin(detector: MoveGestureDetector) {
                             updatePolygonsForMapSize()

@@ -63,7 +63,7 @@ class PlaceDetailViewModel(
                     loadingEnter = false,
                     loadingExit = false
                 )
-            }
+            }.sortedSettings()
 
             PlaceDetailScreenState(
                 groupId = groupId,
@@ -127,7 +127,7 @@ class PlaceDetailViewModel(
         toggleSetting(memberId, isEnter = true) { setting ->
             GroupPlaceSettingsData(
                 memberId = setting.memberId,
-                memberUserId = setting.memberId,
+                memberUserId = setting.memberUserId,
                 enter = !setting.notifyEnter,
                 exit = setting.notifyExit
             )
@@ -173,7 +173,7 @@ class PlaceDetailViewModel(
                                     loadingExit = result is Payload.Loading && !isEnter
                                 )
                             )
-                        }
+                        }.sortedSettings()
                         it.copy(settings = newList)
                     }
                 }
@@ -186,6 +186,11 @@ class PlaceDetailViewModel(
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    private fun List<PlaceSettingsState>.sortedSettings(): List<PlaceSettingsState> {
+        return this.sortedBy { it.name }
+            .sortedBy { it.memberUserId == config.userId }
     }
 
 }

@@ -12,10 +12,7 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -29,7 +26,12 @@ class PlacesRepository constructor(
     private val geofenceManager: IGeofenceManager
 ) : BaseRepository() {
 
+    // TODO maybe clear place activity if location sharing stops?
     private val placeActivity = hashMapOf<String, Pair<Long, Boolean>?>()
+
+    fun hasAnyPlace(): Flow<Boolean> {
+        return local.getNumberOfPlaces().map { it > 0 }
+    }
 
     fun getAllActivePlaces(): Flow<List<GroupPlace>> {
         return local.getAllPlaces().map {
@@ -201,8 +203,12 @@ class PlacesRepository constructor(
 
         // there already was a request for this place in last 10 seconds
         if(timeDiff < 10L) return
-        // already entered the place within the last 2 minutes
-        if(placeActivityInfo?.second == true && timeDiff < 2L.minutes.inWholeSeconds) return
+
+        // TODO this needs more improvement. If location updates are slow and user didn't move -> this will trigger place alert
+        // maybe check for last location / persist place activity in case app is closed + increase this threshold
+        // if user stays in one place for some time, there should be only one place enter alert
+        // already entered the place within the last 15 minutes
+        if(placeActivityInfo?.second == true && timeDiff < 15L.minutes.inWholeSeconds) return
 
         val place = local.getPlaceWithoutSettingsOnce(placeId) ?: return
         if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) {
@@ -233,8 +239,8 @@ class PlacesRepository constructor(
         // there already was a request for this place in last 10 seconds
         if(timeDiff < 10L) return
 
-        // already exited the place within the last 2 minutes
-        if(placeActivityInfo?.second == false && timeDiff < 2L.minutes.inWholeSeconds) return
+        // already exited the place within the last 15 minutes
+        if(placeActivityInfo?.second == false && timeDiff < 15L.minutes.inWholeSeconds) return
 
         val place = local.getPlaceWithoutSettingsOnce(placeId) ?: return
         if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) {

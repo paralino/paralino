@@ -29,5 +29,6 @@ data class UserMe constructor(
 @Serializable
 data class UserMeData constructor(
     var userImage: ImageModel? = null,
-    val userName: String = ""
+    val userName: String = "",
+    val pushToken: String = ""
 )

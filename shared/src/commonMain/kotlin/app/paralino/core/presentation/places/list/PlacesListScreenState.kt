@@ -1,11 +1,13 @@
 package app.paralino.core.presentation.places.list
 
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.utils.ConditionErrorType
 
 data class PlacesListScreenState constructor(
     val groupId: String,
     val groupName: String,
-    val places: List<PlaceListItemData>
+    val places: List<PlaceListItemData>,
+    val errors: List<ConditionErrorType>
 )
 
 data class PlaceListItemData constructor(

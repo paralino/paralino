@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.dashboard.DashboardScreenEvent
 import app.paralino.core.utils.ConditionErrorType
@@ -43,10 +44,16 @@ fun DashboardScreen(
     vm: DashboardViewModel = getViewModel(),
 ) {
 
-    val permissionHandler = rememberLocationPermissionHandler(
+    val locationPermissionHandler = rememberLocationPermissionHandler(
         appState = appState,
         locationStatusProvider = vm.locationStatusProvider
     )
+
+    val notificationPermissionHandler = rememberNotificationsPermissionHandler(
+        appState = appState,
+        locationStatusProvider = vm.locationStatusProvider
+    )
+
     val vmState by vm.uiState.collectAsState(Payload.Loading)
     val state = vmState
 
@@ -110,9 +117,10 @@ fun DashboardScreen(
                     state.data.errors.forEach {
                         ConditionErrorItem(data = it) {
                             when (it) {
-                                ConditionErrorType.GPS -> permissionHandler.askLocationService()
-                                ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
-                                ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                                ConditionErrorType.GPS -> locationPermissionHandler.askLocationService()
+                                ConditionErrorType.PERMISSION_NOTIFICATIONS -> notificationPermissionHandler.askNotificationPermission()
+                                ConditionErrorType.PERMISSION_LOCATION -> locationPermissionHandler.askLocationPermission()
+                                ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> locationPermissionHandler.askBackgroundLocationPermission()
                                 ConditionErrorType.EMAIL_VERIFICATION -> showDialog = MainAlertDialog.VerifyEmail(state.data.email)
                                 else -> { /* TODO review or do nothing */ }
                             }

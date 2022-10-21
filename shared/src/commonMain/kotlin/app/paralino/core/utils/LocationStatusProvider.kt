@@ -9,7 +9,8 @@ interface ILocationStatusProvider {
 data class LocationConditionStatus constructor(
     val isGpsOn: Boolean,
     val isPermissionAllowed: Boolean,
-    val isBackgroundPermissionAllowed: Boolean
+    val isBackgroundPermissionAllowed: Boolean,
+    val isNotificationPermissionAllowed: Boolean
 ) {
 
     fun isOK(forAlwaysOnAccess: Boolean = false): Boolean {
