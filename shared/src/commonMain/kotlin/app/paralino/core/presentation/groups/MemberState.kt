@@ -12,16 +12,20 @@ data class GroupMemberItemState constructor(
     val name: String,
     val image: ImageModel?,
     val batterLevel: Int?,
+    val speedMs: Float?,
+    val elevationMeters: Float?,
     val lastPing: LocalDateTime?,
     val status: GroupMemberStatus
 ) {
-    constructor(member: MemberModel): this(
+    constructor(member: MemberModel, showSpeedAndElevation: Boolean = false): this(
         id = member.id,
         userId = member.userId,
         actionItem = null,
         name = member.name,
         image = member.image,
         batterLevel = member.mutableData?.batteryLevel,
+        speedMs = member.mutableData?.speed?.takeIf { showSpeedAndElevation },
+        elevationMeters = member.mutableData?.altitude?.takeIf { showSpeedAndElevation },
         lastPing = member.mutableData?.timeUTC?.isoToLocalDateTime(),
         status = if(member.isActive) GroupMemberStatus.ACTIVE else GroupMemberStatus.INACTIVE
     )

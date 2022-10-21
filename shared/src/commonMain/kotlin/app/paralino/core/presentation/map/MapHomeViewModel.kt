@@ -52,7 +52,7 @@ class MapHomeViewModel(
                     ) { group, sharingStatus, focusedMarkerId ->
 
                         val memberData = group.members.map { member ->
-                            GroupMemberItemState(member).copy(
+                            GroupMemberItemState(member, showSpeedAndElevation = true).copy(
                                 actionItem = MemberAction.DELETE_LOCATION.takeIf {
                                     member.userId == config.userId && member.mutableData != null &&
                                             !sharingManager.isSharingActiveForGroup(groupIdData.value)
@@ -67,7 +67,7 @@ class MapHomeViewModel(
                                     focused = focusedMarkerId == member.id,
                                     active = member.isActive,
                                     image = member.image,
-                                    memberData = GroupMemberItemState(member),
+                                    memberData = GroupMemberItemState(member, showSpeedAndElevation = true),
                                     locationData = member.mutableData!!
                                 )
                             }

@@ -237,8 +237,7 @@
     <string name="group_create_name_placeholder">Group name</string>
     <string name="group_create_button_text">Create group</string>
 
-    <string name="group_members_last_active_status_now">Last update: just now</string>
-    <string name="group_members_last_active_status_full">Last update: %s</string>
+    <string name="group_members_last_active_status_now">Just now</string>
     <string name="group_members_status_inactive">INACTIVE</string>
 
     <string name="places_list_add_button">New place</string>

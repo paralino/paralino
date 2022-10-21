@@ -35,6 +35,8 @@ import app.paralino.core.utils.Emojis
 import app.paralino.android.R
 import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.android.ui.share.getDistance
+import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.fromUTCtoUserLastPing
@@ -115,14 +117,13 @@ fun GroupMember(
         // center content
         Column(
             modifier = Modifier
-                .padding(start = 16.dp, bottom = 12.dp)
                 .constrainAs(center) {
                     linkTo(
                         start = image.end,
                         end = expand.start,
                         top = parent.top,
-                        bottom = image.bottom,
-                        startMargin = 8.dp,
+                        bottom = actions.top,
+                        startMargin = 12.dp,
                         endMargin = 8.dp,
                         horizontalBias = 0f
                     )
@@ -157,20 +158,65 @@ fun GroupMember(
                     color = MaterialTheme.colors.secondary,
                 )
             }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+
+                if (state.speedMs != null) {
+                    Icon(
+                        imageVector = Icons.Rounded.Speed,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 2.dp)
+                            .size(18.dp)
+                    )
+                    Text(
+                        text = getDistance(meters = state.speedMs!!.toInt()),
+                        style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                }
+
+                if (state.elevationMeters != null) {
+                    Icon(
+                        imageVector = Icons.Rounded.StackedLineChart,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 2.dp)
+                            .size(18.dp)
+                    )
+                    Text(
+                        text = getDistance(meters = state.elevationMeters!!.toInt()),
+                        style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                }
+            }
+
         }
 
         // expand icon
         if (state.actionItem != null) {
-            IconButton(onClick = { expanded = !expanded }, modifier = Modifier.constrainAs(expand) {
-                end.linkTo(parent.end)
-                bottom.linkTo(image.bottom)
-                top.linkTo(image.top)
-            }) {
+            IconButton(
+                onClick = { expanded = !expanded },
+                modifier = Modifier.constrainAs(expand) {
+                    end.linkTo(parent.end)
+                    bottom.linkTo(image.bottom)
+                    top.linkTo(image.top)
+                }
+            ) {
                 Icon(
                     imageVector = if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
                     contentDescription = null
                 )
             }
+        } else {
+            Spacer(
+                modifier = Modifier.size(1.dp).constrainAs(expand) {
+                    end.linkTo(parent.end)
+                    bottom.linkTo(image.bottom)
+                    top.linkTo(image.top)
+                }
+            )
         }
 
         // action item
@@ -192,6 +238,7 @@ fun GroupMember(
                     FilledButton(
                         style = ButtonStyle.SMALL_ACTION,
                         icon = state.actionItem!!.actionIcon,
+                        elevation = ButtonDefaults.elevation(pressedElevation = 2.dp),
                         modifier = Modifier.padding(top = 10.dp),
                         onClick = {
                             if (collapseOnActionClick)
@@ -216,10 +263,7 @@ fun GroupMemberItemState.getLastPingText(): String? {
         if (it.isAfter(LocalDateTime.now().minusMinutes(2)))
             stringResource(R.string.group_members_last_active_status_now)
         else
-            stringResource(
-                R.string.group_members_last_active_status_full,
-                it.fromUTCtoUserLastPing()
-            )
+            it.fromUTCtoUserLastPing()
     }
 }
 
@@ -257,6 +301,8 @@ val dummyMemberState = GroupMemberItemState(
     name = "User name",
     image = ImageModel.emoji(Emojis.robot),
     batterLevel = 20,
+    speedMs = 10f,
+    elevationMeters = 50f,
     lastPing = LocalDateTime.now().minusDays(2).toKotlinLocalDateTime(),
     status = GroupMemberStatus.INACTIVE
 )
