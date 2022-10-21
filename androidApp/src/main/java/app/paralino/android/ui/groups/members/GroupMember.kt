@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
@@ -27,19 +28,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import app.paralino.android.R
+import app.paralino.android.ui.components.FilledButton
+import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.android.ui.theme.AppTheme
+import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.android.utils.extensions.fromUTCtoUserLastPing
+import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberStatus
 import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.utils.Emojis
-import app.paralino.android.R
-import app.paralino.android.ui.components.FilledButton
-import app.paralino.android.ui.components.ImageModelImage
-import app.paralino.android.ui.share.getDistance
-import app.paralino.android.ui.theme.AppColors
-import app.paralino.android.ui.theme.AppTheme
-import app.paralino.android.ui.theme.ButtonStyle
-import app.paralino.android.utils.extensions.fromUTCtoUserLastPing
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import java.time.LocalDateTime
@@ -170,7 +170,7 @@ fun GroupMember(
                             .size(18.dp)
                     )
                     Text(
-                        text = getDistance(meters = state.speedMs!!.toInt()),
+                        text = DistanceFormatter.getSpeedSmall(LocalContext.current, state.speedMs!!),
                         style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
@@ -185,7 +185,7 @@ fun GroupMember(
                             .size(18.dp)
                     )
                     Text(
-                        text = getDistance(meters = state.elevationMeters!!.toInt()),
+                        text = DistanceFormatter.getDistanceSmall(LocalContext.current, state.elevationMeters!!),
                         style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))

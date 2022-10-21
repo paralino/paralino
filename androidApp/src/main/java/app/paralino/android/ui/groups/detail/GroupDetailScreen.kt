@@ -16,10 +16,6 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
@@ -30,6 +26,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.paralino.android.R
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
+import app.paralino.android.tracking.rememberLocationPermissionHandler
+import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.components.ConditionErrorItem
+import app.paralino.android.ui.components.DefaultEmptyState
+import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.android.ui.groups.members.GroupMember
+import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.android.ui.settings.SettingsSectionHeader
+import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.ui.theme.AppTheme
+import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
+import app.paralino.android.utils.extensions.toLocalDateTime
+import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LocationSharingContract
@@ -37,26 +51,7 @@ import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.GroupDetailScreenState
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.android.R
-import app.paralino.android.notification.rememberNotificationsPermissionHandler
-import app.paralino.android.tracking.rememberLocationPermissionHandler
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.DefaultEmptyState
-import app.paralino.android.ui.components.ImageModelImage
-import app.paralino.android.ui.components.MainAlertDialog
-import app.paralino.android.ui.groups.members.GroupMember
-import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.settings.SettingsSectionHeader
-import app.paralino.android.ui.share.getDistance
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.components.ConditionErrorItem
-import app.paralino.android.ui.theme.AppColors
-import app.paralino.android.ui.theme.AppTheme
-import app.paralino.android.utils.extensions.annotatedBold
-import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
-import app.paralino.android.utils.extensions.toLocalDateTime
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.serialization.builtins.MapEntrySerializer
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -530,7 +525,7 @@ fun GroupDetailSharingStatusElement(
                         .size(18.dp)
                 )
                 Text(
-                    text = getDistance(meters = contract.approximateLocationInMeters!!).let { "($it)" },
+                    text = DistanceFormatter.getDistanceSmall(LocalContext.current, contract.approximateLocationInMeters!!.toFloat()).let { "($it)" },
                     style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                 )
                 Spacer(modifier = Modifier.size(5.dp))

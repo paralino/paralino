@@ -1,6 +1,5 @@
 package app.paralino.android.ui.share
 
-import android.icu.text.DecimalFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
@@ -19,12 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import app.paralino.core.models.Payload
-import app.paralino.core.models.data
-import app.paralino.core.presentation.dashboard.GroupItemData
-import app.paralino.core.presentation.share.SharingStartScreenEvent
-import app.paralino.core.presentation.share.SharingStartScreenState
-import app.paralino.core.utils.ConditionErrorType
 import app.paralino.android.R
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.MainAppState
@@ -32,11 +25,16 @@ import app.paralino.android.ui.components.*
 import app.paralino.android.ui.groups.GroupListItem
 import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.components.ConditionErrorItem
-import app.paralino.android.ui.components.nameRes
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.android.utils.extensions.safeCast
+import app.paralino.android.utils.formatting.DistanceFormatter
+import app.paralino.core.models.Payload
+import app.paralino.core.models.data
+import app.paralino.core.presentation.dashboard.GroupItemData
+import app.paralino.core.presentation.share.SharingStartScreenEvent
+import app.paralino.core.presentation.share.SharingStartScreenState
+import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -188,8 +186,10 @@ fun SharingStartScreen(
                 },
                 icon = {
                     if (state.errors.isNotEmpty()) {
-                        Icon(imageVector = Icons.Rounded.NotListedLocation,
-                            contentDescription = null)
+                        Icon(
+                            imageVector = Icons.Rounded.NotListedLocation,
+                            contentDescription = null
+                        )
                     } else {
                         Icon(imageVector = Icons.Rounded.PersonPinCircle, contentDescription = null)
                     }
@@ -285,7 +285,12 @@ fun SharingStartScreen(
                     modifier = Modifier.fillMaxWidth(),
                     icon = Icons.Rounded.ShareLocation,
                     title = stringResource(id = R.string.groups_sharing_setting_approximate_location),
-                    description = if (state.shareApproximateLocation) getDistance(meters = state.approximateLocationMeters) else null,
+                    description = if (state.shareApproximateLocation)
+                        DistanceFormatter.getDistanceSmall(
+                            LocalContext.current,
+                            state.approximateLocationMeters.toFloat()
+                        )
+                    else null,
                     state = approxLocationSwitchState,
                     onProgressChange = {
                         vm.approximateLocationChanged(it - 1)
@@ -334,7 +339,8 @@ fun SharingStartScreen(
                         ConditionErrorType.GPS -> permissionHandler.askLocationService()
                         ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
                         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
-                        else -> { /* TODO review or do nothing */ }
+                        else -> { /* TODO review or do nothing */
+                        }
                     }
                 }
             }
@@ -376,19 +382,5 @@ fun getTime(milis: Long): String {
         getPluralTime(R.plurals.groups_sharing_duration_type_minutes, duration.toMinutes())
     } else {
         stringResource(R.string.groups_sharing_duration_type_infinite)
-    }
-}
-
-@Composable
-fun getDistance(meters: Int): String {
-    // TODO move to separate util
-    return if (meters < 1000) {
-        stringResource(id = R.string.placeholder_unit_meter, "$meters")
-    } else {
-        val value = DecimalFormat.getInstance().apply {
-            minimumFractionDigits = 0
-            maximumFractionDigits = 2
-        }.format(meters.toFloat() / 1000)
-        stringResource(id = R.string.placeholder_unit_km, value)
     }
 }
