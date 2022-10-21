@@ -273,44 +273,6 @@ fun SharingStartScreen(
                     modifier = Modifier
                         .padding(end = 10.dp)
                         .fillMaxWidth(0.5f),
-                    icon = Icons.Rounded.BatteryChargingFull,
-                    title = stringResource(id = R.string.groups_sharing_setting_battery_share),
-                    description = null,
-                    state = shareBatteryState,
-                    onStateChange = {
-                        vm.turnOnBatterySharing(it)
-                    }
-                )
-                LargeSeekbarSwitch(
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = Icons.Rounded.ShareLocation,
-                    title = stringResource(id = R.string.groups_sharing_setting_approximate_location),
-                    description = if (state.shareApproximateLocation)
-                        DistanceFormatter.getDistanceSmall(
-                            LocalContext.current,
-                            state.approximateLocationMeters.toFloat()
-                        )
-                    else null,
-                    state = approxLocationSwitchState,
-                    onProgressChange = {
-                        vm.approximateLocationChanged(it - 1)
-                    },
-                    onStateChange = {
-                        vm.turnOnApproximateLocationSharing(it)
-                    }
-                )
-            }
-
-            Spacer(modifier = Modifier.size(10.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                LargeSeekbarSwitch(
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .fillMaxWidth(0.5f),
                     icon = Icons.Rounded.Speed,
                     title = stringResource(id = R.string.groups_sharing_setting_speed_share),
                     description = null,
@@ -329,6 +291,44 @@ fun SharingStartScreen(
                         vm.turnOnElevationSharing(it)
                     }
                 )
+            }
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                LargeSeekbarSwitch(
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .fillMaxWidth(0.5f),
+                    icon = Icons.Rounded.BatteryChargingFull,
+                    title = stringResource(id = R.string.groups_sharing_setting_battery_share),
+                    description = null,
+                    state = shareBatteryState,
+                    onStateChange = {
+                        vm.turnOnBatterySharing(it)
+                    }
+                )
+//                LargeSeekbarSwitch(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    icon = Icons.Rounded.ShareLocation,
+//                    title = stringResource(id = R.string.groups_sharing_setting_approximate_location),
+//                    description = if (state.shareApproximateLocation)
+//                        DistanceFormatter.getDistanceSmall(
+//                            LocalContext.current,
+//                            state.approximateLocationMeters.toFloat()
+//                        )
+//                    else null,
+//                    state = approxLocationSwitchState,
+//                    onProgressChange = {
+//                        vm.approximateLocationChanged(it - 1)
+//                    },
+//                    onStateChange = {
+//                        vm.turnOnApproximateLocationSharing(it)
+//                    }
+//                )
             }
 
             Spacer(modifier = Modifier.size(50.dp))
