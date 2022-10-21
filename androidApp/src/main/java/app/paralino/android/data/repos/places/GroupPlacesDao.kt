@@ -44,6 +44,9 @@ interface GroupPlacesDao {
     @Query("SELECT * FROM group_places")
     fun getAllPlaces(): Flow<List<GroupPlaceEntity>>
 
+    @Query("SELECT COUNT(*) FROM group_places;")
+    fun getNumberOfPlaces(): Flow<Int>
+
     @Query("SELECT * FROM place_settings")
     fun getAllPlaceSettings(): Flow<List<GroupPlaceSettingsEntity>>
 

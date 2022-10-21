@@ -88,6 +88,10 @@ class GroupPlacesLocalDataSource(
             }
     }
 
+    override fun getNumberOfPlaces(): Flow<Int> {
+        return dao.getNumberOfPlaces()
+    }
+
     override suspend fun getPlaceWithoutSettingsOnce(placeId: String): GroupPlace? {
         return dao.getPlaceOnce(placeId)?.let { mapper.local2Core(it) }
     }

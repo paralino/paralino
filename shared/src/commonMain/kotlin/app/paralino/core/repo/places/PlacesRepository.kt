@@ -12,10 +12,7 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -31,6 +28,10 @@ class PlacesRepository constructor(
 
     // TODO maybe clear place activity if location sharing stops?
     private val placeActivity = hashMapOf<String, Pair<Long, Boolean>?>()
+
+    fun hasAnyPlace(): Flow<Boolean> {
+        return local.getNumberOfPlaces().map { it > 0 }
+    }
 
     fun getAllActivePlaces(): Flow<List<GroupPlace>> {
         return local.getAllPlaces().map {
