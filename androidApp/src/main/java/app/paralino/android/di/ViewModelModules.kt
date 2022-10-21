@@ -69,7 +69,7 @@ val viewModelModules = module {
     viewModel { EditProfileViewModel(get()) }
     viewModel { RecoverKeysViewModel(get(), get()) }
     viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
-    viewModel { (groupID: String) -> PlacesViewModel(groupID, get(), get()) }
+    viewModel { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
     viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
     viewModel { (groupID: String, placeId: String?) -> CreatePlaceViewModel(groupID, placeId, get(), get()) }
 }
