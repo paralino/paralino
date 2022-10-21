@@ -36,11 +36,18 @@ data class DeleteGroupMemberPayload constructor(
 )
 
 @Serializable
-data class UpdateGroupKeysPayload(
+data class UpdateGroupKeysPayload constructor(
     val groupId: String,
     val userPublicKey: String,
     val encryptedGroupKeys: List<GroupKeysPayload>,
-    val groupData: String
+    val groupData: String,
+    val places: List<GroupPlaceDataUpdatePayload>
+)
+
+@Serializable
+data class GroupPlaceDataUpdatePayload(
+    val placeId: String,
+    val placeData: String
 )
 
 @Serializable
@@ -83,4 +90,19 @@ data class LocationNodePayload(
     val groupId: String,
     val mutableData: String?,
     val memberKeyVersion: Long
+)
+
+@Serializable
+data class CreatePlacePayload(
+    val groupId: String,
+    val ownerPublicKey: String,
+    val keyVersion: Long,
+    val private: Boolean,
+    val data: String
+)
+
+@Serializable
+data class PlaceEventPayload(
+    val placeId: String,
+    val enter: Boolean
 )

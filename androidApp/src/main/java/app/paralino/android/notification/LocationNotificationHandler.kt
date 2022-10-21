@@ -1,17 +1,18 @@
-package app.paralino.android.tracking.notification
+package app.paralino.android.notification
 
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
-import androidx.core.content.ContextCompat
-import app.paralino.core.utils.ConditionErrorType
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.android.ui.components.nameRes
+import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.attributedBold
+import app.paralino.core.utils.ConditionErrorType
 
 class LocationNotificationHandler(
     private val context: Context
@@ -20,7 +21,7 @@ class LocationNotificationHandler(
     private val channelId = "location_active_channel"
     val notificationId = 9537
     private val notificationColor: Int by lazy {
-        ContextCompat.getColor(context, R.color.theme_light)
+        AppColors.lightThemePrimary.toArgb()
     }
 
     fun notify(context: Context, groupCount: Int, errors: List<ConditionErrorType>): Notification {
@@ -61,12 +62,18 @@ class LocationNotificationHandler(
             .setContentText(content)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setContentIntent(pendingIntent)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_notification_icon)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setAutoCancel(false)
             .setSound(null)
             .setColor(notificationColor)
+            .setPriority(
+                if (errors.isEmpty())
+                    NotificationCompat.PRIORITY_MIN
+                else
+                    NotificationCompat.PRIORITY_HIGH
+            )
             .setColorized(true)
 
 

@@ -14,6 +14,7 @@ import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupWithMemberRaw
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
+import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -26,21 +27,17 @@ class GroupRepository constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val groupMapperCore: GroupMapperCore,
+    private val placesRepo: PlacesRepository
 ) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
         return mergeDataWithRemote(
             local = local.getAllGroups(),
             remote = {
-                logg.tag("tag_crypto_key").w("refreshing all groups")
-                remote.getAllGroups()
-                    .also { cryptoKEKRepo.refreshAllKeys().first() }
-                    .let { it.map { handleGroupKeysUpdate(it) } }
+                logg.tag("tag_crypto_key").w("refreshing all groups and places")
+                refreshAllGroupsWithPlaces()
             },
-            localUpdate = {
-                logg.tag("tag_crypto_key_group").d("group and keys ready, updating groups")
-                local.recreateGroups(it)
-            },
+            localUpdate = {},
             remotePreference = RemotePreference.CACHE("groups", 3_000)
         )
     }
@@ -73,11 +70,27 @@ class GroupRepository constructor(
         )
     }
 
+    suspend fun refreshAllGroupsWithPlaces() {
+        refreshAllGroups()
+        placesRepo.refreshAllPlaces()
+    }
+
+    suspend fun refreshAllGroups() {
+        triggerRemoteOnly {
+            logg.tag("tag_crypto_key").w("refreshing all groups")
+            remote.getAllGroups()
+                .also { cryptoKEKRepo.refreshAllKeys().first() }
+                .let { it.map { handleGroupKeysUpdate(it) } }
+        }
+            .also {
+                logg.tag("tag_crypto_key_group").d("group and keys ready, updating groups")
+                local.recreateGroups(it)
+            }
+    }
+
     suspend fun refreshGroupWithMembers(id: String): GroupWithMemberRaw {
         // TODO refresh and handle keys
-        return getRemoteGroupWithMembers(id).also {
-                local.updateOrCreateGroup(it)
-            }
+        return getRemoteGroupWithMembers(id).also { local.updateOrCreateGroup(it) }
     }
 
     private suspend fun getRemoteGroupWithMembers(groupId: String): GroupWithMemberRaw {
@@ -220,7 +233,9 @@ class GroupRepository constructor(
         if (!force && !remoteGroup.shouldRotateKeys) return null
 
         logg.tag("tag_crypto_key_group").w("group key is deprecated - rotating: ${remoteGroup.id}")
-        cryptoKEKRepo.rotateAllGroupKeys(remoteGroup)
+
+        val places = placesRepo.getPlacesForGroupLocally(remoteGroup.id).first()
+        cryptoKEKRepo.rotateAllGroupKeys(remoteGroup, places)
         return getDataOnce(remote = { getRemoteGroupWithMembers(remoteGroup.id) }).first()
     }
 

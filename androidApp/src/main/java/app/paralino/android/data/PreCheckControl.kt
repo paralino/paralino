@@ -28,13 +28,11 @@ class PreCheckControl(
 
         return flow {
             emit(DataSetupState.SESSION_READY)
-            initialRefresh()
+
+            userRepository.refreshUserIfAvailable()
+
             emit(DataSetupState.USER_READY)
         }.onEach { logg.tag("initial_refresh").d(it.name) }
-    }
-
-    private suspend fun initialRefresh() {
-        userRepository.refreshUserIfAvailable()
     }
 
     enum class DataSetupState {

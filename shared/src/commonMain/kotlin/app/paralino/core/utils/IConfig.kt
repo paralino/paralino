@@ -8,6 +8,8 @@ interface IConfig {
     var emailConfirmed: Boolean
     var temporaryBackupPassword: String
 
+    var pushTokenUnsynced: String
+
     var guestEmail: String
     var guestPassword: String
 

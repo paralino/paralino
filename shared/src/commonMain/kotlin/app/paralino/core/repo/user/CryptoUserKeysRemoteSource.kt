@@ -17,10 +17,9 @@ class CryptoUserKeysRemoteSource(
 
     suspend fun createPersonalKey(data: UserCryptoKeyRaw): UserCryptoKeyRaw {
         // TODO review: move to separate function or restrict permission + adjust database index to be unique
-        return docApi.createOrUpdateDocument(
+        return docApi.createDocument(
             databaseType = BackendDatabaseType.KEYS,
             collectionId = remoteConfig.resourceIds.collectionUserKeysID,
-            docId = null,
             data = data.toPostJson()
         ).let {
             UserCryptoKeyRaw.from(it)

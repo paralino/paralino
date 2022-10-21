@@ -13,9 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.LocationOff
-import androidx.compose.material.icons.rounded.PhonelinkSetup
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -117,6 +115,7 @@ val ConditionErrorType.iconVector: ImageVector
     @Composable
     get() = when (this) {
         ConditionErrorType.GPS -> Icons.Rounded.LocationOff
+        ConditionErrorType.PERMISSION_NOTIFICATIONS -> Icons.Rounded.NotificationsActive
         ConditionErrorType.PERMISSION_LOCATION -> Icons.Rounded.PhonelinkSetup
         ConditionErrorType.PERMISSION_LOCATION_PRECISE -> Icons.Rounded.PhonelinkSetup
         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> Icons.Rounded.PhonelinkSetup
@@ -128,9 +127,10 @@ val ConditionErrorType.iconVector: ImageVector
 val ConditionErrorType.nameRes: Int
     get() = when (this) {
         ConditionErrorType.GPS -> R.string.location_banner_error_gps_off
-        ConditionErrorType.PERMISSION_LOCATION -> R.string.location_banner_error_no_permission
-        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.string.location_banner_error_no_permission
-        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.string.location_banner_error_no_background_permission
+        ConditionErrorType.PERMISSION_NOTIFICATIONS -> R.string.location_banner_error_no_permission_notifications
+        ConditionErrorType.PERMISSION_LOCATION -> R.string.location_banner_error_no_permission_location
+        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.string.location_banner_error_no_permission_location
+        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.string.location_banner_error_no_permission_location_background
         ConditionErrorType.NETWORK -> R.string.location_banner_error_offline
         ConditionErrorType.EMAIL_VERIFICATION -> R.string.info_email_confirm
         ConditionErrorType.GUEST_ACCOUNT -> R.string.settings_account_guest_badge
@@ -139,6 +139,7 @@ val ConditionErrorType.nameRes: Int
 val ConditionErrorType.endActionTextRes: Int
     get() = when (this) {
         ConditionErrorType.GPS -> R.string.location_banner_fix
+        ConditionErrorType.PERMISSION_NOTIFICATIONS -> R.string.location_banner_fix
         ConditionErrorType.PERMISSION_LOCATION -> R.string.location_banner_fix
         ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.string.location_banner_fix
         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.string.location_banner_fix

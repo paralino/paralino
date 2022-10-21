@@ -19,6 +19,7 @@ class Config(context: Context) : IConfig {
         const val keyEmailConfirmed = "prefs.profile.email.confirmed"
         const val keyEmailGuest = "prefs.profile.guest.email"
         const val keyPasswordGuest = "prefs.profile.guest.password"
+        const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
     }
 
     private val secureSharedData by lazy {
@@ -77,6 +78,13 @@ class Config(context: Context) : IConfig {
         set(value) {
             secureSharedData.edit { putString(keyUserKey, value) }
         }
+
+    override var pushTokenUnsynced: String
+        get() = secureSharedData.getString(keyPushTokenUnsynced, "") ?: ""
+        set(value) {
+            secureSharedData.edit { putString(keyPushTokenUnsynced, value) }
+        }
+
 
     override fun clear() {
         secureSharedData.edit { clear() }

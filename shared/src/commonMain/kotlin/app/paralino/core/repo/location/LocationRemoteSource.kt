@@ -37,7 +37,8 @@ class LocationRemoteSource constructor(
             channel = event,
             filters = listOf("$event.*.create", "$event.*.update")
         ).map {
-            MemberDocumentRaw.from(it)
+            // TODO also listen for delete so we can remove member right away and rotate keys
+            MemberDocumentRaw.from(it.payload)
         }
     }
 

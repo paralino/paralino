@@ -11,6 +11,8 @@ import app.paralino.android.data.models.group.UserGroupEntity
 import app.paralino.android.data.models.user.PersonalCodeEntity
 import app.paralino.android.data.models.location.MemberEntity
 import app.paralino.android.data.models.location.SharingContractEntity
+import app.paralino.android.data.models.places.GroupPlaceEntity
+import app.paralino.android.data.models.places.GroupPlaceSettingsEntity
 import app.paralino.android.data.models.user.UserEntity
 import app.paralino.android.data.models.user.UserKeyEntity
 import app.paralino.android.data.repos.group.GroupKeysDao
@@ -18,6 +20,7 @@ import app.paralino.android.data.repos.group.UserGroupDao
 import app.paralino.android.data.repos.personal_code.PersonalCodeDao
 import app.paralino.android.data.repos.location.MemberDao
 import app.paralino.android.data.repos.location.SharingContractsDao
+import app.paralino.android.data.repos.places.GroupPlacesDao
 import app.paralino.android.data.repos.user.UserDao
 import app.paralino.android.data.repos.user.UserKeyDao
 
@@ -32,6 +35,8 @@ import app.paralino.android.data.repos.user.UserKeyDao
         GroupKeyEntity::class,
         GroupMemberKeyEntity::class,
         UserKeyEntity::class,
+        GroupPlaceEntity::class,
+        GroupPlaceSettingsEntity::class
     ],
     version = MainAppDatabase.VERSION
 )
@@ -51,9 +56,10 @@ abstract class MainAppDatabase : RoomDatabase() {
     abstract fun personalCodeDao(): PersonalCodeDao
     abstract fun groupKeysDao(): GroupKeysDao
     abstract fun userKeysDao(): UserKeyDao
+    abstract fun placesDao(): GroupPlacesDao
 
     companion object {
-        const val VERSION = 29
+        const val VERSION = 33
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

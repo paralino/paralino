@@ -15,8 +15,10 @@ import app.paralino.android.utils.extensions.getBitmapFromView
 import app.paralino.android.utils.extensions.imageTintRes
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.presentation.map.MapMarkerState
+import app.paralino.core.presentation.places.create.CreatePlaceScreenState
+import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
+import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.utils.Emojis
 
 class MapUserMarkerView : ConstraintLayout {
@@ -92,9 +94,8 @@ class MapUserMarkerView : ConstraintLayout {
     }
 
     companion object {
-        fun create(context: Context, model: MapMarkerState): Pair<MapPinData, BitmapDrawable> {
+        fun create(context: Context, data: MapPinData): Pair<MapPinData, BitmapDrawable> {
             val pinView = MapUserMarkerView(context)
-            val data = MapPinData(model)
             val bitmap = pinView.getPinForData(data)
             return data to BitmapDrawable(context.resources, bitmap)
         }
@@ -108,8 +109,47 @@ data class MapPinData constructor(
     val focused: Boolean,
     val active: Boolean,
     val image: ImageModel?,
-    val locationData: LocationDataModel,
+    val lat: Double,
+    val lng: Double,
+    val accuracy: Float = 0f,
+    val shouldShowApproximateCircle: Boolean
 ) {
+
+    constructor(state: CreatePlaceScreenState) : this(
+        groupId = state.groupId,
+        memberId = "place_marker",
+        focused = true,
+        active = true,
+        image = state.image,
+        lat = state.lat ?: 0.0,
+        lng = state.lng ?: 0.0,
+        accuracy = state.radiusMeters.toFloat(),
+        shouldShowApproximateCircle = true
+    )
+
+    constructor(state: PlaceDetailScreenState) : this(
+        groupId = state.groupId,
+        memberId = "place_marker",
+        focused = true,
+        active = true,
+        image = state.image,
+        lat = state.lat ?: 0.0,
+        lng = state.lng ?: 0.0,
+        accuracy = state.radiusMeters.toFloat(),
+        shouldShowApproximateCircle = true
+    )
+
+    constructor(groupId: String, state: PlaceListItemData) : this(
+        groupId = groupId,
+        memberId = "place_marker_${state.id}",
+        focused = false,
+        active = true,
+        image = state.image,
+        lat = state.lat,
+        lng = state.lng,
+        accuracy = state.radiusMeters.toFloat(),
+        shouldShowApproximateCircle = true
+    )
 
     constructor(state: MapMarkerState) : this(
         groupId = state.groupId,
@@ -117,6 +157,9 @@ data class MapPinData constructor(
         focused = state.focused,
         active = state.active,
         image = state.image,
-        locationData = state.locationData
+        lat = state.locationData.lat,
+        lng = state.locationData.lng,
+        accuracy = state.locationData.accuracy,
+        shouldShowApproximateCircle = state.locationData.shouldShowApproximateCircle
     )
 }

@@ -6,6 +6,7 @@ import app.paralino.core.crypto.DecryptedGroupKeyData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
@@ -206,11 +207,11 @@ class CryptoKEKRepository(
         return DecryptedGroupKeyData(keyRaw.version, memberKey)
     }
 
-    suspend fun rotateAllGroupKeys(remoteGroup: UserGroupWithMembers) {
+    suspend fun rotateAllGroupKeys(remoteGroup: UserGroupWithMembers, places: List<GroupPlace>) {
         val userKey = userKeyRepository.latestKeyPair()
 
         // 1. rotate group key
-        getDataOnce { remote.rotateGroupKeys(group = remoteGroup, myKey = userKey) }.first()
+        getDataOnce { remote.rotateGroupKeys(group = remoteGroup, places = places, myKey = userKey) }.first()
 
         // 2. fetch new key(s) for that group
         refreshGroupKeysForGroup(groupId = remoteGroup.id).first()

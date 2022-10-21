@@ -30,13 +30,8 @@ class LocationLocalDataSource(
         dao.recreateForGroup(groupId, data.map { mapper.remote2Local(it) })
     }
 
-    override fun getMemberModelsForUser(userId: String): Flow<MemberModel> {
-        return dao.getLastLocationForUser(userId)
-            .distinctUntilChanged()
-            .map {
-                val key = it.groupId.let { groupDao.getGroupPublicKeyOnce(it) } ?: ""
-                mapper.local2Core(it, key)
-            }
+    override fun getMemberModelsForUser(userId: String): Flow<List<MemberModel>> {
+        return getMemberModelsForUsers(listOf(userId))
     }
 
     override fun getMemberModelsForUsers(userIds: List<String>): Flow<List<MemberModel>> {

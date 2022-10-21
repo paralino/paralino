@@ -12,11 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
-import androidx.core.util.lruCache
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
-import app.paralino.core.presentation.map.MapMarkerState
 import com.google.gson.JsonPrimitive
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.StandardScaleGestureDetector
@@ -24,8 +23,6 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.*
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
-import com.mapbox.maps.plugin.annotation.AnnotationConfig
-import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.attribution.attribution
 import com.mapbox.maps.plugin.compass.compass
@@ -35,26 +32,9 @@ import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfTransformation
 import kotlin.math.abs
 
-@Composable
-fun rememberMapViewProviderState(
-    darkMode: Boolean,
-    mapView: MapView = rememberMapViewWithLifecycle(darkMode = darkMode),
-): IMapViewProviderState {
-    val markerCache: LruCache<String, MarkerCacheData> = remember { lruCache(100) }
-    return remember {
-        MapViewProviderState(
-            mapView = mapView,
-            markerCache = markerCache,
-            annotationsManager = mapView.annotations.createPointAnnotationManager(AnnotationConfig(
-                layerId = "markers")),
-            polygonAnnotationsManager = mapView.annotations.createPolygonAnnotationManager(
-                AnnotationConfig(belowLayerId = "markers")),
-        )
-    }
-}
 
 @Composable
-private fun rememberMapViewWithLifecycle(darkMode: Boolean): MapView {
+internal fun rememberMapViewWithLifecycle(darkMode: Boolean): MapView {
     val context = LocalContext.current
     val mapView = remember(context, darkMode) {
         val option = ResourceOptionsManager.getDefault(
@@ -93,28 +73,28 @@ private fun rememberMapViewWithLifecycle(darkMode: Boolean): MapView {
     return mapView
 }
 
-private data class MarkerCacheData(
+data class MarkerCacheData(
     val data: MapPinData,
     val point: PointAnnotation,
     val polygon: PolygonAnnotation?,
 )
 
-private class MapViewProviderState constructor(
-    private val mapView: MapView,
-    private val markerCache: LruCache<String, MarkerCacheData>,
-    private val annotationsManager: PointAnnotationManager?,
-    private val polygonAnnotationsManager: PolygonAnnotationManager?,
+open class MapViewProviderState constructor(
+    protected val mapView: MapView,
+    protected val markerCache: LruCache<String, MarkerCacheData>,
+    protected val annotationsManager: PointAnnotationManager?,
+    protected val polygonAnnotationsManager: PolygonAnnotationManager?,
 ) : IMapViewProviderState {
 
     override val mapAndroidView: View
         get() = mapView
 
     override var onMapTouch: (() -> Boolean)? = null
+    override var onMapTouchEnd: (() -> Unit)? = null
     override var onMarkerClick: ((String) -> Boolean)? = null
 
     override fun initMap() {
         mapView.apply {
-
             // disable telemetry by default
             attribution.getMapAttributionDelegate().telemetry()
                 .setUserTelemetryRequestState(enabled = false)
@@ -131,7 +111,13 @@ private class MapViewProviderState constructor(
             }
 
             scalebar.updateSettings { this.enabled = false }
+        }
 
+        initListeners()
+    }
+
+    protected fun initListeners() {
+        mapView.apply {
             getMapboxMap().apply {
                 addOnMapClickListener {
                     annotationsManager?.annotations?.forEach { it.isSelected = false }
@@ -152,7 +138,9 @@ private class MapViewProviderState constructor(
                 addOnMoveListener(
                     object : OnMoveListener {
                         override fun onMove(detector: MoveGestureDetector) = false
-                        override fun onMoveEnd(detector: MoveGestureDetector) {}
+                        override fun onMoveEnd(detector: MoveGestureDetector) {
+                            onMapTouchEnd?.invoke()
+                        }
 
                         override fun onMoveBegin(detector: MoveGestureDetector) {
                             updatePolygonsForMapSize()
@@ -185,11 +173,10 @@ private class MapViewProviderState constructor(
                 }
                 return@OnPolygonAnnotationClickListener true
             })
-
         }
     }
 
-    private fun updatePolygonsForMapSize() {
+    protected fun updatePolygonsForMapSize() {
         val currentCamera = mapView.getMapboxMap().cameraState.toCameraOptions()
         synchronized(markerCache) {
             markerCache.snapshot().forEach {
@@ -203,93 +190,6 @@ private class MapViewProviderState constructor(
                     }
                 }
             }
-        }
-    }
-
-    override fun updateMarkers(list: List<MapMarkerState>) {
-        synchronized(markerCache) {
-            // remove markers not in current list
-            markerCache.snapshot().minus(list.map { MapPinData(it).toString() })
-                .forEach {
-                    markerCache.remove(it.key)
-                    annotationsManager?.delete(it.value.point)
-                    it.value.polygon?.let { it1 -> polygonAnnotationsManager?.delete(it1) }
-                }
-
-            list
-                .forEach { model ->
-                    val pinData = MapPinData(model)
-                    val marker = markerCache.get(pinData.toString())
-                    if (marker != null) {
-                        // update marker
-                        Point.fromLngLat(model.locationData.lng, model.locationData.lat).let {
-                            marker.point.point = it
-                            marker.polygon?.geometry = TurfTransformation.circle(
-                                it,
-                                model.locationData.accuracy.toDouble(),
-                                360,
-                                TurfConstants.UNIT_METERS
-                            )
-                        }
-                        if (marker.data != pinData) {
-                            // marker content has changed
-                            val pin = MapUserMarkerView.create(mapView.context, model)
-                            marker.point.iconImageBitmap = pin.second.bitmap
-                            val newMarker = marker.copy(data = pin.first)
-                            markerCache.put(marker.data.memberId, newMarker)
-                        }
-                        annotationsManager?.update(marker.point)
-                        marker.polygon?.let { polygonAnnotationsManager?.update(it) }
-                    } else {
-                        // create new marker
-                        val pin = MapUserMarkerView.create(mapView.context, model)
-
-                        val newPoint = PointAnnotationOptions()
-                            .withData(JsonPrimitive(model.memberData.id))
-                            .withPoint(
-                                Point.fromLngLat(
-                                    model.locationData.lng,
-                                    model.locationData.lat
-                                )
-                            )
-                            .withIconImage(pin.second.bitmap)
-                            .withIconAnchor(IconAnchor.BOTTOM)
-                            .let {
-                                annotationsManager?.create(it)!!
-                            }
-
-                        val newPolygon = if (model.locationData.shouldShowApproximateCircle) {
-                            PolygonAnnotationOptions()
-                                .withGeometry(
-                                    TurfTransformation.circle(
-                                        Point.fromLngLat(
-                                            model.locationData.lng,
-                                            model.locationData.lat
-                                        ),
-                                        model.locationData.accuracy.toDouble(),
-                                        360,
-                                        TurfConstants.UNIT_METERS
-                                    )
-                                )
-                                .withFillColor(Color.BLUE)
-                                .withFillOpacity(0.2)
-                                .let {
-                                    polygonAnnotationsManager?.create(it)
-                                }
-                        } else {
-                            null
-                        }
-
-                        markerCache.put(
-                            pin.first.toString(),
-                            MarkerCacheData(
-                                data = pin.first,
-                                point = newPoint,
-                                polygon = newPolygon
-                            )
-                        )
-                    }
-                }
         }
     }
 
@@ -325,6 +225,101 @@ private class MapViewProviderState constructor(
         }
     }
 
+    fun setAndUpdateMarkers(list: List<MapPinData>) {
+        synchronized(markerCache) {
+            // remove markers not in current list
+            markerCache.snapshot().minus(list.map { it.toString() })
+                .forEach {
+                    markerCache.remove(it.key)
+                    annotationsManager?.delete(it.value.point)
+                    it.value.polygon?.let { it1 -> polygonAnnotationsManager?.delete(it1) }
+                }
+
+            list.forEach { pinData ->
+                val marker = markerCache.get(pinData.toString())
+                if (marker != null) {
+                    // update marker
+                    updateMarker(pinData, marker)
+                } else {
+                    // create new marker
+                    addNewMarker(pinData)
+                }
+            }
+        }
+    }
+
+    protected fun addNewMarker(model: MapPinData) {
+        val pin = MapUserMarkerView.create(mapView.context, model)
+
+        val newPoint = PointAnnotationOptions()
+            .withData(JsonPrimitive(model.memberId))
+            .withPoint(
+                Point.fromLngLat(
+                    model.lng,
+                    model.lat
+                )
+            )
+            .withIconImage(pin.second.bitmap)
+            .withIconAnchor(IconAnchor.BOTTOM)
+            .let {
+                annotationsManager?.create(it)!!
+            }
+
+        val newPolygon = if (model.shouldShowApproximateCircle) {
+            PolygonAnnotationOptions()
+                .withGeometry(
+                    TurfTransformation.circle(
+                        Point.fromLngLat(
+                            model.lng,
+                            model.lat
+                        ),
+                        model.accuracy.toDouble(),
+                        360,
+                        TurfConstants.UNIT_METERS
+                    )
+                )
+                .withFillColor(Color.BLUE)
+                .withFillOpacity(0.2)
+                .let {
+                    polygonAnnotationsManager?.create(it)
+                }
+        } else {
+            null
+        }
+
+        markerCache.put(
+            pin.first.toString(),
+            MarkerCacheData(
+                data = pin.first,
+                point = newPoint,
+                polygon = newPolygon
+            )
+        )
+    }
+
+    protected fun updateMarker(newMarkerData: MapPinData, marker: MarkerCacheData) {
+        Point.fromLngLat(newMarkerData.lng, newMarkerData.lat).let {
+            marker.point.point = it
+            marker.polygon?.geometry = TurfTransformation.circle(
+                it,
+                newMarkerData.accuracy.toDouble(),
+                360,
+                TurfConstants.UNIT_METERS
+            )
+        }
+
+        if (marker.data != newMarkerData) {
+            // marker content has changed
+            val pin = MapUserMarkerView.create(mapView.context, newMarkerData)
+            marker.point.iconImageBitmap = pin.second.bitmap
+            val newMarker = marker.copy(data = pin.first)
+            markerCache.put(marker.data.memberId, newMarker)
+        }
+
+        annotationsManager?.update(marker.point)
+        marker.polygon?.let { polygonAnnotationsManager?.update(it) }
+    }
+
     private fun resetMapMaxZoom() {
         mapView.getMapboxMap().setBounds(CameraBoundsOptions.Builder().maxZoom(22.0).build())
     }
@@ -335,7 +330,7 @@ private class MapViewProviderState constructor(
         }
     }
 
-    private fun focusToMarker(annotation: PointAnnotation) {
+    protected open fun focusToMarker(annotation: PointAnnotation) {
         val cameraPosition = CameraOptions.Builder()
             .zoom(16.0)
             .center(annotation.point)

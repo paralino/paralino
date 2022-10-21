@@ -162,9 +162,20 @@ class UserRepository constructor(
 
     fun updateUserData(data: UserMeData): Flow<Boolean> {
         return getDataOnce(
-            remote = { remote.updateUserData(data) },
+            remote = {
+                val pushToken = config.pushTokenUnsynced
+                    .takeIf { it.isNotBlank() }
+                    ?: data.pushToken.takeIf { it.isNotBlank() }
+                    ?: cachedUser?.data?.pushToken
+                remote.updateUserData(data.copy(pushToken = pushToken ?: ""))
+            },
             localUpdate = { updateLocalUser(it) }
         ).map { true }
+    }
+
+    suspend fun updateUserDataBlocking(data: UserMeData) {
+        triggerRemoteOnly { remote.updateUserData(data) }
+            .also { updateLocalUser(it) }
     }
 
     suspend fun initEmailVerification() {
@@ -173,6 +184,41 @@ class UserRepository constructor(
 
     suspend fun confirmEmail(userId: String, secret: String) {
         triggerRemoteOnly { remote.confirmEmail(userId, secret) }
+    }
+
+    suspend fun registerPushToken(newToken: String) {
+
+        logg.tag("push_notifications").v("Starting to register new push token")
+        config.pushTokenUnsynced = newToken
+
+        val currentUserData = cachedUser?.data ?: let {
+            logg.tag("push_notifications").v("User not ready, skipping registering push token")
+            return
+        }
+        val newData = currentUserData.copy(pushToken = newToken)
+
+        logg.tag("push_notifications").v("Ready to register new push token")
+        updateUserDataBlocking(newData)
+
+        config.pushTokenUnsynced = ""
+        logg.tag("push_notifications").v("Push token registered")
+    }
+
+    suspend fun registerPushTokenIfNeeded() {
+        val userData = cachedUser?.data ?: let {
+            logg.tag("push_notifications").v("User not present, ignoring...")
+            return
+        }
+        val unsyncedToken = config.pushTokenUnsynced
+            .takeIf { it.isNotBlank() }
+            ?.takeIf { it != userData.pushToken }
+            ?: let {
+                logg.tag("push_notifications").v("No new push token to register")
+                return
+            }
+
+        logg.tag("push_notifications").v("Found unsynced push token, syncing...")
+        registerPushToken(unsyncedToken)
     }
 
     suspend fun logoutLocally() {

@@ -1,5 +1,6 @@
 package app.paralino.android.remote.appwrite
 
+import app.paralino.core.models.base.RealtimeResponse
 import app.paralino.core.repo.api.IRealtimeApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -9,22 +10,22 @@ class RealtimeApi constructor(
     private val remoteModule: AppWriteRemoteModule
 ): IRealtimeApi {
 
-    override fun subscribe(vararg channels: String): Flow<Map<String, Any>> {
+    override fun subscribe(vararg channels: String): Flow<RealtimeResponse<Map<String, Any>>> {
         return subscribeWithFilter(channels.toList(), listOf())
     }
 
-    override fun subscribeWithFilter(channel: String, vararg filter: String): Flow<Map<String, Any>> {
+    override fun subscribeWithFilter(channel: String, vararg filter: String): Flow<RealtimeResponse<Map<String, Any>>> {
         return subscribeWithFilter(listOf(channel), filter.toList())
     }
 
     override fun subscribeWithFilter(
         channel: String,
         filters: List<String>
-    ): Flow<Map<String, Any>> {
+    ): Flow<RealtimeResponse<Map<String, Any>>> {
         return subscribeWithFilter(listOf(channel), filters)
     }
 
-    override fun subscribeWithFilter(channels: List<String>, filters: List<String>): Flow<Map<String, Any>> {
+    override fun subscribeWithFilter(channels: List<String>, filters: List<String>): Flow<RealtimeResponse<Map<String, Any>>> {
         return callbackFlow {
 
             val subscription = remoteModule.realtime.subscribe(
@@ -32,7 +33,14 @@ class RealtimeApi constructor(
                 payloadType = mutableMapOf<String, Any>().javaClass
             ) {
                 if(filters.isEmpty() || it.events.any { event -> filters.any { it == event } })
-                    this.trySend(it.payload)
+                    this.trySend(
+                        RealtimeResponse(
+                            events = it.events,
+                            channels = it.channels,
+                            timestamp = it.timestamp,
+                            payload = it.payload
+                        )
+                    )
             }
 
             awaitClose {

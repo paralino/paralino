@@ -10,7 +10,7 @@ interface ILocationLocalDataSource {
     suspend fun recreateAllMember(data: List<MemberDocumentRaw>)
     suspend fun recreateMembersForGroup(groupId: String, data: List<MemberDocumentRaw>)
 
-    fun getMemberModelsForUser(userId: String): Flow<MemberModel>
+    fun getMemberModelsForUser(userId: String): Flow<List<MemberModel>>
     fun getMemberModelsForUsers(userIds: List<String>): Flow<List<MemberModel>>
     fun getMembersForGroup(groupId: String): Flow<List<MemberModel>>
     suspend fun memberCountInGroup(groupId: String): Int

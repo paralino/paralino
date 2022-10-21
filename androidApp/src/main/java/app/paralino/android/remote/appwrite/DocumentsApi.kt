@@ -10,29 +10,6 @@ class DocumentsApi constructor(
     private val remoteModule: AppWriteRemoteModule
 ) : IDocumentsApi {
 
-    override suspend fun createOrUpdateDocument(
-        databaseType: BackendDatabaseType,
-        collectionId: String,
-        docId: String?,
-        data: Any
-    ): Map<String, Any> {
-        if (docId.isNullOrBlank()) {
-            return createDocument(
-                databaseType = databaseType,
-                collectionId = collectionId,
-                docId = docId,
-                data = data
-            )
-        } else {
-            return updateDocument(
-                databaseType = databaseType,
-                collectionId = collectionId,
-                docId = docId,
-                data = data
-            )
-        }
-    }
-
     override suspend fun createDocument(
         databaseType: BackendDatabaseType,
         collectionId: String,

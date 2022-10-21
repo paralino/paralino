@@ -12,6 +12,13 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import app.paralino.android.data.PreCheckControl
+import app.paralino.android.data.config.Config
+import app.paralino.android.di.KoinSetup
+import app.paralino.android.tracking.LocationService
+import app.paralino.android.tracking.getLocationStatus
+import app.paralino.android.utils.logger.DebugLogger
+import app.paralino.android.utils.logger.LoggerKind
 import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.connectionStatus
@@ -24,14 +31,6 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.LocationConditionStatus
-import app.paralino.android.data.PreCheckControl
-import app.paralino.android.data.config.Config
-import app.paralino.android.di.KoinSetup
-import app.paralino.android.tracking.LocationInitHandler
-import app.paralino.android.tracking.LocationService
-import app.paralino.android.tracking.getLocationStatus
-import app.paralino.android.utils.logger.DebugLogger
-import app.paralino.android.utils.logger.LoggerKind
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -121,7 +120,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     private fun initLogger() {
         logg = Logger
-        if (!app.paralino.android.BuildConfig.forceLogToSystem) {
+        if (!BuildConfig.forceLogToSystem) {
             Logger.setLogger(externalLogTree)
         } else {
             Logger.setLogger(DebugLogger(getString(R.string.app_name)))
@@ -129,7 +128,12 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     }
 
     override fun onStart(owner: LifecycleOwner) {
+        logg.tag("app_state").v("App is in foreground")
         updateLocationStatus()
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        logg.tag("app_state").v("App is in background")
     }
 
     fun updateLocationStatus() {

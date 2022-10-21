@@ -9,7 +9,10 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.tracking.LocationInitHandler
-import app.paralino.android.tracking.notification.LocationNotificationHandler
+import app.paralino.android.tracking.geofence.GeofenceManager
+import app.paralino.android.notification.LocationNotificationHandler
+import app.paralino.android.notification.PlaceNotificationHandler
+import app.paralino.android.notification.PushNotificationHandler
 import app.paralino.android.ui.MainViewModel
 import app.paralino.android.ui.dashboard.DashboardViewModel
 import app.paralino.android.ui.groups.create.CreateGroupViewModel
@@ -20,20 +23,25 @@ import app.paralino.android.ui.login.LoginViewModel
 import app.paralino.android.ui.login.passwordreset.ResetPasswordViewModel
 import app.paralino.android.ui.login.recover.RecoverKeysViewModel
 import app.paralino.android.ui.map.MapViewModel
+import app.paralino.android.ui.places.create.CreatePlaceViewModel
+import app.paralino.android.ui.places.detail.PlaceDetailViewModel
+import app.paralino.android.ui.places.list.PlacesViewModel
 import app.paralino.android.ui.settings.SettingsViewModel
 import app.paralino.android.ui.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.android.ui.settings.editprofile.EditProfileViewModel
 import app.paralino.android.ui.settings.emailchange.ChangeEmailViewModel
 import app.paralino.android.ui.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.android.ui.share.SharingViewModel
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.places.PlacesRepository
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { DashboardViewModel(androidApplication(), get(), get(), get(), get()) }
+    viewModel { DashboardViewModel(androidApplication(), get(), get(), get(), get(), get()) }
     viewModel { MapViewModel(androidApplication(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { (startScreenType: Any) -> LoginViewModel(androidApplication(), get(), get(), get(), startScreenType as LoginScreenUiType) }
@@ -53,7 +61,7 @@ val viewModelModules = module {
             get(),
             get())
     }
-    viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get()) }
+    viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get()) }
     viewModel { MainViewModel(get(), get(), get()) }
     viewModel { ChangeEmailViewModel(get(), get()) }
     viewModel { ChangePasswordViewModel(get()) }
@@ -61,18 +69,24 @@ val viewModelModules = module {
     viewModel { EditProfileViewModel(get()) }
     viewModel { RecoverKeysViewModel(get(), get()) }
     viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
+    viewModel { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
+    viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
+    viewModel { (groupID: String, placeId: String?) -> CreatePlaceViewModel(groupID, placeId, get(), get()) }
 }
 
 val utilModule = module {
     single { PreCheckControl(get()) }
     single { UserSessionMonitor() }
-    single { AppAccountStateMonitor(get(), get(), get(), get()) }
+    single { AppAccountStateMonitor(get(), get(), get(), get(), get()) }
 }
 
 val locationModules = module {
     factory { LocationNotificationHandler(androidContext()) }
+    factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) }
+    factory { PushNotificationHandler(get()) }
     single { LocationInitHandler(androidContext(), get(), get()) }
-    single { LocationPerformanceManager(get(), get(), get(), get(), get()) }
+    single { LocationPerformanceManager(get(), get(), get()) }
+    single<IGeofenceManager> { GeofenceManager(androidApplication()) }
 }
 
 val coreModule = module {
@@ -80,14 +94,15 @@ val coreModule = module {
     factory { CreateAccountUseCase(get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
-    factory { LogoutUseCase(get(), get(), get(), get(), get(), get()) }
+    factory { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get(), get()) }
-    single { GroupRepository(get(), get(), get(), get(), get(), get()) }
+    single { GroupRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
-    single { LocationRepository(get(), get(), get(), get(), get()) }
+    single { LocationRepository(get(), get(), get(), get(), get(), get(), get()) }
+    single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
 }

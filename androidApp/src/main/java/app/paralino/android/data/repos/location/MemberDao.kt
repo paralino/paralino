@@ -27,7 +27,7 @@ interface MemberDao {
     fun getLocationsForUsers(userIds: List<String>): Flow<List<MemberEntity>>
 
     @Query("SELECT * FROM members WHERE userId = :userId")
-    fun getLastLocationForUser(userId: String): Flow<MemberEntity>
+    fun getLastLocationForUser(userId: String): Flow<List<MemberEntity>>
 
     @Query("SELECT * FROM members WHERE groupId = :groupId")
     fun getLocationsForGroup(groupId: String): Flow<List<MemberEntity>>

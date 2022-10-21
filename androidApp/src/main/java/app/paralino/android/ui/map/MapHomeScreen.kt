@@ -53,7 +53,7 @@ fun MapHomeScreen(
     groupId: String?,
     vm: MapViewModel = getViewModel(),
 ) {
-    val mapViewState = rememberMapViewProviderState(darkMode = isSystemInDarkTheme())
+    val mapViewState = rememberMapViewHomeState(darkMode = isSystemInDarkTheme())
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
     rememberSaveable(groupId, isSystemInDarkTheme()) {
@@ -271,8 +271,6 @@ fun MapHomeScreenElements(
                 tint = if (isTrackingGroup) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
             )
         }
-
-        snapshotFlow { }
 
         // user list
         Box(
