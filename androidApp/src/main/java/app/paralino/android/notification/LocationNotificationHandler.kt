@@ -7,13 +7,12 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
-import androidx.core.content.ContextCompat
-import app.paralino.core.utils.ConditionErrorType
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.android.ui.components.nameRes
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.attributedBold
+import app.paralino.core.utils.ConditionErrorType
 
 class LocationNotificationHandler(
     private val context: Context
@@ -69,6 +68,12 @@ class LocationNotificationHandler(
             .setAutoCancel(false)
             .setSound(null)
             .setColor(notificationColor)
+            .setPriority(
+                if (errors.isEmpty())
+                    NotificationCompat.PRIORITY_MIN
+                else
+                    NotificationCompat.PRIORITY_HIGH
+            )
             .setColorized(true)
 
 
