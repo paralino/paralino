@@ -13,6 +13,12 @@ data class CreateGroupPayload constructor(
 )
 
 @Serializable
+data class UpdateGroupPayload constructor(
+    val groupId: String,
+    val groupData: String
+)
+
+@Serializable
 data class CreateGroupMemberPayload constructor(
     val groupId: String,
     val userId: String,

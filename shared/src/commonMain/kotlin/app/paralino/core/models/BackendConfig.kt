@@ -38,6 +38,7 @@ object BackendResourceIDs {
     const val functionPersonalCodeReadID: String = "personal_code_read"
     const val functionCreateGroupID: String = "group_create"
     const val functionDeleteGroupID: String = "group_delete"
+    const val functionUpdateGroupID: String = "group_update"
     const val functionCreateGroupMemberID: String = "group_member_create"
     const val functionDeleteGroupMemberID: String = "group_member_delete"
     const val functionUpdateGroupKeysID: String = "group_keys_update"

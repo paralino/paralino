@@ -14,13 +14,6 @@ data class GroupDocumentRaw constructor(
     val data: String = ""
 ) {
 
-    fun toPostJson(): Map<String, Any> {
-        return buildMap {
-            put("ownerPublicKey", ownerPublicKey)
-            put("data", data)
-        }
-    }
-
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): GroupDocumentRaw {
@@ -28,7 +21,7 @@ data class GroupDocumentRaw constructor(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 ownerPublicKey = map["ownerPublicKey"] as String,
-                keyVersion = map["keyVersion"] as Long,
+                keyVersion = (map["keyVersion"] as Number).toLong(),
                 shouldRotateKeys = map["shouldRotateKeys"] as Boolean,
                 data = map["data"] as String
             )
