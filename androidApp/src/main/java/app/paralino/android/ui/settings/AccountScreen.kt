@@ -1,6 +1,8 @@
 package app.paralino.android.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -191,6 +193,18 @@ fun AccountScreen(
             }
             Payload.Loading -> {}
             is Payload.Error -> {}
+        }
+    }
+
+    AnimatedVisibility(accountState.data?.loadingAction == true, enter = fadeIn(), exit = fadeOut()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colors.background.copy(alpha = 0.5f))
+                .clickable { },
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
     }
 }
