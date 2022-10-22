@@ -31,7 +31,7 @@ data class GroupMemberCryptoKeyDataRaw constructor(
                 memberUserId = map["memberUserId"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 groupId = map["groupId"] as String,
-                version = map["version"] as Long,
+                version = (map["version"] as Number).toLong(),
                 encryptedSenderKey = map["encryptedSenderKey"] as String
             )
         }

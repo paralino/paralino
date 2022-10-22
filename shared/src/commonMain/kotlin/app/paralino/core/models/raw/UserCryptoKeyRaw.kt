@@ -32,7 +32,7 @@ data class UserCryptoKeyRaw constructor(
                 encryptedSymmetricKey = map["encryptedSymmetricKey"] as String,
                 encryptedPrivateKey = map["encryptedPrivateKey"] as String,
                 publicKey = map["publicKey"] as String,
-                version = map["version"] as Long
+                version = (map["version"] as Number).toLong()
             )
         }
     }

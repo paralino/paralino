@@ -32,7 +32,7 @@ data class PersonalCodeRaw constructor(
                 ownerId = map["ownerId"] as String,
                 encryptedCode = map["encryptedCode"] as String,
                 encryptedCodeData = map["encryptedCodeData"] as String,
-                validityUnix = map["validityUnix"] as Long,
+                validityUnix = (map["validityUnix"] as Number).toLong()
             )
         }
     }

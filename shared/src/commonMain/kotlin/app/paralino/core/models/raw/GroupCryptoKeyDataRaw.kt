@@ -22,7 +22,7 @@ data class GroupCryptoKeyDataRaw constructor(
                 id = map["\$id"] as String,
                 groupId = map["groupId"] as String,
                 memberUserId = map["memberUserId"] as String,
-                version = map["version"] as Long,
+                version = (map["version"] as Number).toLong(),
                 encryptedGroupKey = map["encryptedGroupKey"] as String
             )
         }
