@@ -108,6 +108,12 @@ data class CreatePlacePayload(
 )
 
 @Serializable
+data class UpdatePlacePayload constructor(
+    val placeId: String,
+    val placeData: String
+)
+
+@Serializable
 data class PlaceEventPayload(
     val placeId: String,
     val enter: Boolean

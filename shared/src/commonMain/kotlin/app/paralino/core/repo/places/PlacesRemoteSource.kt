@@ -18,6 +18,7 @@ import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
+import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
 import kotlinx.serialization.encodeToString
 
 class PlacesRemoteSource(
@@ -137,16 +138,34 @@ class PlacesRemoteSource(
     }
 
     suspend fun updatePlace(
-        data: GroupPlace
+        place: GroupPlace
     ): GroupPlaceRaw {
         return blocking {
-            val mapped = mapper.core2Remote(data)
-            api.updateDocument(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionPlacesID,
-                docId = mapped.id,
-                data = mapped.toPostJson()
-            ).parsePlace()
+            val mapped = mapper.core2Remote(place)
+
+            val payload = UpdatePlacePayload(
+                placeId = place.id,
+                placeData = mapped.data
+            )
+
+            val data = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionPlaceUpdate,
+                data = BaseRemoteModule.formatter.encodeToString(payload)
+            )
+
+            if (data.isSuccess) {
+                val response = data.response.fromJsonObjectToMapOfPrimitives()
+                    .filterValues { it != null }
+                    .mapValues { it.value!! }
+                response.parsePlace()
+            } else {
+                // TODO throw better exception
+                throw BaseRemoteException.fromCode(
+                    code = null,
+                    message = "Unable to update group",
+                    cause = Exception(data.stderr)
+                )
+            }
         }
     }
 
