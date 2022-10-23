@@ -48,23 +48,11 @@ class CryptoUserKeyRepository(
         local.saveKey(keyRaw, decryptedKey.asBase64String(cryptoCore.hashProvider))
     }
 
-    suspend fun uploadNewUserKey(keyRaw: UserCryptoKeyRaw): UserCryptoKeyRaw {
-        return triggerRemoteOnly { remote.createPersonalKey(keyRaw) }
+    suspend fun uploadNewUserKey(keyRaw: UserCryptoKeyRaw, removeOldKeys: Boolean = true): UserCryptoKeyRaw {
+        return triggerRemoteOnly { remote.createPersonalKey(keyRaw, removeOldKeys) }
     }
 
     fun userKeyState(): Flow<Boolean> {
         return local.userKeyState()
     }
-
-    fun deleteKey(id: String): Flow<Unit> {
-        return getDataOnce(
-            remote = { remote.deleteUserKey(id) },
-            localUpdate = { deleteLocalKey(id) }
-        )
-    }
-
-    suspend fun deleteLocalKey(id: String) {
-        local.deleteKey(id)
-    }
-
 }

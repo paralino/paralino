@@ -9,7 +9,10 @@ import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 
 class RecoverAccountUseCase(
     private val userRepo: UserRepository,
@@ -73,8 +76,7 @@ class RecoverAccountUseCase(
         return flow {
             val newKey = cryptoCore.generateNewKeysForUser(
                 backupPassword = backupPassword,
-                userId = userRepo.cachedUserId,
-                keyVersion = nowUTC().epochSeconds
+                userId = userRepo.cachedUserId
             )
             emitAll(logoutUseCase.resetAccount(newKey.encryptedKeyData))
         }
@@ -84,6 +86,8 @@ class RecoverAccountUseCase(
     fun recoverUserAccount(backupPassword: String, key: GeneratedUserKeys): Flow<Unit> {
         return flow {
 
+            // only re-encrypting symmetric key
+            // private asymmetric key is encrypted with symmetric key and keys don't change here
             val newEncryptedKey = try {
                 cryptoCore.reEncryptSymmetricKey(
                     backupPassword = backupPassword,
@@ -97,22 +101,17 @@ class RecoverAccountUseCase(
             // change version
             val newKey = key.encryptedKeyData.copy(
                 encryptedSymmetricKey = newEncryptedKey,
-                version = nowUTC().epochSeconds
+                version = nowUTC().toEpochMilliseconds()
             )
 
             // upload and save key
-            val remoteKey = userKeyRepo.uploadNewUserKey(newKey)
+            val remoteKey = userKeyRepo.uploadNewUserKey(newKey, removeOldKeys = true)
             userKeyRepo.saveUserKeyLocally(remoteKey, key.userPersonalKey)
 
-            // at this point both encryption key is updated
-            // we can delete old key
+            // at this point encryption keys are correct and updated and old keys are removed
+            // we can remove temporary password
 
             config.temporaryBackupPassword = ""
-            try {
-                userKeyRepo.deleteKey(key.encryptedKeyData.id).first()
-            } catch (e: Exception) {
-                // ignore if deleting fail, will be deleted on next login
-            }
 
             emit(Unit)
         }

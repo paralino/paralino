@@ -27,7 +27,7 @@ class CryptoCore(
     suspend fun generateNewKeysForUser(
         backupPassword: String,
         userId: String,
-        keyVersion: Long = nowUTC().epochSeconds,
+        keyVersion: Long = nowUTC().toEpochMilliseconds(),
     ): GeneratedUserKeys {
         val newPersonalKey = getNewSymmetricKey()
         val encryptedPersonalKey = serviceProvider.encryptDataWithPassword(

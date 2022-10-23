@@ -13,16 +13,6 @@ data class UserCryptoKeyRaw constructor(
     val publicKey: String,
     val version: Long
 ) {
-    fun toPostJson(): Map<String, Any?> {
-        return buildMap {
-            put("ownerUserId", ownerUserId)
-            put("encryptedSymmetricKey", encryptedSymmetricKey)
-            put("encryptedPrivateKey", encryptedPrivateKey)
-            put("publicKey", publicKey)
-            put("version", version)
-        }
-    }
-
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): UserCryptoKeyRaw {

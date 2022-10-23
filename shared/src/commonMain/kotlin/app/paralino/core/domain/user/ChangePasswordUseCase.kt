@@ -45,11 +45,11 @@ class ChangePasswordUseCase(
             // change version
             val newKey = oldKey.copy(
                 encryptedSymmetricKey = newEncryptedKey,
-                version = nowUTC().epochSeconds
+                version = nowUTC().toEpochMilliseconds()
             )
 
-            // first upload new key to server as backup
-            val newRemoteKey = userKeyRepository.uploadNewUserKey(newKey)
+            // first upload new key to server as backup, without deleting old keys
+            userKeyRepository.uploadNewUserKey(newKey, removeOldKeys = false)
 
             // change login password
             userRepo.changePassword(
@@ -57,17 +57,12 @@ class ChangePasswordUseCase(
                 newPassword = derivedNewPassword.loginPassword
             )
 
-            // if password is saved successfully we can save the key locally
-            userKeyRepository.saveUserKeyLocally(newRemoteKey, userKeyRepository.personalKey)
+            // if password is changed successfully we can save the new key and delete old ones
+            val newRemoteKey = userKeyRepository.uploadNewUserKey(newKey, removeOldKeys = true)
 
             // at this point both login password and encryption key are updated safely
-            // we can delete old key
-
-            try {
-                userKeyRepository.deleteKey(oldKey.id).first()
-            } catch (e: Exception) {
-                // ignore if deleting fail, will be deleted on next login
-            }
+            // we can save the key locally
+            userKeyRepository.saveUserKeyLocally(newRemoteKey, userKeyRepository.personalKey)
 
             emit(Unit)
         }

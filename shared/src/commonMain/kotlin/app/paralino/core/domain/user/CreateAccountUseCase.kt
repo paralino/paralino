@@ -101,8 +101,7 @@ class CreateAccountUseCase constructor(
     suspend fun createNewKey(backupPassword: String, userId: String): GeneratedUserKeys {
         return cryptoCore.generateNewKeysForUser(
             backupPassword = backupPassword,
-            userId = userId,
-            keyVersion = nowUTC().epochSeconds
+            userId = userId
         )
     }
 

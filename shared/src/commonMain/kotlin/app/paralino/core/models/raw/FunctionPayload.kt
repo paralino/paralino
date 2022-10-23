@@ -119,3 +119,19 @@ data class PlaceEventPayload(
     val placeId: String,
     val enter: Boolean
 )
+
+@Serializable
+data class UpdateUserKeysFunctionData constructor(
+    val userPublicKey: String,
+    val encryptedSymmetricKey: String,
+    val encryptedPrivateKey: String,
+    val keyVersion: Long,
+    val removeOldKeys: Boolean,
+)
+
+@Serializable
+data class AccountResetCryptoKeyPayload constructor(
+    val encryptedSymmetricKey: String,
+    val encryptedPrivateKey: String,
+    val publicKey: String,
+)

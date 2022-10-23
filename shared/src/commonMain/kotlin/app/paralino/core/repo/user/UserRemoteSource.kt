@@ -3,6 +3,7 @@ package app.paralino.core.repo.user
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.mappers.UserMapperCore
+import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserSession
@@ -97,9 +98,18 @@ class UserRemoteSource constructor(
 
     suspend fun resetAccount(keyToPersist: UserCryptoKeyRaw?) {
         blocking {
+
+            val payload = keyToPersist?.let {
+                AccountResetCryptoKeyPayload(
+                    encryptedSymmetricKey = it.encryptedSymmetricKey,
+                    encryptedPrivateKey = it.encryptedPrivateKey,
+                    publicKey = it.publicKey
+                )
+            }
+
             val data = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionResetAccount,
-                data = keyToPersist?.let { BaseRemoteModule.formatter.encodeToString(it) }
+                data = payload?.let { BaseRemoteModule.formatter.encodeToString(it) }
             )
 
             if (!data.isSuccess) {

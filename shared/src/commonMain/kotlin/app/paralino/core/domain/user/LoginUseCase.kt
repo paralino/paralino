@@ -62,8 +62,8 @@ class LoginUseCase constructor(
 
                         // check if keypair is valid by decrypting
                         keyMapper.mapKeyPair(
-                            it,
-                            personalKeyData.asBase64String(cryptoCore.hashProvider)
+                            model = it,
+                            userKey = personalKeyData.asBase64String(cryptoCore.hashProvider)
                         )
 
                         // key is valid
@@ -83,13 +83,20 @@ class LoginUseCase constructor(
                     userRepo.initLocallyAfterSignUp(user, session)
                     throw MissingUserKeyException(false)
                 } else {
-                    keys.filter { it.id != correctPersonalKey.encryptedKeyData.id }.forEach {
-                        try {
-                            userKeyRepository.deleteKey(it.id).first()
-                        } catch (e: Exception) {
-                            // ignore error if key is not deleted
+                    keys.filter { it.id != correctPersonalKey.encryptedKeyData.id }
+                        .takeIf { it.isNotEmpty() }
+                        ?.let {
+                            // we have valid key and old unused keys are on server
+                            // here we notify server to keep currently valid key
+                            try {
+                                userKeyRepository.uploadNewUserKey(
+                                    keyRaw = correctPersonalKey.encryptedKeyData,
+                                    removeOldKeys = true
+                                )
+                            } catch (e: Exception) {
+                                // ignore error if key is not deleted
+                            }
                         }
-                    }
                     keyData = correctPersonalKey
                 }
 

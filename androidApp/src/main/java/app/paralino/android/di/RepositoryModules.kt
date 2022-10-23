@@ -108,7 +108,7 @@ val remoteDataSourceModule = module {
     single { PlacesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { PersonalCodesRemoteSource(get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get(), get(), get()) }
-    single { CryptoUserKeysRemoteSource(get(), get()) }
+    single { CryptoUserKeysRemoteSource(get(), get(), get()) }
     single {
         BackendConfig(
             serverUrl = app.paralino.android.BuildConfig.serverUrl,
