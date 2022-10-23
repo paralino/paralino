@@ -60,9 +60,10 @@ class LocationRemoteSource constructor(
 
                 LocationNodePayload(
                     memberId = it.memberId,
-                    groupId = it.groupId,
+                    memberData = null,
+                    groupKeyVersion = null,
                     mutableData = encryptedData,
-                    memberKeyVersion = memberKey.version
+                    memberKeyVersion = memberKey.version,
                 )
             }
 
