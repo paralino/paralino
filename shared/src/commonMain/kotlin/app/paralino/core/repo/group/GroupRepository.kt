@@ -91,8 +91,10 @@ class GroupRepository constructor(
     }
 
     suspend fun refreshGroupWithMembers(id: String): GroupWithMemberRaw {
-        // TODO refresh and handle keys
-        return getRemoteGroupWithMembers(id).also { local.updateOrCreateGroup(it) }
+        return getRemoteGroupWithMembers(id)
+            .also { cryptoKEKRepo.refreshKeysForGroup(id).first() }
+            .let { handleGroupKeysUpdate(it) }
+            .also { local.updateOrCreateGroup(it) }
     }
 
     private suspend fun getRemoteGroupWithMembers(groupId: String): GroupWithMemberRaw {
