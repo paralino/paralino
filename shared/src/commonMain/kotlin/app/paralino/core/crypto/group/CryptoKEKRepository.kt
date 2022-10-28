@@ -250,7 +250,10 @@ class CryptoKEKRepository(
     }
 
     suspend fun deleteKeysForUser(groupId: String, userId: String) {
-        cachedMemberKeys.value = cachedMemberKeys.value.filter { it.memberUserId != groupId }
+        cachedMemberKeys.value = cachedMemberKeys.value.filter {
+            // remove all keys that were either created by or for userId
+            !(it.memberUserId == userId || it.ownerUserId == userId)
+        }
         local.deleteKeysForUser(groupId, userId)
     }
 

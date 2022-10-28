@@ -72,7 +72,7 @@ interface GroupKeysDao {
     @Query("DELETE FROM group_member_keys WHERE groupId = :groupId")
     suspend fun deleteMemberKeysForGroup(groupId: String)
 
-    @Query("DELETE FROM group_member_keys WHERE groupId = :groupId AND memberUserId = :userId")
+    @Query("DELETE FROM group_member_keys WHERE groupId = :groupId AND (memberUserId = :userId OR ownerUserId = :userId)")
     suspend fun deleteUserFromGroup(groupId: String, userId: String)
 
     @Transaction
