@@ -188,12 +188,12 @@ class CryptoKeyRemoteDataSource(
         groupId: String,
         members: List<MemberModel>,
         myKey: AsymmetricCryptoKeyData,
-        currentSenderKey: Data?
+        currentSenderKey: DecryptedGroupKeyData?
     ) {
         blocking {
 
             // if no key is passed, create new one
-            val newSenderKey = currentSenderKey?.content ?: cryptoCore.getNewSymmetricKey().content
+            val newSenderKey = currentSenderKey?.data?.content ?: cryptoCore.getNewSymmetricKey().content
 
             val keys = members.map {
                 GroupMemberKeyPayload(
@@ -204,7 +204,8 @@ class CryptoKeyRemoteDataSource(
                         myPrivateKey = myKey.privateKey,
                         // encrypt with user public key
                         publicKey = it.publicKey
-                    )
+                    ),
+                    keyVersion = currentSenderKey?.version
                 )
             }
 

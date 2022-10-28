@@ -74,7 +74,8 @@ data class UpdateGroupMemberKeysPayload(
 @Serializable
 data class GroupMemberKeyPayload(
     val userId: String,
-    val encryptedSenderKey: String
+    val encryptedSenderKey: String,
+    val keyVersion: Long? = null
 )
 
 @Serializable
@@ -82,7 +83,8 @@ data class GroupMemberDataPayload(
     val memberId: String,
     val groupKeyVersion: Long,
     val memberData: String,
-    val mutableMemberData: String
+    val mutableMemberData: String,
+    val memberKeyVersion: Long? = null
 )
 
 @Serializable

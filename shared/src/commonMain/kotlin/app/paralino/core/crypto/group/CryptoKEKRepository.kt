@@ -272,7 +272,7 @@ class CryptoKEKRepository(
                     myKey = userKey,
                     // if member key is null, it will be created in next step
                     // this means that this user has no keys yet like if it just added to a group
-                    currentSenderKey = myMemberKey?.data
+                    currentSenderKey = myMemberKey
                 )
             }
             refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
