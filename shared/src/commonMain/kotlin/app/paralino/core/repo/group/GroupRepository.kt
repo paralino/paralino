@@ -187,7 +187,7 @@ class GroupRepository constructor(
         )
             .onEach {
                 val group = local.getGroupWithMembers(groupId).first()
-                updateGroupKeyAndRefresh(group, force = true)?.let {
+                updateGroupAndMemberKeysAndRefresh(group, force = true)?.let {
                     local.updateOrCreateGroup(it)
                 }
             }
@@ -197,7 +197,7 @@ class GroupRepository constructor(
         // TODO handle errors
         logg.tag("tag_crypto_key_group").w("group and member keys updated")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
-        return updateGroupKeyAndRefresh(remoteGroup, force = false)
+        return updateGroupAndMemberKeysAndRefresh(remoteGroup, force = false)
             ?: updateMemberKeyAndRefresh(remoteGroup)
             ?: group
     }
@@ -222,7 +222,7 @@ class GroupRepository constructor(
         return null
     }
 
-    private suspend fun updateGroupKeyAndRefresh(
+    private suspend fun updateGroupAndMemberKeysAndRefresh(
         remoteGroup: UserGroupWithMembers,
         force: Boolean = false,
     ): GroupWithMemberRaw? {
@@ -232,6 +232,8 @@ class GroupRepository constructor(
         logg.tag("tag_crypto_key_group").w("group key is deprecated - rotating: ${remoteGroup.id}")
 
         val places = placesRepo.getPlacesForGroupLocally(remoteGroup.id).first()
+
+        // this will rotate and refresh both group and member keys
         cryptoKEKRepo.rotateAllGroupKeys(remoteGroup, places)
         return getDataOnce(remote = { getRemoteGroupWithMembers(remoteGroup.id) }).first()
     }
