@@ -242,7 +242,7 @@ class CryptoKEKRepository(
         return getDataOnce {
             remote.rotateMemberKeysForGroup(
                 group = group,
-                groupKey = getLatestGroupKey(group.id)!!,
+                groupKey = getGroupKey(group.id, group.ownerPublicKey)!!,
                 myKey = myKey
             )
         }.map { Unit }
