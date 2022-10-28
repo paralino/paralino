@@ -12,9 +12,11 @@ import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupWithMemberRaw
+import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
+import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.NotFoundException
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.*
 class GroupRepository constructor(
     private val local: IGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
+    private val memberLocal: ILocationLocalDataSource,
     private val userRepository: UserRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
@@ -245,6 +248,20 @@ class GroupRepository constructor(
         // this will rotate and refresh both group and member keys
         cryptoKEKRepo.rotateAllGroupKeys(remoteGroup, places)
         return getDataOnce(remote = { getRemoteGroupWithMembers(remoteGroup.id) }).first()
+    }
+
+    suspend fun gotMemberUpdateFromRealtime(member: MemberDocumentRaw) {
+        val memberKey = try {
+            cryptoKEKRepo.getMemberKey(groupId = member.groupId, memberUserId = member.ownerUserId, memberPublicKey = member.ownerPublicKey)
+        } catch (e: Exception) {
+            null
+        }
+
+        if(memberKey == null || member.memberKeyVersion != memberKey.version) {
+            refreshGroupWithMembers(member.groupId)
+        } else {
+            memberLocal.createOrUpdateMembers(member)
+        }
     }
 
     private suspend fun clearGroupLocally(groupId: String) {

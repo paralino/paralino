@@ -4,45 +4,32 @@ import app.paralino.core.config
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
-import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.LocationDataModel
-import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.raw.GroupPlaceRaw
+import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 class LocationRepository constructor(
     val sharingManager: LocationSharingManager,
     private val local: ILocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val realtimeApi: IRealtimeApi,
-    private val groupsRepos: GroupRepository,
     private val placesRepo: PlacesRepository,
     private val locationPerformanceManager: LocationPerformanceManager,
 ) : BaseRepository() {
 
-    fun locationRefresh(groupId: String): Flow<Unit> {
-
-        val locationSubscriptionFlow = remote.listenForMembersLocationUpdates(groupId)
-            .onStart { groupsRepos.refreshGroupWithMembers(groupId) }
-            .onEach { local.createOrUpdateMembers(it) }
-            .catch { logg.e("Error parsing member on map", it) }
-
-        val userMapFocusFlow = locationPerformanceManager.boostOnMapFlow(groupId)
-
-        return combine(
-            locationSubscriptionFlow,
-            userMapFocusFlow
-        ) { _, _ ->
-            Unit
-        }
+    fun listenForMembersLocationUpdates(groupId: String): Flow<MemberDocumentRaw> {
+        return remote.listenForMembersLocationUpdates(groupId)
     }
 
     fun getMembersByUserId(userid: String): Flow<List<MemberModel>> {

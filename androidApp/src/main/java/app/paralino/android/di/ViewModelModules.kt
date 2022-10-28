@@ -32,6 +32,7 @@ import app.paralino.android.ui.settings.editprofile.EditProfileViewModel
 import app.paralino.android.ui.settings.emailchange.ChangeEmailViewModel
 import app.paralino.android.ui.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.android.ui.share.SharingViewModel
+import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
@@ -42,7 +43,7 @@ import org.koin.dsl.module
 
 val viewModelModules = module {
     viewModel { DashboardViewModel(androidApplication(), get(), get(), get(), get(), get()) }
-    viewModel { MapViewModel(androidApplication(), get(), get(), get()) }
+    viewModel { MapViewModel(androidApplication(), get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { (startScreenType: Any) -> LoginViewModel(androidApplication(), get(), get(), get(), startScreenType as LoginScreenUiType) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
@@ -98,11 +99,12 @@ val coreModule = module {
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
+    factory { LocationRefreshUseCase(get(), get(), get()) }
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get(), get()) }
-    single { GroupRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
-    single { LocationRepository(get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationRepository(get(), get(), get(), get(), get(), get()) }
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
 }

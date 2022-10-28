@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.config
+import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
@@ -17,10 +18,11 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MapHomeViewModel(
+class MapHomeViewModel constructor(
     private val locationRepo: LocationRepository,
     private val sharingManager: LocationSharingManager,
     private val groupRepo: GroupRepository,
+    private val locationRefreshUseCase: LocationRefreshUseCase,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -36,7 +38,7 @@ class MapHomeViewModel(
     val locationRefreshSubscription = uiState.map { it.data?.groupId }
         .filterNotNull()
         .distinctUntilChanged()
-        .flatMapLatest { locationRepo.locationRefresh(it).mapToPayload { Unit } }
+        .flatMapLatest { locationRefreshUseCase.locationRefresh(it).mapToPayload { Unit } }
 
 
     init {

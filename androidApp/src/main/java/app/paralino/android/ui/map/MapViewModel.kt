@@ -3,6 +3,7 @@ package app.paralino.android.ui.map
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
@@ -14,9 +15,10 @@ class MapViewModel constructor(
     private val locationRepo: LocationRepository,
     private val sharingManager: LocationSharingManager,
     private val groupRepo: GroupRepository,
+    private val locationRefreshUseCase: LocationRefreshUseCase
 ) : AndroidViewModel(app) {
 
-    private val coreVM = MapHomeViewModel(locationRepo, sharingManager, groupRepo, viewModelScope)
+    private val coreVM = MapHomeViewModel(locationRepo, sharingManager, groupRepo, locationRefreshUseCase, viewModelScope)
 
     val uiState = coreVM.uiState
     val locationRefreshSubscription = coreVM.locationRefreshSubscription
