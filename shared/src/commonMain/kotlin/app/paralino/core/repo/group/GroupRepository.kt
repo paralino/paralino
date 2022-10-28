@@ -206,17 +206,21 @@ class GroupRepository constructor(
         remoteGroup: UserGroupWithMembers,
         force: Boolean = false,
     ): GroupWithMemberRaw? {
-        val memberMeRemote =
-            remoteGroup.members.firstOrNull { it.userId == userRepository.cachedUserId }
 
-        if (memberMeRemote?.shouldRotateKeys == true || force) {
+        val shouldRotateKeys = remoteGroup.members.any {
+            // check if any of current user member documents have key rotate flag set
+            it.userId == userRepository.cachedUserId && it.shouldRotateKeys
+        }
+
+        if (shouldRotateKeys || force) {
             logg.tag("tag_crypto_key_group_member")
-                .w("group member key is deprecated - rotating: ${remoteGroup.id} - ${memberMeRemote?.userId}")
+                .w("group member key is deprecated - rotating: ${remoteGroup.id}")
             cryptoKEKRepo.rotateAllMemberKeys(remoteGroup)
             return getDataOnce(remote = { getRemoteGroupWithMembers(remoteGroup.id) }).first()
         } else {
             logg.tag("tag_crypto_key_group_member")
-                .w("not rotating member keys: ${remoteGroup.id} - ${memberMeRemote?.userId}")
+                .w("not rotating member keys, create missing instead: ${remoteGroup.id}")
+            cryptoKEKRepo.createMissingMemberKeys(remoteGroup)
         }
 
         return null

@@ -2,10 +2,12 @@ package app.paralino.core.crypto.group
 
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.DecryptedGroupKeyData
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.raw.*
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
@@ -66,6 +68,9 @@ class CryptoKeyRemoteDataSource(
 
             val newSenderKey = cryptoCore.getNewSymmetricKey().content
 
+            // update data for every user device
+            // this way any device from user that gets to update the keys will update data for all other devices
+            // no need for other devices to do the same since encryption key is unique per user
             val memberData = group.members.filter { it.userId == config.userId }.map {
                 GroupMemberDataPayload(
                     memberId = it.id,
@@ -173,6 +178,52 @@ class CryptoKeyRemoteDataSource(
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to update group keys",
+                    Exception(response.stderr)
+                )
+            }
+        }
+    }
+
+    suspend fun createMemberKeysForSpecificMembers(
+        groupId: String,
+        members: List<MemberModel>,
+        myKey: AsymmetricCryptoKeyData,
+        currentSenderKey: Data?
+    ) {
+        blocking {
+
+            // if no key is passed, create new one
+            val newSenderKey = currentSenderKey?.content ?: cryptoCore.getNewSymmetricKey().content
+
+            val keys = members.map {
+                GroupMemberKeyPayload(
+                    userId = it.userId,
+                    encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
+                        data = newSenderKey,
+                        // sign with owner private key
+                        myPrivateKey = myKey.privateKey,
+                        // encrypt with user public key
+                        publicKey = it.publicKey
+                    )
+                )
+            }
+
+            val payload = UpdateGroupMemberKeysPayload(
+                groupId = groupId,
+                userPublicKey = myKey.publicKey,
+                encryptedSenderKeys = keys,
+                memberData = emptyList()
+            )
+
+            val response = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionUpdateGroupMemberKeysID,
+                data = BaseRemoteModule.formatter.encodeToString(payload)
+            )
+
+            if (!response.isSuccess) {
+                throw BaseRemoteException.fromCode(
+                    null,
+                    "Unable to update missing group member keys",
                     Exception(response.stderr)
                 )
             }

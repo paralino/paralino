@@ -248,6 +248,39 @@ class CryptoKEKRepository(
         }.map { Unit }
     }
 
+    suspend fun createMissingMemberKeys(remoteGroup: UserGroupWithMembers) {
+
+        // get ids of members that already have key created by current user
+        val memberKeysCreatedByMe = getMemberKeys().filter {
+            it.groupId == remoteGroup.id && it.ownerUserId == userRepository.cachedUserId
+        }.map { it.memberUserId }
+
+        // get all other members from group that are missing key
+        val membersThatNeedKeyUpdate = remoteGroup.members.filter { member ->
+            !memberKeysCreatedByMe.contains(member.userId)
+        }
+
+        if(memberKeysCreatedByMe.isNotEmpty()) {
+            logg.tag("tag_crypto_key_group_member").d("Creating missing member keys for users (${membersThatNeedKeyUpdate.map { it.userId }}) in group ${remoteGroup.id}")
+            val userKey = userKeyRepository.latestKeyPair()
+            val myMemberKey =
+                getMemberKey(groupId = remoteGroup.id, memberUserId = userRepository.cachedUserId)
+            triggerRemoteOnly {
+                remote.createMemberKeysForSpecificMembers(
+                    groupId = remoteGroup.id,
+                    members = membersThatNeedKeyUpdate,
+                    myKey = userKey,
+                    // if member key is null, it will be created in next step
+                    // this means that this user has no keys yet like if it just added to a group
+                    currentSenderKey = myMemberKey?.data
+                )
+            }
+            refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
+        } else {
+            logg.tag("tag_crypto_key_group_member").d("No missing member keys for group ${remoteGroup.id}")
+        }
+    }
+
     suspend fun deleteAllKeysForGroup(groupId: String) {
         cachedGroupKeys.value = cachedGroupKeys.value.filter { it.groupId != groupId }
         cachedMemberKeys.value = cachedMemberKeys.value.filter { it.groupId != groupId }
