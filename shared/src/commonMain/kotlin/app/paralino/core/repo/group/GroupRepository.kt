@@ -158,11 +158,12 @@ class GroupRepository constructor(
                     groupId,
                     code,
                     userKeyRepo.latestKeyPair()
-                )
+                ).also {
+                    cryptoKEKRepo.refreshKeysForGroup(groupId).first()
+                }
             },
             localUpdate = {
                 local.updateOrCreateGroup(it)
-                    .also { cryptoKEKRepo.refreshKeysForGroup(groupId).first() }
             }
         ).map { it.group }
     }
