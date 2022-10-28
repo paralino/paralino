@@ -11,6 +11,7 @@ import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.*
 
 class CryptoKEKRepository(
@@ -18,6 +19,7 @@ class CryptoKEKRepository(
     private val remote: CryptoKeyRemoteDataSource,
     private val local: ICryptoKeyLocalDataSource,
     private val userKeyRepository: CryptoUserKeyRepository,
+    private val userRepository: UserRepository,
     private val cryptoCore: CryptoCore
 ) : BaseRepository() {
 
@@ -194,8 +196,11 @@ class CryptoKEKRepository(
         memberPublicKey: String
     ): DecryptedGroupKeyData? {
         logg.tag("tag_crypto_key_group_member").d("member key count: ${cachedMemberKeys.value.size}")
+
+        val currentUserId = userRepository.cachedUserId
         val keyRaw = getMemberKeys()
-            .filter { it.groupId == groupId && it.ownerUserId == memberUserId }
+            // filter keys that memberUserId created for current user
+            .filter { it.groupId == groupId && it.ownerUserId == memberUserId && it.memberUserId == currentUserId }
             .maxByOrNull { it.version }
             ?: return null
 

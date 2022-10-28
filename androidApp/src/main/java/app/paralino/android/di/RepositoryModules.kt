@@ -77,7 +77,7 @@ val cryptoModule = module {
     single<ICryptoHashProvider> { get<CryptoHashProvider>() }
     single<ICryptoKeyProvider> { get<CryptoKeyProvider>() }
     single { CryptoCore(get(), get(), get()) }
-    single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
+    single { CryptoKEKRepository(get(), get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get(), get()) }
 }
 
