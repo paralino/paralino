@@ -98,8 +98,7 @@ class GroupRepository constructor(
             triggerRemoteOnly { remote.getGroupWithMembers(groupId) }
         } catch (e: Exception) {
             if (e.asRemoteException() is NotFoundException) {
-                local.deleteGroup(groupId)
-                cryptoKEKRepo.deleteAllKeysForGroup(groupId)
+                clearGroupLocally(groupId)
             }
             throw e
         }
@@ -133,8 +132,7 @@ class GroupRepository constructor(
                 remote.deleteGroup(id)
             },
             localUpdate = {
-                local.deleteGroup(id)
-                cryptoKEKRepo.deleteAllKeysForGroup(id)
+                clearGroupLocally(id)
             }
         )
     }
@@ -146,8 +144,7 @@ class GroupRepository constructor(
                 remote.removeUserFromGroup(group, userRepository.cachedUserId)
             },
             localUpdate = {
-                local.deleteGroup(id)
-                cryptoKEKRepo.deleteAllKeysForGroup(id)
+                clearGroupLocally(id)
             }
         )
     }
@@ -239,8 +236,15 @@ class GroupRepository constructor(
         return getDataOnce(remote = { getRemoteGroupWithMembers(remoteGroup.id) }).first()
     }
 
+    private suspend fun clearGroupLocally(groupId: String) {
+        local.deleteGroup(groupId)
+        placesRepo.deleteLocallyForGroup(groupId)
+        cryptoKEKRepo.deleteAllKeysForGroup(groupId)
+    }
+
     suspend fun clear() {
         local.clearAll()
+        placesRepo.clear()
     }
 
 }
