@@ -12,6 +12,7 @@ import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupWithMemberRaw
+import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.places.PlacesRepository
@@ -27,7 +28,8 @@ class GroupRepository constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val groupMapperCore: GroupMapperCore,
-    private val placesRepo: PlacesRepository
+    private val placesRepo: PlacesRepository,
+    private val locationSharingManager: LocationSharingManager
 ) : BaseRepository() {
 
     fun getAllGroups(): Flow<List<UserGroup>> {
@@ -246,6 +248,7 @@ class GroupRepository constructor(
         local.deleteGroup(groupId)
         placesRepo.deleteLocallyForGroup(groupId)
         cryptoKEKRepo.deleteAllKeysForGroup(groupId)
+        locationSharingManager.stopSharing(groupId)
     }
 
     suspend fun clear() {
