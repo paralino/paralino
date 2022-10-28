@@ -79,12 +79,13 @@ class MemberMapperCore constructor(
 
         // data encrypted with user senderKey DEK
         val locationData = model.mutableData?.takeIf { it.isNotBlank() }?.let {
-            val data = cryptoCore.decryptDataWithKey(
-                data = it,
-                key = memberKey?.data?.content
-                    ?: throw MissingMemberKeyException(model.groupId, model.ownerUserId)
-            )
-            data.takeIf { it.isNotBlank() }?.let {
+            val data = memberKey?.data?.content?.let { it1 ->
+                cryptoCore.decryptDataWithKey(
+                    data = it,
+                    key = it1
+                )
+            }
+            data?.takeIf { it.isNotBlank() }?.let {
                 BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
             }
         }
