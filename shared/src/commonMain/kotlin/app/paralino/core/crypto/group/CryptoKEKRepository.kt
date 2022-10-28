@@ -260,7 +260,7 @@ class CryptoKEKRepository(
             !memberKeysCreatedByMe.contains(member.userId)
         }
 
-        if(memberKeysCreatedByMe.isNotEmpty()) {
+        if(membersThatNeedKeyUpdate.isNotEmpty()) {
             logg.tag("tag_crypto_key_group_member").d("Creating missing member keys for users (${membersThatNeedKeyUpdate.map { it.userId }}) in group ${remoteGroup.id}")
             val userKey = userKeyRepository.latestKeyPair()
             val myMemberKey =
