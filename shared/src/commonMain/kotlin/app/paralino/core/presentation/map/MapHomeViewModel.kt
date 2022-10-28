@@ -46,7 +46,7 @@ class MapHomeViewModel(
                     flowOf(Payload.Loading)
                 } else {
                     combine(
-                        locationRepo.getLocationsForGroup(it),
+                        groupRepo.getGroupWithMembersLocally(it),
                         getSharingContract(),
                         focusedMarkerId
                     ) { group, sharingStatus, focusedMarkerId ->

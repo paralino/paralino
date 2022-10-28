@@ -45,10 +45,6 @@ class LocationRepository constructor(
         }
     }
 
-    fun getLocationsForGroup(groupId: String): Flow<UserGroupWithMembers> {
-        return groupsRepos.getGroupWithMembersLocally(groupId)
-    }
-
     fun getMembersByUserId(userid: String): Flow<List<MemberModel>> {
         return local.getMemberModelsForUser(userid)
     }
