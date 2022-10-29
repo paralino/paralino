@@ -4,43 +4,22 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.models.BackendDatabaseType
-import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.raw.LocationNodePayload
-import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.UpdateLocationFunctionData
-import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 
 class LocationRemoteSource constructor(
-    private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
-    private val realtimeApi: IRealtimeApi,
     private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository,
 ) {
-
-    fun listenForMembersLocationUpdates(groupId: String): Flow<MemberDocumentRaw> {
-        val event =
-            "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents"
-        return realtimeApi.subscribeWithFilter(
-            channel = event,
-            filters = listOf("$event.*.create", "$event.*.update")
-        ).map {
-            // TODO also listen for delete so we can remove member right away and rotate keys
-            MemberDocumentRaw.from(it.payload)
-        }
-    }
 
     suspend fun saveCurrentLocation(
         ids: List<MemberGroupId>,

@@ -261,6 +261,10 @@ class GroupRepository constructor(
         return getDataOnce(remote = { getRemoteGroupWithMembers(remoteGroup.id) }).first()
     }
 
+    suspend fun gotMemberDeleteFromRealtime(groupId: String) {
+        refreshGroupWithMembers(groupId)
+    }
+
     suspend fun gotMemberUpdateFromRealtime(member: MemberDocumentRaw) {
         val memberKey = try {
             cryptoKEKRepo.getMemberKey(groupId = member.groupId, memberUserId = member.ownerUserId, memberPublicKey = member.ownerPublicKey)
@@ -276,10 +280,10 @@ class GroupRepository constructor(
     }
 
     private suspend fun clearGroupLocally(groupId: String) {
+        locationSharingManager.stopSharing(groupId)
         local.deleteGroup(groupId)
         placesRepo.deleteLocallyForGroup(groupId)
         cryptoKEKRepo.deleteAllKeysForGroup(groupId)
-        locationSharingManager.stopSharing(groupId)
     }
 
     suspend fun clear() {

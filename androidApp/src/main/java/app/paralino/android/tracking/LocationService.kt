@@ -7,6 +7,7 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import app.paralino.android.AppClass
 import app.paralino.android.notification.LocationNotificationHandler
+import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
@@ -36,6 +37,7 @@ class LocationService : Service() {
     private val locationInitHandler: LocationInitHandler by inject()
     private val locationSharingManager: LocationSharingManager by inject()
     private val locationRepository: LocationRepository by inject()
+    private val sharingRealtimeEvents: RealtimeEventsWhileSharingUseCase by inject()
     private val locationStatus: ILocationStatusProvider by inject()
     private val placesRepository: PlacesRepository by inject()
     private val geofenceManager: IGeofenceManager by inject()
@@ -123,7 +125,7 @@ class LocationService : Service() {
             }
             .launchIn(serviceDefaultScope)
 
-        locationRepository.listenForEventsWhileSharing()
+        sharingRealtimeEvents.listenForEventsWhileSharing()
             .launchIn(serviceDefaultScope)
     }
 
