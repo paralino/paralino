@@ -75,12 +75,23 @@ class GroupRepository constructor(
         )
     }
 
+    suspend fun scheduleRefreshAllGroupsWithPlaces(key: String = "groups_refresh", time: Long = 15_000) {
+        getDataOnce(
+            local = flowOf(key),
+            remotePreference = RemotePreference.CACHE(key = key, timeMillis = time)
+        ) {
+            refreshAllGroupsWithPlaces()
+        }
+            .catch {  }
+            .collect()
+    }
+
     suspend fun refreshAllGroupsWithPlaces() {
         refreshAllGroups()
         placesRepo.refreshAllPlaces()
     }
 
-    suspend fun refreshAllGroups() {
+    private suspend fun refreshAllGroups() {
         triggerRemoteOnly {
             logg.tag("tag_crypto_key").w("refreshing all groups")
             remote.getAllGroups()

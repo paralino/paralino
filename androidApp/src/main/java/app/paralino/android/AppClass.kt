@@ -27,14 +27,12 @@ import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.LocationConditionStatus
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -62,6 +60,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     private val launcher: PreCheckControl by inject()
     private val userRepo: UserRepository by inject()
+    private val groupRepo: GroupRepository by inject()
     private val sessionMonitor: UserSessionMonitor by inject()
     private val logoutUseCase: LogoutUseCase by inject()
     private val connectionStatusProvider: IConnectionStatusProvider by inject()
@@ -70,6 +69,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     val locationStatus: ILocationStatusProvider by inject()
 
     val isForeground get() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+    private var wasInBackground = false
 
     override fun onCreate() {
         super<Application>.onCreate()
@@ -130,9 +130,19 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     override fun onStart(owner: LifecycleOwner) {
         logg.tag("app_state").v("App is in foreground")
         updateLocationStatus()
+
+        if(wasInBackground) {
+            wasInBackground = false
+            userSessionIOScope.launch {
+                groupRepo.scheduleRefreshAllGroupsWithPlaces(
+                    time = 60_000
+                )
+            }
+        }
     }
 
     override fun onStop(owner: LifecycleOwner) {
+        wasInBackground = true
         logg.tag("app_state").v("App is in background")
     }
 

@@ -26,7 +26,7 @@ class DashboardViewModel(
     val events = coreVM.events
 
     fun sendEmailVerification() = coreVM.sendEmailVerification()
-    fun loadDashboard() = coreVM.loadDashboard()
+    fun refreshGroups() = coreVM.refreshGroups()
     fun stopTracking(groupId: String) = coreVM.stopTracking(groupId)
 
 }

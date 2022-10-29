@@ -60,6 +60,11 @@ fun DashboardScreen(
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     val context = LocalContext.current
+
+    LaunchedEffect(key1 = context) {
+        vm.refreshGroups()
+    }
+
     LaunchedEffect(key1 = context) {
         vm.events.collectLatest { event ->
             when (event) {

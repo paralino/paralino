@@ -32,14 +32,23 @@ class DashboardViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
+        refreshGroups()
         loadDashboard()
+    }
+
+    fun refreshGroups() {
+        coroutineScope.launch {
+            try {
+                groupRepository.scheduleRefreshAllGroupsWithPlaces()
+            } catch (e: Exception) { }
+        }
     }
 
     fun loadDashboard() {
         combine(
             userRepo.localUser,
             locationStatusProvider.status,
-            groupRepository.getAllGroups(),
+            groupRepository.getAllGroupsLocally(),
             placesRepo.hasAnyPlace(),
             locationSharing.allContractsFlow.map { it.data }.filterNotNull()
         ) { user, location, groups, hasPlace, sharing ->
