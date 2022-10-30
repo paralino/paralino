@@ -67,6 +67,7 @@ data class GroupKeysPayload(
 data class UpdateGroupMemberKeysPayload(
     val groupId: String,
     val userPublicKey: String,
+    val deleteOldKeys: Boolean,
     val encryptedSenderKeys: List<GroupMemberKeyPayload>,
     val memberData: List<GroupMemberDataPayload>
 )
