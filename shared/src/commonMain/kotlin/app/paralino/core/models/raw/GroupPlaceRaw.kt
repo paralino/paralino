@@ -9,18 +9,10 @@ data class GroupPlaceRaw constructor(
     val id: String,
     val groupId: String,
     val ownerUserId: String,
-    val ownerPublicKey: String,
     val keyVersion: Long,
     val private: Boolean,
     val data: String = ""
 ) {
-
-    fun toPostJson(): Map<String, Any> {
-        return buildMap {
-            put("private", private)
-            put("data", data)
-        }
-    }
 
     companion object {
         @Suppress("UNCHECKED_CAST")
@@ -29,7 +21,6 @@ data class GroupPlaceRaw constructor(
                 id = map["\$id"] as String,
                 groupId = map["groupId"] as String,
                 ownerUserId = map["ownerUserId"] as String,
-                ownerPublicKey = map["ownerPublicKey"] as String,
                 keyVersion = (map["keyVersion"] as Number).toLong(),
                 private = map["private"] as Boolean,
                 data = map["data"] as String,

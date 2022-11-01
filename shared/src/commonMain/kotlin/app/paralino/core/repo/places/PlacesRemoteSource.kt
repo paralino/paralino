@@ -34,7 +34,6 @@ class PlacesRemoteSource(
         groupId: String,
         private: Boolean,
         data: GroupPlaceData,
-        myKey: AsymmetricCryptoKeyData
     ): GroupPlacesWithSettingsRaw {
         return blocking {
             val groupKey = cryptoKEKRepo.getLatestGroupKey(groupId)!!
@@ -46,7 +45,6 @@ class PlacesRemoteSource(
 
             val payload = CreatePlacePayload(
                 groupId = groupId,
-                ownerPublicKey = myKey.publicKey,
                 keyVersion = groupKey.version,
                 private = private,
                 data = encryptedData

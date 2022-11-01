@@ -8,7 +8,6 @@ data class GroupPlace constructor(
     val id: String,
     val groupId: String,
     val ownerUserId: String,
-    val ownerPublicKey: String,
     val keyVersion: Long,
     val private: Boolean,
     val data: GroupPlaceData

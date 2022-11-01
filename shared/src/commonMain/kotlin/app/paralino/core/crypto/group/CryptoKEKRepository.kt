@@ -137,9 +137,9 @@ class CryptoKEKRepository(
         return getGroupKeys().filter { it.groupId == groupId }.maxByOrNull { it.version }?.version
     }
 
-    suspend fun getLatestGroupKey(groupId: String): DecryptedGroupKeyData? {
+    suspend fun getLatestGroupKey(groupId: String, keyVersion: Long? = null): DecryptedGroupKeyData? {
         val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return null
-        return getGroupKey(groupId, ownerPublicKey)
+        return getGroupKey(groupId, ownerPublicKey, keyVersion)
     }
 
     suspend fun getGroupKey(

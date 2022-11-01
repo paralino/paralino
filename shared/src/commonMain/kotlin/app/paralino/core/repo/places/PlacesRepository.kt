@@ -86,8 +86,7 @@ class PlacesRepository constructor(
                 remote.createPlace(
                     groupId = groupId,
                     data = data,
-                    private = private,
-                    myKey = userKeyRepo.latestKeyPair()
+                    private = private
                 )
             },
             localUpdate = { local.updateOrCreatePlace(it) }

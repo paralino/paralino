@@ -105,7 +105,6 @@ data class LocationNodePayload constructor(
 @Serializable
 data class CreatePlacePayload(
     val groupId: String,
-    val ownerPublicKey: String,
     val keyVersion: Long,
     val private: Boolean,
     val data: String
