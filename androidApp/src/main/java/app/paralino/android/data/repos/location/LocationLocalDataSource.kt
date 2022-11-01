@@ -59,8 +59,12 @@ class LocationLocalDataSource(
             }
     }
 
-    override suspend fun memberCountInGroup(groupId: String): Int {
-        return dao.memberCountInGroup(groupId)
+    override fun getMemberCountInGroup(groupId: String): Flow<Int> {
+        return dao.getMemberCountInGroup(groupId)
+    }
+
+    override suspend fun getMemberCountInGroupOnce(groupId: String): Int {
+        return dao.getMemberCountInGroupOnce(groupId)
     }
 
     override suspend fun getUserMemberIds(userId: String, groupId: String): List<String> {

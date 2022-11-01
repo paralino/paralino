@@ -8,10 +8,7 @@ import app.paralino.core.repo.group.IGroupLocalDataSource
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import app.paralino.android.data.mappers.GroupsMapperLocal
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 class UserGroupLocalDataSource constructor(
     private val dao: UserGroupDao,
@@ -36,7 +33,9 @@ class UserGroupLocalDataSource constructor(
     override fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
             .filterNotNull()
-            .map { mapper.local2Core(it, memberLocal.memberCountInGroup(groupId)) }
+            .combine(memberLocal.getMemberCountInGroup(groupId)) { group, memberCount ->
+                mapper.local2Core(group, memberCount)
+            }
     }
 
     override fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
@@ -54,8 +53,20 @@ class UserGroupLocalDataSource constructor(
 
     override fun getAllGroups(): Flow<List<UserGroup>> {
         return dao.getAllGroups()
+            .flatMapLatest { groups ->
+                if(groups.isEmpty()) {
+                    flowOf(emptyList())
+                } else {
+                    val flows = groups.map { group ->
+                        memberLocal.getMemberCountInGroup(group.id)
+                            .map { group to it }
+                    }
+                    combine(flows) {
+                        it.map { mapper.local2Core(it.first, it.second) }
+                    }
+                }
+            }
             .distinctFlowOfList()
-            .map { it.map { mapper.local2Core(it, memberLocal.memberCountInGroup(it.id)) } }
             .map { it.sortedBy { it.name } }
     }
 

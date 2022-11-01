@@ -44,7 +44,7 @@ class DashboardViewModel(
         }
     }
 
-    fun loadDashboard() {
+    private fun loadDashboard() {
         combine(
             userRepo.localUser,
             locationStatusProvider.status,

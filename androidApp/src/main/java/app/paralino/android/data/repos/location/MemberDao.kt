@@ -33,7 +33,10 @@ interface MemberDao {
     fun getLocationsForGroup(groupId: String): Flow<List<MemberEntity>>
 
     @Query("SELECT COUNT(:groupId) FROM members WHERE groupId = :groupId")
-    suspend fun memberCountInGroup(groupId: String): Int
+    fun getMemberCountInGroup(groupId: String): Flow<Int>
+
+    @Query("SELECT COUNT(:groupId) FROM members WHERE groupId = :groupId")
+    suspend fun getMemberCountInGroupOnce(groupId: String): Int
 
     @Query("SELECT id FROM members WHERE userId = :userId AND groupId = :groupId")
     suspend fun getUserMemberIds(userId: String, groupId: String): List<String>
