@@ -8,7 +8,7 @@ import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.utils.IDeviceStatusProvider
+import app.paralino.core.utils.IDeviceApiProvider
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.nowUTC
@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 class LocationPerformanceManager constructor(
     private val documentApi: IDocumentsApi,
     val scope: ICoroutineScopeProvider,
-    val deviceStatus: IDeviceStatusProvider,
+    val deviceStatus: IDeviceApiProvider,
 ) : BaseRepository() {
 
     private val _locationPerformanceType = MutableStateFlow(LocationPerformanceType.BALANCED)

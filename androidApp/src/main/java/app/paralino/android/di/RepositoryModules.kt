@@ -43,13 +43,13 @@ import app.paralino.android.data.repos.user.UserLocalDataSource
 import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.remote.appwrite.*
 import app.paralino.android.utils.ConnectionStatusProvider
-import app.paralino.android.utils.DeviceStatusProvider
+import app.paralino.android.utils.DeviceApiProvider
 import app.paralino.android.utils.LocationStatusProvider
 import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.places.IPlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.user.IPushProviderManager
-import app.paralino.core.utils.IDeviceStatusProvider
+import app.paralino.core.utils.IDeviceApiProvider
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -129,7 +129,7 @@ val coreDependencyModules = module {
     single<ICoroutineScopeProvider> { androidApplication() as AppClass }
     single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
     single<ILocationStatusProvider> { LocationStatusProvider(androidApplication() as AppClass) }
-    single<IDeviceStatusProvider> { DeviceStatusProvider(androidApplication() as AppClass) }
+    single<IDeviceApiProvider> { DeviceApiProvider(androidApplication() as AppClass) }
     single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
 
     single<IUserApi> { UserApi(get()) }

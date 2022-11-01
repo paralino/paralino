@@ -8,7 +8,7 @@ import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.IDeviceStatusProvider
+import app.paralino.core.utils.IDeviceApiProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onEach
@@ -21,7 +21,7 @@ class LogoutUseCase(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val codeRepo: PersonalCodesRepository,
     private val pushManager: IPushProviderManager,
-    private val deviceStatus: IDeviceStatusProvider
+    private val deviceStatus: IDeviceApiProvider
 ) {
 
     fun logout(): Flow<Unit> {

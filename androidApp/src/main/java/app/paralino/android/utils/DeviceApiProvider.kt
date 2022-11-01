@@ -4,14 +4,19 @@ import androidx.work.WorkManager
 import androidx.work.await
 import app.paralino.android.AppClass
 import app.paralino.android.utils.extensions.batterLevel
-import app.paralino.core.utils.IDeviceStatusProvider
+import app.paralino.core.utils.IDeviceApiProvider
 import loge
+import java.util.UUID
 
-class DeviceStatusProvider(
+class DeviceApiProvider(
     private val appClass: AppClass
-): IDeviceStatusProvider {
+): IDeviceApiProvider {
+
     override val batteryLevel: Int
         get() = appClass.batterLevel
+
+    override val randomUUID: String
+        get() = UUID.randomUUID().toString()
 
     override suspend fun logout() {
         try {
