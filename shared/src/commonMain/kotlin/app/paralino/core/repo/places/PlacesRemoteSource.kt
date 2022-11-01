@@ -36,7 +36,7 @@ class PlacesRemoteSource(
         data: GroupPlaceData,
     ): GroupPlacesWithSettingsRaw {
         return blocking {
-            val groupKey = cryptoKEKRepo.getLatestGroupKey(groupId)!!
+            val groupKey = cryptoKEKRepo.getGroupKey(groupId, keyVersion = null)!!
 
             val encryptedData = cryptoCore.encryptModel(
                 data = data,
