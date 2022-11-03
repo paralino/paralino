@@ -27,34 +27,38 @@ class CryptoKeyRemoteDataSource(
 
     suspend fun getAllGroupKeys(): List<GroupCryptoKeyDataRaw> {
         return blocking {
-            api.getDocumentsFor(BackendDatabaseType.KEYS, remoteConfig.resourceIds.collectionGroupKeysID)
-                .map { it.parseGroupKey() }
+            api.listAllDocuments(
+                databaseType = BackendDatabaseType.KEYS,
+                collectionId = remoteConfig.resourceIds.collectionGroupKeysID
+            ).map { it.parseGroupKey() }
         }
     }
 
     suspend fun getGroupKeyForGroup(groupId: String): List<GroupCryptoKeyDataRaw> {
         return blocking {
-            api.getDocumentsFor(
+            api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
                 collectionId = remoteConfig.resourceIds.collectionGroupKeysID,
-                keyValue = arrayOf("groupId" to groupId)
+                keyValues = listOf("groupId" to groupId)
             ).map { it.parseGroupKey() }
         }
     }
 
     suspend fun getAllGroupMemberKeys(): List<GroupMemberCryptoKeyDataRaw> {
         return blocking {
-            api.getDocumentsFor(BackendDatabaseType.KEYS, remoteConfig.resourceIds.collectionGroupMembersKeysID)
-                .map { it.parseGroupMemberKey() }
+            api.listAllDocuments(
+                databaseType = BackendDatabaseType.KEYS,
+                collectionId = remoteConfig.resourceIds.collectionGroupMembersKeysID
+            ).map { it.parseGroupMemberKey() }
         }
     }
 
     suspend fun getAllGroupMemberKeysForGroup(groupId: String): List<GroupMemberCryptoKeyDataRaw> {
         return blocking {
-            api.getDocumentsFor(
-                BackendDatabaseType.KEYS,
-                remoteConfig.resourceIds.collectionGroupMembersKeysID,
-                "groupId" to groupId
+            api.listAllDocuments(
+                databaseType = BackendDatabaseType.KEYS,
+                collectionId = remoteConfig.resourceIds.collectionGroupMembersKeysID,
+                keyValues = listOf("groupId" to groupId)
             ).map { it.parseGroupMemberKey() }
         }
     }

@@ -77,10 +77,10 @@ class PlacesRemoteSource(
             ).parsePlace()
 
             val settings = try {
-                api.getDocumentsFor(
+                api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
                     collectionId = BackendResourceIDs.collectionPlacesSettingsID,
-                    "placeId" to placeId
+                    keyValues = listOf("placeId" to placeId)
                 ).first().parsePlaceSettings()
             } catch (e: Exception) {
                 null
@@ -95,16 +95,16 @@ class PlacesRemoteSource(
 
     suspend fun getPlacesForGroup(groupId: String): List<GroupPlacesWithSettingsRaw> {
         return blocking {
-            val places = api.getDocumentsFor(
+            val places = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = BackendResourceIDs.collectionPlacesID,
-                "groupId" to groupId
+                keyValues = listOf("groupId" to groupId)
             ).map { it.parsePlace() }
 
-            val settings = api.getDocumentsFor(
+            val settings = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = BackendResourceIDs.collectionPlacesSettingsID,
-                "groupId" to groupId
+                keyValues = listOf("groupId" to groupId)
             ).map { it.parsePlaceSettings() }
 
             places.map { place ->
@@ -118,14 +118,16 @@ class PlacesRemoteSource(
 
     suspend fun getAllPlaces(): List<GroupPlacesWithSettingsRaw> {
         return blocking {
-            val places = api.getDocuments(
+            val places = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
-                remoteConfig.resourceIds.collectionPlacesID
+                collectionId = remoteConfig.resourceIds.collectionPlacesID
             ).map { it.parsePlace() }
-            val settings = api.getDocumentsFor(
+
+            val settings = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
-                remoteConfig.resourceIds.collectionPlacesSettingsID
+                collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID
             ).map { it.parsePlaceSettings() }
+
             places.map { place ->
                 GroupPlacesWithSettingsRaw(
                     place = place,

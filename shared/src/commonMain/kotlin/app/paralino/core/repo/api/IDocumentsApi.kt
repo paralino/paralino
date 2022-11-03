@@ -20,8 +20,19 @@ interface IDocumentsApi {
 
     suspend fun getDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String): Map<String, Any>
 
-    suspend fun getDocuments(databaseType: BackendDatabaseType, collectionId: String): List<Map<String, Any>>
-    suspend fun getDocumentsFor(databaseType: BackendDatabaseType, collectionId: String, vararg keyValue: Pair<String, Any>): List<Map<String, Any>>
+    suspend fun listAllDocuments(
+        databaseType: BackendDatabaseType,
+        collectionId: String,
+        keyValues: List<Pair<String, Any>> = emptyList(),
+    ): List<Map<String, Any>>
+
+    suspend fun listDocuments(
+        databaseType: BackendDatabaseType,
+        collectionId: String,
+        keyValues: List<Pair<String, Any>> = emptyList(),
+        limit: Int = 25,
+        onNewValues: (List<Map<String, Any>>) -> Boolean,
+    )
 
     suspend fun deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String)
 

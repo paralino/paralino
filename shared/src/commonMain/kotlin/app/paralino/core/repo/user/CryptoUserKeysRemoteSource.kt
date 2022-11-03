@@ -18,8 +18,10 @@ class CryptoUserKeysRemoteSource(
 ) {
 
     suspend fun getAllMyKeys(): List<UserCryptoKeyRaw> {
-        return docApi.getDocuments(databaseType = BackendDatabaseType.KEYS, remoteConfig.resourceIds.collectionUserKeysID)
-            .map { UserCryptoKeyRaw.from(it) }
+        return docApi.listAllDocuments(
+            databaseType = BackendDatabaseType.KEYS,
+            collectionId = remoteConfig.resourceIds.collectionUserKeysID
+        ).map { UserCryptoKeyRaw.from(it) }
     }
 
     suspend fun createPersonalKey(data: UserCryptoKeyRaw, removeOldKeys: Boolean): UserCryptoKeyRaw {

@@ -228,14 +228,16 @@ class GroupsRemoteSource constructor(
 
     suspend fun getAllGroups(): List<GroupWithMemberRaw> {
         return blocking {
-            val groups = api.getDocuments(
+            val groups = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
-                remoteConfig.resourceIds.collectionGroupsID
+                collectionId = remoteConfig.resourceIds.collectionGroupsID
             ).map { it.parseGroup() }
-            val members = api.getDocumentsFor(
+
+            val members = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
-                remoteConfig.resourceIds.collectionGroupMembersID
+                collectionId = remoteConfig.resourceIds.collectionGroupMembersID
             ).map { it.parseGroupMember() }
+
             groups.map { group ->
                 GroupWithMemberRaw(
                     group = group,
@@ -247,16 +249,19 @@ class GroupsRemoteSource constructor(
 
     suspend fun getGroupWithMembers(groupId: String): GroupWithMemberRaw {
         return blocking {
+
             val group = api.getDocument(
                 databaseType = BackendDatabaseType.DATA,
                 remoteConfig.resourceIds.collectionGroupsID,
                 groupId
             ).parseGroup()
-            val members = api.getDocumentsFor(
+
+            val members = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
-                remoteConfig.resourceIds.collectionGroupMembersID,
-                "groupId" to groupId
+                collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
+                keyValues = listOf("groupId" to groupId)
             ).map { it.parseGroupMember() }
+
             GroupWithMemberRaw(
                 group = group,
                 members = members

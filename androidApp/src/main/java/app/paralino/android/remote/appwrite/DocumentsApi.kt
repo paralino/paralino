@@ -56,27 +56,53 @@ class DocumentsApi constructor(
         }
     }
 
-    override suspend fun getDocuments(
+    override suspend fun listAllDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
+        keyValues: List<Pair<String, Any>>,
     ): List<Map<String, Any>> {
-        return remoteModule.execute {
-            database.listDocuments(databaseId = databaseType.id, collectionId = collectionId)
-                .parseListOfDocuments()
-        }
+        val result = mutableListOf<Map<String, Any>>()
+        listDocuments(
+            databaseType = databaseType,
+            collectionId = collectionId,
+            keyValues = keyValues,
+            limit = 25,
+            onNewValues = {
+                result.addAll(it)
+                true
+            },
+        )
+        return result.toList()
     }
 
-    override suspend fun getDocumentsFor(
+    override suspend fun listDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
-        vararg keyValue: Pair<String, Any>,
-    ): List<Map<String, Any>> {
-        return remoteModule.execute {
-            database.listDocuments(
-                databaseId = databaseType.id,
-                collectionId = collectionId,
-                queries = keyValue.map { Query.equal(attribute = it.first, value = it.second) }
-            ).parseListOfDocuments()
+        keyValues: List<Pair<String, Any>>,
+        limit: Int,
+        onNewValues: (List<Map<String, Any>>) -> Boolean,
+    ) {
+        remoteModule.execute {
+            var cursor: String = ""
+            do {
+                val results = database.listDocuments(
+                    databaseId = databaseType.id,
+                    collectionId = collectionId,
+                    queries = buildList {
+                        addAll(keyValues.map { Query.equal(attribute = it.first, value = it.second) })
+                        add(Query.limit(limit))
+                        if(cursor.isNotBlank())
+                            add(Query.cursorAfter(cursor))
+                    }
+                )
+
+                val shouldLoadMore = onNewValues(results.parseListOfDocuments())
+                if(shouldLoadMore && results.documents.size >= limit) {
+                    cursor = results.documents.lastOrNull()?.id ?: ""
+                } else {
+                    cursor = ""
+                }
+            } while (cursor.isNotBlank())
         }
     }
 

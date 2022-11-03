@@ -41,8 +41,10 @@ class PersonalCodesRemoteSource constructor(
     }
 
     suspend fun getMyPersonalCodes(): List<PersonalCodeRaw> {
-        return docApi.getDocuments(databaseType = BackendDatabaseType.DATA, remoteConfig.resourceIds.collectionPersonalCodeID)
-            .map { PersonalCodeRaw.from(it) }
+        return docApi.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionPersonalCodeID
+        ).map { PersonalCodeRaw.from(it) }
     }
 
     suspend fun getUserInfoFromCode(code: String): UserPersonalCodeData {
