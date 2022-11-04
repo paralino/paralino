@@ -7,13 +7,15 @@ class DecryptionException(message: String, cause: Throwable? = null): CryptoExce
 
 open class MissingCryptoKeyException(message: String, cause: Throwable? = null): CryptoException(message, cause)
 
-class MissingGroupKeyException(
-    val groupId: String
-) : MissingCryptoKeyException("Missing group key for group ($groupId)")
-
-class MissingMemberKeyException(
+class MissingGroupKeyException constructor(
     val groupId: String,
-    val memberId: String
-) : MissingCryptoKeyException("Missing member key for member ($memberId) in: ($groupId)")
+    val keyVersion: Long? = null
+) : MissingCryptoKeyException("Missing group key for group ($groupId), key version $keyVersion")
+
+class MissingMemberKeyException constructor(
+    val groupId: String,
+    val memberId: String,
+    val keyVersion: Long? = null
+) : MissingCryptoKeyException("Missing member key for member ($memberId) in: ($groupId) for key version $keyVersion")
 
 class MissingUserKeyException(val localCache: Boolean) : MissingCryptoKeyException("Missing main user key from ${if(localCache) "cache" else "storage" }")

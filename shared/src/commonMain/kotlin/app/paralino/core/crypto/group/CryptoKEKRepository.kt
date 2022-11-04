@@ -114,7 +114,7 @@ class CryptoKEKRepository(
                 groupKeys to memberKeys
             },
             localUpdate = {
-                logg.tag("tag_crypto_key_group").d("member key count for $groupId: ${it.second.size}")
+                logg.tag("tag_crypto_key_group").d("Got new member keys (${it.second.size}) and group keys (${it.first.size}) for group $groupId")
 
                 cachedGroupKeys.value = emptyList()
                 cachedMemberKeys.value = emptyList()
@@ -147,17 +147,20 @@ class CryptoKEKRepository(
         ownerPublicKey: String,
         keyVersion: Long? = null
     ): DecryptedGroupKeyData? {
-        logg.tag("tag_crypto_key_group").d("group key count: ${cachedGroupKeys.value.size}")
-        val keyRaw = getGroupKeys()
+        val allGroupKeys = getGroupKeys()
+        val keyRaw = allGroupKeys
             .filter { it.groupId == groupId }
-            .let {
-                logg.tag("tag_crypto_key_group").d("group key count: ${it.size} for $groupId")
-                if (keyVersion != null)
+            .let { keys ->
+                val matchingKey = if (keyVersion != null)
                 // if key version is passed get matching key
-                    it.firstOrNull { it.version == keyVersion }
+                    keys.firstOrNull { it.version == keyVersion }
                 else
                 // otherwise get latest key
-                    it.maxByOrNull { it.version }
+                    keys.maxByOrNull { it.version }
+
+                logg.tag("tag_crypto_key_group").d("group keys count: ${allGroupKeys.size} - ${keys.size} for $groupId, with match: ${matchingKey != null}")
+
+                matchingKey
             }
             ?: return null
 
@@ -195,12 +198,15 @@ class CryptoKEKRepository(
         memberUserId: String,
         memberPublicKey: String
     ): DecryptedGroupKeyData? {
-        logg.tag("tag_crypto_key_group_member").d("member key count: ${cachedMemberKeys.value.size}")
-
         val currentUserId = userRepository.cachedUserId
-        val keyRaw = getMemberKeys()
+        val allMemberKeys = getMemberKeys()
+        val keyRaw = allMemberKeys
             // filter keys that memberUserId created for current user
             .filter { it.groupId == groupId && it.ownerUserId == memberUserId && it.memberUserId == currentUserId }
+            .let { keys ->
+                logg.tag("tag_crypto_key_group_member").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
+                keys
+            }
             .maxByOrNull { it.version }
             ?: return null
 

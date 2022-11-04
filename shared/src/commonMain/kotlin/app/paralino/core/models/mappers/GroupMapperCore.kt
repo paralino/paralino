@@ -23,7 +23,7 @@ class GroupMapperCore constructor(
             groupId = model.id,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion
-        ) ?: throw MissingGroupKeyException(model.id)
+        ) ?: throw MissingGroupKeyException(model.id, model.keyVersion)
 
         val groupData = cryptoCore.encryptDataWithKey(
             data = BaseRemoteModule.formatter.encodeToString(model.data),
@@ -46,7 +46,7 @@ class GroupMapperCore constructor(
             groupId = model.id,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion
-        ) ?: throw MissingGroupKeyException(model.id)
+        ) ?: throw MissingGroupKeyException(model.id, model.keyVersion)
 
         val groupData = cryptoCore.decryptDataWithKey(
             data = model.data,

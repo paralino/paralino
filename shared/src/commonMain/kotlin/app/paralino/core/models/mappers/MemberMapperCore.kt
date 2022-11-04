@@ -2,6 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.logg
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelData
@@ -31,8 +32,8 @@ class MemberMapperCore constructor(
                 ownerPublicKey = groupOwnerPublicKey,
                 // use latest group key
                 keyVersion = null
-            ) ?: throw MissingGroupKeyException(model.id)
-        } ?: memberKey
+            ) ?: throw MissingGroupKeyException(model.id, keyVersion = null)
+        }
 
         // data encrypted with user senderKey DEK
         val locationData = model.mutableData?.let {
@@ -75,15 +76,23 @@ class MemberMapperCore constructor(
             groupId = model.groupId,
             ownerPublicKey = groupOwnerPublicKey,
             keyVersion = model.groupKeyVersion
-        ) ?: throw MissingGroupKeyException(model.groupId)
+        ) ?: throw MissingGroupKeyException(model.groupId, model.groupKeyVersion)
 
+        // TODO check and wrap location data to indicate to ui if decryption fails, data or keys are missing - now it is only null
         // data encrypted with user senderKey DEK
         val locationData = model.mutableData?.takeIf { it.isNotBlank() }?.let {
             val data = memberKey?.data?.content?.let { it1 ->
-                cryptoCore.decryptDataWithKey(
-                    data = it,
-                    key = it1
-                )
+                try {
+                    cryptoCore.decryptDataWithKey(
+                        data = it,
+                        key = it1
+                    )
+                } catch (e: Exception) {
+                    logg.tag("tag_crypto_key_group_member")
+                        .e("Error decrypting location data for user ${model.ownerUserId} - member ${model.id} in group ${model.groupId}\n" +
+                            "Model key version: ${model.memberKeyVersion} - key version: ${memberKey.version}", e)
+                    null
+                }
             }
             data?.takeIf { it.isNotBlank() }?.let {
                 BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
