@@ -39,9 +39,10 @@ class PlaceNotificationHandler(
             try {
                 placeName = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()?.data?.name
                 userName = locationRepo.getMembersByUserId(payload.memberUserId)
-                    .firstOrNull()?.firstOrNull()?.name
-            } catch (e: Exception) {
-            }
+                    .firstOrNull()
+                    ?.firstOrNull { it.id == payload.memberId }
+                    ?.name
+            } catch (e: Exception) { }
 
             val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
                 context.getString(R.string.place_notification_default)
@@ -120,8 +121,9 @@ class PlaceNotificationHandler(
 
 @kotlinx.serialization.Serializable
 @Parcelize
-data class PlaceActivityNotificationPayload(
+data class PlaceActivityNotificationPayload constructor(
     val memberUserId: String,
+    val memberId: String,
     val placeId: String,
     val enter: Boolean
 ) : Parcelable

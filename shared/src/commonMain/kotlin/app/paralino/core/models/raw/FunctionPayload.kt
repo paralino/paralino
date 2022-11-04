@@ -73,14 +73,14 @@ data class UpdateGroupMemberKeysPayload(
 )
 
 @Serializable
-data class GroupMemberKeyPayload(
+data class GroupMemberKeyPayload constructor(
     val userId: String,
     val encryptedSenderKey: String,
     val keyVersion: Long? = null
 )
 
 @Serializable
-data class GroupMemberDataPayload(
+data class GroupMemberDataPayload constructor(
     val memberId: String,
     val groupKeyVersion: Long,
     val memberData: String,
@@ -117,8 +117,9 @@ data class UpdatePlacePayload constructor(
 )
 
 @Serializable
-data class PlaceEventPayload(
+data class PlaceEventPayload constructor(
     val placeId: String,
+    val memberId: String,
     val enter: Boolean
 )
 

@@ -2,6 +2,7 @@ package app.paralino.core.repo.places
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
@@ -27,7 +28,8 @@ class PlacesRemoteSource(
     private val remoteConfig: BackendConfig,
     private val mapper: PlaceMapperCore,
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKRepository
+    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val userMemberId: UserMemberIdUseCase
 ) {
 
     suspend fun createPlace(
@@ -230,6 +232,7 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
+                memberId = userMemberId.getCurrentDeviceMemberIdForPlace(placeId) ?: "",
                 enter = true
             )
         )
@@ -239,6 +242,7 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
+                memberId = userMemberId.getCurrentDeviceMemberIdForPlace(placeId) ?: "",
                 enter = false
             )
         )
