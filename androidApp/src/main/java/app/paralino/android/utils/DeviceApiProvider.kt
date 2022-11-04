@@ -4,8 +4,10 @@ import androidx.work.WorkManager
 import androidx.work.await
 import app.paralino.android.AppClass
 import app.paralino.android.utils.extensions.batterLevel
+import app.paralino.core.logg
 import app.paralino.core.utils.IDeviceApiProvider
 import loge
+import logw
 import java.util.UUID
 
 class DeviceApiProvider(
@@ -20,7 +22,7 @@ class DeviceApiProvider(
 
     override suspend fun logout() {
         try {
-            loge("logout", "Canceling all work on logout")
+            logg.tag("logout").w("Canceling all work on logout")
             val workManager = WorkManager.getInstance(appClass)
             workManager.cancelAllWork().await()
         } catch (e: Exception) {
