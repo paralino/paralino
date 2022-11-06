@@ -262,6 +262,7 @@ class GroupRepository constructor(
     }
 
     suspend fun gotMemberDeleteFromRealtime(groupId: String) {
+        logg.tag("realtime_events").v("Delete member event in group $groupId")
         refreshGroupWithMembers(groupId)
     }
 
@@ -273,8 +274,10 @@ class GroupRepository constructor(
         }
 
         if(memberKey == null || member.memberKeyVersion != memberKey.version) {
+            logg.tag("realtime_events").v("Refresh group - update member (${member.id}) event in group ${member.groupId}")
             refreshGroupWithMembers(member.groupId)
         } else {
+            logg.tag("realtime_events").v("Update member (${member.id}) event in group ${member.groupId}")
             memberLocal.createOrUpdateMembers(member)
         }
     }

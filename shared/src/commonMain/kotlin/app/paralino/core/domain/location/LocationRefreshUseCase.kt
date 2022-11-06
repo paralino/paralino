@@ -41,11 +41,11 @@ class LocationRefreshUseCase(
                         groupsRepo.gotMemberDeleteFromRealtime(it.payload.get("groupId") as String)
                     }
                 } catch (e: Exception) {
-                    logg.e("Error with realtime member event", e)
+                    logg.tag("realtime_events").e("Error with realtime member event", e)
                 }
 
             }
-            .catch { logg.e("Error parsing member on map", it) }
+            .catch { logg.tag("realtime_events").e("Error parsing member on map", it) }
 
         val userMapFocusFlow = locationPerformanceManager.boostOnMapFlow(groupId)
 

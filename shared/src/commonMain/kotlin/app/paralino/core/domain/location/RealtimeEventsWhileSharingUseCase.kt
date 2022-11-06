@@ -40,23 +40,23 @@ class RealtimeEventsWhileSharingUseCase(
             .onEach {
                 when {
                     it.channels.contains(focusEvent) -> {
-                        logg.tag("realtime_events").v("Got location focus create/update event")
+                        logg.tag("realtime_events_sharing").v("Got location focus create/update event")
                         val groupId = it.payload["groupId"] as String
                         if (locationSharingManager.isSharingActiveForGroup(groupId)) {
                             locationPerformanceManager.locationBoostRequested(groupId)
                         }
                     }
                     it.channels.contains(placesEvent) -> {
-                        logg.tag("realtime_events").v("Got place create/update event")
+                        logg.tag("realtime_events_sharing").v("Got place create/update event")
                         val place = GroupPlaceRaw.from(it.payload)
                         placesRepo.updatePlaceLocally(place)
                     }
                     it.channels.contains(membersEvent) -> {
                         val member = if (it.events.any { it.endsWith(".delete") }) {
-                            logg.tag("realtime_events").v("Got member delete event")
+                            logg.tag("realtime_events_sharing").v("Got member delete event")
                             null
                         } else {
-                            logg.tag("realtime_events").v("Got member create/update event")
+                            logg.tag("realtime_events_sharing").v("Got member create/update event")
                             MemberDocumentRaw.from(it.payload)
                         }
 
@@ -67,12 +67,12 @@ class RealtimeEventsWhileSharingUseCase(
                                 groupRepo.gotMemberDeleteFromRealtime(it.payload.get("groupId") as String)
                             }
                         } catch (e: Exception) {
-                            logg.e("Error with realtime member event", e)
+                            logg.tag("realtime_events_sharing").e("Error with realtime member event", e)
                         }
                     }
                 }
             }
-            .catch { logg.e("Error with realtime events while sharing", it) }
+            .catch { logg.tag("realtime_events_sharing").e("Error with realtime events while sharing", it) }
             .distinctUntilChanged()
             .map { }
     }

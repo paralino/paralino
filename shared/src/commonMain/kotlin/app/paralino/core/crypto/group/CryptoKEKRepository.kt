@@ -158,7 +158,7 @@ class CryptoKEKRepository(
                 // otherwise get latest key
                     keys.maxByOrNull { it.version }
 
-                logg.tag("tag_crypto_key_group").d("group keys count: ${allGroupKeys.size} - ${keys.size} for $groupId, with match: ${matchingKey != null}")
+                logg.tag("tag_crypto_key_group").d("group keys count: ${allGroupKeys.size} - ${keys.size} for group $groupId, with version ($keyVersion) match: ${matchingKey != null}")
 
                 matchingKey
             }
@@ -222,7 +222,13 @@ class CryptoKEKRepository(
         val userKey = userKeyRepository.latestKeyPair()
 
         // 1. rotate group key
-        getDataOnce { remote.rotateGroupKeys(group = remoteGroup, places = places, myKey = userKey) }.first()
+        getDataOnce {
+            remote.rotateGroupKeys(
+                group = remoteGroup,
+                places = places,
+                myKey = userKey
+            )
+        }.first()
 
         // 2. fetch new key(s) for that group
         refreshGroupKeysForGroup(groupId = remoteGroup.id).first()
