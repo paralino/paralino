@@ -49,3 +49,25 @@ fun <T: Any> T.toResource(): Resource<T> {
 
 val <T> Resource<T>.data: T?
     get() = (this as? Resource.Ready)?.data
+
+
+
+sealed class CryptoResource<out R> {
+
+    object NotInitialized : CryptoResource<Nothing>()
+    object MissingKey : CryptoResource<Nothing>()
+    object WrongKeyOrData : CryptoResource<Nothing>()
+    data class Ready<out T>(val data: T) : CryptoResource<T>()
+
+    override fun toString(): String {
+        return when (this) {
+            is Ready<*> -> "Ready[data=$data]"
+            is NotInitialized -> "NotInitialized"
+            MissingKey -> "MissingKey"
+            WrongKeyOrData -> "WrongKeyOrData"
+        }
+    }
+}
+
+val <T> CryptoResource<T>.data: T?
+    get() = (this as? CryptoResource.Ready)?.data
