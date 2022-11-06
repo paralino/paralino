@@ -45,6 +45,7 @@ data class DeleteGroupMemberPayload constructor(
 data class UpdateGroupKeysPayload constructor(
     val groupId: String,
     val userPublicKey: String,
+    val keyVersionsToKeep: List<Long>,
     val encryptedGroupKeys: List<GroupKeysPayload>,
     val groupData: String,
     val places: List<GroupPlaceDataUpdatePayload>

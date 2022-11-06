@@ -153,6 +153,8 @@ class CryptoKeyRemoteDataSource(
                 )
             }
 
+            val usedKeys = group.members.map { it.groupKeyVersion } + places.map { it.keyVersion } + group.keyVersion
+
             val keys = group.members.map {
                 GroupKeysPayload(
                     userId = it.userId,
@@ -169,6 +171,7 @@ class CryptoKeyRemoteDataSource(
             val payload = UpdateGroupKeysPayload(
                 groupId = group.id,
                 userPublicKey = myKey.publicKey,
+                keyVersionsToKeep = usedKeys.distinct(),
                 encryptedGroupKeys = keys,
                 groupData = groupData,
                 places = placesData
