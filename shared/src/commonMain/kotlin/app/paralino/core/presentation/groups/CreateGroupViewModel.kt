@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.groups
 
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -69,7 +70,12 @@ class CreateGroupViewModel(
 
         val group = groupFlow.value.data
         val groupUpdateFlow = if (group != null) {
-            val newData = group.data.copy(name = filteredName, image = image)
+            val newData = when(group.data) {
+                is CryptoResource.Ready -> {
+                    CryptoResource.Ready(group.data.data.copy(name = filteredName, image = image))
+                }
+                else -> group.data
+            }
             val newGroup = group.copy(data = newData)
             groupRepo.updateGroup(newGroup)
         } else {

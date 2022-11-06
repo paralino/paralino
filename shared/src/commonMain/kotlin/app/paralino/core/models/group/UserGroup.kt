@@ -1,9 +1,12 @@
 package app.paralino.core.models.group
 
 import app.paralino.core.config
-import app.paralino.core.models.location.MemberModel
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.utils.Constants
+import app.paralino.core.models.data
+import app.paralino.core.models.location.MemberModel
+import app.paralino.core.utils.Emojis
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,20 +16,19 @@ data class UserGroup constructor(
     val ownerPublicKey: String,
     val keyVersion: Long,
     val shouldRotateKeys: Boolean,
-    val data: UserGroupData = UserGroupData(),
+    @Contextual
+    val data: CryptoResource<UserGroupData>,
     val memberCount: Int
 ) {
 
-    val name: String get() = data.name
-    val image: ImageModel get() = data.image
-    val type: String get() = data.type
+    val name: String get() = data.data?.name ?: "---"
+    val image: ImageModel get() = data.data?.image ?: ImageModel.emoji(Emojis.lock)
 
     companion object {
         const val personalTrackingId = "personalTracking"
         const val publicSharingId = "publicSharing"
     }
 
-    val isFromUser: Boolean get() = type == Constants.collectionGroupUser
     val isCurrentUserOwner: Boolean get() = ownerUserId == config.userId
 
 }
@@ -36,9 +38,8 @@ data class UserGroupData constructor(
     val name: String = "",
     val image: ImageModel = ImageModel(),
     val type: String = ""
-) {
+)
 
-}
 
 data class UserGroupWithMembers(
     val group: UserGroup,
@@ -50,12 +51,11 @@ data class UserGroupWithMembers(
     val ownerPublicKey: String get() = group.ownerPublicKey
     val keyVersion: Long get() = group.keyVersion
     val shouldRotateKeys: Boolean get() = group.shouldRotateKeys
-    val data: UserGroupData get() = group.data
+    val data: CryptoResource<UserGroupData> get() = group.data
     val memberCount: Int get() = members.size
 
-    val name: String get() = data.name
-    val image: ImageModel get() = data.image
-    val type: String get() = data.type
+    val name: String get() = group.name
+    val image: ImageModel get() = group.image
 
     val isCurrentUserOwner: Boolean get() = group.isCurrentUserOwner
 

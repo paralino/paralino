@@ -2,12 +2,15 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.logg
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupWithMemberRaw
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -25,10 +28,15 @@ class GroupMapperCore constructor(
             keyVersion = model.keyVersion
         ) ?: throw MissingGroupKeyException(model.id, model.keyVersion)
 
-        val groupData = cryptoCore.encryptDataWithKey(
-            data = BaseRemoteModule.formatter.encodeToString(model.data),
-            key = groupKey.data.content
-        )
+        val groupData = when (model.data) {
+            is CryptoResource.Ready -> {
+                cryptoCore.encryptDataWithKey(
+                    data = BaseRemoteModule.formatter.encodeToString(model.data.data),
+                    key = groupKey.data.content
+                )
+            }
+            else -> throw CryptoException("Group data is missing: ${model.id}")
+        }
 
         return GroupDocumentRaw(
             id = model.id,
@@ -46,13 +54,25 @@ class GroupMapperCore constructor(
             groupId = model.id,
             ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion
-        ) ?: throw MissingGroupKeyException(model.id, model.keyVersion)
+        )
 
-        val groupData = cryptoCore.decryptDataWithKey(
-            data = model.data,
-            key = groupKey.data.content
-        ).let {
-            BaseRemoteModule.formatter.decodeFromString<UserGroupData>(it)
+        logg.e(MissingGroupKeyException(model.id, model.keyVersion))
+
+        val groupData = if (groupKey != null) {
+            try {
+                cryptoCore.decryptDataWithKey(
+                    data = model.data,
+                    key = groupKey.data.content
+                ).let {
+                    BaseRemoteModule.formatter.decodeFromString<UserGroupData>(it)
+                }.let {
+                    CryptoResource.Ready(it)
+                }
+            } catch (e: Exception) {
+                CryptoResource.WrongKeyOrData
+            }
+        } else {
+            CryptoResource.MissingKey
         }
 
         return UserGroup(
