@@ -81,10 +81,10 @@ class CryptoKeyRemoteDataSource(
                     memberId = it.id,
                     groupKeyVersion = groupKey.version,
                     memberData = cryptoCore.encryptDataWithKey(
-                        BaseRemoteModule.formatter.encodeToString(it.data),
+                        BaseRemoteModule.formatter.encodeToString(it.data.data!!),
                         groupKey.data.content
                     ),
-                    mutableMemberData = it.mutableData?.let {
+                    mutableMemberData = it.mutableData.data?.let {
                         cryptoCore.encryptDataWithKey(
                             BaseRemoteModule.formatter.encodeToString(it),
                             newSenderKey

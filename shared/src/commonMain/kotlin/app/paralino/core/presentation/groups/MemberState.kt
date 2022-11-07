@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.groups
 
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.datetime.LocalDateTime
@@ -23,10 +24,10 @@ data class GroupMemberItemState constructor(
         actionItem = null,
         name = member.name,
         image = member.image,
-        batterLevel = member.mutableData?.batteryLevel,
-        speedMs = member.mutableData?.speed?.takeIf { showSpeedAndElevation },
-        elevationMeters = member.mutableData?.altitude?.takeIf { showSpeedAndElevation },
-        lastPing = member.mutableData?.timeUTC?.isoToLocalDateTime(),
+        batterLevel = member.mutableData.data?.batteryLevel,
+        speedMs = member.mutableData.data?.speed?.takeIf { showSpeedAndElevation },
+        elevationMeters = member.mutableData.data?.altitude?.takeIf { showSpeedAndElevation },
+        lastPing = member.mutableData.data?.timeUTC?.isoToLocalDateTime(),
         status = if(member.isActive) GroupMemberStatus.ACTIVE else GroupMemberStatus.INACTIVE
     )
 }

@@ -3,11 +3,14 @@ package app.paralino.core.models.mappers
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.logg
+import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import kotlinx.serialization.decodeFromString
@@ -35,19 +38,22 @@ class MemberMapperCore constructor(
             ) ?: throw MissingGroupKeyException(model.id, keyVersion = null)
         }
 
+        // data encrypted with group DEK
+        val memberData = when (model.data) {
+            is CryptoResource.Ready -> {
+                cryptoCore.encryptDataWithKey(
+                    data = BaseRemoteModule.formatter.encodeToString(model.data.data),
+                    key = groupKey.data.content
+                )
+            }
+            else -> throw CryptoException("Member data is missing: ${model.id}")
+        }
+
         // data encrypted with user senderKey DEK
-        val locationData = model.mutableData?.let {
+        val locationData = model.mutableData.data?.let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
                 key = memberKey.data.content
-            )
-        }
-
-        // data encrypted with group DEK
-        val memberData = model.data.let {
-            cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(it),
-                key = groupKey.data.content
             )
         }
 
@@ -76,36 +82,53 @@ class MemberMapperCore constructor(
             groupId = model.groupId,
             ownerPublicKey = groupOwnerPublicKey,
             keyVersion = model.groupKeyVersion
-        ) ?: throw MissingGroupKeyException(model.groupId, model.groupKeyVersion)
+        )
 
-        // TODO check and wrap location data to indicate to ui if decryption fails, data or keys are missing - now it is only null
+        if(groupKey == null)
+            logg.e(MissingGroupKeyException(model.id, model.groupKeyVersion))
+
         // data encrypted with user senderKey DEK
-        val locationData = model.mutableData?.takeIf { it.isNotBlank() }?.let {
-            val data = memberKey?.data?.content?.let { it1 ->
+        val locationData = if(memberKey != null) {
+            if(model.mutableData.isNullOrBlank()) {
+                CryptoResource.NotInitialized
+            } else {
                 try {
                     cryptoCore.decryptDataWithKey(
-                        data = it,
-                        key = it1
-                    )
+                        data = model.mutableData,
+                        key = memberKey.data.content
+                    ).let {
+                        BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
+                    }.let {
+                        CryptoResource.Ready(it)
+                    }
                 } catch (e: Exception) {
                     logg.tag("tag_crypto_key_group_member")
                         .e("Error decrypting location data for user ${model.ownerUserId} - member ${model.id} in group ${model.groupId}\n" +
-                            "Model key version: ${model.memberKeyVersion} - key version: ${memberKey.version}", e)
-                    null
+                                "Model key version: ${model.memberKeyVersion} - key version: ${memberKey.version}", e)
+                    CryptoResource.WrongKeyOrData
                 }
             }
-            data?.takeIf { it.isNotBlank() }?.let {
-                BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
-            }
+        } else {
+            CryptoResource.MissingKey
         }
 
+
         // data encrypted with group DEK
-        val memberData = model.data.let {
-            val data = cryptoCore.decryptDataWithKey(
-                data = it,
-                key = groupKey.data.content
-            )
-            BaseRemoteModule.formatter.decodeFromString<MemberModelData>(data)
+        val memberData = if(groupKey != null) {
+            try {
+                cryptoCore.decryptDataWithKey(
+                    data = model.data,
+                    key = groupKey.data.content
+                ).let {
+                    BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
+                }.let {
+                    CryptoResource.Ready(it)
+                }
+            } catch (e: Exception) {
+                CryptoResource.WrongKeyOrData
+            }
+        } else {
+            CryptoResource.MissingKey
         }
 
         return MemberModel(

@@ -1,8 +1,12 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
+import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -16,41 +20,22 @@ data class MemberModel constructor(
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
     val shouldRotateKeys: Boolean,
-    val data: MemberModelData,
-    val mutableData: LocationDataModel? = null
+    @Contextual
+    val data: CryptoResource<MemberModelData>,
+    @Contextual
+    val mutableData: CryptoResource<LocationDataModel>
 ) {
 
-    val name: String get() = data.name
-    val image: ImageModel? get() = data.image
+    val name: String get() = data.data?.name ?: "---"
+    val image: ImageModel? get() = data.data?.image ?: ImageModel.emoji(Emojis.lock)
 
     val isActive: Boolean
         get() {
             val now = nowUTC()
-            val pinTime = mutableData?.timeUTC?.fromUTCtoInstant() ?: return false
+            val pinTime = mutableData.data?.timeUTC?.fromUTCtoInstant() ?: return false
             val activeThreshold = 30.toDuration(DurationUnit.MINUTES)
             return pinTime.plus(activeThreshold) > now
         }
-
-    companion object {
-        fun fromSystem(
-            userId: String,
-            name: String,
-            image: ImageModel?,
-            model: LocationDataModel
-        ): MemberModel {
-            return MemberModel(
-                id = "",
-                groupId = "",
-                userId = userId,
-                publicKey = "",
-                groupKeyVersion = 0,
-                memberKeyVersion = 0,
-                shouldRotateKeys = false,
-                data = MemberModelData(name, image),
-                mutableData = model
-            )
-        }
-    }
 
 }
 

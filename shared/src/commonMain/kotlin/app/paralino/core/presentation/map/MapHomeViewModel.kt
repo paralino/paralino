@@ -56,13 +56,13 @@ class MapHomeViewModel constructor(
                         val memberData = group.members.map { member ->
                             GroupMemberItemState(member, showSpeedAndElevation = true).copy(
                                 actionItem = MemberAction.DELETE_LOCATION.takeIf {
-                                    member.userId == config.userId && member.mutableData != null &&
+                                    member.userId == config.userId && member.mutableData.data != null &&
                                             !sharingManager.isSharingActiveForGroup(groupIdData.value)
                                 }
                             )
                         }
 
-                        val markers = group.members.filter { it.mutableData != null }
+                        val markers = group.members.filter { it.mutableData.data != null }
                             .map { member ->
                                 MapMarkerState(
                                     groupId = group.id,
@@ -70,7 +70,7 @@ class MapHomeViewModel constructor(
                                     active = member.isActive,
                                     image = member.image,
                                     memberData = GroupMemberItemState(member, showSpeedAndElevation = true),
-                                    locationData = member.mutableData!!
+                                    locationData = member.mutableData.data!!
                                 )
                             }
 
