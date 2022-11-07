@@ -193,6 +193,7 @@ class CryptoKEKRepository(
         return getMemberKey(groupId, memberUserId, memberPublicKey)
     }
 
+    // TODO pass key version
     suspend fun getMemberKey(
         groupId: String,
         memberUserId: String,

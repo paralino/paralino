@@ -77,6 +77,10 @@ class CryptoKeyRemoteDataSource(
             // this way any device from user that gets to update the keys will update data for all other devices
             // no need for other devices to do the same since encryption key is unique per user
             val memberData = group.members.filter { it.userId == config.userId }.map {
+                // TODO review:
+                // if group key is somehow removed, this crashes because we can not decrypt the data
+                // what is happening now is that remote data is re-encrypted
+                // but since this data is user own data, we can replace it if remote is missing or wrong
                 GroupMemberDataPayload(
                     memberId = it.id,
                     groupKeyVersion = groupKey.version,

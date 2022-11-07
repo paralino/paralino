@@ -41,7 +41,7 @@ data class UserGroupData constructor(
 )
 
 
-data class UserGroupWithMembers(
+data class UserGroupWithMembers constructor(
     val group: UserGroup,
     val members: List<MemberModel>
 ) {
