@@ -6,6 +6,7 @@ import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.DecryptedGroupKeyData
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.places.GroupPlace
@@ -139,7 +140,7 @@ class CryptoKeyRemoteDataSource(
             val newGroupKey = cryptoCore.getNewSymmetricKey().content
 
             val groupData = cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(group.data),
+                data = BaseRemoteModule.formatter.encodeToString(group.data.data!!),
                 key = newGroupKey
             )
 

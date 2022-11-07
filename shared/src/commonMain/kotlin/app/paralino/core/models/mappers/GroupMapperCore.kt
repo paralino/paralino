@@ -56,7 +56,8 @@ class GroupMapperCore constructor(
             keyVersion = model.keyVersion
         )
 
-        logg.e(MissingGroupKeyException(model.id, model.keyVersion))
+        if(groupKey == null)
+            logg.e(MissingGroupKeyException(model.id, model.keyVersion))
 
         val groupData = if (groupKey != null) {
             try {
