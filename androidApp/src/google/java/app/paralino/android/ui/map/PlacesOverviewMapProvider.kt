@@ -79,6 +79,7 @@ class MapViewPlacesOverviewProviderState constructor(
 
     fun updateMarkers(groupId: String, data: List<PlaceListItemData>) {
         val pins = data
+            .filter { it.lat != null && it.lng != null }
             .map { MapPinData(groupId, it) }
         setAndUpdateMarkers(pins)
 

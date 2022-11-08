@@ -12,6 +12,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.models.data
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import kotlinx.coroutines.flow.firstOrNull
@@ -37,7 +38,7 @@ class PlaceNotificationHandler(
             var userName: String? = null
 
             try {
-                placeName = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()?.data?.name
+                placeName = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()?.data?.data?.name
                 userName = locationRepo.getMembersByUserId(payload.memberUserId)
                     .firstOrNull()
                     ?.firstOrNull { it.id == payload.memberId }

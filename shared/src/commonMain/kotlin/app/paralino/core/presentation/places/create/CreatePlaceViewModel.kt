@@ -1,16 +1,14 @@
 package app.paralino.core.presentation.places.create
 
-import app.paralino.core.models.Payload
-import app.paralino.core.models.Resource
+import app.paralino.core.models.*
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -59,13 +57,13 @@ class CreatePlaceViewModel(
                         CreatePlaceScreenState(
                             groupId = groupId,
                             isNewPlace = false,
-                            name = place.data.name,
-                            image = place.data.image,
+                            name = place.data.data?.name ?: "---",
+                            image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
                             hasNameError = false,
                             private = false,
-                            lat = place.data.lat,
-                            lng = place.data.lng,
-                            radiusMeters = place.data.radiusMeters,
+                            lat = place.data.data?.lat,
+                            lng = place.data.data?.lng,
+                            radiusMeters = place.data.data?.radiusMeters ?: 0,
                             actionLoading = false,
                             fullLoading = false
                         )
@@ -110,7 +108,7 @@ class CreatePlaceViewModel(
         )
 
         val groupUpdateFlow = if (place != null) {
-            val newPlace = place.copy(data = placeData)
+            val newPlace = place.copy(data = CryptoResource.Ready(placeData))
             placesRepo.updatePlace(newPlace)
         } else {
             placesRepo.createPlace(

@@ -15,8 +15,8 @@ data class PlaceListItemData constructor(
     val name: String,
     val image: ImageModel,
     val private: Boolean,
-    val lat: Double,
-    val lng: Double,
+    val lat: Double?,
+    val lng: Double?,
     val radiusMeters: Int,
 )
 

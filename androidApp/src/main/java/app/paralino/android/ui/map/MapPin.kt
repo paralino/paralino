@@ -145,8 +145,8 @@ data class MapPinData constructor(
         focused = false,
         active = true,
         image = state.image,
-        lat = state.lat,
-        lng = state.lng,
+        lat = state.lat ?: 0.0,
+        lng = state.lng ?: 0.0,
         accuracy = state.radiusMeters.toFloat(),
         shouldShowApproximateCircle = true
     )

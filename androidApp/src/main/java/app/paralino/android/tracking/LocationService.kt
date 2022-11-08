@@ -155,13 +155,15 @@ class LocationService : Service() {
 
         val places = placesRepository.getAllActivePlaces()
             .map {
-                it.map {
-                    GroupPlaceGeofenceData(
-                        placeId = it.id,
-                        lat = it.data.lat,
-                        lng = it.data.lng,
-                        radiusMeters = it.data.radiusMeters
-                    )
+                it.mapNotNull { place ->
+                    place.data.data?.let {
+                        GroupPlaceGeofenceData(
+                            placeId = place.id,
+                            lat = it.lat,
+                            lng = it.lng,
+                            radiusMeters = it.radiusMeters
+                        )
+                    }
                 }
             }
             .distinctFlowOfList()

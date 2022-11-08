@@ -148,14 +148,16 @@ class CryptoKeyRemoteDataSource(
                 key = newGroupKey
             )
 
-            val placesData = places.map { place ->
-                GroupPlaceDataUpdatePayload(
-                    placeId = place.id,
-                    placeData = cryptoCore.encryptDataWithKey(
-                        data = BaseRemoteModule.formatter.encodeToString(place.data),
-                        key = newGroupKey
+            val placesData = places.mapNotNull { place ->
+                place.data.data?.let {
+                    GroupPlaceDataUpdatePayload(
+                        placeId = place.id,
+                        placeData = cryptoCore.encryptDataWithKey(
+                            data = BaseRemoteModule.formatter.encodeToString(place.data.data),
+                            key = newGroupKey
+                        )
                     )
-                )
+                }
             }
 
             val usedKeys = group.members.map { it.groupKeyVersion } + places.map { it.keyVersion } + group.keyVersion

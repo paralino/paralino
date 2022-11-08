@@ -2,6 +2,7 @@ package app.paralino.core.repo.places
 
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
+import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.places.*
 import app.paralino.core.models.raw.GroupPlaceRaw
@@ -155,18 +156,20 @@ class PlacesRepository constructor(
         val entered = mutableListOf<String>()
         val exited = mutableListOf<String>()
 
-        places.forEach {
-            val isEnter = geofenceManager.isLocationInGeofence(
-                data,
-                GroupPlaceGeofenceData(
-                    placeId = it.id,
-                    lat = it.data.lat,
-                    lng = it.data.lng,
-                    radiusMeters = it.data.radiusMeters
+        places.forEach { place ->
+            place.data.data?.let { placeData ->
+                val isEnter = geofenceManager.isLocationInGeofence(
+                    data,
+                    GroupPlaceGeofenceData(
+                        placeId = place.id,
+                        lat = placeData.lat,
+                        lng = placeData.lng,
+                        radiusMeters = placeData.radiusMeters
+                    )
                 )
-            )
-            if(isEnter) entered.add(it.id)
-            else exited.add(it.id)
+                if(isEnter) entered.add(place.id)
+                else exited.add(place.id)
+            }
         }
 
         placesEnter(entered)

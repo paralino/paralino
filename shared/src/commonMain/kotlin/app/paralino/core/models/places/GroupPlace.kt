@@ -1,6 +1,8 @@
 package app.paralino.core.models.places
 
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,7 +12,8 @@ data class GroupPlace constructor(
     val ownerUserId: String,
     val keyVersion: Long,
     val private: Boolean,
-    val data: GroupPlaceData
+    @Contextual
+    val data: CryptoResource<GroupPlaceData>
 )
 
 @Serializable
