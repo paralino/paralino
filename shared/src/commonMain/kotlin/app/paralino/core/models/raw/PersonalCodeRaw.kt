@@ -1,5 +1,6 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -13,6 +14,12 @@ data class PersonalCodeRaw constructor(
     val encryptedCodeData: String,
     val validityUnix: Long
 ) {
+
+    fun isStillValid(): Boolean {
+        val now = nowUTC().epochSeconds
+        return validityUnix <= 0 || validityUnix >= now
+    }
+
     fun toPostJson(): Map<String, Any> {
         return buildMap {
             put("keyId", keyId)

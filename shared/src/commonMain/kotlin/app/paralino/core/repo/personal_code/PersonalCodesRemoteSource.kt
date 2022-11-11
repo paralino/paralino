@@ -1,5 +1,6 @@
 package app.paralino.core.repo.personal_code
 
+import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
@@ -44,7 +45,20 @@ class PersonalCodesRemoteSource constructor(
         return docApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionPersonalCodeID
-        ).map { PersonalCodeRaw.from(it) }
+        )
+            .map { PersonalCodeRaw.from(it) }
+            .mapNotNull {
+                if(it.isStillValid()) {
+                    it
+                } else {
+                    try {
+                        revokePersonalCode(it.id)
+                    } catch (e: Exception) {
+                        logg.e("Error deleting expired personal code", e)
+                    }
+                    null
+                }
+            }
     }
 
     suspend fun getUserInfoFromCode(code: String): UserPersonalCodeData {
