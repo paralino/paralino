@@ -97,9 +97,19 @@ data class UpdateLocationFunctionData(
 @Serializable
 data class LocationNodePayload constructor(
     val memberId: String,
-    val memberData: String? = null,
-    val groupKeyVersion: Long? = null,
-    val mutableData: String?,
+    val memberData: MemberDataPayload? = null,
+    val locationData: LocationDataPayload? = null,
+)
+
+@Serializable
+data class MemberDataPayload(
+    val memberData: String,
+    val groupKeyVersion: Long,
+)
+
+@Serializable
+data class LocationDataPayload(
+    val locationData: String?,
     val memberKeyVersion: Long,
 )
 

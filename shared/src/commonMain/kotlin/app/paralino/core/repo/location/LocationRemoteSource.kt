@@ -5,6 +5,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.raw.LocationDataPayload
 import app.paralino.core.models.raw.LocationNodePayload
 import app.paralino.core.models.raw.UpdateLocationFunctionData
 import app.paralino.core.repo.api.IFunctionsApi
@@ -40,9 +41,10 @@ class LocationRemoteSource constructor(
                 LocationNodePayload(
                     memberId = it.memberId,
                     memberData = null,
-                    groupKeyVersion = null,
-                    mutableData = encryptedData,
-                    memberKeyVersion = memberKey.version,
+                    locationData = LocationDataPayload(
+                        locationData = encryptedData,
+                        memberKeyVersion = memberKey.version
+                    )
                 )
             }
 
