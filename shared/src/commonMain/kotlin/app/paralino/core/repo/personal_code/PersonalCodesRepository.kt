@@ -2,6 +2,7 @@ package app.paralino.core.repo.personal_code
 
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.models.Payload
+import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
@@ -11,9 +12,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlin.random.Random
 
 class PersonalCodesRepository(
@@ -23,7 +22,7 @@ class PersonalCodesRepository(
     private val userKeyRepo: CryptoUserKeyRepository,
 ) : BaseRepository() {
 
-    fun createPersonalCode(): Flow<Payload<UserPersonalCode>> {
+    fun createPersonalCode(): Flow<Payload<PersonalCodeRaw>> {
         val user = userRepo.cachedUser
             ?: return flow { emit(Payload.Error(Throwable("User not valid"))) }
 
@@ -88,6 +87,27 @@ class PersonalCodesRepository(
         return getDataOnce(
             localUpdate = { local.deletePersonalCode(id) }
         ) { remote.revokePersonalCode(id) }.mapToPayload()
+    }
+
+    fun revokeAllCodes(): Flow<Payload<Boolean>> {
+        return getDataOnce(
+            remote = {
+                val allValidCodes = remote.getMyPersonalCodes()
+                allValidCodes.forEach {
+                    remote.revokePersonalCode(it.id)
+                }
+                allValidCodes
+            },
+            localUpdate = { local.clear() }
+        )
+            .flatMapLatest {
+                val flow = if(it.isNotEmpty()) {
+                    createPersonalCode().map { it.mapSuccess { true } }
+                } else {
+                    flowOf(true).mapToPayload()
+                }
+                flow
+            }
     }
 
     suspend fun clearLocally() {

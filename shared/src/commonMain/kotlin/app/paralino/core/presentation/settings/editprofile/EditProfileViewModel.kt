@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.settings.editprofile
 
+import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.user.UserMeData
@@ -13,8 +14,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class EditProfileViewModel(
+class EditProfileViewModel constructor(
     private val userRepository: UserRepository,
+    private val updateUserData: UpdateUserDataUseCase,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -42,7 +44,7 @@ class EditProfileViewModel(
             }
         } else {
             val userData = UserMeData(userImage = image, userName = name)
-            userRepository.updateUserData(userData)
+            updateUserData.updateUserData(userData)
                 .mapToPayload { it }
                 .onEach { result ->
                     when (result) {

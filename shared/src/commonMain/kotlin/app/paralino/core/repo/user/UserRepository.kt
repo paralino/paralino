@@ -150,26 +150,13 @@ class UserRepository constructor(
             }
     }
 
-    private suspend fun updateLocalUser(data: UserMeRaw) {
+    suspend fun updateLocalUser(data: UserMeRaw) {
         config.userId = data.id
         config.email = data.email
         local.update(data)
     }
 
-    fun updateUserData(data: UserMeData): Flow<Boolean> {
-        return getDataOnce(
-            remote = {
-                val pushToken = config.pushTokenUnsynced
-                    .takeIf { it.isNotBlank() }
-                    ?: data.pushToken.takeIf { it.isNotBlank() }
-                    ?: cachedUser?.data?.pushToken
-                remote.updateUserData(data.copy(pushToken = pushToken ?: ""))
-            },
-            localUpdate = { updateLocalUser(it) }
-        ).map { true }
-    }
-
-    suspend fun updateUserDataBlocking(data: UserMeData) {
+    private suspend fun updateUserDataBlocking(data: UserMeData) {
         triggerRemoteOnly { remote.updateUserData(data) }
             .also { updateLocalUser(it) }
     }

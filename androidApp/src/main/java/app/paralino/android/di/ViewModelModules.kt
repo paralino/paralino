@@ -73,7 +73,7 @@ val viewModelModules = module {
     viewModel { ChangeEmailViewModel(get(), get()) }
     viewModel { ChangePasswordViewModel(get()) }
     viewModel { ConvertAccountViewModel(get()) }
-    viewModel { EditProfileViewModel(get()) }
+    viewModel { EditProfileViewModel(get(), get()) }
     viewModel { RecoverKeysViewModel(get(), get()) }
     viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
     viewModel { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
@@ -108,6 +108,7 @@ val coreModule = module {
     factory { LocationRefreshUseCase(get(), get(), get(), get()) }
     factory { RealtimeEventsWhileSharingUseCase(get(), get(), get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get()) }
+    factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
