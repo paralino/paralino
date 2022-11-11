@@ -135,7 +135,6 @@ class GroupsRemoteSource constructor(
             val memberKey = cryptoKEKRepo.getMemberKey(groupId, config.userId)
                 ?: throw MissingMemberKeyException(groupId, config.userId)
 
-            val oldKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
 
             val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                 data = groupKey.data.content,
@@ -153,18 +152,21 @@ class GroupsRemoteSource constructor(
                 publicKey = codeData.ownerPublicKey
             )
 
-            val encryptedOldKeys = oldKeys.map {
-                GroupMemberOldKeyPayload(
-                    version = it.version,
-                    encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                        data = it.data.content,
-                        // sign with owner private key
-                        myPrivateKey = myKey.privateKey,
-                        // encrypt with user public key
-                        publicKey = codeData.ownerPublicKey
+            val oldKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
+            val encryptedOldKeys = oldKeys
+                .distinctBy { it.version }
+                .map { key ->
+                    GroupMemberOldKeyPayload(
+                        version = key.version,
+                        encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
+                            data = key.data.content,
+                            // sign with owner private key
+                            myPrivateKey = myKey.privateKey,
+                            // encrypt with user public key
+                            publicKey = codeData.ownerPublicKey
+                        )
                     )
-                )
-            }
+                }
 
             val payload = CreateGroupMemberPayload(
                 groupId = groupId,
