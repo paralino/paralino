@@ -1,0 +1,70 @@
+package app.paralino.core.domain.group
+
+import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
+import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
+import app.paralino.core.logg
+import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemotePreference
+import kotlinx.coroutines.flow.*
+
+class GroupPreRefreshUseCase constructor(
+    private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
+    private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
+    private val groupRemove: GroupRemoveUseCase,
+    private val groupMemberRemove: GroupMemberRemoveUseCase,
+    private val groupRefresh: GroupRefreshUseCase
+) : BaseRepository(), ILimitedExecution<String> {
+
+    override val executionState = MutableStateFlow(listOf<String>())
+
+    override fun isProcessing(key: String): Boolean {
+        val selfProcessing = super.isProcessing(key)
+        val groupRemoveProcessing = groupRemove.isProcessing(key)
+        val groupMemberRemoveProcessing = groupMemberRemove.isProcessing(key)
+        val groupCryptoKeyRotationProcessing = groupCryptoKeyRotation.isProcessing(key)
+        val memberCryptoKeyRotationProcessing = memberCryptoKeyRotation.isProcessing(key)
+
+        logg.tag("group_actions").v(
+            "Group pre-refresh processing:" +
+                    " self: $selfProcessing" +
+                    " groupRemove: $groupRemoveProcessing" +
+                    " groupMemberRemove: $groupMemberRemoveProcessing" +
+                    " groupKeyRotation: $groupCryptoKeyRotationProcessing" +
+                    " memberKeyRotation: $memberCryptoKeyRotationProcessing"
+        )
+
+        return selfProcessing || groupRemoveProcessing || groupMemberRemoveProcessing || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing
+    }
+
+    suspend fun refreshGroupWithMembers(groupId: String) {
+        val key = "group_refresh_$groupId"
+
+        if (isProcessing(groupId)) {
+            logg.tag("group_actions").v("Processing, can't refresh group $groupId")
+            return
+        }
+
+        logg.tag("group_actions").v("No processing, can refresh group $groupId")
+
+        getDataOnce(
+            local = flowOf(key),
+            remotePreference = RemotePreference.CACHE(key = key, timeMillis = 4_000)
+        ) {
+            logg.tag("group_actions").v("Start processing group refresh for group $groupId")
+            setAsProcessing(groupId)
+            groupRefresh.refreshRemoteGroupWithMembersAndPlaces(groupId)
+                .also {
+                    logg.tag("group_actions")
+                        .v("Stop processing group member remove for group $groupId")
+                    stopProcessing(groupId)
+                }
+        }
+            .catch {
+                logg.tag("group_actions")
+                    .v("Stop processing group member remove for group $groupId")
+                stopProcessing(groupId)
+            }
+            .collect()
+    }
+}

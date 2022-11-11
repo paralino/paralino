@@ -1,6 +1,9 @@
 package app.paralino.core.presentation.groups
 
 import app.paralino.core.config
+import app.paralino.core.domain.group.GroupMemberRemoveUseCase
+import app.paralino.core.domain.group.GroupRefreshUseCase
+import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
@@ -20,10 +23,12 @@ import kotlinx.coroutines.launch
 
 class GroupDetailViewModel(
     private val groupId: String,
-    private val groupRepo: GroupRepository,
     private val placesRepo: PlacesRepository,
     private val sharingManager: LocationSharingManager,
     private val locationStatusProvider: ILocationStatusProvider,
+    private val groupRemove: GroupRemoveUseCase,
+    private val groupMemberRemove: GroupMemberRemoveUseCase,
+    private val groupRefresh: GroupRefreshUseCase,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -37,7 +42,7 @@ class GroupDetailViewModel(
     init {
         combine(
             locationStatusProvider.status,
-            groupRepo.getGroupWithMembers(groupId),
+            groupRefresh.getGroupWithMembers(groupId),
             placesRepo.hasAnyPlace(),
             sharingManager.sharingContractForGroup(groupId)
         )
@@ -98,9 +103,9 @@ class GroupDetailViewModel(
             }
             flowOf(Payload.Error<Unit>(NotFoundException("Group not loaded")))
         } else if (data.canEdit) {
-            groupRepo.deleteGroup(groupId).mapToPayload { it }
+            groupRemove.deleteGroup(groupId).mapToPayload { it }
         } else {
-            groupRepo.leaveGroup(groupId).mapToPayload { it }
+            groupRemove.leaveGroup(groupId).mapToPayload { it }
         }
             .onEach { result ->
                 _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }
@@ -118,7 +123,7 @@ class GroupDetailViewModel(
     }
 
     fun removeMember(memberUserId: String) {
-        groupRepo.removeMember(groupId, memberUserId)
+        groupMemberRemove.removeMember(groupId, memberUserId)
             .mapToPayload { Unit }
             .onEach { result ->
                 _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }

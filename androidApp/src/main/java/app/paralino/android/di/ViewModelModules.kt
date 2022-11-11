@@ -32,6 +32,12 @@ import app.paralino.android.ui.settings.editprofile.EditProfileViewModel
 import app.paralino.android.ui.settings.emailchange.ChangeEmailViewModel
 import app.paralino.android.ui.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.android.ui.share.SharingViewModel
+import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
+import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
+import app.paralino.core.domain.group.GroupMemberRemoveUseCase
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.group.GroupRefreshUseCase
+import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
@@ -64,7 +70,7 @@ val viewModelModules = module {
             get(),
             get())
     }
-    viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get()) }
+    viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get()) }
     viewModel { MainViewModel(get(), get(), get()) }
     viewModel { ChangeEmailViewModel(get(), get()) }
     viewModel { ChangePasswordViewModel(get()) }
@@ -97,18 +103,25 @@ val coreModule = module {
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
-    factory { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
-    factory { LocationRefreshUseCase(get(), get(), get()) }
-    factory { RealtimeEventsWhileSharingUseCase(get(), get(), get(), get(), get()) }
+    factory { LocationRefreshUseCase(get(), get(), get(), get()) }
+    factory { RealtimeEventsWhileSharingUseCase(get(), get(), get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get()) }
+
+    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
+    single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get()) }
+    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupPreRefreshUseCase(get(), get(), get(), get(), get()) }
+    single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get(), get()) }
     single { GroupRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
     single { LocationRepository(get(), get(), get(), get()) }
-    single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
+    single { PlacesRepository(get(), get(), get(), get(), get()) }
 }

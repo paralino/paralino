@@ -12,9 +12,8 @@ import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
 import kotlinx.coroutines.flow.*
 
-class RealtimeEventsWhileSharingUseCase(
+class RealtimeEventsWhileSharingUseCase constructor(
     private val realtimeApi: IRealtimeApi,
-    private val placesRepo: PlacesRepository,
     private val groupRepo: GroupRepository,
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager
@@ -49,7 +48,7 @@ class RealtimeEventsWhileSharingUseCase(
                     it.channels.contains(placesEvent) -> {
                         logg.tag("realtime_events_sharing").v("Got place create/update event")
                         val place = GroupPlaceRaw.from(it.payload)
-                        placesRepo.updatePlaceLocally(place)
+                        groupRepo.gotPlaceUpdateFromRealtime(place)
                     }
                     it.channels.contains(membersEvent) -> {
                         val member = if (it.events.any { it.endsWith(".delete") }) {

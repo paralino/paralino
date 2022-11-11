@@ -6,10 +6,8 @@ import app.paralino.core.crypto.DecryptedGroupKeyData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroupWithMembers
-import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
-import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.*
@@ -20,7 +18,7 @@ class CryptoKEKRepository(
     private val local: ICryptoKeyLocalDataSource,
     private val userKeyRepository: CryptoUserKeyRepository,
     private val userRepository: UserRepository,
-    private val cryptoCore: CryptoCore
+    private val cryptoCore: CryptoCore,
 ) : BaseRepository() {
 
     private var cachedGroupKeys = MutableStateFlow<List<GroupCryptoKeyDataRaw>>(emptyList())
@@ -217,81 +215,6 @@ class CryptoKEKRepository(
             publicKey = memberPublicKey
         )
         return DecryptedGroupKeyData(keyRaw.version, memberKey)
-    }
-
-    suspend fun rotateAllGroupKeys(remoteGroup: UserGroupWithMembers, places: List<GroupPlace>) {
-        val userKey = userKeyRepository.latestKeyPair()
-
-        // 1. rotate group key
-        getDataOnce {
-            remote.rotateGroupKeys(
-                group = remoteGroup,
-                places = places,
-                myKey = userKey
-            )
-        }.first()
-
-        // 2. fetch new key(s) for that group
-        refreshGroupKeysForGroup(groupId = remoteGroup.id).first()
-
-        // 3. rotate member keys
-        // new group key is required first since we are re-encrypting user data with it
-        executeMemberKeyRotation(group = remoteGroup, myKey = userKey).first()
-
-        // 4. refresh member keys
-        refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
-    }
-
-    suspend fun rotateAllMemberKeys(remoteGroup: UserGroupWithMembers) {
-        val userKey = userKeyRepository.latestKeyPair()
-        executeMemberKeyRotation(group = remoteGroup, myKey = userKey).first()
-        refreshKeysForGroup(groupId = remoteGroup.id).first()
-    }
-
-    private suspend fun executeMemberKeyRotation(
-        group: UserGroupWithMembers,
-        myKey: AsymmetricCryptoKeyData
-    ): Flow<Unit> {
-        return getDataOnce {
-            remote.rotateMemberKeysForGroup(
-                group = group,
-                groupKey = getGroupKey(group.id, group.ownerPublicKey)!!,
-                myKey = myKey
-            )
-        }.map { Unit }
-    }
-
-    suspend fun createMissingMemberKeys(remoteGroup: UserGroupWithMembers) {
-
-        // get ids of members that already have key created by current user
-        val memberKeysCreatedByMe = getMemberKeys().filter {
-            it.groupId == remoteGroup.id && it.ownerUserId == userRepository.cachedUserId
-        }.map { it.memberUserId }
-
-        // get all other members from group that are missing key
-        val membersThatNeedKeyUpdate = remoteGroup.members.filter { member ->
-            !memberKeysCreatedByMe.contains(member.userId)
-        }
-
-        if(membersThatNeedKeyUpdate.isNotEmpty()) {
-            logg.tag("tag_crypto_key_group_member").d("Creating missing member keys for users (${membersThatNeedKeyUpdate.map { it.userId }}) in group ${remoteGroup.id}")
-            val userKey = userKeyRepository.latestKeyPair()
-            val myMemberKey =
-                getMemberKey(groupId = remoteGroup.id, memberUserId = userRepository.cachedUserId)
-            triggerRemoteOnly {
-                remote.createMemberKeysForSpecificMembers(
-                    groupId = remoteGroup.id,
-                    members = membersThatNeedKeyUpdate,
-                    myKey = userKey,
-                    // if member key is null, it will be created in next step
-                    // this means that this user has no keys yet like if it just added to a group
-                    currentSenderKey = myMemberKey
-                )
-            }
-            refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
-        } else {
-            logg.tag("tag_crypto_key_group_member").d("No missing member keys for group ${remoteGroup.id}")
-        }
     }
 
     suspend fun deleteAllKeysForGroup(groupId: String) {

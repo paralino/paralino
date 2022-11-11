@@ -1,5 +1,7 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
@@ -9,9 +11,10 @@ import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import kotlinx.coroutines.flow.*
 
-class LocationRefreshUseCase(
+class LocationRefreshUseCase constructor(
     private val realtimeApi: IRealtimeApi,
     private val groupsRepo: GroupRepository,
+    private val groupPreRefresh: GroupPreRefreshUseCase,
     private val locationPerformanceManager: LocationPerformanceManager,
 ) {
 
@@ -24,7 +27,7 @@ class LocationRefreshUseCase(
             channel = event,
             filters = listOf("$event.*.create", "$event.*.update")
         )
-            .onStart { groupsRepo.refreshGroupWithMembers(groupId) }
+            .onStart { groupPreRefresh.refreshGroupWithMembers(groupId) }
             .onEach {
                 val member = if (it.events.any { it.endsWith(".delete") }) {
                     logg.tag("realtime_events").v("Got member delete event")

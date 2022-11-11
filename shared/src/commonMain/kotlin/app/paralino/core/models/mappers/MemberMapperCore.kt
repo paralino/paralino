@@ -85,7 +85,7 @@ class MemberMapperCore constructor(
         )
 
         if(groupKey == null)
-            logg.e(MissingGroupKeyException(model.id, model.groupKeyVersion))
+            logg.e(MissingGroupKeyException(model.groupId, model.groupKeyVersion))
 
         // data encrypted with user senderKey DEK
         val locationData = if(memberKey != null) {

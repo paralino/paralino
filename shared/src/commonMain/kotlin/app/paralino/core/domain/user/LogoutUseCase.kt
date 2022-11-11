@@ -6,6 +6,7 @@ import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.IDeviceApiProvider
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.onEach
 class LogoutUseCase(
     private val userRepo: UserRepository,
     private val groupsRepo: GroupRepository,
+    private val placesRepo: PlacesRepository,
     private val locationRepo: LocationRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
@@ -67,6 +69,7 @@ class LogoutUseCase(
         pushManager.logout()
         deviceStatus.logout()
         groupsRepo.clear()
+        placesRepo.clear()
         locationRepo.clear()
         codeRepo.clearLocally()
     }

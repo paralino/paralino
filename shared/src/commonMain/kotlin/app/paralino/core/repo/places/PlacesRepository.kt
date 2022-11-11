@@ -1,6 +1,5 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
@@ -13,18 +12,18 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 class PlacesRepository constructor(
     private val local: IPlacesLocalDataSource,
     private val remote: PlacesRemoteSource,
     private val userRepository: UserRepository,
-    private val userKeyRepo: CryptoUserKeyRepository,
     private val locationSharingManager: LocationSharingManager,
-    private val geofenceManager: IGeofenceManager
+    private val geofenceManager: IGeofenceManager,
 ) : BaseRepository() {
 
     // TODO maybe clear place activity if location sharing stops?
@@ -67,6 +66,12 @@ class PlacesRepository constructor(
             },
             localUpdate = { local.recreatePlacesForGroup(groupId, it) }
         )
+    }
+
+    suspend fun refreshPlacesForGroup(groupId: String): List<GroupPlacesWithSettingsRaw> {
+        return triggerRemoteOnly {
+            remote.getPlacesForGroup(groupId)
+        }.also { local.recreatePlacesForGroup(groupId, it) }
     }
 
     suspend fun refreshAllPlaces(): List<GroupPlacesWithSettingsRaw> {
