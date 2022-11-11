@@ -38,10 +38,6 @@ class UserRemoteSource constructor(
         return api.login(email, password)
     }
 
-    suspend fun singUpAnonymously(): UserSession {
-        return api.createAnonymous()
-    }
-
     suspend fun getMe(): UserMeRaw {
         return api.getMe()
     }
@@ -69,10 +65,6 @@ class UserRemoteSource constructor(
     suspend fun updateUserData(data: UserMeData): UserMeRaw {
         val payload = userMapper.core2Remote(data)
         return api.updateUserData(payload.toPostJson())
-    }
-
-    suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {
-        return api.updateUserData(data)
     }
 
     suspend fun updateEmail(email: String, password: String): UserMeRaw {

@@ -156,10 +156,6 @@ class UserRepository constructor(
         local.update(data)
     }
 
-    suspend fun uploadAndInitKeysAndData(data: UserMeDataRaw): UserMeRaw {
-        return triggerRemoteOnly { remote.updateUserData(data.toPostJson()) }
-    }
-
     fun updateUserData(data: UserMeData): Flow<Boolean> {
         return getDataOnce(
             remote = {
