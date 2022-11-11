@@ -26,7 +26,7 @@ class PersonalCodesRemoteSource constructor(
 
         val userCodeData = UserPersonalCode(
             id = "",
-            validityUnix = nowUTC().plus(7.days).epochSeconds,
+            validityUnix = nowUTC().plus(2.days).epochSeconds,
             data = codeData
         )
 
