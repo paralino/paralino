@@ -34,10 +34,7 @@ import app.paralino.android.ui.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.android.ui.share.SharingViewModel
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
-import app.paralino.core.domain.group.GroupMemberRemoveUseCase
-import app.paralino.core.domain.group.GroupPreRefreshUseCase
-import app.paralino.core.domain.group.GroupRefreshUseCase
-import app.paralino.core.domain.group.GroupRemoveUseCase
+import app.paralino.core.domain.group.*
 import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
@@ -64,11 +61,12 @@ val viewModelModules = module {
     }
     viewModel { (createCode: Boolean) -> PersonalCodesViewModel(androidApplication(), createCode, get()) }
     viewModel { (groupId: String?, code: String?) ->
-        MemberInviteViewModel(androidApplication(),
+        MemberInviteViewModel(
+            androidApplication(),
             groupId = groupId,
             code = code,
-            get(),
-            get())
+            get(), get(), get()
+        )
     }
     viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get()) }
     viewModel { MainViewModel(get(), get(), get()) }
@@ -114,8 +112,9 @@ val coreModule = module {
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get()) }
+    single { GroupMemberAddUseCase(get(), get(), get(), get()) }
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupPreRefreshUseCase(get(), get(), get(), get(), get()) }
+    single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
 
     single { LocationSharingManager(get(), get()) }

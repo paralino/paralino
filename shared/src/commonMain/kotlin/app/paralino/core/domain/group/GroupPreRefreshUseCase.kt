@@ -13,6 +13,7 @@ class GroupPreRefreshUseCase constructor(
     private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
     private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
+    private val groupMemberAdd: GroupMemberAddUseCase,
     private val groupRefresh: GroupRefreshUseCase
 ) : BaseRepository(), ILimitedExecution<String> {
 
@@ -22,6 +23,7 @@ class GroupPreRefreshUseCase constructor(
         val selfProcessing = super.isProcessing(key)
         val groupRemoveProcessing = groupRemove.isProcessing(key)
         val groupMemberRemoveProcessing = groupMemberRemove.isProcessing(key)
+        val groupMemberAddProcessing = groupMemberAdd.isProcessing(key)
         val groupCryptoKeyRotationProcessing = groupCryptoKeyRotation.isProcessing(key)
         val memberCryptoKeyRotationProcessing = memberCryptoKeyRotation.isProcessing(key)
 
@@ -30,11 +32,12 @@ class GroupPreRefreshUseCase constructor(
                     " self: $selfProcessing" +
                     " groupRemove: $groupRemoveProcessing" +
                     " groupMemberRemove: $groupMemberRemoveProcessing" +
+                    " groupAddRemove: $groupMemberAddProcessing" +
                     " groupKeyRotation: $groupCryptoKeyRotationProcessing" +
                     " memberKeyRotation: $memberCryptoKeyRotationProcessing"
         )
 
-        return selfProcessing || groupRemoveProcessing || groupMemberRemoveProcessing || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing
+        return selfProcessing || groupRemoveProcessing || groupMemberRemoveProcessing || groupMemberAddProcessing || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing
     }
 
     suspend fun refreshGroupWithMembers(groupId: String) {
@@ -56,13 +59,13 @@ class GroupPreRefreshUseCase constructor(
             groupRefresh.refreshRemoteGroupWithMembersAndPlaces(groupId)
                 .also {
                     logg.tag("group_actions")
-                        .v("Stop processing group member remove for group $groupId")
+                        .v("Stop processing group refresh for group $groupId")
                     stopProcessing(groupId)
                 }
         }
             .catch {
                 logg.tag("group_actions")
-                    .v("Stop processing group member remove for group $groupId")
+                    .v("Stop processing group refresh for group $groupId")
                 stopProcessing(groupId)
             }
             .collect()

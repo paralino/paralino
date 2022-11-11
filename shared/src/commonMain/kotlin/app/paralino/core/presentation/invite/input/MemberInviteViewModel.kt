@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.invite.input
 
+import app.paralino.core.domain.group.GroupMemberAddUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.dashboard.GroupItemData
@@ -18,6 +19,7 @@ class MemberInviteViewModel(
     code: String?,
     private val codeRepo: PersonalCodesRepository,
     private val groupRepo: GroupRepository,
+    private val groupMemberAdd: GroupMemberAddUseCase,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -124,7 +126,7 @@ class MemberInviteViewModel(
     }
 
     private fun addMemberToGroup(groupId: String, state: MemberInviteScreenState.Loaded) {
-        groupRepo.addMemberByAccessCode(groupId, state.codeReadData)
+        groupMemberAdd.addMemberByAccessCode(groupId, state.codeReadData)
             .mapToPayload { it }
             .onEach { result ->
                 when (result) {

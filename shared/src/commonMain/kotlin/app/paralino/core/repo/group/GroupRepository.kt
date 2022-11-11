@@ -9,10 +9,8 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberModelData
-import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
-import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.ILocationLocalDataSource
@@ -97,23 +95,6 @@ class GroupRepository constructor(
             remote = { remote.updateGroup(userGroup) },
             localUpdate = { local.updateGroupOnly(it) }
         ).map { Unit }
-    }
-
-    fun addMemberByAccessCode(groupId: String, code: UserPersonalCodeData): Flow<GroupDocumentRaw> {
-        return getDataOnce(
-            remote = {
-                remote.addUserToGroup(
-                    groupId,
-                    code,
-                    userKeyRepo.latestKeyPair()
-                ).also {
-                    cryptoKEKRepo.refreshKeysForGroup(groupId).first()
-                }
-            },
-            localUpdate = {
-                local.updateOrCreateGroup(it)
-            }
-        ).map { it.group }
     }
 
     suspend fun gotPlaceUpdateFromRealtime(place: GroupPlaceRaw) {
