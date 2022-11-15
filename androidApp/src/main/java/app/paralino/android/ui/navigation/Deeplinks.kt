@@ -116,6 +116,10 @@ sealed class Deeplink() {
     }
 
     companion object {
+
+        const val homeUrl = "https://paralino.app"
+        const val sourceCodeUrl = "https://github.com/paralino"
+
         fun parse(deeplink: String?): Deeplink? {
             deeplink ?: return null
             val cleanDeeplink = DeeplinkHandler.cleanDeepLink(deeplink) ?: return null

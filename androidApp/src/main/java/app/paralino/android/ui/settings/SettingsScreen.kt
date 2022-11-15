@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,17 +26,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.rememberAppState
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.android.utils.extensions.openUri
+import app.paralino.android.utils.extensions.share
 
 @Composable
 fun SettingsScreen(appState: MainAppState) {
-//    Surface {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -44,10 +48,12 @@ fun SettingsScreen(appState: MainAppState) {
     ) {
         SettingsBigHeader(name = stringResource(id = R.string.title_settings))
         SettingSectionAccount(appState.navController)
-        SettingSectionLocation()
-        SettingSectionInfo()
+        SettingSectionInfo(
+            onLicencesClick = {
+                appState.navController.navigate(AppScreen.SettingsRoot.Licences.routeSignature)
+            }
+        )
     }
-//    }
 }
 
 @Composable
@@ -64,49 +70,43 @@ fun SettingSectionAccount(navController: NavController) {
 }
 
 @Composable
-fun SettingSectionLocation() {
-    SettingsSectionHeader(name = stringResource(id = R.string.settings_section_location_title))
-    SettingsActionItem(
-        name = stringResource(id = R.string.setting_title_location_defaults),
-        icon = Icons.Rounded.EditLocation
-    ) {}
-    SettingsActionItem(
-        name = stringResource(id = R.string.setting_title_location_sharing),
-        icon = Icons.Rounded.PersonPinCircle
-    ) {}
-    SettingsActionItem(
-        name = stringResource(id = R.string.setting_title_location_history),
-        icon = Icons.Rounded.History
-    ) {}
-}
-
-@Composable
-fun SettingSectionInfo() {
+fun SettingSectionInfo(
+    onLicencesClick: () -> Unit
+) {
+    val context = LocalContext.current
     SettingsSectionHeader(name = stringResource(id = R.string.settings_section_general_title))
-    SettingsActionItem(
-        name = stringResource(id = R.string.setting_title_rate),
-        icon = Icons.Rounded.Celebration
-    ) {}
+//    SettingsActionItem(
+//        name = stringResource(id = R.string.setting_title_rate),
+//        icon = Icons.Rounded.Celebration
+//    ) {}
     SettingsActionItem(
         name = stringResource(id = R.string.setting_title_share),
         icon = Icons.Rounded.Share
-    ) {}
-    SettingsActionItem(
-        name = stringResource(id = R.string.setting_title_help),
-        icon = Icons.Rounded.Help
-    ) {}
+    ) {
+        context.share(Deeplink.homeUrl)
+    }
+//    SettingsActionItem(
+//        name = stringResource(id = R.string.setting_title_help),
+//        icon = Icons.Rounded.Help
+//    ) {}
     SettingsActionItem(
         name = stringResource(id = R.string.setting_title_sourceCode),
         icon = Icons.Rounded.Code
-    ) {}
+    ) {
+        context.openUri(Deeplink.sourceCodeUrl.toUri())
+    }
     SettingsActionItem(
         name = stringResource(id = R.string.setting_title_privacy),
         icon = Icons.Rounded.PrivacyTip
-    ) {}
+    ) {
+        context.openUri(Deeplink.homeUrl.toUri())
+    }
     SettingsActionItem(
         name = stringResource(id = R.string.setting_title_libraries),
         icon = Icons.Rounded.LibraryBooks
-    ) {}
+    ) {
+        onLicencesClick()
+    }
 
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
