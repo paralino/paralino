@@ -4,6 +4,7 @@ import android.content.*
 import android.content.Context.BATTERY_SERVICE
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.net.Uri
 import android.os.BatteryManager
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -37,6 +38,11 @@ fun Context.share(data: String) {
 fun Context.copy(data: String, copyKey: String = app.paralino.android.BuildConfig.APPLICATION_ID + "_copyKey") {
     ContextCompat.getSystemService(this, ClipboardManager::class.java)
         ?.setPrimaryClip(ClipData.newPlainText(copyKey, data))
+}
+
+fun Context.openUri(uri: Uri) {
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+    startActivity(Intent.createChooser(intent, "Open"))
 }
 
 fun Context.hideKeyboardFrom(view: View) {

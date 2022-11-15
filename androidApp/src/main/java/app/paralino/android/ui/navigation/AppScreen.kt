@@ -184,5 +184,9 @@ sealed class AppScreen {
                 override val routeSignature: String = "convert-account"
             }
         }
+
+        object Licences : AppScreen() {
+            override val routeSignature: String = "licences"
+        }
     }
 }
