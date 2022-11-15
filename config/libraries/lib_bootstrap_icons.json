@@ -1,0 +1,15 @@
+{
+  "uniqueId": "getboostrap:icons",
+  "developers": [
+    {
+      "name": "Bootstrap",
+      "organisationUrl": "https://icons.getbootstrap.com/"
+    }
+  ],
+  "artifactVersion": "-",
+  "description": "Boostrap incognito icon",
+  "name": "Bootstrap icons",
+  "tag": "custom",
+  "website": "https://icons.getbootstrap.com/",
+  "licenses": ["MIT"]
+}
