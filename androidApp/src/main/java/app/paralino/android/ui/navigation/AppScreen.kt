@@ -1,6 +1,7 @@
 package app.paralino.android.ui.navigation
 
 import app.paralino.core.presentation.login.LoginScreenUiType
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 
 sealed class AppScreen {
 
@@ -133,6 +134,28 @@ sealed class AppScreen {
                 )
                     .joinToString(separator = "&")
                 return "places-detail?$args"
+            }
+        }
+
+        object RawDataScreen : AppScreen() {
+            val argumentDataType: String = "dataType"
+            val argumentDataId: String = "dataId"
+            override val routeSignature: String = "raw-data-screen?$argumentDataType={$argumentDataType}&$argumentDataId={$argumentDataId}"
+            fun route(type: RawPresentationDataType): String {
+
+                val id = when(type) {
+                    is RawPresentationDataType.GroupMemberPresentation -> type.memberId
+                    is RawPresentationDataType.GroupPlacePresentation -> type.placeId
+                    is RawPresentationDataType.GroupPresentation -> type.groupId
+                    RawPresentationDataType.UserPresentation -> ""
+                }
+
+                val args = arrayOf(
+                    "$argumentDataType=${type.key}",
+                    "$argumentDataId=$id"
+                ).joinToString(separator = "&")
+
+                return "raw-data-screen?$args"
             }
         }
     }
