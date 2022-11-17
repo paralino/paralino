@@ -57,11 +57,15 @@ sealed class CryptoResource<out R> {
     object NotInitialized : CryptoResource<Nothing>()
     object MissingKey : CryptoResource<Nothing>()
     object WrongKeyOrData : CryptoResource<Nothing>()
-    data class Ready<out T>(val data: T) : CryptoResource<T>()
+    data class Ready<out T>(val data: T) : CryptoResource<T>() {
+        override fun toString(): String {
+            return "Ready:START>>>${data}<<<END"
+        }
+    }
 
     override fun toString(): String {
         return when (this) {
-            is Ready<*> -> "Ready[data=$data]"
+            is Ready<*> -> "Ready:START>>>${data}<<<END"
             is NotInitialized -> "NotInitialized"
             MissingKey -> "MissingKey"
             WrongKeyOrData -> "WrongKeyOrData"
@@ -71,3 +75,12 @@ sealed class CryptoResource<out R> {
 
 val <T> CryptoResource<T>.data: T?
     get() = (this as? CryptoResource.Ready)?.data
+
+inline fun <reified T, R> CryptoResource<T>.mapSuccess(action: (T) -> R): CryptoResource<R> {
+    return when(this){
+        CryptoResource.MissingKey -> CryptoResource.MissingKey
+        CryptoResource.NotInitialized -> CryptoResource.NotInitialized
+        is CryptoResource.Ready -> CryptoResource.Ready(action(data))
+        CryptoResource.WrongKeyOrData -> CryptoResource.WrongKeyOrData
+    }
+}
