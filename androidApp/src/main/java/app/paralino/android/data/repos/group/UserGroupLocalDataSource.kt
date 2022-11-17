@@ -30,6 +30,14 @@ class UserGroupLocalDataSource constructor(
         dao.createOrUpdate(mapper.remote2Local(group))
     }
 
+    override fun getGroupRawPresentation(groupId: String): Flow<Pair<GroupDocumentRaw, UserGroup>> {
+        return dao.getGroup(groupId)
+            .filterNotNull()
+            .combine(memberLocal.getMemberCountInGroup(groupId)) { group, memberCount ->
+                mapper.local2Remote(group) to mapper.local2Core(group, memberCount)
+            }
+    }
+
     override fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
             .filterNotNull()

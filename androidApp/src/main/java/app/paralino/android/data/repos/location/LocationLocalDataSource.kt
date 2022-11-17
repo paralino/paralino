@@ -10,6 +10,7 @@ import app.paralino.android.data.models.location.MemberMutableDataUpdate
 import app.paralino.android.data.repos.group.UserGroupDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
 class LocationLocalDataSource(
@@ -28,6 +29,16 @@ class LocationLocalDataSource(
 
     override suspend fun recreateMembersForGroup(groupId: String, data: List<MemberDocumentRaw>) {
         dao.recreateForGroup(groupId, data.map { mapper.remote2Local(it) })
+    }
+
+    override fun getMemberRawPresentation(memberId: String): Flow<Pair<MemberDocumentRaw, MemberModel>> {
+        return dao.getMember(memberId)
+            .filterNotNull()
+            .map {
+                val key = groupDao.getGroupPublicKeyOnce(it.groupId)
+                    ?: throw MissingGroupKeyException(it.groupId)
+                mapper.local2Remote(it) to mapper.local2Core(it, key)
+            }
     }
 
     override fun getMemberModelsForUser(userId: String): Flow<List<MemberModel>> {
@@ -60,7 +71,7 @@ class LocationLocalDataSource(
     }
 
     override fun getMemberCountInGroup(groupId: String): Flow<Int> {
-        return dao.getMemberCountInGroup(groupId)
+        return dao.getMemberCountInGroup(groupId).distinctUntilChanged()
     }
 
     override suspend fun getMemberCountInGroupOnce(groupId: String): Int {

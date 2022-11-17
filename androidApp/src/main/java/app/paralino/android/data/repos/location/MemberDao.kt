@@ -23,6 +23,9 @@ interface MemberDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createOrUpdate(vararg data: MemberEntity)
 
+    @Query("SELECT * FROM members WHERE id = :memberId")
+    fun getMember(memberId: String): Flow<MemberEntity?>
+
     @Query("SELECT * FROM members WHERE userId IN (:userIds)")
     fun getLocationsForUsers(userIds: List<String>): Flow<List<MemberEntity>>
 
