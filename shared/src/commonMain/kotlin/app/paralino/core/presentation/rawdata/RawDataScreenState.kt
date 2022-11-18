@@ -25,9 +25,9 @@ data class RawDataScreenState constructor(
 sealed class RawPresentationDataType() {
     val key
         get() = when (this) {
-            is GroupMemberPresentation -> "group"
+            is GroupPresentation -> "group"
+            is GroupMemberPresentation -> "group_member"
             is GroupPlacePresentation -> "place"
-            is GroupPresentation -> "group_member"
             UserPresentation -> "user"
         }
 
