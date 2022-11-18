@@ -206,21 +206,25 @@ fun LargeSeekbarSwitch(
             ) {
                 if (state.switchState != null) {
                     if (state.switchState.checkState) {
-                        Icon(modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colors.onPrimary, shape = CircleShape)
-                            .padding(1.dp),
-                            imageVector = Icons.Rounded.CheckCircle,
+                        Icon(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colors.onPrimary, shape = CircleShape)
+                                .padding(1.dp),
+                            imageVector = state.switchState.checkedIcon,
                             contentDescription = null,
-                            tint = MaterialTheme.colors.primary)
+                            tint = MaterialTheme.colors.primary
+                        )
                     } else {
-                        Icon(modifier = Modifier
-                            .fillMaxSize()
-                            .background(backgroundColor, shape = CircleShape)
-                            .padding(2.dp),
-                            imageVector = Icons.Rounded.RadioButtonUnchecked,
+                        Icon(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(backgroundColor, shape = CircleShape)
+                                .padding(2.dp),
+                            imageVector = state.switchState.unCheckedIcon,
                             contentDescription = null,
-                            tint = contentColor.copy(alpha = ContentAlpha.disabled))
+                            tint = contentColor.copy(alpha = ContentAlpha.disabled)
+                        )
                     }
                 }
             }
@@ -251,7 +255,11 @@ fun rememberSeekbarState(
 }
 
 object LargeSeekbarSwitchState {
-    data class Switch(val checkState: Boolean)
+    data class Switch(
+        val checkState: Boolean,
+        val checkedIcon: ImageVector = Icons.Rounded.CheckCircle,
+        val unCheckedIcon: ImageVector = Icons.Rounded.RadioButtonUnchecked
+    )
 
     data class Seekbar(
         val seekbarRange: IntRange,
