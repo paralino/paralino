@@ -50,6 +50,7 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.GroupDetailScreenState
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
@@ -183,6 +184,20 @@ fun GroupDetailScreen(
                         AppScreen.DashboardRoot.PlacesList.route(groupId)
                     )
                 },
+                openRawDataPresentation = {
+                    appState.navController.navigate(
+                        AppScreen.DashboardRoot.RawDataScreen.route(
+                            RawPresentationDataType.GroupPresentation(groupId)
+                        )
+                    )
+                },
+                openMemberRawDataPresentation = {
+                    appState.navController.navigate(
+                        AppScreen.DashboardRoot.RawDataScreen.route(
+                            RawPresentationDataType.GroupMemberPresentation(it)
+                        )
+                    )
+                },
                 onSharingAction = {
                     if (state.data.sharingStatus != null) {
                         vm.stopSharing()
@@ -218,6 +233,8 @@ fun GroupDetailScreen(
     onMemberDelete: (GroupMemberItemState) -> Unit,
     onOpenMap: () -> Unit,
     openPlaces: () -> Unit,
+    openRawDataPresentation: () -> Unit,
+    openMemberRawDataPresentation: (memberId: String) -> Unit,
     onSharingAction: () -> Unit,
     onErrorAction: (ConditionErrorType) -> Unit,
 ) {
@@ -242,6 +259,18 @@ fun GroupDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = {
+                            openRawDataPresentation()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Security,
+                            tint = AppColors.accent,
+                            contentDescription = null
+                        )
+                    }
+
                     IconButton(
                         onClick = {
                             optionMenuExpanded = false
@@ -385,7 +414,20 @@ fun GroupDetailScreen(
                     forceExpandAction = expanded,
                     collapseOnActionClick = false,
                     onClick = { expanded = !expanded },
-                    onActionClick = { onMemberDelete(item) }
+                    onActionClick = { onMemberDelete(item) },
+                    extraActions = {
+                        IconButton(
+                            onClick = {
+                                openMemberRawDataPresentation(item.id)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Security,
+                                tint = AppColors.accent,
+                                contentDescription = null
+                            )
+                        }
+                    }
                 )
             }
         }
@@ -525,7 +567,10 @@ fun GroupDetailSharingStatusElement(
                         .size(18.dp)
                 )
                 Text(
-                    text = DistanceFormatter.getDistanceSmall(LocalContext.current, contract.approximateLocationInMeters!!.toFloat()).let { "($it)" },
+                    text = DistanceFormatter.getDistanceSmall(
+                        LocalContext.current,
+                        contract.approximateLocationInMeters!!.toFloat()
+                    ).let { "($it)" },
                     style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                 )
                 Spacer(modifier = Modifier.size(5.dp))

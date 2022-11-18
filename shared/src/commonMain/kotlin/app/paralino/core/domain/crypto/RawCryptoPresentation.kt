@@ -52,18 +52,37 @@ class RawCryptoPresentation constructor(
         return memberLocal.getMemberRawPresentation(memberId)
             .map {
 
-                val rawData = "${it.first.data}\n\n${it.first.mutableData ?: "---"}"
-                val decryptedMemberData = it.second.data.mapSuccess {
-                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
+                val rawData =
+                    "memberData: ${it.first.data}\n\nlocationData: ${it.first.mutableData?.ifEmpty { null } ?: "N/A"}"
+
+                val decryptedMemberData = it.second.data.let {
+                    when (it) {
+                        is CryptoResource.Ready -> {
+                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
+                        }
+                        CryptoResource.NotInitialized -> "N/A"
+                        else -> it.toString()
+                    }
+                }.let {
+                    "memberData: $it"
                 }
-                val decryptedLocationData = it.second.mutableData.mapSuccess {
-                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
+                val decryptedLocationData = it.second.mutableData.let {
+                    when (it) {
+                        is CryptoResource.Ready -> {
+                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
+                        }
+                        CryptoResource.NotInitialized -> "N/A"
+                        else -> it.toString()
+                    }
+                }.let {
+                    "locationData: $it"
                 }
+                val decryptedData = "${decryptedMemberData}\n\n$decryptedLocationData"
 
                 RawPresentationModel(
                     title = it.second.data.data?.name ?: "",
                     rawData = rawData,
-                    decryptedData = CryptoResource.Ready("\n$decryptedMemberData\n\n$decryptedLocationData\n"),
+                    decryptedData = CryptoResource.Ready(decryptedData),
                     type = RawPresentationDataType.GroupMemberPresentation(memberId)
                 )
             }
