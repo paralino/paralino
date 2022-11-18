@@ -12,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -27,7 +29,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import androidx.navigation.NavController
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
@@ -37,36 +38,79 @@ import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.openUri
 import app.paralino.android.utils.extensions.share
+import app.paralino.core.models.Payload
+import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
+import app.paralino.core.utils.Emojis
+import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun SettingsScreen(appState: MainAppState) {
-    val scrollState = rememberScrollState()
+fun SettingsScreen(
+    appState: MainAppState,
+    viewModel: SettingsViewModel = getViewModel(),
+) {
+
+    val accountState by viewModel.userData.collectAsState(Payload.Loading)
+
     Column(
         modifier = Modifier
-            .verticalScroll(state = scrollState)
+            .verticalScroll(state = rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
-        SettingsBigHeader(name = stringResource(id = R.string.title_settings))
-        SettingSectionAccount(appState.navController)
+
+        SettingsBigHeader(
+            name = stringResource(id = R.string.title_settings),
+            bottomPadding = if (accountState.data?.userState?.isGuestUser == true) 0.dp
+            else dimensionResource(id = R.dimen.activity_side_margin_medium_large)
+        )
+
+        when (val state = accountState) {
+            is Payload.Success -> {
+                AccountInfoHeader(
+                    name = state.data.userState.name,
+                    email = "",
+                    userId = "",
+                    image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
+                    isGuestUser = state.data.userState.isGuestUser,
+                    errorItem = null,
+                    onGuestAccountClick = {
+                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature)
+                    },
+                    onErrorItemClick = { }
+                )
+
+                SettingsActionItem(
+                    name = stringResource(id = R.string.settings_section_account_title),
+                    icon = Icons.Rounded.AccountCircle
+                ) {
+                    appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.routeSignature)
+                }
+
+                SettingsActionItem(
+                    name = stringResource(id = R.string.settings_section_personal_code_title),
+                    icon = Icons.Rounded.Key
+                ) {
+                    appState.navController.navigate(AppScreen.SettingsRoot.PersonalCodes.routeSignature)
+                }
+
+//                SettingsActionItem(
+//                    name = stringResource(id = R.string.settings_section_general_title),
+//                    icon = Icons.Rounded.Share
+//                ) {
+//                    appState.navController.navigate(AppScreen.SettingsRoot.PersonalCodes.routeSignature)
+//                }
+
+            }
+            Payload.Loading -> {}
+            is Payload.Error -> {}
+        }
+
         SettingSectionInfo(
             onLicencesClick = {
                 appState.navController.navigate(AppScreen.SettingsRoot.Licences.routeSignature)
             }
         )
     }
-}
-
-@Composable
-fun SettingSectionAccount(navController: NavController) {
-    SettingsSectionHeader(name = stringResource(id = R.string.settings_section_account_title))
-    SettingsActionItem(
-        name = stringResource(id = R.string.settings_section_account_title),
-        icon = Icons.Rounded.AccountCircle
-    ) { navController.navigate(AppScreen.SettingsRoot.ProfileDetails.routeSignature) }
-    SettingsActionItem(
-        name = stringResource(id = R.string.settings_section_personal_code_title),
-        icon = Icons.Rounded.Key
-    ) { navController.navigate(AppScreen.SettingsRoot.PersonalCodes.routeSignature) }
 }
 
 @Composable

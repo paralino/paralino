@@ -137,27 +137,7 @@ sealed class AppScreen {
             }
         }
 
-        object RawDataScreen : AppScreen() {
-            val argumentDataType: String = "dataType"
-            val argumentDataId: String = "dataId"
-            override val routeSignature: String = "raw-data-screen?$argumentDataType={$argumentDataType}&$argumentDataId={$argumentDataId}"
-            fun route(type: RawPresentationDataType): String {
-
-                val id = when(type) {
-                    is RawPresentationDataType.GroupMemberPresentation -> type.memberId
-                    is RawPresentationDataType.GroupPlacePresentation -> type.placeId
-                    is RawPresentationDataType.GroupPresentation -> type.groupId
-                    RawPresentationDataType.UserPresentation -> ""
-                }
-
-                val args = arrayOf(
-                    "$argumentDataType=${type.key}",
-                    "$argumentDataId=$id"
-                ).joinToString(separator = "&")
-
-                return "raw-data-screen?$args"
-            }
-        }
+        object RawDataScreen: Common.RawDataScreen("home")
     }
 
     object MapRoot : AppScreen() {
@@ -206,10 +186,36 @@ sealed class AppScreen {
             object ConvertAccount : AppScreen() {
                 override val routeSignature: String = "convert-account"
             }
+
+            object RawDataScreen: Common.RawDataScreen("profile")
         }
 
         object Licences : AppScreen() {
             override val routeSignature: String = "licences"
+        }
+    }
+
+    object Common {
+        open class RawDataScreen(private val parent: String) : AppScreen() {
+            val argumentDataType: String = "dataType"
+            val argumentDataId: String = "dataId"
+            override val routeSignature: String = "${parent}-raw-data-screen?$argumentDataType={$argumentDataType}&$argumentDataId={$argumentDataId}"
+            fun route(type: RawPresentationDataType): String {
+
+                val id = when(type) {
+                    is RawPresentationDataType.GroupMemberPresentation -> type.memberId
+                    is RawPresentationDataType.GroupPlacePresentation -> type.placeId
+                    is RawPresentationDataType.GroupPresentation -> type.groupId
+                    RawPresentationDataType.UserPresentation -> ""
+                }
+
+                val args = arrayOf(
+                    "$argumentDataType=${type.key}",
+                    "$argumentDataId=$id"
+                ).joinToString(separator = "&")
+
+                return "${parent}-raw-data-screen?$args"
+            }
         }
     }
 }

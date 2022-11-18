@@ -155,6 +155,14 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         composable(AppScreen.SettingsRoot.Licences.routeSignature) {
             LicencesScreen(appState)
         }
+        composable(AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.routeSignature) {
+            val type =
+                it.arguments?.getString(AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.argumentDataType)!!
+            val id =
+                it.arguments?.getString(AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.argumentDataId)
+            val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
+            RawDataScreen(appState = appState, type = rawDataType!!)
+        }
     }
 }
 
