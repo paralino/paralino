@@ -1,6 +1,5 @@
 package app.paralino.android.ui.groups.detail
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,30 +15,21 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.android.R
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.ConditionErrorItem
-import app.paralino.android.ui.components.DefaultEmptyState
-import app.paralino.android.ui.components.ImageModelImage
-import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.android.ui.components.*
 import app.paralino.android.ui.groups.members.GroupMember
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppColors
-import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.android.utils.extensions.toLocalDateTime
@@ -213,7 +203,8 @@ fun GroupDetailScreen(
                         ConditionErrorType.PERMISSION_NOTIFICATIONS -> notificationPermissionHandler.askNotificationPermission()
                         ConditionErrorType.PERMISSION_LOCATION -> locationPermissionHandler.askLocationPermission()
                         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> locationPermissionHandler.askBackgroundLocationPermission()
-                        else -> { /* TODO review or do nothing */ }
+                        else -> { /* TODO review or do nothing */
+                        }
                     }
                 }
             )
@@ -267,18 +258,6 @@ fun GroupDetailScreen(
                         Icon(
                             imageVector = Icons.Rounded.Security,
                             tint = AppColors.accent,
-                            contentDescription = null
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {
-                            optionMenuExpanded = false
-                            openPlaces()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.MapsHomeWork,
                             contentDescription = null
                         )
                     }
@@ -382,7 +361,8 @@ fun GroupDetailScreen(
                 GroupDetailsHeader(
                     groupName = state.name,
                     groupImage = state.image,
-                    onMapClick = onOpenMap
+                    onMapClick = onOpenMap,
+                    onPlacesClick = openPlaces
                 )
             }
 
@@ -453,6 +433,7 @@ fun GroupDetailsHeader(
     groupName: String,
     groupImage: ImageModel,
     onMapClick: () -> Unit,
+    onPlacesClick: () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
@@ -472,12 +453,45 @@ fun GroupDetailsHeader(
 
         Spacer(modifier = Modifier.size(40.dp))
 
-        GroupDetailsMapElement(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp),
-            onClick = onMapClick
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            LargeSeekbarSwitch(
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .fillMaxWidth(0.5f),
+                icon = Icons.Rounded.Map,
+                title = stringResource(id = R.string.title_map),
+                description = null,
+                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                    switchState = LargeSeekbarSwitchState.Switch(
+                        checkState = false,
+                        unCheckedIcon = Icons.Rounded.ChevronRight
+                    ),
+                    seekbarState = null
+                ),
+                onStateChange = {
+                    onMapClick()
+                }
+            )
+            LargeSeekbarSwitch(
+                modifier = Modifier.fillMaxWidth(),
+                icon = Icons.Rounded.MapsHomeWork,
+                title = stringResource(id = R.string.places_list_screen_title),
+                description = null,
+                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                    switchState = LargeSeekbarSwitchState.Switch(
+                        checkState = false,
+                        unCheckedIcon = Icons.Rounded.ChevronRight
+                    ),
+                    seekbarState = null
+                ),
+                onStateChange = {
+                    onPlacesClick()
+                }
+            )
+        }
 
         Spacer(modifier = Modifier.size(20.dp))
     }
@@ -577,70 +591,5 @@ fun GroupDetailSharingStatusElement(
             }
         }
 
-    }
-}
-
-@Composable
-fun GroupDetailsMapElement(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-
-    val colorMatrix = remember {
-        ColorMatrix(
-            floatArrayOf(
-                0.33f, 0.33f, 0.33f, 0f, 0f,
-                0.33f, 0.33f, 0.33f, 0f, 0f,
-                0.33f, 0.33f, 0.33f, 0f, 0f,
-                0f, 0f, 0f, 1f, 0f
-            )
-        )
-    }
-    Surface(
-        modifier = modifier,
-        elevation = 12.dp,
-        color = MaterialTheme.colors.surface,
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(4.dp, color = MaterialTheme.colors.surface),
-    ) {
-        Box(
-            modifier = Modifier.clickable { onClick() },
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.image_map_wide_placeholder),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.colorMatrix(colorMatrix)
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        AppColors.lightThemePrimary.copy(alpha = if (isSystemInDarkTheme()) 0.8f else 0.5f),
-                        shape = MaterialTheme.shapes.medium
-                    )
-            )
-            Text(
-                text = stringResource(id = R.string.group_details_map_action_button),
-                style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.SemiBold),
-                color = AppColors.lightBackground
-            )
-        }
-    }
-}
-
-@Preview("group_map_item", uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun PlaceListItemPreview() {
-    AppTheme {
-        Surface(
-            modifier = Modifier
-                .background(MaterialTheme.colors.background)
-                .padding(20.dp)
-        ) {
-            GroupDetailsMapElement { }
-        }
     }
 }
