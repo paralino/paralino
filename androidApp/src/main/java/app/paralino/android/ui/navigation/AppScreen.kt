@@ -124,18 +124,7 @@ sealed class AppScreen {
             }
         }
 
-        object PlaceDetail : AppScreen() {
-            val argumentPlaceId: String = "placeId"
-            override val routeSignature: String = "places-detail?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}"
-            fun route(groupId: String, placeId: String): String {
-                val args = arrayOf(
-                    "$argumentGroupId=$groupId",
-                    "${argumentPlaceId}=$placeId"
-                )
-                    .joinToString(separator = "&")
-                return "places-detail?$args"
-            }
-        }
+        object PlaceDetail : Common.PlaceDetail("home")
 
         object RawDataScreen: Common.RawDataScreen("home")
     }
@@ -151,6 +140,8 @@ sealed class AppScreen {
                 return "map-mainMap?$argumentGroupId=$groupId"
             }
         }
+
+        object PlaceDetail : Common.PlaceDetail("map")
     }
 
     object SettingsRoot : AppScreen() {
@@ -215,6 +206,19 @@ sealed class AppScreen {
                 ).joinToString(separator = "&")
 
                 return "${parent}-raw-data-screen?$args"
+            }
+        }
+
+        open class PlaceDetail(private val parent: String) : AppScreen() {
+            val argumentPlaceId: String = "placeId"
+            override val routeSignature: String = "$parent-places-detail?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}"
+            fun route(groupId: String, placeId: String): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    "${argumentPlaceId}=$placeId"
+                )
+                    .joinToString(separator = "&")
+                return "$parent-places-detail?$args"
             }
         }
     }

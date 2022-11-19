@@ -29,6 +29,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.BottomSheetsScreen
 import app.paralino.android.ui.groups.members.GroupMember
+import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.android.utils.extensions.safeCast
@@ -89,7 +90,11 @@ fun MapHomeScreen(
                             vm.trackMarker(it.markerId)
                         }
                         MapPinType.PLACE -> {
-
+                            if(mapViewState.isMarkerFocused(it.markerId)) {
+                                appState.navController.navigate(
+                                    AppScreen.MapRoot.PlaceDetail.route(uiState.data?.groupId!!, it.markerId)
+                                )
+                            }
                         }
                     }
                     trackGroup = false

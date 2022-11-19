@@ -161,6 +161,7 @@ open class MapViewProviderState constructor(
                         focusToMarker(it)
                     }
                     onMarkerClick?.invoke(it.data)
+                    annotation.isSelected = true
                 }
                 return@OnPointAnnotationClickListener true
             })
@@ -350,5 +351,10 @@ open class MapViewProviderState constructor(
             .build()
         // set camera position
         mapView.getMapboxMap().cameraAnimationsPlugin { this.flyTo(cameraPosition) }
+    }
+
+    fun isMarkerFocused(markerId: String): Boolean {
+        return markerCache.snapshot().values.firstOrNull { it.data.markerId == markerId }?.point?.isSelected
+            ?: false
     }
 }

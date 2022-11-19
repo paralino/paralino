@@ -122,6 +122,13 @@ fun NavGraphBuilder.mapGraph(appState: MainAppState) {
                 it.arguments!!.getString(AppScreen.MapRoot.MainMap.argumentGroupId)
             MapHomeScreen(appState = appState, groupId = groupId)
         }
+        composable(AppScreen.MapRoot.PlaceDetail.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.MapRoot.PlaceDetail.argumentGroupId)!!
+            val placeId =
+                it.arguments?.getString(AppScreen.MapRoot.PlaceDetail.argumentPlaceId)!!
+            PlaceDetailScreen(appState = appState, groupId = groupId, placeId = placeId)
+        }
     }
 }
 
