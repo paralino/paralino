@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
+import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 
@@ -53,11 +56,15 @@ fun MainAlertDialog(
                     buttons.forEach { buttonData ->
                         TextButton(
                             onClick = { onAction(buttonData.id) },
-                            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.onSurface),
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = contentColorFor(backgroundColor = buttonData.color),
+                                backgroundColor = buttonData.color
+                            ),
                             shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(16.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(vertical = 1.dp)
                         ) {
                             Text(buttonData.text)
                         }
@@ -68,10 +75,17 @@ fun MainAlertDialog(
     }
 }
 
+@Stable
 data class AlertDialogButtonData(
     val id: String,
     val text: String,
-)
+    val color: Color = Color.Transparent
+) {
+    companion object {
+        val destructiveColor = AppColors.errorBackground
+        val positiveColor = AppColors.accentLight.copy(alpha = 0.3f)
+    }
+}
 
 sealed interface MainAlertDialog {
     object Buttons {
@@ -91,8 +105,11 @@ sealed interface MainAlertDialog {
                 title = stringResource(id = R.string.settings_account_logout_alert_title),
                 message = stringResource(id = R.string.settings_account_logout_alert_message),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.button_ok),
+                        AlertDialogButtonData.destructiveColor
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
@@ -112,8 +129,11 @@ sealed interface MainAlertDialog {
                 title = stringResource(id = R.string.settings_account_delete_alert_title),
                 message = stringResource(id = R.string.settings_account_delete_alert_message),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.button_ok),
+                        AlertDialogButtonData.destructiveColor
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
@@ -168,8 +188,11 @@ sealed interface MainAlertDialog {
                 title = stringResource(id = R.string.group_details_menu_leave),
                 message = stringResource(id = R.string.group_details_leave_group_alert_title),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_leave_group_alert_button)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_leave_group_alert_button),
+                        AlertDialogButtonData.destructiveColor
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
@@ -189,8 +212,11 @@ sealed interface MainAlertDialog {
                 title = stringResource(id = R.string.group_details_menu_delete),
                 message = stringResource(id = R.string.group_details_delete_group_alert_title),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_delete_group_alert_button)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_delete_group_alert_button),
+                        AlertDialogButtonData.destructiveColor
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
@@ -211,10 +237,16 @@ sealed interface MainAlertDialog {
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
                 title = stringResource(id = R.string.alert_title_confirm),
-                message = stringResource(id = R.string.group_members_remove_alert_title, memberName),
+                message = stringResource(
+                    id = R.string.group_members_remove_alert_title,
+                    memberName
+                ),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_remove_member_alert_button)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_remove_member_alert_button),
+                        AlertDialogButtonData.destructiveColor
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
@@ -234,11 +266,15 @@ sealed interface MainAlertDialog {
                 title = stringResource(id = R.string.groups_sharing_potential_error_title),
                 message = stringResource(id = R.string.groups_sharing_potential_error_background_location_message),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.button_ok),
+                        AlertDialogButtonData.positiveColor
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_skip)
+                        stringResource(id = R.string.button_skip),
+                        AlertDialogButtonData.destructiveColor
                     ),
                 ),
                 onAction = onAction
@@ -251,13 +287,19 @@ sealed interface MainAlertDialog {
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
-            val errorContent = errorMessages.joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
+            val errorContent =
+                errorMessages.joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
             MainAlertDialog(
                 title = stringResource(id = R.string.groups_sharing_potential_error_title),
-                message = stringResource(id = R.string.groups_sharing_potential_error_message, errorContent),
+                message = stringResource(
+                    id = R.string.groups_sharing_potential_error_message,
+                    errorContent
+                ),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.groups_sharing_potential_error_button_enable)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.groups_sharing_potential_error_button_enable)
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
@@ -281,7 +323,8 @@ sealed interface MainAlertDialog {
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok)
+                        stringResource(id = R.string.button_ok),
+                        AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
@@ -304,7 +347,8 @@ sealed interface MainAlertDialog {
                 buttons = listOf(
                     AlertDialogButtonData(
                         id = Buttons.buttonOk,
-                        text = stringResource(id = R.string.button_ok)
+                        text = stringResource(id = R.string.button_ok),
+                        AlertDialogButtonData.positiveColor
                     )
                 ),
                 onAction = onAction
@@ -321,8 +365,11 @@ sealed interface MainAlertDialog {
                 title = stringResource(id = R.string.alert_title_confirm),
                 message = stringResource(id = R.string.recover_account_alert_message_reset),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.button_confirm)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.button_confirm),
+                        AlertDialogButtonData.destructiveColor
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
@@ -342,8 +389,11 @@ sealed interface MainAlertDialog {
                 title = stringResource(id = R.string.alert_title_confirm),
                 message = stringResource(id = R.string.recover_account_alert_message_recover),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.button_confirm)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.button_confirm),
+                        AlertDialogButtonData.positiveColor
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
@@ -365,7 +415,8 @@ sealed interface MainAlertDialog {
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_confirm)
+                        stringResource(id = R.string.button_confirm),
+                        AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
@@ -388,7 +439,8 @@ sealed interface MainAlertDialog {
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.login_signup_guest_recover_alert_confirm)
+                        stringResource(id = R.string.login_signup_guest_recover_alert_confirm),
+                        AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
@@ -413,7 +465,8 @@ sealed interface MainAlertDialog {
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.info_email_confirm_alert_button_resend)
+                        stringResource(id = R.string.info_email_confirm_alert_button_resend),
+                        AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
@@ -434,8 +487,11 @@ sealed interface MainAlertDialog {
                 title = stringResource(id = R.string.place_list_menu_delete),
                 message = stringResource(id = R.string.place_list_delete_place_alert_title),
                 buttons = listOf(
-                    AlertDialogButtonData(Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_delete_group_alert_button)),
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_delete_group_alert_button),
+                        AlertDialogButtonData.destructiveColor
+                    ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
                         stringResource(id = R.string.button_cancel)
