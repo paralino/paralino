@@ -7,7 +7,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,11 +18,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.DefaultEmptyState
 import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.rawdata.RawDataScreenEvent
@@ -102,13 +109,23 @@ fun RawDataScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 40.dp, horizontal = 20.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .verticalScroll(rememberScrollState())
+            .padding(vertical = 40.dp, horizontal = 20.dp),
     ) {
 
+        Text(
+            text = stringResource(id = R.string.raw_data_screen_info),
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 40.dp)
+        )
 
-        Text(text = "Encrypted data")
+        RawDataChip(
+            modifier = Modifier.padding(bottom = 8.dp),
+            icon = Icons.Outlined.Lock,
+            text = stringResource(R.string.raw_data_section_encrypted)
+        )
         Text(
             text = state.rawContent,
             modifier = Modifier
@@ -120,7 +137,11 @@ fun RawDataScreen(
 
         Spacer(modifier = Modifier.size(40.dp))
 
-        Text(text = "Decrypted data")
+        RawDataChip(
+            modifier = Modifier.padding(bottom = 8.dp),
+            icon = Icons.Rounded.LockOpen,
+            text = stringResource(R.string.raw_data_section_decrypted)
+        )
         Text(
             text = state.decryptedContent,
             modifier = Modifier
@@ -130,5 +151,33 @@ fun RawDataScreen(
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         )
 
+    }
+}
+
+@Composable
+private fun RawDataChip(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    text: String
+) {
+    Row(
+        modifier = modifier
+            .background(
+                AppColors.accentLight.copy(alpha = 0.3f),
+                RoundedCornerShape(percent = 50)
+            )
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(14.dp),
+        )
+        Spacer(modifier = Modifier.size(4.dp))
+        Text(
+            text = text.annotatedBold(),
+            style = MaterialTheme.typography.caption
+        )
     }
 }

@@ -292,5 +292,8 @@
     <string name="reset_password_screen_title">Reset password</string>
     <string name="reset_password_success_message">Please login again!</string>
     <string name="reset_password_error_token_message">Your password reset link expired, please request a new one.</string>
+    <string name="raw_data_screen_info">Here you can preview your data as it is stored on the server.\nOnly your device can unlock (decrypt) and see this information.</string>
+    <string name="raw_data_section_encrypted">Encrypted data on server</string>
+    <string name="raw_data_section_decrypted">Decrypted data on device</string>
 
 </resources>
