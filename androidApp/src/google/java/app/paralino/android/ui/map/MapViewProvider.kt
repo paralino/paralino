@@ -263,7 +263,12 @@ open class MapViewProviderState constructor(
                 )
             )
             .withIconImage(pin.second.bitmap)
-            .withIconAnchor(IconAnchor.BOTTOM)
+            .withIconAnchor(
+                when(model.pinType) {
+                    MapPinType.MEMBER -> IconAnchor.BOTTOM
+                    MapPinType.PLACE -> IconAnchor.CENTER
+                }
+            )
             .let {
                 annotationsManager?.create(it)!!
             }
