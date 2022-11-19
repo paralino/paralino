@@ -9,9 +9,11 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.dashboard.GroupItemData
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -22,6 +24,7 @@ class MapHomeViewModel constructor(
     private val locationRepo: LocationRepository,
     private val sharingManager: LocationSharingManager,
     private val groupRepo: GroupRepository,
+    private val placesRepo: PlacesRepository,
     private val locationRefreshUseCase: LocationRefreshUseCase,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
@@ -49,9 +52,10 @@ class MapHomeViewModel constructor(
                 } else {
                     combine(
                         groupRepo.getGroupWithMembersLocally(it),
+                        placesRepo.getPlacesForGroupLocally(it),
                         getSharingContract(),
                         focusedMarkerId
-                    ) { group, sharingStatus, focusedMarkerId ->
+                    ) { group, places, sharingStatus, focusedMarkerId ->
 
                         val memberData = group.members.map { member ->
                             GroupMemberItemState(member, showSpeedAndElevation = true).copy(
@@ -62,16 +66,20 @@ class MapHomeViewModel constructor(
                             )
                         }
 
-                        val markers = group.members.filter { it.mutableData.data != null }
+                        val memberMarkers = group.members.filter { it.mutableData.data != null }
                             .map { member ->
-                                MapMarkerState(
-                                    groupId = group.id,
-                                    focused = focusedMarkerId == member.id,
-                                    active = member.isActive,
-                                    image = member.image,
-                                    memberData = GroupMemberItemState(member, showSpeedAndElevation = true),
-                                    locationData = member.mutableData.data!!
+                                MapPinData(
+                                    member = member,
+                                    focused = focusedMarkerId == member.id
                                 )
+                            }
+
+                        val placeMarkers = places.filter { it.data.data?.lat != null && it.data.data?.lng != null }
+                            .map { place ->
+                                MapPinData(
+                                    groupId = group.id,
+                                    state = PlaceListItemData(place)
+                                ).copy(active = false)
                             }
 
                         MapHomeScreenState(
@@ -79,9 +87,9 @@ class MapHomeViewModel constructor(
                             groupName = group.name,
                             groupImage = group.image,
                             userCount = group.memberCount,
-                            inactiveUserCount = group.memberCount - markers.size,
+                            inactiveUserCount = group.memberCount - memberMarkers.size,
                             members = memberData,
-                            markers = markers,
+                            markers = memberMarkers + placeMarkers,
                             focusedMarkerId = focusedMarkerId,
                             sharingStatus = sharingStatus
                         )

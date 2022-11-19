@@ -13,12 +13,8 @@ import app.paralino.android.utils.extensions.bitmapFromBase64
 import app.paralino.android.utils.extensions.dp2px
 import app.paralino.android.utils.extensions.getBitmapFromView
 import app.paralino.android.utils.extensions.imageTintRes
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
-import app.paralino.core.presentation.map.MapMarkerState
-import app.paralino.core.presentation.places.create.CreatePlaceScreenState
-import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
-import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.utils.Emojis
 
 class MapUserMarkerView : ConstraintLayout {
@@ -40,12 +36,12 @@ class MapUserMarkerView : ConstraintLayout {
             ImageType.emoji -> {
                 vb.ivPinImage.isVisible = false
                 vb.tvGroupEmoji.isVisible = true
-                vb.tvGroupEmoji.text = data.image.getImageValue()
+                vb.tvGroupEmoji.text = data.image!!.getImageValue()
             }
             ImageType.raw -> {
                 vb.ivPinImage.isVisible = true
                 vb.tvGroupEmoji.isVisible = false
-                val b = data.image.getImageValue()?.bitmapFromBase64()
+                val b = data.image!!.getImageValue()?.bitmapFromBase64()
                 if (b != null) vb.ivPinImage.setImageBitmap(b)
                 else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
             }
@@ -101,65 +97,4 @@ class MapUserMarkerView : ConstraintLayout {
         }
     }
 
-}
-
-data class MapPinData constructor(
-    val groupId: String,
-    val memberId: String,
-    val focused: Boolean,
-    val active: Boolean,
-    val image: ImageModel?,
-    val lat: Double,
-    val lng: Double,
-    val accuracy: Float = 0f,
-    val shouldShowApproximateCircle: Boolean
-) {
-
-    constructor(state: CreatePlaceScreenState) : this(
-        groupId = state.groupId,
-        memberId = "place_marker",
-        focused = true,
-        active = true,
-        image = state.image,
-        lat = state.lat ?: 0.0,
-        lng = state.lng ?: 0.0,
-        accuracy = state.radiusMeters.toFloat(),
-        shouldShowApproximateCircle = true
-    )
-
-    constructor(state: PlaceDetailScreenState) : this(
-        groupId = state.groupId,
-        memberId = "place_marker",
-        focused = true,
-        active = true,
-        image = state.image,
-        lat = state.lat ?: 0.0,
-        lng = state.lng ?: 0.0,
-        accuracy = state.radiusMeters.toFloat(),
-        shouldShowApproximateCircle = true
-    )
-
-    constructor(groupId: String, state: PlaceListItemData) : this(
-        groupId = groupId,
-        memberId = "place_marker_${state.id}",
-        focused = false,
-        active = true,
-        image = state.image,
-        lat = state.lat ?: 0.0,
-        lng = state.lng ?: 0.0,
-        accuracy = state.radiusMeters.toFloat(),
-        shouldShowApproximateCircle = true
-    )
-
-    constructor(state: MapMarkerState) : this(
-        groupId = state.groupId,
-        memberId = state.memberData.id,
-        focused = state.focused,
-        active = state.active,
-        image = state.image,
-        lat = state.locationData.lat,
-        lng = state.locationData.lng,
-        accuracy = state.locationData.accuracy,
-        shouldShowApproximateCircle = state.locationData.shouldShowApproximateCircle
-    )
 }

@@ -51,7 +51,7 @@ import org.koin.dsl.module
 
 val viewModelModules = module {
     viewModel { DashboardViewModel(androidApplication(), get(), get(), get(), get(), get()) }
-    viewModel { MapViewModel(androidApplication(), get(), get(), get(), get()) }
+    viewModel { MapViewModel(androidApplication(), get(), get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { (startScreenType: Any) -> LoginViewModel(androidApplication(), get(), get(), get(), startScreenType as LoginScreenUiType) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }

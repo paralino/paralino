@@ -1,14 +1,14 @@
 package app.paralino.android.ui.map
 
 import android.view.View
-import app.paralino.core.presentation.map.MapMarkerState
+import app.paralino.core.presentation.map.MapPinData
 
 interface IMapViewProviderState {
 
     val mapAndroidView: View
     var onMapTouch: (() -> Boolean)?
     var onMapTouchEnd: (() -> Unit)?
-    var onMarkerClick: ((String) -> Boolean)?
+    var onMarkerClick: ((MapPinData) -> Boolean)?
 
     fun initMap()
 

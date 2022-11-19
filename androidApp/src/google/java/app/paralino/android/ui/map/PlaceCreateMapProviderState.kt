@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
 import app.paralino.android.R
+import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import com.mapbox.maps.MapView
@@ -96,7 +97,7 @@ class MapViewPlaceCreateProviderState constructor(
     private fun recenterMap() {
         synchronized(markerCache) {
             val point = markerCache.snapshot().entries.firstOrNull()?.value ?: return
-            focusToMarker(point.point)
+            focusToMarker(point)
         }
     }
 
@@ -115,11 +116,11 @@ class MapViewPlaceCreateProviderState constructor(
                 polygonAnnotationsManager?.update(polygon)
             }
 
-            focusToMarker(point.point)
+            focusToMarker(point)
         }
     }
 
-    override fun focusToMarker(annotation: PointAnnotation) {
+    override fun focusToMarker(data: MarkerCacheData) {
         synchronized(markerCache) {
             markerCache.snapshot().entries.firstOrNull()?.value?.polygon?.let {
                 val camera = mapView.getMapboxMap().cameraForGeometry(it.geometry).let {

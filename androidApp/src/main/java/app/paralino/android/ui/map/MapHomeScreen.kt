@@ -38,6 +38,7 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.dashboard.GroupItemData
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.map.MapHomeScreenState
+import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -83,7 +84,14 @@ fun MapHomeScreen(
                     false
                 }
                 mapViewState.onMarkerClick = {
-                    vm.trackMarker(it)
+                    when(it.pinType) {
+                        MapPinType.MEMBER -> {
+                            vm.trackMarker(it.markerId)
+                        }
+                        MapPinType.PLACE -> {
+
+                        }
+                    }
                     trackGroup = false
                     true
                 }

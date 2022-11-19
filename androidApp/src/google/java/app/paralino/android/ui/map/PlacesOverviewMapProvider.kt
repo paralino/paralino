@@ -1,7 +1,5 @@
 package app.paralino.android.ui.map
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.util.LruCache
 import android.view.Gravity
 import androidx.compose.runtime.Composable
@@ -9,11 +7,9 @@ import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
 import app.paralino.android.R
+import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.list.PlaceListItemData
-import app.paralino.core.presentation.places.list.PlacesListScreenState
-import com.mapbox.maps.CameraBoundsOptions
 import com.mapbox.maps.MapView
-import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.annotation.AnnotationConfig
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
@@ -99,7 +95,7 @@ class MapViewPlacesOverviewProviderState constructor(
         }
     }
 
-    override fun focusToMarker(annotation: PointAnnotation) {
+    override fun focusToMarker(data: MarkerCacheData) {
         // ignoring focusing on one marker in this screen
         recenterMap()
     }

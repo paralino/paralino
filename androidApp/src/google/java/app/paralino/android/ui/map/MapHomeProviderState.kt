@@ -4,7 +4,7 @@ import android.util.LruCache
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.core.util.lruCache
-import app.paralino.core.presentation.map.MapMarkerState
+import app.paralino.core.presentation.map.MapPinData
 import com.mapbox.maps.MapView
 import com.mapbox.maps.plugin.annotation.AnnotationConfig
 import com.mapbox.maps.plugin.annotation.annotations
@@ -40,8 +40,8 @@ class MapViewHomeProviderState constructor(
     polygonAnnotationsManager: PolygonAnnotationManager?,
 ) : MapViewProviderState(mapView, markerCache, annotationsManager, polygonAnnotationsManager) {
 
-    fun updateMarkers(list: List<MapMarkerState>) {
-        setAndUpdateMarkers(list.map { MapPinData(it) })
+    fun updateMarkers(list: List<MapPinData>) {
+        setAndUpdateMarkers(list)
     }
 
 }

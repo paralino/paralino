@@ -12,10 +12,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
+import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.presentation.map.MapPinType
 import com.google.gson.JsonPrimitive
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.StandardScaleGestureDetector
@@ -91,7 +92,7 @@ open class MapViewProviderState constructor(
 
     override var onMapTouch: (() -> Boolean)? = null
     override var onMapTouchEnd: (() -> Unit)? = null
-    override var onMarkerClick: ((String) -> Boolean)? = null
+    override var onMarkerClick: ((MapPinData) -> Boolean)? = null
 
     override fun initMap() {
         mapView.apply {
@@ -155,11 +156,11 @@ open class MapViewProviderState constructor(
             }
 
             annotationsManager?.addClickListener(OnPointAnnotationClickListener { annotation ->
-                if (!annotation.isSelected) {
-                    focusToMarker(annotation)
-                }
                 markerCache.snapshot()?.values?.firstOrNull { it.point.id == annotation.id }?.let {
-                    onMarkerClick?.invoke(it.data.memberId)
+                    if (!annotation.isSelected) {
+                        focusToMarker(it)
+                    }
+                    onMarkerClick?.invoke(it.data)
                 }
                 return@OnPointAnnotationClickListener true
             })
@@ -167,9 +168,9 @@ open class MapViewProviderState constructor(
             polygonAnnotationsManager?.addClickListener(OnPolygonAnnotationClickListener { polygon ->
                 markerCache.snapshot()?.values?.firstOrNull { it.point.id == polygon.id }?.let {
                     if (!polygon.isSelected) {
-                        focusToMarker(it.point)
+                        focusToMarker(it)
                     }
-                    onMarkerClick?.invoke(it.data.memberId)
+                    onMarkerClick?.invoke(it.data)
                 }
                 return@OnPolygonAnnotationClickListener true
             })
@@ -195,7 +196,7 @@ open class MapViewProviderState constructor(
 
     override fun reDrawMarkers(trackMarkerId: String?, trackPositions: Boolean) {
         val markers = markerCache.snapshot().values
-        val markerToTrack = markers.firstOrNull { it.data.memberId == trackMarkerId }
+        val markerToTrack = markers.firstOrNull { it.data.markerId == trackMarkerId }
 
         if (markers.isNotEmpty()) {
             if (trackPositions) {
@@ -204,7 +205,9 @@ open class MapViewProviderState constructor(
                     // Currently we do this workaround to focus on bounds (bounding box in osmdroid)
                     // and it will jump without animation if zoom > maxZoom
                     setBounds(CameraBoundsOptions.Builder().maxZoom(15.0).build())
-                    val camera = cameraForCoordinates(markers.map { it.point.point })
+                    val camera = cameraForCoordinates(markers.map { it.point.point }).let {
+                        it.toBuilder().zoom(it.zoom?.times(0.9)).build()
+                    }
                     cameraAnimationsPlugin {
                         flyTo(camera, MapAnimationOptions.mapAnimationOptions {
                             animatorListener(object : AnimatorListenerAdapter() {
@@ -220,7 +223,7 @@ open class MapViewProviderState constructor(
                     }
                 }
             } else if (markerToTrack != null) {
-                focusToMarker(markerToTrack.point)
+                focusToMarker(markerToTrack)
             }
         }
     }
@@ -252,7 +255,7 @@ open class MapViewProviderState constructor(
         val pin = MapUserMarkerView.create(mapView.context, model)
 
         val newPoint = PointAnnotationOptions()
-            .withData(JsonPrimitive(model.memberId))
+            .withData(JsonPrimitive(model.markerId))
             .withPoint(
                 Point.fromLngLat(
                     model.lng,
@@ -313,7 +316,7 @@ open class MapViewProviderState constructor(
             val pin = MapUserMarkerView.create(mapView.context, newMarkerData)
             marker.point.iconImageBitmap = pin.second.bitmap
             val newMarker = marker.copy(data = pin.first)
-            markerCache.put(marker.data.memberId, newMarker)
+            markerCache.put(marker.data.markerId, newMarker)
         }
 
         annotationsManager?.update(marker.point)
@@ -325,15 +328,20 @@ open class MapViewProviderState constructor(
     }
 
     override fun focusToMarker(markerId: String) {
-        markerCache.snapshot().values.firstOrNull { it.data.memberId == markerId }?.let {
-            focusToMarker(it.point)
+        markerCache.snapshot().values.firstOrNull { it.data.markerId == markerId }?.let {
+            focusToMarker(it)
         }
     }
 
-    protected open fun focusToMarker(annotation: PointAnnotation) {
+    protected open fun focusToMarker(data: MarkerCacheData) {
+
+        val zoom = when(data.data.pinType) {
+            MapPinType.MEMBER -> 15.0
+            MapPinType.PLACE -> 12.0
+        }
         val cameraPosition = CameraOptions.Builder()
-            .zoom(16.0)
-            .center(annotation.point)
+            .zoom(zoom)
+            .center(data.point.point)
             .build()
         // set camera position
         mapView.getMapboxMap().cameraAnimationsPlugin { this.flyTo(cameraPosition) }

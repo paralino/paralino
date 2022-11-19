@@ -1,13 +1,10 @@
 package app.paralino.core.presentation.places.list
 
 import app.paralino.core.models.Payload
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.ILocationStatusProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -35,18 +32,10 @@ class PlacesViewModel(
         ) { group, places, status ->
 
             val placesState = places.map {
-                PlaceListItemData(
-                    id = it.id,
-                    name = it.data.data?.name ?: "---",
-                    image = it.data.data?.image ?: ImageModel.emoji(Emojis.robot),
-                    private = it.private,
-                    lat = it.data.data?.lat,
-                    lng = it.data.data?.lng,
-                    radiusMeters = it.data.data?.radiusMeters ?: 0
-                )
+                PlaceListItemData(it)
             }
 
-            val errors = if(places.isNotEmpty() && !status.isNotificationPermissionAllowed) {
+            val errors = if (places.isNotEmpty() && !status.isNotificationPermissionAllowed) {
                 listOf(ConditionErrorType.PERMISSION_NOTIFICATIONS)
             } else {
                 emptyList()
