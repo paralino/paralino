@@ -9,10 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,11 +26,13 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppColors
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenEvent
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
@@ -97,6 +96,23 @@ fun PlaceDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = {
+                            appState.navController.navigate(
+                                AppScreen.DashboardRoot.RawDataScreen.route(
+                                    RawPresentationDataType.GroupPlacePresentation(
+                                        placeId = state.data!!.placeId
+                                    )
+                                )
+                            )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Security,
+                            tint = AppColors.accent,
+                            contentDescription = null
+                        )
+                    }
                     if (state.data?.canEdit == true) {
                         IconButton(
                             onClick = {

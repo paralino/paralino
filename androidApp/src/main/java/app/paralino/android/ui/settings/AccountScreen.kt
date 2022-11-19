@@ -30,10 +30,12 @@ import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.AccountScreenEvent
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
@@ -45,7 +47,6 @@ fun AccountScreen(
     appState: MainAppState,
     viewModel: SettingsViewModel = getViewModel(),
 ) {
-    val scrollState = rememberScrollState()
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
     var showDangerZoneContent by remember { mutableStateOf(false) }
     val accountState by viewModel.userData.collectAsState(Payload.Loading)
@@ -105,15 +106,36 @@ fun AccountScreen(
 
     Column(
         modifier = Modifier
-            .verticalScroll(state = scrollState)
+            .verticalScroll(state = rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
 
-        SettingsBigHeader(
-            name = stringResource(id = R.string.settings_section_account_title),
-            bottomPadding = if (accountState.data?.userState?.isGuestUser == true) 0.dp
-            else dimensionResource(id = R.dimen.activity_side_margin_medium_large)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SettingsBigHeader(
+                name = stringResource(id = R.string.settings_section_account_title),
+                bottomPadding = if (accountState.data?.userState?.isGuestUser == true) 0.dp
+                else dimensionResource(id = R.dimen.activity_side_margin_medium_large)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(
+                onClick = {
+                    appState.navController.navigate(
+                        AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.route(
+                            RawPresentationDataType.UserPresentation
+                        )
+                    )
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Security,
+                    tint = AppColors.accent,
+                    contentDescription = null
+                )
+            }
+        }
 
         when (val state = accountState) {
             is Payload.Success -> {
@@ -128,9 +150,10 @@ fun AccountScreen(
                         appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature)
                     },
                     onErrorItemClick = {
-                        when(it) {
-                           ConditionErrorType.EMAIL_VERIFICATION -> showDialog = MainAlertDialog.VerifyEmail(state.data.userState.email)
-                           else -> {}
+                        when (it) {
+                            ConditionErrorType.EMAIL_VERIFICATION -> showDialog =
+                                MainAlertDialog.VerifyEmail(state.data.userState.email)
+                            else -> {}
                         }
                     }
                 )
@@ -196,7 +219,11 @@ fun AccountScreen(
         }
     }
 
-    AnimatedVisibility(accountState.data?.loadingAction == true, enter = fadeIn(), exit = fadeOut()) {
+    AnimatedVisibility(
+        accountState.data?.loadingAction == true,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -271,21 +298,23 @@ fun AccountInfoHeader(
         Spacer(modifier = Modifier.size(10.dp))
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-            if (!isGuestUser) {
+            if (!isGuestUser && email.isNotBlank()) {
                 Text(
                     text = "Email: **$email**".annotatedBold(),
                     style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
                 )
             }
-            Text(
-                text = "ID: **$userId**".annotatedBold(),
-                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
-            )
+            if (userId.isNotBlank()) {
+                Text(
+                    text = "ID: **$userId**".annotatedBold(),
+                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.size(10.dp))
 
-        if(errorItem != null) {
+        if (errorItem != null) {
             ConditionErrorItem(
                 data = errorItem
             ) {

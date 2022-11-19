@@ -13,6 +13,7 @@ interface IPlacesLocalDataSource {
     suspend fun updatePlaceOnly(place: GroupPlaceRaw)
     suspend fun updatePlaceSettings(settings: GroupPlaceSettingRaw)
 
+    fun getPlaceRawPresentation(placeId: String): Flow<Pair<GroupPlaceRaw, GroupPlace>>
     fun getPlaceWithoutSettings(placeId: String): Flow<GroupPlace>
     fun getPlaceWithSettings(placeId: String): Flow<GroupPlaceWithSettings>
     fun getPlacesForGroup(groupId: String): Flow<List<GroupPlace>>

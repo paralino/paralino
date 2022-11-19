@@ -52,6 +52,7 @@ fun GroupMember(
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     onActionClick: (() -> Unit)? = null,
+    extraActions: (@Composable RowScope.() -> Unit)? = null,
     onClick: () -> Unit,
 ) {
     ConstraintLayout(
@@ -170,7 +171,10 @@ fun GroupMember(
                             .size(18.dp)
                     )
                     Text(
-                        text = DistanceFormatter.getSpeedSmall(LocalContext.current, state.speedMs!!),
+                        text = DistanceFormatter.getSpeedSmall(
+                            LocalContext.current,
+                            state.speedMs!!
+                        ),
                         style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
@@ -185,7 +189,10 @@ fun GroupMember(
                             .size(18.dp)
                     )
                     Text(
-                        text = DistanceFormatter.getDistanceSmall(LocalContext.current, state.elevationMeters!!),
+                        text = DistanceFormatter.getDistanceSmall(
+                            LocalContext.current,
+                            state.elevationMeters!!
+                        ),
                         style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
@@ -195,7 +202,7 @@ fun GroupMember(
         }
 
         // expand icon
-        if (state.actionItem != null) {
+        if (state.actionItem != null || extraActions != null) {
             IconButton(
                 onClick = { expanded = !expanded },
                 modifier = Modifier.constrainAs(expand) {
@@ -211,11 +218,13 @@ fun GroupMember(
             }
         } else {
             Spacer(
-                modifier = Modifier.size(1.dp).constrainAs(expand) {
-                    end.linkTo(parent.end)
-                    bottom.linkTo(image.bottom)
-                    top.linkTo(image.top)
-                }
+                modifier = Modifier
+                    .size(1.dp)
+                    .constrainAs(expand) {
+                        end.linkTo(parent.end)
+                        bottom.linkTo(image.bottom)
+                        top.linkTo(image.top)
+                    }
             )
         }
 
@@ -233,23 +242,33 @@ fun GroupMember(
                 width = Dimension.fillToConstraints
             }
         ) {
-            if (state.actionItem != null) {
+            if (state.actionItem != null || extraActions != null) {
                 AnimatedVisibility(visible = expanded) {
-                    FilledButton(
-                        style = ButtonStyle.SMALL_ACTION,
-                        icon = state.actionItem!!.actionIcon,
-                        elevation = ButtonDefaults.elevation(pressedElevation = 2.dp),
+                    Row(
                         modifier = Modifier.padding(top = 10.dp),
-                        onClick = {
-                            if (collapseOnActionClick)
-                                expanded = !expanded
-                            onActionClick?.invoke()
-                        }
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = stringResource(id = state.actionItem!!.actionText),
-                            style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
-                        )
+                        if (state.actionItem != null) {
+                            FilledButton(
+                                style = ButtonStyle.SMALL_ACTION,
+                                icon = state.actionItem!!.actionIcon,
+                                elevation = ButtonDefaults.elevation(pressedElevation = 2.dp),
+                                onClick = {
+                                    if (collapseOnActionClick)
+                                        expanded = !expanded
+                                    onActionClick?.invoke()
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(id = state.actionItem!!.actionText),
+                                    style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
+                                )
+                            }
+                        }
+
+                        if (extraActions != null) {
+                            extraActions()
+                        }
                     }
                 }
             }
@@ -267,20 +286,23 @@ fun GroupMemberItemState.getLastPingText(): String? {
     }
 }
 
-val MemberAction.actionIcon: ImageVector get() = when(this) {
-    MemberAction.DELETE_MEMBER -> Icons.Rounded.PersonRemove
-    MemberAction.DELETE_LOCATION -> Icons.Rounded.Delete
-}
+val MemberAction.actionIcon: ImageVector
+    get() = when (this) {
+        MemberAction.DELETE_MEMBER -> Icons.Rounded.PersonRemove
+        MemberAction.DELETE_LOCATION -> Icons.Rounded.Delete
+    }
 
-val MemberAction.actionText: Int get() = when(this) {
-    MemberAction.DELETE_MEMBER -> R.string.group_members_item_remove_button
-    MemberAction.DELETE_LOCATION -> R.string.group_members_item_clear_location_button
-}
+val MemberAction.actionText: Int
+    get() = when (this) {
+        MemberAction.DELETE_MEMBER -> R.string.group_members_item_remove_button
+        MemberAction.DELETE_LOCATION -> R.string.group_members_item_clear_location_button
+    }
 
-val GroupMemberStatus.actionText: Int? get() = when(this) {
-    GroupMemberStatus.ACTIVE -> null
-    GroupMemberStatus.INACTIVE -> R.string.group_members_status_inactive
-}
+val GroupMemberStatus.actionText: Int?
+    get() = when (this) {
+        GroupMemberStatus.ACTIVE -> null
+        GroupMemberStatus.INACTIVE -> R.string.group_members_status_inactive
+    }
 
 @Preview(device = Devices.PIXEL_3A)
 @Composable

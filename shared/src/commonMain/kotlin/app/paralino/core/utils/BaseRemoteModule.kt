@@ -11,6 +11,12 @@ object BaseRemoteModule {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
+    val prettyPrintFormatter = Json {
+        encodeDefaults = true
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+        prettyPrint = true
+    }
 }
 
 suspend inline fun <reified T> poll(

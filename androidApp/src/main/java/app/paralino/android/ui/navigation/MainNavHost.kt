@@ -22,6 +22,7 @@ import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.places.create.CreatePlaceScreen
 import app.paralino.android.ui.places.detail.PlaceDetailScreen
 import app.paralino.android.ui.places.list.PlacesScreen
+import app.paralino.android.ui.rawdata.RawDataScreen
 import app.paralino.android.ui.settings.AccountScreen
 import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.SettingsScreen
@@ -32,6 +33,7 @@ import app.paralino.android.ui.settings.passwordchange.ChangePasswordScreen
 import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 
 
 @Composable
@@ -99,6 +101,14 @@ fun NavGraphBuilder.dashboardGraph(appState: MainAppState) {
                 it.arguments?.getString(AppScreen.DashboardRoot.PlaceCreate.argumentPlaceId)
             CreatePlaceScreen(appState = appState, groupId = groupId, placeId = placeId)
         }
+        composable(AppScreen.DashboardRoot.RawDataScreen.routeSignature) {
+            val type =
+                it.arguments?.getString(AppScreen.DashboardRoot.RawDataScreen.argumentDataType)!!
+            val id =
+                it.arguments?.getString(AppScreen.DashboardRoot.RawDataScreen.argumentDataId)
+            val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
+            RawDataScreen(appState = appState, type = rawDataType!!)
+        }
     }
 }
 
@@ -144,6 +154,14 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.SettingsRoot.Licences.routeSignature) {
             LicencesScreen(appState)
+        }
+        composable(AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.routeSignature) {
+            val type =
+                it.arguments?.getString(AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.argumentDataType)!!
+            val id =
+                it.arguments?.getString(AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.argumentDataId)
+            val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
+            RawDataScreen(appState = appState, type = rawDataType!!)
         }
     }
 }

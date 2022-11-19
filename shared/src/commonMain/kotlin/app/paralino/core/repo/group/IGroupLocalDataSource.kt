@@ -12,6 +12,7 @@ interface IGroupLocalDataSource {
     suspend fun updateOrCreateGroup(group: GroupWithMemberRaw)
     suspend fun updateGroupOnly(group: GroupDocumentRaw)
 
+    fun getGroupRawPresentation(groupId: String): Flow<Pair<GroupDocumentRaw, UserGroup>>
     fun getGroupWithoutMembers(groupId: String): Flow<UserGroup>
     fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers>
     fun getAllGroups(): Flow<List<UserGroup>>

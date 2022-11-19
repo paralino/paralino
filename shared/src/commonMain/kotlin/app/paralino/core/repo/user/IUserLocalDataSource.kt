@@ -8,6 +8,8 @@ interface IUserLocalDataSource {
 
     fun getMe(): Flow<UserMe?>
     fun getMeRaw(): Flow<UserMeRaw?>
+    fun getMeRawPresentation(): Flow<Pair<UserMeRaw, UserMe>?>
+
     suspend fun update(data: UserMeRaw): UserMe
     suspend fun clear()
 

@@ -50,6 +50,13 @@ class GroupPlacesLocalDataSource(
         dao.createOrUpdate(settingsMapper.remote2Local(settings))
     }
 
+    override fun getPlaceRawPresentation(placeId: String): Flow<Pair<GroupPlaceRaw, GroupPlace>> {
+        return dao.getPlace(placeId)
+            .filterNotNull()
+            .distinctUntilChanged()
+            .map { mapper.local2Remote(it) to mapper.local2Core(it) }
+    }
+
     override fun getPlaceWithoutSettings(placeId: String): Flow<GroupPlace> {
         return dao.getPlace(placeId)
             .filterNotNull()

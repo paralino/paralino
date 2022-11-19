@@ -26,6 +26,7 @@ import app.paralino.android.ui.map.MapViewModel
 import app.paralino.android.ui.places.create.CreatePlaceViewModel
 import app.paralino.android.ui.places.detail.PlaceDetailViewModel
 import app.paralino.android.ui.places.list.PlacesViewModel
+import app.paralino.android.ui.rawdata.RawDataPresentationViewModel
 import app.paralino.android.ui.settings.SettingsViewModel
 import app.paralino.android.ui.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.android.ui.settings.editprofile.EditProfileViewModel
@@ -34,10 +35,12 @@ import app.paralino.android.ui.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.android.ui.share.SharingViewModel
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
+import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.group.*
 import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
@@ -79,6 +82,7 @@ val viewModelModules = module {
     viewModel { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
     viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
     viewModel { (groupID: String, placeId: String?) -> CreatePlaceViewModel(groupID, placeId, get(), get()) }
+    viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
 }
 
 val utilModule = module {
@@ -109,6 +113,7 @@ val coreModule = module {
     factory { RealtimeEventsWhileSharingUseCase(get(), get(), get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { RawCryptoPresentation(get(), get(), get(), get()) }
 
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
