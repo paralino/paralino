@@ -7,7 +7,6 @@ import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.LocationNodePayload
-import app.paralino.core.models.raw.MemberDataPayload
 import app.paralino.core.models.raw.UpdateLocationFunctionData
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.repo.api.IFunctionsApi
@@ -61,8 +60,8 @@ class UpdateUserDataUseCase constructor(
 
         val nodes = userMembers.map { member ->
 
-            val groupKey = cryptoKEKRepo.getGroupKey(member.groupId, member.groupKeyVersion)
-                ?: throw MissingGroupKeyException(member.groupId, member.groupKeyVersion)
+            val groupKey = cryptoKEKRepo.getGroupKey(member.member.groupId, member.member.groupKeyVersion)
+                ?: throw MissingGroupKeyException(member.member.groupId, member.member.groupKeyVersion)
 
             val newData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
@@ -72,12 +71,11 @@ class UpdateUserDataUseCase constructor(
             )
 
             LocationNodePayload(
-                memberId = member.id,
-                memberData = MemberDataPayload(
-                    memberData = newData,
-                    groupKeyVersion = member.groupKeyVersion
-                ),
-                locationData = null
+                groupId = member.member.groupId,
+                groupKeyVersion = member.member.groupKeyVersion,
+                memberKeyVersion = member.member.memberKeyVersion,
+                memberData = newData,
+                locations = emptyList()
             )
         }
 

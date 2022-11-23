@@ -10,13 +10,19 @@ class UserMemberIdUseCase constructor(
     private val placeLocal: IPlacesLocalDataSource
 ) {
 
+    suspend fun getCurrentDeviceIdForGroup(groupId: String): String? {
+        // TODO replace with proper id when multiple device support is added
+        return memberLocal.getUserLocationsIds(
+            groupId = groupId,
+            userId = userRepository.cachedUserId
+        ).firstOrNull()
+    }
+
     suspend fun getCurrentDeviceMemberIdForGroup(groupId: String): String? {
-        return memberLocal.getUserMemberIds(
-            userId = userRepository.cachedUserId,
-            groupId = groupId
+        return memberLocal.getUserMemberId(
+            groupId = groupId,
+            userId = userRepository.cachedUserId
         )
-            // TODO replace with proper id when multiple device support is added
-            .firstOrNull()
     }
 
     suspend fun getCurrentDeviceMemberIdForPlace(placeId: String): String? {

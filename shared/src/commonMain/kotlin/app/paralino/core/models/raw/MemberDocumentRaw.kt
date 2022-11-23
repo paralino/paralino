@@ -15,19 +15,8 @@ data class MemberDocumentRaw constructor(
     val memberKeyVersion: Long,
     val shouldRotateKeys: Boolean,
 
-    val data: String,
-    val mutableData: String? = null
+    val data: String
 ) {
-
-    fun toPostJson(): Map<String, Any?> {
-        return buildMap {
-            put("ownerUserId", ownerUserId)
-            put("groupId", groupId)
-            put("ownerPublicKey", ownerPublicKey)
-            put("data", data)
-            put("mutableData", mutableData)
-        }
-    }
 
     companion object {
         @Suppress("UNCHECKED_CAST")
@@ -40,9 +29,14 @@ data class MemberDocumentRaw constructor(
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
                 shouldRotateKeys = map["shouldRotateKeys"] as Boolean,
-                data = map["data"] as String,
-                mutableData = map["mutableData"] as? String,
+                data = map["data"] as String
             )
         }
     }
 }
+
+@Serializable
+data class MemberWithLocationsRaw(
+    val member: MemberDocumentRaw,
+    val locations: List<MemberLocationRaw>
+)

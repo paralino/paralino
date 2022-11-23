@@ -49,14 +49,26 @@ class GroupDetailViewModel(
         { locationStatus, group, hasPlaces, sharingStatus ->
 
             val members = group.members
-                .sortedBy { it.name }
-                .sortedBy { it.userId != config.userId }
-                .map { member ->
-                    GroupMemberItemState(member).copy(
-                        actionItem = MemberAction.DELETE_MEMBER.takeIf {
-                            group.isCurrentUserOwner && member.userId != group.ownerUserId
+                .sortedBy { it.member.name }
+                .sortedBy { it.member.userId != config.userId }
+                .flatMap { member ->
+                    if(member.locations.isEmpty()) {
+                        listOf(
+                            GroupMemberItemState(member.member, memberLocation = null).copy(
+                                actionItem = MemberAction.DELETE_MEMBER.takeIf {
+                                    group.isCurrentUserOwner && member.member.userId != group.ownerUserId
+                                }
+                            )
+                        )
+                    } else {
+                        member.locations.map { location ->
+                            GroupMemberItemState(member.member, location).copy(
+                                actionItem = MemberAction.DELETE_MEMBER.takeIf {
+                                    group.isCurrentUserOwner && member.member.userId != group.ownerUserId
+                                }
+                            )
                         }
-                    )
+                    }
                 }
 
             val errors = buildList {

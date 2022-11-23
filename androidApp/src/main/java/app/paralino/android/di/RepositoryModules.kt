@@ -88,7 +88,8 @@ val mappersModule = module {
     single { GroupsMapperLocal(get()) }
     single { GroupMapperCore(get(), get(), get()) }
     single { MemberMapperCore(get(), get()) }
-    single { MemberMapperLocal(get()) }
+    single { MemberWithLocationsMapperLocal(get(), get()) }
+    single { MemberMapperLocal() }
     single { GroupKeysMapper() }
     single { MemberKeysMapper() }
     single { UserKeyMapperLocal(get()) }

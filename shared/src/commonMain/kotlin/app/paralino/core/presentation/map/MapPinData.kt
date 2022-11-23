@@ -2,6 +2,7 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
@@ -59,17 +60,17 @@ data class MapPinData constructor(
         shouldShowApproximateCircle = true
     )
 
-    constructor(member: MemberModel, focused: Boolean) : this(
+    constructor(member: MemberLocation, focused: Boolean) : this(
         groupId = member.groupId,
         markerId = member.id,
         pinType = MapPinType.MEMBER,
         focused = focused,
         active = member.isActive,
         image = member.image,
-        lat = member.mutableData.data!!.lat,
-        lng = member.mutableData.data!!.lng,
-        accuracy = member.mutableData.data?.accuracy ?: 0f,
-        shouldShowApproximateCircle = member.mutableData.data?.shouldShowApproximateCircle ?: false
+        lat = member.locationData.data!!.lat,
+        lng = member.locationData.data!!.lng,
+        accuracy = member.locationData.data?.accuracy ?: 0f,
+        shouldShowApproximateCircle = member.locationData.data?.shouldShowApproximateCircle ?: false
     )
 }
 

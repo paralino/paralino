@@ -317,7 +317,8 @@ fun MemberPreview() {
 }
 
 val dummyMemberState = GroupMemberItemState(
-    id = "",
+    locationId = "",
+    memberId = "",
     userId = "",
     actionItem = MemberAction.DELETE_MEMBER,
     name = "User name",

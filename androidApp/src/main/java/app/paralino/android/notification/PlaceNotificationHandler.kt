@@ -41,8 +41,8 @@ class PlaceNotificationHandler(
                 placeName = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()?.data?.data?.name
                 userName = locationRepo.getMembersByUserId(payload.memberUserId)
                     .firstOrNull()
-                    ?.firstOrNull { it.id == payload.memberId }
-                    ?.name
+                    ?.firstOrNull { it.member.id == payload.memberId }
+                    ?.member?.name
             } catch (e: Exception) { }
 
             val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {

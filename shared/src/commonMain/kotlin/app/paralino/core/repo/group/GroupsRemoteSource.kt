@@ -240,10 +240,22 @@ class GroupsRemoteSource constructor(
                 collectionId = remoteConfig.resourceIds.collectionGroupMembersID
             ).map { it.parseGroupMember() }
 
+            val locations = api.listAllDocuments(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+            ).map { it.parseMemberLocation() }
+
             groups.map { group ->
                 GroupWithMemberRaw(
                     group = group,
-                    members = members.filter { it.groupId == group.id }
+                    members = members
+                        .filter { it.groupId == group.id }
+                        .map { member ->
+                            MemberWithLocationsRaw(
+                                member = member,
+                                locations = locations.filter { it.memberId == member.id }
+                            )
+                        }
                 )
             }
         }
@@ -264,20 +276,21 @@ class GroupsRemoteSource constructor(
                 keyValues = listOf("groupId" to groupId)
             ).map { it.parseGroupMember() }
 
+            val locations = api.listAllDocuments(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+                keyValues = listOf("groupId" to groupId)
+            ).map { it.parseMemberLocation() }
+
             GroupWithMemberRaw(
                 group = group,
-                members = members
+                members = members.map { member ->
+                    MemberWithLocationsRaw(
+                        member = member,
+                        locations = locations.filter { it.memberId == member.id }
+                    )
+                }
             )
-        }
-    }
-
-    suspend fun getGroupOnly(groupId: String): GroupDocumentRaw {
-        return blocking {
-            api.getDocument(
-                databaseType = BackendDatabaseType.DATA,
-                remoteConfig.resourceIds.collectionGroupsID,
-                groupId
-            ).parseGroup()
         }
     }
 
@@ -305,6 +318,10 @@ class GroupsRemoteSource constructor(
 
     private fun Map<String, Any>.parseGroupMember(): MemberDocumentRaw {
         return MemberDocumentRaw.from(this)
+    }
+
+    private fun Map<String, Any>.parseMemberLocation(): MemberLocationRaw {
+        return MemberLocationRaw.from(this)
     }
 
 }

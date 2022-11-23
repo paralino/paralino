@@ -1,9 +1,9 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.config
+import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.models.location.MemberModel
+import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.base.BaseRepository
@@ -15,9 +15,10 @@ class LocationRepository constructor(
     private val local: ILocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val placesRepo: PlacesRepository,
+    private val memberIdUseCase: UserMemberIdUseCase
 ) : BaseRepository() {
 
-    fun getMembersByUserId(userid: String): Flow<List<MemberModel>> {
+    fun getMembersByUserId(userid: String): Flow<List<MemberModelWithLocations>> {
         return local.getMemberModelsForUser(userid)
     }
 
@@ -28,9 +29,7 @@ class LocationRepository constructor(
             val contracts = sharingManager.allValidContracts()
             val mapped = contracts.map { contract ->
                 MemberGroupId(
-                    memberId = local.getUserMemberIds(config.userId, contract.groupId)
-                        // TODO use current device id for multiple device support
-                        .first(),
+                    locationId = memberIdUseCase.getCurrentDeviceIdForGroup(groupId = contract.groupId),
                     groupId = contract.groupId,
                     // TODO share approximate location if selected
                     data = LocationDataModel(
@@ -50,18 +49,19 @@ class LocationRepository constructor(
         }
     }
 
+    // TODO pass specific location
     fun clearLocation(groupId: String): Flow<Unit> {
         return getDataOnce(
             localUpdate = {
                 local.clearMemberLocationData(
-                    local.getUserMemberIds(config.userId, groupId).first()
+                    locationId = memberIdUseCase.getCurrentDeviceIdForGroup(groupId)!!
                 )
             }
         ) {
             remote.saveCurrentLocation(
                 ids = listOf(
                     MemberGroupId(
-                        memberId = local.getUserMemberIds(config.userId, groupId).first(),
+                        locationId = memberIdUseCase.getCurrentDeviceIdForGroup(groupId)!!,
                         groupId = groupId,
                         data = null
                     )

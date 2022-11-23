@@ -57,16 +57,30 @@ class MapHomeViewModel constructor(
                         focusedMarkerId
                     ) { group, places, sharingStatus, focusedMarkerId ->
 
-                        val memberData = group.members.map { member ->
-                            GroupMemberItemState(member, showSpeedAndElevation = true).copy(
-                                actionItem = MemberAction.DELETE_LOCATION.takeIf {
-                                    member.userId == config.userId && member.mutableData.data != null &&
-                                            !sharingManager.isSharingActiveForGroup(groupIdData.value)
+                        val memberData = group.members.flatMap { member ->
+                            if(member.locations.isEmpty()) {
+                                listOf(
+                                    GroupMemberItemState(member.member, memberLocation = null, showSpeedAndElevation = true)
+                                )
+                            } else {
+                                member.locations.map { location ->
+                                    GroupMemberItemState(
+                                        member.member,
+                                        location,
+                                        showSpeedAndElevation = true
+                                    ).copy(
+                                        actionItem = MemberAction.DELETE_LOCATION.takeIf {
+                                            member.member.userId == config.userId && location.locationData.data != null &&
+                                                    !sharingManager.isSharingActiveForGroup(groupIdData.value)
+                                        }
+                                    )
                                 }
-                            )
+                            }
                         }
 
-                        val memberMarkers = group.members.filter { it.mutableData.data != null }
+                        val memberMarkers = group.members
+                            .flatMap { it.locations }
+                            .filter { it.locationData.data != null }
                             .map { member ->
                                 MapPinData(
                                     member = member,

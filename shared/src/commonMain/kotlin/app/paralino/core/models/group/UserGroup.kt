@@ -5,6 +5,7 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberModel
+import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.utils.Emojis
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -43,7 +44,7 @@ data class UserGroupData constructor(
 
 data class UserGroupWithMembers constructor(
     val group: UserGroup,
-    val members: List<MemberModel>
+    val members: List<MemberModelWithLocations>
 ) {
 
     val id: String get() = group.id
@@ -60,7 +61,7 @@ data class UserGroupWithMembers constructor(
     val isCurrentUserOwner: Boolean get() = group.isCurrentUserOwner
 
     fun memberByUserId(userId: String): MemberModel {
-        return members.first { it.userId == userId }
+        return members.first { it.member.userId == userId }.member
     }
 
 }

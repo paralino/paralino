@@ -2,12 +2,14 @@ package app.paralino.core.presentation.groups
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.datetime.LocalDateTime
 
 data class GroupMemberItemState constructor(
-    val id: String,
+    val locationId: String,
+    val memberId: String,
     val userId: String,
     val actionItem: MemberAction? = null,
     val name: String,
@@ -18,17 +20,19 @@ data class GroupMemberItemState constructor(
     val lastPing: LocalDateTime?,
     val status: GroupMemberStatus
 ) {
-    constructor(member: MemberModel, showSpeedAndElevation: Boolean = false): this(
-        id = member.id,
+    // TODO refactor to use separate devices
+    constructor(member: MemberModel, memberLocation: MemberLocation?, showSpeedAndElevation: Boolean = false): this(
+        locationId = memberLocation?.id ?: "",
+        memberId = member.id,
         userId = member.userId,
         actionItem = null,
-        name = member.name,
+        name = arrayOf(member.name, memberLocation?.deviceData?.data?.deviceName).filterNotNull().filter { it.isNotBlank() }.joinToString(" - "),
         image = member.image,
-        batterLevel = member.mutableData.data?.batteryLevel,
-        speedMs = member.mutableData.data?.speed?.takeIf { showSpeedAndElevation },
-        elevationMeters = member.mutableData.data?.altitude?.takeIf { showSpeedAndElevation },
-        lastPing = member.mutableData.data?.timeUTC?.isoToLocalDateTime(),
-        status = if(member.isActive) GroupMemberStatus.ACTIVE else GroupMemberStatus.INACTIVE
+        batterLevel = memberLocation?.locationData?.data?.batteryLevel,
+        speedMs = memberLocation?.locationData?.data?.speed?.takeIf { showSpeedAndElevation },
+        elevationMeters = memberLocation?.locationData?.data?.altitude?.takeIf { showSpeedAndElevation },
+        lastPing = memberLocation?.locationData?.data?.timeUTC?.isoToLocalDateTime(),
+        status = if(memberLocation?.isActive == true) GroupMemberStatus.ACTIVE else GroupMemberStatus.INACTIVE
     )
 }
 

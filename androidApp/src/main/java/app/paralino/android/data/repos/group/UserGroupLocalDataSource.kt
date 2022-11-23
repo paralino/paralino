@@ -84,11 +84,11 @@ class UserGroupLocalDataSource constructor(
 
     override suspend fun deleteGroup(groupId: String) {
         dao.deleteGroup(groupId)
-        memberLocal.clearAllMembersForGroup(groupId)
+        memberLocal.removeAllMembersForGroup(groupId)
     }
 
     override suspend fun removeMember(groupId: String, userId: String) {
-        memberLocal.clearAllMembersForGroup(groupId, userId)
+        memberLocal.removeMemberFromGroup(groupId, userId)
     }
 
     override suspend fun clearAll() {

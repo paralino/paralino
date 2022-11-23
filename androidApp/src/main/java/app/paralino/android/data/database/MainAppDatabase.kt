@@ -10,6 +10,7 @@ import app.paralino.android.data.models.group.GroupMemberKeyEntity
 import app.paralino.android.data.models.group.UserGroupEntity
 import app.paralino.android.data.models.user.PersonalCodeEntity
 import app.paralino.android.data.models.location.MemberEntity
+import app.paralino.android.data.models.location.MemberLocationEntity
 import app.paralino.android.data.models.location.SharingContractEntity
 import app.paralino.android.data.models.places.GroupPlaceEntity
 import app.paralino.android.data.models.places.GroupPlaceSettingsEntity
@@ -28,6 +29,7 @@ import app.paralino.android.data.repos.user.UserKeyDao
 @Database(
     entities = [
         MemberEntity::class,
+        MemberLocationEntity::class,
         SharingContractEntity::class,
         UserEntity::class,
         UserGroupEntity::class,
@@ -59,7 +61,7 @@ abstract class MainAppDatabase : RoomDatabase() {
     abstract fun placesDao(): GroupPlacesDao
 
     companion object {
-        const val VERSION = 34
+        const val VERSION = 35
         const val DB_NAME = "app_main_db"
 
         fun create(context: Context): MainAppDatabase {

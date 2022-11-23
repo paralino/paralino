@@ -376,9 +376,10 @@ fun GroupDetailScreen(
                 Spacer(modifier = Modifier.size(4.dp))
             }
 
+            // TODO handle multiple devices
             this.itemsIndexed(
                 items = state.members,
-                key = { index, item -> item.id }
+                key = { index, item -> item.memberId + item.locationId}
             ) { index, item ->
 
                 if (index > 0)
@@ -398,7 +399,7 @@ fun GroupDetailScreen(
                     extraActions = {
                         IconButton(
                             onClick = {
-                                openMemberRawDataPresentation(item.id)
+                                openMemberRawDataPresentation(item.memberId)
                             }
                         ) {
                             Icon(

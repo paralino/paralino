@@ -132,7 +132,7 @@ fun MapHomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         state = data,
                         isTrackingGroup = trackGroup,
-                        trackingUserId = data.focusedMarkerId,
+                        focusedMarkerId = data.focusedMarkerId,
                         onGroupPickerClick = {
                             appState.uiScope.launch {
                                 val groups = vm.getAllGroups()
@@ -152,8 +152,8 @@ fun MapHomeScreen(
                         },
                         onMemberClick = {
                             trackGroup = false
-                            vm.trackMarker(it.id)
-                            mapViewState.focusToMarker(it.id)
+                            vm.trackMarker(it.locationId)
+                            mapViewState.focusToMarker(it.locationId)
                         }
                     )
                 }
@@ -169,7 +169,7 @@ fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
     state: MapHomeScreenState,
     isTrackingGroup: Boolean,
-    trackingUserId: String?,
+    focusedMarkerId: String?,
     onGroupPickerClick: () -> Unit,
     onTrackGroupClick: () -> Unit,
     onClearMyLocationClick: () -> Unit,
@@ -187,7 +187,7 @@ fun MapHomeScreenElements(
     ) {
 
         val (groupSelect, groupTrack, userListButton, userList, shareTime) = createRefs()
-        var userListExpanded by remember(trackingUserId) { mutableStateOf(!trackingUserId.isNullOrBlank()) }
+        var userListExpanded by remember(focusedMarkerId) { mutableStateOf(!focusedMarkerId.isNullOrBlank()) }
 
         // group picker button
         MapGroupPicker(
@@ -306,7 +306,7 @@ fun MapHomeScreenElements(
                     itemSpacing = 4.dp,
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     count = state.members.size,
-                    key = { state.members.get(it).id }
+                    key = { state.members.get(it).locationId }
                 ) {
                     val memberState = state.members[it]
                     GroupMember(
@@ -318,10 +318,10 @@ fun MapHomeScreenElements(
                         onClick = { onMemberClick(memberState) }
                     )
                 }
-                LaunchedEffect(trackingUserId) {
+                LaunchedEffect(focusedMarkerId) {
                     val page =
-                        state.members.indexOfFirst { it.id == trackingUserId }.takeIf { it > 0 }
-                            ?: 0
+                        state.members.indexOfFirst { it.locationId == focusedMarkerId }
+                            .takeIf { it > 0 } ?: 0
                     pagerState.animateScrollToPage(page)
                 }
             }

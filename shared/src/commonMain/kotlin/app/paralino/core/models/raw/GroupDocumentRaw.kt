@@ -32,5 +32,5 @@ data class GroupDocumentRaw constructor(
 @Serializable
 data class GroupWithMemberRaw constructor(
     val group: GroupDocumentRaw,
-    val members: List<MemberDocumentRaw>
+    val members: List<MemberWithLocationsRaw>
 )
