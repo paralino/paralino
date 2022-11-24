@@ -162,7 +162,7 @@ fun GroupDetailScreen(
                     }
                 },
                 onMemberDelete = {
-                    showDialog = MainAlertDialog.DeleteGroupMember(it.userId, it.name)
+                    showDialog = MainAlertDialog.DeleteGroupMember(it.memberState.userId, it.memberState.name)
                 },
                 onOpenMap = {
                     appState.navController.navigate(
@@ -379,7 +379,7 @@ fun GroupDetailScreen(
             // TODO handle multiple devices
             this.itemsIndexed(
                 items = state.members,
-                key = { index, item -> item.memberId + item.locationId}
+                key = { index, item -> item.memberState.memberId}
             ) { index, item ->
 
                 if (index > 0)
@@ -399,7 +399,7 @@ fun GroupDetailScreen(
                     extraActions = {
                         IconButton(
                             onClick = {
-                                openMemberRawDataPresentation(item.memberId)
+                                openMemberRawDataPresentation(item.memberState.memberId)
                             }
                         ) {
                             Icon(

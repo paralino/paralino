@@ -38,6 +38,8 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.dashboard.GroupItemData
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.utils.extensions.isoToLocalDateTime
@@ -152,8 +154,13 @@ fun MapHomeScreen(
                         },
                         onMemberClick = {
                             trackGroup = false
-                            vm.trackMarker(it.locationId)
-                            mapViewState.focusToMarker(it.locationId)
+                            when(it) {
+                                is GroupMemberItemStateWithLocations -> {}
+                                is GroupMemberItemStateWithOneLocation -> {
+                                    vm.trackMarker(it.keyId)
+                                    mapViewState.focusToMarker(it.keyId)
+                                }
+                            }
                         }
                     )
                 }
@@ -306,22 +313,35 @@ fun MapHomeScreenElements(
                     itemSpacing = 4.dp,
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     count = state.members.size,
-                    key = { state.members.get(it).locationId }
+                    key = { state.members.get(it).keyId }
                 ) {
                     val memberState = state.members[it]
+                    var expanded by remember {
+                        mutableStateOf(false)
+                    }
                     GroupMember(
                         state = memberState,
                         backgroundColor = MaterialTheme.colors.background,
+                        collapseOnActionClick = true,
+                        forceExpandAction = expanded,
                         onActionClick = {
                             onClearMyLocationClick()
                         },
-                        onClick = { onMemberClick(memberState) }
+                        onClick = {
+                            expanded = !expanded
+                            onMemberClick(memberState)
+                        }
                     )
                 }
                 LaunchedEffect(focusedMarkerId) {
-                    val page =
-                        state.members.indexOfFirst { it.locationId == focusedMarkerId }
-                            .takeIf { it > 0 } ?: 0
+                    val page = state.members.indexOfFirst {
+                        when(it) {
+                            is GroupMemberItemStateWithLocations -> false
+                            is GroupMemberItemStateWithOneLocation -> {
+                                it.keyId == focusedMarkerId
+                            }
+                        }
+                    }.takeIf { it > 0 } ?: 0
                     pagerState.animateScrollToPage(page)
                 }
             }

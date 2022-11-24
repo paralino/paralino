@@ -9,7 +9,6 @@ import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.ILocationStatusProvider
@@ -51,23 +50,36 @@ class GroupDetailViewModel(
             val members = group.members
                 .sortedBy { it.member.name }
                 .sortedBy { it.member.userId != config.userId }
-                .flatMap { member ->
-                    if(member.locations.isEmpty()) {
-                        listOf(
-                            GroupMemberItemState(member.member, memberLocation = null).copy(
-                                actionItem = MemberAction.DELETE_MEMBER.takeIf {
-                                    group.isCurrentUserOwner && member.member.userId != group.ownerUserId
-                                }
-                            )
+                .map { member ->
+                    val canEdit = group.isCurrentUserOwner || member.member.userId == config.userId
+
+                    val memberState = GroupMemberState(member.member).copy(
+                        actionItem = MemberAction.DELETE_MEMBER.takeIf {
+                            group.isCurrentUserOwner && member.member.userId != group.ownerUserId
+                        }
+                    )
+                    if (member.locations.size <= 1) {
+                        GroupMemberItemStateWithOneLocation(
+                            memberState = memberState,
+                            location = member.locations.firstOrNull()?.let {
+                                GroupMemberItemLocationState(
+                                    memberLocation = it,
+                                    canEdit = false,
+                                    showSpeedAndElevation = false
+                                )
+                            }
                         )
                     } else {
-                        member.locations.map { location ->
-                            GroupMemberItemState(member.member, location).copy(
-                                actionItem = MemberAction.DELETE_MEMBER.takeIf {
-                                    group.isCurrentUserOwner && member.member.userId != group.ownerUserId
-                                }
-                            )
-                        }
+                        GroupMemberItemStateWithLocations(
+                            memberState = memberState,
+                            locations = member.locations.map {
+                                GroupMemberItemLocationState(
+                                    memberLocation = it,
+                                    canEdit = canEdit,
+                                    showSpeedAndElevation = false
+                                )
+                            }
+                        )
                     }
                 }
 
@@ -76,7 +88,7 @@ class GroupDetailViewModel(
                     addAll(locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
                 }
 
-                if(hasPlaces && !locationStatus.isNotificationPermissionAllowed) {
+                if (hasPlaces && !locationStatus.isNotificationPermissionAllowed) {
                     add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
                 }
             }
@@ -95,8 +107,8 @@ class GroupDetailViewModel(
             .mapToPayload { it }
             .onEach { result ->
                 _uiState.update { result }
-                if(result is Payload.Error) {
-                    if(result.exception.asRemoteException() is NotFoundException)
+                if (result is Payload.Error) {
+                    if (result.exception.asRemoteException() is NotFoundException)
                         _eventChannel.send(GroupDetailScreenEvent.GroupNotFound)
                     else
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))

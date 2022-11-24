@@ -43,6 +43,9 @@ data class MemberModelWithLocations(
             val activeThreshold = 30.toDuration(DurationUnit.MINUTES)
             return pinTime.plus(activeThreshold) > now
         }
+
+    val hasLocation: Boolean
+        get() = locations.firstNotNullOfOrNull { it.locationData.data } != null
 }
 
 @Serializable

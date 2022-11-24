@@ -7,7 +7,9 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.dashboard.GroupItemData
-import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.groups.GroupMemberState
 import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.repo.LocationSharingManager
@@ -58,21 +60,29 @@ class MapHomeViewModel constructor(
                     ) { group, places, sharingStatus, focusedMarkerId ->
 
                         val memberData = group.members.flatMap { member ->
-                            if(member.locations.isEmpty()) {
+
+                            if (member.locations.isEmpty()) {
                                 listOf(
-                                    GroupMemberItemState(member.member, memberLocation = null, showSpeedAndElevation = true)
+                                    GroupMemberItemStateWithOneLocation(
+                                        memberState = GroupMemberState(member.member),
+                                        location = null
+                                    )
                                 )
                             } else {
+                                val memberState = GroupMemberState(member.member)
                                 member.locations.map { location ->
-                                    GroupMemberItemState(
-                                        member.member,
-                                        location,
-                                        showSpeedAndElevation = true
-                                    ).copy(
-                                        actionItem = MemberAction.DELETE_LOCATION.takeIf {
-                                            member.member.userId == config.userId && location.locationData.data != null &&
-                                                    !sharingManager.isSharingActiveForGroup(groupIdData.value)
-                                        }
+                                    val canDelete = member.member.userId == config.userId &&
+                                            location.locationData.data != null &&
+                                            !sharingManager.isSharingActiveForGroup(groupIdData.value)
+                                    GroupMemberItemStateWithOneLocation(
+                                        memberState = memberState.copy(
+                                            actionItem = MemberAction.DELETE_LOCATION.takeIf { canDelete }
+                                        ),
+                                        location = GroupMemberItemLocationState(
+                                            memberLocation = location,
+                                            canEdit = false,
+                                            showSpeedAndElevation = true
+                                        )
                                     )
                                 }
                             }
@@ -88,20 +98,21 @@ class MapHomeViewModel constructor(
                                 )
                             }
 
-                        val placeMarkers = places.filter { it.data.data?.lat != null && it.data.data?.lng != null }
-                            .map { place ->
-                                MapPinData(
-                                    groupId = group.id,
-                                    state = PlaceListItemData(place)
-                                ).copy(active = false)
-                            }
+                        val placeMarkers =
+                            places.filter { it.data.data?.lat != null && it.data.data?.lng != null }
+                                .map { place ->
+                                    MapPinData(
+                                        groupId = group.id,
+                                        state = PlaceListItemData(place)
+                                    ).copy(active = false)
+                                }
 
                         MapHomeScreenState(
                             groupId = group.id,
                             groupName = group.name,
                             groupImage = group.image,
                             userCount = group.memberCount,
-                            inactiveUserCount = group.memberCount - memberMarkers.size,
+                            inactiveUserCount = group.memberCount - group.members.filter { it.hasLocation }.size,
                             members = memberData,
                             markers = memberMarkers + placeMarkers,
                             focusedMarkerId = focusedMarkerId,
