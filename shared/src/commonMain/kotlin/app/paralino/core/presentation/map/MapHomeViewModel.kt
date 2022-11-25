@@ -153,8 +153,8 @@ class MapHomeViewModel constructor(
             ?: emptyList()
     }
 
-    fun clearMyLocation() {
-        locationRepo.clearLocation(groupIdData.value)
+    fun clearMyLocation(locationId: String) {
+        locationRepo.clearLocation(locationId)
             .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
             .launchIn(coroutineScope)
     }

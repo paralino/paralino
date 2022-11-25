@@ -23,8 +23,8 @@ class UserApi constructor(
         }
     }
 
-    override suspend fun createAnonymous(): UserSession {
-        return remoteModule.execute { account.createAnonymousSession().parseSession() }
+    override suspend fun getCurrentSession(): UserSession {
+        return remoteModule.execute { account.getSession("current").parseSession() }
     }
 
     override suspend fun getMe(): UserMeRaw {

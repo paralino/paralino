@@ -6,8 +6,8 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.MemberModelData
-import app.paralino.core.models.raw.LocationNodePayload
-import app.paralino.core.models.raw.UpdateLocationFunctionData
+import app.paralino.core.models.raw.UpdateMemberData
+import app.paralino.core.models.raw.UpdateMemberFunctionPayload
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.base.BaseRepository
@@ -70,21 +70,19 @@ class UpdateUserDataUseCase constructor(
                 key = groupKey.data.content
             )
 
-            LocationNodePayload(
-                groupId = member.member.groupId,
+            UpdateMemberData(
+                memberId = member.member.id,
                 groupKeyVersion = member.member.groupKeyVersion,
-                memberKeyVersion = member.member.memberKeyVersion,
                 memberData = newData,
-                locations = emptyList()
             )
         }
 
-        val payload = UpdateLocationFunctionData(
+        val payload = UpdateMemberFunctionPayload(
             data = nodes
         )
 
         val response = functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionLocationUpdateID,
+            functionId = remoteConfig.resourceIds.functionGroupMemberUpdateID,
             data = BaseRemoteModule.formatter.encodeToString(payload)
         )
 

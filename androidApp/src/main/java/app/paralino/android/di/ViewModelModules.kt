@@ -39,6 +39,7 @@ import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.group.*
 import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
+import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.repo.location.IGeofenceManager
@@ -56,11 +57,7 @@ val viewModelModules = module {
     viewModel { (startScreenType: Any) -> LoginViewModel(androidApplication(), get(), get(), get(), startScreenType as LoginScreenUiType) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { (args: String?) ->
-        SharingViewModel(androidApplication(),
-            args,
-            get(),
-            get(),
-            get())
+        SharingViewModel(androidApplication(), args, get(), get(), get(), get())
     }
     viewModel { (createCode: Boolean) -> PersonalCodesViewModel(androidApplication(), createCode, get()) }
     viewModel { (groupId: String?, code: String?) ->
@@ -114,6 +111,7 @@ val coreModule = module {
     factory { UserMemberIdUseCase(get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get()) }
+    factory { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get()) }
 
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }

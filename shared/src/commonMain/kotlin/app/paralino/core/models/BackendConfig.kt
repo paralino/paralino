@@ -44,7 +44,7 @@ object BackendResourceIDs {
     const val functionDeleteGroupMemberID: String = "group_member_delete"
     const val functionUpdateGroupKeysID: String = "group_keys_update"
     const val functionUpdateGroupMemberKeysID: String = "group_member_keys_update"
-    const val functionLocationUpdateID: String = "location_update"
+    const val functionGroupMemberUpdateID: String = "group_member_update"
     const val functionDeleteAccountAndData: String = "user_account_delete"
     const val functionResetAccount: String = "user_account_reset"
     const val functionUserKeysUpdate: String = "user_keys_update"
@@ -52,4 +52,5 @@ object BackendResourceIDs {
     const val functionPlaceDelete: String = "place_delete"
     const val functionPlaceUpdate: String = "place_update"
     const val functionPlaceNotify: String = "place_notify"
+    const val functionLocationCreate: String = "location_create"
 }

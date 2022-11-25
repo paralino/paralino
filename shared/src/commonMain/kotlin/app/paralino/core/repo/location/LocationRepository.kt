@@ -29,7 +29,7 @@ class LocationRepository constructor(
             val contracts = sharingManager.allValidContracts()
             val mapped = contracts.map { contract ->
                 MemberGroupId(
-                    locationId = memberIdUseCase.getCurrentDeviceIdForGroup(groupId = contract.groupId),
+                    locationId = memberIdUseCase.getCurrentLocationIdForGroup(groupId = contract.groupId)!!,
                     groupId = contract.groupId,
                     // TODO share approximate location if selected
                     data = LocationDataModel(
@@ -49,24 +49,13 @@ class LocationRepository constructor(
         }
     }
 
-    // TODO pass specific location
-    fun clearLocation(groupId: String): Flow<Unit> {
+    fun clearLocation(locationId: String): Flow<Unit> {
         return getDataOnce(
             localUpdate = {
-                local.clearMemberLocationData(
-                    locationId = memberIdUseCase.getCurrentDeviceIdForGroup(groupId)!!
-                )
+                local.clearMemberLocationData(locationId = locationId)
             }
         ) {
-            remote.saveCurrentLocation(
-                ids = listOf(
-                    MemberGroupId(
-                        locationId = memberIdUseCase.getCurrentDeviceIdForGroup(groupId)!!,
-                        groupId = groupId,
-                        data = null
-                    )
-                )
-            )
+            remote.clearLocation(locationId)
         }
     }
 

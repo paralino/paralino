@@ -21,14 +21,22 @@ class LocationLocalDataSource(
 ) : ILocationLocalDataSource {
 
     override suspend fun createOrUpdateMembers(vararg data: MemberDocumentRaw) {
-        dao.createOrUpdateMemberOnly(*data.map { mapper.memberMapper.remote2Local(it) }.toTypedArray())
+        dao.createOrUpdateMemberOnly(*data.map { mapper.memberMapper.remote2Local(it) }
+            .toTypedArray())
+    }
+
+    override suspend fun createOrUpdateMembers(vararg data: MemberWithLocationsRaw) {
+        dao.createOrUpdateMembersWithLocations(data.map { mapper.remote2Local(it) })
     }
 
     override suspend fun recreateAllMember(data: List<MemberWithLocationsRaw>) {
         dao.recreateAll(data.map { mapper.remote2Local(it) })
     }
 
-    override suspend fun recreateMembersForGroup(groupId: String, data: List<MemberWithLocationsRaw>) {
+    override suspend fun recreateMembersForGroup(
+        groupId: String,
+        data: List<MemberWithLocationsRaw>
+    ) {
         dao.recreateForGroup(groupId, data.map { mapper.remote2Local(it) })
     }
 
@@ -59,11 +67,24 @@ class LocationLocalDataSource(
             .distinctFlowOfList()
             .map {
                 val key = groupDao.getGroupPublicKeyOnce(groupId)
-                if(key == null && it.isNotEmpty())
+                if (key == null && it.isNotEmpty())
                     throw MissingGroupKeyException(groupId)
                 it.map {
                     mapper.local2Core(it, key!!)
                 }
+            }
+    }
+
+    override fun getMember(groupId: String, userId: String): Flow<MemberModelWithLocations> {
+        return dao.getMember(
+            groupId = groupId,
+            userId = userId
+        )
+            .filterNotNull()
+            .map {
+                val key = groupDao.getGroupPublicKeyOnce(it.member.groupId)
+                    ?: throw MissingGroupKeyException(it.member.groupId)
+                mapper.local2Core(it, key)
             }
     }
 

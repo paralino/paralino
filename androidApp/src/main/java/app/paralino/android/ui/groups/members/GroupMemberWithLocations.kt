@@ -120,10 +120,12 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
             top.linkTo(image.top)
         }
     ) {
-        Icon(
-            imageVector = if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
-            contentDescription = null
-        )
+        if (state.memberState.actionItem != null || extraActions != null || state.locations.isNotEmpty()) {
+            Icon(
+                imageVector = if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                contentDescription = null
+            )
+        }
     }
 
     // action item

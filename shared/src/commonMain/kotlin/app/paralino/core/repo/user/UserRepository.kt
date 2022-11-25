@@ -120,6 +120,10 @@ class UserRepository constructor(
         }
     }
 
+    suspend fun getCurrentSessionFromRemote(): UserSession {
+        return triggerRemoteOnly { remote.getCurrentSession() }
+    }
+
     suspend fun getUserFromRemote(): UserMeRaw {
         if (!config.isTokenValid) {
             throw Exception("Token is not available")

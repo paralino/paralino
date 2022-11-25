@@ -28,6 +28,12 @@ interface MemberDao {
     @Transaction
     suspend fun createOrUpdateMembersWithLocations(data: List<MemberEntityWithLocations>) {
         createOrUpdateMemberOnly(*data.map { it.member }.toTypedArray())
+        data.forEach {
+            clearMemberLocationsForGroup(
+                groupId = it.member.groupId,
+                memberId = it.member.id
+            )
+        }
         createOrUpdateMemberLocations(*data.flatMap { it.locations }.toTypedArray())
     }
 
@@ -38,9 +44,11 @@ interface MemberDao {
     suspend fun createOrUpdateMemberLocations(vararg data: MemberLocationEntity)
 
 
-
     @Query("SELECT * FROM members WHERE id = :memberId")
     fun getMember(memberId: String): Flow<MemberEntityWithLocations?>
+
+    @Query("SELECT * FROM members WHERE groupId = :groupId AND userId = :userId")
+    fun getMember(groupId: String, userId: String): Flow<MemberEntityWithLocations?>
 
     @Query("SELECT * FROM members WHERE userId = :userId")
     fun getLocationsForUser(userId: String): Flow<List<MemberEntityWithLocations>>
@@ -56,7 +64,6 @@ interface MemberDao {
     suspend fun getMemberCountInGroupOnce(groupId: String): Int
 
 
-
     @Query("SELECT id FROM locations WHERE userId = :userId AND groupId = :groupId")
     suspend fun getUserLocationIds(groupId: String, userId: String): List<String>
 
@@ -64,13 +71,11 @@ interface MemberDao {
     suspend fun getUserMemberId(groupId: String, userId: String): String?
 
 
-
     @Query("SELECT ownerPublicKey FROM members WHERE groupId = :groupId AND userId = :userId")
     suspend fun getMemberPublicKeyOnce(groupId: String, userId: String): String?
 
     @Update(onConflict = OnConflictStrategy.IGNORE, entity = MemberLocationEntity::class)
     suspend fun updateMemberMutableData(data: MemberMutableDataUpdate)
-
 
 
     suspend fun removeMemberWithLocationsForGroup(groupId: String, memberId: String) {
@@ -85,7 +90,6 @@ interface MemberDao {
     suspend fun clearMemberLocationsForGroup(groupId: String, memberId: String)
 
 
-
     @Transaction
     suspend fun clearAllMembersAndLocationsForGroup(groupId: String) {
         clearAllMembersForGroup(groupId)
@@ -97,7 +101,6 @@ interface MemberDao {
 
     @Query("DELETE FROM locations WHERE groupId = :groupId")
     suspend fun clearAllLocationsForGroup(groupId: String)
-
 
 
     @Transaction

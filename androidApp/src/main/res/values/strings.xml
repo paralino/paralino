@@ -193,6 +193,7 @@
     <string name="groups_sharing_potential_error_button_enable">Enable anyway</string>
     <string name="groups_sharing_potential_error_message">Sharing will start **automatically** once you resolve all the errors: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Your location can not be shared if you restart your phone!\n\nPlease allow **all the time** location access for reliable sharing.</string>
+    <string name="groups_sharing_error_registration_generic">Unable to register you device, please try again.</string>
 
     <string name="groups_sharing_duration_type_infinite">Always on</string>
 

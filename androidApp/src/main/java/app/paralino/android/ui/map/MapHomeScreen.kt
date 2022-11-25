@@ -150,7 +150,7 @@ fun MapHomeScreen(
                             vm.trackMarker(null)
                         },
                         onClearMyLocationClick = {
-                            vm.clearMyLocation()
+                            vm.clearMyLocation(it)
                         },
                         onMemberClick = {
                             trackGroup = false
@@ -179,7 +179,7 @@ fun MapHomeScreenElements(
     focusedMarkerId: String?,
     onGroupPickerClick: () -> Unit,
     onTrackGroupClick: () -> Unit,
-    onClearMyLocationClick: () -> Unit,
+    onClearMyLocationClick: (String) -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
 ) {
     ConstraintLayout(
@@ -325,7 +325,9 @@ fun MapHomeScreenElements(
                         collapseOnActionClick = true,
                         forceExpandAction = expanded,
                         onActionClick = {
-                            onClearMyLocationClick()
+                            if(memberState is GroupMemberItemStateWithOneLocation && memberState.location != null) {
+                                onClearMyLocationClick(memberState.location!!.locationId)
+                            }
                         },
                         onClick = {
                             expanded = !expanded

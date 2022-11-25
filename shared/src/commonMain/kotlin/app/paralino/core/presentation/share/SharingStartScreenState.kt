@@ -40,4 +40,5 @@ sealed class SharingStartScreenEvent() {
     object SelectGroupInfo: SharingStartScreenEvent()
     object LocationStatusInsufficient: SharingStartScreenEvent()
     object MissingBackgroundPermission: SharingStartScreenEvent()
+    object CanNotRegisterDevice: SharingStartScreenEvent()
 }

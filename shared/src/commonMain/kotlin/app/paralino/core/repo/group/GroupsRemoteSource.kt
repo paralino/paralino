@@ -294,6 +294,28 @@ class GroupsRemoteSource constructor(
         }
     }
 
+    suspend fun getMember(memberId: String): MemberWithLocationsRaw {
+        return blocking {
+
+            val member = api.getDocument(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
+                documentId = memberId
+            ).parseGroupMember()
+
+            val locations = api.listAllDocuments(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+                keyValues = listOf("groupId" to member.groupId)
+            ).map { it.parseMemberLocation() }
+
+            MemberWithLocationsRaw(
+                member = member,
+                locations = locations.filter { location -> member.locationIds.contains(location.id) }
+            )
+        }
+    }
+
     suspend fun deleteGroup(groupId: String) {
         blocking {
             val data = functionsApi.runAndWait(
