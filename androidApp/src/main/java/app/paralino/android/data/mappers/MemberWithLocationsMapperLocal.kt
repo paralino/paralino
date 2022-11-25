@@ -29,9 +29,6 @@ class MemberWithLocationsMapperLocal(
         val locations = model.locations.map { location ->
             MemberLocationRaw(
                 id = location.id,
-                groupId = location.groupId,
-                memberId = location.memberId,
-                userId = location.userId,
                 deviceId = location.deviceId,
                 deviceData = location.deviceData,
                 locationData = location.locationData
@@ -51,9 +48,9 @@ class MemberWithLocationsMapperLocal(
         val locations = model.locations.map { location ->
             MemberLocationEntity(
                 id = location.id,
-                groupId = location.groupId,
-                memberId = location.memberId,
-                userId = location.userId,
+                groupId = model.member.groupId,
+                memberId = model.member.id,
+                userId = model.member.ownerUserId,
                 deviceId = location.deviceId,
                 deviceData = location.deviceData,
                 locationData = location.locationData
@@ -79,7 +76,8 @@ class MemberMapperLocal() : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
-            data = model.data
+            data = model.data,
+            locationIds = emptyList()
         )
     }
 

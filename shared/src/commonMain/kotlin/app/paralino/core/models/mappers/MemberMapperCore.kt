@@ -83,9 +83,9 @@ class MemberMapperCore constructor(
                     } catch (e: Exception) {
                         logg.tag("tag_crypto_key_group_member")
                             .e(
-                                "Error decrypting location data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
+                                message = "Error decrypting location data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
                                         "Model key version: ${model.member.memberKeyVersion} - key version: ${memberKey.version}",
-                                e
+                                t = e
                             )
                         CryptoResource.WrongKeyOrData
                     }
@@ -96,9 +96,9 @@ class MemberMapperCore constructor(
 
             MemberLocation(
                 id = location.id,
-                groupId = location.groupId,
-                memberId = location.memberId,
-                userId = location.userId,
+                groupId = model.member.groupId,
+                memberId = model.member.id,
+                userId = model.member.ownerUserId,
                 deviceId = location.deviceId,
                 deviceData = deviceData,
                 locationData = locationData

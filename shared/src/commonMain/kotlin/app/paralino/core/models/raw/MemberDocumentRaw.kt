@@ -15,7 +15,8 @@ data class MemberDocumentRaw constructor(
     val memberKeyVersion: Long,
     val shouldRotateKeys: Boolean,
 
-    val data: String
+    val data: String,
+    val locationIds: List<String>
 ) {
 
     companion object {
@@ -29,7 +30,8 @@ data class MemberDocumentRaw constructor(
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
                 shouldRotateKeys = map["shouldRotateKeys"] as Boolean,
-                data = map["data"] as String
+                data = map["data"] as String,
+                locationIds = map["locationIds"] as List<String>,
             )
         }
     }

@@ -253,7 +253,7 @@ class GroupsRemoteSource constructor(
                         .map { member ->
                             MemberWithLocationsRaw(
                                 member = member,
-                                locations = locations.filter { it.memberId == member.id }
+                                locations = locations.filter { location -> member.locationIds.contains(location.id) }
                             )
                         }
                 )
@@ -287,7 +287,7 @@ class GroupsRemoteSource constructor(
                 members = members.map { member ->
                     MemberWithLocationsRaw(
                         member = member,
-                        locations = locations.filter { it.memberId == member.id }
+                        locations = locations.filter { location -> member.locationIds.contains(location.id) }
                     )
                 }
             )
