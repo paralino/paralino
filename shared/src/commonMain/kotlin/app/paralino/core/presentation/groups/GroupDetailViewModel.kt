@@ -44,8 +44,7 @@ class GroupDetailViewModel(
             groupRefresh.getGroupWithMembers(groupId),
             placesRepo.hasAnyPlace(),
             sharingManager.sharingContractForGroup(groupId)
-        )
-        { locationStatus, group, hasPlaces, sharingStatus ->
+        ) { locationStatus, group, hasPlaces, sharingStatus ->
 
             val members = group.members
                 .sortedBy { it.member.name }
@@ -53,7 +52,10 @@ class GroupDetailViewModel(
                 .map { member ->
                     val canEdit = group.isCurrentUserOwner || member.member.userId == config.userId
 
-                    val memberState = GroupMemberState(member.member).copy(
+                    val memberState = GroupMemberState(
+                        member = member.member,
+                        isCurrentUser = member.member.userId == config.userId
+                    ).copy(
                         actionItem = MemberAction.DELETE_MEMBER.takeIf {
                             group.isCurrentUserOwner && member.member.userId != group.ownerUserId
                         }
@@ -158,6 +160,24 @@ class GroupDetailViewModel(
                     }
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.GroupMemberDeleted)
+                    }
+                }
+            }
+            .launchIn(coroutineScope)
+    }
+
+    fun removeMemberLocation(memberUserId: String, locationId: String) {
+        groupMemberRemove.deleteLocation(memberUserId, locationId)
+            .mapToPayload { Unit }
+            .onEach { result ->
+                _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }
+                when (result) {
+                    Payload.Loading -> {}
+                    is Payload.Error -> {
+                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                    }
+                    is Payload.Success -> {
+                        _eventChannel.send(GroupDetailScreenEvent.MemberLocationDeleted)
                     }
                 }
             }

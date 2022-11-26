@@ -39,6 +39,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.GroupDetailScreenState
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.utils.ConditionErrorType
@@ -82,6 +83,7 @@ fun GroupDetailScreen(
                     appState.navController.popBackStack()
                 }
                 GroupDetailScreenEvent.GroupMemberDeleted -> {}
+                GroupDetailScreenEvent.MemberLocationDeleted -> {}
                 null -> {
                     /* do nothing */
                 }
@@ -136,6 +138,16 @@ fun GroupDetailScreen(
                             vm.removeMember(dialog.memberUserId)
                     }
                 }
+                is MainAlertDialog.DeleteMemberLocation -> {
+                    dialog.Show {
+                        showDialog = null
+                        if (it == MainAlertDialog.Buttons.buttonOk)
+                            vm.removeMemberLocation(
+                                memberUserId = dialog.memberId,
+                                locationId = dialog.locationId
+                            )
+                    }
+                }
                 else -> {}
             }
 
@@ -163,6 +175,14 @@ fun GroupDetailScreen(
                 },
                 onMemberDelete = {
                     showDialog = MainAlertDialog.DeleteGroupMember(it.memberState.userId, it.memberState.name)
+                },
+                onMemberDeviceDelete = { member, location ->
+                    showDialog = MainAlertDialog.DeleteMemberLocation(
+                        memberId = member.memberState.memberId,
+                        locationId = location.locationId,
+                        isUserOwnDevice = member.memberState.isCurrentUser,
+                        memberName = member.memberState.name
+                    )
                 },
                 onOpenMap = {
                     appState.navController.navigate(
@@ -222,6 +242,7 @@ fun GroupDetailScreen(
     onAddGroupMember: () -> Unit,
     onGroupDeleteOrLeave: () -> Unit,
     onMemberDelete: (GroupMemberItemState) -> Unit,
+    onMemberDeviceDelete: (GroupMemberItemState, GroupMemberItemLocationState) -> Unit,
     onOpenMap: () -> Unit,
     openPlaces: () -> Unit,
     openRawDataPresentation: () -> Unit,
@@ -376,10 +397,9 @@ fun GroupDetailScreen(
                 Spacer(modifier = Modifier.size(4.dp))
             }
 
-            // TODO handle multiple devices
             this.itemsIndexed(
                 items = state.members,
-                key = { index, item -> item.memberState.memberId}
+                key = { index, item -> item.memberState.memberId }
             ) { index, item ->
 
                 if (index > 0)
@@ -396,6 +416,9 @@ fun GroupDetailScreen(
                     collapseOnActionClick = false,
                     onClick = { expanded = !expanded },
                     onActionClick = { onMemberDelete(item) },
+                    onDeleteDeviceClick = {
+                        onMemberDeviceDelete(item, it)
+                    },
                     extraActions = {
                         IconButton(
                             onClick = {

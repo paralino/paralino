@@ -18,13 +18,15 @@ data class GroupMemberState constructor(
     val actionItem: MemberAction? = null,
     val name: String,
     val image: ImageModel?,
+    val isCurrentUser: Boolean
 ) {
-    constructor(member: MemberModel) : this(
+    constructor(member: MemberModel, isCurrentUser: Boolean) : this(
         memberId = member.id,
         userId = member.userId,
         actionItem = null,
         name = member.name,
         image = member.image,
+        isCurrentUser = isCurrentUser
     )
 }
 

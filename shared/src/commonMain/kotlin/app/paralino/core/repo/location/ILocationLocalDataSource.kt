@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface ILocationLocalDataSource {
 
     suspend fun createOrUpdateMembers(vararg data: MemberDocumentRaw)
-    suspend fun createOrUpdateMembers(vararg data: MemberWithLocationsRaw)
-    suspend fun recreateAllMember(data: List<MemberWithLocationsRaw>)
+    suspend fun recreateMembers(vararg data: MemberWithLocationsRaw)
+    suspend fun recreateAllMembers(data: List<MemberWithLocationsRaw>)
     suspend fun recreateMembersForGroup(groupId: String, data: List<MemberWithLocationsRaw>)
 
     fun getMemberRawPresentation(memberId: String): Flow<Pair<MemberWithLocationsRaw, MemberModelWithLocations>>

@@ -21,4 +21,5 @@ sealed class GroupDetailScreenEvent() {
     object GroupDeleted : GroupDetailScreenEvent()
     object GroupNotFound : GroupDetailScreenEvent()
     object GroupMemberDeleted : GroupDetailScreenEvent()
+    object MemberLocationDeleted : GroupDetailScreenEvent()
 }

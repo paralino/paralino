@@ -37,6 +37,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     onActionClick: (() -> Unit)? = null,
+    onDeleteDeviceClick: ((GroupMemberItemLocationState) -> Unit)? = null,
     extraActions: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val (image, center, expand, actions) = createRefs()
@@ -153,6 +154,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
                         },
                         onDelete = {
                             // delete device
+                            onDeleteDeviceClick?.invoke(it)
                         }
                     )
                 }

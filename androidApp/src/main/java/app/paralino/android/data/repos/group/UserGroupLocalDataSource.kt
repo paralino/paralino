@@ -18,7 +18,7 @@ class UserGroupLocalDataSource constructor(
 
     override suspend fun recreateGroups(data: List<GroupWithMemberRaw>) {
         dao.replaceGroups(*data.map { mapper.remote2Local(it.group) }.toTypedArray())
-        memberLocal.recreateAllMember(data.flatMap { it.members })
+        memberLocal.recreateAllMembers(data.flatMap { it.members })
     }
 
     override suspend fun updateOrCreateGroup(group: GroupWithMemberRaw) {

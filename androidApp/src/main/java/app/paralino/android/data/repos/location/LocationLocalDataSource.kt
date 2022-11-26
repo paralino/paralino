@@ -25,11 +25,11 @@ class LocationLocalDataSource(
             .toTypedArray())
     }
 
-    override suspend fun createOrUpdateMembers(vararg data: MemberWithLocationsRaw) {
+    override suspend fun recreateMembers(vararg data: MemberWithLocationsRaw) {
         dao.createOrUpdateMembersWithLocations(data.map { mapper.remote2Local(it) })
     }
 
-    override suspend fun recreateAllMember(data: List<MemberWithLocationsRaw>) {
+    override suspend fun recreateAllMembers(data: List<MemberWithLocationsRaw>) {
         dao.recreateAll(data.map { mapper.remote2Local(it) })
     }
 

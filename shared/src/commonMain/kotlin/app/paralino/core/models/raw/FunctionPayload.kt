@@ -171,3 +171,9 @@ data class LocationCreatePayload constructor(
     val deviceData: String?,
     val deviceId: String,
 )
+
+@Serializable
+data class LocationDeletePayload constructor(
+    val memberId: String,
+    val locationId: String,
+)

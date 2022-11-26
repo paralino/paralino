@@ -6,12 +6,16 @@ import app.paralino.core.logg
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.IGroupLocalDataSource
+import app.paralino.core.repo.location.ILocationLocalDataSource
+import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.*
 
 class GroupMemberRemoveUseCase(
     private val local: IGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
+    private val memberRemote: LocationRemoteSource,
+    private val memberLocal: ILocationLocalDataSource,
     private val userRepository: UserRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupRemoveUseCase: GroupRemoveUseCase,
@@ -59,6 +63,18 @@ class GroupMemberRemoveUseCase(
                 stopProcessing(groupId)
                 throw it
             }
+    }
+
+    fun deleteLocation(memberId: String, locationId: String): Flow<Unit> {
+        return getDataOnce(
+            remote = {
+                memberRemote.deleteLocation(memberId = memberId, locationId = locationId)
+                memberRemote.getMember(memberId)
+            },
+            localUpdate = {
+                memberLocal.recreateMembers(it)
+            }
+        ).map { Unit }
     }
 
 }

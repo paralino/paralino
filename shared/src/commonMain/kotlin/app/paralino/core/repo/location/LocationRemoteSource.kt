@@ -6,8 +6,14 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.raw.LocationDeletePayload
+import app.paralino.core.models.raw.MemberDocumentRaw
+import app.paralino.core.models.raw.MemberLocationRaw
+import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.repo.api.IDocumentsApi
+import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
@@ -15,18 +21,33 @@ import kotlinx.serialization.encodeToString
 
 class LocationRemoteSource constructor(
     private val documentApi: IDocumentsApi,
+    private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository,
 ) {
 
-    suspend fun deleteLocation(id: String) {
+    suspend fun deleteLocation(memberId: String, locationId: String) {
         blocking {
-            documentApi.deleteDocument(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
-                documentId = id
+
+            val payload = LocationDeletePayload(
+                memberId = memberId,
+                locationId = locationId
             )
+
+            val response = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionLocationDelete,
+                data = BaseRemoteModule.formatter.encodeToString(payload)
+            )
+
+            if (!response.isSuccess) {
+                // TODO throw better exception
+                throw BaseRemoteException.fromCode(
+                    null,
+                    "Unable to delete location",
+                    Exception(response.stderr)
+                )
+            }
         }
     }
 
@@ -73,7 +94,29 @@ class LocationRemoteSource constructor(
                     )
                 )
             }
+        }
+    }
 
+
+    suspend fun getMember(memberId: String): MemberWithLocationsRaw {
+        return blocking {
+
+            val member = documentApi.getDocument(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
+                documentId = memberId
+            ).let { MemberDocumentRaw.from(it) }
+
+            val locations = documentApi.listAllDocuments(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+                keyValues = listOf("groupId" to member.groupId)
+            ).map { MemberLocationRaw.from(it) }
+
+            MemberWithLocationsRaw(
+                member = member,
+                locations = locations.filter { location -> member.locationIds.contains(location.id) }
+            )
         }
     }
 

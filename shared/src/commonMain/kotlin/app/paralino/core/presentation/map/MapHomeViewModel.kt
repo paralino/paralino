@@ -64,12 +64,18 @@ class MapHomeViewModel constructor(
                             if (member.locations.isEmpty()) {
                                 listOf(
                                     GroupMemberItemStateWithOneLocation(
-                                        memberState = GroupMemberState(member.member),
+                                        memberState = GroupMemberState(
+                                            member = member.member,
+                                            isCurrentUser = member.member.userId == config.userId
+                                        ),
                                         location = null
                                     )
                                 )
                             } else {
-                                val memberState = GroupMemberState(member.member)
+                                val memberState = GroupMemberState(
+                                    member = member.member,
+                                    isCurrentUser = member.member.userId == config.userId
+                                )
                                 member.locations.map { location ->
                                     val canDelete = member.member.userId == config.userId &&
                                             location.locationData.data != null &&

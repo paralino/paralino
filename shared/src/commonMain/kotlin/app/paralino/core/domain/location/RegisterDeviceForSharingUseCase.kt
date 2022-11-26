@@ -6,6 +6,7 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.location.ILocationLocalDataSource
+import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import kotlinx.serialization.encodeToString
@@ -13,7 +14,7 @@ import kotlinx.serialization.encodeToString
 class RegisterDeviceForSharingUseCase constructor(
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
-    private val groupsRemote: GroupsRemoteSource,
+    private val memberRemote: LocationRemoteSource,
     private val userMemberId: UserMemberIdUseCase,
     private val memberLocal: ILocationLocalDataSource
 ): BaseRepository() {
@@ -41,8 +42,8 @@ class RegisterDeviceForSharingUseCase constructor(
             )
 
             if (data.isSuccess) {
-                groupsRemote.getMember(userMemberId.getCurrentUserMemberIdForGroup(groupId)!!)
-                    .also { memberLocal.createOrUpdateMembers(it) }
+                memberRemote.getMember(userMemberId.getCurrentUserMemberIdForGroup(groupId)!!)
+                    .also { memberLocal.recreateMembers(it) }
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(

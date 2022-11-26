@@ -40,6 +40,7 @@ fun GroupMember(
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     onActionClick: (() -> Unit)? = null,
+    onDeleteDeviceClick: ((GroupMemberItemLocationState) -> Unit)? = null,
     extraActions: (@Composable RowScope.() -> Unit)? = null,
     onClick: () -> Unit,
 ) {
@@ -73,6 +74,7 @@ fun GroupMember(
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
                     onActionClick = onActionClick,
+                    onDeleteDeviceClick = onDeleteDeviceClick,
                     extraActions = extraActions
                 )
             }
@@ -161,6 +163,7 @@ val dummyMemberState = GroupMemberState(
     actionItem = MemberAction.DELETE_MEMBER,
     name = "User name",
     image = ImageModel.emoji(Emojis.robot),
+    isCurrentUser = true
 )
 
 val dummyLocations = listOf(

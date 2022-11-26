@@ -217,6 +217,8 @@
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
     <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>
+    <string name="group_members_device_other_remove_alert_title">Are you sure you want remove %ss\' device from group?\n\nThis will not remove user from a group.</string>
+    <string name="group_members_device_own_remove_alert_title">Are you sure you want remove your device from group?\n\nThis will not remove you from a group.</string>
     <string name="group_members_empty_info">This group is lonely!\nAdd someone to securely share your location with.</string>
     <string name="group_details_section_members_title">Members **(%d)**</string>
     <string name="group_details_menu_edit">Edit</string>
