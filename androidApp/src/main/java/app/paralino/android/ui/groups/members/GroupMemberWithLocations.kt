@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayoutScope
 import androidx.constraintlayout.compose.Dimension
+import app.paralino.android.R
 import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.theme.ButtonStyle
@@ -216,8 +217,7 @@ fun GroupMemberLocationChild(
             modifier = Modifier.width(50.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ImageModelImage(
-                imageModel = state.image,
+            Icon(
                 modifier = Modifier
                     .padding(end = 2.dp)
                     .size(36.dp)
@@ -226,6 +226,9 @@ fun GroupMemberLocationChild(
                         MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                         RoundedCornerShape(10.dp)
                     )
+                    .padding(10.dp),
+                imageVector = Icons.Rounded.Smartphone,
+                contentDescription = null
             )
             if (state.batterLevel != null) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -258,7 +261,7 @@ fun GroupMemberLocationChild(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = state.name,
+                text = state.name?.takeIf { it.isNotBlank() } ?: stringResource(id = R.string.group_members_device_name_default),
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier
             )

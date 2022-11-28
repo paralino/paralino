@@ -94,6 +94,7 @@ fun EditProfileScreen(
                 }
             },
             onNameChange = { vm.onNameChange(it) },
+            onDeviceNameChange = { vm.onDeviceNameChange(it) },
             onCreateGroupClick = { vm.proceed() }
         )
     }
@@ -105,6 +106,7 @@ fun EditProfileScreen(
     state: EditProfileScreenState,
     onImageClick: () -> Unit,
     onNameChange: (String) -> Unit,
+    onDeviceNameChange: (String) -> Unit,
     onCreateGroupClick: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -150,6 +152,18 @@ fun EditProfileScreen(
             imeAction = ImeAction.Done,
             focusManager = focusManager,
             onInputChange = onNameChange
+        )
+
+        Spacer(modifier = Modifier.size(20.dp))
+
+        MainInputField(
+            text = state.deviceName,
+            hint = stringResource(id = R.string.groups_sharing_device_name_placeholder),
+            hasError = false,
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done,
+            focusManager = focusManager,
+            onInputChange = onDeviceNameChange
         )
 
         Spacer(modifier = Modifier.size(80.dp))

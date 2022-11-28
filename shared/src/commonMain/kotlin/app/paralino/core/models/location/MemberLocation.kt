@@ -24,8 +24,7 @@ data class MemberLocation constructor(
     @Contextual
     val locationData: CryptoResource<LocationDataModel>
 ) {
-    val name: String get() = deviceData.data?.deviceName ?: "---"
-    val image: ImageModel get() = deviceData.data?.deviceImage ?: ImageModel.emoji(Emojis.lock)
+    val name: String? get() = deviceData.data?.deviceName
 
     val isActive: Boolean
         get() {
@@ -39,5 +38,5 @@ data class MemberLocation constructor(
 @Serializable
 data class MemberDeviceData constructor(
     val deviceName: String,
-    val deviceImage: ImageModel
+    val deviceType: String
 )

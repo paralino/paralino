@@ -124,8 +124,10 @@ data class UpdateMemberFunctionPayload constructor(
 @Serializable
 data class UpdateMemberData constructor(
     val memberId: String,
+    val locationId: String,
     val groupKeyVersion: Long,
     val memberData: String,
+    val deviceData: String
 )
 
 @Serializable

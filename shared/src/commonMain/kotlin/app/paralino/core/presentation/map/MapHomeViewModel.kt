@@ -86,6 +86,7 @@ class MapHomeViewModel constructor(
                                         ),
                                         location = GroupMemberItemLocationState(
                                             memberLocation = location,
+                                            image = member.member.image,
                                             canEdit = false,
                                             showSpeedAndElevation = true
                                         )
@@ -95,13 +96,14 @@ class MapHomeViewModel constructor(
                         }
 
                         val memberMarkers = group.members
-                            .flatMap { it.locations }
-                            .filter { it.locationData.data != null }
-                            .map { member ->
-                                MapPinData(
-                                    member = member,
-                                    focused = focusedMarkerId == member.id
-                                )
+                            .flatMap { member ->
+                                member.locations.filter { it.locationData.data != null }.map {
+                                    MapPinData(
+                                        member = it,
+                                        image = member.member.image,
+                                        focused = focusedMarkerId == it.id
+                                    )
+                                }
                             }
 
                         val placeMarkers =

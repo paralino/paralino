@@ -66,6 +66,7 @@ class GroupDetailViewModel(
                             location = member.locations.firstOrNull()?.let {
                                 GroupMemberItemLocationState(
                                     memberLocation = it,
+                                    image = member.member.image,
                                     canEdit = false,
                                     showSpeedAndElevation = false
                                 )
@@ -77,6 +78,7 @@ class GroupDetailViewModel(
                             locations = member.locations.map {
                                 GroupMemberItemLocationState(
                                     memberLocation = it,
+                                    image = member.member.image,
                                     canEdit = canEdit,
                                     showSpeedAndElevation = false
                                 )

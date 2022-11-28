@@ -20,4 +20,5 @@ class EditProfileViewModel(
     fun proceed() = coreVm.proceed()
     fun onImageChange(imageModel: ImageModel) = coreVm.onImageChange(imageModel)
     fun onNameChange(name: String) = coreVm.onNameChange(name)
+    fun onDeviceNameChange(name: String) = coreVm.onDeviceNameChange(name)
 }

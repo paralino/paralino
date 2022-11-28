@@ -3,8 +3,10 @@ package app.paralino.core.domain.user
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.Payload
+import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.UpdateMemberData
 import app.paralino.core.models.raw.UpdateMemberFunctionPayload
@@ -32,10 +34,11 @@ class UpdateUserDataUseCase constructor(
     private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val personalCodes: PersonalCodesRepository
+    private val personalCodes: PersonalCodesRepository,
+    private val userMemberIdUseCase: UserMemberIdUseCase
 ) : BaseRepository() {
 
-    fun updateUserData(data: UserMeData): Flow<Boolean> {
+    fun updateUserData(data: UserMeData, deviceName: String): Flow<Boolean> {
         return getDataOnce(
             remote = {
                 val pushToken = config.pushTokenUnsynced
@@ -47,15 +50,16 @@ class UpdateUserDataUseCase constructor(
             localUpdate = { userRepo.updateLocalUser(it) }
         )
             .map {
-                updateMemberDataInGroups(data)
+                updateMemberDataInGroups(data, deviceName)
             }
             .flatMapLatest {
+                config.deviceName = deviceName
                 personalCodes.revokeAllCodes()
             }
             .map { it is Payload.Success }
     }
 
-    private suspend fun updateMemberDataInGroups(data: UserMeData) {
+    private suspend fun updateMemberDataInGroups(data: UserMeData, deviceName: String) {
         val userMembers = locationRepo.getMembersByUserId(userRepo.cachedUserId).first()
 
         val nodes = userMembers.map { member ->
@@ -63,17 +67,29 @@ class UpdateUserDataUseCase constructor(
             val groupKey = cryptoKEKRepo.getGroupKey(member.member.groupId, member.member.groupKeyVersion)
                 ?: throw MissingGroupKeyException(member.member.groupId, member.member.groupKeyVersion)
 
-            val newData = cryptoCore.encryptDataWithKey(
+            val memberData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberModelData(data.userName, data.userImage)
                 ),
                 key = groupKey.data.content
             )
 
+            val deviceData = cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(
+                    MemberDeviceData(
+                        deviceName = deviceName,
+                        deviceType = "phone"
+                    )
+                ),
+                key = groupKey.data.content
+            )
+
             UpdateMemberData(
                 memberId = member.member.id,
+                locationId = userMemberIdUseCase.getCurrentLocationIdForGroup(member.member.groupId) ?: "",
                 groupKeyVersion = member.member.groupKeyVersion,
-                memberData = newData,
+                memberData = memberData,
+                deviceData = deviceData
             )
         }
 

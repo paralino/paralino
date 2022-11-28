@@ -4,6 +4,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
+import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.datetime.LocalDateTime
 
@@ -48,7 +49,7 @@ data class GroupMemberItemStateWithLocations constructor(
 
 data class GroupMemberItemLocationState constructor(
     val locationId: String,
-    val name: String,
+    val name: String?,
     val image: ImageModel,
     val batterLevel: Int?,
     val speedMs: Float?,
@@ -59,12 +60,13 @@ data class GroupMemberItemLocationState constructor(
 ) {
     constructor(
         memberLocation: MemberLocation,
+        image: ImageModel?,
         canEdit: Boolean,
         showSpeedAndElevation: Boolean
     ) : this(
         locationId = memberLocation.id,
         name = memberLocation.name,
-        image = memberLocation.image,
+        image = image ?: ImageModel.emoji(Emojis.lock),
         batterLevel = memberLocation.locationData.data?.batteryLevel,
         speedMs = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation },
         elevationMeters = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation },

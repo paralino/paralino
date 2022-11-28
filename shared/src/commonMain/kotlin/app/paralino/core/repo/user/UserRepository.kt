@@ -9,7 +9,6 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
-import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
@@ -75,7 +74,6 @@ class UserRepository constructor(
 
     suspend fun login(email: String, password: String): UserSession {
         return triggerRemoteOnly { remote.login(email, password) }
-            .also { config.token = it.id }
     }
 
     suspend fun remoteSignUp(
@@ -87,9 +85,14 @@ class UserRepository constructor(
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
         updateLocalUser(userMeRaw)
-        config.token = userSession.id
+        updateSession(userSession)
         config.emailConfirmed = true
         sessionMonitor.updateSessionState(sessionValid = true)
+    }
+
+    private suspend fun updateSession(session: UserSession) {
+        config.sessionId = session.id
+        config.deviceName = session.deviceName
     }
 
     fun updateUserEmail(newEmail: String, password: String): Flow<Unit> {
@@ -120,15 +123,7 @@ class UserRepository constructor(
         }
     }
 
-    suspend fun getCurrentSessionFromRemote(): UserSession {
-        return triggerRemoteOnly { remote.getCurrentSession() }
-    }
-
     suspend fun getUserFromRemote(): UserMeRaw {
-        if (!config.isTokenValid) {
-            throw Exception("Token is not available")
-        }
-
         return try {
             triggerRemoteOnly { remote.getMe() }
         } catch (e: Exception) {

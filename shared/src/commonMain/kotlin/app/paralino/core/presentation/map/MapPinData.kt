@@ -60,13 +60,13 @@ data class MapPinData constructor(
         shouldShowApproximateCircle = true
     )
 
-    constructor(member: MemberLocation, focused: Boolean) : this(
+    constructor(member: MemberLocation, image: ImageModel?, focused: Boolean) : this(
         groupId = member.groupId,
         markerId = member.id,
         pinType = MapPinType.MEMBER,
         focused = focused,
         active = member.isActive,
-        image = member.image,
+        image = image,
         lat = member.locationData.data!!.lat,
         lng = member.locationData.data!!.lng,
         accuracy = member.locationData.data?.accuracy ?: 0f,

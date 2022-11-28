@@ -1,11 +1,13 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.config
+import app.paralino.core.models.location.MemberLocation
+import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.repo.places.IPlacesLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 
 class UserMemberIdUseCase constructor(
     private val userRepository: UserRepository,
@@ -14,17 +16,20 @@ class UserMemberIdUseCase constructor(
 ) {
 
     suspend fun getCurrentDeviceId(): String {
-        return config.token
+        return config.sessionId
     }
 
-    suspend fun getCurrentLocationIdForGroup(groupId: String): String? {
-        // TODO replace with proper id when multiple device support is added
+    suspend fun getCurrentLocationForGroup(groupId: String): MemberLocation? {
         return memberLocal.getMember(
             groupId = groupId,
             userId = userRepository.cachedUserId
         ).first().locations.firstOrNull {
-            it.deviceId == config.token
-        }?.id
+            it.deviceId == config.sessionId
+        }
+    }
+
+    suspend fun getCurrentLocationIdForGroup(groupId: String): String? {
+        return getCurrentLocationForGroup(groupId)?.id
     }
 
     suspend fun getCurrentUserMemberIdForGroup(groupId: String): String? {
@@ -32,6 +37,13 @@ class UserMemberIdUseCase constructor(
             groupId = groupId,
             userId = userRepository.cachedUserId
         )
+    }
+
+    suspend fun getCurrentUserMemberForGroup(groupId: String): MemberModelWithLocations? {
+        return memberLocal.getMember(
+            groupId = groupId,
+            userId = userRepository.cachedUserId
+        ).firstOrNull()
     }
 
     suspend fun getCurrentUserMemberIdForPlace(placeId: String): String? {

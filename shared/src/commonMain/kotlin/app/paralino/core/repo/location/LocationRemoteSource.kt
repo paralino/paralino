@@ -5,6 +5,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.raw.LocationDeletePayload
 import app.paralino.core.models.raw.MemberDocumentRaw
@@ -77,20 +78,30 @@ class LocationRemoteSource constructor(
                 val groupKey = cryptoKEKRepo.getGroupKey(it.groupId)
                     ?: throw MissingGroupKeyException(it.groupId)
 
-                val encryptedData = it.data?.let {
+                val locationData = it.data?.let {
                     cryptoCore.encryptDataWithKey(
                         data = BaseRemoteModule.formatter.encodeToString(it),
                         key = memberKey.data.content
                     )
                 }
 
+                val deviceData = cryptoCore.encryptDataWithKey(
+                    data = BaseRemoteModule.formatter.encodeToString(
+                        MemberDeviceData(
+                            deviceName = config.deviceName,
+                            deviceType = "phone"
+                        )
+                    ),
+                    key = groupKey.data.content
+                )
+
                 documentApi.updateDocument(
                     databaseType = BackendDatabaseType.DATA,
                     collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
                     docId = it.locationId,
                     data = mapOf(
-                        "locationData" to encryptedData,
-                        "deviceData" to ""
+                        "locationData" to locationData,
+                        "deviceData" to deviceData
                     )
                 )
             }

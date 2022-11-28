@@ -5,9 +5,10 @@ import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.common.FormValidationResult
 import app.paralino.core.utils.Emojis
 
-data class EditProfileScreenState(
+data class EditProfileScreenState constructor(
     val image: ImageModel = ImageModel.emoji(Emojis.robot),
     val name: String = "",
+    val deviceName: String = "",
     val hasNameError: Boolean = false,
     val actionLoading: Boolean? = false,
 ) {
