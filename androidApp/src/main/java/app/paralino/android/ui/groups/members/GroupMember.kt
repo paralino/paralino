@@ -176,7 +176,8 @@ val dummyLocations = listOf(
         elevationMeters = 50f,
         lastPing = LocalDateTime.now().minusDays(2).toKotlinLocalDateTime(),
         status = GroupMemberStatus.ACTIVE,
-        canEdit = true
+        canEdit = true,
+        currentDevice = true
     ),
     GroupMemberItemLocationState(
         locationId = "",
@@ -187,7 +188,8 @@ val dummyLocations = listOf(
         elevationMeters = null,
         lastPing = null,
         status = GroupMemberStatus.INACTIVE,
-        canEdit = true
+        canEdit = true,
+        currentDevice = true
     ),
     GroupMemberItemLocationState(
         locationId = "",
@@ -198,6 +200,7 @@ val dummyLocations = listOf(
         elevationMeters = 50f,
         lastPing = LocalDateTime.now().minusDays(2).toKotlinLocalDateTime(),
         status = GroupMemberStatus.ACTIVE,
-        canEdit = false
+        canEdit = false,
+        currentDevice = false
     )
 )

@@ -88,6 +88,7 @@ class MapHomeViewModel constructor(
                                             memberLocation = location,
                                             image = member.member.image,
                                             canEdit = false,
+                                            currentDevice = location.deviceId == config.sessionId,
                                             showSpeedAndElevation = true
                                         )
                                     )

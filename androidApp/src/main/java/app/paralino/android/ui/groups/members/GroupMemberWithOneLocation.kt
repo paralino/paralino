@@ -51,8 +51,11 @@ fun ConstraintLayoutScope.GroupMemberWithOneLocation(
             modifier = Modifier
                 .size(50.dp)
                 .border(
-                    0.5.dp,
-                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                    if (state.memberState.isCurrentUser) 2.dp else 0.5.dp,
+                    if (state.memberState.isCurrentUser)
+                        MaterialTheme.colors.primary
+                    else
+                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                     RoundedCornerShape(8.dp)
                 )
         )

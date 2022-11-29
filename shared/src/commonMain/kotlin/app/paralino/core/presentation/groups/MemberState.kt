@@ -56,12 +56,14 @@ data class GroupMemberItemLocationState constructor(
     val elevationMeters: Float?,
     val lastPing: LocalDateTime?,
     val status: GroupMemberStatus,
-    val canEdit: Boolean
+    val canEdit: Boolean,
+    val currentDevice: Boolean
 ) {
     constructor(
         memberLocation: MemberLocation,
         image: ImageModel?,
         canEdit: Boolean,
+        currentDevice: Boolean,
         showSpeedAndElevation: Boolean
     ) : this(
         locationId = memberLocation.id,
@@ -72,7 +74,8 @@ data class GroupMemberItemLocationState constructor(
         elevationMeters = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation },
         lastPing = memberLocation.locationData.data?.timeUTC?.isoToLocalDateTime(),
         status = if (memberLocation.isActive) GroupMemberStatus.ACTIVE else GroupMemberStatus.INACTIVE,
-        canEdit = canEdit
+        canEdit = canEdit,
+        currentDevice = currentDevice
     )
 }
 

@@ -1,9 +1,7 @@
 package app.paralino.android.ui.groups.members
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -57,14 +55,17 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
             modifier = Modifier
                 .size(50.dp)
                 .border(
-                    0.5.dp,
-                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                    if (state.memberState.isCurrentUser) 2.dp else 0.5.dp,
+                    if (state.memberState.isCurrentUser)
+                        MaterialTheme.colors.primary
+                    else
+                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                     RoundedCornerShape(8.dp)
                 )
         )
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -194,6 +195,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GroupMemberLocationChild(
     modifier: Modifier = Modifier,
@@ -208,13 +210,16 @@ fun GroupMemberLocationChild(
             .padding(start = 12.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
-            .clickable { onClick(state) }
+            .combinedClickable(
+                onClick = { onClick(state) },
+                onLongClick = { onDelete(state) }
+            )
             .padding(horizontal = 6.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
         Column(
-            modifier = Modifier.width(50.dp),
+            modifier = Modifier.width(36.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
@@ -222,11 +227,14 @@ fun GroupMemberLocationChild(
                     .padding(end = 2.dp)
                     .size(36.dp)
                     .border(
-                        0.5.dp,
-                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                        if (state.currentDevice) 2.dp else 0.5.dp,
+                        if (state.currentDevice)
+                            MaterialTheme.colors.primary
+                        else
+                            MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                         RoundedCornerShape(10.dp)
                     )
-                    .padding(10.dp),
+                    .padding(8.dp),
                 imageVector = Icons.Rounded.Smartphone,
                 contentDescription = null
             )
@@ -261,7 +269,8 @@ fun GroupMemberLocationChild(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = state.name?.takeIf { it.isNotBlank() } ?: stringResource(id = R.string.group_members_device_name_default),
+                text = state.name?.takeIf { it.isNotBlank() }
+                    ?: stringResource(id = R.string.group_members_device_name_default),
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier
             )
@@ -327,20 +336,6 @@ fun GroupMemberLocationChild(
                 }
             }
 
-        }
-
-        if (state.canEdit) {
-            IconButton(
-                modifier = Modifier
-                    .padding(end = 12.dp)
-                    .size(16.dp),
-                onClick = { onDelete(state) }
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Delete,
-                    contentDescription = null
-                )
-            }
         }
     }
 }
