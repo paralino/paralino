@@ -1,23 +1,25 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.config
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.repo.places.IPlacesLocalDataSource
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.IDeviceApiProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 
 class UserMemberIdUseCase constructor(
     private val userRepository: UserRepository,
     private val memberLocal: ILocationLocalDataSource,
-    private val placeLocal: IPlacesLocalDataSource
+    private val placeLocal: IPlacesLocalDataSource,
+    private val deviceApiProvider: IDeviceApiProvider
 ) {
 
-    suspend fun getCurrentDeviceType(): String {
-        // TODO add proper device type
-        return "android"
+    suspend fun getCurrentDeviceType(): DeviceType {
+        return deviceApiProvider.deviceType
     }
 
     suspend fun getCurrentSessionId(): String {

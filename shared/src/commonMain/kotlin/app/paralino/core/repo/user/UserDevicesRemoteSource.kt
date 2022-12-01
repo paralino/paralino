@@ -39,7 +39,7 @@ class UserDevicesRemoteSource constructor(
             val payload = UpdateUserDeviceFunctionData(
                 sessionId = userMemberIdUseCase.getCurrentSessionId(),
                 pushToken = pushToken,
-                deviceType = userMemberIdUseCase.getCurrentDeviceType()
+                deviceType = userMemberIdUseCase.getCurrentDeviceType().key
             )
 
             val data = functionsApi.runAndWait(

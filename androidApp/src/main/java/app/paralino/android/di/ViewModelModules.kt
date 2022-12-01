@@ -108,7 +108,7 @@ val coreModule = module {
     factory { ConvertAccountUseCase(get(), get()) }
     factory { LocationRefreshUseCase(get(), get(), get(), get()) }
     factory { RealtimeEventsWhileSharingUseCase(get(), get(), get(), get()) }
-    factory { UserMemberIdUseCase(get(), get(), get()) }
+    factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get()) }
     factory { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get()) }
