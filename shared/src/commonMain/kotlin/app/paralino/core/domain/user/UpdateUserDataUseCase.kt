@@ -4,6 +4,7 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.MemberDeviceData
@@ -15,6 +16,7 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.user.UserDevicesRemoteSource
 import app.paralino.core.repo.user.UserRemoteSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
@@ -29,6 +31,7 @@ import kotlinx.serialization.encodeToString
 class UpdateUserDataUseCase constructor(
     private val userRepo: UserRepository,
     private val userRemoteSource: UserRemoteSource,
+    private val userDevicesRemoteSource: UserDevicesRemoteSource,
     private val locationRepo: LocationRepository,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
@@ -104,6 +107,28 @@ class UpdateUserDataUseCase constructor(
                 cause = Exception(response.stderr)
             )
         }
+    }
+
+    suspend fun registerPushTokenIfNeeded() {
+       userRepo.cachedUser?.data ?: let {
+            logg.tag("push_notifications").v("User not present, ignoring...")
+            return
+        }
+
+        val unsyncedToken = config.pushTokenUnsynced
+            .takeIf { it.isNotBlank() }
+            ?: let {
+                logg.tag("push_notifications").v("No new push token to register")
+                return
+            }
+
+        logg.tag("push_notifications").v("Found unsynced push token, syncing...")
+
+        config.pushTokenUnsynced = unsyncedToken
+        userDevicesRemoteSource.updateDeviceData(unsyncedToken)
+        config.pushTokenUnsynced = ""
+
+        logg.tag("push_notifications").v("Push token registered")
     }
 
 }

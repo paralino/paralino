@@ -3,8 +3,8 @@ package app.paralino.android.fcm
 import android.content.Context
 import androidx.work.*
 import app.paralino.core.config
+import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.logg
-import app.paralino.core.repo.user.UserRepository
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
 import org.koin.core.component.KoinComponent
@@ -15,7 +15,7 @@ class PushTokenSyncWorker(
     params: WorkerParameters,
 ) : CoroutineWorker(appContext, params) {
 
-    private val userRepo by lazy { UserRepoComponent() }
+    private val userDataUpdate by lazy { UserRepoComponent() }
 
     override suspend fun doWork(): Result {
 
@@ -24,7 +24,7 @@ class PushTokenSyncWorker(
             val token = FirebaseMessaging.getInstance().token.await()
             logg.tag("push_notifications").v("Got token from firebase: $token")
             config.pushTokenUnsynced = token
-            userRepo.userRepo.registerPushTokenIfNeeded()
+            userDataUpdate.userDataUpdate.registerPushTokenIfNeeded()
         } catch (e: Exception) {
             logg.tag("push_notifications").e("Error syncing push token", e)
             return if (runAttemptCount < 3) Result.retry() else Result.failure()
@@ -51,5 +51,5 @@ class PushTokenSyncWorker(
 }
 
 class UserRepoComponent() : KoinComponent {
-    val userRepo: UserRepository by inject()
+    val userDataUpdate: UpdateUserDataUseCase by inject()
 }

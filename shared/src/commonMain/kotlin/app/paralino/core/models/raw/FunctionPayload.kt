@@ -179,3 +179,10 @@ data class LocationDeletePayload constructor(
     val memberId: String,
     val locationId: String,
 )
+
+@Serializable
+data class UpdateUserDeviceFunctionData constructor(
+    val sessionId: String,
+    val pushToken: String,
+    val deviceType: String
+)

@@ -57,7 +57,7 @@ class RegisterDeviceForSharingUseCase constructor(
             val payload = LocationCreatePayload(
                 groupId = groupId,
                 deviceData = deviceData,
-                deviceId = userMemberId.getCurrentDeviceId(),
+                deviceId = userMemberId.getCurrentSessionId(),
             )
 
             val data = functionsApi.runAndWait(

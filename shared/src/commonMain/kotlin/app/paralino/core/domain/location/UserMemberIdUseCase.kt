@@ -15,7 +15,12 @@ class UserMemberIdUseCase constructor(
     private val placeLocal: IPlacesLocalDataSource
 ) {
 
-    suspend fun getCurrentDeviceId(): String {
+    suspend fun getCurrentDeviceType(): String {
+        // TODO add proper device type
+        return "android"
+    }
+
+    suspend fun getCurrentSessionId(): String {
         return config.sessionId
     }
 

@@ -20,9 +20,6 @@ import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.repo.location.ISharingContractsLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
-import app.paralino.core.repo.user.CryptoUserKeysRemoteSource
-import app.paralino.core.repo.user.IUserLocalDataSource
-import app.paralino.core.repo.user.UserRemoteSource
 import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.android.crpyto.CryptoFrameworkProvider
@@ -48,7 +45,7 @@ import app.paralino.android.utils.LocationStatusProvider
 import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.places.IPlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
-import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.repo.user.*
 import app.paralino.core.utils.IDeviceApiProvider
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -104,6 +101,7 @@ val mappersModule = module {
 
 val remoteDataSourceModule = module {
     single { UserRemoteSource(get(), get(), get(), get()) }
+    single { UserDevicesRemoteSource(get(), get(), get(), get()) }
     single { LocationRemoteSource(get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
