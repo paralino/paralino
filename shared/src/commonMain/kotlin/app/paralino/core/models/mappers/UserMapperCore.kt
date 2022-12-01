@@ -28,7 +28,6 @@ class UserMapperCore(
         return UserMeData(
             userImage = model.userImage?.let { cryptoCore.decryptDataWithKey(it, userKey) }?.asImageModel(),
             userName = model.userName?.let { cryptoCore.decryptDataWithKey(it, userKey) } ?: "",
-            pushToken = model.pushToken ?: ""
         )
     }
 
@@ -37,7 +36,6 @@ class UserMapperCore(
         return UserMeDataRaw(
             userImage = model.userImage?.image?.let { cryptoCore.encryptDataWithKey(it, userKey) },
             userName = model.userName.takeIf { it.isNotBlank() }?.let { cryptoCore.encryptDataWithKey(it, userKey) },
-            pushToken = model.pushToken
         )
     }
 

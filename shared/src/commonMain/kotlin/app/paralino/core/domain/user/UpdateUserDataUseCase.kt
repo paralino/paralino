@@ -40,13 +40,7 @@ class UpdateUserDataUseCase constructor(
 
     fun updateUserData(data: UserMeData, deviceName: String): Flow<Boolean> {
         return getDataOnce(
-            remote = {
-                val pushToken = config.pushTokenUnsynced
-                    .takeIf { it.isNotBlank() }
-                    ?: data.pushToken.takeIf { it.isNotBlank() }
-                    ?: userRepo.cachedUser?.data?.pushToken
-                userRemoteSource.updateUserData(data.copy(pushToken = pushToken ?: ""))
-            },
+            remote = { userRemoteSource.updateUserData(data) },
             localUpdate = { userRepo.updateLocalUser(it) }
         )
             .map {

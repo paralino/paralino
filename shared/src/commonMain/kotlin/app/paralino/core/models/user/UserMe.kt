@@ -30,5 +30,4 @@ data class UserMe constructor(
 data class UserMeData constructor(
     var userImage: ImageModel? = null,
     val userName: String = "",
-    val pushToken: String = ""
 )
