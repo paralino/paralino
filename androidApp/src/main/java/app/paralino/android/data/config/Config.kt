@@ -21,6 +21,7 @@ class Config(context: Context) : IConfig {
         const val keyPasswordGuest = "prefs.profile.guest.password"
         const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
         const val keyDeviceName = "prefs.device.name"
+        const val keyDeviceID = "prefs.device.ID"
     }
 
     private val secureSharedData by lazy {
@@ -31,6 +32,11 @@ class Config(context: Context) : IConfig {
         EncryptedSharedPreferences(context, "shared_prefs_app", MasterKey(context))
     }
 
+    override var deviceId: String
+        get() = persistentSharedData.getString(keyDeviceID, "") ?: ""
+        set(value) {
+            persistentSharedData.edit { putString(keyDeviceID, value) }
+        }
 
     override var sessionId: String
         get() = secureSharedData.getString(keyToken, "") ?: ""

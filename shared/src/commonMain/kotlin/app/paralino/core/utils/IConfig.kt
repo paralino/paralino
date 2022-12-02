@@ -2,6 +2,7 @@ package app.paralino.core.utils
 
 interface IConfig {
 
+    var deviceId: String
     var sessionId: String
     var deviceName: String
     var email: String

@@ -1,8 +1,31 @@
 package app.paralino.android.di
 
+import app.paralino.android.AppClass
+import app.paralino.android.crpyto.CryptoFrameworkProvider
+import app.paralino.android.crpyto.CryptoHashProvider
+import app.paralino.android.crpyto.CryptoKeyProvider
+import app.paralino.android.data.config.Config
+import app.paralino.android.data.database.MainAppDatabase
+import app.paralino.android.data.mappers.*
+import app.paralino.android.data.repos.group.CryptoKeyLocalDataSource
+import app.paralino.android.data.repos.group.UserGroupLocalDataSource
+import app.paralino.android.data.repos.location.LocationLocalDataSource
+import app.paralino.android.data.repos.location.SharingContractsLocalDataSourceImpl
+import app.paralino.android.data.repos.personal_code.PersonalCodeLocalDataSource
+import app.paralino.android.data.repos.places.GroupPlacesLocalDataSource
+import app.paralino.android.data.repos.user.UserCryptoKeyLocalDataSource
+import app.paralino.android.data.repos.user.UserLocalDataSource
+import app.paralino.android.fcm.PushProviderManager
+import app.paralino.android.remote.appwrite.*
+import app.paralino.android.utils.ConnectionStatusProvider
+import app.paralino.android.utils.DeviceApiProvider
+import app.paralino.android.utils.LocationStatusProvider
 import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.config
-import app.paralino.core.crypto.*
+import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.ICryptoHashProvider
+import app.paralino.core.crypto.ICryptoKeyProvider
+import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.group.ICryptoKeyLocalDataSource
@@ -12,41 +35,21 @@ import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.mappers.*
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.IGroupLocalDataSource
-import app.paralino.core.repo.personal_code.IPersonalCodelLocalDataSource
-import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.repo.location.ISharingContractsLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
-import app.paralino.core.utils.IConnectionStatusProvider
-import app.paralino.core.utils.ILocationStatusProvider
-import app.paralino.android.crpyto.CryptoFrameworkProvider
-import app.paralino.android.crpyto.CryptoHashProvider
-import app.paralino.android.crpyto.CryptoKeyProvider
-import app.paralino.android.AppClass
-import app.paralino.android.data.config.Config
-import app.paralino.android.data.database.MainAppDatabase
-import app.paralino.android.data.mappers.*
-import app.paralino.android.data.repos.group.CryptoKeyLocalDataSource
-import app.paralino.android.data.repos.group.UserGroupLocalDataSource
-import app.paralino.android.data.repos.personal_code.PersonalCodeLocalDataSource
-import app.paralino.android.data.repos.location.LocationLocalDataSource
-import app.paralino.android.data.repos.location.SharingContractsLocalDataSourceImpl
-import app.paralino.android.data.repos.places.GroupPlacesLocalDataSource
-import app.paralino.android.data.repos.user.UserCryptoKeyLocalDataSource
-import app.paralino.android.data.repos.user.UserLocalDataSource
-import app.paralino.android.fcm.PushProviderManager
-import app.paralino.android.remote.appwrite.*
-import app.paralino.android.utils.ConnectionStatusProvider
-import app.paralino.android.utils.DeviceApiProvider
-import app.paralino.android.utils.LocationStatusProvider
-import app.paralino.core.repo.api.IRealtimeApi
+import app.paralino.core.repo.personal_code.IPersonalCodelLocalDataSource
+import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
 import app.paralino.core.repo.places.IPlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.user.*
+import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.IDeviceApiProvider
+import app.paralino.core.utils.ILocationStatusProvider
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -128,7 +131,7 @@ val coreDependencyModules = module {
     single<ICoroutineScopeProvider> { androidApplication() as AppClass }
     single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
     single<ILocationStatusProvider> { LocationStatusProvider(androidApplication() as AppClass) }
-    single<IDeviceApiProvider> { DeviceApiProvider(androidApplication() as AppClass) }
+    single<IDeviceApiProvider> { DeviceApiProvider(androidApplication() as AppClass, config) }
     single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
 
     single<IUserApi> { UserApi(get()) }

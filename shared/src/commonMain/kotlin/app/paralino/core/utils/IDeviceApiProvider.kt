@@ -7,4 +7,5 @@ interface IDeviceApiProvider {
     val randomUUID: String
     val deviceType: DeviceType
     suspend fun logout()
+    fun initialize()
 }
