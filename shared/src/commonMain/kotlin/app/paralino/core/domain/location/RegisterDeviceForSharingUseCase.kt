@@ -10,6 +10,7 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
@@ -48,7 +49,7 @@ class RegisterDeviceForSharingUseCase constructor(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberDeviceData(
                         deviceName = config.deviceName,
-                        deviceType = "phone"
+                        deviceType = userMemberId.getCurrentDeviceType().key
                     )
                 ),
                 key = groupKey.data.content
@@ -56,8 +57,8 @@ class RegisterDeviceForSharingUseCase constructor(
 
             val payload = LocationCreatePayload(
                 groupId = groupId,
+                deviceId = userMemberId.getCurrentDeviceId(),
                 deviceData = deviceData,
-                deviceId = userMemberId.getCurrentSessionId(),
             )
 
             val data = functionsApi.runAndWait(

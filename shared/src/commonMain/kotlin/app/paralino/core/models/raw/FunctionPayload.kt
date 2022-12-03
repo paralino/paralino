@@ -170,8 +170,8 @@ data class AccountResetCryptoKeyPayload constructor(
 @Serializable
 data class LocationCreatePayload constructor(
     val groupId: String,
-    val deviceData: String?,
     val deviceId: String,
+    val deviceData: String?,
 )
 
 @Serializable

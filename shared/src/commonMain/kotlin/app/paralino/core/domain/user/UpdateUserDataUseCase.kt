@@ -75,7 +75,7 @@ class UpdateUserDataUseCase constructor(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberDeviceData(
                         deviceName = deviceName,
-                        deviceType = "phone"
+                        deviceType = userMemberIdUseCase.getCurrentDeviceType().key
                     )
                 ),
                 key = groupKey.data.content

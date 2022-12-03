@@ -68,7 +68,7 @@ class GroupDetailViewModel(
                                     memberLocation = it,
                                     image = member.member.image,
                                     canEdit = false,
-                                    currentDevice = it.deviceId == config.sessionId,
+                                    currentDevice = it.deviceId == config.deviceId,
                                     showSpeedAndElevation = false
                                 )
                             }
@@ -81,7 +81,7 @@ class GroupDetailViewModel(
                                     memberLocation = it,
                                     image = member.member.image,
                                     canEdit = canEdit,
-                                    currentDevice = it.deviceId == config.sessionId,
+                                    currentDevice = it.deviceId == config.deviceId,
                                     showSpeedAndElevation = false
                                 )
                             }

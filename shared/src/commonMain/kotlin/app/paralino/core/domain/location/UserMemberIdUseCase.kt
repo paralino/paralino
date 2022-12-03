@@ -22,17 +22,22 @@ class UserMemberIdUseCase constructor(
         return deviceApiProvider.deviceType
     }
 
+    suspend fun getCurrentDeviceId(): String {
+        return config.deviceId
+    }
+
     suspend fun getCurrentSessionId(): String {
         return config.sessionId
     }
 
     suspend fun getCurrentLocationForGroup(groupId: String): MemberLocation? {
-        return memberLocal.getMember(
-            groupId = groupId,
-            userId = userRepository.cachedUserId
-        ).first().locations.firstOrNull {
-            it.deviceId == config.sessionId
+        val locationsForGroup = getCurrentUserMemberForGroup(groupId)!!.locations
+
+        val locationForDeviceId = locationsForGroup.firstOrNull {
+            it.deviceId == config.deviceId
         }
+
+        return locationForDeviceId
     }
 
     suspend fun getCurrentLocationIdForGroup(groupId: String): String? {
