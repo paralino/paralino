@@ -1,54 +1,34 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
-import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.logg
-import app.paralino.core.models.BackendDatabaseType
-import app.paralino.core.models.BackendResourceIDs
-import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.repo.api.IRealtimeApi
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import kotlinx.coroutines.flow.*
 
 class LocationRefreshUseCase constructor(
     private val realtimeApi: IRealtimeApi,
-    private val groupsRepo: GroupRepository,
+    private val realtimeEventsProcessor: RealtimeEventsProcessor,
     private val groupPreRefresh: GroupPreRefreshUseCase,
     private val locationPerformanceManager: LocationPerformanceManager,
 ) {
 
     fun locationRefresh(groupId: String): Flow<Unit> {
-
-        val event =
-            "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents"
-
         val locationSubscriptionFlow = realtimeApi.subscribeWithFilter(
-            channel = event,
-            filters = listOf("$event.*.create", "$event.*.update")
+            channels = listOf(
+                realtimeEventsProcessor.membersChannel,
+                realtimeEventsProcessor.locationsChannel
+            ),
+            filters = listOf(
+                "${realtimeEventsProcessor.membersChannel}.*",
+                "${realtimeEventsProcessor.locationsChannel}.*"
+            )
         )
             .onStart { groupPreRefresh.refreshGroupWithMembers(groupId) }
             .onEach {
-                val member = if (it.events.any { it.endsWith(".delete") }) {
-                    logg.tag("realtime_events").v("Got member delete event")
-                    null
-                } else {
-                    logg.tag("realtime_events").v("Got member create/update event")
-                    MemberDocumentRaw.from(it.payload)
-                }
-
-                try {
-                    if(member != null) {
-                        groupsRepo.gotMemberUpdateFromRealtime(member)
-                    } else {
-                        groupsRepo.gotMemberDeleteFromRealtime(it.payload.get("groupId") as String)
-                    }
-                } catch (e: Exception) {
-                    logg.tag("realtime_events").e("Error with realtime member event", e)
-                }
-
+                realtimeEventsProcessor.processEvent(it)
             }
-            .catch { logg.tag("realtime_events").e("Error parsing member on map", it) }
+            .catch { logg.tag("realtime_events").e("Error parsing member or location on map", it) }
 
         val userMapFocusFlow = locationPerformanceManager.boostOnMapFlow(groupId)
 

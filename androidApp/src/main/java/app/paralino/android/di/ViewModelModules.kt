@@ -37,10 +37,7 @@ import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.group.*
-import app.paralino.core.domain.location.LocationRefreshUseCase
-import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
-import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
-import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.domain.location.*
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -107,11 +104,12 @@ val coreModule = module {
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
     factory { LocationRefreshUseCase(get(), get(), get(), get()) }
-    factory { RealtimeEventsWhileSharingUseCase(get(), get(), get(), get()) }
+    factory { RealtimeEventsWhileSharingUseCase(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get()) }
     factory { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    factory { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get()) }
 
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
@@ -123,7 +121,7 @@ val coreModule = module {
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get(), get()) }
-    single { GroupRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
     single { LocationRepository(get(), get(), get(), get(), get(), get()) }
     single { PlacesRepository(get(), get(), get(), get(), get()) }
