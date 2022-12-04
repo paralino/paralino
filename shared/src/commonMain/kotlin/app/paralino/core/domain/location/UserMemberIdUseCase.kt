@@ -65,4 +65,11 @@ class UserMemberIdUseCase constructor(
         }
     }
 
+    suspend fun getCurrentLocationIdForPlace(placeId: String): String? {
+        val place = placeLocal.getPlaceWithoutSettingsOnce(placeId)
+        return place?.groupId?.let {
+            getCurrentLocationIdForGroup(it)
+        }
+    }
+
 }

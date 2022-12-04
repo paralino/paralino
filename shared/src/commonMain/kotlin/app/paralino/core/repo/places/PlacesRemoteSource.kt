@@ -232,6 +232,7 @@ class PlacesRemoteSource(
             PlaceEventPayload(
                 placeId = placeId,
                 memberId = userMemberId.getCurrentUserMemberIdForPlace(placeId) ?: "",
+                locationId = userMemberId.getCurrentLocationIdForPlace(placeId),
                 enter = true
             )
         )
@@ -242,6 +243,7 @@ class PlacesRemoteSource(
             PlaceEventPayload(
                 placeId = placeId,
                 memberId = userMemberId.getCurrentUserMemberIdForPlace(placeId) ?: "",
+                locationId = userMemberId.getCurrentLocationIdForPlace(placeId),
                 enter = false
             )
         )
