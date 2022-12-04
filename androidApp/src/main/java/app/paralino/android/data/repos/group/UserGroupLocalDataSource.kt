@@ -18,7 +18,7 @@ class UserGroupLocalDataSource constructor(
 
     override suspend fun recreateGroups(data: List<GroupWithMemberRaw>) {
         dao.replaceGroups(*data.map { mapper.remote2Local(it.group) }.toTypedArray())
-        memberLocal.recreateAllMember(data.flatMap { it.members })
+        memberLocal.recreateAllMembers(data.flatMap { it.members })
     }
 
     override suspend fun updateOrCreateGroup(group: GroupWithMemberRaw) {
@@ -84,11 +84,11 @@ class UserGroupLocalDataSource constructor(
 
     override suspend fun deleteGroup(groupId: String) {
         dao.deleteGroup(groupId)
-        memberLocal.clearAllMembersForGroup(groupId)
+        memberLocal.removeAllMembersForGroup(groupId)
     }
 
     override suspend fun removeMember(groupId: String, userId: String) {
-        memberLocal.clearAllMembersForGroup(groupId, userId)
+        memberLocal.removeMemberFromGroup(groupId, userId)
     }
 
     override suspend fun clearAll() {

@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.share
 
+import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
@@ -21,6 +22,7 @@ class SharingStartViewModel(
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
     private val locationStatusProvider: ILocationStatusProvider,
+    private val registerDevice: RegisterDeviceForSharingUseCase,
     scope: CoroutineScope,
 ) : CoreViewModel(scope) {
 
@@ -98,6 +100,15 @@ class SharingStartViewModel(
 
         coroutineScope.launch {
             _uiState.update { it.copy(loadingAction = true) }
+
+            try {
+                registerDevice.registerDevice(group.id)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(loadingAction = false) }
+                _eventChannel.send(SharingStartScreenEvent.CanNotRegisterDevice)
+                return@launch
+            }
+
             sharingManager.startSharing(
                 LocationSharingContract(
                     groupId = group.id,

@@ -1,10 +1,10 @@
 package app.paralino.core.repo.user
 
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
 import app.paralino.core.models.raw.UserCryptoKeyRaw
+import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.repo.api.IFunctionsApi
@@ -18,7 +18,7 @@ class UserRemoteSource constructor(
     private val api: IUserApi,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
-    private val userMapper: UserMapperCore
+    private val userMapper: UserMapperCore,
 ) {
 
     suspend fun signUp(email: String, password: String): UserMeRaw {
@@ -40,6 +40,10 @@ class UserRemoteSource constructor(
 
     suspend fun getMe(): UserMeRaw {
         return api.getMe()
+    }
+
+    suspend fun getCurrentSession(): UserSession {
+        return api.getCurrentSession()
     }
 
     suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw {

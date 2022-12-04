@@ -12,6 +12,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccessTime
+import androidx.compose.material.icons.rounded.CenterFocusStrong
 import androidx.compose.material.icons.rounded.GroupWork
 import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.runtime.*
@@ -38,8 +39,12 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.dashboard.GroupItemData
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapPinType
+import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -65,7 +70,7 @@ fun MapHomeScreen(
 
     var trackGroup by rememberSaveable(isSystemInDarkTheme()) { mutableStateOf(true) }
 
-    if(uiState is Payload.Success) {
+    if (uiState is Payload.Success) {
         LaunchedEffect(uiState.data?.groupId) {
             logg.tag("location_performance").v("Map active for ${uiState.data?.groupId}")
             vm.locationRefreshSubscription.collect()
@@ -85,16 +90,21 @@ fun MapHomeScreen(
                     false
                 }
                 mapViewState.onMarkerClick = {
-                    when(it.pinType) {
+                    when (it.pinType) {
                         MapPinType.MEMBER -> {
-                            vm.trackMarker(it.markerId)
+                            logg.tag("marker_click").v("Member marker clicked")
+                            vm.trackMarker(it.asFocusedMarker())
                         }
                         MapPinType.PLACE -> {
-                            if(mapViewState.isMarkerFocused(it.markerId)) {
-                                appState.navController.navigate(
-                                    AppScreen.MapRoot.PlaceDetail.route(uiState.data?.groupId!!, it.markerId)
+                            val focusedMarker = uiState.data?.focusedMarker
+                            logg.tag("marker_click").v("Place marker clicked: $focusedMarker")
+                            vm.trackMarker(it.asFocusedMarker())
+                            appState.navController.navigate(
+                                AppScreen.MapRoot.PlaceDetail.route(
+                                    uiState.data?.groupId!!,
+                                    it.markerId
                                 )
-                            }
+                            )
                         }
                     }
                     trackGroup = false
@@ -119,7 +129,7 @@ fun MapHomeScreen(
                 }
 
                 LaunchedEffect(data, trackGroup) {
-                    mapViewState.reDrawMarkers(data.focusedMarkerId, trackGroup)
+                    mapViewState.reDrawMarkers(data.focusedMarker, trackGroup)
                 }
 
                 @Suppress("USELESS_IS_CHECK")
@@ -132,7 +142,7 @@ fun MapHomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         state = data,
                         isTrackingGroup = trackGroup,
-                        trackingUserId = data.focusedMarkerId,
+                        focusedMarker = data.focusedMarker,
                         onGroupPickerClick = {
                             appState.uiScope.launch {
                                 val groups = vm.getAllGroups()
@@ -148,12 +158,17 @@ fun MapHomeScreen(
                             vm.trackMarker(null)
                         },
                         onClearMyLocationClick = {
-                            vm.clearMyLocation()
+                            vm.clearMyLocation(it)
                         },
                         onMemberClick = {
                             trackGroup = false
-                            vm.trackMarker(it.id)
-                            mapViewState.focusToMarker(it.id)
+                            when (it) {
+                                is GroupMemberItemStateWithLocations -> {}
+                                is GroupMemberItemStateWithOneLocation -> {
+                                    vm.trackMarker(it.asFocusedMarker())
+                                    mapViewState.focusToMarker(it.keyId)
+                                }
+                            }
                         }
                     )
                 }
@@ -169,10 +184,10 @@ fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
     state: MapHomeScreenState,
     isTrackingGroup: Boolean,
-    trackingUserId: String?,
+    focusedMarker: FocusedMarkerData?,
     onGroupPickerClick: () -> Unit,
     onTrackGroupClick: () -> Unit,
-    onClearMyLocationClick: () -> Unit,
+    onClearMyLocationClick: (String) -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
 ) {
     ConstraintLayout(
@@ -187,7 +202,7 @@ fun MapHomeScreenElements(
     ) {
 
         val (groupSelect, groupTrack, userListButton, userList, shareTime) = createRefs()
-        var userListExpanded by remember(trackingUserId) { mutableStateOf(!trackingUserId.isNullOrBlank()) }
+        var userListExpanded by remember(focusedMarker) { mutableStateOf(focusedMarker?.type == MapPinType.MEMBER) }
 
         // group picker button
         MapGroupPicker(
@@ -278,7 +293,7 @@ fun MapHomeScreenElements(
             backgroundColor = if (isTrackingGroup) AppColors.accent else MaterialTheme.colors.surface
         ) {
             Icon(
-                imageVector = Icons.Rounded.GroupWork,
+                imageVector = Icons.Rounded.CenterFocusStrong,
                 contentDescription = null,
                 modifier = Modifier.size(32.dp),
                 tint = if (isTrackingGroup) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
@@ -306,22 +321,37 @@ fun MapHomeScreenElements(
                     itemSpacing = 4.dp,
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     count = state.members.size,
-                    key = { state.members.get(it).id }
+                    key = { state.members.get(it).keyId }
                 ) {
                     val memberState = state.members[it]
+                    var expanded by remember {
+                        mutableStateOf(false)
+                    }
                     GroupMember(
                         state = memberState,
                         backgroundColor = MaterialTheme.colors.background,
+                        collapseOnActionClick = true,
+                        forceExpandAction = expanded,
                         onActionClick = {
-                            onClearMyLocationClick()
+                            if (memberState is GroupMemberItemStateWithOneLocation && memberState.location != null) {
+                                onClearMyLocationClick(memberState.location!!.locationId)
+                            }
                         },
-                        onClick = { onMemberClick(memberState) }
+                        onClick = {
+                            expanded = !expanded
+                            onMemberClick(memberState)
+                        }
                     )
                 }
-                LaunchedEffect(trackingUserId) {
-                    val page =
-                        state.members.indexOfFirst { it.id == trackingUserId }.takeIf { it > 0 }
-                            ?: 0
+                LaunchedEffect(focusedMarker) {
+                    val page = state.members.indexOfFirst {
+                        when (it) {
+                            is GroupMemberItemStateWithLocations -> false
+                            is GroupMemberItemStateWithOneLocation -> {
+                                it.keyId == focusedMarker?.markerId
+                            }
+                        }
+                    }.takeIf { it > 0 } ?: 0
                     pagerState.animateScrollToPage(page)
                 }
             }

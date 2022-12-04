@@ -9,7 +9,6 @@ import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.ILocationStatusProvider
@@ -45,18 +44,49 @@ class GroupDetailViewModel(
             groupRefresh.getGroupWithMembers(groupId),
             placesRepo.hasAnyPlace(),
             sharingManager.sharingContractForGroup(groupId)
-        )
-        { locationStatus, group, hasPlaces, sharingStatus ->
+        ) { locationStatus, group, hasPlaces, sharingStatus ->
 
             val members = group.members
-                .sortedBy { it.name }
-                .sortedBy { it.userId != config.userId }
+                .sortedBy { it.member.name }
+                .sortedBy { it.member.userId != config.userId }
                 .map { member ->
-                    GroupMemberItemState(member).copy(
+                    val canEdit = group.isCurrentUserOwner || member.member.userId == config.userId
+
+                    val memberState = GroupMemberState(
+                        member = member.member,
+                        isCurrentUser = member.member.userId == config.userId
+                    ).copy(
                         actionItem = MemberAction.DELETE_MEMBER.takeIf {
-                            group.isCurrentUserOwner && member.userId != group.ownerUserId
+                            group.isCurrentUserOwner && member.member.userId != group.ownerUserId
                         }
                     )
+                    if (member.locations.size <= 1) {
+                        GroupMemberItemStateWithOneLocation(
+                            memberState = memberState,
+                            location = member.locations.firstOrNull()?.let {
+                                GroupMemberItemLocationState(
+                                    memberLocation = it,
+                                    image = member.member.image,
+                                    canEdit = false,
+                                    currentDevice = it.deviceId == config.deviceId,
+                                    showSpeedAndElevation = false
+                                )
+                            }
+                        )
+                    } else {
+                        GroupMemberItemStateWithLocations(
+                            memberState = memberState,
+                            locations = member.locations.map {
+                                GroupMemberItemLocationState(
+                                    memberLocation = it,
+                                    image = member.member.image,
+                                    canEdit = canEdit,
+                                    currentDevice = it.deviceId == config.deviceId,
+                                    showSpeedAndElevation = false
+                                )
+                            }
+                        )
+                    }
                 }
 
             val errors = buildList {
@@ -64,7 +94,7 @@ class GroupDetailViewModel(
                     addAll(locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
                 }
 
-                if(hasPlaces && !locationStatus.isNotificationPermissionAllowed) {
+                if (hasPlaces && !locationStatus.isNotificationPermissionAllowed) {
                     add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
                 }
             }
@@ -83,8 +113,8 @@ class GroupDetailViewModel(
             .mapToPayload { it }
             .onEach { result ->
                 _uiState.update { result }
-                if(result is Payload.Error) {
-                    if(result.exception.asRemoteException() is NotFoundException)
+                if (result is Payload.Error) {
+                    if (result.exception.asRemoteException() is NotFoundException)
                         _eventChannel.send(GroupDetailScreenEvent.GroupNotFound)
                     else
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
@@ -134,6 +164,24 @@ class GroupDetailViewModel(
                     }
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.GroupMemberDeleted)
+                    }
+                }
+            }
+            .launchIn(coroutineScope)
+    }
+
+    fun removeMemberLocation(memberUserId: String, locationId: String) {
+        groupMemberRemove.deleteLocation(memberUserId, locationId)
+            .mapToPayload { Unit }
+            .onEach { result ->
+                _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }
+                when (result) {
+                    Payload.Loading -> {}
+                    is Payload.Error -> {
+                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                    }
+                    is Payload.Success -> {
+                        _eventChannel.send(GroupDetailScreenEvent.MemberLocationDeleted)
                     }
                 }
             }

@@ -16,13 +16,11 @@ data class UserMeRaw constructor(
 data class UserMeDataRaw constructor(
     var userImage: String? = null,
     var userName: String? = null,
-    var pushToken: String? = null,
 ) {
     fun toPostJson(): Map<String, Any> {
         return mutableMapOf<String, Any>().apply {
             userImage?.let { put("userImage", it) }
             userName?.let { put("userName", it) }
-            pushToken?.let { put("pushToken", it) }
         }
     }
 
@@ -31,7 +29,6 @@ data class UserMeDataRaw constructor(
             return UserMeDataRaw(
                 userImage = prefs["userImage"] as? String,
                 userName = prefs["userName"] as? String,
-                pushToken = prefs["pushToken"] as? String
             )
         }
     }

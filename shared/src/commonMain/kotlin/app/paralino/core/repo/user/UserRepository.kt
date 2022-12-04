@@ -9,7 +9,6 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
-import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
@@ -75,7 +74,6 @@ class UserRepository constructor(
 
     suspend fun login(email: String, password: String): UserSession {
         return triggerRemoteOnly { remote.login(email, password) }
-            .also { config.token = it.id }
     }
 
     suspend fun remoteSignUp(
@@ -87,9 +85,14 @@ class UserRepository constructor(
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
         updateLocalUser(userMeRaw)
-        config.token = userSession.id
+        updateSession(userSession)
         config.emailConfirmed = true
         sessionMonitor.updateSessionState(sessionValid = true)
+    }
+
+    private suspend fun updateSession(session: UserSession) {
+        config.sessionId = session.id
+        config.deviceName = session.deviceName
     }
 
     fun updateUserEmail(newEmail: String, password: String): Flow<Unit> {
@@ -121,10 +124,6 @@ class UserRepository constructor(
     }
 
     suspend fun getUserFromRemote(): UserMeRaw {
-        if (!config.isTokenValid) {
-            throw Exception("Token is not available")
-        }
-
         return try {
             triggerRemoteOnly { remote.getMe() }
         } catch (e: Exception) {
@@ -167,41 +166,6 @@ class UserRepository constructor(
 
     suspend fun confirmEmail(userId: String, secret: String) {
         triggerRemoteOnly { remote.confirmEmail(userId, secret) }
-    }
-
-    suspend fun registerPushToken(newToken: String) {
-
-        logg.tag("push_notifications").v("Starting to register new push token")
-        config.pushTokenUnsynced = newToken
-
-        val currentUserData = cachedUser?.data ?: let {
-            logg.tag("push_notifications").v("User not ready, skipping registering push token")
-            return
-        }
-        val newData = currentUserData.copy(pushToken = newToken)
-
-        logg.tag("push_notifications").v("Ready to register new push token")
-        updateUserDataBlocking(newData)
-
-        config.pushTokenUnsynced = ""
-        logg.tag("push_notifications").v("Push token registered")
-    }
-
-    suspend fun registerPushTokenIfNeeded() {
-        val userData = cachedUser?.data ?: let {
-            logg.tag("push_notifications").v("User not present, ignoring...")
-            return
-        }
-        val unsyncedToken = config.pushTokenUnsynced
-            .takeIf { it.isNotBlank() }
-            ?.takeIf { it != userData.pushToken }
-            ?: let {
-                logg.tag("push_notifications").v("No new push token to register")
-                return
-            }
-
-        logg.tag("push_notifications").v("Found unsynced push token, syncing...")
-        registerPushToken(unsyncedToken)
     }
 
     suspend fun logoutLocally() {

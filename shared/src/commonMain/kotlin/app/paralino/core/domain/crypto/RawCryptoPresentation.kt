@@ -52,10 +52,13 @@ class RawCryptoPresentation constructor(
         return memberLocal.getMemberRawPresentation(memberId)
             .map {
 
-                val rawData =
-                    "memberData: ${it.first.data}\n\nlocationData: ${it.first.mutableData?.ifEmpty { null } ?: "N/A"}"
+                val rawLocationData = it.first.locations.map { mapOf("deviceData" to it.deviceData, "locationData" to it.locationData) }.let {
+                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
+                }
 
-                val decryptedMemberData = it.second.data.let {
+                val rawData = "memberData: ${it.first.member.data}\n\nlocations: $rawLocationData"
+
+                val decryptedMemberData = it.second.member.memberData.let {
                     when (it) {
                         is CryptoResource.Ready -> {
                             BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
@@ -66,21 +69,36 @@ class RawCryptoPresentation constructor(
                 }.let {
                     "memberData: $it"
                 }
-                val decryptedLocationData = it.second.mutableData.let {
-                    when (it) {
-                        is CryptoResource.Ready -> {
-                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
+                val decryptedLocationData = it.second.locations.map {
+                    mapOf(
+                        "deviceData" to it.deviceData.let {
+                            when (it) {
+                                is CryptoResource.Ready -> {
+                                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
+                                }
+                                CryptoResource.NotInitialized -> "N/A"
+                                else -> it.toString()
+                            }
+                        },
+                        "locationData" to it.locationData.let {
+                            when (it) {
+                                is CryptoResource.Ready -> {
+                                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
+                                }
+                                CryptoResource.NotInitialized -> "N/A"
+                                else -> it.toString()
+                            }
                         }
-                        CryptoResource.NotInitialized -> "N/A"
-                        else -> it.toString()
-                    }
+                    )
                 }.let {
-                    "locationData: $it"
+                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
+                }.let {
+                    "locations: $it"
                 }
                 val decryptedData = "${decryptedMemberData}\n\n$decryptedLocationData"
 
                 RawPresentationModel(
-                    title = it.second.data.data?.name ?: "",
+                    title = it.second.member.memberData.data?.name ?: "",
                     rawData = rawData,
                     decryptedData = CryptoResource.Ready(decryptedData),
                     type = RawPresentationDataType.GroupMemberPresentation(memberId)

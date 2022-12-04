@@ -1,9 +1,7 @@
 package app.paralino.android.data.models.location
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -18,14 +16,14 @@ data class MemberEntity constructor(
     val memberKeyVersion: Long,
     val shouldRotateKeys: Boolean,
     val data: String,
-    val mutableData: String? = null
 ) : Parcelable
 
-@Entity
-data class MemberMutableDataUpdate(
-    @ColumnInfo(name = "id")
-    val id: String,
-
-    @ColumnInfo(name = "mutableData")
-    val mutableData: String? = null,
+data class MemberEntityWithLocations constructor(
+    @Embedded
+    val member: MemberEntity,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "memberId"
+    )
+    val locations: List<MemberLocationEntity>
 )

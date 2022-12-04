@@ -1,5 +1,6 @@
 package app.paralino.android.remote.appwrite
 
+import android.os.Build
 import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserSession
@@ -23,8 +24,8 @@ class UserApi constructor(
         }
     }
 
-    override suspend fun createAnonymous(): UserSession {
-        return remoteModule.execute { account.createAnonymousSession().parseSession() }
+    override suspend fun getCurrentSession(): UserSession {
+        return remoteModule.execute { account.getSession("current").parseSession() }
     }
 
     override suspend fun getMe(): UserMeRaw {
@@ -102,6 +103,8 @@ class UserApi constructor(
         return UserSession(
             id = this.id,
             expire = this.expire,
+            deviceName = Build.MODEL,
+            deviceType = "android"
         )
     }
 

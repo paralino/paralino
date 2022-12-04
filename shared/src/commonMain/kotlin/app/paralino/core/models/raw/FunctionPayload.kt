@@ -70,7 +70,7 @@ data class UpdateGroupMemberKeysPayload(
     val userPublicKey: String,
     val deleteOldKeys: Boolean,
     val encryptedSenderKeys: List<GroupMemberKeyPayload>,
-    val memberData: List<GroupMemberDataPayload>
+    val memberData: GroupMemberDataPayload?,
 )
 
 @Serializable
@@ -82,11 +82,17 @@ data class GroupMemberKeyPayload constructor(
 
 @Serializable
 data class GroupMemberDataPayload constructor(
-    val memberId: String,
-    val groupKeyVersion: Long,
     val memberData: String,
-    val mutableMemberData: String,
-    val memberKeyVersion: Long? = null
+    val locations: List<MemberLocationDataPayload>,
+    val groupKeyVersion: Long,
+    val memberKeyVersion: Long? = null,
+)
+
+@Serializable
+data class MemberLocationDataPayload constructor(
+    val locationId: String,
+    val deviceData: String,
+    val locationData: String,
 )
 
 @Serializable
@@ -95,22 +101,33 @@ data class UpdateLocationFunctionData(
 )
 
 @Serializable
-data class LocationNodePayload constructor(
-    val memberId: String,
-    val memberData: MemberDataPayload? = null,
-    val locationData: LocationDataPayload? = null,
-)
-
-@Serializable
-data class MemberDataPayload(
-    val memberData: String,
-    val groupKeyVersion: Long,
-)
-
-@Serializable
-data class LocationDataPayload(
-    val locationData: String?,
+data class LocationNodePayload(
+    val groupId: String,
+    val memberData: String? = null,
     val memberKeyVersion: Long,
+    val groupKeyVersion: Long,
+    val locations: List<LocationsPayload>,
+)
+
+@Serializable
+data class LocationsPayload(
+    val locationId: String?,
+    val deviceData: String?,
+    val locationData: String?
+)
+
+@Serializable
+data class UpdateMemberFunctionPayload constructor(
+    val data: List<UpdateMemberData>
+)
+
+@Serializable
+data class UpdateMemberData constructor(
+    val memberId: String,
+    val locationId: String,
+    val groupKeyVersion: Long,
+    val memberData: String,
+    val deviceData: String
 )
 
 @Serializable
@@ -131,6 +148,7 @@ data class UpdatePlacePayload constructor(
 data class PlaceEventPayload constructor(
     val placeId: String,
     val memberId: String,
+    val locationId: String?,
     val enter: Boolean
 )
 
@@ -148,4 +166,24 @@ data class AccountResetCryptoKeyPayload constructor(
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
     val publicKey: String,
+)
+
+@Serializable
+data class LocationCreatePayload constructor(
+    val groupId: String,
+    val deviceId: String,
+    val deviceData: String?,
+)
+
+@Serializable
+data class LocationDeletePayload constructor(
+    val memberId: String,
+    val locationId: String,
+)
+
+@Serializable
+data class UpdateUserDeviceFunctionData constructor(
+    val sessionId: String,
+    val pushToken: String,
+    val deviceType: String
 )

@@ -2,7 +2,9 @@ package app.paralino.core.utils
 
 interface IConfig {
 
-    var token: String
+    var deviceId: String
+    var sessionId: String
+    var deviceName: String
     var email: String
     var userId: String
     var emailConfirmed: Boolean
@@ -14,7 +16,7 @@ interface IConfig {
     var guestPassword: String
 
     val isTokenValid: Boolean
-        get() = token.isNotBlank()
+        get() = sessionId.isNotBlank()
 
     fun clear()
 }

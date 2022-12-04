@@ -1,7 +1,9 @@
 package app.paralino.android.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 
 
 @Composable
@@ -36,8 +39,7 @@ fun PasswordInputField(
 ) {
     OutlinedTextField(
         modifier = modifier
-            .fillMaxWidth()
-            .height(TextFieldDefaults.MinHeight),
+            .fillMaxWidth(),
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start),
         value = password,
         singleLine = true,
@@ -52,11 +54,13 @@ fun PasswordInputField(
                 focusManager.clearFocus()
         },
         visualTransformation = if (passwordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
-        placeholder = {
+        label = {
             Text(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface, RoundedCornerShape(4.dp))
+                    .padding(vertical = 2.dp, horizontal = 4.dp),
                 text = hint,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.fillMaxWidth()
+                textAlign = TextAlign.Start
             )
         },
         onValueChange = {
@@ -67,6 +71,7 @@ fun PasswordInputField(
         colors = TextFieldDefaults.outlinedTextFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             unfocusedBorderColor = MaterialTheme.colors.surface,
+            focusedLabelColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
         ),
         trailingIcon = {
             IconButton(onClick = { passwordHidden.value = !passwordHidden.value }) {

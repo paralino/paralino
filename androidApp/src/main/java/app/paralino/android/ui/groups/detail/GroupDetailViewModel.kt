@@ -37,6 +37,7 @@ class GroupDetailViewModel constructor(
 
     fun leaveOrDeleteGroup() = coreVm.leaveOrDeleteGroup()
     fun removeMember(memberUserId: String) = coreVm.removeMember(memberUserId)
+    fun removeMemberLocation(memberUserId: String, locationId: String) = coreVm.removeMemberLocation(memberUserId, locationId)
     fun stopSharing() = coreVm.stopSharing()
 
 }

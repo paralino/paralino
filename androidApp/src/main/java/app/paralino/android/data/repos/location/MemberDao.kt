@@ -1,39 +1,58 @@
 package app.paralino.android.data.repos.location
 
 import androidx.room.*
-import app.paralino.android.data.models.location.MemberEntity
-import app.paralino.android.data.models.location.MemberMutableDataUpdate
+import app.paralino.android.data.models.location.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MemberDao {
 
     @Transaction
-    suspend fun recreateForGroup(groupId: String, data: List<MemberEntity>) {
-        clearAllMembersForGroup(groupId)
-        createOrUpdate(*data.toTypedArray())
+    suspend fun recreateForGroup(groupId: String, data: List<MemberEntityWithLocations>) {
+        clearAllMembersAndLocationsForGroup(groupId)
+        createOrUpdateMemberOnly(*data.map { it.member }.toTypedArray())
+        createOrUpdateMemberLocations(*data.flatMap { it.locations }.toTypedArray())
     }
 
     @Transaction
-    suspend fun recreateAll(data: List<MemberEntity>) {
-        clear()
-        createOrUpdate(*data.toTypedArray())
+    suspend fun recreateAll(data: List<MemberEntityWithLocations>) {
+        clearAll()
+        createOrUpdateMemberOnly(*data.map { it.member }.toTypedArray())
+        createOrUpdateMemberLocations(*data.flatMap { it.locations }.toTypedArray())
+    }
+
+
+    @Transaction
+    suspend fun createOrUpdateMembersWithLocations(data: List<MemberEntityWithLocations>) {
+        createOrUpdateMemberOnly(*data.map { it.member }.toTypedArray())
+        data.forEach {
+            clearMemberLocationsForGroup(
+                groupId = it.member.groupId,
+                memberId = it.member.id
+            )
+        }
+        createOrUpdateMemberLocations(*data.flatMap { it.locations }.toTypedArray())
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createOrUpdate(vararg data: MemberEntity)
+    suspend fun createOrUpdateMemberOnly(vararg data: MemberEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createOrUpdateMemberLocations(vararg data: MemberLocationEntity)
+
 
     @Query("SELECT * FROM members WHERE id = :memberId")
-    fun getMember(memberId: String): Flow<MemberEntity?>
+    fun getMember(memberId: String): Flow<MemberEntityWithLocations?>
 
-    @Query("SELECT * FROM members WHERE userId IN (:userIds)")
-    fun getLocationsForUsers(userIds: List<String>): Flow<List<MemberEntity>>
+    @Query("SELECT * FROM members WHERE groupId = :groupId AND userId = :userId")
+    fun getMember(groupId: String, userId: String): Flow<MemberEntityWithLocations?>
 
     @Query("SELECT * FROM members WHERE userId = :userId")
-    fun getLastLocationForUser(userId: String): Flow<List<MemberEntity>>
+    fun getLocationsForUser(userId: String): Flow<List<MemberEntityWithLocations>>
 
     @Query("SELECT * FROM members WHERE groupId = :groupId")
-    fun getLocationsForGroup(groupId: String): Flow<List<MemberEntity>>
+    fun getLocationsForGroup(groupId: String): Flow<List<MemberEntityWithLocations>>
+
 
     @Query("SELECT COUNT(:groupId) FROM members WHERE groupId = :groupId")
     fun getMemberCountInGroup(groupId: String): Flow<Int>
@@ -41,29 +60,58 @@ interface MemberDao {
     @Query("SELECT COUNT(:groupId) FROM members WHERE groupId = :groupId")
     suspend fun getMemberCountInGroupOnce(groupId: String): Int
 
+
+    @Query("SELECT id FROM locations WHERE userId = :userId AND groupId = :groupId")
+    suspend fun getUserLocationIds(groupId: String, userId: String): List<String>
+
     @Query("SELECT id FROM members WHERE userId = :userId AND groupId = :groupId")
-    suspend fun getUserMemberIds(userId: String, groupId: String): List<String>
+    suspend fun getUserMemberId(groupId: String, userId: String): String?
+
 
     @Query("SELECT ownerPublicKey FROM members WHERE groupId = :groupId AND userId = :userId")
     suspend fun getMemberPublicKeyOnce(groupId: String, userId: String): String?
 
-    @Query("DELETE FROM members WHERE id = :id")
-    suspend fun removeMember(id: String)
+    @Update(onConflict = OnConflictStrategy.IGNORE, entity = MemberLocationEntity::class)
+    suspend fun updateMemberLocationData(data: MemberLocationDataUpdate)
 
-    @Update(onConflict = OnConflictStrategy.IGNORE, entity = MemberEntity::class)
-    suspend fun updateMemberMutableData(data: MemberMutableDataUpdate)
+    @Update(onConflict = OnConflictStrategy.IGNORE, entity = MemberLocationEntity::class)
+    suspend fun updateMemberLocationFromRemote(data: MemberLocationEntityUpdate)
 
-    @Query("DELETE FROM members WHERE userId = :userId")
-    suspend fun clearAllMembersForUser(userId: String)
+    suspend fun removeMemberWithLocationsForGroup(groupId: String, memberId: String) {
+        clearMemberForGroup(groupId, memberId)
+        clearMemberLocationsForGroup(groupId, memberId)
+    }
+
+    @Query("DELETE FROM members WHERE groupId = :groupId AND id = :memberId")
+    suspend fun clearMemberForGroup(groupId: String, memberId: String)
+
+    @Query("DELETE FROM locations WHERE groupId = :groupId AND memberId = :memberId")
+    suspend fun clearMemberLocationsForGroup(groupId: String, memberId: String)
+
+
+    @Transaction
+    suspend fun clearAllMembersAndLocationsForGroup(groupId: String) {
+        clearAllMembersForGroup(groupId)
+        clearAllLocationsForGroup(groupId)
+    }
 
     @Query("DELETE FROM members WHERE groupId = :groupId")
     suspend fun clearAllMembersForGroup(groupId: String)
 
-    @Query("DELETE FROM members WHERE groupId = :groupId AND userId = :userId")
-    suspend fun clearAllMembersForGroup(groupId: String, userId: String)
+    @Query("DELETE FROM locations WHERE groupId = :groupId")
+    suspend fun clearAllLocationsForGroup(groupId: String)
+
+
+    @Transaction
+    suspend fun clearAll() {
+        clearMembers()
+        clearLocations()
+    }
 
     @Query("DELETE FROM members")
-    suspend fun clear()
+    suspend fun clearMembers()
 
+    @Query("DELETE FROM locations")
+    suspend fun clearLocations()
 
 }

@@ -11,7 +11,6 @@ import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceSettings
 import app.paralino.core.models.raw.*
-import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.utils.BaseRemoteModule
@@ -232,7 +231,8 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
-                memberId = userMemberId.getCurrentDeviceMemberIdForPlace(placeId) ?: "",
+                memberId = userMemberId.getCurrentUserMemberIdForPlace(placeId) ?: "",
+                locationId = userMemberId.getCurrentLocationIdForPlace(placeId),
                 enter = true
             )
         )
@@ -242,7 +242,8 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
-                memberId = userMemberId.getCurrentDeviceMemberIdForPlace(placeId) ?: "",
+                memberId = userMemberId.getCurrentUserMemberIdForPlace(placeId) ?: "",
+                locationId = userMemberId.getCurrentLocationIdForPlace(placeId),
                 enter = false
             )
         )

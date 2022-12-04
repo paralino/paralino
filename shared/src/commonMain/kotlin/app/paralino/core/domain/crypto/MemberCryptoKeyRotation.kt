@@ -13,6 +13,7 @@ import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.raw.GroupMemberDataPayload
 import app.paralino.core.models.raw.GroupMemberKeyPayload
+import app.paralino.core.models.raw.MemberLocationDataPayload
 import app.paralino.core.models.raw.UpdateGroupMemberKeysPayload
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.api.IFunctionsApi
@@ -43,7 +44,7 @@ class MemberCryptoKeyRotation(
 
         val shouldRotateKeys = remoteGroup.members.any {
             // check if any of current user member documents have key rotate flag set
-            it.userId == userRepository.cachedUserId && it.shouldRotateKeys
+            it.member.userId == userRepository.cachedUserId && it.member.shouldRotateKeys
         }
 
         if (shouldRotateKeys || force) {
@@ -117,40 +118,46 @@ class MemberCryptoKeyRotation(
             // update data for every user device
             // this way any device from user that gets to update the keys will update data for all other devices
             // no need for other devices to do the same since encryption key is unique per user
-            val memberData = group.members.filter { it.userId == config.userId }.mapNotNull {
-                // TODO review:
-                // if group key is somehow removed, this crashes because we can not decrypt the data
-                // what is happening now is that remote data is re-encrypted
-                // but since this data is user own data, we can replace it if remote is missing or wrong
-                if (it.data.data != null) {
-                    GroupMemberDataPayload(
-                        memberId = it.id,
-                        groupKeyVersion = groupKey.version,
-                        memberData = cryptoCore.encryptDataWithKey(
-                            BaseRemoteModule.formatter.encodeToString(it.data.data),
-                            groupKey.data.content
-                        ),
-                        mutableMemberData = it.mutableData.data?.let {
+            val member = group.members.filter { it.member.userId == config.userId }.firstOrNull()!!
+
+            // TODO review:
+            // if group key is somehow removed, this crashes because we can not decrypt the data
+            // what is happening now is that remote data is re-encrypted
+            // but since this data is user own data, we can replace it if remote is missing or wrong
+            val memberData = GroupMemberDataPayload(
+                groupKeyVersion = groupKey.version,
+                memberData = cryptoCore.encryptDataWithKey(
+                    BaseRemoteModule.formatter.encodeToString(member.member.memberData.data),
+                    groupKey.data.content
+                ),
+                locations = member.locations.map { location ->
+                    MemberLocationDataPayload(
+                        locationId = location.id,
+                        deviceData = location.deviceData.data?.let {
+                            cryptoCore.encryptDataWithKey(
+                                BaseRemoteModule.formatter.encodeToString(it),
+                                groupKey.data.content
+                            )
+                        } ?: "",
+                        locationData = location.locationData.data?.let {
                             cryptoCore.encryptDataWithKey(
                                 BaseRemoteModule.formatter.encodeToString(it),
                                 newSenderKey
                             )
                         } ?: ""
                     )
-                } else {
-                    null
                 }
-            }
+            )
 
-            val keys = group.members.map {
+            val keys = group.members.map { member ->
                 GroupMemberKeyPayload(
-                    userId = it.userId,
+                    userId = member.member.userId,
                     encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                         data = newSenderKey,
                         // sign with owner private key
                         myPrivateKey = myKey.privateKey,
                         // encrypt with user public key
-                        publicKey = it.publicKey
+                        publicKey = member.member.publicKey
                     )
                 )
 
@@ -188,12 +195,12 @@ class MemberCryptoKeyRotation(
 
         // get all other members from group that are missing key
         val membersThatNeedKeyUpdate = remoteGroup.members.filter { member ->
-            !memberKeysCreatedByMe.contains(member.userId)
+            !memberKeysCreatedByMe.contains(member.member.userId)
         }
 
         if (membersThatNeedKeyUpdate.isNotEmpty()) {
             logg.tag("tag_crypto_key_group_member")
-                .d("Creating missing member keys for users (${membersThatNeedKeyUpdate.map { it.userId }}) in group ${remoteGroup.id}")
+                .d("Creating missing member keys for users (${membersThatNeedKeyUpdate.map { it.member.userId }}) in group ${remoteGroup.id}")
             val userKey = userKeyRepo.latestKeyPair()
             val myMemberKey =
                 cryptoKEKRepository.getMemberKey(
@@ -202,7 +209,7 @@ class MemberCryptoKeyRotation(
                 )
             createMemberKeysForSpecificMembers(
                 groupId = remoteGroup.id,
-                members = membersThatNeedKeyUpdate,
+                members = membersThatNeedKeyUpdate.map { it.member },
                 myKey = userKey,
                 // if member key is null, it will be created in next step
                 // this means that this user has no keys yet like if it just added to a group
@@ -246,7 +253,9 @@ class MemberCryptoKeyRotation(
                 userPublicKey = myKey.publicKey,
                 deleteOldKeys = false,
                 encryptedSenderKeys = keys,
-                memberData = emptyList()
+                // no data passed here since we are only creating keys for new members
+                // keys didn't change so no need to re-encrypt the data
+                memberData = null
             )
 
             val response = functionsApi.runAndWait(

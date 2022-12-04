@@ -49,17 +49,17 @@ class PlaceDetailViewModel(
 
             val settings = group.members.map { member ->
                 val memberSetting =
-                    place.settings?.alertData?.firstOrNull { it.memberId == member.id }
+                    place.settings?.alertData?.firstOrNull { it.memberId == member.member.id }
                 PlaceSettingsState(
                     groupId = groupId,
                     placeId = placeId,
-                    memberId = member.id,
-                    memberUserId = member.userId,
-                    name = member.name,
-                    image = member.image ?: ImageModel.emoji(Emojis.robot),
+                    memberId = member.member.id,
+                    memberUserId = member.member.userId,
+                    name = member.member.name,
+                    image = member.member.image ?: ImageModel.emoji(Emojis.robot),
                     // default to true for other members and false to current user
-                    notifyEnter = memberSetting?.enter ?: (member.userId != config.userId),
-                    notifyExit = memberSetting?.exit ?: (member.userId != config.userId),
+                    notifyEnter = memberSetting?.enter ?: (member.member.userId != config.userId),
+                    notifyExit = memberSetting?.exit ?: (member.member.userId != config.userId),
                     loadingEnter = false,
                     loadingExit = false
                 )

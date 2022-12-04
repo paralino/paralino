@@ -5,14 +5,24 @@ import androidx.work.await
 import app.paralino.android.AppClass
 import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.core.logg
+import app.paralino.core.models.base.DeviceType
+import app.paralino.core.utils.IConfig
 import app.paralino.core.utils.IDeviceApiProvider
 import loge
-import logw
-import java.util.UUID
+import java.util.*
 
-class DeviceApiProvider(
-    private val appClass: AppClass
+class DeviceApiProvider constructor(
+    private val appClass: AppClass,
+    private val config: IConfig
 ): IDeviceApiProvider {
+
+    override fun initialize() {
+        if(config.deviceId.isBlank())
+            config.deviceId = randomUUID
+    }
+
+    override val deviceType: DeviceType
+        get() = DeviceType.Android
 
     override val batteryLevel: Int
         get() = appClass.batterLevel

@@ -6,8 +6,8 @@ import app.paralino.core.models.user.UserSession
 interface IUserApi {
     suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw
     suspend fun login(email: String, password: String): UserSession
-    suspend fun createAnonymous(): UserSession
     suspend fun getMe(): UserMeRaw
+    suspend fun getCurrentSession(): UserSession
     suspend fun updateName(name: String): UserMeRaw
     suspend fun updateUserData(data: Map<String, Any>): UserMeRaw
     suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw

@@ -2,7 +2,8 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
-import app.paralino.core.models.location.MemberModel
+import app.paralino.core.models.location.MemberLocation
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.list.PlaceListItemData
@@ -59,20 +60,33 @@ data class MapPinData constructor(
         shouldShowApproximateCircle = true
     )
 
-    constructor(member: MemberModel, focused: Boolean) : this(
-        groupId = member.groupId,
-        markerId = member.id,
+    constructor(location: MemberLocation, image: ImageModel?) : this(
+        groupId = location.groupId,
+        markerId = location.id,
         pinType = MapPinType.MEMBER,
-        focused = focused,
-        active = member.isActive,
-        image = member.image,
-        lat = member.mutableData.data!!.lat,
-        lng = member.mutableData.data!!.lng,
-        accuracy = member.mutableData.data?.accuracy ?: 0f,
-        shouldShowApproximateCircle = member.mutableData.data?.shouldShowApproximateCircle ?: false
+        focused = false,
+        active = location.isActive,
+        image = image,
+        lat = location.locationData.data!!.lat,
+        lng = location.locationData.data!!.lng,
+        accuracy = location.locationData.data?.accuracy ?: 0f,
+        shouldShowApproximateCircle = location.locationData.data?.shouldShowApproximateCircle ?: false
     )
 }
 
 enum class MapPinType {
     MEMBER, PLACE
+}
+
+data class FocusedMarkerData constructor(
+    val markerId: String,
+    val type: MapPinType
+)
+
+fun MapPinData.asFocusedMarker(): FocusedMarkerData {
+    return FocusedMarkerData(markerId = this.markerId, type = this.pinType)
+}
+
+fun GroupMemberItemStateWithOneLocation.asFocusedMarker(): FocusedMarkerData {
+    return FocusedMarkerData(markerId = this.keyId, type = MapPinType.MEMBER)
 }

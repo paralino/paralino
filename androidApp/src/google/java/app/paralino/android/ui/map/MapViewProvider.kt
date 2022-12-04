@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
+import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import com.google.gson.JsonPrimitive
@@ -195,9 +196,9 @@ open class MapViewProviderState constructor(
         }
     }
 
-    override fun reDrawMarkers(trackMarkerId: String?, trackPositions: Boolean) {
+    override fun reDrawMarkers(focusedMarkerData: FocusedMarkerData?, trackPositions: Boolean) {
         val markers = markerCache.snapshot().values
-        val markerToTrack = markers.firstOrNull { it.data.markerId == trackMarkerId }
+        val markerToTrack = markers.firstOrNull { it.data.markerId == focusedMarkerData?.markerId }
 
         if (markers.isNotEmpty()) {
             if (trackPositions) {

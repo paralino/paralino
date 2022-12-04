@@ -26,6 +26,7 @@ object BackendResourceIDs {
 
     const val collectionGroupsID: String = "groups"
     const val collectionGroupMembersID: String = "group_members"
+    const val collectionMemberLocationsID: String = "locations"
     const val collectionPersonalCodeID: String = "personal_ids"
     const val collectionLocationFocusID: String = "location_focus"
     const val collectionPlacesID: String = "places"
@@ -34,6 +35,7 @@ object BackendResourceIDs {
     const val collectionGroupKeysID: String = "group_keys"
     const val collectionGroupMembersKeysID: String = "group_member_keys"
     const val collectionUserKeysID: String = "user_keys"
+    const val collectionUserDevicesID: String = "devices"
 
     const val functionPersonalCodeReadID: String = "personal_code_read"
     const val functionCreateGroupID: String = "group_create"
@@ -43,12 +45,15 @@ object BackendResourceIDs {
     const val functionDeleteGroupMemberID: String = "group_member_delete"
     const val functionUpdateGroupKeysID: String = "group_keys_update"
     const val functionUpdateGroupMemberKeysID: String = "group_member_keys_update"
-    const val functionLocationUpdateID: String = "location_update"
+    const val functionGroupMemberUpdateID: String = "group_member_update"
     const val functionDeleteAccountAndData: String = "user_account_delete"
     const val functionResetAccount: String = "user_account_reset"
     const val functionUserKeysUpdate: String = "user_keys_update"
+    const val functionUserDeviceUpdate: String = "user_device_update"
     const val functionPlaceCreate: String = "place_create"
     const val functionPlaceDelete: String = "place_delete"
     const val functionPlaceUpdate: String = "place_update"
     const val functionPlaceNotify: String = "place_notify"
+    const val functionLocationCreate: String = "location_create"
+    const val functionLocationDelete: String = "location_delete"
 }

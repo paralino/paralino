@@ -110,17 +110,17 @@ class GroupCryptoKeyRotation constructor(
             }
 
             val usedKeys =
-                group.members.map { it.groupKeyVersion } + places.map { it.keyVersion } + group.keyVersion
+                group.members.map { it.member.groupKeyVersion } + places.map { it.keyVersion } + group.keyVersion
 
             val keys = group.members.map {
                 GroupKeysPayload(
-                    userId = it.userId,
+                    userId = it.member.userId,
                     encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                         data = newGroupKey,
                         // sign with owner private key
                         myPrivateKey = myKey.privateKey,
                         // encrypt with user public key
-                        publicKey = it.publicKey
+                        publicKey = it.member.publicKey
                     )
                 )
             }

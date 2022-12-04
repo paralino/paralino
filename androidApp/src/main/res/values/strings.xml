@@ -96,7 +96,7 @@
     <string name="settings_account_delete_alert_cancel_button3">Abort</string>
     <string name="settings_account_delete_alert_cancel_button4">Close</string>
 
-    <string name="settings_profile_name_placeholder">Your name</string>
+    <string name="settings_profile_name_placeholder">Your name*</string>
     <string name="settings_profile_username_placeholder">Your email</string>
 
     <string name="settings_section_location_title">Location</string>
@@ -189,10 +189,12 @@
     <string name="groups_sharing_button_start">Start sharing</string>
     <string name="groups_sharing_button_enable">Enable sharing</string>
     <string name="groups_sharing_title">Share location</string>
+    <string name="groups_sharing_device_name_placeholder">Device name</string>
     <string name="groups_sharing_potential_error_title">Warning</string>
     <string name="groups_sharing_potential_error_button_enable">Enable anyway</string>
     <string name="groups_sharing_potential_error_message">Sharing will start **automatically** once you resolve all the errors: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Your location can not be shared if you restart your phone!\n\nPlease allow **all the time** location access for reliable sharing.</string>
+    <string name="groups_sharing_error_registration_generic">Unable to register you device, please try again.</string>
 
     <string name="groups_sharing_duration_type_infinite">Always on</string>
 
@@ -216,6 +218,9 @@
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
     <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>
+    <string name="group_members_device_other_remove_alert_title">Are you sure you want remove %ss\' device from group?\n\nThis will not remove user from a group.</string>
+    <string name="group_members_device_own_remove_alert_title">Are you sure you want remove your device from group?\n\nThis will not remove you from a group.</string>
+    <string name="group_members_device_name_default">Device</string>
     <string name="group_members_empty_info">This group is lonely!\nAdd someone to securely share your location with.</string>
     <string name="group_details_section_members_title">Members **(%d)**</string>
     <string name="group_details_menu_edit">Edit</string>

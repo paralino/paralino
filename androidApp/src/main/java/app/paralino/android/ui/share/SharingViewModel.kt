@@ -3,6 +3,7 @@ package app.paralino.android.ui.share
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
@@ -15,6 +16,7 @@ class SharingViewModel constructor(
     private val groupRepo: GroupRepository,
     private val locationSharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
+    private val registerDevice: RegisterDeviceForSharingUseCase,
 ) : AndroidViewModel(app) {
 
     private val coreVm =
@@ -23,6 +25,7 @@ class SharingViewModel constructor(
             groupRepo,
             locationSharingManager,
             locationStatusProvider,
+            registerDevice,
             viewModelScope
         )
 

@@ -21,22 +21,31 @@ data class MemberModel constructor(
     val memberKeyVersion: Long,
     val shouldRotateKeys: Boolean,
     @Contextual
-    val data: CryptoResource<MemberModelData>,
-    @Contextual
-    val mutableData: CryptoResource<LocationDataModel>
+    val memberData: CryptoResource<MemberModelData>,
 ) {
 
-    val name: String get() = data.data?.name ?: "---"
-    val image: ImageModel? get() = data.data?.image ?: ImageModel.emoji(Emojis.lock)
+    val name: String get() = memberData.data?.name ?: "---"
+    val image: ImageModel? get() = memberData.data?.image ?: ImageModel.emoji(Emojis.lock)
 
+}
+
+@Serializable
+data class MemberModelWithLocations(
+    val member: MemberModel,
+    val locations: List<MemberLocation>
+) {
     val isActive: Boolean
         get() {
             val now = nowUTC()
-            val pinTime = mutableData.data?.timeUTC?.fromUTCtoInstant() ?: return false
+            val pinTime =
+                locations.firstNotNullOfOrNull { it.locationData?.data?.timeUTC?.fromUTCtoInstant() }
+                    ?: return false
             val activeThreshold = 30.toDuration(DurationUnit.MINUTES)
             return pinTime.plus(activeThreshold) > now
         }
 
+    val hasLocation: Boolean
+        get() = locations.firstNotNullOfOrNull { it.locationData.data } != null
 }
 
 @Serializable
@@ -44,16 +53,3 @@ data class MemberModelData constructor(
     val name: String,
     val image: ImageModel? = null
 )
-
-@Serializable
-data class LocationDataModel constructor(
-    val lat: Double,
-    val lng: Double,
-    val accuracy: Float = 0f,
-    val timeUTC: String? = null,
-    val batteryLevel: Int? = null,
-    val speed: Float? = null,
-    val altitude: Float? = null
-) {
-    val shouldShowApproximateCircle get() = accuracy > 10f
-}

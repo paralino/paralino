@@ -129,6 +129,9 @@ fun SharingStartScreen(
                 SharingStartScreenEvent.SelectGroupInfo -> {
                     appState.showSnackbar(context.getString(R.string.invite_connect_alert_pickGroup))
                 }
+                SharingStartScreenEvent.CanNotRegisterDevice -> {
+                    appState.showSnackbar(context.getString(R.string.invite_connect_alert_pickGroup))
+                }
                 null -> {
                     /* do nothing */
                 }

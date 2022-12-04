@@ -7,7 +7,9 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.dashboard.GroupItemData
-import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.groups.GroupMemberState
 import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.repo.LocationSharingManager
@@ -36,7 +38,7 @@ class MapHomeViewModel constructor(
     val events = _eventChannel.receiveAsFlow()
 
     private val groupIdData = MutableStateFlow("")
-    private val focusedMarkerId = MutableStateFlow("")
+    private val focusedMarker = MutableStateFlow<FocusedMarkerData?>(null)
 
     val locationRefreshSubscription = uiState.map { it.data?.groupId }
         .filterNotNull()
@@ -54,43 +56,83 @@ class MapHomeViewModel constructor(
                         groupRepo.getGroupWithMembersLocally(it),
                         placesRepo.getPlacesForGroupLocally(it),
                         getSharingContract(),
-                        focusedMarkerId
-                    ) { group, places, sharingStatus, focusedMarkerId ->
+                        focusedMarker
+                    ) { group, places, sharingStatus, focusedMarker ->
 
-                        val memberData = group.members.map { member ->
-                            GroupMemberItemState(member, showSpeedAndElevation = true).copy(
-                                actionItem = MemberAction.DELETE_LOCATION.takeIf {
-                                    member.userId == config.userId && member.mutableData.data != null &&
+                        val membersData = group.members.flatMap { member ->
+
+                            if (member.locations.isEmpty()) {
+                                listOf(
+                                    GroupMemberItemStateWithOneLocation(
+                                        memberState = GroupMemberState(
+                                            member = member.member,
+                                            isCurrentUser = member.member.userId == config.userId
+                                        ),
+                                        location = null
+                                    )
+                                )
+                            } else {
+                                val memberState = GroupMemberState(
+                                    member = member.member,
+                                    isCurrentUser = member.member.userId == config.userId
+                                )
+                                member.locations.map { location ->
+                                    val canDelete = member.member.userId == config.userId &&
+                                            location.locationData.data != null &&
                                             !sharingManager.isSharingActiveForGroup(groupIdData.value)
+                                    GroupMemberItemStateWithOneLocation(
+                                        memberState = memberState.copy(
+                                            actionItem = MemberAction.DELETE_LOCATION.takeIf { canDelete }
+                                        ),
+                                        location = GroupMemberItemLocationState(
+                                            memberLocation = location,
+                                            image = member.member.image,
+                                            canEdit = false,
+                                            currentDevice = location.deviceId == config.deviceId,
+                                            showSpeedAndElevation = true
+                                        )
+                                    )
                                 }
-                            )
+                            }
                         }
 
-                        val memberMarkers = group.members.filter { it.mutableData.data != null }
-                            .map { member ->
-                                MapPinData(
-                                    member = member,
-                                    focused = focusedMarkerId == member.id
-                                )
+                        val memberMarkers = group.members
+                            .flatMap { member ->
+                                member.locations.filter { it.locationData.data != null }
+                                    .map { location ->
+                                        val memberLocationState =
+                                            membersData.first { it.location?.locationId == location.id }
+                                        MapPinData(
+                                            location = location,
+                                            image = member.member.image,
+                                        ).copy(
+                                            markerId = memberLocationState.keyId,
+                                            focused = focusedMarker?.markerId == memberLocationState.keyId
+                                        )
+                                    }
                             }
 
-                        val placeMarkers = places.filter { it.data.data?.lat != null && it.data.data?.lng != null }
-                            .map { place ->
-                                MapPinData(
-                                    groupId = group.id,
-                                    state = PlaceListItemData(place)
-                                ).copy(active = false)
-                            }
+                        val placeMarkers =
+                            places.filter { it.data.data?.lat != null && it.data.data?.lng != null }
+                                .map { place ->
+                                    MapPinData(
+                                        groupId = group.id,
+                                        state = PlaceListItemData(place)
+                                    ).copy(
+                                        active = false,
+                                        focused = focusedMarker?.markerId == place.id
+                                    )
+                                }
 
                         MapHomeScreenState(
                             groupId = group.id,
                             groupName = group.name,
                             groupImage = group.image,
                             userCount = group.memberCount,
-                            inactiveUserCount = group.memberCount - memberMarkers.size,
-                            members = memberData,
+                            inactiveUserCount = group.memberCount - group.members.filter { it.hasLocation }.size,
+                            members = membersData,
                             markers = memberMarkers + placeMarkers,
-                            focusedMarkerId = focusedMarkerId,
+                            focusedMarker = focusedMarker,
                             sharingStatus = sharingStatus
                         )
                     }
@@ -112,10 +154,9 @@ class MapHomeViewModel constructor(
         } else groupIdData.value = groupId
     }
 
-    fun trackMarker(markerId: String?) {
-        focusedMarkerId.update { markerId ?: "" }
+    fun trackMarker(marker: FocusedMarkerData?) {
+        focusedMarker.update { marker }
     }
-
 
     private fun getSharingContract(): Flow<LocationSharingContract?> {
         return locationRepo.sharingManager.allContractsFlow.combine(groupIdData) { contracts, group ->
@@ -128,8 +169,8 @@ class MapHomeViewModel constructor(
             ?: emptyList()
     }
 
-    fun clearMyLocation() {
-        locationRepo.clearLocation(groupIdData.value)
+    fun clearMyLocation(locationId: String) {
+        locationRepo.clearLocation(locationId)
             .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
             .launchIn(coroutineScope)
     }

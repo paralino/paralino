@@ -30,6 +30,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.IConnectionStatusProvider
+import app.paralino.core.utils.IDeviceApiProvider
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.LocationConditionStatus
 import kotlinx.coroutines.*
@@ -64,6 +65,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private val sessionMonitor: UserSessionMonitor by inject()
     private val logoutUseCase: LogoutUseCase by inject()
     private val connectionStatusProvider: IConnectionStatusProvider by inject()
+    private val deviceApiProvider: IDeviceApiProvider by inject()
 
     private val locationSharing: LocationSharingManager by inject()
     val locationStatus: ILocationStatusProvider by inject()
@@ -85,6 +87,8 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
         locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
         connectionStatus = connectionStatusProvider
         config = Config(context)
+
+        deviceApiProvider.initialize()
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 

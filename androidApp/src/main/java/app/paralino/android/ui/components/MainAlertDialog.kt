@@ -257,6 +257,45 @@ sealed interface MainAlertDialog {
         }
     }
 
+    data class DeleteMemberLocation(
+        val memberId: String,
+        val locationId: String,
+        val isUserOwnDevice: Boolean,
+        val memberName: String,
+    ) : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            val message = if(isUserOwnDevice) {
+                stringResource(
+                    id = R.string.group_members_device_own_remove_alert_title
+                )
+            } else {
+                stringResource(
+                    id = R.string.group_members_device_other_remove_alert_title,
+                    memberName
+                )
+            }
+            MainAlertDialog(
+                title = stringResource(id = R.string.alert_title_confirm),
+                message = message,
+                buttons = listOf(
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_remove_member_alert_button),
+                        AlertDialogButtonData.destructiveColor
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
     object SharingBackgroundLocationMissing : MainAlertDialog {
         override val key: String = this.javaClass.simpleName
 
