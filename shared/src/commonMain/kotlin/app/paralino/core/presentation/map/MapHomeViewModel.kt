@@ -38,7 +38,7 @@ class MapHomeViewModel constructor(
     val events = _eventChannel.receiveAsFlow()
 
     private val groupIdData = MutableStateFlow("")
-    private val focusedMarkerId = MutableStateFlow("")
+    private val focusedMarker = MutableStateFlow<FocusedMarkerData?>(null)
 
     val locationRefreshSubscription = uiState.map { it.data?.groupId }
         .filterNotNull()
@@ -56,10 +56,10 @@ class MapHomeViewModel constructor(
                         groupRepo.getGroupWithMembersLocally(it),
                         placesRepo.getPlacesForGroupLocally(it),
                         getSharingContract(),
-                        focusedMarkerId
-                    ) { group, places, sharingStatus, focusedMarkerId ->
+                        focusedMarker
+                    ) { group, places, sharingStatus, focusedMarker ->
 
-                        val memberData = group.members.flatMap { member ->
+                        val membersData = group.members.flatMap { member ->
 
                             if (member.locations.isEmpty()) {
                                 listOf(
@@ -98,13 +98,18 @@ class MapHomeViewModel constructor(
 
                         val memberMarkers = group.members
                             .flatMap { member ->
-                                member.locations.filter { it.locationData.data != null }.map {
-                                    MapPinData(
-                                        member = it,
-                                        image = member.member.image,
-                                        focused = focusedMarkerId == it.id
-                                    )
-                                }
+                                member.locations.filter { it.locationData.data != null }
+                                    .map { location ->
+                                        val memberLocationState =
+                                            membersData.first { it.location?.locationId == location.id }
+                                        MapPinData(
+                                            location = location,
+                                            image = member.member.image,
+                                        ).copy(
+                                            markerId = memberLocationState.keyId,
+                                            focused = focusedMarker?.markerId == memberLocationState.keyId
+                                        )
+                                    }
                             }
 
                         val placeMarkers =
@@ -113,7 +118,10 @@ class MapHomeViewModel constructor(
                                     MapPinData(
                                         groupId = group.id,
                                         state = PlaceListItemData(place)
-                                    ).copy(active = false)
+                                    ).copy(
+                                        active = false,
+                                        focused = focusedMarker?.markerId == place.id
+                                    )
                                 }
 
                         MapHomeScreenState(
@@ -122,9 +130,9 @@ class MapHomeViewModel constructor(
                             groupImage = group.image,
                             userCount = group.memberCount,
                             inactiveUserCount = group.memberCount - group.members.filter { it.hasLocation }.size,
-                            members = memberData,
+                            members = membersData,
                             markers = memberMarkers + placeMarkers,
-                            focusedMarkerId = focusedMarkerId,
+                            focusedMarker = focusedMarker,
                             sharingStatus = sharingStatus
                         )
                     }
@@ -146,10 +154,9 @@ class MapHomeViewModel constructor(
         } else groupIdData.value = groupId
     }
 
-    fun trackMarker(markerId: String?) {
-        focusedMarkerId.update { markerId ?: "" }
+    fun trackMarker(marker: FocusedMarkerData?) {
+        focusedMarker.update { marker }
     }
-
 
     private fun getSharingContract(): Flow<LocationSharingContract?> {
         return locationRepo.sharingManager.allContractsFlow.combine(groupIdData) { contracts, group ->

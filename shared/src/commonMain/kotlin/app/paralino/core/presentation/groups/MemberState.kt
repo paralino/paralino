@@ -14,6 +14,7 @@ sealed interface GroupMemberItemState {
 }
 
 data class GroupMemberState constructor(
+    val groupId: String,
     val memberId: String,
     val userId: String,
     val actionItem: MemberAction? = null,
@@ -22,6 +23,7 @@ data class GroupMemberState constructor(
     val isCurrentUser: Boolean
 ) {
     constructor(member: MemberModel, isCurrentUser: Boolean) : this(
+        groupId = member.groupId,
         memberId = member.id,
         userId = member.userId,
         actionItem = null,
@@ -36,7 +38,7 @@ data class GroupMemberItemStateWithOneLocation constructor(
     val location: GroupMemberItemLocationState?,
 ) : GroupMemberItemState {
     override val keyId: String
-        get() = memberState.memberId + (location?.locationId ?: "")
+        get() = location?.locationId?.takeIf { it.isNotBlank() } ?: memberState.memberId
     val status: GroupMemberStatus get() = location?.status ?: GroupMemberStatus.INACTIVE
 }
 

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.paralino.core.domain.location.LocationRefreshUseCase
+import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
@@ -26,7 +27,7 @@ class MapViewModel constructor(
     val locationRefreshSubscription = coreVM.locationRefreshSubscription
 
     fun switchGroup(groupId: String) = coreVM.switchGroup(groupId)
-    fun trackMarker(markerId: String?) = coreVM.trackMarker(markerId)
+    fun trackMarker(marker: FocusedMarkerData?) = coreVM.trackMarker(marker)
     suspend fun getAllGroups() = coreVM.getAllGroups()
     fun clearMyLocation(locationId: String) = coreVM.clearMyLocation(locationId)
 
