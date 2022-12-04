@@ -21,10 +21,25 @@ data class MemberLocationEntity constructor(
 ) : Parcelable
 
 @Entity
-data class MemberMutableDataUpdate constructor(
+data class MemberLocationDataUpdate constructor(
     @ColumnInfo(name = "id")
     val id: String,
 
     @ColumnInfo(name = "locationData")
     val locationData: String? = null,
+)
+
+@Entity
+data class MemberLocationEntityUpdate constructor(
+    @ColumnInfo(name = "id")
+    val id: String,
+
+    @ColumnInfo(name = "deviceId")
+    val deviceId: String,
+
+    @ColumnInfo(name = "locationData")
+    val locationData: String?,
+
+    @ColumnInfo(name = "deviceData")
+    val deviceData: String?
 )

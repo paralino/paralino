@@ -8,6 +8,7 @@ import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.base.RealtimeResponse
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
+import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -34,65 +35,99 @@ class RealtimeEventsProcessor constructor(
     suspend fun processEvent(response: RealtimeResponse<Map<String, Any>>) {
         when {
             response.channels.contains(locationFocusChannel) -> {
-                logg.tag("realtime_events_sharing").v("Got location focus create/update event")
-                val groupId = response.payload["groupId"] as String
-                if (locationSharingManager.isSharingActiveForGroup(groupId)) {
-                    locationPerformanceManager.locationBoostRequested(groupId)
-                }
+                processLocationFocusChannelEvent(response)
             }
             response.channels.contains(placesChannel) -> {
-                logg.tag("realtime_events_sharing").v("Got place create/update event")
-                val place = GroupPlaceRaw.from(response.payload)
-                gotPlaceUpdateFromRealtime(place)
+                processPlaceChannelEvent(response)
             }
             response.channels.contains(membersChannel) -> {
-                val member = if (response.events.any { it.endsWith(".delete") }) {
-                    logg.tag("realtime_events").v("Got member delete event")
-                    null
-                } else {
-                    logg.tag("realtime_events").v("Got member create/update event")
-                    MemberDocumentRaw.from(response.payload)
-                }
-
-                try {
-                    if(member != null) {
-                        gotMemberUpdateFromRealtime(member)
-                    } else {
-                        gotMemberDeleteFromRealtime(response.payload.get("groupId") as String)
-                    }
-                } catch (e: Exception) {
-                    logg.tag("realtime_events").e("Error with realtime member event", e)
-                }
+                processMemberChannelEvent(response)
+            }
+            response.channels.contains(locationsChannel) -> {
+                processMemberLocationChannelEvent(response)
             }
         }
     }
 
-    suspend fun gotPlaceUpdateFromRealtime(place: GroupPlaceRaw) {
-        // don't update place if group actions are processing
-        // place will be updated after everything is finished
-        if(!groupPreRefreshUseCase.isProcessing(place.groupId))
-            placesRepo.updatePlaceLocally(place)
+    private suspend fun processLocationFocusChannelEvent(response: RealtimeResponse<Map<String, Any>>) {
+        logg.tag("realtime_events").v("Got location focus create/update event")
+        val groupId = response.payload["groupId"] as String
+        if (locationSharingManager.isSharingActiveForGroup(groupId)) {
+            locationPerformanceManager.locationBoostRequested(groupId)
+        }
     }
 
-    suspend fun gotMemberDeleteFromRealtime(groupId: String) {
-        logg.tag("realtime_events").v("Delete member event in group $groupId")
-        groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
+    private suspend fun processPlaceChannelEvent(response: RealtimeResponse<Map<String, Any>>) {
+        if (response.events.any { it.endsWith(".delete") }) {
+            // do nothing for now
+        } else {
+            logg.tag("realtime_events").v("Got place create/update event")
+
+            // don't update place if group actions are processing
+            // place will be updated after everything is finished
+            // key rotation is still in progress at this point so ignore this data
+            val place = GroupPlaceRaw.from(response.payload)
+            if (!groupPreRefreshUseCase.isProcessing(place.groupId))
+                placesRepo.updatePlaceLocally(place)
+        }
     }
 
-    suspend fun gotMemberUpdateFromRealtime(member: MemberDocumentRaw) {
-        val memberKey = try {
-            cryptoKEKRepo.getMemberKey(groupId = member.groupId, memberUserId = member.ownerUserId, memberPublicKey = member.ownerPublicKey)
-        } catch (e: Exception) {
+    private suspend fun processMemberChannelEvent(response: RealtimeResponse<Map<String, Any>>) {
+        val member = if (response.events.any { it.endsWith(".delete") }) {
+            logg.tag("realtime_events").v("Got member delete event")
             null
+        } else {
+            logg.tag("realtime_events").v("Got member create/update event")
+            MemberDocumentRaw.from(response.payload)
         }
 
-        if(memberKey == null || member.memberKeyVersion != memberKey.version) {
-            logg.tag("realtime_events").v("Refresh group - update member (${member.id}) event in group ${member.groupId}")
-            // this is either new member so we are missing keys, or keys are obsolete
-            groupPreRefreshUseCase.refreshGroupWithMembers(member.groupId)
+        try {
+            if (member != null) {
+                val memberKey = try {
+                    cryptoKEKRepo.getMemberKey(
+                        groupId = member.groupId,
+                        memberUserId = member.ownerUserId,
+                        memberPublicKey = member.ownerPublicKey
+                    )
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (memberKey == null || member.memberKeyVersion != memberKey.version) {
+                    logg.tag("realtime_events")
+                        .v("Refresh group - update member (${member.id}) event in group ${member.groupId}")
+                    // this is either new member so we are missing keys, or keys are obsolete
+                    groupPreRefreshUseCase.refreshGroupWithMembers(member.groupId)
+                } else {
+                    logg.tag("realtime_events")
+                        .v("Update member (${member.id}) event in group ${member.groupId}")
+                    memberLocal.createOrUpdateMembers(member)
+                }
+            } else {
+                val groupId = response.payload["groupId"] as String
+                logg.tag("realtime_events").v("Delete member event in group $groupId")
+                groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
+            }
+        } catch (e: Exception) {
+            logg.tag("realtime_events").e("Error with realtime member event", e)
+        }
+    }
+
+    private suspend fun processMemberLocationChannelEvent(response: RealtimeResponse<Map<String, Any>>) {
+        val location = if (response.events.any { it.endsWith(".delete") }) {
+            logg.tag("realtime_events").v("Got location delete event")
+            null
         } else {
-            logg.tag("realtime_events").v("Update member (${member.id}) event in group ${member.groupId}")
-            memberLocal.createOrUpdateMembers(member)
+            logg.tag("realtime_events").v("Got location create/update event")
+            MemberLocationRaw.from(response.payload)
+        }
+
+        if (location != null) {
+            memberLocal.createOrUpdateMemberLocation(location)
+        } else {
+            val groupId = response.payload["groupId"] as String
+            logg.tag("realtime_events").v("Delete member event in group $groupId")
+            groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
         }
     }
 

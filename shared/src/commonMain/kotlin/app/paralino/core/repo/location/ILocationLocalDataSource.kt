@@ -2,12 +2,14 @@ package app.paralino.core.repo.location
 
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.MemberDocumentRaw
+import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import kotlinx.coroutines.flow.Flow
 
 interface ILocationLocalDataSource {
 
     suspend fun createOrUpdateMembers(vararg data: MemberDocumentRaw)
+    suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw)
     suspend fun recreateMembers(vararg data: MemberWithLocationsRaw)
     suspend fun recreateAllMembers(data: List<MemberWithLocationsRaw>)
     suspend fun recreateMembersForGroup(groupId: String, data: List<MemberWithLocationsRaw>)

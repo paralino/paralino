@@ -1,10 +1,7 @@
 package app.paralino.android.data.repos.location
 
 import androidx.room.*
-import app.paralino.android.data.models.location.MemberEntity
-import app.paralino.android.data.models.location.MemberEntityWithLocations
-import app.paralino.android.data.models.location.MemberLocationEntity
-import app.paralino.android.data.models.location.MemberMutableDataUpdate
+import app.paralino.android.data.models.location.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -75,8 +72,10 @@ interface MemberDao {
     suspend fun getMemberPublicKeyOnce(groupId: String, userId: String): String?
 
     @Update(onConflict = OnConflictStrategy.IGNORE, entity = MemberLocationEntity::class)
-    suspend fun updateMemberMutableData(data: MemberMutableDataUpdate)
+    suspend fun updateMemberLocationData(data: MemberLocationDataUpdate)
 
+    @Update(onConflict = OnConflictStrategy.IGNORE, entity = MemberLocationEntity::class)
+    suspend fun updateMemberLocationFromRemote(data: MemberLocationEntityUpdate)
 
     suspend fun removeMemberWithLocationsForGroup(groupId: String, memberId: String) {
         clearMemberForGroup(groupId, memberId)

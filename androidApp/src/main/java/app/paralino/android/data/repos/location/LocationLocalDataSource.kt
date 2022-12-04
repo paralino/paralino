@@ -1,14 +1,16 @@
 package app.paralino.android.data.repos.location
 
+import app.paralino.android.data.mappers.MemberWithLocationsMapperLocal
+import app.paralino.android.data.models.location.MemberLocationDataUpdate
+import app.paralino.android.data.models.location.MemberLocationEntityUpdate
+import app.paralino.android.data.repos.group.UserGroupDao
+import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.MemberDocumentRaw
+import app.paralino.core.models.raw.MemberLocationRaw
+import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.extensions.distinctFlowOfList
-import app.paralino.android.data.mappers.MemberWithLocationsMapperLocal
-import app.paralino.android.data.models.location.MemberMutableDataUpdate
-import app.paralino.android.data.repos.group.UserGroupDao
-import app.paralino.core.models.location.MemberModelWithLocations
-import app.paralino.core.models.raw.MemberWithLocationsRaw
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -23,6 +25,17 @@ class LocationLocalDataSource(
     override suspend fun createOrUpdateMembers(vararg data: MemberDocumentRaw) {
         dao.createOrUpdateMemberOnly(*data.map { mapper.memberMapper.remote2Local(it) }
             .toTypedArray())
+    }
+
+    override suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw) {
+        dao.updateMemberLocationFromRemote(
+            MemberLocationEntityUpdate(
+                id = data.id,
+                deviceId = data.deviceId,
+                deviceData = data.deviceData,
+                locationData = data.locationData
+            )
+        )
     }
 
     override suspend fun recreateMembers(vararg data: MemberWithLocationsRaw) {
@@ -105,7 +118,7 @@ class LocationLocalDataSource(
     }
 
     override suspend fun clearMemberLocationData(locationId: String) {
-        dao.updateMemberMutableData(MemberMutableDataUpdate(id = locationId, locationData = null))
+        dao.updateMemberLocationData(MemberLocationDataUpdate(id = locationId, locationData = null))
     }
 
     override suspend fun removeAllMembersForGroup(groupId: String) {
