@@ -106,9 +106,9 @@ fun ConstraintLayoutScope.GroupMemberWithOneLocation(
             modifier = Modifier
         )
 
-        if (state.location?.status?.actionText != null) {
+        if (state.status.actionText != null) {
             Text(
-                text = stringResource(id = state.location?.status?.actionText!!),
+                text = stringResource(id = state.status.actionText!!),
                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
                 color = MaterialTheme.colors.onPrimary.copy(alpha = 0.8f),
                 modifier = Modifier

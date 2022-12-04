@@ -37,6 +37,7 @@ data class GroupMemberItemStateWithOneLocation constructor(
 ) : GroupMemberItemState {
     override val keyId: String
         get() = memberState.memberId + (location?.locationId ?: "")
+    val status: GroupMemberStatus get() = location?.status ?: GroupMemberStatus.INACTIVE
 }
 
 data class GroupMemberItemStateWithLocations constructor(
