@@ -1,5 +1,6 @@
 package app.paralino.core.repo.personal_code
 
+import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.models.Payload
 import app.paralino.core.models.mapSuccess
@@ -15,11 +16,12 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.flow.*
 import kotlin.random.Random
 
-class PersonalCodesRepository(
+class PersonalCodesRepository constructor(
     private val remote: PersonalCodesRemoteSource,
     private val local: IPersonalCodelLocalDataSource,
     private val userRepo: UserRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
+    private val cryptoCore: CryptoCore,
 ) : BaseRepository() {
 
     fun createPersonalCode(): Flow<Payload<PersonalCodeRaw>> {
@@ -115,16 +117,17 @@ class PersonalCodesRepository(
     }
 
     private fun createPersonalCodeString(): String {
+        val key = cryptoCore.getNewSymmetricKey().asBase64String(cryptoCore.hashProvider)
+        val derivedKey = cryptoCore.derivePassword(key).backupPassword
+
         // without similar characters: 0,O,1,I
-        // code pattern XXXX-XXXX
-        val seed = "ABCDEFGHJKLMNPQRSTUVWXYZ2345789"
-        val sectionLength = 8
-        val sections = 1
-        val chars = CharArray(sectionLength * sections + sections - 1) {
-            if (it % (sectionLength + 1) == sectionLength) '-'
-            else seed[Random.nextInt(seed.length)]
-        }
-        return chars.concatToString()
+        val code = derivedKey
+            .replace(Regex("[^a-zA-Z0-9]"), "")
+            .uppercase()
+            .replace(Regex("[O01I]"), "")
+            .take(8)
+
+        return code
     }
 
 }
