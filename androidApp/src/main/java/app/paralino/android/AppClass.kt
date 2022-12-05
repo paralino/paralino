@@ -33,6 +33,8 @@ import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.IDeviceApiProvider
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.LocationConditionStatus
+import io.sentry.*
+import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -82,6 +84,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
         instance = this
         context = applicationContext
 
+        initLogger()
         KoinSetup.initKoin(this)
 
         locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
@@ -92,7 +95,6 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
-        initLogger()
 
         sessionMonitor.listenForSessionExpired()
             .onEach {
@@ -125,6 +127,9 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private fun initLogger() {
         logg = Logger
         if (!BuildConfig.forceLogToSystem) {
+            SentryAndroid.init(this) {
+                it.isSendDefaultPii = false
+            }
             Logger.setLogger(externalLogTree)
         } else {
             Logger.setLogger(DebugLogger(getString(R.string.app_name)))
@@ -157,7 +162,9 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private val externalLogTree: LoggerKind by lazy {
         object : LoggerKind() {
             override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-                // TODO maybe log to file
+                if(t != null) {
+                    Sentry.captureException(t)
+                }
             }
         }
     }

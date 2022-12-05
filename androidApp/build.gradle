@@ -47,6 +47,7 @@ android {
             buildConfigField("String", "serverUrl", props['serverUrl'])
             buildConfigField("String", "serverKey", props['serverKey'])
             buildConfigField("String", "mapboxAccessToken", props['MAPBOX_ACCESS_TOKEN'])
+            resValue "string", "glitchTipDSN", props['glitchTipDSN']
         }
 
         // room schema export
@@ -227,7 +228,9 @@ dependencies {
     }
 
     implementation 'com.cossacklabs.com:themis:0.14.0'
+
     implementation "com.mikepenz:aboutlibraries-compose:10.5.1"
+    implementation 'io.sentry:sentry-android:6.9.1'
 
     // TODO replace with vanilla library at some point
     implementation project(path: ':appwrite')
