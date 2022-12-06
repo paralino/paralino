@@ -246,8 +246,8 @@ class PlacesRepository constructor(
         // there already was a request for this place in last 10 seconds
         if(timeDiff < 10L) return
 
-        // already exited the place within the last 15 minutes
-        if(placeActivityInfo?.second == false && timeDiff < 15L.minutes.inWholeSeconds) return
+        // already exited the place
+        if(placeActivityInfo?.second == false) return
 
         val place = local.getPlaceWithoutSettingsOnce(placeId) ?: return
         if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) {
