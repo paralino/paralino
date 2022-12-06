@@ -103,7 +103,7 @@ class UserApi constructor(
         return UserSession(
             id = this.id,
             expire = this.expire,
-            deviceName = Build.MODEL,
+            deviceName = Build.MANUFACTURER,
             deviceType = "android"
         )
     }
