@@ -120,10 +120,10 @@ class LocationPerformanceManager constructor(
         }
 
         // allow only certain amount of medium or higher boost (HIGH and MEDIUM_HIGH) per hour
-        val timeCriteriaLow = lastMediumBoostDiff > 20.minutes
+        val timeCriteriaLow = lastMediumBoostDiff > 40.minutes
 
         // allow only certain amount of high boost per hour
-        val timeCriteriaHigh = lastHighBoostDiff > 10.minutes
+        val timeCriteriaHigh = lastHighBoostDiff > 20.minutes
 
         // take certain range of battery in account
         val batteryLow = deviceStatus.batteryLevel < 10
