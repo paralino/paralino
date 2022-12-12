@@ -27,7 +27,7 @@ class CryptoUserKeysRemoteSource(
     suspend fun createPersonalKey(data: UserCryptoKeyRaw, removeOldKeys: Boolean): UserCryptoKeyRaw {
 
         val payload = UpdateUserKeysFunctionData(
-            userPublicKey = data.publicKey,
+            encryptedPublicKey = data.encryptedPublicKey,
             encryptedPrivateKey = data.encryptedPrivateKey,
             encryptedSymmetricKey = data.encryptedSymmetricKey,
             keyVersion = data.version,

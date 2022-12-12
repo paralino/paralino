@@ -14,9 +14,14 @@ class UserKeyMapperCore constructor(
             key = userKey
         )
 
+        val publicKey = cryptoCore.decryptDataWithKey(
+            data = model.encryptedPublicKey,
+            key = userKey
+        )
+
         return AsymmetricCryptoKeyData(
             privateKey = privateKey,
-            publicKey = model.publicKey,
+            publicKey = publicKey,
             version = model.version
         )
     }

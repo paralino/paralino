@@ -154,7 +154,7 @@ data class PlaceEventPayload constructor(
 
 @Serializable
 data class UpdateUserKeysFunctionData constructor(
-    val userPublicKey: String,
+    val encryptedPublicKey: String,
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
     val keyVersion: Long,
@@ -165,7 +165,7 @@ data class UpdateUserKeysFunctionData constructor(
 data class AccountResetCryptoKeyPayload constructor(
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
-    val publicKey: String,
+    val encryptedPublicKey: String,
 )
 
 @Serializable

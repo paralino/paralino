@@ -41,13 +41,17 @@ class CryptoCore(
             data = newKeyPair.privateKey.toData().asBase64String(hashProvider),
             key = newPersonalKey.content
         )
+        val encryptedPublicKey = encryptDataWithKey(
+            data = newKeyPair.publicKey.toData().asBase64String(hashProvider),
+            key = newPersonalKey.content
+        )
 
         val encryptedKeyData = UserCryptoKeyRaw(
             "",
             ownerUserId = userId,
             encryptedSymmetricKey = encryptedPersonalKey.asBase64String(hashProvider),
             encryptedPrivateKey = encryptedPrivateKey,
-            publicKey = newKeyPair.publicKey.toData().asBase64String(hashProvider),
+            encryptedPublicKey = encryptedPublicKey,
             version = keyVersion
         )
 
