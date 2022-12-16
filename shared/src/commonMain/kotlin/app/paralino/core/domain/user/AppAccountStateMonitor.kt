@@ -106,6 +106,7 @@ class AppAccountStateMonitor(
                         logg.tag("push_notifications")
                             .v("User is ready, start push token registration")
                         pushManager.syncPushToken()
+                        pushManager.syncPushNotifications()
                     }
                     is AppAccountState.NO_USER_DATA -> {
                         logg.tag("account_state").v("Launch different scope to refresh user")

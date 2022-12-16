@@ -91,7 +91,7 @@ val utilModule = module {
 val locationModules = module {
     factory { LocationNotificationHandler(androidContext()) }
     factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) } bind IPlaceNotificationsHandler::class
-    factory { PushNotificationHandler(get(), get(), get()) }
+    factory { PushNotificationHandler(get(), get()) }
     single { LocationInitHandler(androidContext(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), get()) }
     single<IGeofenceManager> { GeofenceManager(androidApplication()) }

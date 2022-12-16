@@ -16,6 +16,10 @@ class PushProviderManager(
         PushTokenSyncWorker.createRequest(appClass)
     }
 
+    override fun syncPushNotifications() {
+        PushNotificationsSyncWorker.createRequest(appClass)
+    }
+
     override suspend fun logout() {
         try {
             FirebaseMessaging.getInstance().deleteToken().await()

@@ -1,25 +1,23 @@
 package app.paralino.core.notifications
 
-import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 
 class PushNotificationHandler constructor(
     private val placePush: IPlaceNotificationsHandler,
     private val docApi: IDocumentsApi,
-    private val scopeProvider: ICoroutineScopeProvider
 ) {
 
-    fun checkForPushNotifications() {
-        logg.tag("push_notifications").v("Start checking push notifications")
-        scopeProvider.userSessionIOScope.launch {
+    suspend fun checkForPushNotifications() {
+        blocking {
+            logg.tag("push_notifications").v("Start checking push notifications")
             val notifications = docApi.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = BackendResourceIDs.collectionPushNotificationID
