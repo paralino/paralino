@@ -64,13 +64,14 @@ data class GroupMemberItemLocationState constructor(
 ) {
     constructor(
         memberLocation: MemberLocation,
+        name: String? = memberLocation.name,
         image: ImageModel?,
         canEdit: Boolean,
         currentDevice: Boolean,
         showSpeedAndElevation: Boolean
     ) : this(
         locationId = memberLocation.id,
-        name = memberLocation.name,
+        name = name,
         image = image ?: ImageModel.emoji(Emojis.lock),
         batterLevel = memberLocation.locationData.data?.batteryLevel,
         speedMs = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation },

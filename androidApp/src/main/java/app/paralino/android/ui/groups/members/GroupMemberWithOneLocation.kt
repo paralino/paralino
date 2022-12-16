@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -14,13 +16,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayoutScope
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.base.ImageModel
@@ -100,8 +105,47 @@ fun ConstraintLayoutScope.GroupMemberWithOneLocation(
             },
         verticalArrangement = Arrangement.Center
     ) {
+        val iconId = "deviceIcon"
         Text(
-            text = state.memberState.name,
+            text = buildAnnotatedString {
+                this.append(state.memberState.name)
+                if (!state.location?.name.isNullOrBlank()) {
+                    this.append(" • ")
+                    appendInlineContent(iconId, "[device]")
+                    this.withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            baselineShift = BaselineShift(0.1f),
+                            color = AppColors.accent
+                        )
+                    ) {
+                        this.append(state.location?.name ?: "")
+                    }
+                }
+
+            },
+            inlineContent = mapOf(
+                Pair(
+                    iconId,
+                    InlineTextContent(
+                        Placeholder(
+                            width = 14.sp,
+                            height = 16.sp,
+                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.PhoneAndroid,
+                            contentDescription = null,
+                            tint = AppColors.accent,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 1.dp, end = 1.dp)
+                        )
+                    }
+                )
+            ),
             style = MaterialTheme.typography.subtitle1,
             modifier = Modifier
         )

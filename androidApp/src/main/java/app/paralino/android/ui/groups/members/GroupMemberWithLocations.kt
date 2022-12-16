@@ -236,7 +236,7 @@ fun GroupMemberLocationChild(
                         RoundedCornerShape(10.dp)
                     )
                     .padding(8.dp),
-                imageVector = Icons.Rounded.Smartphone,
+                imageVector = Icons.Rounded.PhoneAndroid,
                 contentDescription = null
             )
             if (state.batterLevel != null) {

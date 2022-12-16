@@ -66,6 +66,8 @@ class GroupDetailViewModel(
                             location = member.locations.firstOrNull()?.let {
                                 GroupMemberItemLocationState(
                                     memberLocation = it,
+                                    // don't show device name if there is only one location
+                                    name = null,
                                     image = member.member.image,
                                     canEdit = false,
                                     currentDevice = it.deviceId == config.deviceId,
