@@ -103,7 +103,7 @@ fun RootApp(
         when (val state = userState) {
             Resource.NotInitialized -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = MaterialTheme.colors.secondary)
                 }
             }
             is Resource.Ready -> {
@@ -135,6 +135,11 @@ fun RootApp(
                             appState = appState,
                             start = AppScreen.AppStartRoot.Welcome
                         )
+                    }
+                    is AppAccountState.NO_USER_DATA -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = MaterialTheme.colors.primary)
+                        }
                     }
                     is AppAccountState.USER_READY -> {
                         MainAppScreen(appState)

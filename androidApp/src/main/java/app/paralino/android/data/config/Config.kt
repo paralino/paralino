@@ -3,12 +3,18 @@ package app.paralino.android.data.config
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import androidx.preference.PreferenceManager
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import app.paralino.core.utils.IConfig
 
+private val Context.dataStoreUserKeys: DataStore<Preferences> by preferencesDataStore(name = "datastore_user_keys")
+
 class Config(context: Context) : IConfig {
+
+    val dataStoreUserKeys = context.dataStoreUserKeys
 
     companion object {
         const val keyToken = "prefs.profile.token"
@@ -100,7 +106,7 @@ class Config(context: Context) : IConfig {
 
 
     override fun clear() {
-        secureSharedData.edit { clear() }
+        secureSharedData.edit(commit = true) { clear() }
     }
 
 

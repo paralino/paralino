@@ -15,6 +15,5 @@ interface ICryptoUserKeyLocalDataSource {
     fun userKeyState(): Flow<Boolean>
 
     suspend fun clearAllKeys()
-    suspend fun deleteKey(id: String)
 
 }

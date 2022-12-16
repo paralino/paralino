@@ -214,6 +214,8 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.4.3'
     implementation "androidx.room:room-ktx:2.4.3"
 
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
     def koinVersion = '3.1.6'
     implementation "io.insert-koin:koin-android:$koinVersion"
     implementation "io.insert-koin:koin-androidx-compose:$koinVersion"

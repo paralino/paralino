@@ -2,6 +2,7 @@ package app.paralino.android.remote.appwrite
 
 import android.app.Application
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
@@ -51,9 +52,11 @@ class AppWriteRemoteModule(
             return action(this)
         } catch (e: Exception) {
             throw mapException(e).also {
+                logg.w("Remote exception - ${it.javaClass.simpleName} - ${it.message}")
                 when ((it as? UnauthorizedException)?.type) {
                     "general_unauthorized_scope", "user_blocked" -> {
                         // user session is invalid
+                        logg.w("Remote exception - user session expired")
                         sessionMonitor.updateSessionState(sessionValid = false)
                     }
                     else -> {}

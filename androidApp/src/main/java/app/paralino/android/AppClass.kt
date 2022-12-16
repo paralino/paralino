@@ -98,6 +98,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
         sessionMonitor.listenForSessionExpired()
             .onEach {
+                logg.tag("account_session").v("Got session expired event - logout")
                 userSessionIOScope.coroutineContext.cancelChildren()
                 logoutUseCase.logoutLocally()
             }

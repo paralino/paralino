@@ -1,5 +1,6 @@
 package app.paralino.core.domain.user
 
+import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
@@ -12,13 +13,15 @@ import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class AppAccountStateMonitor(
     private val userRepo: UserRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val userMapper: UserMapperCore,
     private val logoutUseCase: LogoutUseCase,
-    private val pushManager: IPushProviderManager
+    private val pushManager: IPushProviderManager,
+    private val scopeProvider: ICoroutineScopeProvider
 ) {
 
     private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
@@ -34,11 +37,25 @@ class AppAccountStateMonitor(
                 is Resource.Ready -> {
                     val user = userState.data
                     when {
-                        user == null -> Resource.Ready(data = AppAccountState.NO_USER)
+                        user == null -> {
+                            if (config.isTokenValid) {
+                                // try and sync user
+                                logg.tag("account_state")
+                                    .v("User is null but token is active - try to refresh")
+                                Resource.Ready(data = AppAccountState.NO_USER_DATA)
+                            } else {
+                                logg.tag("account_state").v("User is null and token is missing")
+                                Resource.Ready(data = AppAccountState.NO_USER)
+                            }
+                        }
                         !isKeyValid -> {
                             if (config.temporaryBackupPassword.isNotBlank()) {
+                                logg.tag("account_state")
+                                    .v("Key is not valid but backup password is active")
                                 Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                             } else {
+                                logg.tag("account_state")
+                                    .v("Key is not valid and no backup password - logout locally")
                                 logoutUseCase.logoutLocally()
                                 Resource.Ready(data = AppAccountState.NO_USER)
                             }
@@ -47,14 +64,20 @@ class AppAccountStateMonitor(
                             try {
                                 val decryptedUser = userMapper.remote2Core(user)
                                 if (decryptedUser.hasValidData) {
+                                    logg.tag("account_state").v("User is ready")
                                     Resource.Ready(data = AppAccountState.USER_READY(decryptedUser))
                                 } else {
+                                    logg.tag("account_state")
+                                        .v("User is ready but profile is missing")
                                     Resource.Ready(data = AppAccountState.NO_PROFILE(decryptedUser))
                                 }
                             } catch (e: Exception) {
                                 if (config.temporaryBackupPassword.isNotBlank()) {
+                                    logg.tag("account_state").v("User needs to reset account")
                                     Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                                 } else {
+                                    logg.tag("account_state")
+                                        .v("User can not be initialized, reset (${e.message}")
                                     logoutUseCase.logoutLocally()
                                     Resource.Ready(data = AppAccountState.NO_USER)
                                 }
@@ -78,16 +101,31 @@ class AppAccountStateMonitor(
             }
             .distinctUntilChanged()
             .onEach {
-                if(it.data is AppAccountState.USER_READY) {
-                    logg.tag("push_notifications").v("User is ready, start push token registration")
-                    pushManager.syncPushToken()
+                when (it.data) {
+                    is AppAccountState.USER_READY -> {
+                        logg.tag("push_notifications")
+                            .v("User is ready, start push token registration")
+                        pushManager.syncPushToken()
+                    }
+                    is AppAccountState.NO_USER_DATA -> {
+                        logg.tag("account_state").v("Launch different scope to refresh user")
+                        scopeProvider.userSessionIOScope.launch {
+                            try {
+                                logg.tag("account_state").v("Refresh user on different scope")
+                                userRepo.refreshUserIfAvailable()
+                            } catch (e: Exception) {
+                                logg.tag("account_state").v("Unable to refresh user: ${e.message}")
+                            }
+                        }
+                    }
+                    else -> {}
                 }
             }
-
 }
 
 sealed class AppAccountState {
     object NO_USER : AppAccountState()
+    object NO_USER_DATA : AppAccountState()
     data class NO_PROFILE(val user: UserMe) : AppAccountState()
     data class ACCOUNT_RESET(val userRaw: UserMeRaw) : AppAccountState()
     data class USER_READY(val user: UserMe) : AppAccountState()

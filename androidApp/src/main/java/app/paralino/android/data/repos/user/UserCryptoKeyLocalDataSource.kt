@@ -1,18 +1,18 @@
 package app.paralino.android.data.repos.user
 
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import app.paralino.android.data.config.Config
 import app.paralino.core.crypto.user.ICryptoUserKeyLocalDataSource
+import app.paralino.core.logg
+import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
-import app.paralino.android.data.config.Config
-import app.paralino.android.data.mappers.UserKeyMapperLocal
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 class UserCryptoKeyLocalDataSource constructor(
-    private val dao: UserKeyDao,
-    private val userKeyMapper: UserKeyMapperLocal,
+    private val userKeyMapper: UserKeyMapperCore,
     private val appConfig: Config,
 ) : ICryptoUserKeyLocalDataSource {
 
@@ -22,24 +22,48 @@ class UserCryptoKeyLocalDataSource constructor(
 
     override suspend fun saveKey(key: UserCryptoKeyRaw, decryptedMainKey: String) {
         appConfig.userKey = decryptedMainKey
-        dao.recreateAll(userKeyMapper.remote2Local(key))
+        appConfig.dataStoreUserKeys.edit {
+            it.clear()
+            it[stringPreferencesKey("publicKey")] = key.publicKey
+            it[stringPreferencesKey("encryptedPrivateKey")] = key.encryptedPrivateKey
+            it[stringPreferencesKey("encryptedSymmetricKey")] = key.encryptedSymmetricKey
+            it[longPreferencesKey("version")] = key.version
+        }
     }
 
     override suspend fun getKeyPair(): AsymmetricCryptoKeyData? {
-        return dao.getKey()?.let { userKeyMapper.mapKeyPair(it, getCachedUserKey()) }
+        return getMyKey()?.let { userKeyMapper.mapKeyPair(it, getCachedUserKey()) }
     }
 
     override suspend fun getMyKey(): UserCryptoKeyRaw? {
-        return dao.getKey()?.let { userKeyMapper.local2Remote(it) }
+        return listenToMyKey().firstOrNull()
+    }
+
+    private fun listenToMyKey(): Flow<UserCryptoKeyRaw?> {
+        return appConfig.dataStoreUserKeys.data.map { prefs ->
+            if (prefs.asMap().isEmpty())
+                return@map null
+
+            UserCryptoKeyRaw(
+                id = "",
+                ownerUserId = appConfig.userId,
+                publicKey = prefs[stringPreferencesKey("publicKey")]!!,
+                encryptedPrivateKey = prefs[stringPreferencesKey("encryptedPrivateKey")]!!,
+                encryptedSymmetricKey = prefs[stringPreferencesKey("encryptedSymmetricKey")]!!,
+                version = prefs[longPreferencesKey("version")]!!,
+            )
+        }.catch { emit(null) }
     }
 
     override fun userKeyState(): Flow<Boolean> {
-        return dao.listenToKey()
+        return listenToMyKey()
             .map {
                 try {
                     userKeyMapper.mapKeyPair(it!!, getCachedUserKey())
+                    logg.v("User keys can be parsed and decrypted")
                     true
                 } catch (e: Exception) {
+                    logg.v("User keys can not be parsed or decrypted")
                     false
                 }
             }
@@ -49,10 +73,8 @@ class UserCryptoKeyLocalDataSource constructor(
 
     override suspend fun clearAllKeys() {
         appConfig.userKey = ""
-        dao.clear()
-    }
-
-    override suspend fun deleteKey(id: String) {
-        dao.delete(id)
+        appConfig.dataStoreUserKeys.edit {
+            it.clear()
+        }
     }
 }

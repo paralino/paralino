@@ -65,7 +65,6 @@ val daoModules = module {
     single { get<MainAppDatabase>().groupsDao() }
     single { get<MainAppDatabase>().personalCodeDao() }
     single { get<MainAppDatabase>().groupKeysDao() }
-    single { get<MainAppDatabase>().userKeysDao() }
     single { get<MainAppDatabase>().placesDao() }
 }
 
@@ -92,7 +91,6 @@ val mappersModule = module {
     single { MemberMapperLocal() }
     single { GroupKeysMapper() }
     single { MemberKeysMapper() }
-    single { UserKeyMapperLocal(get()) }
     single { UserKeyMapperCore(get()) }
     single { PersonalCodeMapperCore(get(), get()) }
     single { PersonalCodeMapperLocal(get()) }
@@ -145,6 +143,6 @@ val coreDependencyModules = module {
     single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get(), get(), get(), get()) }
     single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get()) }
     single<IPersonalCodelLocalDataSource> { PersonalCodeLocalDataSource(get(), get()) }
-    single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), get(), config as Config) }
+    single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), config as Config) }
     single<IPlacesLocalDataSource> { GroupPlacesLocalDataSource(get(), get(), get()) }
 }

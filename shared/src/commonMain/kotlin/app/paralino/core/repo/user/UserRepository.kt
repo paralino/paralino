@@ -170,7 +170,6 @@ class UserRepository constructor(
 
     suspend fun logoutLocally() {
         local.clear()
-        config.clear()
     }
 
     fun remoteLogout(): Flow<Unit> {
