@@ -1,6 +1,6 @@
 package app.paralino.android.fcm
 
-import app.paralino.android.notification.PushNotificationHandler
+import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.core.repo.user.IPushProviderManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -21,7 +21,7 @@ class ParalinoFcmService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         logv("push_notifications", "Got new push notification")
-        pushHandler.processFcmMessage(message.data)
+        pushHandler.checkForPushNotifications()
     }
 
 }

@@ -12,7 +12,7 @@ import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.notification.PlaceNotificationHandler
-import app.paralino.android.notification.PushNotificationHandler
+import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.android.ui.MainViewModel
 import app.paralino.android.ui.dashboard.DashboardViewModel
 import app.paralino.android.ui.groups.create.CreateGroupViewModel
@@ -39,6 +39,7 @@ import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.group.*
 import app.paralino.core.domain.location.*
+import app.paralino.core.notifications.IPlaceNotificationsHandler
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -46,6 +47,7 @@ import app.paralino.core.repo.places.PlacesRepository
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val viewModelModules = module {
@@ -88,8 +90,8 @@ val utilModule = module {
 
 val locationModules = module {
     factory { LocationNotificationHandler(androidContext()) }
-    factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) }
-    factory { PushNotificationHandler(get()) }
+    factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) } bind IPlaceNotificationsHandler::class
+    factory { PushNotificationHandler(get(), get(), get()) }
     single { LocationInitHandler(androidContext(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), get()) }
     single<IGeofenceManager> { GeofenceManager(androidApplication()) }

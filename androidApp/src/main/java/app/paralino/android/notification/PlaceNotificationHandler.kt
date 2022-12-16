@@ -3,7 +3,6 @@ package app.paralino.android.notification
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.os.Parcelable
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -13,25 +12,26 @@ import app.paralino.android.ui.MainActivity
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.models.data
+import app.paralino.core.notifications.IPlaceNotificationsHandler
+import app.paralino.core.notifications.PlaceActivityNotificationPayload
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 
 class PlaceNotificationHandler(
     private val context: Context,
     private val locationRepo: LocationRepository,
     private val placeRepo: PlacesRepository,
     private val scopeProvider: ICoroutineScopeProvider
-) {
+): IPlaceNotificationsHandler {
 
     private val channelId = "place_activity_channel"
     private val notificationColor: Int by lazy {
         AppColors.lightThemePrimary.toArgb()
     }
 
-    fun process(payload: PlaceActivityNotificationPayload) {
+    override fun process(payload: PlaceActivityNotificationPayload) {
         scopeProvider.userSessionIOScope.launch {
 
             var placeName: String? = null
@@ -120,11 +120,3 @@ class PlaceNotificationHandler(
 
 }
 
-@kotlinx.serialization.Serializable
-@Parcelize
-data class PlaceActivityNotificationPayload constructor(
-    val memberUserId: String,
-    val memberId: String,
-    val placeId: String,
-    val enter: Boolean
-) : Parcelable
