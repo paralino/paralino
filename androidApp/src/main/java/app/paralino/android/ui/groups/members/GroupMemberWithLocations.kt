@@ -94,6 +94,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
                     bottom = actions.top,
                     startMargin = 12.dp,
                     endMargin = 8.dp,
+                    bottomMargin = 14.dp,
                     horizontalBias = 0f
                 )
                 width = Dimension.fillToConstraints
@@ -219,7 +220,7 @@ fun GroupMemberLocationChild(
     ) {
 
         Column(
-            modifier = Modifier.width(36.dp),
+            modifier = Modifier.width(40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
@@ -265,7 +266,7 @@ fun GroupMemberLocationChild(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 8.dp, end = 4.dp),
+                .padding(start = 8.dp, end = 4.dp, bottom = if(state.batterLevel != null) 12.dp else 0.dp),
             verticalArrangement = Arrangement.Center
         ) {
             Text(
