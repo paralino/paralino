@@ -124,7 +124,7 @@ class LocationInitHandler constructor(
     private var locationCallback = object : LocationCallback() {
         override fun onLocationResult(location: LocationResult) {
             logg.tag("location_request").v("got location update")
-            location.lastLocation.let {
+            location.lastLocation?.let {
                 val value = LocationDataModel(
                     lat = it.latitude,
                     lng = it.longitude,

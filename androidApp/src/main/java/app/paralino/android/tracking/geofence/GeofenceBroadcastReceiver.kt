@@ -24,6 +24,12 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         context ?: return
 
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
+
+        if(geofencingEvent == null) {
+            logv("geofences", "Geofence event is null")
+            return
+        }
+
         if (geofencingEvent.hasError()) {
             val errorMessage = GeofenceStatusCodes.getStatusCodeString(geofencingEvent.errorCode)
             logv("geofences", "Geofence error: $errorMessage")
@@ -33,11 +39,11 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         when (val transition = geofencingEvent.geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
                 logv("geofences", "User entered geofence")
-                receiver.notifyPlaceEnter(geofencingEvent.triggeringGeofences.map { it.requestId })
+                geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceEnter(it.map { it.requestId }) }
             }
             Geofence.GEOFENCE_TRANSITION_EXIT -> {
                 logv("geofences", "User exited geofence")
-                receiver.notifyPlaceExit(geofencingEvent.triggeringGeofences.map { it.requestId })
+                geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceExit(it.map { it.requestId }) }
             }
             else -> {
                 logv("geofences", "Invalid geofence type: $transition")
