@@ -29,6 +29,10 @@ android {
         versionCode 1
         versionName "1.0"
 
+
+        buildConfigField("boolean", "internalTesting", "false")
+        buildConfigField("boolean", "forceLogToSystem", "false")
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         def propsFile = rootProject.file('user.properties')
@@ -72,13 +76,9 @@ android {
             shrinkResources true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField("boolean", "internalTesting", "false")
-            buildConfigField("boolean", "forceLogToSystem", "false")
         }
         debug {
             debuggable true
-            buildConfigField("boolean", "internalTesting", "true")
-            buildConfigField("boolean", "forceLogToSystem", "true")
         }
     }
 
@@ -105,6 +105,9 @@ android {
             versionName "0.0.1"
             versionNameSuffix "-dev"
             applicationIdSuffix ".dev"
+
+            buildConfigField("boolean", "internalTesting", "true")
+            buildConfigField("boolean", "forceLogToSystem", "true")
             signingConfig signingConfigs.testConfig
         }
         oss {
