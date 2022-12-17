@@ -241,10 +241,11 @@ dependencies {
     implementation 'io.sentry:sentry-android:6.9.1'
 
     // TODO replace with vanilla library at some point
-    implementation project(path: ':appwrite')
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.0"))
-    implementation("com.squareup.okhttp3:okhttp")
-    implementation("com.squareup.okhttp3:logging-interceptor")
+    releaseImplementation("io.appwrite:sdk-for-android:1.1.0")
+    debugImplementation project(path: ':appwrite')
+    debugImplementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.0"))
+    debugImplementation("com.squareup.okhttp3:okhttp")
+    debugImplementation("com.squareup.okhttp3:logging-interceptor")
     // endregion
 
 }

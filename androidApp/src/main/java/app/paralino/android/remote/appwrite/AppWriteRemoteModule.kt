@@ -1,6 +1,7 @@
 package app.paralino.android.remote.appwrite
 
 import android.app.Application
+import app.paralino.android.remote.RemoteClient
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
@@ -13,8 +14,6 @@ import io.appwrite.services.Account
 import io.appwrite.services.Databases
 import io.appwrite.services.Functions
 import io.appwrite.services.Realtime
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import java.net.UnknownHostException
 
 class AppWriteRemoteModule(
@@ -34,17 +33,7 @@ class AppWriteRemoteModule(
         Client(app, selfSigned = false)
             .setEndpoint(backendConfig.endpoint)
             .setProject(backendConfig.projectId)
-            .setSelfSigned(status = false, okHttpClient(backendConfig.debug))
-    }
-
-    private fun okHttpClient(debug: Boolean): OkHttpClient {
-        val interceptor = HttpLoggingInterceptor().apply {
-            level = if (debug) HttpLoggingInterceptor.Level.BASIC
-            else HttpLoggingInterceptor.Level.NONE
-        }
-        return OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .build()
+            .run { RemoteClient.setup(this, backendConfig.debug) }
     }
 
     inline fun <T> execute(action: AppWriteRemoteModule.() -> T): T {
