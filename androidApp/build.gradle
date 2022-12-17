@@ -49,6 +49,23 @@ android {
         }
     }
 
+    signingConfigs {
+        testConfig {
+            try {
+                def propsFile = rootProject.file('user.properties')
+                def props = new Properties()
+                props.load(new FileInputStream(propsFile))
+                storePassword props['testKeyPassword']
+                keyAlias props['testKeyAlias']
+                keyPassword props['testKeyPassword']
+                storeFile file("$projectDir.parentFile/paralinoTestKey")
+            }
+            catch (ex) {
+                throw ex
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -88,6 +105,7 @@ android {
             versionName "0.0.1"
             versionNameSuffix "-dev"
             applicationIdSuffix ".dev"
+            signingConfig signingConfigs.testConfig
         }
         oss {
             dimension "source"

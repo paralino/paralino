@@ -14,3 +14,5 @@ appwrite-android/
 
 androidApp/src/devGoogle/res/values/fcm_config.xml
 androidApp/src/playStore/res/values/fcm_config.xml
+
+paralinoTestKey
