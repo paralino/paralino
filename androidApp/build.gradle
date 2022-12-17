@@ -12,23 +12,14 @@ android {
     compileSdkVersion 33
 
     variantFilter { variant ->
-
         def names = variant.flavors*.name
-        if (names.contains("playStore") && names.contains("oss")) {
-            setIgnore(true)
-        }
-        if (names.contains("direct") && names.contains("google")) {
-            setIgnore(true)
-        }
-        if (variant.buildType.name == 'debug' && names.contains("playStore")) {
-            variant.setIgnore(true)
-        }
-        if (variant.buildType.name == 'debug' && names.contains("direct")) {
-            variant.setIgnore(true)
-        }
-        if (variant.buildType.name == 'release' && variant.getFlavors().get(0).name == 'dev') {
-            variant.setIgnore(true)
-        }
+        def variantIgnore = (variant.buildType.name == 'debug' && names.contains("playStore")) ||
+                (variant.buildType.name == 'debug' && names.contains("playStoreTest")) ||
+                (variant.buildType.name == 'debug' && names.contains("direct")) ||
+                (names.contains("direct") && names.contains("google")) ||
+                (names.contains("playStore") && names.contains("oss")) ||
+                (names.contains("playStoreTest") && names.contains("oss"))
+        variant.setIgnore(variantIgnore)
     }
 
     defaultConfig {
