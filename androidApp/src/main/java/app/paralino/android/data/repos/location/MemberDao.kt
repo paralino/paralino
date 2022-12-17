@@ -40,16 +40,19 @@ interface MemberDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createOrUpdateMemberLocations(vararg data: MemberLocationEntity)
 
-
+    @Transaction
     @Query("SELECT * FROM members WHERE id = :memberId")
     fun getMember(memberId: String): Flow<MemberEntityWithLocations?>
 
+    @Transaction
     @Query("SELECT * FROM members WHERE groupId = :groupId AND userId = :userId")
     fun getMember(groupId: String, userId: String): Flow<MemberEntityWithLocations?>
 
+    @Transaction
     @Query("SELECT * FROM members WHERE userId = :userId")
     fun getLocationsForUser(userId: String): Flow<List<MemberEntityWithLocations>>
 
+    @Transaction
     @Query("SELECT * FROM members WHERE groupId = :groupId")
     fun getLocationsForGroup(groupId: String): Flow<List<MemberEntityWithLocations>>
 
