@@ -31,6 +31,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenEvent
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
+import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import kotlinx.coroutines.delay

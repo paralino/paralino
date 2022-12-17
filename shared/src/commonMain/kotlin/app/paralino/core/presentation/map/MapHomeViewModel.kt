@@ -17,7 +17,6 @@ import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -28,8 +27,7 @@ class MapHomeViewModel constructor(
     private val groupRepo: GroupRepository,
     private val placesRepo: PlacesRepository,
     private val locationRefreshUseCase: LocationRefreshUseCase,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<MapHomeScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<MapHomeScreenState>> = _uiState

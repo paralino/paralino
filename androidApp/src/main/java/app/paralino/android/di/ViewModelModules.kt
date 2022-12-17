@@ -13,26 +13,6 @@ import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.notification.PlaceNotificationHandler
 import app.paralino.core.notifications.PushNotificationHandler
-import app.paralino.android.ui.MainViewModel
-import app.paralino.android.ui.dashboard.DashboardViewModel
-import app.paralino.android.ui.groups.create.CreateGroupViewModel
-import app.paralino.android.ui.groups.detail.GroupDetailViewModel
-import app.paralino.android.ui.invite.input.MemberInviteViewModel
-import app.paralino.android.ui.invite.manage.PersonalCodesViewModel
-import app.paralino.android.ui.login.LoginViewModel
-import app.paralino.android.ui.login.passwordreset.ResetPasswordViewModel
-import app.paralino.android.ui.login.recover.RecoverKeysViewModel
-import app.paralino.android.ui.map.MapViewModel
-import app.paralino.android.ui.places.create.CreatePlaceViewModel
-import app.paralino.android.ui.places.detail.PlaceDetailViewModel
-import app.paralino.android.ui.places.list.PlacesViewModel
-import app.paralino.android.ui.rawdata.RawDataPresentationViewModel
-import app.paralino.android.ui.settings.SettingsViewModel
-import app.paralino.android.ui.settings.convertaccount.ConvertAccountViewModel
-import app.paralino.android.ui.settings.editprofile.EditProfileViewModel
-import app.paralino.android.ui.settings.emailchange.ChangeEmailViewModel
-import app.paralino.android.ui.settings.passwordchange.ChangePasswordViewModel
-import app.paralino.android.ui.share.SharingViewModel
 import app.paralino.core.config
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
@@ -40,7 +20,27 @@ import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.group.*
 import app.paralino.core.domain.location.*
 import app.paralino.core.notifications.IPlaceNotificationsHandler
+import app.paralino.core.presentation.MainViewModel
+import app.paralino.core.presentation.dashboard.DashboardViewModel
+import app.paralino.core.presentation.groups.CreateGroupViewModel
+import app.paralino.core.presentation.groups.GroupDetailViewModel
+import app.paralino.core.presentation.invite.input.MemberInviteViewModel
+import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
+import app.paralino.core.presentation.login.LoginViewModel
+import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
+import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
+import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.places.create.CreatePlaceViewModel
+import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
+import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.presentation.settings.SettingsViewModel
+import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
+import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
+import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
+import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
+import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
@@ -51,18 +51,17 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { DashboardViewModel(androidApplication(), get(), get(), get(), get(), get()) }
-    viewModel { MapViewModel(androidApplication(), get(), get(), get(), get(), get()) }
+    viewModel { DashboardViewModel(get(), get(), get(), get(), get()) }
+    viewModel { MapHomeViewModel(get(), get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
-    viewModel { (startScreenType: Any) -> LoginViewModel(androidApplication(), get(), get(), get(), startScreenType as LoginScreenUiType) }
+    viewModel { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), startScreenType as LoginScreenUiType) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { (args: String?) ->
-        SharingViewModel(androidApplication(), args, get(), get(), get(), get())
+        SharingStartViewModel(args, get(), get(), get(), get())
     }
-    viewModel { (createCode: Boolean) -> PersonalCodesViewModel(androidApplication(), createCode, get()) }
+    viewModel { (createCode: Boolean) -> PersonalCodeViewModel(get(), createCode) }
     viewModel { (groupId: String?, code: String?) ->
         MemberInviteViewModel(
-            androidApplication(),
             groupId = groupId,
             code = code,
             get(), get(), get()

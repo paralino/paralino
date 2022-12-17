@@ -3,7 +3,6 @@ package app.paralino.core.presentation.dashboard
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.settings.AccountScreenEvent
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
@@ -11,7 +10,6 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,10 +18,9 @@ class DashboardViewModel(
     private val locationSharing: LocationSharingManager,
     private val groupRepository: GroupRepository,
     private val placesRepo: PlacesRepository,
-    private val locationStatusProvider: ILocationStatusProvider,
+    val locationStatusProvider: ILocationStatusProvider,
     private val userRepo: UserRepository,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<DashboardScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<DashboardScreenState>> = _uiState

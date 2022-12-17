@@ -12,7 +12,6 @@ import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.exceptions.TimeoutException
 import app.paralino.core.utils.poll
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,10 +20,9 @@ class SharingStartViewModel(
     groupId: String?,
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
-    private val locationStatusProvider: ILocationStatusProvider,
+    val locationStatusProvider: ILocationStatusProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState =
         MutableStateFlow(SharingStartScreenState(groupState = if (groupId.isNullOrBlank()) Payload.Success(

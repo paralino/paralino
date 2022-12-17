@@ -34,6 +34,7 @@ import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.safeCast
+import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -96,10 +97,10 @@ fun MemberInviteScreen(
                 vm.codeChanged(it)
             },
             onLoadCode = {
-                vm.loadMember()
+                vm.addOrLoadMember()
             },
             onAddMember = {
-                vm.addMember()
+                vm.addOrLoadMember()
             },
             onPickGroup = {
                 appState.uiScope.launch {

@@ -6,7 +6,6 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.utils.exceptions.*
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -14,8 +13,7 @@ import kotlinx.coroutines.launch
 
 class ConvertAccountViewModel(
     private val convertAccount: ConvertAccountUseCase,
-    scope: CoroutineScope
-): CoreViewModel(scope) {
+): CoreViewModel() {
 
     private val _uiState = MutableStateFlow(ConvertAccountScreenState())
     val uiState: Flow<ConvertAccountScreenState> = _uiState

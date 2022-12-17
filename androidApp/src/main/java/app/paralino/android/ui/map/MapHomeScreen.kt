@@ -41,10 +41,7 @@ import app.paralino.core.presentation.dashboard.GroupItemData
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
-import app.paralino.core.presentation.map.FocusedMarkerData
-import app.paralino.core.presentation.map.MapHomeScreenState
-import app.paralino.core.presentation.map.MapPinType
-import app.paralino.core.presentation.map.asFocusedMarker
+import app.paralino.core.presentation.map.*
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -58,7 +55,7 @@ import org.koin.androidx.compose.getViewModel
 fun MapHomeScreen(
     appState: MainAppState,
     groupId: String?,
-    vm: MapViewModel = getViewModel(),
+    vm: MapHomeViewModel = getViewModel(),
 ) {
     val mapViewState = rememberMapViewHomeState(darkMode = isSystemInDarkTheme())
 

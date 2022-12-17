@@ -36,6 +36,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesScreenEvent
+import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.delay

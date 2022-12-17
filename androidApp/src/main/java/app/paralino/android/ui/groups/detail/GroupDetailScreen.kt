@@ -37,10 +37,7 @@ import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LocationSharingContract
-import app.paralino.core.presentation.groups.GroupDetailScreenEvent
-import app.paralino.core.presentation.groups.GroupDetailScreenState
-import app.paralino.core.presentation.groups.GroupMemberItemLocationState
-import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.*
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.flow.collectLatest

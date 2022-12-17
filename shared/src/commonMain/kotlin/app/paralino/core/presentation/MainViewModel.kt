@@ -3,7 +3,6 @@ package app.paralino.core.presentation
 import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.repo.user.UserRepository
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -12,8 +11,7 @@ class MainViewModel constructor(
     private val userStateMonitor: AppAccountStateMonitor,
     private val sessionMonitor: UserSessionMonitor,
     private val userRepo: UserRepository,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     val sessionExpiredFlow = sessionMonitor.listenForSessionExpired()
     val userState = userStateMonitor.userState

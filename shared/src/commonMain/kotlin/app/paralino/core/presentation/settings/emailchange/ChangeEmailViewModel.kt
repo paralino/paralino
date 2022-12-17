@@ -9,7 +9,6 @@ import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -18,8 +17,7 @@ import kotlinx.coroutines.launch
 class ChangeEmailViewModel(
     private val userRepository: UserRepository,
     private val changeEmail: ChangeEmailUseCase,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState =
         MutableStateFlow(ChangeEmailScreenState(userRepository.cachedUser?.email ?: ""))

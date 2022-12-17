@@ -9,7 +9,6 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,8 +16,7 @@ import kotlinx.coroutines.launch
 class RecoverKeysViewModel(
     val logoutUseCase: LogoutUseCase,
     val recoverAccountUseCase: RecoverAccountUseCase,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<RecoverKeysScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<RecoverKeysScreenState>> = _uiState

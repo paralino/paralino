@@ -34,6 +34,7 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.dashboard.GroupItemData
 import app.paralino.core.presentation.share.SharingStartScreenEvent
 import app.paralino.core.presentation.share.SharingStartScreenState
+import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -46,7 +47,7 @@ import java.time.Duration
 fun SharingStartScreen(
     appState: MainAppState,
     groupId: String?,
-    vm: SharingViewModel = getViewModel { parametersOf(groupId) },
+    vm: SharingStartViewModel = getViewModel { parametersOf(groupId) },
 ) {
 
     val state by vm.uiState.collectAsState(

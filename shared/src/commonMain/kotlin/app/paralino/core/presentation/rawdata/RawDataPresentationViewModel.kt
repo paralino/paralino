@@ -5,15 +5,13 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 
 class RawDataPresentationViewModel constructor(
     private val rawCryptoPresentation: RawCryptoPresentation,
     private val rawPresentationType: RawPresentationDataType,
-    scope: CoroutineScope
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<RawDataScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<RawDataScreenState>> = _uiState

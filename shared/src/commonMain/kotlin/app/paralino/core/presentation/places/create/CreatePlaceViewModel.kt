@@ -10,7 +10,6 @@ import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,8 +19,7 @@ class CreatePlaceViewModel(
     placeId: String?,
     private val placesRepo: PlacesRepository,
     private val groupRepo: GroupRepository,
-    scope: CoroutineScope
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
 
     private val placeFlow = MutableStateFlow<Payload<GroupPlace>>(Payload.Loading)

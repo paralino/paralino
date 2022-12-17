@@ -37,6 +37,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.AccountScreenEvent
+import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.flow.collectLatest
@@ -49,7 +50,7 @@ fun AccountScreen(
 ) {
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
     var showDangerZoneContent by remember { mutableStateOf(false) }
-    val accountState by viewModel.userData.collectAsState(Payload.Loading)
+    val accountState by viewModel.accountState.collectAsState(Payload.Loading)
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {

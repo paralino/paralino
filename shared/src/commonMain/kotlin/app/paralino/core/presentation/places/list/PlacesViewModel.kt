@@ -6,7 +6,6 @@ import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.ILocationStatusProvider
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 
@@ -14,9 +13,8 @@ class PlacesViewModel(
     groupId: String,
     private val placesRepo: PlacesRepository,
     private val groupRepo: GroupRepository,
-    private val locationStatusProvider: ILocationStatusProvider,
-    scope: CoroutineScope
-) : CoreViewModel(scope) {
+    val locationStatusProvider: ILocationStatusProvider,
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PlacesListScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<PlacesListScreenState>> = _uiState

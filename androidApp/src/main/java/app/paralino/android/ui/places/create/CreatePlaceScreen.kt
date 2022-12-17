@@ -33,6 +33,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
+import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

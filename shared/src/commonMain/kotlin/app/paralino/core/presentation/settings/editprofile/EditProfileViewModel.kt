@@ -9,7 +9,6 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -18,8 +17,7 @@ import kotlinx.coroutines.launch
 class EditProfileViewModel constructor(
     private val userRepository: UserRepository,
     private val updateUserData: UpdateUserDataUseCase,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<EditProfileScreenState>(
         EditProfileScreenState.fromUser(userRepository.cachedUser?.data)

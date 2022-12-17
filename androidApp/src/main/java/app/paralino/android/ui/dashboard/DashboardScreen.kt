@@ -34,6 +34,7 @@ import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.presentation.dashboard.DashboardViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 

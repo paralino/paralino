@@ -41,6 +41,7 @@ import app.paralino.android.utils.extensions.share
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.utils.Emojis
 import org.koin.androidx.compose.getViewModel
 
@@ -50,7 +51,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = getViewModel(),
 ) {
 
-    val accountState by viewModel.userData.collectAsState(Payload.Loading)
+    val accountState by viewModel.accountState.collectAsState(Payload.Loading)
 
     Column(
         modifier = Modifier

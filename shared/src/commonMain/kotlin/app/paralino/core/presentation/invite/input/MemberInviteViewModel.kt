@@ -9,7 +9,6 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,8 +19,7 @@ class MemberInviteViewModel(
     private val codeRepo: PersonalCodesRepository,
     private val groupRepo: GroupRepository,
     private val groupMemberAdd: GroupMemberAddUseCase,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState =
         MutableStateFlow<MemberInviteScreenState>(MemberInviteScreenState.Empty())

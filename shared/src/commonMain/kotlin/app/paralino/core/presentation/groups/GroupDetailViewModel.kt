@@ -15,7 +15,6 @@ import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -24,12 +23,11 @@ class GroupDetailViewModel(
     private val groupId: String,
     private val placesRepo: PlacesRepository,
     private val sharingManager: LocationSharingManager,
-    private val locationStatusProvider: ILocationStatusProvider,
+    val locationStatusProvider: ILocationStatusProvider,
     private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupRefreshUseCase,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<GroupDetailScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<GroupDetailScreenState>> = _uiState

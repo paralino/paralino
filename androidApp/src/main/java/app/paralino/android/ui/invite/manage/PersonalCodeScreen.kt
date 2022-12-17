@@ -24,6 +24,7 @@ import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.share
+import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -32,7 +33,7 @@ import org.koin.core.parameter.parametersOf
 fun PersonalCodeScreen(
     appState: MainAppState,
     createCode: Boolean = false,
-    vm: PersonalCodesViewModel = getViewModel { parametersOf(createCode) },
+    vm: PersonalCodeViewModel = getViewModel { parametersOf(createCode) },
 ) {
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)

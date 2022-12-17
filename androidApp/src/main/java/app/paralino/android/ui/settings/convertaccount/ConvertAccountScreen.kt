@@ -27,6 +27,7 @@ import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenEvent
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenState
+import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 

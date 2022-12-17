@@ -35,6 +35,7 @@ import app.paralino.android.ui.theme.AppTheme
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.models.Resource
 import app.paralino.core.presentation.MainScreenEvent
+import app.paralino.core.presentation.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel

@@ -9,7 +9,6 @@ import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,8 +16,7 @@ import kotlinx.coroutines.launch
 class CreateGroupViewModel(
     private val groupId: String?,
     private val groupRepo: GroupRepository,
-    scope: CoroutineScope
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
 
     private val groupFlow = MutableStateFlow<Payload<UserGroup>>(Payload.Loading)

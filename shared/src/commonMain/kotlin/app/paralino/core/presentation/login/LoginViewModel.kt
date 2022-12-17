@@ -9,7 +9,6 @@ import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.UnauthorizedException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -20,8 +19,7 @@ class LoginViewModel constructor(
     private val createAccountUseCase: CreateAccountUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     startScreenUiType: LoginScreenUiType,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(LoginScreenState(uiType = startScreenUiType, hasGuestAccount = hasGuestAccount()))
     val uiState: Flow<LoginScreenState> = _uiState

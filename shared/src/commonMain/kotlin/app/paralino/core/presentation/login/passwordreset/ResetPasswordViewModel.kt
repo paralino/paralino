@@ -7,9 +7,7 @@ import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.utils.exceptions.*
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -17,8 +15,7 @@ class ResetPasswordViewModel constructor(
     private val userId: String,
     private val secret: String,
     private val resetPassword: ResetPasswordUseCase,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(ResetPasswordScreenState())
     val uiState: Flow<ResetPasswordScreenState> = _uiState

@@ -10,7 +10,6 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,8 +17,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository,
-    scope: CoroutineScope,
-) : CoreViewModel(scope) {
+) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(Payload.Loading)
     val accountState: Flow<Payload<AccountScreenState>> = _accountState
