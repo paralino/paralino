@@ -22,7 +22,7 @@ kotlin {
             dependencies {
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
             }
         }
         val commonTest by getting {
@@ -55,9 +55,9 @@ kotlin {
 
 android {
     namespace = "app.paralino"
-    compileSdk = 32
+    compileSdk = 33
     defaultConfig {
         minSdk = 29
-        targetSdk = 32
+        targetSdk = 33
     }
 }
