@@ -84,7 +84,7 @@ class MapHomeViewModel constructor(
                                         ),
                                         location = GroupMemberItemLocationState(
                                             memberLocation = location,
-                                            name = location.name,
+                                            name = location.name.takeIf { member.locations.size > 1 },
                                             image = member.member.image,
                                             canEdit = false,
                                             currentDevice = location.deviceId == config.deviceId,
