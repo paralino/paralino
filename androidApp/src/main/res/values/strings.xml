@@ -8,6 +8,7 @@
 
     <string name="date_name_today">Today</string>
     <string name="date_name_tomorrow">Tomorrow</string>
+    <string name="date_name_yesterday">Yesterday</string>
 
     <string name="button_cancel">Cancel</string>
     <string name="button_ok">OK</string>

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import app.paralino.android.R
 import app.paralino.android.ui.theme.AppTheme
+import app.paralino.android.utils.extensions.fromUTCtoLocal
 import app.paralino.android.utils.extensions.fromUTCtoUserLastPing
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.*
@@ -100,12 +102,7 @@ fun GroupMemberItemState.getLastPingText(): String? {
 
 @Composable
 fun GroupMemberItemLocationState.getLastPingText(): String? {
-    return lastPing?.toJavaLocalDateTime()?.let {
-        if (it.isAfter(LocalDateTime.now().minusMinutes(2)))
-            stringResource(R.string.group_members_last_active_status_now)
-        else
-            it.fromUTCtoUserLastPing()
-    }
+    return lastPing?.toJavaLocalDateTime()?.fromUTCtoUserLastPing(LocalContext.current)
 }
 
 val MemberAction.actionIcon: ImageVector

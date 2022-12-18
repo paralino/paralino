@@ -2,6 +2,7 @@ package app.paralino.android.utils.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
+import androidx.compose.ui.res.stringResource
 import app.paralino.android.R
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -48,8 +49,20 @@ fun LocalDateTime.fromLocalToUTC(): LocalDateTime {
     return this.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()
 }
 
-fun LocalDateTime.fromUTCtoUserLastPing(): String {
-    return this.fromUTCtoLocal().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
+fun LocalDateTime.fromUTCtoUserLastPing(context: Context): String {
+    val local = this.fromUTCtoLocal()
+    val now = LocalDateTime.now()
+    val sameYear = local.year == now.year
+    val sameDay = sameYear && local.dayOfYear == now.dayOfYear
+    val isYesterday = sameYear && local.dayOfYear == now.minusDays(1).dayOfYear
+    val time = local.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+
+    return if (local.isAfter(LocalDateTime.now().minusMinutes(2)))
+        context.getString(R.string.group_members_last_active_status_now)
+    else if(sameDay) time
+    else if(isYesterday) "${context.getString(R.string.date_name_yesterday)}, $time"
+    else if(sameYear) local.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMd"))) + ", $time"
+    else local.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
 }
 
 fun LocalDateTime.fromUTCtoMapSharingTime(context: Context, splitTimeToOneLine: Boolean = true): String? {
