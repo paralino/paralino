@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class LocationStatusProvider(
     appClass: AppClass
 ) : ILocationStatusProvider {
-    override var status: MutableStateFlow<LocationConditionStatus> = MutableStateFlow(
+    override val status: MutableStateFlow<LocationConditionStatus> = MutableStateFlow(
         LocationConditionStatus.getLocationStatus(appClass)
     )
 }

@@ -8,7 +8,9 @@ import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.ILocationStatusProvider
+import app.paralino.core.utils.extensions.combine
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -19,6 +21,7 @@ class DashboardViewModel(
     private val groupRepository: GroupRepository,
     private val placesRepo: PlacesRepository,
     val locationStatusProvider: ILocationStatusProvider,
+    private val connectionStatus: IConnectionStatusProvider,
     private val userRepo: UserRepository,
 ) : CoreViewModel() {
 
@@ -47,8 +50,9 @@ class DashboardViewModel(
             locationStatusProvider.status,
             groupRepository.getAllGroupsLocally(),
             placesRepo.hasAnyPlace(),
-            locationSharing.allContractsFlow.map { it.data }.filterNotNull()
-        ) { user, location, groups, hasPlace, sharing ->
+            locationSharing.allContractsFlow.map { it.data }.filterNotNull(),
+            connectionStatus.status
+        ) { user, location, groups, hasPlace, sharing, network ->
 
             val active =
                 groups.filter { group -> sharing.any { it.groupId == group.id } }.map { group ->
@@ -61,6 +65,9 @@ class DashboardViewModel(
                 }
 
             val errors = buildList {
+                if(sharing.isNotEmpty() && !network.isOnline)
+                    add(ConditionErrorType.NETWORK)
+
                 sharing
                     .takeIf { it.isNotEmpty() }
                     ?.let { location.getPossibleErrors(forBackground = it.any { it.isLongTerm }) }

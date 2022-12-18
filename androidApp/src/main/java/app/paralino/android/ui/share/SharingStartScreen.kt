@@ -60,7 +60,7 @@ fun SharingStartScreen(
     )
 
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
-    var scrollToPosition  by remember { mutableStateOf(0F) }
+    var scrollToPosition by remember { mutableStateOf(0F) }
     val scrollState = rememberScrollState()
 
     val approxLocationSwitchState by rememberSeekbarState(
@@ -136,7 +136,7 @@ fun SharingStartScreen(
                     appState.showSnackbar(context.getString(R.string.invite_connect_alert_pickGroup))
                 }
                 SharingStartScreenEvent.CanNotRegisterDevice -> {
-                    appState.showSnackbar(context.getString(R.string.invite_connect_alert_pickGroup))
+                    appState.showSnackbar(context.getString(R.string.error_generic_snacbar))
                 }
                 null -> {
                     /* do nothing */
@@ -163,12 +163,18 @@ fun SharingStartScreen(
                 if (it == MainAlertDialog.Buttons.buttonOk) {
 //                    vm.proceedWithSharing()
                     appState.uiScope.launch {
-                        scrollState.animateScrollTo(scrollToPosition.roundToInt(), animationSpec = tween(durationMillis = 1000))
+                        scrollState.animateScrollTo(
+                            scrollToPosition.roundToInt(),
+                            animationSpec = tween(durationMillis = 500)
+                        )
                     }
-                    when(state.errors.firstOrNull()){
+                    when (state.errors.firstOrNull()) {
                         ConditionErrorType.GPS -> permissionHandler.askLocationService()
                         ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
                         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                        ConditionErrorType.NETWORK -> appState.showSnackbar(
+                            text = context.getString(R.string.error_no_connection_snackbar)
+                        )
                         else -> {}
                     }
                 }
@@ -213,7 +219,7 @@ fun SharingStartScreen(
                         Icon(imageVector = Icons.Rounded.PersonPinCircle, contentDescription = null)
                     }
                 },
-                backgroundColor = if(state.errors.isEmpty()) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
+                backgroundColor = if (state.errors.isEmpty()) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
                 elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
                 onClick = { vm.startSharing() }
             )
@@ -227,21 +233,30 @@ fun SharingStartScreen(
                 .padding(start = 20.dp, end = 20.dp, bottom = it.calculateBottomPadding() + 100.dp),
         ) {
 
-            Spacer(modifier = Modifier.size(40.dp).onGloballyPositioned { scrollToPosition = it.positionInParent().y })
-
-            state.errors.forEach {
-                ConditionErrorItem(data = it) {
-                    when (it) {
-                        ConditionErrorType.GPS -> permissionHandler.askLocationService()
-                        ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
-                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
-                        else -> { /* TODO review or do nothing */
+            AnimatedVisibility(visible = state.errors.isNotEmpty()) {
+                Column(modifier = Modifier.animateContentSize()) {
+                    Spacer(modifier = Modifier
+                        .size(40.dp)
+                        .onGloballyPositioned { scrollToPosition = it.positionInParent().y })
+                    state.errors.forEach {
+                        ConditionErrorItem(data = it) {
+                            when (it) {
+                                ConditionErrorType.GPS -> permissionHandler.askLocationService()
+                                ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
+                                ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                                ConditionErrorType.NETWORK -> appState.showSnackbar(
+                                    text = context.getString(
+                                        R.string.error_no_connection_snackbar
+                                    )
+                                )
+                                else -> { /* TODO review or do nothing */
+                                }
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.size(20.dp))
                 }
             }
-
-            Spacer(modifier = Modifier.size(20.dp))
 
             AnimatedVisibility(visible = state.groupState.data != null) {
                 Column(modifier = Modifier.fillMaxWidth()) {

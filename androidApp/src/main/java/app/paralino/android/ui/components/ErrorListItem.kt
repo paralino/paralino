@@ -119,7 +119,7 @@ val ConditionErrorType.iconVector: ImageVector
         ConditionErrorType.PERMISSION_LOCATION -> Icons.Rounded.PhonelinkSetup
         ConditionErrorType.PERMISSION_LOCATION_PRECISE -> Icons.Rounded.PhonelinkSetup
         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> Icons.Rounded.PhonelinkSetup
-        ConditionErrorType.NETWORK -> Icons.Rounded.LocationOff
+        ConditionErrorType.NETWORK -> Icons.Rounded.WifiOff
         ConditionErrorType.EMAIL_VERIFICATION -> Icons.Rounded.Email
         ConditionErrorType.GUEST_ACCOUNT -> ImageVector.vectorResource(id = R.drawable.ic_incognito)
     }

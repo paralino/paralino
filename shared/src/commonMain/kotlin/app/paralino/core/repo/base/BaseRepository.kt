@@ -153,7 +153,7 @@ abstract class BaseRepository {
     }
 
     private fun throwOfflineError(): Nothing {
-        throw InternalConnectionException(connection.status, "Device is offline: ${connection.status}")
+        throw InternalConnectionException(connection.status.value, "Device is offline: ${connection.status.value}")
     }
 
     private suspend fun <T> Flow<T>.firstOrNull(): T? {

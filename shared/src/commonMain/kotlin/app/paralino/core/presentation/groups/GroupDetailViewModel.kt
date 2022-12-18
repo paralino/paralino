@@ -11,6 +11,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -24,6 +25,7 @@ class GroupDetailViewModel(
     private val placesRepo: PlacesRepository,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
+    private val connectionStatus: IConnectionStatusProvider,
     private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupRefreshUseCase,
@@ -39,10 +41,11 @@ class GroupDetailViewModel(
     init {
         combine(
             locationStatusProvider.status,
+            connectionStatus.status,
             groupRefresh.getGroupWithMembers(groupId),
             placesRepo.hasAnyPlace(),
             sharingManager.sharingContractForGroup(groupId)
-        ) { locationStatus, group, hasPlaces, sharingStatus ->
+        ) { locationStatus, network, group, hasPlaces, sharingStatus ->
 
             val members = group.members
                 .sortedBy { it.member.name }
@@ -91,6 +94,8 @@ class GroupDetailViewModel(
 
             val errors = buildList {
                 sharingStatus?.let {
+                    if(!network.isOnline)
+                        add(ConditionErrorType.NETWORK)
                     addAll(locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
                 }
 

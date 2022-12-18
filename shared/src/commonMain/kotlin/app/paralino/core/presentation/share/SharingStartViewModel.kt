@@ -8,10 +8,8 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.dashboard.GroupItemData
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.utils.ILocationStatusProvider
-import app.paralino.core.utils.SharingDurationPreset
+import app.paralino.core.utils.*
 import app.paralino.core.utils.exceptions.TimeoutException
-import app.paralino.core.utils.poll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,6 +19,7 @@ class SharingStartViewModel(
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
+    private val connectionStatus: IConnectionStatusProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
 ) : CoreViewModel() {
 
@@ -36,13 +35,18 @@ class SharingStartViewModel(
 
         groupId?.let { setSelectedGroup(it) }
 
-        locationStatusProvider.status
-            .onEach { status ->
-                _uiState.update {
-                    it.copy(errors = status.getPossibleErrors(it.isLongTerm))
-                }
+        combine(locationStatusProvider.status, connectionStatus.status) { location, connection ->
+            _uiState.update {
+                it.copy(
+                    errors = buildList {
+                        addAll(location.getPossibleErrors(it.isLongTerm))
+                        if (!connection.isOnline) {
+                            add(ConditionErrorType.NETWORK)
+                        }
+                    }
+                )
             }
-            .launchIn(coroutineScope)
+        }.launchIn(coroutineScope)
     }
 
     suspend fun getAllGroups(): List<GroupItemData> {
@@ -64,7 +68,7 @@ class SharingStartViewModel(
 
     fun startSharing() {
 
-        if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = _uiState.value.isLongTerm)) {
+        if (getErrors(forLongTerm = _uiState.value.isLongTerm).isEmpty()) {
             proceedWithSharing()
             return
         }
@@ -76,7 +80,7 @@ class SharingStartViewModel(
             return
         }
 
-        if (locationStatusProvider.status.value.isOK(forAlwaysOnAccess = false) && _uiState.value.isLongTerm) {
+        if (getErrors(forLongTerm = false).isEmpty() && _uiState.value.isLongTerm) {
             // only background location permission is missing
             coroutineScope.launch {
                 _eventChannel.send(SharingStartScreenEvent.MissingBackgroundPermission)
@@ -167,9 +171,7 @@ class SharingStartViewModel(
             val time = SharingDurationPreset.presets.getOrNull(index) ?: SharingDurationPreset.hour
             it.copy(
                 sharingTimeMillis = time,
-                errors = locationStatusProvider.status.value.getPossibleErrors(
-                    LocationSharingContract.isLongTerm(time)
-                )
+                errors = getErrors(LocationSharingContract.isLongTerm(time))
             )
         }
     }
@@ -183,6 +185,17 @@ class SharingStartViewModel(
     fun turnOnElevationSharing(state: Boolean) {
         _uiState.update {
             it.copy(shareElevation = state)
+        }
+    }
+
+    private fun getErrors(forLongTerm: Boolean): List<ConditionErrorType> {
+        return buildList {
+            addAll(
+                locationStatusProvider.status.value.getPossibleErrors(forLongTerm)
+            )
+            if(!connectionStatus.status.value.isOnline) {
+                add(ConditionErrorType.NETWORK)
+            }
         }
     }
 

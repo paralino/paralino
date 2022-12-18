@@ -3,7 +3,7 @@ package app.paralino.core.utils
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface ILocationStatusProvider {
-    var status: MutableStateFlow<LocationConditionStatus>
+    val status: MutableStateFlow<LocationConditionStatus>
 }
 
 data class LocationConditionStatus constructor(
@@ -25,9 +25,10 @@ data class LocationConditionStatus constructor(
         return list
     }
 
-    companion object {
-
-    }
+    /**
+     * Empty companion object so we can add extensions to it in app modules
+     */
+    companion object { }
 }
 
 class LocationStatusException(val status: LocationConditionStatus): IllegalStateException(status.toString())

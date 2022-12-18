@@ -220,6 +220,9 @@ fun GroupDetailScreen(
                         ConditionErrorType.PERMISSION_NOTIFICATIONS -> notificationPermissionHandler.askNotificationPermission()
                         ConditionErrorType.PERMISSION_LOCATION -> locationPermissionHandler.askLocationPermission()
                         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> locationPermissionHandler.askBackgroundLocationPermission()
+                        ConditionErrorType.NETWORK -> appState.showSnackbar(
+                            text = context.getString(R.string.error_no_connection_snackbar)
+                        )
                         else -> { /* TODO review or do nothing */
                         }
                     }

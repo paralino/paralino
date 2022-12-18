@@ -8,6 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
+import androidx.core.content.getSystemService
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -58,8 +62,8 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private val applicationJob = SupervisorJob()
 
     override val defaultScope = CoroutineScope(Dispatchers.Default + applicationJob)
-    override val defaultIOScope = CoroutineScope(Dispatchers.IO)
-    override val userSessionIOScope = CoroutineScope(Dispatchers.IO)
+    override val defaultIOScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    override val userSessionIOScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val launcher: PreCheckControl by inject()
     private val userRepo: UserRepository by inject()
@@ -123,6 +127,10 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
             .launchIn(defaultScope)
 
         registerReceiver(gpsReceiver, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION).apply { addAction(Intent.ACTION_PROVIDER_CHANGED) })
+        context.getSystemService<ConnectivityManager>()?.registerDefaultNetworkCallback(object: NetworkCallback() {
+            override fun onAvailable(network: Network) { updateConnectionStatus() }
+            override fun onLost(network: Network) { updateConnectionStatus() }
+        })
     }
 
     private fun initLogger() {
@@ -140,6 +148,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     override fun onStart(owner: LifecycleOwner) {
         logg.tag("app_state").v("App is in foreground")
         updateLocationStatus()
+        updateConnectionStatus()
 
         if(wasInBackground) {
             wasInBackground = false
@@ -156,8 +165,14 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
         logg.tag("app_state").v("App is in background")
     }
 
-    fun updateLocationStatus() {
+    private fun updateLocationStatus() {
         locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
+    }
+
+    private fun updateConnectionStatus() {
+        defaultIOScope.launch {
+            connectionStatusProvider.initAndGetStatus()
+        }
     }
 
     private val externalLogTree: LoggerKind by lazy {

@@ -51,13 +51,13 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { DashboardViewModel(get(), get(), get(), get(), get()) }
+    viewModel { DashboardViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { MapHomeViewModel(get(), get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), startScreenType as LoginScreenUiType) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
     viewModel { (args: String?) ->
-        SharingStartViewModel(args, get(), get(), get(), get())
+        SharingStartViewModel(args, get(), get(), get(), get(), get())
     }
     viewModel { (createCode: Boolean) -> PersonalCodeViewModel(get(), createCode) }
     viewModel { (groupId: String?, code: String?) ->
@@ -67,7 +67,7 @@ val viewModelModules = module {
             get(), get(), get()
         )
     }
-    viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get()) }
+    viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get()) }
     viewModel { MainViewModel(get(), get(), get()) }
     viewModel { ChangeEmailViewModel(get(), get()) }
     viewModel { ChangePasswordViewModel(get()) }

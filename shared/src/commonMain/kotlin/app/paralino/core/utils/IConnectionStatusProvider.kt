@@ -1,7 +1,9 @@
 package app.paralino.core.utils
 
+import kotlinx.coroutines.flow.MutableStateFlow
+
 interface IConnectionStatusProvider {
-    var status: ConnectionStatus
+    val status: MutableStateFlow<ConnectionStatus>
     suspend fun initAndGetStatus(): ConnectionStatus
 }
 
