@@ -552,7 +552,7 @@ fun GroupDetailSharingStatusElement(
                 ?: stringResource(id = R.string.group_details_sharing_status_infinite)
 
             Icon(
-                imageVector = Icons.Rounded.AccessTime,
+                imageVector = Icons.Rounded.Timer,
                 contentDescription = null,
                 modifier = Modifier.size(14.dp),
                 tint = contentColor

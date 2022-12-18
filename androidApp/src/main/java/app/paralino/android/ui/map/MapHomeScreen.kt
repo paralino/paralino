@@ -11,10 +11,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.CenterFocusStrong
-import androidx.compose.material.icons.rounded.GroupWork
-import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -242,7 +239,7 @@ fun MapHomeScreenElements(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.AccessTime,
+                    imageVector = Icons.Rounded.Timer,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
