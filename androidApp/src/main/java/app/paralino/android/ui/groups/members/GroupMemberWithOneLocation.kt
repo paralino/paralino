@@ -165,11 +165,21 @@ fun ConstraintLayoutScope.GroupMemberWithOneLocation(
         }
 
         if (state.location?.lastPing != null) {
-            Text(
-                text = state.getLastPingText() ?: "",
-                style = MaterialTheme.typography.caption,
-                color = MaterialTheme.colors.secondary,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Rounded.AccessTime,
+                    tint = MaterialTheme.colors.secondary,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 2.dp)
+                        .size(14.dp)
+                )
+                Text(
+                    text = state.getLastPingText() ?: "",
+                    style = MaterialTheme.typography.caption,
+                    color = MaterialTheme.colors.secondary,
+                )
+            }
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
