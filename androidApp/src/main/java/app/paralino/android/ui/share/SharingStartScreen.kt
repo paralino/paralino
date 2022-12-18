@@ -2,6 +2,7 @@ package app.paralino.android.ui.share
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -15,6 +16,8 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,7 +31,6 @@ import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.android.utils.extensions.safeCast
-import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.dashboard.GroupItemData
@@ -42,6 +44,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import java.time.Duration
+import kotlin.math.roundToInt
 
 @Composable
 fun SharingStartScreen(
@@ -57,6 +60,8 @@ fun SharingStartScreen(
     )
 
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
+    var scrollToPosition  by remember { mutableStateOf(0F) }
+    val scrollState = rememberScrollState()
 
     val approxLocationSwitchState by rememberSeekbarState(
         key = state,
@@ -146,6 +151,7 @@ fun SharingStartScreen(
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk) {
                     // TODO ask for background location permission
+                    permissionHandler.askBackgroundLocationPermission()
                 } else {
                     vm.proceedWithSharing()
                 }
@@ -155,7 +161,16 @@ fun SharingStartScreen(
             dialog.Show {
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.proceedWithSharing()
+//                    vm.proceedWithSharing()
+                    appState.uiScope.launch {
+                        scrollState.animateScrollTo(scrollToPosition.roundToInt(), animationSpec = tween(durationMillis = 1000))
+                    }
+                    when(state.errors.firstOrNull()){
+                        ConditionErrorType.GPS -> permissionHandler.askLocationService()
+                        ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
+                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                        else -> {}
+                    }
                 }
             }
         }
@@ -198,7 +213,7 @@ fun SharingStartScreen(
                         Icon(imageVector = Icons.Rounded.PersonPinCircle, contentDescription = null)
                     }
                 },
-                backgroundColor = MaterialTheme.colors.primary,
+                backgroundColor = if(state.errors.isEmpty()) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
                 elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
                 onClick = { vm.startSharing() }
             )
@@ -207,10 +222,26 @@ fun SharingStartScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .animateContentSize()
                 .padding(start = 20.dp, end = 20.dp, bottom = it.calculateBottomPadding() + 100.dp),
         ) {
+
+            Spacer(modifier = Modifier.size(40.dp).onGloballyPositioned { scrollToPosition = it.positionInParent().y })
+
+            state.errors.forEach {
+                ConditionErrorItem(data = it) {
+                    when (it) {
+                        ConditionErrorType.GPS -> permissionHandler.askLocationService()
+                        ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
+                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
+                        else -> { /* TODO review or do nothing */
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.size(20.dp))
 
             AnimatedVisibility(visible = state.groupState.data != null) {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -333,20 +364,6 @@ fun SharingStartScreen(
 //                        vm.turnOnApproximateLocationSharing(it)
 //                    }
 //                )
-            }
-
-            Spacer(modifier = Modifier.size(50.dp))
-
-            state.errors.forEach {
-                ConditionErrorItem(data = it) {
-                    when (it) {
-                        ConditionErrorType.GPS -> permissionHandler.askLocationService()
-                        ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
-                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
-                        else -> { /* TODO review or do nothing */
-                        }
-                    }
-                }
             }
 
         }

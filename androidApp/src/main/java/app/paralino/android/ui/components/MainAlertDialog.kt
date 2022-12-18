@@ -337,12 +337,9 @@ sealed interface MainAlertDialog {
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.groups_sharing_potential_error_button_enable)
-                    ),
-                    AlertDialogButtonData(
-                        Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
-                    ),
+                        stringResource(id = R.string.button_ok),
+                        AlertDialogButtonData.positiveColor
+                    )
                 ),
                 onAction = onAction
             )
