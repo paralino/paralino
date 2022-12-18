@@ -236,7 +236,7 @@ fun SharingStartScreen(
             AnimatedVisibility(visible = state.errors.isNotEmpty()) {
                 Column(modifier = Modifier.animateContentSize()) {
                     Spacer(modifier = Modifier
-                        .size(40.dp)
+                        .size(20.dp)
                         .onGloballyPositioned { scrollToPosition = it.positionInParent().y })
                     state.errors.forEach {
                         ConditionErrorItem(data = it) {
@@ -254,7 +254,6 @@ fun SharingStartScreen(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.size(20.dp))
                 }
             }
 
