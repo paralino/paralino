@@ -5,6 +5,7 @@ import androidx.work.*
 import app.paralino.core.config
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.logg
+import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
 import org.koin.core.component.KoinComponent
@@ -21,6 +22,7 @@ class PushTokenSyncWorker(
 
         try {
             logg.tag("push_notifications").v("Try to get and sync push token")
+            FirebaseApp.initializeApp(applicationContext)
             val token = FirebaseMessaging.getInstance().token.await()
             logg.tag("push_notifications").v("Got token from firebase: $token")
             config.pushTokenUnsynced = token
