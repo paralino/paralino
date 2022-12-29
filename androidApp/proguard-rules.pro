@@ -38,6 +38,7 @@
 -keep class app.paralino.android.data.** { *; }
 -keep class app.paralino.android.remote.** { *; }
 -keep class app.paralino.core.models.** { *; }
+-keep class io.appwrite.models.** { *; }
 
 # keep parcelables
 -keepclassmembers class * implements android.os.Parcelable {
