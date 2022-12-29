@@ -38,12 +38,13 @@ import app.paralino.core.presentation.rawdata.RawPresentationDataType
 
 @Composable
 fun MainNavHost(
+    modifier: Modifier = Modifier,
     appState: MainAppState,
-    modifier: Modifier = Modifier
+    startDestination: AppScreen
 ) {
     NavHost(
         navController = appState.navController,
-        startDestination = AppScreen.DashboardRoot.routeSignature,
+        startDestination = startDestination.routeSignature,
         modifier = modifier
     ) {
         dashboardGraph(appState)
@@ -119,7 +120,7 @@ fun NavGraphBuilder.mapGraph(appState: MainAppState) {
     ) {
         composable(AppScreen.MapRoot.MainMap.routeSignature) {
             val groupId =
-                it.arguments!!.getString(AppScreen.MapRoot.MainMap.argumentGroupId)
+                it.arguments?.getString(AppScreen.MapRoot.MainMap.argumentGroupId)
             MapHomeScreen(appState = appState, groupId = groupId)
         }
         composable(AppScreen.MapRoot.PlaceDetail.routeSignature) {

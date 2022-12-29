@@ -9,16 +9,18 @@ import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMe
+import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class AppAccountStateMonitor(
+class AppAccountStateMonitor constructor(
     private val userRepo: UserRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val userMapper: UserMapperCore,
+    private val groupRepo: GroupRepository,
     private val logoutUseCase: LogoutUseCase,
     private val pushManager: IPushProviderManager,
     private val scopeProvider: ICoroutineScopeProvider
@@ -65,7 +67,8 @@ class AppAccountStateMonitor(
                                 val decryptedUser = userMapper.remote2Core(user)
                                 if (decryptedUser.hasValidData) {
                                     logg.tag("account_state").v("User is ready")
-                                    Resource.Ready(data = AppAccountState.USER_READY(decryptedUser))
+                                    val groupCount = groupRepo.getAllGroupIds().firstOrNull()?.size ?: 0
+                                    Resource.Ready(data = AppAccountState.USER_READY(decryptedUser, groupCount))
                                 } else {
                                     logg.tag("account_state")
                                         .v("User is ready but profile is missing")
@@ -129,5 +132,5 @@ sealed class AppAccountState {
     object NO_USER_DATA : AppAccountState()
     data class NO_PROFILE(val user: UserMe) : AppAccountState()
     data class ACCOUNT_RESET(val userRaw: UserMeRaw) : AppAccountState()
-    data class USER_READY(val user: UserMe) : AppAccountState()
+    data class USER_READY(val user: UserMe, val groupCount: Int) : AppAccountState()
 }

@@ -118,7 +118,7 @@ fun RootApp(
                     else -> {}
                 }
 
-                when (state.data) {
+                when (val finalState = state.data) {
                     is AppAccountState.ACCOUNT_RESET -> {
                         AppStartScreen(
                             appState = appState,
@@ -143,7 +143,12 @@ fun RootApp(
                         }
                     }
                     is AppAccountState.USER_READY -> {
-                        MainAppScreen(appState)
+                        val startScreen = if(finalState.groupCount > 0) {
+                            AppScreen.MapRoot
+                        } else {
+                            AppScreen.DashboardRoot
+                        }
+                        MainAppScreen(appState, startScreen)
                     }
                 }
             }
@@ -209,6 +214,7 @@ fun AppStartScreen(
 @Composable
 fun MainAppScreen(
     appState: MainAppState,
+    startDestination: AppScreen,
 ) {
     RootAppScreen(appState) {
         Scaffold(
@@ -225,8 +231,9 @@ fun MainAppScreen(
             snackbarHost = { AppSnackbar(it) }
         ) { innerPadding ->
             MainNavHost(
+                modifier = Modifier.padding(innerPadding),
                 appState = appState,
-                modifier = Modifier.padding(innerPadding)
+                startDestination = startDestination
             )
         }
     }

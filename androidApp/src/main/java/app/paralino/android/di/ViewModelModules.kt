@@ -84,7 +84,7 @@ val viewModelModules = module {
 val utilModule = module {
     single { PreCheckControl(get()) }
     single { UserSessionMonitor() }
-    single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get()) }
+    single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val locationModules = module {
