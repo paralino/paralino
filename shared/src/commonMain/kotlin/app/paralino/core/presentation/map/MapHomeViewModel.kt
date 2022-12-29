@@ -1,6 +1,5 @@
 package app.paralino.core.presentation.map
 
-import app.paralino.core.config
 import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
@@ -16,6 +15,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.utils.IConfig
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -27,6 +27,7 @@ class MapHomeViewModel constructor(
     private val groupRepo: GroupRepository,
     private val placesRepo: PlacesRepository,
     private val locationRefreshUseCase: LocationRefreshUseCase,
+    private val config: IConfig
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<MapHomeScreenState>>(Payload.Loading)
@@ -147,10 +148,15 @@ class MapHomeViewModel constructor(
         if (groupId.isBlank()) {
             _uiState.value = Payload.Loading
             coroutineScope.launch {
-                groupIdData.value =
-                    groupRepo.getAllGroupIds().firstOrNull()?.firstOrNull() ?: ""
+                val groupIds = groupRepo.getAllGroupIds().firstOrNull() ?: emptyList()
+                groupIdData.value = groupIds.firstOrNull { it == config.selectedGroupId }
+                        ?: groupIds.firstOrNull()
+                        ?: ""
             }
-        } else groupIdData.value = groupId
+        } else {
+            groupIdData.value = groupId
+            config.selectedGroupId = groupId
+        }
     }
 
     fun trackMarker(marker: FocusedMarkerData?) {

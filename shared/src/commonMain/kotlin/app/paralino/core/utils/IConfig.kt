@@ -15,6 +15,8 @@ interface IConfig {
     var guestEmail: String
     var guestPassword: String
 
+    var selectedGroupId: String?
+
     val isTokenValid: Boolean
         get() = sessionId.isNotBlank()
 

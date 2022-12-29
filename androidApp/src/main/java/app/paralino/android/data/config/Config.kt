@@ -28,6 +28,7 @@ class Config(context: Context) : IConfig {
         const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
         const val keyDeviceName = "prefs.device.name"
         const val keyDeviceID = "prefs.device.ID"
+        const val keySelectedGroupID = "prefs.group.selectedGroupID"
     }
 
     private val secureSharedData by lazy {
@@ -102,6 +103,12 @@ class Config(context: Context) : IConfig {
         get() = secureSharedData.getString(keyPushTokenUnsynced, "") ?: ""
         set(value) {
             secureSharedData.edit { putString(keyPushTokenUnsynced, value) }
+        }
+
+    override var selectedGroupId: String?
+        get() = secureSharedData.getString(keySelectedGroupID, null)
+        set(value) {
+            secureSharedData.edit { putString(keySelectedGroupID, value) }
         }
 
 
