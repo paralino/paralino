@@ -3,8 +3,10 @@ package app.paralino.android.ui.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -33,6 +35,7 @@ fun LoggedOutScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Bottom
@@ -53,9 +56,9 @@ fun LoggedOutScreen(
 
         Spacer(Modifier.weight(1f))
 
-        val infoTextStyle = MaterialTheme.typography.h3.copy(
+        val infoTextStyle = MaterialTheme.typography.h4.copy(
             fontWeight = FontWeight.Thin,
-            lineHeight = 44.sp
+            lineHeight = 40.sp
         )
         Text(stringResource(R.string.welcome_screen_info_1), style = infoTextStyle)
         Text(stringResource(R.string.welcome_screen_info_2), style = infoTextStyle)
