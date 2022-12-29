@@ -1,7 +1,9 @@
 package app.paralino.android.fcm
 
 import android.content.Context
+import android.content.pm.ServiceInfo
 import androidx.work.*
+import app.paralino.android.notification.PushSyncNotificationHandler
 import app.paralino.core.config
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.logg
@@ -19,7 +21,6 @@ class PushTokenSyncWorker(
     private val userDataUpdate by lazy { UserRepoComponent() }
 
     override suspend fun doWork(): Result {
-
         try {
             logg.tag("push_notifications").v("Try to get and sync push token")
             FirebaseApp.initializeApp(applicationContext)
@@ -35,6 +36,14 @@ class PushTokenSyncWorker(
         return Result.success()
     }
 
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return ForegroundInfo(
+            PushSyncNotificationHandler.notificationId,
+            PushSyncNotificationHandler.create(applicationContext),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+        )
+    }
+
     companion object {
         fun createRequest(context: Context) {
             val workManager = WorkManager.getInstance(context)
@@ -44,6 +53,8 @@ class PushTokenSyncWorker(
 
             val request = OneTimeWorkRequestBuilder<PushTokenSyncWorker>()
                 .setConstraints(constraints)
+                // setting as expedited will run as foreground service
+//                .setExpedited()
                 .build()
 
             logg.tag("push_notifications").v("Create token sync request")

@@ -47,6 +47,7 @@
     <string name="notifications_sharing_error_message">Sharing is on hold because of the following errors:\n%s</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
     <string name="notifications_channel_place_alert">Place alerts</string>
+    <string name="notifications_channel_push_sync">Notification sync</string>
 
     <string name="location_banner_sharing_active">Sharing location</string>
     <string name="location_banner_sharing_start">Share</string>

@@ -1,7 +1,9 @@
 package app.paralino.android.fcm
 
 import android.content.Context
+import android.content.pm.ServiceInfo
 import androidx.work.*
+import app.paralino.android.notification.PushSyncNotificationHandler
 import app.paralino.core.logg
 import app.paralino.core.notifications.PushNotificationHandler
 import org.koin.core.component.KoinComponent
@@ -15,7 +17,6 @@ class PushNotificationsSyncWorker(
     private val pushHandler by lazy { PushHandlerComponent() }
 
     override suspend fun doWork(): Result {
-
         try {
             logg.tag("push_notifications").v("Try to get push notifications from server")
             pushHandler.pushHandler.checkForPushNotifications()
@@ -25,6 +26,14 @@ class PushNotificationsSyncWorker(
         }
 
         return Result.success()
+    }
+
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return ForegroundInfo(
+            PushSyncNotificationHandler.notificationId,
+            PushSyncNotificationHandler.create(applicationContext),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+        )
     }
 
     companion object {
