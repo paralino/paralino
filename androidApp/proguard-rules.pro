@@ -15,6 +15,7 @@
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 -keepattributes SourceFile,LineNumberTable
+-keepattributes Signature,Exceptions
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
@@ -34,6 +35,7 @@
 -dontwarn javax.annotation.**
 
 # retaining fields of Serlizable class (including Enums and kotlin data classes)
+-keepnames class app.paralino.**
 -keepclassmembers class app.paralino.** implements java.io.Serializable {*;}
 -keep class app.paralino.android.data.** { *; }
 -keep class app.paralino.android.remote.** { *; }
