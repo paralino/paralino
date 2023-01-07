@@ -12,26 +12,24 @@ object DistanceFormatter {
         meters: Float,
         unitType: DistanceUnitType = DistanceUnitType.METRIC,
     ): String {
+        val formatter = DecimalFormat.getInstance().apply {
+            minimumFractionDigits = 0
+            maximumFractionDigits = 2
+        }
         return when (unitType) {
             DistanceUnitType.METRIC -> {
                 if (meters < 1000) {
-                    context.getString(R.string.placeholder_unit_meter, "$meters")
+                    val value = formatter.apply { maximumFractionDigits = 0 }.format(meters)
+                    context.getString(R.string.placeholder_unit_meter, value)
                 } else {
-                    val km = meters.toFloat() / 1000
-                    val value = DecimalFormat.getInstance().apply {
-                        minimumFractionDigits = 0
-                        maximumFractionDigits = 2
-                    }.format(km)
+                    val value = formatter.apply { maximumFractionDigits = 2 }.format(meters / 1000)
                     context.getString(R.string.placeholder_unit_km, value)
                 }
             }
             DistanceUnitType.IMPERIAL -> {
                 // TODO add imperial values
                 val mile = meters / 1000 / 1.609344
-                val value = DecimalFormat.getInstance().apply {
-                    minimumFractionDigits = 0
-                    maximumFractionDigits = 2
-                }.format(mile)
+                val value = formatter.format(mile)
                 context.getString(R.string.placeholder_unit_mile, value)
             }
         }
