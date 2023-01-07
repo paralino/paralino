@@ -22,6 +22,18 @@ android {
         variant.setIgnore(variantIgnore)
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def name = "Paralino"
+            def SEP = "_"
+            def flavor = variant.productFlavors[0].name.take(3)
+            def buildType = variant.buildType.name.take(1).toUpperCase()
+            def versionName = variant.versionName
+            def newApkName = name + SEP + "v" + versionName + buildType + ".apk"
+            output.outputFileName = newApkName
+        }
+    }
+
     defaultConfig {
         applicationId "app.paralino.android"
         minSdkVersion 29
@@ -29,6 +41,7 @@ android {
         versionCode 1
         versionName "1.0"
 
+        setProperty("archivesBaseName", "Paralino" + "_v" + versionName + "($versionCode)")
 
         buildConfigField("boolean", "internalTesting", "false")
         buildConfigField("boolean", "forceLogToSystem", "false")
