@@ -144,7 +144,7 @@ fun SettingSectionInfo(
         name = stringResource(id = R.string.setting_title_privacy),
         icon = Icons.Rounded.PrivacyTip
     ) {
-        context.openUri(Deeplink.homeUrl.toUri())
+        TODO()
     }
     SettingsActionItem(
         name = stringResource(id = R.string.setting_title_libraries),
