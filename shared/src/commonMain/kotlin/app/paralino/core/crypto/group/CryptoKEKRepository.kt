@@ -2,6 +2,7 @@ package app.paralino.core.crypto.group
 
 import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.DecryptedGroupKeyData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
@@ -136,13 +137,13 @@ class CryptoKEKRepository(
     }
 
     suspend fun getGroupKey(groupId: String, keyVersion: Long? = null): DecryptedGroupKeyData? {
-        val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return null
-        return getGroupKey(groupId, ownerPublicKey, keyVersion)
+        val groupOwnerId = local.getGroupOwnerId(groupId) ?: return null
+        return getGroupKey(groupId, groupOwnerId, keyVersion)
     }
 
     suspend fun getGroupKey(
         groupId: String,
-        ownerPublicKey: String,
+        groupOwnerId: String,
         keyVersion: Long? = null
     ): DecryptedGroupKeyData? {
         val allGroupKeys = getGroupKeys()
@@ -162,6 +163,8 @@ class CryptoKEKRepository(
             }
             ?: return null
 
+        val ownerPublicKey = getMemberPublicKey(groupId, memberUserId = groupOwnerId) ?: return null
+
         val groupKey = cryptoCore.decryptKeyWithKeyPair(
             key = keyRaw.encryptedGroupKey,
             myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
@@ -172,7 +175,8 @@ class CryptoKEKRepository(
     }
 
     suspend fun getAllGroupKeys(groupId: String): List<DecryptedGroupKeyData> {
-        val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return emptyList()
+        val groupOwnerId = local.getGroupOwnerId(groupId) ?: return emptyList()
+        val ownerPublicKey = getMemberPublicKey(groupId, memberUserId = groupOwnerId) ?: return emptyList()
         val keys = getGroupKeys().filter { it.groupId == groupId }
 
         return keys.map {
@@ -186,16 +190,10 @@ class CryptoKEKRepository(
         }
     }
 
-    suspend fun getMemberKey(groupId: String, memberUserId: String): DecryptedGroupKeyData? {
-        val memberPublicKey = local.getMemberPublicKey(groupId, memberUserId) ?: return null
-        return getMemberKey(groupId, memberUserId, memberPublicKey)
-    }
-
     // TODO pass key version
     suspend fun getMemberKey(
         groupId: String,
-        memberUserId: String,
-        memberPublicKey: String
+        memberUserId: String
     ): DecryptedGroupKeyData? {
         val currentUserId = userRepository.cachedUserId
         val allMemberKeys = getMemberKeys()
@@ -209,12 +207,42 @@ class CryptoKEKRepository(
             .maxByOrNull { it.version }
             ?: return null
 
+        if(keyRaw.encryptedSenderKey == null)
+            return null
+
+        val memberPublicKey = cryptoCore.decryptDataWithKey(
+            data = keyRaw.encryptedPublicKey,
+            key = userKeyRepository.latestKeyPair().publicKey
+        )
+
         val memberKey = cryptoCore.decryptKeyWithKeyPair(
             key = keyRaw.encryptedSenderKey,
             myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
             publicKey = memberPublicKey
         )
         return DecryptedGroupKeyData(keyRaw.version, memberKey)
+    }
+
+    suspend fun getMemberPublicKey(
+        groupId: String,
+        memberUserId: String
+    ): String? {
+        val allMemberKeys = getMemberKeys()
+        val keyRaw = allMemberKeys
+            // filter keys that memberUserId created for current user
+            .filter { it.groupId == groupId && it.ownerUserId == memberUserId }
+            .let { keys ->
+                logg.tag("tag_crypto_key_group_member").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
+                keys
+            }
+            .maxByOrNull { it.version }
+            ?: return null
+
+        val memberPublicKey = cryptoCore.decryptDataWithKey(
+            data = keyRaw.encryptedPublicKey,
+            key = userKeyRepository.latestKeyPair().publicKey
+        )
+        return memberPublicKey
     }
 
     suspend fun deleteAllKeysForGroup(groupId: String) {

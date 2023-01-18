@@ -8,7 +8,6 @@ data class GroupDocumentRaw constructor(
     @SerialName("\$id")
     val id: String,
     val ownerUserId: String,
-    val ownerPublicKey: String,
     val keyVersion: Long,
     val shouldRotateKeys: Boolean,
     val data: String = ""
@@ -20,7 +19,6 @@ data class GroupDocumentRaw constructor(
             return GroupDocumentRaw(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
-                ownerPublicKey = map["ownerPublicKey"] as String,
                 keyVersion = (map["keyVersion"] as Number).toLong(),
                 shouldRotateKeys = map["shouldRotateKeys"] as Boolean,
                 data = map["data"] as String

@@ -69,7 +69,7 @@ class MemberCryptoKeyRotation(
 
         setAsProcessing(group.id)
         val myKey = userKeyRepo.latestKeyPair()
-        val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerPublicKey)!!
+        val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId)!!
         try {
             rotateMemberKeysForGroup(group, groupKey, myKey)
             stopProcessing(group.id)
@@ -91,7 +91,7 @@ class MemberCryptoKeyRotation(
 
         setAsProcessing(group.id)
         val myKey = userKeyRepo.latestKeyPair()
-        val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerPublicKey)!!
+        val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId)!!
         try {
             rotateMemberKeysForGroup(group, groupKey, myKey)
 
@@ -149,23 +149,27 @@ class MemberCryptoKeyRotation(
                 }
             )
 
-            val keys = group.members.map { member ->
-                GroupMemberKeyPayload(
-                    userId = member.member.userId,
-                    encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
-                        data = newSenderKey,
-                        // sign with owner private key
-                        myPrivateKey = myKey.privateKey,
-                        // encrypt with user public key
-                        publicKey = member.member.publicKey
+            val keys = group.members.mapNotNull { groupMember ->
+                val memberPublicKey = cryptoKEKRepository.getMemberPublicKey(group.id, groupMember.member.userId)
+                if(memberPublicKey != null) {
+                    GroupMemberKeyPayload(
+                        userId = groupMember.member.userId,
+                        encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
+                            data = newSenderKey,
+                            // sign with owner private key
+                            myPrivateKey = myKey.privateKey,
+                            // encrypt with user public key
+                            publicKey = memberPublicKey
+                        ),
+                        keyVersion = null
                     )
-                )
-
+                } else {
+                    null
+                }
             }
 
             val payload = UpdateGroupMemberKeysPayload(
                 groupId = group.id,
-                userPublicKey = myKey.publicKey,
                 deleteOldKeys = true,
                 encryptedSenderKeys = keys,
                 memberData = memberData
@@ -234,23 +238,27 @@ class MemberCryptoKeyRotation(
             val newSenderKey =
                 currentSenderKey?.data?.content ?: cryptoCore.getNewSymmetricKey().content
 
-            val keys = members.map {
-                GroupMemberKeyPayload(
-                    userId = it.userId,
-                    encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
-                        data = newSenderKey,
-                        // sign with owner private key
-                        myPrivateKey = myKey.privateKey,
-                        // encrypt with user public key
-                        publicKey = it.publicKey
-                    ),
-                    keyVersion = currentSenderKey?.version
-                )
+            val keys = members.mapNotNull { groupMember ->
+                val memberPublicKey = cryptoKEKRepository.getMemberPublicKey(groupId, groupMember.userId)
+                if(memberPublicKey != null) {
+                    GroupMemberKeyPayload(
+                        userId = groupMember.userId,
+                        encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
+                            data = newSenderKey,
+                            // sign with owner private key
+                            myPrivateKey = myKey.privateKey,
+                            // encrypt with user public key
+                            publicKey = memberPublicKey
+                        ),
+                        keyVersion = currentSenderKey?.version
+                    )
+                } else {
+                    null
+                }
             }
 
             val payload = UpdateGroupMemberKeysPayload(
                 groupId = groupId,
-                userPublicKey = myKey.publicKey,
                 deleteOldKeys = false,
                 encryptedSenderKeys = keys,
                 // no data passed here since we are only creating keys for new members

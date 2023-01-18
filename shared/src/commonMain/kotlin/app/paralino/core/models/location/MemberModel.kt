@@ -16,7 +16,6 @@ data class MemberModel constructor(
     val id: String,
     val groupId: String,
     val userId: String,
-    val publicKey: String,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
     val shouldRotateKeys: Boolean,

@@ -23,8 +23,9 @@ class GroupMemberAddUseCase constructor(
         return getDataOnce(
             remote = {
                 setAsProcessing(groupId)
+                val group = local.getGroupWithMembers(groupId).first()
                 remote.addUserToGroup(
-                    groupId,
+                    group,
                     code,
                     userKeyRepo.latestKeyPair()
                 ).also {

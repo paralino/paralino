@@ -86,8 +86,7 @@ class RealtimeEventsProcessor constructor(
                 val memberKey = try {
                     cryptoKEKRepo.getMemberKey(
                         groupId = member.groupId,
-                        memberUserId = member.ownerUserId,
-                        memberPublicKey = member.ownerPublicKey
+                        memberUserId = member.ownerUserId
                     )
                 } catch (e: Exception) {
                     null

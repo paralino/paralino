@@ -18,7 +18,6 @@ class GroupsMapperLocal(
         return GroupDocumentRaw(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
             data = model.data
@@ -29,7 +28,6 @@ class GroupsMapperLocal(
         return UserGroupEntity(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
             data = model.data

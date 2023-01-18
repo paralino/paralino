@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateGroupPayload constructor(
-    val userPublicKey: String,
     val encryptedGroupKey: String,
     val encryptedMemberKey: String,
+    val encryptedPublicKey: String,
     val groupData: String,
     val memberData: String
 )
@@ -22,10 +22,11 @@ data class UpdateGroupPayload constructor(
 data class CreateGroupMemberPayload constructor(
     val groupId: String,
     val userId: String,
-    val userPublicKey: String,
     val encryptedGroupKey: String,
     val encryptedOwnerKey: String,
     val oldKeys: List<GroupMemberOldKeyPayload>,
+    val keysForNewUser: List<GroupMemberPublicKeyPayload>,
+    val userKeyForOtherUsers: List<GroupMemberPublicKeyPayload>,
     val memberData: String
 )
 
@@ -44,7 +45,6 @@ data class DeleteGroupMemberPayload constructor(
 @Serializable
 data class UpdateGroupKeysPayload constructor(
     val groupId: String,
-    val userPublicKey: String,
     val keyVersionsToKeep: List<Long>,
     val encryptedGroupKeys: List<GroupKeysPayload>,
     val groupData: String,
@@ -63,11 +63,16 @@ data class GroupKeysPayload(
     val encryptedGroupKey: String
 )
 
+@Serializable
+data class GroupMemberPublicKeyPayload(
+    val userId: String,
+    val encryptedPublicKey: String
+)
+
 
 @Serializable
 data class UpdateGroupMemberKeysPayload(
     val groupId: String,
-    val userPublicKey: String,
     val deleteOldKeys: Boolean,
     val encryptedSenderKeys: List<GroupMemberKeyPayload>,
     val memberData: GroupMemberDataPayload?,

@@ -57,7 +57,7 @@ class LocationLocalDataSource(
         return dao.getMember(memberId)
             .filterNotNull()
             .map {
-                val key = groupDao.getGroupPublicKeyOnce(it.member.groupId)
+                val key = groupDao.getGroupOwnerIdOnce(it.member.groupId)
                     ?: throw MissingGroupKeyException(it.member.groupId)
                 mapper.local2Remote(it) to mapper.local2Core(it, key)
             }
@@ -68,7 +68,7 @@ class LocationLocalDataSource(
             .distinctFlowOfList()
             .map {
                 it.map {
-                    val key = groupDao.getGroupPublicKeyOnce(it.member.groupId)
+                    val key = groupDao.getGroupOwnerIdOnce(it.member.groupId)
                         ?: throw MissingGroupKeyException(it.member.groupId)
                     mapper.local2Core(it, key)
                 }
@@ -79,7 +79,7 @@ class LocationLocalDataSource(
         return dao.getLocationsForGroup(groupId)
             .distinctFlowOfList()
             .map {
-                val key = groupDao.getGroupPublicKeyOnce(groupId)
+                val key = groupDao.getGroupOwnerIdOnce(groupId)
                 if (key == null && it.isNotEmpty())
                     throw MissingGroupKeyException(groupId)
                 it.map {
@@ -95,7 +95,7 @@ class LocationLocalDataSource(
         )
             .filterNotNull()
             .map {
-                val key = groupDao.getGroupPublicKeyOnce(it.member.groupId)
+                val key = groupDao.getGroupOwnerIdOnce(it.member.groupId)
                     ?: throw MissingGroupKeyException(it.member.groupId)
                 mapper.local2Core(it, key)
             }

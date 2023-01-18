@@ -11,7 +11,6 @@ data class MemberEntity constructor(
     val id: String,
     val userId: String,
     val groupId: String,
-    val ownerPublicKey: String,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
     val shouldRotateKeys: Boolean,

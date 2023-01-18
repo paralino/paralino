@@ -17,9 +17,9 @@ class MemberWithLocationsMapperLocal(
 
     suspend fun local2Core(
         model: MemberEntityWithLocations,
-        ownerPublicKey: String
+        groupOwnerId: String
     ): MemberModelWithLocations {
-        return coreMapper.remote2Core(local2Remote(model), ownerPublicKey)
+        return coreMapper.remote2Core(local2Remote(model), groupOwnerId)
     }
 
     override suspend fun local2Remote(model: MemberEntityWithLocations): MemberWithLocationsRaw {
@@ -72,7 +72,6 @@ class MemberMapperLocal() : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
             id = model.id,
             ownerUserId = model.userId,
             groupId = model.groupId,
-            ownerPublicKey = model.ownerPublicKey,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
@@ -86,7 +85,6 @@ class MemberMapperLocal() : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
             id = model.id,
             userId = model.ownerUserId,
             groupId = model.groupId,
-            ownerPublicKey = model.ownerPublicKey,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
             shouldRotateKeys = model.shouldRotateKeys,

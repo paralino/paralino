@@ -17,18 +17,17 @@ class MemberMapperCore constructor(
 
     suspend fun remote2Core(
         model: MemberWithLocationsRaw,
-        groupOwnerPublicKey: String
+        groupOwnerId: String
     ): MemberModelWithLocations {
 
         val memberKey = cryptoKEKRepo.getMemberKey(
             groupId = model.member.groupId,
-            memberUserId = model.member.ownerUserId,
-            memberPublicKey = model.member.ownerPublicKey
+            memberUserId = model.member.ownerUserId
         )
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.member.groupId,
-            ownerPublicKey = groupOwnerPublicKey,
+            groupOwnerId = groupOwnerId,
             keyVersion = model.member.groupKeyVersion
         )
 
@@ -40,6 +39,7 @@ class MemberMapperCore constructor(
 
         val locations = model.locations.map { location ->
 
+            // TODO review if we need to check for member key
             val deviceData = if (memberKey != null && groupKey != null) {
                 if (location.deviceData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
@@ -128,7 +128,6 @@ class MemberMapperCore constructor(
             id = model.member.id,
             groupId = model.member.groupId,
             userId = model.member.ownerUserId,
-            publicKey = model.member.ownerPublicKey,
             groupKeyVersion = model.member.groupKeyVersion,
             memberKeyVersion = model.member.memberKeyVersion,
             shouldRotateKeys = model.member.shouldRotateKeys,

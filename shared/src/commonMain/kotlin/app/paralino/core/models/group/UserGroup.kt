@@ -14,7 +14,6 @@ import kotlinx.serialization.Serializable
 data class UserGroup constructor(
     val id: String,
     val ownerUserId: String,
-    val ownerPublicKey: String,
     val keyVersion: Long,
     val shouldRotateKeys: Boolean,
     @Contextual
@@ -49,7 +48,6 @@ data class UserGroupWithMembers constructor(
 
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
-    val ownerPublicKey: String get() = group.ownerPublicKey
     val keyVersion: Long get() = group.keyVersion
     val shouldRotateKeys: Boolean get() = group.shouldRotateKeys
     val data: CryptoResource<UserGroupData> get() = group.data

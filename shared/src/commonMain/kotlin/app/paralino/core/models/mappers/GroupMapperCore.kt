@@ -24,7 +24,7 @@ class GroupMapperCore constructor(
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
-            ownerPublicKey = model.ownerPublicKey,
+            groupOwnerId = model.ownerUserId,
             keyVersion = model.keyVersion
         ) ?: throw MissingGroupKeyException(model.id, model.keyVersion)
 
@@ -41,7 +41,6 @@ class GroupMapperCore constructor(
         return GroupDocumentRaw(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
             data = groupData
@@ -52,7 +51,7 @@ class GroupMapperCore constructor(
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
-            ownerPublicKey = model.ownerPublicKey,
+            groupOwnerId = model.ownerUserId,
             keyVersion = model.keyVersion
         )
 
@@ -79,7 +78,6 @@ class GroupMapperCore constructor(
         return UserGroup(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            ownerPublicKey = model.ownerPublicKey,
             keyVersion = model.keyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
             data = groupData,
@@ -91,7 +89,7 @@ class GroupMapperCore constructor(
         val members = model.members.map {
             memberMapperCore.remote2Core(
                 model = it,
-                groupOwnerPublicKey = model.group.ownerPublicKey
+                groupOwnerId = model.group.ownerUserId
             )
         }
         return UserGroupWithMembers(

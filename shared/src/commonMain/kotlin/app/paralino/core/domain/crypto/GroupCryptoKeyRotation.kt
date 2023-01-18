@@ -10,6 +10,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.raw.GroupKeysPayload
+import app.paralino.core.models.raw.GroupMemberKeyPayload
 import app.paralino.core.models.raw.GroupPlaceDataUpdatePayload
 import app.paralino.core.models.raw.UpdateGroupKeysPayload
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
@@ -112,22 +113,26 @@ class GroupCryptoKeyRotation constructor(
             val usedKeys =
                 group.members.map { it.member.groupKeyVersion } + places.map { it.keyVersion } + group.keyVersion
 
-            val keys = group.members.map {
-                GroupKeysPayload(
-                    userId = it.member.userId,
-                    encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                        data = newGroupKey,
-                        // sign with owner private key
-                        myPrivateKey = myKey.privateKey,
-                        // encrypt with user public key
-                        publicKey = it.member.publicKey
+            val keys = group.members.mapNotNull { groupMember ->
+                val memberPublicKey = cryptoKEKRepository.getMemberPublicKey(group.id, groupMember.member.userId)
+                if(memberPublicKey != null) {
+                    GroupKeysPayload(
+                        userId = groupMember.member.userId,
+                        encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
+                            data = newGroupKey,
+                            // sign with owner private key
+                            myPrivateKey = myKey.privateKey,
+                            // encrypt with user public key
+                            publicKey = memberPublicKey
+                        )
                     )
-                )
+                } else {
+                    null
+                }
             }
 
             val payload = UpdateGroupKeysPayload(
                 groupId = group.id,
-                userPublicKey = myKey.publicKey,
                 keyVersionsToKeep = usedKeys.distinct(),
                 encryptedGroupKeys = keys,
                 groupData = groupData,

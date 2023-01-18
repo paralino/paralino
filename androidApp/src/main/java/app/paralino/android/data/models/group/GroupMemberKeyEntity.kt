@@ -12,5 +12,6 @@ data class GroupMemberKeyEntity constructor(
     val ownerUserId: String,
     val version: Long,
     // owner sender key K encrypted with member public key, signed with owner private key
-    val encryptedSenderKey: String
+    val encryptedSenderKey: String?,
+    val encryptedPublicKey: String,
 )

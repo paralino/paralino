@@ -71,9 +71,6 @@ interface MemberDao {
     suspend fun getUserMemberId(groupId: String, userId: String): String?
 
 
-    @Query("SELECT ownerPublicKey FROM members WHERE groupId = :groupId AND userId = :userId")
-    suspend fun getMemberPublicKeyOnce(groupId: String, userId: String): String?
-
     @Update(onConflict = OnConflictStrategy.IGNORE, entity = MemberLocationEntity::class)
     suspend fun updateMemberLocationData(data: MemberLocationDataUpdate)
 

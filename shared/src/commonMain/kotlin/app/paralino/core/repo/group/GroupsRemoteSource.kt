@@ -8,6 +8,7 @@ import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
+import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.*
@@ -57,13 +58,19 @@ class GroupsRemoteSource constructor(
                 publicKey = myKey.publicKey
             )
 
+            val encryptedPublicKey = cryptoCore.encryptDataWithKeyPair(
+                data = myKey.publicKey,
+                myPrivateKey = myKey.privateKey,
+                publicKey = myKey.publicKey
+            )
+
 
             val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
 
             val payload = CreateGroupPayload(
-                userPublicKey = myKey.publicKey,
                 encryptedGroupKey = encryptedGroupKey,
                 encryptedMemberKey = encryptedSenderKey,
+                encryptedPublicKey = encryptedPublicKey,
                 groupData = cryptoCore.encryptDataWithKey(
                     BaseRemoteModule.formatter.encodeToString(groupData),
                     groupKey
@@ -123,18 +130,18 @@ class GroupsRemoteSource constructor(
     }
 
     suspend fun addUserToGroup(
-        groupId: String,
+        group: UserGroupWithMembers,
         codeData: UserPersonalCodeData,
         myKey: AsymmetricCryptoKeyData
     ): GroupWithMemberRaw {
         return blocking {
 
+            val groupId = group.id
             val groupKey = cryptoKEKRepo.getGroupKey(groupId, keyVersion = null)
                 ?: throw MissingGroupKeyException(groupId)
 
             val memberKey = cryptoKEKRepo.getMemberKey(groupId, config.userId)
                 ?: throw MissingMemberKeyException(groupId, config.userId)
-
 
             val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                 data = groupKey.data.content,
@@ -168,13 +175,55 @@ class GroupsRemoteSource constructor(
                     )
                 }
 
+            val newUserOwnPublicKey = GroupMemberPublicKeyPayload(
+                userId = codeData.ownerId,
+                encryptedPublicKey = cryptoCore.encryptDataWithKey(
+                    data = codeData.ownerPublicKey,
+                    key = codeData.ownerPublicKey
+                )
+            )
+
+            val keysForNewUser = group.members.mapNotNull { groupMember ->
+                val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
+                if(key != null) {
+                    val encryptedKey = cryptoCore.encryptDataWithKey(
+                        data = key,
+                        key = codeData.ownerPublicKey
+                    )
+                    GroupMemberPublicKeyPayload(
+                        userId = groupMember.member.userId,
+                        encryptedPublicKey = encryptedKey
+                    )
+                } else {
+                    null
+                }
+            } + newUserOwnPublicKey
+
+            val userKeyForOtherUsers = group.members.mapNotNull { groupMember ->
+                val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
+                if(key != null) {
+                    val encryptedKey = cryptoCore.encryptDataWithKey(
+                        data = codeData.ownerPublicKey,
+                        key = key
+                    )
+                    GroupMemberPublicKeyPayload(
+                        userId = codeData.ownerId,
+                        encryptedPublicKey = encryptedKey
+                    )
+                } else {
+                    null
+                }
+            }
+
+
             val payload = CreateGroupMemberPayload(
                 groupId = groupId,
                 userId = codeData.ownerId,
-                userPublicKey = codeData.ownerPublicKey,
                 encryptedGroupKey = encryptedGroupKey,
                 encryptedOwnerKey = encryptedMemberKey,
                 oldKeys = encryptedOldKeys,
+                keysForNewUser = keysForNewUser,
+                userKeyForOtherUsers = userKeyForOtherUsers,
                 memberData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
                         MemberModelData(codeData.ownerName, codeData.ownerImage)
