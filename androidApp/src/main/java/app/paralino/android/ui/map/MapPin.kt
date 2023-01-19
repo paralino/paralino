@@ -5,15 +5,14 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.compose.ui.graphics.toArgb
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import app.paralino.android.R
 import app.paralino.android.databinding.ElementMapPinBinding
 import app.paralino.android.databinding.ElementMapPinCenteredBinding
-import app.paralino.android.utils.extensions.bitmapFromBase64
-import app.paralino.android.utils.extensions.dp2px
-import app.paralino.android.utils.extensions.getBitmapFromView
-import app.paralino.android.utils.extensions.imageTintRes
+import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.utils.extensions.*
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
@@ -86,22 +85,22 @@ class MapUserMarkerView : ConstraintLayout {
             }
         }
 
-        vb.pinBackground.imageTintRes(R.color.accentDark)
+        vb.pinBackground.setBackgroundColorRes(R.color.accentDark)
     }
 
     private fun getPinSize(data: MapPinData): Int {
         return when (data.pinType) {
             MapPinType.MEMBER -> {
                 when {
-                    data.focused -> 60.dp2px
-                    data.active -> 40.dp2px
-                    else -> 25.dp2px
+                    data.focused -> 100.dp2px
+                    data.active -> 70.dp2px
+                    else -> 40.dp2px
                 }
             }
             MapPinType.PLACE -> {
                 when {
-                    data.focused -> 50.dp2px
-                    else -> 30.dp2px
+                    data.focused -> 70.dp2px
+                    else -> 40.dp2px
                 }
             }
         }

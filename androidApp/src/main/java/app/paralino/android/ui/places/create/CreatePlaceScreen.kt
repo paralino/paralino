@@ -202,14 +202,14 @@ fun CreatePlaceScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 30.dp)
-                .height(TextFieldDefaults.MinHeight),
+                .height(60.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ImageModelImage(
                 imageModel = state.image,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(TextFieldDefaults.MinHeight)
+                    .width(60.dp)
                     .clickable { onImageClick() }
             )
 

@@ -58,6 +58,10 @@ fun AppCompatImageView.imageTintRes(@ColorRes resource: Int) {
     ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(ContextCompat.getColor(context, resource)))
 }
 
+fun AppCompatImageView.imageTint(@ColorInt color: Int) {
+    ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(color))
+}
+
 fun View.getBitmapFromView(): Bitmap? {
     val bitmap = Bitmap.createBitmap(
         this.measuredWidth, this.measuredHeight,

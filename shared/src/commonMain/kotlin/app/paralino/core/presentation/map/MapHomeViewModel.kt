@@ -119,7 +119,7 @@ class MapHomeViewModel constructor(
                                         groupId = group.id,
                                         state = PlaceListItemData(place)
                                     ).copy(
-                                        active = false,
+                                        active = true,
                                         focused = focusedMarker?.markerId == place.id
                                     )
                                 }
