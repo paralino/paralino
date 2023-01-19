@@ -59,6 +59,10 @@ class MemberCryptoKeyRotation(
         }
     }
 
+    /**
+     * rotate keys only - don't refresh
+     * keys should be refreshed separately
+     */
     suspend fun onlyRotateMemberKeysForGroup(
         group: UserGroupWithMembers
     ): Boolean {
@@ -195,11 +199,13 @@ class MemberCryptoKeyRotation(
         // get ids of members that already have key created by current user
         val memberKeysCreatedByMe = cryptoKEKRepository.getMemberKeys().filter {
             it.groupId == remoteGroup.id && it.ownerUserId == userRepository.cachedUserId
-        }.map { it.memberUserId }
+        }
 
         // get all other members from group that are missing key
+        // TODO review if we should create a key if user has no key document
         val membersThatNeedKeyUpdate = remoteGroup.members.filter { member ->
-            !memberKeysCreatedByMe.contains(member.member.userId)
+            val memberKey = memberKeysCreatedByMe.firstOrNull { it.memberUserId == member.member.userId }
+            memberKey != null && memberKey.encryptedSenderKey == null
         }
 
         if (membersThatNeedKeyUpdate.isNotEmpty()) {

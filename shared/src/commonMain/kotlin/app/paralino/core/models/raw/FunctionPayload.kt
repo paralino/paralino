@@ -22,16 +22,15 @@ data class UpdateGroupPayload constructor(
 data class CreateGroupMemberPayload constructor(
     val groupId: String,
     val userId: String,
-    val encryptedGroupKey: String,
     val encryptedOwnerKey: String,
-    val oldKeys: List<GroupMemberOldKeyPayload>,
+    val groupKeys: List<GroupMemberGroupKeysData>,
     val keysForNewUser: List<GroupMemberPublicKeyPayload>,
     val userKeyForOtherUsers: List<GroupMemberPublicKeyPayload>,
     val memberData: String
 )
 
 @Serializable
-data class GroupMemberOldKeyPayload constructor(
+data class GroupMemberGroupKeysData constructor(
     val version: Long,
     val encryptedGroupKey: String,
 )

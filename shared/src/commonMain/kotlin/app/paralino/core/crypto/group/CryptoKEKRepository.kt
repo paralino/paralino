@@ -204,44 +204,53 @@ class CryptoKEKRepository(
                 logg.tag("tag_crypto_key_group_member").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
                 keys
             }
-            .maxByOrNull { it.version }
+            .maxByOrNull { it.version ?: -1 }
             ?: return null
 
-        if(keyRaw.encryptedSenderKey == null)
-            return null
+        val memberPublicKey = try {
+            cryptoCore.decryptDataWithKey(
+                data = keyRaw.encryptedPublicKey,
+                key = userKeyRepository.latestKeyPair().publicKey
+            )
+        } catch (e: Exception) {
+            null
+        }
 
-        val memberPublicKey = cryptoCore.decryptDataWithKey(
-            data = keyRaw.encryptedPublicKey,
-            key = userKeyRepository.latestKeyPair().publicKey
-        )
+        if(keyRaw.encryptedSenderKey == null || memberPublicKey == null)
+            return null
 
         val memberKey = cryptoCore.decryptKeyWithKeyPair(
             key = keyRaw.encryptedSenderKey,
             myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
             publicKey = memberPublicKey
         )
-        return DecryptedGroupKeyData(keyRaw.version, memberKey)
+        return DecryptedGroupKeyData(keyRaw.version ?: -1, memberKey)
     }
 
     suspend fun getMemberPublicKey(
         groupId: String,
         memberUserId: String
     ): String? {
+        val currentUserId = userRepository.cachedUserId
         val allMemberKeys = getMemberKeys()
         val keyRaw = allMemberKeys
             // filter keys that memberUserId created for current user
-            .filter { it.groupId == groupId && it.ownerUserId == memberUserId }
+            .filter { it.groupId == groupId && it.ownerUserId == memberUserId && it.memberUserId == currentUserId }
             .let { keys ->
                 logg.tag("tag_crypto_key_group_member").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
                 keys
             }
-            .maxByOrNull { it.version }
+            .maxByOrNull { it.version ?: -1 }
             ?: return null
 
-        val memberPublicKey = cryptoCore.decryptDataWithKey(
-            data = keyRaw.encryptedPublicKey,
-            key = userKeyRepository.latestKeyPair().publicKey
-        )
+        val memberPublicKey = try {
+            cryptoCore.decryptDataWithKey(
+                data = keyRaw.encryptedPublicKey,
+                key = userKeyRepository.latestKeyPair().publicKey
+            )
+        } catch (e: Exception) {
+            null
+        }
         return memberPublicKey
     }
 

@@ -58,10 +58,9 @@ class GroupsRemoteSource constructor(
                 publicKey = myKey.publicKey
             )
 
-            val encryptedPublicKey = cryptoCore.encryptDataWithKeyPair(
+            val encryptedPublicKey = cryptoCore.encryptDataWithKey(
                 data = myKey.publicKey,
-                myPrivateKey = myKey.privateKey,
-                publicKey = myKey.publicKey
+                key = myKey.publicKey
             )
 
 
@@ -134,119 +133,109 @@ class GroupsRemoteSource constructor(
         codeData: UserPersonalCodeData,
         myKey: AsymmetricCryptoKeyData
     ): GroupWithMemberRaw {
-        return blocking {
 
-            val groupId = group.id
-            val groupKey = cryptoKEKRepo.getGroupKey(groupId, keyVersion = null)
-                ?: throw MissingGroupKeyException(groupId)
+        val groupId = group.id
+        val groupKey = cryptoKEKRepo.getGroupKey(groupId, keyVersion = null)
+            ?: throw MissingGroupKeyException(groupId)
 
-            val memberKey = cryptoKEKRepo.getMemberKey(groupId, config.userId)
-                ?: throw MissingMemberKeyException(groupId, config.userId)
+        val memberKey = cryptoKEKRepo.getMemberKey(groupId, config.userId)
+            ?: throw MissingMemberKeyException(groupId, config.userId)
 
-            val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                data = groupKey.data.content,
-                // sign with owner private key
-                myPrivateKey = myKey.privateKey,
-                // encrypt with user public key
-                publicKey = codeData.ownerPublicKey
-            )
+        val encryptedMemberKey = cryptoCore.encryptDataWithKeyPair(
+            data = memberKey.data.content,
+            // sign with owner private key
+            myPrivateKey = myKey.privateKey,
+            // encrypt with user public key
+            publicKey = codeData.ownerPublicKey
+        )
 
-            val encryptedMemberKey = cryptoCore.encryptDataWithKeyPair(
-                data = memberKey.data.content,
-                // sign with owner private key
-                myPrivateKey = myKey.privateKey,
-                // encrypt with user public key
-                publicKey = codeData.ownerPublicKey
-            )
-
-            val oldKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
-            val encryptedOldKeys = oldKeys
-                .distinctBy { it.version }
-                .map { key ->
-                    GroupMemberOldKeyPayload(
-                        version = key.version,
-                        encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                            data = key.data.content,
-                            // sign with owner private key
-                            myPrivateKey = myKey.privateKey,
-                            // encrypt with user public key
-                            publicKey = codeData.ownerPublicKey
-                        )
+        val allGroupKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
+        val encryptedOldKeys = allGroupKeys
+            .distinctBy { it.version }
+            .map { key ->
+                GroupMemberGroupKeysData(
+                    version = key.version,
+                    encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
+                        data = key.data.content,
+                        // sign with owner private key
+                        myPrivateKey = myKey.privateKey,
+                        // encrypt with user public key
+                        publicKey = codeData.ownerPublicKey
                     )
-                }
+                )
+            }
 
-            val newUserOwnPublicKey = GroupMemberPublicKeyPayload(
-                userId = codeData.ownerId,
-                encryptedPublicKey = cryptoCore.encryptDataWithKey(
-                    data = codeData.ownerPublicKey,
+        val newUserOwnPublicKey = GroupMemberPublicKeyPayload(
+            userId = codeData.ownerId,
+            encryptedPublicKey = cryptoCore.encryptDataWithKey(
+                data = codeData.ownerPublicKey,
+                key = codeData.ownerPublicKey
+            )
+        )
+
+        val keysForNewUser = group.members.mapNotNull { groupMember ->
+            val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
+            if (key != null) {
+                val encryptedKey = cryptoCore.encryptDataWithKey(
+                    data = key,
                     key = codeData.ownerPublicKey
                 )
-            )
-
-            val keysForNewUser = group.members.mapNotNull { groupMember ->
-                val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
-                if(key != null) {
-                    val encryptedKey = cryptoCore.encryptDataWithKey(
-                        data = key,
-                        key = codeData.ownerPublicKey
-                    )
-                    GroupMemberPublicKeyPayload(
-                        userId = groupMember.member.userId,
-                        encryptedPublicKey = encryptedKey
-                    )
-                } else {
-                    null
-                }
-            } + newUserOwnPublicKey
-
-            val userKeyForOtherUsers = group.members.mapNotNull { groupMember ->
-                val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
-                if(key != null) {
-                    val encryptedKey = cryptoCore.encryptDataWithKey(
-                        data = codeData.ownerPublicKey,
-                        key = key
-                    )
-                    GroupMemberPublicKeyPayload(
-                        userId = codeData.ownerId,
-                        encryptedPublicKey = encryptedKey
-                    )
-                } else {
-                    null
-                }
-            }
-
-
-            val payload = CreateGroupMemberPayload(
-                groupId = groupId,
-                userId = codeData.ownerId,
-                encryptedGroupKey = encryptedGroupKey,
-                encryptedOwnerKey = encryptedMemberKey,
-                oldKeys = encryptedOldKeys,
-                keysForNewUser = keysForNewUser,
-                userKeyForOtherUsers = userKeyForOtherUsers,
-                memberData = cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(
-                        MemberModelData(codeData.ownerName, codeData.ownerImage)
-                    ),
-                    key = groupKey.data.content
+                GroupMemberPublicKeyPayload(
+                    userId = groupMember.member.userId,
+                    encryptedPublicKey = encryptedKey
                 )
-            )
-
-            val data = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionCreateGroupMemberID,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
-            )
-
-            if (data.isSuccess) {
-                getGroupWithMembers(groupId)
             } else {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = null,
-                    message = "Unable to create group",
-                    cause = Exception(data.stderr)
-                )
+                null
             }
+        } + newUserOwnPublicKey
+
+        val userKeyForOtherUsers = group.members.mapNotNull { groupMember ->
+            val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
+            val publicy = myKey.publicKey
+            if (key != null && publicy != null) {
+                val encryptedKey = cryptoCore.encryptDataWithKey(
+                    data = codeData.ownerPublicKey,
+                    key = key
+                )
+                GroupMemberPublicKeyPayload(
+                    userId = groupMember.member.userId,
+                    encryptedPublicKey = encryptedKey
+                )
+            } else {
+                null
+            }
+        }
+
+
+        val payload = CreateGroupMemberPayload(
+            groupId = groupId,
+            userId = codeData.ownerId,
+            encryptedOwnerKey = encryptedMemberKey,
+            groupKeys = encryptedOldKeys,
+            keysForNewUser = keysForNewUser,
+            userKeyForOtherUsers = userKeyForOtherUsers,
+            memberData = cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(
+                    MemberModelData(codeData.ownerName, codeData.ownerImage)
+                ),
+                key = groupKey.data.content
+            )
+        )
+
+        val data = functionsApi.runAndWait(
+            functionId = remoteConfig.resourceIds.functionCreateGroupMemberID,
+            data = BaseRemoteModule.formatter.encodeToString(payload)
+        )
+
+        if (data.isSuccess) {
+            return getGroupWithMembers(groupId)
+        } else {
+            // TODO throw better exception
+            throw BaseRemoteException.fromCode(
+                code = null,
+                message = "Unable to create group",
+                cause = Exception(data.stderr)
+            )
         }
     }
 
@@ -302,7 +291,9 @@ class GroupsRemoteSource constructor(
                         .map { member ->
                             MemberWithLocationsRaw(
                                 member = member,
-                                locations = locations.filter { location -> member.locationIds.contains(location.id) }
+                                locations = locations.filter { location ->
+                                    member.locationIds.contains(location.id)
+                                }
                             )
                         }
                 )
@@ -336,7 +327,9 @@ class GroupsRemoteSource constructor(
                 members = members.map { member ->
                     MemberWithLocationsRaw(
                         member = member,
-                        locations = locations.filter { location -> member.locationIds.contains(location.id) }
+                        locations = locations.filter { location ->
+                            member.locationIds.contains(location.id)
+                        }
                     )
                 }
             )
