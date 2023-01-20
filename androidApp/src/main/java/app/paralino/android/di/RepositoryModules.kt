@@ -106,7 +106,7 @@ val remoteDataSourceModule = module {
     single { LocationRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
-    single { PersonalCodesRemoteSource(get(), get(), get(), get()) }
+    single { PersonalCodesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get(), get()) }
     single {

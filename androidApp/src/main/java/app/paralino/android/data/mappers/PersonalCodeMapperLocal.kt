@@ -18,10 +18,11 @@ class PersonalCodeMapperLocal(
         return PersonalCodeRaw(
             id = model.id,
             keyId = model.keyId,
-            ownerId = model.ownerId,
+            ownerUserId = model.ownerUserId,
             encryptedCode = model.encryptedCode,
             encryptedCodeData = model.encryptedCodeData,
-            validityUnix = model.validityUnix
+            validityUTC = model.validityUTC,
+            verification = model.verification
         )
     }
 
@@ -29,10 +30,11 @@ class PersonalCodeMapperLocal(
         return PersonalCodeEntity(
             id = model.id,
             keyId = model.keyId,
-            ownerId = model.ownerId,
+            ownerUserId = model.ownerUserId,
             encryptedCode = model.encryptedCode,
             encryptedCodeData = model.encryptedCodeData,
-            validityUnix = model.validityUnix
+            validityUTC = model.validityUTC,
+            verification = model.verification
         )
     }
 

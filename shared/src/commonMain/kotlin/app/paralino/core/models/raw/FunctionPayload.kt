@@ -191,3 +191,18 @@ data class UpdateUserDeviceFunctionData constructor(
     val pushToken: String,
     val deviceType: String
 )
+
+@Serializable
+data class PersonalCodeFunctionData constructor(
+    val keyId: String,
+    val encryptedCodeData: String,
+    val encryptedCode: String,
+    val validityUTC: String,
+    val verification: String
+)
+
+@Serializable
+data class PersonalCodeResponse constructor(
+    val userId: String,
+    val codeData: String
+)

@@ -1,6 +1,7 @@
 package app.paralino.core.models.user
 
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -9,13 +10,15 @@ import kotlinx.serialization.Serializable
 data class UserPersonalCode constructor(
     @SerialName("\$id")
     val id: String = "",
-    val validityUnix: Long,
+    val validityUTC: String,
+    val verification: String,
     val data: UserPersonalCodeData
 ) {
 
     fun isStillValid(): Boolean {
-        val now = nowUTC().epochSeconds
-        return validityUnix <= 0 || validityUnix >= now
+        val now = nowUTC()
+        val time = validityUTC.fromUTCtoInstant() ?: return false
+        return time >= now
     }
 
 }
@@ -27,6 +30,7 @@ data class UserPersonalCodeData constructor(
     val ownerImage: ImageModel?,
     val ownerPublicKey: String,
     val code: String,
+    val secretKey: String
 ) {
     val formattedCode get() = when {
         code.length <= 5 -> code

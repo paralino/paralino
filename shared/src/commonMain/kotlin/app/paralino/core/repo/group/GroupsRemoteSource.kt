@@ -23,7 +23,6 @@ import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.exceptions.PermissionDeniedException
 import app.paralino.core.utils.extensions.blocking
-import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
 import kotlinx.serialization.encodeToString
 
 class GroupsRemoteSource constructor(
@@ -113,10 +112,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (data.isSuccess) {
-                val response = data.response.fromJsonObjectToMapOfPrimitives()
-                    .filterValues { it != null }
-                    .mapValues { it.value!! }
-                response.parseGroup()
+                data.responseMap.parseGroup()
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(

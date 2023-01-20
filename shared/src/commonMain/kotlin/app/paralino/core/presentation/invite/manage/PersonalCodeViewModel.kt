@@ -28,7 +28,7 @@ class PersonalCodeViewModel(
                             PersonalCodeScreenCodeData(
                                 id = it.id,
                                 code = it.data.formattedCode,
-                                validityUnix = it.validityUnix
+                                validityUTC = it.validityUTC
                             )
                         }
 

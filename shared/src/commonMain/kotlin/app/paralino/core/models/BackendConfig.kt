@@ -39,6 +39,7 @@ object BackendResourceIDs {
     const val collectionPushNotificationID: String = "push_notifications"
 
     const val functionPersonalCodeReadID: String = "personal_code_read"
+    const val functionPersonalCodeCreateID: String = "personal_code_create"
     const val functionCreateGroupID: String = "group_create"
     const val functionDeleteGroupID: String = "group_delete"
     const val functionUpdateGroupID: String = "group_update"
