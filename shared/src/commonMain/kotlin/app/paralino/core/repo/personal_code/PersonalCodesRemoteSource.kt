@@ -1,6 +1,7 @@
 package app.paralino.core.repo.personal_code
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
@@ -35,13 +36,15 @@ class PersonalCodesRemoteSource constructor(
         val derivedCode = cryptoCore.derivePassword(personalCode)
         val myKey = userKeyRepo.latestKeyPair()
 
-        val secretKey = cryptoCore.getNewSymmetricKey().asBase64String(cryptoCore.hashProvider)
+        val secretKey = cryptoCore.getNewSymmetricKey()
+        val secretHash = cryptoCore.hashProvider.computeHash(secretKey.content, HashType.SHA256)
+            .asBase64String(cryptoCore.hashProvider)
         val secretKeyForOthers = cryptoCore.signData(
-            data = secretKey,
+            data = secretHash,
             myPrivateKey = myKey.privateKey
         )
         val secretKeyForMe = cryptoCore.encryptDataWithKey(
-            data = secretKeyForOthers,
+            data = secretKey.asBase64String(cryptoCore.hashProvider),
             key = userKeyRepo.personalKey.content
         )
 

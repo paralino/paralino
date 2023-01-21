@@ -11,7 +11,7 @@ class PersonalCodeMapperLocal(
 ) : IDataMapperLocal<PersonalCodeEntity, PersonalCodeRaw> {
 
     suspend fun local2Core(model: PersonalCodeEntity): UserPersonalCode {
-        return coreMapper.remote2Core(local2Remote(model))
+        return coreMapper.mapMyCode(local2Remote(model))
     }
 
     override suspend fun local2Remote(model: PersonalCodeEntity): PersonalCodeRaw {

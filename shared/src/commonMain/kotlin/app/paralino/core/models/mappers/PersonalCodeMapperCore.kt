@@ -1,12 +1,13 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.HashType
+import app.paralino.core.crypto.base64ToData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.DecryptionException
 import kotlinx.serialization.decodeFromString
 
@@ -26,10 +27,15 @@ class PersonalCodeMapperCore(
             BaseRemoteModule.formatter.decodeFromString<UserPersonalCodeData>(it)
         }
 
+        cryptoCore.verifySignature(
+            data = codeData.secretKey,
+            publicKey = codeData.ownerPublicKey
+        ) ?: throw DecryptionException("User personal code can not be verified")
+
         return codeData
     }
 
-    suspend fun remote2Core(model: PersonalCodeRaw): UserPersonalCode {
+    suspend fun mapMyCode(model: PersonalCodeRaw): UserPersonalCode {
 
         val code = cryptoCore.decryptDataWithKey(
             data = model.encryptedCode,
@@ -43,12 +49,17 @@ class PersonalCodeMapperCore(
             key = userKeyRepo.personalKey.content
         )
 
-        val verifiedKey = cryptoCore.verifySignature(
-            data = userOwnSecret,
+        val hash = cryptoCore.hashProvider.computeHash(
+            data = userOwnSecret.base64ToData(cryptoCore.hashProvider).content,
+            type = HashType.SHA256
+        ).asBase64String(cryptoCore.hashProvider)
+
+        val hashFromCodeData = cryptoCore.verifySignature(
+            data = codeData.secretKey,
             publicKey = userKeyRepo.latestKeyPair().publicKey
         )
 
-        if(userOwnSecret != codeData.secretKey || verifiedKey == null)
+        if(hash != hashFromCodeData)
             throw DecryptionException("User personal code can not be verified")
 
         return UserPersonalCode(
