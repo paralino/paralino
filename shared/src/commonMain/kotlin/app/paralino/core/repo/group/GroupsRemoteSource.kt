@@ -187,8 +187,7 @@ class GroupsRemoteSource constructor(
 
         val userKeyForOtherUsers = group.members.mapNotNull { groupMember ->
             val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
-            val publicy = myKey.publicKey
-            if (key != null && publicy != null) {
+            if (key != null) {
                 val encryptedKey = cryptoCore.encryptDataWithKey(
                     data = codeData.ownerPublicKey,
                     key = key
@@ -202,10 +201,12 @@ class GroupsRemoteSource constructor(
             }
         }
 
+        val keyId = cryptoCore.derivePassword(codeData.code).loginPassword
 
         val payload = CreateGroupMemberPayload(
             groupId = groupId,
-            userId = codeData.ownerId,
+            keyId = keyId,
+            userToAddId = codeData.ownerId,
             encryptedOwnerKey = encryptedMemberKey,
             groupKeys = encryptedOldKeys,
             keysForNewUser = keysForNewUser,

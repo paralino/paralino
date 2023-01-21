@@ -21,7 +21,8 @@ data class UpdateGroupPayload constructor(
 @Serializable
 data class CreateGroupMemberPayload constructor(
     val groupId: String,
-    val userId: String,
+    val keyId: String,
+    val userToAddId: String,
     val encryptedOwnerKey: String,
     val groupKeys: List<GroupMemberGroupKeysData>,
     val keysForNewUser: List<GroupMemberPublicKeyPayload>,
