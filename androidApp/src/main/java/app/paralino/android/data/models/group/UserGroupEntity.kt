@@ -14,6 +14,7 @@ data class UserGroupEntity constructor(
     val ownerUserId: String,
     val keyVersion: Long,
     val shouldRotateKeys: Boolean,
+    val integrity: String,
     val data: String
 ) : Parcelable {
 

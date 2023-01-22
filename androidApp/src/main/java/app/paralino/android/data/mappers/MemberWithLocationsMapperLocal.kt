@@ -76,6 +76,8 @@ class MemberMapperLocal() : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
             memberKeyVersion = model.memberKeyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
             data = model.data,
+            verification = model.verification,
+            integrity = model.integrity,
             locationIds = emptyList()
         )
     }
@@ -88,6 +90,8 @@ class MemberMapperLocal() : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
+            verification = model.verification,
+            integrity = model.integrity,
             data = model.data
         )
     }

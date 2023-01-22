@@ -3,6 +3,7 @@ package app.paralino.core.domain.group
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.logg
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.base.BaseRepository
@@ -20,6 +21,12 @@ class GroupMemberAddUseCase constructor(
     override val executionState = MutableStateFlow(listOf<String>())
 
     fun addMemberByAccessCode(groupId: String, code: UserPersonalCodeData): Flow<GroupDocumentRaw> {
+
+        if (isProcessing(groupId)) {
+            logg.tag("group_actions").v("Processing, can't add new member $groupId")
+            return flow { throw IllegalStateException("Group member creation already in progress") }
+        }
+
         return getDataOnce(
             remote = {
                 setAsProcessing(groupId)

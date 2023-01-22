@@ -19,6 +19,8 @@ data class MemberModel constructor(
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
     val shouldRotateKeys: Boolean,
+    val verification: String,
+    val integrity: String?,
     @Contextual
     val memberData: CryptoResource<MemberModelData>,
 ) {

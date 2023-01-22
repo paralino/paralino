@@ -1,25 +1,19 @@
 package app.paralino.core.repo.group
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.logg
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
-import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.*
 
 class GroupRepository constructor(
     private val local: IGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
-    private val userRepository: UserRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val userKeyRepo: CryptoUserKeyRepository,
     private val placesRepo: PlacesRepository,
     private val groupRefreshUseCase: GroupRefreshUseCase
 ) : BaseRepository() {
@@ -70,21 +64,6 @@ class GroupRepository constructor(
                 logg.tag("tag_crypto_key_group").d("group and keys ready, updating groups")
                 local.recreateGroups(it)
             }
-    }
-
-    fun createGroup(name: String, image: ImageModel): Flow<Unit> {
-        return getDataOnce(
-            remote = {
-                val userData = userRepository.cachedUser!!.data!!
-                remote.createGroup(
-                    name = name,
-                    image = image,
-                    myData = MemberModelData(userData.userName, userData.userImage),
-                    myKey = userKeyRepo.latestKeyPair()
-                ).also { cryptoKEKRepo.refreshKeysForGroup(it.group.id).first() }
-            },
-            localUpdate = { local.updateOrCreateGroup(it) }
-        ).map { Unit }
     }
 
     fun updateGroup(userGroup: UserGroup): Flow<Unit> {

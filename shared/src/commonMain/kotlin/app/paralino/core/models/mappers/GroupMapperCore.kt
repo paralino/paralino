@@ -43,6 +43,7 @@ class GroupMapperCore constructor(
             ownerUserId = model.ownerUserId,
             keyVersion = model.keyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
+            integrity = model.integrity,
             data = groupData
         )
     }
@@ -81,6 +82,7 @@ class GroupMapperCore constructor(
             keyVersion = model.keyVersion,
             shouldRotateKeys = model.shouldRotateKeys,
             data = groupData,
+            integrity = model.integrity,
             memberCount = memberCount
         )
     }

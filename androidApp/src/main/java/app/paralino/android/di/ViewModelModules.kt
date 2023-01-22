@@ -55,7 +55,7 @@ val viewModelModules = module {
     viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), config) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), startScreenType as LoginScreenUiType) }
-    viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get()) }
+    viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
     viewModel { (args: String?) ->
         SharingStartViewModel(args, get(), get(), get(), get(), get())
     }
@@ -120,10 +120,11 @@ val coreModule = module {
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
+    single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get()) }
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get()) }
-    single { GroupRepository(get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupRepository(get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
     single { LocationRepository(get(), get(), get(), get(), get(), get()) }
     single { PlacesRepository(get(), get(), get(), get(), get()) }

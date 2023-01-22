@@ -30,6 +30,8 @@ class UserGroupLocalDataSource constructor(
         dao.createOrUpdate(mapper.remote2Local(group))
     }
 
+    // TODO if group is deleted, changes are not propagated because of filterNotNull()
+
     override fun getGroupRawPresentation(groupId: String): Flow<Pair<GroupDocumentRaw, UserGroup>> {
         return dao.getGroup(groupId)
             .filterNotNull()

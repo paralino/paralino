@@ -18,6 +18,7 @@ data class UserGroup constructor(
     val shouldRotateKeys: Boolean,
     @Contextual
     val data: CryptoResource<UserGroupData>,
+    val integrity: String,
     val memberCount: Int
 ) {
 

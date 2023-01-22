@@ -131,6 +131,8 @@ class MemberMapperCore constructor(
             groupKeyVersion = model.member.groupKeyVersion,
             memberKeyVersion = model.member.memberKeyVersion,
             shouldRotateKeys = model.member.shouldRotateKeys,
+            verification = model.member.verification,
+            integrity = model.member.integrity,
             memberData = memberData
         )
 

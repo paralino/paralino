@@ -4,6 +4,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 
@@ -52,6 +53,7 @@ class PersonalCodeViewModel(
 
     fun createPersonalCode() {
         repo.createPersonalCode()
+            .mapToPayload { it }
             .onEach { result ->
                 _uiState.update {
                     it.mapSuccess { it.copy(createLoading = result is Payload.Loading) }

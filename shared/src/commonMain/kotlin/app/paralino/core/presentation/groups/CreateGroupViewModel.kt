@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.groups
 
+import app.paralino.core.domain.group.GroupCreateUseCase
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class CreateGroupViewModel(
     private val groupId: String?,
     private val groupRepo: GroupRepository,
+    private val createGroup: GroupCreateUseCase
 ) : CoreViewModel() {
 
 
@@ -77,7 +79,7 @@ class CreateGroupViewModel(
             val newGroup = group.copy(data = newData)
             groupRepo.updateGroup(newGroup)
         } else {
-            groupRepo.createGroup(filteredName, image)
+            createGroup.createGroup(filteredName, image)
         }
 
         groupUpdateFlow

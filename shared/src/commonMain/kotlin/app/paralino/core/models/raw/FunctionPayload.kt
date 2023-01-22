@@ -8,6 +8,9 @@ data class CreateGroupPayload constructor(
     val encryptedGroupKey: String,
     val encryptedMemberKey: String,
     val encryptedPublicKey: String,
+    val groupOwnIntegrity: String,
+    val groupMemberIntegrity: String,
+    val memberVerification: String,
     val groupData: String,
     val memberData: String
 )
@@ -22,6 +25,9 @@ data class UpdateGroupPayload constructor(
 data class CreateGroupMemberPayload constructor(
     val groupId: String,
     val keyId: String,
+    val groupOwnIntegrity: String,
+    val groupMemberIntegrity: String,
+    val memberVerification: String,
     val userToAddId: String,
     val encryptedOwnerKey: String,
     val groupKeys: List<GroupMemberGroupKeysData>,

@@ -18,9 +18,9 @@ class PersonalCodesRepository constructor(
     private val userRepo: UserRepository
 ) : BaseRepository() {
 
-    fun createPersonalCode(): Flow<Payload<PersonalCodeRaw>> {
+    fun createPersonalCode(): Flow<PersonalCodeRaw> {
         val user = userRepo.cachedUser
-            ?: return flow { emit(Payload.Error(Throwable("User not valid"))) }
+            ?: return flow { throw Throwable("User not valid") }
 
         return getDataOnce(
             remote = {
@@ -45,7 +45,7 @@ class PersonalCodesRepository constructor(
                 }
             },
             localUpdate = { local.addPersonalCode(it) }
-        ).mapToPayload()
+        )
     }
 
     fun getMyPersonalCodes(): Flow<Payload<List<UserPersonalCode>>> {
@@ -87,7 +87,7 @@ class PersonalCodesRepository constructor(
         )
             .flatMapLatest {
                 val flow = if (it.isNotEmpty()) {
-                    createPersonalCode().map { it.mapSuccess { true } }
+                    createPersonalCode().mapToPayload { true }
                 } else {
                     flowOf(true).mapToPayload()
                 }

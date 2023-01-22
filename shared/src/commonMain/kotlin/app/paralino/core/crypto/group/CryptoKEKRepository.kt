@@ -190,6 +190,10 @@ class CryptoKEKRepository(
         }
     }
 
+    suspend fun getAllRawMemberPublicKeys(groupId: String): List<String> {
+       return getMemberKeys().filter { it.groupId == groupId }.map { it.encryptedPublicKey }
+    }
+
     // TODO pass key version
     suspend fun getMemberKey(
         groupId: String,
