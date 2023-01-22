@@ -211,7 +211,14 @@ class CryptoKEKRepository(
             cryptoCore.decryptDataWithKey(
                 data = keyRaw.encryptedPublicKey,
                 key = userKeyRepository.latestKeyPair().publicKey
-            )
+            ).let { key ->
+                // always return own public key from secure storage but ensure no one tampered with key from server
+                if(memberUserId == currentUserId) {
+                    userKeyRepository.latestKeyPair().publicKey.takeIf { it == key }
+                } else {
+                    key
+                }
+            }
         } catch (e: Exception) {
             null
         }
@@ -247,10 +254,18 @@ class CryptoKEKRepository(
             cryptoCore.decryptDataWithKey(
                 data = keyRaw.encryptedPublicKey,
                 key = userKeyRepository.latestKeyPair().publicKey
-            )
+            ).let { key ->
+                // always return own public key from secure storage but ensure no one tampered with key from server
+                if(memberUserId == currentUserId) {
+                    userKeyRepository.latestKeyPair().publicKey.takeIf { it == key }
+                } else {
+                    key
+                }
+            }
         } catch (e: Exception) {
             null
         }
+
         return memberPublicKey
     }
 
