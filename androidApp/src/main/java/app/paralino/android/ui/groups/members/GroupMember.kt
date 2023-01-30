@@ -138,7 +138,7 @@ fun MemberPreview() {
                 Spacer(modifier = Modifier.size(8.dp))
                 GroupMember(
                     state = GroupMemberItemStateWithOneLocation(
-                        memberState = dummyMemberState,
+                        memberState = dummyMemberState.copy(isVerified = false),
                         location = dummyLocations.first()
                     )
                 ) { }
@@ -161,7 +161,8 @@ val dummyMemberState = GroupMemberState(
     actionItem = MemberAction.DELETE_MEMBER,
     name = "User name",
     image = ImageModel.emoji(Emojis.robot),
-    isCurrentUser = true
+    isCurrentUser = true,
+    isVerified = true
 )
 
 val dummyLocations = listOf(

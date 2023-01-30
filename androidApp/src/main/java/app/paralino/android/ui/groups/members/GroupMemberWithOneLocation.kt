@@ -1,7 +1,6 @@
 package app.paralino.android.ui.groups.members
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,11 +24,14 @@ import androidx.constraintlayout.compose.ConstraintLayoutScope
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.android.ui.groups.GroupStatusTag
+import app.paralino.android.ui.groups.GroupStatusTagType
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.groups.GroupMemberStatus
 import app.paralino.core.utils.Emojis
 
 @Composable
@@ -150,19 +152,12 @@ fun ConstraintLayoutScope.GroupMemberWithOneLocation(
             modifier = Modifier
         )
 
-        if (state.status.actionText != null) {
-            Text(
-                text = stringResource(id = state.status.actionText!!),
-                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colors.onPrimary.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .background(
-                        MaterialTheme.colors.secondary,
-                        MaterialTheme.shapes.medium
-                    )
-                    .padding(horizontal = 6.dp, vertical = 1.dp)
-            )
+        val status = when{
+            !state.memberState.isVerified -> GroupStatusTagType.UNVERIFIED
+            state.status == GroupMemberStatus.INACTIVE -> GroupStatusTagType.INACTIVE
+            else -> null
         }
+        GroupStatusTag(status)
 
         if (state.location?.lastPing != null) {
             Row(verticalAlignment = Alignment.CenterVertically) {
