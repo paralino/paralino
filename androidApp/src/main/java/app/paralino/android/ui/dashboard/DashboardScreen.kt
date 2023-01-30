@@ -145,29 +145,13 @@ fun DashboardScreen(
                             }
                         )
                     } else {
-
-                        if (state.data.activeGroups.isNotEmpty()) {
-                            SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_active))
-                            state.data.activeGroups.forEach {
-                                GroupListItem(data = it) {
-                                    appState.navController.navigate(
-                                        AppScreen.DashboardRoot.GroupDetails.route(it.id)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.size(8.dp))
+                        state.data.groups.forEach {
+                            GroupListItem(data = it) {
+                                appState.navController.navigate(
+                                    AppScreen.DashboardRoot.GroupDetails.route(it.id)
+                                )
                             }
-                        }
-
-                        if (state.data.inactiveGroups.isNotEmpty()) {
-                            SettingsSectionHeader(name = stringResource(id = R.string.dashboard_groups_section_inactive))
-                            state.data.inactiveGroups.forEach {
-                                GroupListItem(data = it) {
-                                    appState.navController.navigate(
-                                        AppScreen.DashboardRoot.GroupDetails.route(it.id)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.size(8.dp))
-                            }
+                            Spacer(modifier = Modifier.size(8.dp))
                         }
 
                         Spacer(modifier = Modifier.size(100.dp))

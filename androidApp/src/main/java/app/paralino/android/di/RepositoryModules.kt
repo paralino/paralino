@@ -86,7 +86,7 @@ val mappersModule = module {
     single { SharingContractsMapper }
     single { GroupsMapperLocal(get()) }
     single { GroupMapperCore(get(), get(), get()) }
-    single { MemberMapperCore(get(), get()) }
+    single { MemberMapperCore(get(), get(), get()) }
     single { MemberWithLocationsMapperLocal(get(), get()) }
     single { MemberMapperLocal() }
     single { GroupKeysMapper() }

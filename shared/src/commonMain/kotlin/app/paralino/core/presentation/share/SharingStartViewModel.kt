@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.share
 
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
+import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
@@ -106,6 +107,7 @@ class SharingStartViewModel(
             try {
                 registerDevice.registerDevice(group.id)
             } catch (e: Exception) {
+                logg.e("Unable to register device", e)
                 _uiState.update { it.copy(loadingAction = false) }
                 _eventChannel.send(SharingStartScreenEvent.CanNotRegisterDevice)
                 return@launch
@@ -130,6 +132,7 @@ class SharingStartViewModel(
                     sharingManager.isSharingActiveForGroup(group.id).takeIf { it }
                 }
             } catch (e: TimeoutException) {
+                logg.e("Sharing timeout", e)
                 false
             }
 

@@ -26,7 +26,7 @@ import androidx.core.widget.TextViewCompat
 import app.paralino.android.R
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
-import app.paralino.core.utils.extensions.fromUTCtoInstant
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -47,7 +47,7 @@ fun PersonalCodeItem(
         code = state.code,
         // TODO review date format
         validity = state.validityUTC
-            .fromUTCtoInstant()
+            .isoWithOffsetToInstant()
             ?.toLocalDateTime(TimeZone.UTC)
             ?.toJavaLocalDateTime()
             ?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))

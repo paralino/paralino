@@ -72,16 +72,28 @@ class GroupsRemoteSource constructor(
             val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
                 data = cryptoCore.keyProvider.createNewSymmetricKey().content,
                 type = HashType.SHA256
-            ).asBase64String(cryptoCore.hashProvider)
+            ).asBase64String(cryptoCore.hashProvider).let {
+                cryptoCore.encryptDataWithKeyPair(
+                    data = it,
+                    myPrivateKey = myKey.privateKey,
+                    publicKey = myKey.publicKey
+                )
+            }.let {
+                cryptoCore.signData(
+                    data = it,
+                    myPrivateKey = myKey.privateKey,
+                )
+            }
 
             val memberVerification = MemberVerification(
                 groupOwnerSecret = ownerVerificationSecret,
                 memberSecret = code.data.secretKey
             ).let {
-                cryptoCore.encryptDataWithKeyPair(
-                    data = BaseRemoteModule.formatter.encodeToString(it),
+                BaseRemoteModule.formatter.encodeToString(it)
+            }.let {
+                cryptoCore.signData(
+                    data = it,
                     myPrivateKey = myKey.privateKey,
-                    publicKey = myKey.publicKey
                 )
             }
 
@@ -210,6 +222,10 @@ class GroupsRemoteSource constructor(
         )
 
         val keysForNewUser = group.members.mapNotNull { groupMember ->
+
+            if(!groupMember.member.isVerified)
+                return@mapNotNull null
+
             val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
             if (key != null) {
                 val encryptedKey = cryptoCore.encryptDataWithKey(
@@ -247,16 +263,28 @@ class GroupsRemoteSource constructor(
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
             data = cryptoCore.keyProvider.createNewSymmetricKey().content,
             type = HashType.SHA256
-        ).asBase64String(cryptoCore.hashProvider)
+        ).asBase64String(cryptoCore.hashProvider).let {
+            cryptoCore.encryptDataWithKeyPair(
+                data = it,
+                myPrivateKey = myKey.privateKey,
+                publicKey = myKey.publicKey
+            )
+        }.let {
+            cryptoCore.signData(
+                data = it,
+                myPrivateKey = myKey.privateKey,
+            )
+        }
 
         val memberVerification = MemberVerification(
             groupOwnerSecret = ownerVerificationSecret,
             memberSecret = codeData.secretKey
         ).let {
-            cryptoCore.encryptDataWithKeyPair(
-                data = BaseRemoteModule.formatter.encodeToString(it),
+            BaseRemoteModule.formatter.encodeToString(it)
+        }.let {
+            cryptoCore.signData(
+                data = it,
                 myPrivateKey = myKey.privateKey,
-                publicKey = codeData.ownerPublicKey
             )
         }
 

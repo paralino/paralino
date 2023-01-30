@@ -49,6 +49,10 @@ interface MemberDao {
     fun getMember(groupId: String, userId: String): Flow<MemberEntityWithLocations?>
 
     @Transaction
+    @Query("SELECT * FROM members WHERE groupId = :groupId AND userId = :userId")
+    suspend fun getMemberOnce(groupId: String, userId: String): MemberEntityWithLocations?
+
+    @Transaction
     @Query("SELECT * FROM members WHERE userId = :userId")
     fun getLocationsForUser(userId: String): Flow<List<MemberEntityWithLocations>>
 

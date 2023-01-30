@@ -20,7 +20,8 @@ data class GroupMemberState constructor(
     val actionItem: MemberAction? = null,
     val name: String,
     val image: ImageModel?,
-    val isCurrentUser: Boolean
+    val isCurrentUser: Boolean,
+    val isVerified: Boolean
 ) {
     constructor(member: MemberModel, isCurrentUser: Boolean) : this(
         groupId = member.groupId,
@@ -29,7 +30,8 @@ data class GroupMemberState constructor(
         actionItem = null,
         name = member.name,
         image = member.image,
-        isCurrentUser = isCurrentUser
+        isCurrentUser = isCurrentUser,
+        isVerified = member.isVerified
     )
 }
 

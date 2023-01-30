@@ -1,31 +1,27 @@
 package app.paralino.android.di
 
-import app.paralino.core.domain.user.*
-import app.paralino.core.presentation.login.LoginScreenUiType
-import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.repo.location.LocationRepository
-import app.paralino.core.repo.personal_code.PersonalCodesRepository
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.android.data.PreCheckControl
-import app.paralino.android.tracking.LocationInitHandler
-import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.notification.PlaceNotificationHandler
-import app.paralino.core.notifications.PushNotificationHandler
+import app.paralino.android.tracking.LocationInitHandler
+import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.config
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
+import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.group.*
 import app.paralino.core.domain.location.*
+import app.paralino.core.domain.user.*
 import app.paralino.core.notifications.IPlaceNotificationsHandler
+import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.presentation.dashboard.DashboardViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
+import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
@@ -41,9 +37,14 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
+import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.UserRepository
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -121,6 +122,8 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get()) }
+
+    single { GroupValidityVerification(get(), get(), config) }
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get()) }

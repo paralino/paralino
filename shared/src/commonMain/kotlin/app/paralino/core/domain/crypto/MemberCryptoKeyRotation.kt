@@ -154,6 +154,10 @@ class MemberCryptoKeyRotation(
             )
 
             val keys = group.members.mapNotNull { groupMember ->
+
+                if(!groupMember.member.isVerified)
+                    return@mapNotNull null
+
                 val memberPublicKey = cryptoKEKRepository.getMemberPublicKey(group.id, groupMember.member.userId)
                 if(memberPublicKey != null) {
                     GroupMemberKeyPayload(
@@ -205,7 +209,7 @@ class MemberCryptoKeyRotation(
         // TODO review if we should create a key if user has no key document
         val membersThatNeedKeyUpdate = remoteGroup.members.filter { member ->
             val memberKey = memberKeysCreatedByMe.firstOrNull { it.memberUserId == member.member.userId }
-            memberKey != null && memberKey.encryptedSenderKey == null
+            member.member.isVerified && memberKey != null && memberKey.encryptedSenderKey == null
         }
 
         if (membersThatNeedKeyUpdate.isNotEmpty()) {
@@ -245,6 +249,10 @@ class MemberCryptoKeyRotation(
                 currentSenderKey?.data?.content ?: cryptoCore.getNewSymmetricKey().content
 
             val keys = members.mapNotNull { groupMember ->
+
+                if(!groupMember.isVerified)
+                    return@mapNotNull null
+
                 val memberPublicKey = cryptoKEKRepository.getMemberPublicKey(groupId, groupMember.userId)
                 if(memberPublicKey != null) {
                     GroupMemberKeyPayload(

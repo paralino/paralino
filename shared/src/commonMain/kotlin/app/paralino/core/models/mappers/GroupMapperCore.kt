@@ -1,7 +1,9 @@
 package app.paralino.core.models.mappers
 
+import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.group.UserGroup
@@ -48,7 +50,7 @@ class GroupMapperCore constructor(
         )
     }
 
-    suspend fun remote2Core(model: GroupDocumentRaw, memberCount: Int = 0): UserGroup {
+    suspend fun remote2Core(model: GroupDocumentRaw, memberCount: Int = 0, verification: VerificationResult): UserGroup {
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
@@ -83,7 +85,8 @@ class GroupMapperCore constructor(
             shouldRotateKeys = model.shouldRotateKeys,
             data = groupData,
             integrity = model.integrity,
-            memberCount = memberCount
+            memberCount = memberCount,
+            verification = verification
         )
     }
 
@@ -94,8 +97,9 @@ class GroupMapperCore constructor(
                 groupOwnerId = model.group.ownerUserId
             )
         }
+        val verification = members.first { it.member.userId == config.userId }.member.verificationResult
         return UserGroupWithMembers(
-            group = remote2Core(model.group, members.size),
+            group = remote2Core(model.group, members.size, verification),
             members = members
         )
     }

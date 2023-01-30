@@ -18,6 +18,7 @@ interface ILocationLocalDataSource {
     fun getMemberModelsForUser(userId: String): Flow<List<MemberModelWithLocations>>
     fun getMembersForGroup(groupId: String): Flow<List<MemberModelWithLocations>>
     fun getMember(groupId: String, userId: String): Flow<MemberModelWithLocations>
+    suspend fun getMemberOnce(groupId: String, userId: String): MemberModelWithLocations?
     fun getMemberCountInGroup(groupId: String): Flow<Int>
     suspend fun getMemberCountInGroupOnce(groupId: String): Int
 

@@ -59,6 +59,7 @@
 
     <string name="dashboard_groups_section_active">Active</string>
     <string name="dashboard_groups_section_inactive">Inactive</string>
+    <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create new group</string>
     <string name="dashboard_groups_join_button">Or join a group</string>
     <string name="dashboard_info_logged_out">Log in to start sharing your location.</string>

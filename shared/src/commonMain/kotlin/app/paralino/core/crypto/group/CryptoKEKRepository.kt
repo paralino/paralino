@@ -165,11 +165,16 @@ class CryptoKEKRepository(
 
         val ownerPublicKey = getMemberPublicKey(groupId, memberUserId = groupOwnerId) ?: return null
 
-        val groupKey = cryptoCore.decryptKeyWithKeyPair(
-            key = keyRaw.encryptedGroupKey,
-            myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
-            publicKey = ownerPublicKey
-        )
+        val groupKey = try {
+            cryptoCore.decryptKeyWithKeyPair(
+                key = keyRaw.encryptedGroupKey,
+                myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
+                publicKey = ownerPublicKey
+            )
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group").d("Invalid member key for group $groupId")
+            return null
+        }
 
         return DecryptedGroupKeyData(keyRaw.version, groupKey)
     }
@@ -230,12 +235,22 @@ class CryptoKEKRepository(
         if(keyRaw.encryptedSenderKey == null || memberPublicKey == null)
             return null
 
-        val memberKey = cryptoCore.decryptKeyWithKeyPair(
-            key = keyRaw.encryptedSenderKey,
-            myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
-            publicKey = memberPublicKey
-        )
+        val memberKey = try {
+            cryptoCore.decryptKeyWithKeyPair(
+                key = keyRaw.encryptedSenderKey,
+                myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
+                publicKey = memberPublicKey
+            )
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group_member").d("Invalid member key for group $groupId & member $memberUserId")
+            return null
+        }
         return DecryptedGroupKeyData(keyRaw.version ?: -1, memberKey)
+    }
+
+    suspend fun getGroupOwnerPublicKey(groupId: String): String? {
+        val groupOwnerId = local.getGroupOwnerId(groupId) ?: return null
+        return getMemberPublicKey(groupId, groupOwnerId)
     }
 
     suspend fun getMemberPublicKey(

@@ -1,5 +1,6 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -23,10 +24,12 @@ data class MemberModel constructor(
     val integrity: String?,
     @Contextual
     val memberData: CryptoResource<MemberModelData>,
+    val verificationResult: VerificationResult
 ) {
 
     val name: String get() = memberData.data?.name ?: "---"
     val image: ImageModel? get() = memberData.data?.image ?: ImageModel.emoji(Emojis.lock)
+    val isVerified: Boolean get() = verificationResult == VerificationResult.VERIFIED
 
 }
 

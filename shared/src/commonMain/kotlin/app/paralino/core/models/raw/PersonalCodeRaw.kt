@@ -1,6 +1,6 @@
 package app.paralino.core.models.raw
 
-import app.paralino.core.utils.extensions.fromUTCtoInstant
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -19,7 +19,7 @@ data class PersonalCodeRaw constructor(
 
     fun isStillValid(): Boolean {
         val now = nowUTC()
-        val time = validityUTC.fromUTCtoInstant() ?: return false
+        val time = validityUTC.isoWithOffsetToInstant() ?: return false
         return time >= now
     }
 

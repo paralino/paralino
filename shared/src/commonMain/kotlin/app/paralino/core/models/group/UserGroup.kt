@@ -1,6 +1,7 @@
 package app.paralino.core.models.group
 
 import app.paralino.core.config
+import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -19,9 +20,11 @@ data class UserGroup constructor(
     @Contextual
     val data: CryptoResource<UserGroupData>,
     val integrity: String,
-    val memberCount: Int
+    val memberCount: Int,
+    val verification: VerificationResult,
 ) {
 
+    val isVerified get() = verification == VerificationResult.VERIFIED
     val name: String get() = data.data?.name ?: "---"
     val image: ImageModel get() = data.data?.image ?: ImageModel.emoji(Emojis.lock)
 
@@ -47,6 +50,7 @@ data class UserGroupWithMembers constructor(
     val members: List<MemberModelWithLocations>
 ) {
 
+    val isGroupVerified get() = group.isVerified && memberByUserId(config.userId).isVerified
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
     val keyVersion: Long get() = group.keyVersion

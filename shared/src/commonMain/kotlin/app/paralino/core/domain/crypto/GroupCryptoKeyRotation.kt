@@ -6,6 +6,7 @@ import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.places.GroupPlace
@@ -74,11 +75,11 @@ class GroupCryptoKeyRotation constructor(
             myKey = myKey
         )
 
+        // new group key is required first since we are re-encrypting user data with it
         // 2. fetch new key(s) for that group
         cryptoKEKRepository.refreshGroupKeysForGroup(groupId = remoteGroup.id).first()
 
         // 3. rotate member keys
-        // new group key is required first since we are re-encrypting user data with it
         memberCryptoKeyRotation.onlyRotateMemberKeysForGroup(group = remoteGroup)
 
         // 4. refresh member keys
@@ -114,6 +115,10 @@ class GroupCryptoKeyRotation constructor(
                 group.members.map { it.member.groupKeyVersion } + places.map { it.keyVersion } + group.keyVersion
 
             val keys = group.members.mapNotNull { groupMember ->
+
+                if(!groupMember.member.isVerified)
+                    return@mapNotNull null
+
                 val memberPublicKey = cryptoKEKRepository.getMemberPublicKey(group.id, groupMember.member.userId)
                 if(memberPublicKey != null) {
                     GroupKeysPayload(

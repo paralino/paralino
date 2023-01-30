@@ -8,6 +8,8 @@ import app.paralino.core.repo.group.IGroupLocalDataSource
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import app.paralino.android.data.mappers.GroupsMapperLocal
+import app.paralino.core.config
+import app.paralino.core.domain.crypto.VerificationResult
 import kotlinx.coroutines.flow.*
 
 class UserGroupLocalDataSource constructor(
@@ -34,29 +36,33 @@ class UserGroupLocalDataSource constructor(
 
     override fun getGroupRawPresentation(groupId: String): Flow<Pair<GroupDocumentRaw, UserGroup>> {
         return dao.getGroup(groupId)
-            .filterNotNull()
-            .combine(memberLocal.getMemberCountInGroup(groupId)) { group, memberCount ->
-                mapper.local2Remote(group) to mapper.local2Core(group, memberCount)
+            .filterNotNull().let {
+                combine(it, memberLocal.getMemberCountInGroup(groupId), memberLocal.getMember(groupId, config.userId)) { group, memberCount, member ->
+                    mapper.local2Remote(group) to mapper.local2Core(group, memberCount, member.member.verificationResult)
+                }
             }
     }
 
     override fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
         return dao.getGroup(groupId)
-            .filterNotNull()
-            .combine(memberLocal.getMemberCountInGroup(groupId)) { group, memberCount ->
-                mapper.local2Core(group, memberCount)
+            .filterNotNull().let {
+                combine(it, memberLocal.getMemberCountInGroup(groupId), memberLocal.getMember(groupId, config.userId)) { group, memberCount, member ->
+                    mapper.local2Core(group, memberCount, member.member.verificationResult)
+                }
             }
     }
 
     override fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
         return dao.getGroup(groupId)
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
-                if(group != null)
+                if(group != null) {
+                    val verificationResult =
+                        members.first { it.member.userId == config.userId }.member.verificationResult
                     UserGroupWithMembers(
-                        group = mapper.local2Core(group, members.size),
+                        group = mapper.local2Core(group, members.size, verificationResult),
                         members = members
                     )
-                else null
+                } else null
             }
             .filterNotNull()
     }
@@ -72,7 +78,11 @@ class UserGroupLocalDataSource constructor(
                             .map { group to it }
                     }
                     combine(flows) {
-                        it.map { mapper.local2Core(it.first, it.second) }
+                        it.map {
+                            val verificationResult = memberLocal.getMemberOnce(it.first.id, config.userId)?.member?.verificationResult
+                                ?: VerificationResult.GENERIC_ERROR
+                            mapper.local2Core(it.first, it.second, verificationResult)
+                        }
                     }
                 }
             }
