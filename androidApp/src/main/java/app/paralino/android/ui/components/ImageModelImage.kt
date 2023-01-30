@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.core.models.base.ImageModel
@@ -25,6 +26,7 @@ import app.paralino.android.utils.extensions.bitmapFromBase64
 fun ImageModelImage(
     imageModel: ImageModel,
     modifier: Modifier = Modifier,
+    cornerSize: Dp = 8.dp,
     useBackgroundForEmoji: Boolean = true
 ) {
     when (imageModel.getImageType()) {
@@ -32,7 +34,7 @@ fun ImageModelImage(
             val emoji = imageModel.getImageValue()!!
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(cornerSize))
                     .run {
                         if (useBackgroundForEmoji)
                             this
@@ -55,7 +57,7 @@ fun ImageModelImage(
                 Image(
                     bitmap = imageContent,
                     contentDescription = null,
-                    modifier = modifier.clip(RoundedCornerShape(8.dp))
+                    modifier = modifier.clip(RoundedCornerShape(cornerSize))
                 )
             }
         }
