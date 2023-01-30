@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Dashboard
-import androidx.compose.material.icons.rounded.Map
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -138,12 +138,15 @@ fun RootApp(
                         )
                     }
                     is AppAccountState.NO_USER_DATA -> {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
                             CircularProgressIndicator(color = MaterialTheme.colors.primary)
                         }
                     }
                     is AppAccountState.USER_READY -> {
-                        val startScreen = if(finalState.groupCount > 0) {
+                        val startScreen = if (finalState.groupCount > 0) {
                             AppScreen.MapRoot
                         } else {
                             AppScreen.DashboardRoot
@@ -246,9 +249,16 @@ fun RowScope.BottomBarButtons(
     val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val unselectedColor = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.high)
+    val selectedColor = LocalContentColor.current
+    val homeSelected =
+        currentDestination?.hierarchy?.any { it.route == AppScreen.DashboardRoot.routeSignature } == true
+    val mapSelected =
+        currentDestination?.hierarchy?.any { it.route == AppScreen.MapRoot.routeSignature } == true
+    val settingsSelected =
+        currentDestination?.hierarchy?.any { it.route == AppScreen.SettingsRoot.routeSignature } == true
 
     BottomNavigationItem(
-        selected = currentDestination?.hierarchy?.any { it.route == AppScreen.DashboardRoot.routeSignature } == true,
+        selected = homeSelected,
         onClick = {
             naviClick(
                 navController = appState.navController,
@@ -256,16 +266,24 @@ fun RowScope.BottomBarButtons(
                 firstRoute = AppScreen.DashboardRoot.Dashboard.routeSignature
             )
         },
+        label = {
+            Text(
+                text = stringResource(id = R.string.title_dashboard),
+                fontWeight = if (homeSelected) FontWeight.Bold else FontWeight.Medium
+            )
+        },
+        alwaysShowLabel = true,
         icon = {
             Icon(
-                imageVector = Icons.Rounded.Dashboard,
+                imageVector = Icons.Rounded.Workspaces,
                 contentDescription = null
             )
         },
+        selectedContentColor = selectedColor,
         unselectedContentColor = unselectedColor
     )
     BottomNavigationItem(
-        selected = currentDestination?.hierarchy?.any { it.route == AppScreen.MapRoot.routeSignature } == true,
+        selected = mapSelected,
         onClick = {
             naviClick(
                 navController = appState.navController,
@@ -273,11 +291,19 @@ fun RowScope.BottomBarButtons(
                 firstRoute = AppScreen.MapRoot.MainMap.routeSignature
             )
         },
-        icon = { Icon(imageVector = Icons.Rounded.Map, contentDescription = null) },
+        label = {
+            Text(
+                text = stringResource(id = R.string.title_map),
+                fontWeight = if (mapSelected) FontWeight.ExtraBold else FontWeight.Normal
+            )
+        },
+        alwaysShowLabel = true,
+        icon = { Icon(imageVector = Icons.Rounded.PersonPinCircle, contentDescription = null) },
+        selectedContentColor = selectedColor,
         unselectedContentColor = unselectedColor
     )
     BottomNavigationItem(
-        selected = currentDestination?.hierarchy?.any { it.route == AppScreen.SettingsRoot.routeSignature } == true,
+        selected = settingsSelected,
         onClick = {
             naviClick(
                 navController = appState.navController,
@@ -285,12 +311,20 @@ fun RowScope.BottomBarButtons(
                 firstRoute = AppScreen.SettingsRoot.Settings.routeSignature
             )
         },
+        label = {
+            Text(
+                text = stringResource(id = R.string.title_settings),
+                fontWeight = if (settingsSelected) FontWeight.Bold else FontWeight.Light
+            )
+        },
+        alwaysShowLabel = true,
         icon = {
             Icon(
                 imageVector = Icons.Rounded.Settings,
                 contentDescription = null
             )
         },
+        selectedContentColor = selectedColor,
         unselectedContentColor = unselectedColor
     )
 }
