@@ -47,6 +47,8 @@ class GroupCryptoKeyRotation constructor(
         force: Boolean
     ): Boolean {
         if (remoteGroup.ownerUserId != userRepository.cachedUserId) return false
+        // if group is not verified (current member is not verified - group owner) skip key generation
+        if (!remoteGroup.isGroupVerified) return false
         if (isProcessing(remoteGroup.id)) return false
 
         val integrity = validityVerification.checkIntegrity(remoteGroup)

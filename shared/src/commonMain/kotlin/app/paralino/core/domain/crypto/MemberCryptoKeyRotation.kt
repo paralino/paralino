@@ -46,6 +46,10 @@ class MemberCryptoKeyRotation(
         refresh: Boolean = true,
     ): Boolean {
 
+        // if group is not verified (current member is not verified) skip key generation
+        if(!remoteGroup.isGroupVerified)
+            return false
+
         val integrity = validityVerification.checkIntegrity(remoteGroup)
         if(integrity == IntegrityResult.CORRUPTED)
             return false
