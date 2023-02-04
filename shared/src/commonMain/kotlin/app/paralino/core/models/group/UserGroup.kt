@@ -16,10 +16,8 @@ data class UserGroup constructor(
     val id: String,
     val ownerUserId: String,
     val keyVersion: Long,
-    val shouldRotateKeys: Boolean,
     @Contextual
     val data: CryptoResource<UserGroupData>,
-    val integrity: String,
     val memberCount: Int,
     val verification: VerificationResult,
 ) {
@@ -54,7 +52,6 @@ data class UserGroupWithMembers constructor(
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
     val keyVersion: Long get() = group.keyVersion
-    val shouldRotateKeys: Boolean get() = group.shouldRotateKeys
     val data: CryptoResource<UserGroupData> get() = group.data
     val memberCount: Int get() = members.size
 

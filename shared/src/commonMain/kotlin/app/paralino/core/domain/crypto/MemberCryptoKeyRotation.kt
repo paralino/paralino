@@ -9,6 +9,7 @@ import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.data
+import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.raw.GroupMemberDataPayload
@@ -21,6 +22,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
@@ -31,83 +33,53 @@ class MemberCryptoKeyRotation(
     private val cryptoCore: CryptoCore,
     private val userRepository: UserRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
-    private val cryptoKEKRepository: CryptoKEKRepository
+    private val cryptoKEKRepository: CryptoKEKRepository,
+    private val validityVerification: GroupValidityVerification
 ): ILimitedExecution<String> {
 
     override val executionState = MutableStateFlow(listOf<String>())
 
 
-    suspend fun rotateMemberKeysIfNeeded(
+    suspend fun rotateMemberKeys(
         remoteGroup: UserGroupWithMembers,
         force: Boolean = false,
+        refresh: Boolean = true,
     ): Boolean {
 
-        val shouldRotateKeys = remoteGroup.members.any {
-            // check if any of current user member documents have key rotate flag set
-            it.member.userId == userRepository.cachedUserId && it.member.shouldRotateKeys
-        }
+        val integrity = validityVerification.checkIntegrity(remoteGroup)
+        if(integrity == IntegrityResult.CORRUPTED)
+            return false
 
-        if (shouldRotateKeys || force) {
+        if (force || integrity == IntegrityResult.VALID_EXPIRED) {
             logg.tag("tag_crypto_key_group_member")
                 .w("group member key is deprecated - rotating: ${remoteGroup.id}")
-            return rotateAndRefreshMemberKeysForGroup(remoteGroup)
+
+            if (isProcessing(remoteGroup.id)) {
+                return false
+            }
+
+            setAsProcessing(remoteGroup.id)
+            val myKey = userKeyRepo.latestKeyPair()
+            val groupKey = cryptoKEKRepository.getGroupKey(remoteGroup.id, remoteGroup.ownerUserId)!!
+            try {
+                rotateMemberKeysForGroup(remoteGroup, groupKey, myKey)
+
+                if(refresh)
+                    cryptoKEKRepository.refreshKeysForGroup(remoteGroup.id).first()
+
+                stopProcessing(remoteGroup.id)
+            } catch (e: Exception) {
+                stopProcessing(remoteGroup.id)
+                throw e
+            }
+
+            return true
         } else {
             logg.tag("tag_crypto_key_group_member")
                 .w("not rotating member keys, create missing instead: ${remoteGroup.id}")
             createMissingMemberKeys(remoteGroup)
             return false
         }
-    }
-
-    /**
-     * rotate keys only - don't refresh
-     * keys should be refreshed separately
-     */
-    suspend fun onlyRotateMemberKeysForGroup(
-        group: UserGroupWithMembers
-    ): Boolean {
-
-        if (isProcessing(group.id)) {
-            return false
-        }
-
-        setAsProcessing(group.id)
-        val myKey = userKeyRepo.latestKeyPair()
-        val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId)!!
-        try {
-            rotateMemberKeysForGroup(group, groupKey, myKey)
-            stopProcessing(group.id)
-        } catch (e: Exception) {
-            stopProcessing(group.id)
-            throw e
-        }
-
-        return true
-    }
-
-    private suspend fun rotateAndRefreshMemberKeysForGroup(
-        group: UserGroupWithMembers
-    ): Boolean {
-
-        if (isProcessing(group.id)) {
-            return false
-        }
-
-        setAsProcessing(group.id)
-        val myKey = userKeyRepo.latestKeyPair()
-        val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId)!!
-        try {
-            rotateMemberKeysForGroup(group, groupKey, myKey)
-
-            cryptoKEKRepository.refreshKeysForGroup(group.id).first()
-
-            stopProcessing(group.id)
-        } catch (e: Exception) {
-            stopProcessing(group.id)
-            throw e
-        }
-
-        return true
     }
 
     private suspend fun rotateMemberKeysForGroup(
@@ -124,12 +96,29 @@ class MemberCryptoKeyRotation(
             // no need for other devices to do the same since encryption key is unique per user
             val member = group.members.filter { it.member.userId == config.userId }.firstOrNull()!!
 
+            val groupIntegrity = GroupIntegrity(
+                timeUtc = nowUTC().toString(),
+                signature = GroupIntegrity.createSignature(
+                    hashProvider = cryptoCore.hashProvider,
+                    memberVerifications = group.members.map { it.member.verification },
+                    groupKey = groupKey.data.asBase64String(cryptoCore.hashProvider),
+                    encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMemberPublicKeys(group.id)
+                )
+            ).let {
+                cryptoCore.encryptDataWithKeyPair(
+                    data = BaseRemoteModule.formatter.encodeToString(it),
+                    myPrivateKey = myKey.privateKey,
+                    publicKey = myKey.publicKey
+                )
+            }
+
             // TODO review:
             // if group key is somehow removed, this crashes because we can not decrypt the data
             // what is happening now is that remote data is re-encrypted
             // but since this data is user own data, we can replace it if remote is missing or wrong
             val memberData = GroupMemberDataPayload(
                 groupKeyVersion = groupKey.version,
+                integrity = groupIntegrity,
                 memberData = cryptoCore.encryptDataWithKey(
                     BaseRemoteModule.formatter.encodeToString(member.member.memberData.data),
                     groupKey.data.content
@@ -198,7 +187,7 @@ class MemberCryptoKeyRotation(
         }
     }
 
-    suspend fun createMissingMemberKeys(remoteGroup: UserGroupWithMembers) {
+    private suspend fun createMissingMemberKeys(remoteGroup: UserGroupWithMembers) {
 
         // get ids of members that already have key created by current user
         val memberKeysCreatedByMe = cryptoKEKRepository.getMemberKeys().filter {
@@ -206,7 +195,6 @@ class MemberCryptoKeyRotation(
         }
 
         // get all other members from group that are missing key
-        // TODO review if we should create a key if user has no key document
         val membersThatNeedKeyUpdate = remoteGroup.members.filter { member ->
             val memberKey = memberKeysCreatedByMe.firstOrNull { it.memberUserId == member.member.userId }
             member.member.isVerified && memberKey != null && memberKey.encryptedSenderKey == null
@@ -229,7 +217,7 @@ class MemberCryptoKeyRotation(
                 // this means that this user has no keys yet like if it just added to a group
                 currentSenderKey = myMemberKey
             )
-            cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
+            cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
         } else {
             logg.tag("tag_crypto_key_group_member")
                 .d("No missing member keys for group ${remoteGroup.id}")

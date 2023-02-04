@@ -114,8 +114,8 @@ val coreModule = module {
     factory { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get()) }
 
-    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
+    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get()) }
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -123,7 +123,7 @@ val coreModule = module {
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get()) }
 
-    single { GroupValidityVerification(get(), get(), config) }
+    single { GroupValidityVerification(get(), get(), get(), config) }
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get()) }

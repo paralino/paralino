@@ -7,6 +7,7 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
@@ -22,10 +23,7 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.Constants
-import app.paralino.core.utils.exceptions.BaseRemoteException
-import app.paralino.core.utils.exceptions.MissingGroupKeyException
-import app.paralino.core.utils.exceptions.MissingMemberKeyException
-import app.paralino.core.utils.exceptions.PermissionDeniedException
+import app.paralino.core.utils.exceptions.*
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.encodeToString
@@ -47,6 +45,8 @@ class GroupsRemoteSource constructor(
         myKey: AsymmetricCryptoKeyData
     ): GroupWithMemberRaw {
         return blocking {
+
+            val secretKey = code.data.data?.secretKey ?: throw CryptoException("Invalid personal code")
 
             val groupKey = cryptoCore.getNewSymmetricKey()
             val memberSenderKey = cryptoCore.getNewSymmetricKey()
@@ -72,22 +72,11 @@ class GroupsRemoteSource constructor(
             val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
                 data = cryptoCore.keyProvider.createNewSymmetricKey().content,
                 type = HashType.SHA256
-            ).asBase64String(cryptoCore.hashProvider).let {
-                cryptoCore.encryptDataWithKeyPair(
-                    data = it,
-                    myPrivateKey = myKey.privateKey,
-                    publicKey = myKey.publicKey
-                )
-            }.let {
-                cryptoCore.signData(
-                    data = it,
-                    myPrivateKey = myKey.privateKey,
-                )
-            }
+            ).asBase64String(cryptoCore.hashProvider)
 
             val memberVerification = MemberVerification(
                 groupOwnerSecret = ownerVerificationSecret,
-                memberSecret = code.data.secretKey
+                memberSecret = secretKey
             ).let {
                 BaseRemoteModule.formatter.encodeToString(it)
             }.let {
@@ -119,10 +108,6 @@ class GroupsRemoteSource constructor(
                     data = BaseRemoteModule.formatter.encodeToString(groupIntegrity),
                     myPrivateKey = myKey.privateKey,
                     publicKey = myKey.publicKey
-                ),
-                groupOwnIntegrity = cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(groupIntegrity),
-                    key = groupKey.content,
                 ),
                 memberVerification = memberVerification,
                 memberData = cryptoCore.encryptDataWithKey(
@@ -263,18 +248,19 @@ class GroupsRemoteSource constructor(
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
             data = cryptoCore.keyProvider.createNewSymmetricKey().content,
             type = HashType.SHA256
-        ).asBase64String(cryptoCore.hashProvider).let {
-            cryptoCore.encryptDataWithKeyPair(
-                data = it,
-                myPrivateKey = myKey.privateKey,
-                publicKey = myKey.publicKey
-            )
-        }.let {
-            cryptoCore.signData(
-                data = it,
-                myPrivateKey = myKey.privateKey,
-            )
-        }
+        ).asBase64String(cryptoCore.hashProvider)
+//            .let {
+//                cryptoCore.encryptDataWithKeyPair(
+//                    data = it,
+//                    myPrivateKey = myKey.privateKey,
+//                    publicKey = myKey.publicKey
+//                )
+//            }.let {
+//                cryptoCore.signData(
+//                    data = it,
+//                    myPrivateKey = myKey.privateKey,
+//                )
+//            }
 
         val memberVerification = MemberVerification(
             groupOwnerSecret = ownerVerificationSecret,
@@ -294,22 +280,21 @@ class GroupsRemoteSource constructor(
                 hashProvider = cryptoCore.hashProvider,
                 memberVerifications = group.members.map { it.member.verification } + memberVerification,
                 groupKey = groupKey.data.asBase64String(cryptoCore.hashProvider),
-                encryptedMemberPublicKeys = cryptoKEKRepo.getAllRawMemberPublicKeys(groupId) + newUserOwnPublicKey.encryptedPublicKey
+                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMemberPublicKeys(groupId) + newUserOwnPublicKey.encryptedPublicKey
             )
-        )
+        ).let {
+            cryptoCore.encryptDataWithKeyPair(
+                data = BaseRemoteModule.formatter.encodeToString(it),
+                myPrivateKey = myKey.privateKey,
+                publicKey = myKey.publicKey
+            )
+        }
 
         val payload = CreateGroupMemberPayload(
             groupId = groupId,
             keyId = keyId,
-            groupMemberIntegrity = cryptoCore.encryptDataWithKeyPair(
-                data = BaseRemoteModule.formatter.encodeToString(groupIntegrity),
-                myPrivateKey = myKey.privateKey,
-                publicKey = myKey.publicKey
-            ),
-            groupOwnIntegrity = cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(groupIntegrity),
-                key = groupKey.data.content,
-            ),
+            groupMemberIntegrity = codeData.integrity,
+            groupOwnerIntegrity = groupIntegrity,
             memberVerification = memberVerification,
             userToAddId = codeData.ownerId,
             encryptedOwnerKey = encryptedMemberKey,

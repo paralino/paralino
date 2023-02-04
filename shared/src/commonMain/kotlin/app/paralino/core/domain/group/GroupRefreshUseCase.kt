@@ -69,7 +69,7 @@ class GroupRefreshUseCase constructor(
 
         if (groupCryptoKeyRotation.rotateGroupAndMemberKeysIfNeeded(remoteGroup, force = false)) {
             return getRemoteGroupWithMembers(remoteGroup.id)
-        } else if (memberCryptoKeyRotation.rotateMemberKeysIfNeeded(remoteGroup, force = false)) {
+        } else if (memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false, refresh = false)) {
             return getRemoteGroupWithMembers(remoteGroup.id)
         } else {
             return group
@@ -78,9 +78,8 @@ class GroupRefreshUseCase constructor(
 
     suspend fun updateGroupAndMemberKeysAndRefresh(
         remoteGroup: UserGroupWithMembers,
-        force: Boolean = false,
     ): GroupWithMemberRaw? {
-        if (groupCryptoKeyRotation.rotateGroupAndMemberKeysIfNeeded(remoteGroup, force)) {
+        if (groupCryptoKeyRotation.rotateGroupAndMemberKeysIfNeeded(remoteGroup, force = true)) {
             return refreshRemoteGroupWithMembersAndPlaces(remoteGroup.id)
         } else {
             return null

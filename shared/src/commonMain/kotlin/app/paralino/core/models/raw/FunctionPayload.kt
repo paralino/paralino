@@ -8,7 +8,6 @@ data class CreateGroupPayload constructor(
     val encryptedGroupKey: String,
     val encryptedMemberKey: String,
     val encryptedPublicKey: String,
-    val groupOwnIntegrity: String,
     val groupMemberIntegrity: String,
     val memberVerification: String,
     val groupData: String,
@@ -25,7 +24,7 @@ data class UpdateGroupPayload constructor(
 data class CreateGroupMemberPayload constructor(
     val groupId: String,
     val keyId: String,
-    val groupOwnIntegrity: String,
+    val groupOwnerIntegrity: String,
     val groupMemberIntegrity: String,
     val memberVerification: String,
     val userToAddId: String,
@@ -51,6 +50,7 @@ data class DeleteGroupMemberPayload constructor(
 @Serializable
 data class UpdateGroupKeysPayload constructor(
     val groupId: String,
+    val integrity: String,
     val keyVersionsToKeep: List<Long>,
     val encryptedGroupKeys: List<GroupKeysPayload>,
     val groupData: String,
@@ -94,6 +94,7 @@ data class GroupMemberKeyPayload constructor(
 @Serializable
 data class GroupMemberDataPayload constructor(
     val memberData: String,
+    val integrity: String,
     val locations: List<MemberLocationDataPayload>,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long? = null,

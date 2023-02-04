@@ -5,12 +5,8 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.fromUTCtoInstant
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 @Serializable
 data class MemberModel constructor(
@@ -19,7 +15,6 @@ data class MemberModel constructor(
     val userId: String,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
-    val shouldRotateKeys: Boolean,
     val verification: String,
     val integrity: String?,
     @Contextual
@@ -38,18 +33,9 @@ data class MemberModelWithLocations(
     val member: MemberModel,
     val locations: List<MemberLocation>
 ) {
-    val isActive: Boolean
-        get() {
-            val now = nowUTC()
-            val pinTime =
-                locations.firstNotNullOfOrNull { it.locationData?.data?.timeUTC?.fromUTCtoInstant() }
-                    ?: return false
-            val activeThreshold = 30.toDuration(DurationUnit.MINUTES)
-            return pinTime.plus(activeThreshold) > now
-        }
+    val isActive: Boolean get() = locations.any { it.isActive }
 
-    val hasLocation: Boolean
-        get() = locations.firstNotNullOfOrNull { it.locationData.data } != null
+    val hasLocation: Boolean get() = locations.firstNotNullOfOrNull { it.locationData.data } != null
 }
 
 @Serializable

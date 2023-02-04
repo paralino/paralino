@@ -33,6 +33,7 @@ data class UserPersonalCodeData constructor(
     val ownerImage: ImageModel?,
     val ownerPublicKey: String,
     val code: String,
+    val integrity: String,
     val secretKey: String
 ) {
     val formattedCode get() = when {

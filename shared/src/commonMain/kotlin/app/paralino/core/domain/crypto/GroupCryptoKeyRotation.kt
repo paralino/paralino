@@ -2,12 +2,14 @@ package app.paralino.core.domain.crypto
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.toData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.data
+import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.raw.GroupKeysPayload
@@ -21,6 +23,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
@@ -33,7 +36,8 @@ class GroupCryptoKeyRotation constructor(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val userRepository: UserRepository,
     private val cryptoKEKRepository: CryptoKEKRepository,
-    private val memberCryptoKeyRotation: MemberCryptoKeyRotation
+    private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
+    private val validityVerification: GroupValidityVerification
 ): ILimitedExecution<String> {
 
     override val executionState = MutableStateFlow(listOf<String>())
@@ -43,8 +47,14 @@ class GroupCryptoKeyRotation constructor(
         force: Boolean
     ): Boolean {
         if (remoteGroup.ownerUserId != userRepository.cachedUserId) return false
-        if (!force && !remoteGroup.shouldRotateKeys) return false
-        if (isProcessing(remoteGroup.id) && !force) return false
+        if (isProcessing(remoteGroup.id)) return false
+
+        val integrity = validityVerification.checkIntegrity(remoteGroup)
+        if(integrity == IntegrityResult.CORRUPTED)
+            return false
+
+        if(integrity == IntegrityResult.VALID && !force)
+            return false
 
         setAsProcessing(remoteGroup.id)
 
@@ -77,13 +87,13 @@ class GroupCryptoKeyRotation constructor(
 
         // new group key is required first since we are re-encrypting user data with it
         // 2. fetch new key(s) for that group
-        cryptoKEKRepository.refreshGroupKeysForGroup(groupId = remoteGroup.id).first()
+        cryptoKEKRepository.refreshGroupKeysForGroup(groupId = remoteGroup.id)
 
-        // 3. rotate member keys
-        memberCryptoKeyRotation.onlyRotateMemberKeysForGroup(group = remoteGroup)
+        // 3. only rotate member keys
+        memberCryptoKeyRotation.rotateMemberKeys(remoteGroup = remoteGroup, force = true, refresh = false)
 
         // 4. refresh member keys
-        cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id).first()
+        cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
     }
 
     private suspend fun rotateGroupKeys(
@@ -92,11 +102,11 @@ class GroupCryptoKeyRotation constructor(
         myKey: AsymmetricCryptoKeyData
     ) {
         blocking {
-            val newGroupKey = cryptoCore.getNewSymmetricKey().content
+            val newGroupKey = cryptoCore.getNewSymmetricKey()
 
             val groupData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(group.data.data!!),
-                key = newGroupKey
+                key = newGroupKey.content
             )
 
             val placesData = places.mapNotNull { place ->
@@ -105,14 +115,15 @@ class GroupCryptoKeyRotation constructor(
                         placeId = place.id,
                         placeData = cryptoCore.encryptDataWithKey(
                             data = BaseRemoteModule.formatter.encodeToString(place.data.data),
-                            key = newGroupKey
+                            key = newGroupKey.content
                         )
                     )
                 }
             }
 
-            val usedKeys =
-                group.members.map { it.member.groupKeyVersion } + places.map { it.keyVersion } + group.keyVersion
+            val usedKeys = group.members.map { it.member.groupKeyVersion } +
+                    places.map { it.keyVersion } +
+                    group.keyVersion
 
             val keys = group.members.mapNotNull { groupMember ->
 
@@ -124,7 +135,7 @@ class GroupCryptoKeyRotation constructor(
                     GroupKeysPayload(
                         userId = groupMember.member.userId,
                         encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                            data = newGroupKey,
+                            data = newGroupKey.content,
                             // sign with owner private key
                             myPrivateKey = myKey.privateKey,
                             // encrypt with user public key
@@ -136,8 +147,26 @@ class GroupCryptoKeyRotation constructor(
                 }
             }
 
+
+            val groupIntegrity = GroupIntegrity(
+                timeUtc = nowUTC().toString(),
+                signature = GroupIntegrity.createSignature(
+                    hashProvider = cryptoCore.hashProvider,
+                    memberVerifications = group.members.map { it.member.verification },
+                    groupKey = newGroupKey.asBase64String(cryptoCore.hashProvider),
+                    encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMemberPublicKeys(group.id)
+                )
+            ).let {
+                cryptoCore.encryptDataWithKeyPair(
+                    data = BaseRemoteModule.formatter.encodeToString(it),
+                    myPrivateKey = myKey.privateKey,
+                    publicKey = myKey.publicKey
+                )
+            }
+
             val payload = UpdateGroupKeysPayload(
                 groupId = group.id,
+                integrity = groupIntegrity,
                 keyVersionsToKeep = usedKeys.distinct(),
                 encryptedGroupKeys = keys,
                 groupData = groupData,

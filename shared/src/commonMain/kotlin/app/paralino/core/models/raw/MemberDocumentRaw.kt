@@ -12,7 +12,6 @@ data class MemberDocumentRaw constructor(
 
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
-    val shouldRotateKeys: Boolean,
     val verification: String,
     val integrity: String?,
 
@@ -29,7 +28,6 @@ data class MemberDocumentRaw constructor(
                 groupId = map["groupId"] as String,
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
-                shouldRotateKeys = map["shouldRotateKeys"] as Boolean,
                 data = map["data"] as String,
                 verification = map["verification"] as String,
                 integrity = map["integrity"] as? String?,

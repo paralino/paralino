@@ -9,8 +9,6 @@ data class GroupDocumentRaw constructor(
     val id: String,
     val ownerUserId: String,
     val keyVersion: Long,
-    val shouldRotateKeys: Boolean,
-    val integrity: String,
     val data: String = ""
 ) {
 
@@ -21,8 +19,6 @@ data class GroupDocumentRaw constructor(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 keyVersion = (map["keyVersion"] as Number).toLong(),
-                shouldRotateKeys = map["shouldRotateKeys"] as Boolean,
-                integrity = map["integrity"] as String,
                 data = map["data"] as String
             )
         }

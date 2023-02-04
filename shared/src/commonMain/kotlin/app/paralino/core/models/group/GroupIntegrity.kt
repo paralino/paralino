@@ -3,10 +3,7 @@ package app.paralino.core.models.group
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoHashProvider
 import app.paralino.core.crypto.toData
-import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
-import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
-import app.paralino.core.models.raw.GroupWithMemberRaw
-import app.paralino.core.utils.extensions.fromUTCtoInstant
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
 import kotlin.time.DurationUnit
@@ -18,27 +15,14 @@ data class GroupIntegrity(
     val signature: String
 ) {
 
-    suspend fun isValid(groupIntegrity: GroupIntegrity): Boolean {
-        val signatureValidity = groupIntegrity.signature == signature
+    fun isValid(signature: String): Boolean {
+        val signatureValidity = this.signature == signature
         val threshold = 7.toDuration(DurationUnit.DAYS)
-        val timeValidity = timeUtc.fromUTCtoInstant()?.plus(threshold)?.let { it > nowUTC() } ?: false
+        val timeValidity = timeUtc.isoWithOffsetToInstant()?.plus(threshold)?.let { it > nowUTC() } ?: false
         return signatureValidity && timeValidity
     }
 
     companion object {
-        fun createSignature(
-            hashProvider: ICryptoHashProvider,
-            group: GroupWithMemberRaw,
-            groupKey: String,
-            memberPublicKeys: List<GroupMemberCryptoKeyDataRaw>,
-        ): String {
-            return createSignature(
-                hashProvider = hashProvider,
-                memberVerifications = group.members.map { it.member.verification },
-                groupKey = groupKey,
-                encryptedMemberPublicKeys = memberPublicKeys.map { it.encryptedPublicKey }
-            )
-        }
         fun createSignature(
             hashProvider: ICryptoHashProvider,
             memberVerifications: List<String>,

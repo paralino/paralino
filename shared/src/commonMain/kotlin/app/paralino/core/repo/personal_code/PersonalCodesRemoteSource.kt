@@ -6,6 +6,7 @@ import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.raw.PersonalCodeFunctionData
 import app.paralino.core.models.raw.PersonalCodeRaw
@@ -39,6 +40,7 @@ class PersonalCodesRemoteSource constructor(
         val secretKey = cryptoCore.getNewSymmetricKey()
         val secretHash = cryptoCore.hashProvider.computeHash(secretKey.content, HashType.SHA256)
             .asBase64String(cryptoCore.hashProvider)
+
         val secretKeyForOthers = cryptoCore.signData(
             data = secretHash,
             myPrivateKey = myKey.privateKey
@@ -48,13 +50,25 @@ class PersonalCodesRemoteSource constructor(
             key = userKeyRepo.personalKey.content
         )
 
+        val integrity = GroupIntegrity(
+            timeUtc = nowUTC().toString(),
+            signature = secretHash
+        ).let {
+            cryptoCore.encryptDataWithKeyPair(
+                data = BaseRemoteModule.formatter.encodeToString(it),
+                myPrivateKey = myKey.privateKey,
+                publicKey = myKey.publicKey
+            )
+        }
+
         val codeData = UserPersonalCodeData(
             ownerId = user.id,
             ownerName = user.data?.userName ?: "",
             ownerImage = user.data?.userImage,
             ownerPublicKey = myKey.publicKey,
             code = personalCode,
-            secretKey = secretKeyForOthers
+            secretKey = secretKeyForOthers,
+            integrity = integrity
         )
 
         val validity = nowUTC().plus(2.days).toString()

@@ -1,20 +1,18 @@
 package app.paralino.core.crypto.group
 
-import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.DecryptedGroupKeyData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
-import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.user.UserRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 
 class CryptoKEKRepository(
-    private val scopeProvider: ICoroutineScopeProvider,
     private val remote: CryptoKeyRemoteDataSource,
     private val local: ICryptoKeyLocalDataSource,
     private val userKeyRepository: CryptoUserKeyRepository,
@@ -63,44 +61,28 @@ class CryptoKEKRepository(
         )
     }
 
-    fun refreshAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
-        return getDataOnce(
-            remote = { remote.getAllGroupKeys() },
-            localUpdate = {
-                cachedGroupKeys.value = it
-                local.recreateAllGroupKeys(it)
-            }
-        )
+    suspend fun refreshGroupKeysForGroup(groupId: String): List<GroupCryptoKeyDataRaw> {
+        return triggerRemoteOnly {
+            logg.tag("tag_crypto_key_group").w("refreshing only group key")
+            remote.getGroupKeyForGroup(groupId)
+        }.also {
+            logg.tag("tag_crypto_key_group").w("updated only group key")
+
+            cachedGroupKeys.value = emptyList()
+            local.recreateGroupKeyForGroup(groupId, it)
+        }
     }
 
-    fun refreshGroupKeysForGroup(groupId: String): Flow<List<GroupCryptoKeyDataRaw>> {
-        return getDataOnce(
-            remote = {
-                logg.tag("tag_crypto_key_group").w("refreshing only group key")
-                remote.getGroupKeyForGroup(groupId)
-            },
-            localUpdate = {
-                logg.tag("tag_crypto_key_group").w("updated only group key")
+    suspend fun refreshMemberKeysForGroup(groupId: String): List<GroupMemberCryptoKeyDataRaw> {
+        return triggerRemoteOnly {
+            logg.tag("tag_crypto_key_group_member").w("refreshing only group member key")
+            remote.getAllGroupMemberKeysForGroup(groupId)
+        }.also {
+            logg.tag("tag_crypto_key_group_member").w("updated only group member key")
 
-                cachedGroupKeys.value = emptyList()
-                local.recreateGroupKeyForGroup(groupId, it)
-            }
-        )
-    }
-
-    fun refreshMemberKeysForGroup(groupId: String): Flow<List<GroupMemberCryptoKeyDataRaw>> {
-        return getDataOnce(
-            remote = {
-                logg.tag("tag_crypto_key_group_member").w("refreshing only group member key")
-                remote.getAllGroupMemberKeysForGroup(groupId)
-            },
-            localUpdate = {
-                logg.tag("tag_crypto_key_group_member").w("updated only group member key")
-
-                cachedMemberKeys.value = emptyList()
-                local.recreateMemberKeysForGroup(groupId, it)
-            }
-        )
+            cachedMemberKeys.value = emptyList()
+            local.recreateMemberKeysForGroup(groupId, it)
+        }
     }
 
     fun refreshKeysForGroup(groupId: String): Flow<Pair<List<GroupCryptoKeyDataRaw>, List<GroupMemberCryptoKeyDataRaw>>> {
@@ -122,14 +104,6 @@ class CryptoKEKRepository(
                 logg.tag("tag_crypto_key_group").d("updated group and member keys for group")
             }
         )
-    }
-
-    fun refreshAllKeysSilently() {
-        refreshAllKeys().launchIn(scopeProvider.defaultScope)
-    }
-
-    fun refreshKeysForGroupSilently(groupId: String) {
-        refreshKeysForGroup(groupId).launchIn(scopeProvider.defaultScope)
     }
 
     suspend fun getLatestGroupKeyVersion(groupId: String): Long? {
@@ -195,7 +169,7 @@ class CryptoKEKRepository(
         }
     }
 
-    suspend fun getAllRawMemberPublicKeys(groupId: String): List<String> {
+    suspend fun getAllEncryptedMemberPublicKeys(groupId: String): List<String> {
        return getMemberKeys().filter { it.groupId == groupId }.map { it.encryptedPublicKey }
     }
 

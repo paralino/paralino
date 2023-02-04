@@ -13,7 +13,6 @@ data class MemberEntity constructor(
     val groupId: String,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
-    val shouldRotateKeys: Boolean,
     val verification: String,
     val integrity: String?,
     val data: String,

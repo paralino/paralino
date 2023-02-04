@@ -3,8 +3,12 @@ package app.paralino.core.domain.crypto
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
+import app.paralino.core.models.group.GroupIntegrity
+import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberVerification
+import app.paralino.core.models.raw.GroupWithMemberRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.IConfig
@@ -13,6 +17,7 @@ import kotlinx.serialization.decodeFromString
 class GroupValidityVerification(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore,
+    private val cryptoUserKeyRepo: CryptoUserKeyRepository,
     private val config: IConfig
 ) {
 
@@ -22,9 +27,11 @@ class GroupValidityVerification(
         groupKey: Data?,
         memberVerification: String,
         groupOwnerPublicKey: String?,
+        memberGroupIntegrity: String?
     ): VerificationResult {
         try {
-            groupOwnerPublicKey?.takeIf { it.isNotBlank() } ?: return VerificationResult.MISSING_PUBLIC_KEY
+            groupOwnerPublicKey?.takeIf { it.isNotBlank() }
+                ?: return VerificationResult.MISSING_PUBLIC_KEY
             groupKey ?: return VerificationResult.MISSING_GROUP_KEY
 
             val verification = try {
@@ -40,15 +47,6 @@ class GroupValidityVerification(
 
             try {
                 cryptoCore.verifySignature(
-                    data = verification.groupOwnerSecret,
-                    publicKey = groupOwnerPublicKey
-                ) ?: return VerificationResult.WRONG_OWNER_VERIFICATION
-            } catch (e: Exception) {
-                return VerificationResult.WRONG_OWNER_VERIFICATION
-            }
-
-            try {
-                cryptoCore.verifySignature(
                     data = verification.memberSecret,
                     publicKey = cryptoKEKRepo.getMemberPublicKey(
                         groupId = groupId,
@@ -59,7 +57,24 @@ class GroupValidityVerification(
                 return VerificationResult.WRONG_MEMBER_VERIFICATION
             }
 
-            if(memberUserId == config.userId) {
+            if (memberUserId == config.userId) {
+                if (memberGroupIntegrity.isNullOrBlank()) {
+                    return VerificationResult.WRONG_MEMBER_INTEGRITY
+                } else {
+                    val myKey = cryptoUserKeyRepo.latestKeyPair()
+                    try {
+                        cryptoCore.decryptDataWithKeyPair(
+                            data = memberGroupIntegrity,
+                            publicKey = myKey.publicKey,
+                            myPrivateKey = myKey.privateKey
+                        ).let {
+                            BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it)
+                        }
+                    } catch (e: Exception) {
+                        return VerificationResult.WRONG_MEMBER_INTEGRITY
+                    }
+                }
+
                 // TODO maybe check for personal code content
             }
 
@@ -76,6 +91,7 @@ class GroupValidityVerification(
         groupKeyVersion: Long,
         memberVerification: String,
         groupOwnerPublicKey: String?,
+        memberGroupIntegrity: String?
     ): VerificationResult {
         val groupKey = try {
             cryptoKEKRepo.getGroupKey(
@@ -90,7 +106,8 @@ class GroupValidityVerification(
             memberUserId = memberUserId,
             groupKey = groupKey,
             memberVerification = memberVerification,
-            groupOwnerPublicKey = groupOwnerPublicKey
+            groupOwnerPublicKey = groupOwnerPublicKey,
+            memberGroupIntegrity = memberGroupIntegrity
         )
     }
 
@@ -109,7 +126,8 @@ class GroupValidityVerification(
             memberUserId = member.ownerUserId,
             memberVerification = member.verification,
             groupKeyVersion = member.groupKeyVersion,
-            groupOwnerPublicKey = groupOwnerPublicKey
+            groupOwnerPublicKey = groupOwnerPublicKey,
+            memberGroupIntegrity = member.integrity
         )
     }
 
@@ -127,10 +145,84 @@ class GroupValidityVerification(
             memberUserId = member.ownerUserId,
             memberVerification = member.verification,
             groupOwnerPublicKey = groupOwnerPublicKey,
-            groupKey = groupKey
+            groupKey = groupKey,
+            memberGroupIntegrity = member.integrity
         )
     }
+
+
+    suspend fun checkIntegrity(group: UserGroupWithMembers): IntegrityResult {
+        return checkIntegrity(
+            groupId = group.group.id,
+            myIntegrity = group.members.firstOrNull() { it.member.userId == config.userId }?.member?.integrity,
+            memberVerifications = group.members.map { it.member.verification }
+        )
+    }
+
+    suspend fun checkIntegrity(group: GroupWithMemberRaw): IntegrityResult {
+        return checkIntegrity(
+            groupId = group.group.id,
+            myIntegrity = group.members.firstOrNull() { it.member.ownerUserId == config.userId }?.member?.integrity,
+            memberVerifications = group.members.map { it.member.verification }
+        )
+    }
+
+    suspend fun checkIntegrity(
+        groupId: String,
+        myIntegrity: String?,
+        memberVerifications: List<String>,
+    ): IntegrityResult {
+
+//        val myMember = group.members.first { it.member.ownerUserId == config.userId }
+
+//        if(group.group.keyVersion != myMember.member.groupKeyVersion)
+//            return IntegrityResult.INVALID
+
+        if (myIntegrity.isNullOrBlank())
+            return IntegrityResult.CORRUPTED
+
+        val remoteIntegrity: GroupIntegrity
+        val realIntegritySignature = try {
+            val myKey = cryptoUserKeyRepo.latestKeyPair()
+            remoteIntegrity = try {
+                cryptoCore.decryptDataWithKeyPair(
+                    data = myIntegrity,
+                    publicKey = myKey.publicKey,
+                    myPrivateKey = myKey.privateKey
+                ).let { BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it) }
+            } catch (e: Exception) {
+                return IntegrityResult.CORRUPTED
+            }
+
+            val groupKey = cryptoKEKRepo.getGroupKey(
+                groupId = groupId,
+                keyVersion = null
+            )!!.data
+
+            GroupIntegrity.createSignature(
+                hashProvider = cryptoCore.hashProvider,
+                memberVerifications = memberVerifications,
+                groupKey = groupKey.asBase64String(cryptoCore.hashProvider),
+                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMemberPublicKeys(groupId)
+            )
+        } catch (e: Exception) {
+            return IntegrityResult.CORRUPTED
+        }
+
+        if (remoteIntegrity.isValid(realIntegritySignature)) {
+            return IntegrityResult.VALID
+        } else {
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
 }
+
+enum class IntegrityResult {
+    VALID,
+    VALID_EXPIRED,
+    CORRUPTED
+}
+
 enum class VerificationResult {
     VERIFIED,
     GENERIC_ERROR,
@@ -139,5 +231,6 @@ enum class VerificationResult {
     WRONG_VERIFICATION_ENTRY_SIGNATURE,
     WRONG_VERIFICATION_ENTRY_FORM,
     WRONG_OWNER_VERIFICATION,
-    WRONG_MEMBER_VERIFICATION
+    WRONG_MEMBER_VERIFICATION,
+    WRONG_MEMBER_INTEGRITY,
 }
