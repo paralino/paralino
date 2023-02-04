@@ -4,6 +4,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.base64ToData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
@@ -42,25 +43,36 @@ class PersonalCodeMapperCore(
             key = userKeyRepo.personalKey.content
         )
 
-        val codeData = remote2CoreRead(code, model.encryptedCodeData)
+        var codeData = try {
+            CryptoResource.Ready(remote2CoreRead(code, model.encryptedCodeData))
+        } catch (e: Exception) {
+            CryptoResource.WrongKeyOrData
+        }
 
-        val userOwnSecret = cryptoCore.decryptDataWithKey(
-            data = model.verification,
-            key = userKeyRepo.personalKey.content
-        )
+        codeData = when(codeData) {
+            is CryptoResource.Ready -> {
+                val userOwnSecret = cryptoCore.decryptDataWithKey(
+                    data = model.verification,
+                    key = userKeyRepo.personalKey.content
+                )
 
-        val hash = cryptoCore.hashProvider.computeHash(
-            data = userOwnSecret.base64ToData(cryptoCore.hashProvider).content,
-            type = HashType.SHA256
-        ).asBase64String(cryptoCore.hashProvider)
+                val hash = cryptoCore.hashProvider.computeHash(
+                    data = userOwnSecret.base64ToData(cryptoCore.hashProvider).content,
+                    type = HashType.SHA256
+                ).asBase64String(cryptoCore.hashProvider)
 
-        val hashFromCodeData = cryptoCore.verifySignature(
-            data = codeData.secretKey,
-            publicKey = userKeyRepo.latestKeyPair().publicKey
-        )
+                val hashFromCodeData = cryptoCore.verifySignature(
+                    data = codeData.data.secretKey,
+                    publicKey = userKeyRepo.latestKeyPair().publicKey
+                )
 
-        if(hash != hashFromCodeData)
-            throw DecryptionException("User personal code can not be verified")
+                if(hash != hashFromCodeData)
+                    CryptoResource.WrongKeyOrData
+                else
+                    codeData
+            }
+            else -> codeData
+        }
 
         return UserPersonalCode(
             id = model.id,

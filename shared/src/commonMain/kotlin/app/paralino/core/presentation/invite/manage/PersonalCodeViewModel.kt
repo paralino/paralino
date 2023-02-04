@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.invite.manage
 
 import app.paralino.core.models.Payload
+import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
@@ -28,7 +29,7 @@ class PersonalCodeViewModel(
                         val codeData = it.firstOrNull()?.let {
                             PersonalCodeScreenCodeData(
                                 id = it.id,
-                                code = it.data.formattedCode,
+                                code = it.data.data?.formattedCode ?: "---",
                                 validityUTC = it.validityUTC
                             )
                         }

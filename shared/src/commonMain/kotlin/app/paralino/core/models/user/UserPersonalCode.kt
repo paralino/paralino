@@ -1,8 +1,10 @@
 package app.paralino.core.models.user
 
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -12,7 +14,8 @@ data class UserPersonalCode constructor(
     val id: String = "",
     val validityUTC: String,
     val verification: String,
-    val data: UserPersonalCodeData
+    @Contextual
+    val data: CryptoResource<UserPersonalCodeData>
 ) {
 
     fun isStillValid(): Boolean {
