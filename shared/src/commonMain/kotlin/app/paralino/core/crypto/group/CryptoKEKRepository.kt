@@ -209,7 +209,7 @@ class CryptoKEKRepository(
             null
         }
 
-        if(keyRaw.encryptedSenderKey == null || memberPublicKey == null) {
+        if(keyRaw.encryptedSenderKey.isNullOrBlank() || memberPublicKey == null) {
             logg.tag("tag_crypto_key_group").w("No keys available for user $memberUserId in group $groupId")
             return null
         }

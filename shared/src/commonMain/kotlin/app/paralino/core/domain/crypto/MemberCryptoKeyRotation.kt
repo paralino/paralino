@@ -60,7 +60,14 @@ class MemberCryptoKeyRotation(
             return false
         }
 
-        if (force || integrity == IntegrityResult.VALID_EXPIRED) {
+        val unverifiedMembersRotation = shouldRemoveMemberKeyFromUnverifiedMembers(remoteGroup)
+
+        if(unverifiedMembersRotation) {
+            logg.tag("tag_crypto_key_group_member_rotation")
+                .w("Group ${remoteGroup.id} has unverified members with user member key, force rotation")
+        }
+
+        if (force || integrity == IntegrityResult.VALID_EXPIRED || unverifiedMembersRotation) {
             logg.tag("tag_crypto_key_group_member_rotation")
                 .w("group member key is deprecated - rotating: ${remoteGroup.id}")
 
@@ -221,7 +228,7 @@ class MemberCryptoKeyRotation(
             val memberKey = memberKeysCreatedByMe.firstOrNull {
                 it.memberUserId == member.member.userId
             }
-            member.member.isVerified && memberKey != null && memberKey.encryptedSenderKey == null
+            member.member.isVerified && memberKey != null && memberKey.encryptedSenderKey.isNullOrBlank()
         }
 
         if (membersThatNeedKeyUpdate.isNotEmpty()) {
@@ -304,6 +311,21 @@ class MemberCryptoKeyRotation(
                     Exception(response.stderr)
                 )
             }
+        }
+    }
+
+    private suspend fun shouldRemoveMemberKeyFromUnverifiedMembers(remoteGroup: UserGroupWithMembers): Boolean {
+        // get ids of members that already have key created by current user
+        val memberKeysCreatedByMe = cryptoKEKRepository.getMemberKeys().filter {
+            it.groupId == remoteGroup.id && it.ownerUserId == userRepository.cachedUserId
+        }
+
+        // check if any unverified member has key
+        return remoteGroup.members.any { member ->
+            val memberKey = memberKeysCreatedByMe.firstOrNull {
+                it.memberUserId == member.member.userId
+            }
+            !member.member.isVerified && memberKey != null && !memberKey.encryptedSenderKey.isNullOrBlank()
         }
     }
 
