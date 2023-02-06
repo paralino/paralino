@@ -42,25 +42,47 @@ class GroupCryptoKeyRotation constructor(
 
     override val executionState = MutableStateFlow(listOf<String>())
 
-    suspend fun rotateGroupAndMemberKeysIfNeeded(
+    suspend fun rotateGroupAndMemberKeys(
+        remoteGroup: UserGroupWithMembers,
+        force: Boolean
+    ): Boolean {
+        return if(rotateGroupAndMemberKeysIfNeeded(remoteGroup, force)) {
+           true
+        } else {
+            memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false, refresh = false)
+        }
+    }
+
+    private suspend fun rotateGroupAndMemberKeysIfNeeded(
         remoteGroup: UserGroupWithMembers,
         force: Boolean
     ): Boolean {
         if (remoteGroup.ownerUserId != userRepository.cachedUserId) return false
         // if group is not verified (current member is not verified - group owner) skip key generation
-        if (!remoteGroup.isGroupVerified) return false
-        if (isProcessing(remoteGroup.id)) return false
-
-        val integrity = validityVerification.checkIntegrity(remoteGroup)
-        if(integrity == IntegrityResult.CORRUPTED)
+        if (!remoteGroup.isGroupVerified) {
+            logg.tag("tag_crypto_key_group_rotation").v("Group ${remoteGroup.id} not verified")
             return false
-
-        if(integrity == IntegrityResult.VALID && !force)
+        }
+        if (isProcessing(remoteGroup.id)) {
+            logg.tag("tag_crypto_key_group_rotation").v("Group ${remoteGroup.id} key rotation already in progress")
             return false
+        }
+
+        val integrity = validityVerification.checkIntegrityForGroup(remoteGroup)
+        logg.tag("tag_crypto_key_group_rotation").v("Group ${remoteGroup.id} integrity: $integrity")
+        if(integrity == IntegrityResult.CORRUPTED) {
+            logg.tag("tag_crypto_key_group_rotation").w("Group ${remoteGroup.id} integrity corrupted, skip key rotation")
+            return false
+        }
+
+        if(integrity == IntegrityResult.VALID && !force) {
+            logg.tag("tag_crypto_key_group_rotation").v("No need to rotate group ${remoteGroup.id} keys")
+            return false
+        }
 
         setAsProcessing(remoteGroup.id)
 
-        logg.tag("tag_crypto_key_group").w("group key is deprecated - rotating: ${remoteGroup.id}")
+        logg.tag("tag_crypto_key_group_rotation").w("group key is deprecated - rotating: ${remoteGroup.id}")
 
         // this will rotate and refresh both group and member keys
         try {

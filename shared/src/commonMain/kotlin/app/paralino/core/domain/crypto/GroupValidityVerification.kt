@@ -21,7 +21,7 @@ class GroupValidityVerification(
     private val config: IConfig
 ) {
 
-    suspend fun verifyUser(
+    private suspend fun verifyUser(
         groupId: String,
         memberUserId: String,
         groupKey: Data?,
@@ -85,52 +85,6 @@ class GroupValidityVerification(
         }
     }
 
-    suspend fun verifyUser(
-        groupId: String,
-        memberUserId: String,
-        groupKeyVersion: Long,
-        memberVerification: String,
-        groupOwnerPublicKey: String?,
-        memberGroupIntegrity: String?
-    ): VerificationResult {
-        val groupKey = try {
-            cryptoKEKRepo.getGroupKey(
-                groupId = groupId,
-                keyVersion = groupKeyVersion
-            )?.data
-        } catch (e: Exception) {
-            null
-        }
-        return verifyUser(
-            groupId = groupId,
-            memberUserId = memberUserId,
-            groupKey = groupKey,
-            memberVerification = memberVerification,
-            groupOwnerPublicKey = groupOwnerPublicKey,
-            memberGroupIntegrity = memberGroupIntegrity
-        )
-    }
-
-    suspend fun verifyGroupMember(
-        member: MemberDocumentRaw,
-        groupOwnerId: String
-    ): VerificationResult {
-
-        val groupOwnerPublicKey = cryptoKEKRepo.getMemberPublicKey(
-            groupId = member.groupId,
-            memberUserId = groupOwnerId
-        )
-
-        return verifyUser(
-            groupId = member.groupId,
-            memberUserId = member.ownerUserId,
-            memberVerification = member.verification,
-            groupKeyVersion = member.groupKeyVersion,
-            groupOwnerPublicKey = groupOwnerPublicKey,
-            memberGroupIntegrity = member.integrity
-        )
-    }
-
     suspend fun verifyGroupMember(
         member: MemberDocumentRaw,
         groupKey: Data?,
@@ -151,32 +105,30 @@ class GroupValidityVerification(
     }
 
 
-    suspend fun checkIntegrity(group: UserGroupWithMembers): IntegrityResult {
+    suspend fun checkIntegrityForGroup(group: UserGroupWithMembers): IntegrityResult {
         return checkIntegrity(
             groupId = group.group.id,
             myIntegrity = group.members.firstOrNull() { it.member.userId == config.userId }?.member?.integrity,
-            memberVerifications = group.members.map { it.member.verification }
+            memberVerifications = group.members.map { it.member.verification },
+            forGroup = true
         )
     }
 
-    suspend fun checkIntegrity(group: GroupWithMemberRaw): IntegrityResult {
+    suspend fun checkIntegrityForMember(group: UserGroupWithMembers): IntegrityResult {
         return checkIntegrity(
             groupId = group.group.id,
-            myIntegrity = group.members.firstOrNull() { it.member.ownerUserId == config.userId }?.member?.integrity,
-            memberVerifications = group.members.map { it.member.verification }
+            myIntegrity = group.members.firstOrNull() { it.member.userId == config.userId }?.member?.integrity,
+            memberVerifications = group.members.map { it.member.verification },
+            forGroup = false
         )
     }
 
-    suspend fun checkIntegrity(
+    private suspend fun checkIntegrity(
         groupId: String,
         myIntegrity: String?,
         memberVerifications: List<String>,
+        forGroup: Boolean,
     ): IntegrityResult {
-
-//        val myMember = group.members.first { it.member.ownerUserId == config.userId }
-
-//        if(group.group.keyVersion != myMember.member.groupKeyVersion)
-//            return IntegrityResult.INVALID
 
         if (myIntegrity.isNullOrBlank())
             return IntegrityResult.CORRUPTED
@@ -209,7 +161,9 @@ class GroupValidityVerification(
             return IntegrityResult.CORRUPTED
         }
 
-        if (remoteIntegrity.isValid(realIntegritySignature)) {
+        val valid = if(forGroup) remoteIntegrity.isValidForGroup(realIntegritySignature)
+            else remoteIntegrity.isValidForMember(realIntegritySignature)
+        if (valid) {
             return IntegrityResult.VALID
         } else {
             return IntegrityResult.VALID_EXPIRED

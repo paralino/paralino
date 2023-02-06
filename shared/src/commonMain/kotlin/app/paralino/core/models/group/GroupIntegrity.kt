@@ -15,11 +15,14 @@ data class GroupIntegrity(
     val signature: String
 ) {
 
-    fun isValid(signature: String): Boolean {
-        val signatureValidity = this.signature == signature
-        val threshold = 7.toDuration(DurationUnit.DAYS)
+    fun isValidForGroup(signature: String): Boolean {
+        return this.signature == signature
+    }
+
+    fun isValidForMember(signature: String): Boolean {
+        val threshold = 30.toDuration(DurationUnit.DAYS)
         val timeValidity = timeUtc.isoWithOffsetToInstant()?.plus(threshold)?.let { it > nowUTC() } ?: false
-        return signatureValidity && timeValidity
+        return isValidForGroup(signature) && timeValidity
     }
 
     companion object {

@@ -3,7 +3,6 @@ package app.paralino.core.domain.group
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
-import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mappers.GroupMapperCore
@@ -25,7 +24,6 @@ class GroupRefreshUseCase constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupMapperCore: GroupMapperCore,
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
-    private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
     private val groupRemove: GroupRemoveUseCase,
 ) : BaseRepository(), ILimitedExecution<String> {
 
@@ -67,9 +65,7 @@ class GroupRefreshUseCase constructor(
         logg.tag("tag_crypto_key_group").w("group and member keys updated")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
 
-        if (groupCryptoKeyRotation.rotateGroupAndMemberKeysIfNeeded(remoteGroup, force = false)) {
-            return getRemoteGroupWithMembers(remoteGroup.id)
-        } else if (memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false, refresh = false)) {
+        if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = false)) {
             return getRemoteGroupWithMembers(remoteGroup.id)
         } else {
             return group
@@ -79,7 +75,7 @@ class GroupRefreshUseCase constructor(
     suspend fun updateGroupAndMemberKeysAndRefresh(
         remoteGroup: UserGroupWithMembers,
     ): GroupWithMemberRaw? {
-        if (groupCryptoKeyRotation.rotateGroupAndMemberKeysIfNeeded(remoteGroup, force = true)) {
+        if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = true)) {
             return refreshRemoteGroupWithMembersAndPlaces(remoteGroup.id)
         } else {
             return null

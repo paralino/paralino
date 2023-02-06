@@ -197,17 +197,22 @@ class CryptoKEKRepository(
             ).let { key ->
                 // always return own public key from secure storage but ensure no one tampered with key from server
                 if(memberUserId == currentUserId) {
-                    userKeyRepository.latestKeyPair().publicKey.takeIf { it == key }
+                    userKeyRepository.latestKeyPair().publicKey.takeIf { it == key }.also {
+                        if(it == null) logg.tag("tag_crypto_key_group").w("User $memberUserId own public key does not match in group $groupId")
+                    }
                 } else {
                     key
                 }
             }
         } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group").w("Can not decrypt user $memberUserId public key in group $groupId")
             null
         }
 
-        if(keyRaw.encryptedSenderKey == null || memberPublicKey == null)
+        if(keyRaw.encryptedSenderKey == null || memberPublicKey == null) {
+            logg.tag("tag_crypto_key_group").w("No keys available for user $memberUserId in group $groupId")
             return null
+        }
 
         val memberKey = try {
             cryptoCore.decryptKeyWithKeyPair(
@@ -250,12 +255,15 @@ class CryptoKEKRepository(
             ).let { key ->
                 // always return own public key from secure storage but ensure no one tampered with key from server
                 if(memberUserId == currentUserId) {
-                    userKeyRepository.latestKeyPair().publicKey.takeIf { it == key }
+                    userKeyRepository.latestKeyPair().publicKey.takeIf { it == key }.also {
+                        if(it == null) logg.tag("tag_crypto_key_group_member").w("User $memberUserId own public key does not match in group $groupId")
+                    }
                 } else {
                     key
                 }
             }
         } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group_member").w("Can not decrypt user $memberUserId public key in group $groupId")
             null
         }
 
