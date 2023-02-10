@@ -3,9 +3,11 @@ package app.paralino.android.data.mappers
 import app.paralino.android.data.models.location.MemberEntity
 import app.paralino.android.data.models.location.MemberEntityWithLocations
 import app.paralino.android.data.models.location.MemberLocationEntity
+import app.paralino.core.models.group.GroupSettings
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.mappers.IDataMapperLocal
 import app.paralino.core.models.mappers.MemberMapperCore
+import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
@@ -17,9 +19,9 @@ class MemberWithLocationsMapperLocal(
 
     suspend fun local2Core(
         model: MemberEntityWithLocations,
-        ownerPublicKey: String
+        groupOwnerId: String
     ): MemberModelWithLocations {
-        return coreMapper.remote2Core(local2Remote(model), ownerPublicKey)
+        return coreMapper.remote2Core(local2Remote(model), groupOwnerId)
     }
 
     override suspend fun local2Remote(model: MemberEntityWithLocations): MemberWithLocationsRaw {
@@ -72,11 +74,19 @@ class MemberMapperLocal() : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
             id = model.id,
             ownerUserId = model.userId,
             groupId = model.groupId,
-            ownerPublicKey = model.ownerPublicKey,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
-            shouldRotateKeys = model.shouldRotateKeys,
             data = model.data,
+            verification = model.verification,
+            settingsRaw = model.settings?.let {
+                GroupSettingsRaw(
+                    id = it.id,
+                    groupId = it.groupId,
+                    ownerUserId = it.ownerUserId,
+                    secretKey = it.secretKey,
+                    integrity = it.integrity
+                )
+            },
             locationIds = emptyList()
         )
     }
@@ -86,10 +96,18 @@ class MemberMapperLocal() : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
             id = model.id,
             userId = model.ownerUserId,
             groupId = model.groupId,
-            ownerPublicKey = model.ownerPublicKey,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
-            shouldRotateKeys = model.shouldRotateKeys,
+            verification = model.verification,
+            settings = model.settingsRaw?.let {
+                GroupSettings(
+                    id = it.id,
+                    groupId = it.groupId,
+                    ownerUserId = it.ownerUserId,
+                    secretKey = it.secretKey,
+                    integrity = it.integrity
+                )
+            },
             data = model.data
         )
     }

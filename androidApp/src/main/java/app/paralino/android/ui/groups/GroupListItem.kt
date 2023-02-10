@@ -16,10 +16,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.core.presentation.dashboard.GroupItemData
 
 @Composable
 fun GroupListItem(
-    data: app.paralino.core.presentation.dashboard.GroupItemData,
+    data: GroupItemData,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
@@ -41,7 +42,8 @@ fun GroupListItem(
                     0.5.dp,
                     MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                     RoundedCornerShape(12.dp)
-                )
+                ),
+            cornerSize = 12.dp
         )
 
         Spacer(modifier = Modifier.size(16.dp))
@@ -71,6 +73,14 @@ fun GroupListItem(
                     )
                 }
             }
+
+            val status = when (data.uiType) {
+                GroupItemData.GroupUiType.UNVERIFIED -> GroupStatusTagType.UNVERIFIED
+                GroupItemData.GroupUiType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
+                GroupItemData.GroupUiType.INACTIVE -> null
+                GroupItemData.GroupUiType.NONE -> null
+            }
+            GroupStatusTag(status)
         }
     }
 }

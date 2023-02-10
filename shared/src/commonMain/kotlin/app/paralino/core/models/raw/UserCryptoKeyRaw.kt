@@ -10,7 +10,7 @@ data class UserCryptoKeyRaw constructor(
     val ownerUserId: String,
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
-    val publicKey: String,
+    val encryptedPublicKey: String,
     val version: Long
 ) {
     companion object {
@@ -21,7 +21,7 @@ data class UserCryptoKeyRaw constructor(
                 ownerUserId = map["ownerUserId"] as String,
                 encryptedSymmetricKey = map["encryptedSymmetricKey"] as String,
                 encryptedPrivateKey = map["encryptedPrivateKey"] as String,
-                publicKey = map["publicKey"] as String,
+                encryptedPublicKey = map["encryptedPublicKey"] as String,
                 version = (map["version"] as Number).toLong()
             )
         }

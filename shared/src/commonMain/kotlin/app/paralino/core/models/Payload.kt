@@ -57,6 +57,11 @@ sealed class CryptoResource<out R> {
     object NotInitialized : CryptoResource<Nothing>()
     object MissingKey : CryptoResource<Nothing>()
     object WrongKeyOrData : CryptoResource<Nothing>()
+    data class UnverifiedKeyOrData<out T>(val data: T) : CryptoResource<T>() {
+        override fun toString(): String {
+            return "UnverifiedKeyOrData:START>>>${data}<<<END"
+        }
+    }
     data class Ready<out T>(val data: T) : CryptoResource<T>() {
         override fun toString(): String {
             return "Ready:START>>>${data}<<<END"
@@ -69,12 +74,13 @@ sealed class CryptoResource<out R> {
             is NotInitialized -> "NotInitialized"
             MissingKey -> "MissingKey"
             WrongKeyOrData -> "WrongKeyOrData"
+            is UnverifiedKeyOrData<*> -> "UnverifiedKeyOrData(${if(data == null) "OK" else "null"})"
         }
     }
 }
 
 val <T> CryptoResource<T>.data: T?
-    get() = (this as? CryptoResource.Ready)?.data
+    get() = (this as? CryptoResource.Ready)?.data ?: (this as? CryptoResource.UnverifiedKeyOrData)?.data
 
 inline fun <reified T, R> CryptoResource<T>.mapSuccess(action: (T) -> R): CryptoResource<R> {
     return when(this){
@@ -82,5 +88,6 @@ inline fun <reified T, R> CryptoResource<T>.mapSuccess(action: (T) -> R): Crypto
         CryptoResource.NotInitialized -> CryptoResource.NotInitialized
         is CryptoResource.Ready -> CryptoResource.Ready(action(data))
         CryptoResource.WrongKeyOrData -> CryptoResource.WrongKeyOrData
+        is CryptoResource.UnverifiedKeyOrData -> CryptoResource.UnverifiedKeyOrData(action(data))
     }
 }

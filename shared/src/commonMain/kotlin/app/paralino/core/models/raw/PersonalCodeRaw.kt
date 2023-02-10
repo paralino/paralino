@@ -1,5 +1,6 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -9,25 +10,18 @@ data class PersonalCodeRaw constructor(
     @SerialName("\$id")
     val id: String,
     val keyId: String,
-    val ownerId: String,
+    val ownerUserId: String,
     val encryptedCode: String,
     val encryptedCodeData: String,
-    val validityUnix: Long
+    val verification: String,
+    val validityUTC: String?
 ) {
 
     fun isStillValid(): Boolean {
-        val now = nowUTC().epochSeconds
-        return validityUnix <= 0 || validityUnix >= now
-    }
-
-    fun toPostJson(): Map<String, Any> {
-        return buildMap {
-            put("keyId", keyId)
-            put("ownerId", ownerId)
-            put("encryptedCode", encryptedCode)
-            put("encryptedCodeData", encryptedCodeData)
-            put("validityUnix", validityUnix)
-        }
+        if(validityUTC.isNullOrBlank()) return true
+        val now = nowUTC()
+        val time = validityUTC.isoWithOffsetToInstant() ?: return false
+        return time >= now
     }
 
     companion object {
@@ -36,10 +30,11 @@ data class PersonalCodeRaw constructor(
             return PersonalCodeRaw(
                 id = map["\$id"] as String,
                 keyId = map["keyId"] as String,
-                ownerId = map["ownerId"] as String,
+                ownerUserId = map["ownerUserId"] as String,
                 encryptedCode = map["encryptedCode"] as String,
                 encryptedCodeData = map["encryptedCodeData"] as String,
-                validityUnix = (map["validityUnix"] as Number).toLong()
+                verification = map["verification"] as String,
+                validityUTC = map["validityUTC"] as? String?
             )
         }
     }

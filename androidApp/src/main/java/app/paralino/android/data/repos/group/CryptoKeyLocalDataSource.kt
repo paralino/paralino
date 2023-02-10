@@ -73,12 +73,8 @@ class CryptoKeyLocalDataSource constructor(
             .map { it.map { keysMemberMapper.local2Remote(it) } }
     }
 
-    override suspend fun getGroupOwnerPublicKey(groupId: String): String? {
-        return groupDao.getGroupPublicKeyOnce(groupId)
-    }
-
-    override suspend fun getMemberPublicKey(groupId: String, userId: String): String? {
-        return membersDao.getMemberPublicKeyOnce(groupId, userId)
+    override suspend fun getGroupOwnerId(groupId: String): String? {
+        return groupDao.getGroupOwnerIdOnce(groupId)
     }
 
     override suspend fun deleteGroupKeyForGroup(groupId: String) {

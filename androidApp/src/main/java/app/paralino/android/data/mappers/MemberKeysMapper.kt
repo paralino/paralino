@@ -12,7 +12,8 @@ class MemberKeysMapper: IDataMapperLocal<GroupMemberKeyEntity, GroupMemberCrypto
             memberUserId = model.memberUserId,
             ownerUserId = model.ownerUserId,
             version = model.version,
-            encryptedSenderKey = model.encryptedSenderKey
+            encryptedSenderKey = model.encryptedSenderKey,
+            encryptedPublicKey = model.encryptedPublicKey
         )
     }
 
@@ -23,7 +24,8 @@ class MemberKeysMapper: IDataMapperLocal<GroupMemberKeyEntity, GroupMemberCrypto
             memberUserId = model.memberUserId,
             ownerUserId = model.ownerUserId,
             version = model.version,
-            encryptedSenderKey = model.encryptedSenderKey
+            encryptedSenderKey = model.encryptedSenderKey,
+            encryptedPublicKey = model.encryptedPublicKey
         )
     }
 

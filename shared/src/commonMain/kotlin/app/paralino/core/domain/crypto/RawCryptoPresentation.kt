@@ -58,6 +58,8 @@ class RawCryptoPresentation constructor(
 
                 val rawData = "memberData: ${it.first.member.data}\n\nlocations: $rawLocationData"
 
+                val verification = "verification: ${it.second.member.verificationResult}"
+
                 val decryptedMemberData = it.second.member.memberData.let {
                     when (it) {
                         is CryptoResource.Ready -> {
@@ -95,7 +97,7 @@ class RawCryptoPresentation constructor(
                 }.let {
                     "locations: $it"
                 }
-                val decryptedData = "${decryptedMemberData}\n\n$decryptedLocationData"
+                val decryptedData = "${verification}\n\n${decryptedMemberData}\n\n$decryptedLocationData"
 
                 RawPresentationModel(
                     title = it.second.member.memberData.data?.name ?: "",

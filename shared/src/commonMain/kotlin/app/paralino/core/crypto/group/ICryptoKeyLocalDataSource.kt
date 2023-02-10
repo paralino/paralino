@@ -13,8 +13,7 @@ interface ICryptoKeyLocalDataSource {
     suspend fun recreateGroupKeyForGroup(groupId: String, keys: List<GroupCryptoKeyDataRaw>)
     suspend fun recreateMemberKeysForGroup(groupId: String, keys: List<GroupMemberCryptoKeyDataRaw>)
 
-    suspend fun getGroupOwnerPublicKey(groupId: String): String?
-    suspend fun getMemberPublicKey(groupId: String, userId: String): String?
+    suspend fun getGroupOwnerId(groupId: String): String?
     fun getAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>>
     fun getAllMemberKeys(): Flow<List<GroupMemberCryptoKeyDataRaw>>
 

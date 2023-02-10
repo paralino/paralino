@@ -99,7 +99,7 @@ class UserRemoteSource constructor(
                 AccountResetCryptoKeyPayload(
                     encryptedSymmetricKey = it.encryptedSymmetricKey,
                     encryptedPrivateKey = it.encryptedPrivateKey,
-                    publicKey = it.publicKey
+                    encryptedPublicKey = it.encryptedPublicKey
                 )
             }
 

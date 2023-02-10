@@ -5,9 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateGroupPayload constructor(
-    val userPublicKey: String,
     val encryptedGroupKey: String,
     val encryptedMemberKey: String,
+    val encryptedPublicKey: String,
+    val groupMemberIntegrity: String,
+    val secretKey: String,
+    val memberVerification: String,
     val groupData: String,
     val memberData: String
 )
@@ -21,16 +24,20 @@ data class UpdateGroupPayload constructor(
 @Serializable
 data class CreateGroupMemberPayload constructor(
     val groupId: String,
-    val userId: String,
-    val userPublicKey: String,
-    val encryptedGroupKey: String,
+    val keyId: String,
+    val groupOwnerIntegrity: String,
+    val groupMemberIntegrity: String,
+    val memberVerification: String,
+    val userToAddId: String,
     val encryptedOwnerKey: String,
-    val oldKeys: List<GroupMemberOldKeyPayload>,
+    val groupKeys: List<GroupMemberGroupKeysData>,
+    val keysForNewUser: List<GroupMemberPublicKeyPayload>,
+    val userKeyForOtherUsers: List<GroupMemberPublicKeyPayload>,
     val memberData: String
 )
 
 @Serializable
-data class GroupMemberOldKeyPayload constructor(
+data class GroupMemberGroupKeysData constructor(
     val version: Long,
     val encryptedGroupKey: String,
 )
@@ -44,7 +51,7 @@ data class DeleteGroupMemberPayload constructor(
 @Serializable
 data class UpdateGroupKeysPayload constructor(
     val groupId: String,
-    val userPublicKey: String,
+    val integrity: String,
     val keyVersionsToKeep: List<Long>,
     val encryptedGroupKeys: List<GroupKeysPayload>,
     val groupData: String,
@@ -63,11 +70,16 @@ data class GroupKeysPayload(
     val encryptedGroupKey: String
 )
 
+@Serializable
+data class GroupMemberPublicKeyPayload(
+    val userId: String,
+    val encryptedPublicKey: String
+)
+
 
 @Serializable
 data class UpdateGroupMemberKeysPayload(
     val groupId: String,
-    val userPublicKey: String,
     val deleteOldKeys: Boolean,
     val encryptedSenderKeys: List<GroupMemberKeyPayload>,
     val memberData: GroupMemberDataPayload?,
@@ -83,6 +95,7 @@ data class GroupMemberKeyPayload constructor(
 @Serializable
 data class GroupMemberDataPayload constructor(
     val memberData: String,
+    val integrity: String,
     val locations: List<MemberLocationDataPayload>,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long? = null,
@@ -154,7 +167,7 @@ data class PlaceEventPayload constructor(
 
 @Serializable
 data class UpdateUserKeysFunctionData constructor(
-    val userPublicKey: String,
+    val encryptedPublicKey: String,
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
     val keyVersion: Long,
@@ -165,7 +178,7 @@ data class UpdateUserKeysFunctionData constructor(
 data class AccountResetCryptoKeyPayload constructor(
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
-    val publicKey: String,
+    val encryptedPublicKey: String,
 )
 
 @Serializable
@@ -186,4 +199,19 @@ data class UpdateUserDeviceFunctionData constructor(
     val sessionId: String,
     val pushToken: String,
     val deviceType: String
+)
+
+@Serializable
+data class PersonalCodeFunctionData constructor(
+    val keyId: String,
+    val encryptedCodeData: String,
+    val encryptedCode: String,
+    val validityUTC: String?,
+    val verification: String
+)
+
+@Serializable
+data class PersonalCodeResponse constructor(
+    val userId: String,
+    val codeData: String
 )

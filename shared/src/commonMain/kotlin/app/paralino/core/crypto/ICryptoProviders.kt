@@ -9,6 +9,9 @@ interface ICryptoServiceProvider {
 
     fun encryptDataWithKeyPair(data: ByteArray, myPrivateKey: ByteArray, publicKey: ByteArray): Data
     fun decryptDataWithKeyPair(data: ByteArray, myPrivateKey: ByteArray, publicKey: ByteArray): Data
+
+    fun signData(data: ByteArray, myPrivateKey: ByteArray): Data
+    fun verifySignature(data: ByteArray, publicKey: ByteArray): Data?
 }
 
 interface ICryptoKeyProvider {

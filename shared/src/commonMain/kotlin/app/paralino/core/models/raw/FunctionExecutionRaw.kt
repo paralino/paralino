@@ -1,5 +1,6 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -17,4 +18,8 @@ data class FunctionExecutionRaw constructor(
     val isSuccess: Boolean get() = status == "completed"
     val isFail: Boolean get() = status == "failed"
     val isCompleted: Boolean get() = isSuccess || isFail
+
+    val responseMap get() = response.fromJsonObjectToMapOfPrimitives()
+        .filterValues { it != null }
+        .mapValues { it.value!! }
 }

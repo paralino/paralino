@@ -53,7 +53,7 @@ class GroupMemberRemoveUseCase(
             }
             .onEach {
                 val group = local.getGroupWithMembers(groupId).first()
-                groupRefreshUseCase.updateGroupAndMemberKeysAndRefresh(group, force = true)
+                groupRefreshUseCase.updateGroupAndMemberKeysAndRefresh(group)
                     .also {
                         logg.tag("group_actions").v("Stop processing group member remove for group $groupId")
                         stopProcessing(groupId)

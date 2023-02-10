@@ -140,7 +140,7 @@ fun GroupDetailScreen(
                         showDialog = null
                         if (it == MainAlertDialog.Buttons.buttonOk)
                             vm.removeMemberLocation(
-                                memberUserId = dialog.memberId,
+                                memberId = dialog.memberId,
                                 locationId = dialog.locationId
                             )
                     }

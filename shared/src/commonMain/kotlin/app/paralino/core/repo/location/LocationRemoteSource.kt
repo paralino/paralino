@@ -8,10 +8,7 @@ import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.models.raw.LocationDeletePayload
-import app.paralino.core.models.raw.MemberDocumentRaw
-import app.paralino.core.models.raw.MemberLocationRaw
-import app.paralino.core.models.raw.MemberWithLocationsRaw
+import app.paralino.core.models.raw.*
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.utils.BaseRemoteModule
@@ -74,6 +71,7 @@ class LocationRemoteSource constructor(
 
             ids.forEach {
 
+                // TODO if key is missing, create new one
                 val memberKey = cryptoKEKRepo.getMemberKey(it.groupId, config.userId)
                     ?: throw MissingMemberKeyException(it.groupId, config.userId)
 
@@ -87,6 +85,7 @@ class LocationRemoteSource constructor(
                     )
                 }
 
+                // TODO use member key for device data
                 val deviceData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
                         MemberDeviceData(
@@ -120,6 +119,16 @@ class LocationRemoteSource constructor(
                 documentId = memberId
             ).let { MemberDocumentRaw.from(it) }
 
+            val settings = if(member.ownerUserId == config.userId) {
+                documentApi.getDocument(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
+                    documentId = memberId
+                ).let { GroupSettingsRaw.from(it) }
+            } else {
+                null
+            }
+
             val locations = documentApi.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
@@ -127,7 +136,7 @@ class LocationRemoteSource constructor(
             ).map { MemberLocationRaw.from(it) }
 
             MemberWithLocationsRaw(
-                member = member,
+                member = member.copy(settingsRaw = settings),
                 locations = locations.filter { location -> member.locationIds.contains(location.id) }
             )
         }

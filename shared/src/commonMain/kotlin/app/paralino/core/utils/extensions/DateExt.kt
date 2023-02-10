@@ -13,5 +13,17 @@ fun String.isoToLocalDateTime(): LocalDateTime? {
 }
 
 fun String.fromUTCtoInstant(): Instant? {
-    return isoToLocalDateTime()?.toInstant(TimeZone.UTC)
+    return try {
+        isoToLocalDateTime()?.toInstant(TimeZone.UTC)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+fun String.isoWithOffsetToInstant(): Instant? {
+    return try {
+        Instant.parse(isoString = this)
+    } catch (e: Exception) {
+        null
+    }
 }

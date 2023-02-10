@@ -57,9 +57,8 @@ class LocationLocalDataSource(
         return dao.getMember(memberId)
             .filterNotNull()
             .map {
-                val key = groupDao.getGroupPublicKeyOnce(it.member.groupId)
-                    ?: throw MissingGroupKeyException(it.member.groupId)
-                mapper.local2Remote(it) to mapper.local2Core(it, key)
+                val ownerId = groupDao.getGroupOwnerIdOnce(it.member.groupId)!!
+                mapper.local2Remote(it) to mapper.local2Core(model = it, groupOwnerId = ownerId)
             }
     }
 
@@ -68,7 +67,7 @@ class LocationLocalDataSource(
             .distinctFlowOfList()
             .map {
                 it.map {
-                    val key = groupDao.getGroupPublicKeyOnce(it.member.groupId)
+                    val key = groupDao.getGroupOwnerIdOnce(it.member.groupId)
                         ?: throw MissingGroupKeyException(it.member.groupId)
                     mapper.local2Core(it, key)
                 }
@@ -79,12 +78,10 @@ class LocationLocalDataSource(
         return dao.getLocationsForGroup(groupId)
             .distinctFlowOfList()
             .map {
-                val key = groupDao.getGroupPublicKeyOnce(groupId)
-                if (key == null && it.isNotEmpty())
+                val ownerId = groupDao.getGroupOwnerIdOnce(groupId)
+                if (ownerId == null && it.isNotEmpty())
                     throw MissingGroupKeyException(groupId)
-                it.map {
-                    mapper.local2Core(it, key!!)
-                }
+                it.map { mapper.local2Core(model = it, groupOwnerId = ownerId!!) }
             }
     }
 
@@ -95,10 +92,19 @@ class LocationLocalDataSource(
         )
             .filterNotNull()
             .map {
-                val key = groupDao.getGroupPublicKeyOnce(it.member.groupId)
-                    ?: throw MissingGroupKeyException(it.member.groupId)
-                mapper.local2Core(it, key)
+                val ownerId = groupDao.getGroupOwnerIdOnce(it.member.groupId)!!
+                mapper.local2Core(it, ownerId)
             }
+    }
+
+    override suspend fun getMemberOnce(groupId: String, userId: String): MemberModelWithLocations? {
+        return dao.getMemberOnce(
+            groupId = groupId,
+            userId = userId
+        )?.let {
+            val ownerId = groupDao.getGroupOwnerIdOnce(it.member.groupId)!!
+            mapper.local2Core(it, ownerId)
+        }
     }
 
     override fun getMemberCountInGroup(groupId: String): Flow<Int> {

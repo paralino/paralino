@@ -11,17 +11,18 @@ class PersonalCodeMapperLocal(
 ) : IDataMapperLocal<PersonalCodeEntity, PersonalCodeRaw> {
 
     suspend fun local2Core(model: PersonalCodeEntity): UserPersonalCode {
-        return coreMapper.remote2Core(local2Remote(model))
+        return coreMapper.mapMyCode(local2Remote(model))
     }
 
     override suspend fun local2Remote(model: PersonalCodeEntity): PersonalCodeRaw {
         return PersonalCodeRaw(
             id = model.id,
             keyId = model.keyId,
-            ownerId = model.ownerId,
+            ownerUserId = model.ownerUserId,
             encryptedCode = model.encryptedCode,
             encryptedCodeData = model.encryptedCodeData,
-            validityUnix = model.validityUnix
+            validityUTC = model.validityUTC,
+            verification = model.verification
         )
     }
 
@@ -29,10 +30,11 @@ class PersonalCodeMapperLocal(
         return PersonalCodeEntity(
             id = model.id,
             keyId = model.keyId,
-            ownerId = model.ownerId,
+            ownerUserId = model.ownerUserId,
             encryptedCode = model.encryptedCode,
             encryptedCodeData = model.encryptedCodeData,
-            validityUnix = model.validityUnix
+            validityUTC = model.validityUTC,
+            verification = model.verification
         )
     }
 

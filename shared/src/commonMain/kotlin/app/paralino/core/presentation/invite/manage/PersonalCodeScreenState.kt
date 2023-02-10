@@ -9,7 +9,7 @@ data class PersonalCodeScreenState(
 data class PersonalCodeScreenCodeData(
     val id: String,
     val code: String,
-    val validityUnix: Long
+    val validityUTC: String?
 )
 
 sealed class PersonalCodeScreenEvent() {

@@ -1,19 +1,18 @@
 package app.paralino.core.crypto.group
 
-import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.DecryptedGroupKeyData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
-import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.user.UserRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 
 class CryptoKEKRepository(
-    private val scopeProvider: ICoroutineScopeProvider,
     private val remote: CryptoKeyRemoteDataSource,
     private val local: ICryptoKeyLocalDataSource,
     private val userKeyRepository: CryptoUserKeyRepository,
@@ -62,44 +61,28 @@ class CryptoKEKRepository(
         )
     }
 
-    fun refreshAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
-        return getDataOnce(
-            remote = { remote.getAllGroupKeys() },
-            localUpdate = {
-                cachedGroupKeys.value = it
-                local.recreateAllGroupKeys(it)
-            }
-        )
+    suspend fun refreshGroupKeysForGroup(groupId: String): List<GroupCryptoKeyDataRaw> {
+        return triggerRemoteOnly {
+            logg.tag("tag_crypto_key_group").w("refreshing only group key")
+            remote.getGroupKeyForGroup(groupId)
+        }.also {
+            logg.tag("tag_crypto_key_group").w("updated only group key")
+
+            cachedGroupKeys.value = emptyList()
+            local.recreateGroupKeyForGroup(groupId, it)
+        }
     }
 
-    fun refreshGroupKeysForGroup(groupId: String): Flow<List<GroupCryptoKeyDataRaw>> {
-        return getDataOnce(
-            remote = {
-                logg.tag("tag_crypto_key_group").w("refreshing only group key")
-                remote.getGroupKeyForGroup(groupId)
-            },
-            localUpdate = {
-                logg.tag("tag_crypto_key_group").w("updated only group key")
+    suspend fun refreshMemberKeysForGroup(groupId: String): List<GroupMemberCryptoKeyDataRaw> {
+        return triggerRemoteOnly {
+            logg.tag("tag_crypto_key_group_member").w("refreshing only group member key")
+            remote.getAllGroupMemberKeysForGroup(groupId)
+        }.also {
+            logg.tag("tag_crypto_key_group_member").w("updated only group member key")
 
-                cachedGroupKeys.value = emptyList()
-                local.recreateGroupKeyForGroup(groupId, it)
-            }
-        )
-    }
-
-    fun refreshMemberKeysForGroup(groupId: String): Flow<List<GroupMemberCryptoKeyDataRaw>> {
-        return getDataOnce(
-            remote = {
-                logg.tag("tag_crypto_key_group_member").w("refreshing only group member key")
-                remote.getAllGroupMemberKeysForGroup(groupId)
-            },
-            localUpdate = {
-                logg.tag("tag_crypto_key_group_member").w("updated only group member key")
-
-                cachedMemberKeys.value = emptyList()
-                local.recreateMemberKeysForGroup(groupId, it)
-            }
-        )
+            cachedMemberKeys.value = emptyList()
+            local.recreateMemberKeysForGroup(groupId, it)
+        }
     }
 
     fun refreshKeysForGroup(groupId: String): Flow<Pair<List<GroupCryptoKeyDataRaw>, List<GroupMemberCryptoKeyDataRaw>>> {
@@ -123,26 +106,18 @@ class CryptoKEKRepository(
         )
     }
 
-    fun refreshAllKeysSilently() {
-        refreshAllKeys().launchIn(scopeProvider.defaultScope)
-    }
-
-    fun refreshKeysForGroupSilently(groupId: String) {
-        refreshKeysForGroup(groupId).launchIn(scopeProvider.defaultScope)
-    }
-
     suspend fun getLatestGroupKeyVersion(groupId: String): Long? {
         return getGroupKeys().filter { it.groupId == groupId }.maxByOrNull { it.version }?.version
     }
 
     suspend fun getGroupKey(groupId: String, keyVersion: Long? = null): DecryptedGroupKeyData? {
-        val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return null
-        return getGroupKey(groupId, ownerPublicKey, keyVersion)
+        val groupOwnerId = local.getGroupOwnerId(groupId) ?: return null
+        return getGroupKey(groupId, groupOwnerId, keyVersion)
     }
 
     suspend fun getGroupKey(
         groupId: String,
-        ownerPublicKey: String,
+        groupOwnerId: String,
         keyVersion: Long? = null
     ): DecryptedGroupKeyData? {
         val allGroupKeys = getGroupKeys()
@@ -162,17 +137,25 @@ class CryptoKEKRepository(
             }
             ?: return null
 
-        val groupKey = cryptoCore.decryptKeyWithKeyPair(
-            key = keyRaw.encryptedGroupKey,
-            myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
-            publicKey = ownerPublicKey
-        )
+        val ownerPublicKey = getMemberPublicKey(groupId, memberUserId = groupOwnerId) ?: return null
+
+        val groupKey = try {
+            cryptoCore.decryptKeyWithKeyPair(
+                key = keyRaw.encryptedGroupKey,
+                myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
+                publicKey = ownerPublicKey
+            )
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group").d("Invalid member key for group $groupId")
+            return null
+        }
 
         return DecryptedGroupKeyData(keyRaw.version, groupKey)
     }
 
     suspend fun getAllGroupKeys(groupId: String): List<DecryptedGroupKeyData> {
-        val ownerPublicKey = local.getGroupOwnerPublicKey(groupId) ?: return emptyList()
+        val groupOwnerId = local.getGroupOwnerId(groupId) ?: return emptyList()
+        val ownerPublicKey = getMemberPublicKey(groupId, memberUserId = groupOwnerId) ?: return emptyList()
         val keys = getGroupKeys().filter { it.groupId == groupId }
 
         return keys.map {
@@ -186,16 +169,14 @@ class CryptoKEKRepository(
         }
     }
 
-    suspend fun getMemberKey(groupId: String, memberUserId: String): DecryptedGroupKeyData? {
-        val memberPublicKey = local.getMemberPublicKey(groupId, memberUserId) ?: return null
-        return getMemberKey(groupId, memberUserId, memberPublicKey)
+    suspend fun getAllEncryptedMemberPublicKeys(groupId: String): List<String> {
+       return getMemberKeys().filter { it.groupId == groupId }.map { it.encryptedPublicKey }
     }
 
     // TODO pass key version
     suspend fun getMemberKey(
         groupId: String,
-        memberUserId: String,
-        memberPublicKey: String
+        memberUserId: String
     ): DecryptedGroupKeyData? {
         val currentUserId = userRepository.cachedUserId
         val allMemberKeys = getMemberKeys()
@@ -206,15 +187,87 @@ class CryptoKEKRepository(
                 logg.tag("tag_crypto_key_group_member").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
                 keys
             }
-            .maxByOrNull { it.version }
+            .maxByOrNull { it.version ?: -1 }
             ?: return null
 
-        val memberKey = cryptoCore.decryptKeyWithKeyPair(
-            key = keyRaw.encryptedSenderKey,
-            myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
-            publicKey = memberPublicKey
-        )
-        return DecryptedGroupKeyData(keyRaw.version, memberKey)
+        val memberPublicKey = try {
+            cryptoCore.decryptDataWithKey(
+                data = keyRaw.encryptedPublicKey,
+                key = userKeyRepository.latestKeyPair().publicKey
+            ).let { key ->
+                // always return own public key from secure storage but ensure no one tampered with key from server
+                if(memberUserId == currentUserId) {
+                    userKeyRepository.latestKeyPair().publicKey.takeIf { it == key }.also {
+                        if(it == null) logg.tag("tag_crypto_key_group").w("User $memberUserId own public key does not match in group $groupId")
+                    }
+                } else {
+                    key
+                }
+            }
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group").w("Can not decrypt user $memberUserId public key in group $groupId")
+            null
+        }
+
+        if(keyRaw.encryptedSenderKey.isNullOrBlank() || memberPublicKey == null) {
+            logg.tag("tag_crypto_key_group").w("No keys available for user $memberUserId in group $groupId")
+            return null
+        }
+
+        val memberKey = try {
+            cryptoCore.decryptKeyWithKeyPair(
+                key = keyRaw.encryptedSenderKey,
+                myPrivateKey = userKeyRepository.latestKeyPair().privateKey,
+                publicKey = memberPublicKey
+            )
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group_member").d("Invalid member key for group $groupId & member $memberUserId")
+            return null
+        }
+        return DecryptedGroupKeyData(keyRaw.version ?: -1, memberKey)
+    }
+
+    suspend fun getGroupOwnerPublicKey(groupId: String): String? {
+        val groupOwnerId = local.getGroupOwnerId(groupId) ?: return null
+        return getMemberPublicKey(groupId, groupOwnerId)
+    }
+
+    suspend fun getMemberPublicKey(
+        groupId: String,
+        memberUserId: String
+    ): String? {
+        val currentUserId = userRepository.cachedUserId
+        val allMemberKeys = getMemberKeys()
+        val keyRaw = allMemberKeys
+            // filter keys that memberUserId created for current user
+            .filter { it.groupId == groupId && it.ownerUserId == memberUserId && it.memberUserId == currentUserId }
+            .let { keys ->
+                logg.tag("tag_crypto_key_group_member").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
+                keys
+            }
+            .maxByOrNull { it.version ?: -1 }
+            ?: return null
+
+        val memberPublicKey = try {
+            cryptoCore.decryptDataWithKey(
+                data = keyRaw.encryptedPublicKey,
+                key = userKeyRepository.latestKeyPair().publicKey
+            ).let { key ->
+                // always return own public key from secure storage but ensure no one tampered with key from server
+                if(memberUserId == currentUserId) {
+                    userKeyRepository.latestKeyPair().publicKey.takeIf { it == key }.also {
+                        if(it == null) logg.tag("tag_crypto_key_group_member").w("User $memberUserId own public key does not match in group $groupId")
+                    }
+                } else {
+                    key
+                }
+            }
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group_member").w("Can not decrypt user $memberUserId public key in group $groupId")
+            null
+        }
+
+        return memberPublicKey
     }
 
     suspend fun deleteAllKeysForGroup(groupId: String) {

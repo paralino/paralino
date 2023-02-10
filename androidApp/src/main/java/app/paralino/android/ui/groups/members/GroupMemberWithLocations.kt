@@ -22,11 +22,14 @@ import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
 import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.android.ui.groups.GroupStatusTag
+import app.paralino.android.ui.groups.GroupStatusTagType
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.groups.GroupMemberStatus
 import app.paralino.core.utils.Emojis
 
 
@@ -106,6 +109,12 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
             style = MaterialTheme.typography.subtitle1,
             modifier = Modifier
         )
+
+        val status = when {
+            !state.memberState.isVerified -> GroupStatusTagType.UNVERIFIED
+            else -> null
+        }
+        GroupStatusTag(status)
 
         if (state.getLastPingText() != null) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -286,19 +295,11 @@ fun GroupMemberLocationChild(
                 modifier = Modifier
             )
 
-            if (state.status.actionText != null) {
-                Text(
-                    text = stringResource(id = state.status.actionText!!),
-                    style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colors.onPrimary.copy(alpha = 0.8f),
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colors.secondary,
-                            MaterialTheme.shapes.medium
-                        )
-                        .padding(horizontal = 6.dp, vertical = 1.dp)
-                )
+            val status = when (state.status) {
+                GroupMemberStatus.INACTIVE -> GroupStatusTagType.INACTIVE
+                else -> null
             }
+            GroupStatusTag(status)
 
             if (state.lastPing != null) {
                 Text(

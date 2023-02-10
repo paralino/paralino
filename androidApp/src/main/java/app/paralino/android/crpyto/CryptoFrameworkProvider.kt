@@ -47,4 +47,17 @@ class CryptoFrameworkProvider : ICryptoServiceProvider {
         return message.unwrap(data, PublicKey(publicKey)).toData()
     }
 
+    override fun signData(data: ByteArray, myPrivateKey: ByteArray): Data {
+        val message = SecureMessage(PrivateKey(myPrivateKey))
+        return message.sign(data).toData()
+    }
+
+    override fun verifySignature(data: ByteArray, publicKey: ByteArray): Data? {
+        val message = SecureMessage(PublicKey(publicKey))
+        return try {
+            message.verify(data).toData()
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

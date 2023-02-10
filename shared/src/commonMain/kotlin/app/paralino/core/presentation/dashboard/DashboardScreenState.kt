@@ -6,12 +6,11 @@ import app.paralino.core.utils.ConditionErrorType
 
 data class DashboardScreenState constructor(
     val email: String,
-    val activeGroups: List<GroupItemData>,
-    val inactiveGroups: List<GroupItemData>,
+    val groups: List<GroupItemData>,
     val errors: List<ConditionErrorType>,
 ) {
 
-    val isWithoutGroups get() = activeGroups.isEmpty() && inactiveGroups.isEmpty()
+    val isWithoutGroups get() = groups.isEmpty()
 }
 
 data class GroupItemData constructor(
@@ -22,12 +21,12 @@ data class GroupItemData constructor(
     val uiType: GroupUiType = GroupUiType.INACTIVE,
 ) {
 
-    constructor(group: UserGroup, uiType: GroupUiType = GroupUiType.PICKER) : this(
-        group.id, group.name, group.image, group.memberCount, uiType
+    constructor(group: UserGroup, uiType: GroupUiType? = null) : this(
+        group.id, group.name, group.image, group.memberCount, uiType ?: if(!group.isVerified) GroupUiType.UNVERIFIED else GroupUiType.NONE
     )
 
     enum class GroupUiType {
-        ACTIVE, INACTIVE, PICKER
+        UNVERIFIED, ACTIVE, INACTIVE, NONE
     }
 }
 

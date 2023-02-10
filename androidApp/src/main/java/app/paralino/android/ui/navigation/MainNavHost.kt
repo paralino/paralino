@@ -145,8 +145,7 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             AccountScreen(appState)
         }
         composable(AppScreen.SettingsRoot.PersonalCodes.routeSignature) {
-            val createCode = it.arguments?.getString(AppScreen.SettingsRoot.PersonalCodes.argumentCreateCode)?.toBoolean() ?: false
-            PersonalCodeScreen(appState, createCode = createCode)
+            PersonalCodeScreen(appState)
         }
         composable(AppScreen.SettingsRoot.ProfileDetails.EditProfile.routeSignature) {
             EditProfileScreen(appState)

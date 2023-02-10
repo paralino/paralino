@@ -3,7 +3,7 @@
     <string name="app_name">Paralino</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_dashboard">Groups</string>
-    <string name="title_map">Map</string>
+    <string name="title_map">Location</string>
     <string name="title_settings">Settings</string>
 
     <string name="date_name_today">Today</string>
@@ -59,6 +59,7 @@
 
     <string name="dashboard_groups_section_active">Active</string>
     <string name="dashboard_groups_section_inactive">Inactive</string>
+    <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create new group</string>
     <string name="dashboard_groups_join_button">Or join a group</string>
     <string name="dashboard_info_logged_out">Log in to start sharing your location.</string>

@@ -76,7 +76,7 @@ val cryptoModule = module {
     single<ICryptoHashProvider> { get<CryptoHashProvider>() }
     single<ICryptoKeyProvider> { get<CryptoKeyProvider>() }
     single { CryptoCore(get(), get(), get()) }
-    single { CryptoKEKRepository(get(), get(), get(), get(), get(), get()) }
+    single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get(), get()) }
 }
 
@@ -86,7 +86,7 @@ val mappersModule = module {
     single { SharingContractsMapper }
     single { GroupsMapperLocal(get()) }
     single { GroupMapperCore(get(), get(), get()) }
-    single { MemberMapperCore(get(), get()) }
+    single { MemberMapperCore(get(), get(), get()) }
     single { MemberWithLocationsMapperLocal(get(), get()) }
     single { MemberMapperLocal() }
     single { GroupKeysMapper() }
@@ -106,7 +106,7 @@ val remoteDataSourceModule = module {
     single { LocationRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
-    single { PersonalCodesRemoteSource(get(), get(), get(), get()) }
+    single { PersonalCodesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get(), get()) }
     single {

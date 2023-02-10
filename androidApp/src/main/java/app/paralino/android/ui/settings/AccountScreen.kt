@@ -188,7 +188,9 @@ fun AccountScreen(
                     }
                     SettingsActionItem(
                         name = stringResource(id = R.string.setting_title_logout),
-                        icon = Icons.Rounded.Logout
+                        icon = Icons.Rounded.Logout,
+                        iconTint = MaterialTheme.colors.error,
+                        showEndArrow = false
                     ) {
                         showDialog = MainAlertDialog.Logout
                     }
@@ -199,7 +201,9 @@ fun AccountScreen(
                         SettingsSectionHeader(name = stringResource(id = R.string.setting_title_dangerZone))
                         SettingsActionItem(
                             name = stringResource(id = R.string.setting_title_delete_account),
-                            icon = Icons.Rounded.DeleteForever
+                            icon = Icons.Rounded.DeleteForever,
+                            iconTint = MaterialTheme.colors.error,
+                            showEndArrow = false
                         ) {
                             showDialog = MainAlertDialog.DeleteAccount
                         }
@@ -209,7 +213,9 @@ fun AccountScreen(
                 AnimatedVisibility(visible = !showDangerZoneContent) {
                     SettingsActionItem(
                         name = stringResource(id = R.string.setting_title_dangerZone),
-                        icon = Icons.Rounded.Warning
+                        icon = Icons.Rounded.Warning,
+                        iconTint = MaterialTheme.colors.error,
+                        showEndArrow = false
                     ) {
                         showDangerZoneContent = true
                     }

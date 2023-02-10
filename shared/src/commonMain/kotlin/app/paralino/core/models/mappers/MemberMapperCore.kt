@@ -2,8 +2,11 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.domain.crypto.GroupValidityVerification
+import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.group.GroupSettings
 import app.paralino.core.models.location.*
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.utils.BaseRemoteModule
@@ -12,34 +15,39 @@ import kotlinx.serialization.decodeFromString
 
 class MemberMapperCore constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val cryptoCore: CryptoCore
+    private val cryptoCore: CryptoCore,
+    private val groupVerification: GroupValidityVerification
 ) {
 
     suspend fun remote2Core(
         model: MemberWithLocationsRaw,
-        groupOwnerPublicKey: String
+        groupOwnerId: String
     ): MemberModelWithLocations {
-
-        val memberKey = cryptoKEKRepo.getMemberKey(
-            groupId = model.member.groupId,
-            memberUserId = model.member.ownerUserId,
-            memberPublicKey = model.member.ownerPublicKey
-        )
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.member.groupId,
-            ownerPublicKey = groupOwnerPublicKey,
+            groupOwnerId = groupOwnerId,
             keyVersion = model.member.groupKeyVersion
         )
 
         if (groupKey == null)
             logg.e(MissingGroupKeyException(model.member.groupId, model.member.groupKeyVersion))
 
+        val verification = groupVerification.verifyGroupMember(
+            member = model.member,
+            groupOwnerId = groupOwnerId,
+            groupKey = groupKey?.data
+        )
+
+        val memberKey = cryptoKEKRepo.getMemberKey(
+            groupId = model.member.groupId,
+            memberUserId = model.member.ownerUserId
+        )
+
         // data encrypted with user senderKey DEK
-
-
         val locations = model.locations.map { location ->
 
+            // TODO review if we need to check for member key
             val deviceData = if (memberKey != null && groupKey != null) {
                 if (location.deviceData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
@@ -51,7 +59,11 @@ class MemberMapperCore constructor(
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
                         }.let {
-                            CryptoResource.Ready(it)
+                            if(verification == VerificationResult.VERIFIED) {
+                                CryptoResource.Ready(it)
+                            } else {
+                                CryptoResource.UnverifiedKeyOrData(it)
+                            }
                         }
                     } catch (e: Exception) {
                         logg.tag("tag_crypto_key_group_member")
@@ -78,7 +90,11 @@ class MemberMapperCore constructor(
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
                         }.let {
-                            CryptoResource.Ready(it)
+                            if(verification == VerificationResult.VERIFIED) {
+                                CryptoResource.Ready(it)
+                            } else {
+                                CryptoResource.UnverifiedKeyOrData(it)
+                            }
                         }
                     } catch (e: Exception) {
                         logg.tag("tag_crypto_key_group_member")
@@ -105,7 +121,6 @@ class MemberMapperCore constructor(
             )
         }
 
-
         // data encrypted with group DEK
         val memberData = if (groupKey != null) {
             try {
@@ -115,7 +130,11 @@ class MemberMapperCore constructor(
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
                 }.let {
-                    CryptoResource.Ready(it)
+                    if(verification == VerificationResult.VERIFIED) {
+                        CryptoResource.Ready(it)
+                    } else {
+                        CryptoResource.UnverifiedKeyOrData(it)
+                    }
                 }
             } catch (e: Exception) {
                 CryptoResource.WrongKeyOrData
@@ -128,11 +147,20 @@ class MemberMapperCore constructor(
             id = model.member.id,
             groupId = model.member.groupId,
             userId = model.member.ownerUserId,
-            publicKey = model.member.ownerPublicKey,
             groupKeyVersion = model.member.groupKeyVersion,
             memberKeyVersion = model.member.memberKeyVersion,
-            shouldRotateKeys = model.member.shouldRotateKeys,
-            memberData = memberData
+            verification = model.member.verification,
+            settings = model.member.settingsRaw?.let {
+                GroupSettings(
+                    id = it.id,
+                    groupId = it.groupId,
+                    ownerUserId = it.ownerUserId,
+                    secretKey = it.secretKey,
+                    integrity = it.integrity
+                )
+            },
+            memberData = memberData,
+            verificationResult = verification
         )
 
         return MemberModelWithLocations(

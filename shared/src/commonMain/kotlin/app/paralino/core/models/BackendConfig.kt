@@ -26,6 +26,7 @@ object BackendResourceIDs {
 
     const val collectionGroupsID: String = "groups"
     const val collectionGroupMembersID: String = "group_members"
+    const val collectionGroupSettingsID: String = "group_settings"
     const val collectionMemberLocationsID: String = "locations"
     const val collectionPersonalCodeID: String = "personal_ids"
     const val collectionLocationFocusID: String = "location_focus"
@@ -39,6 +40,7 @@ object BackendResourceIDs {
     const val collectionPushNotificationID: String = "push_notifications"
 
     const val functionPersonalCodeReadID: String = "personal_code_read"
+    const val functionPersonalCodeCreateID: String = "personal_code_create"
     const val functionCreateGroupID: String = "group_create"
     const val functionDeleteGroupID: String = "group_delete"
     const val functionUpdateGroupID: String = "group_update"

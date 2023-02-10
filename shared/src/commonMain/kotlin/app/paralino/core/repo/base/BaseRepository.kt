@@ -3,6 +3,7 @@ package app.paralino.core.repo.base
 import app.paralino.core.connectionStatus
 import app.paralino.core.logg
 import app.paralino.core.utils.exceptions.InternalConnectionException
+import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.*
 
@@ -94,59 +95,63 @@ abstract class BaseRepository {
 
         val isOnline = connection.initAndGetStatus().isOnline
 
-        return when(remotePreference) {
-            RemotePreference.FORCE -> {
-                if(!isOnline)
-                    throwOfflineError()
-                remote.invoke()
-            }
-            RemotePreference.PREFER -> {
-                when {
-                    isOnline -> remote.invoke()
-                    localValue == null -> throwOfflineError()
-                    else -> null
-                }
-            }
-            RemotePreference.IGNORE -> {
-                if(localValue == null) {
-                    if(!isOnline)
+        return blocking {
+            when (remotePreference) {
+                RemotePreference.FORCE -> {
+                    if (!isOnline)
                         throwOfflineError()
                     remote.invoke()
-                } else null
-            }
-            is RemotePreference.CACHE -> {
-                val started = cachedInfo[remotePreference.key] ?: 0
-                val now = nowUTC().toEpochMilliseconds()
-                val cacheIsDirty = now - started > remotePreference.timeMillis
-
-                val remoteData = when {
-                    localValue == null -> {
-                        if (!isOnline) throwOfflineError()
-                        cachedInfo[remotePreference.key] = now
-                        remote.invoke()
-                    }
-                    cacheIsDirty -> {
-                        logg.tag("refresh_cache").v("Cache is dirty for ${remotePreference.key} - ${now - started} > ${remotePreference.timeMillis}")
-                        when {
-                            remotePreference.failOnError && !isOnline -> throwOfflineError()
-                            isOnline -> {
-                                cachedInfo[remotePreference.key] = now
-                                remote.invoke()
-                            }
-                            else -> {
-                                cachedInfo[remotePreference.key] = 0
-                                null
-                            }
-                        }
-                    }
-                    else -> {
-                        logg.tag("refresh_cache").v("Cache not dirty for ${remotePreference.key} - ${now - started} > ${remotePreference.timeMillis}")
-                        null
+                }
+                RemotePreference.PREFER -> {
+                    when {
+                        isOnline -> remote.invoke()
+                        localValue == null -> throwOfflineError()
+                        else -> null
                     }
                 }
+                RemotePreference.IGNORE -> {
+                    if (localValue == null) {
+                        if (!isOnline)
+                            throwOfflineError()
+                        remote.invoke()
+                    } else null
+                }
+                is RemotePreference.CACHE -> {
+                    val started = cachedInfo[remotePreference.key] ?: 0
+                    val now = nowUTC().toEpochMilliseconds()
+                    val cacheIsDirty = now - started > remotePreference.timeMillis
 
-                remoteData?.also {
-                    cachedInfo[remotePreference.key] = nowUTC().toEpochMilliseconds()
+                    val remoteData = when {
+                        localValue == null -> {
+                            if (!isOnline) throwOfflineError()
+                            cachedInfo[remotePreference.key] = now
+                            remote.invoke()
+                        }
+                        cacheIsDirty -> {
+                            logg.tag("refresh_cache")
+                                .v("Cache is dirty for ${remotePreference.key} - ${now - started} > ${remotePreference.timeMillis}")
+                            when {
+                                remotePreference.failOnError && !isOnline -> throwOfflineError()
+                                isOnline -> {
+                                    cachedInfo[remotePreference.key] = now
+                                    remote.invoke()
+                                }
+                                else -> {
+                                    cachedInfo[remotePreference.key] = 0
+                                    null
+                                }
+                            }
+                        }
+                        else -> {
+                            logg.tag("refresh_cache")
+                                .v("Cache not dirty for ${remotePreference.key} - ${now - started} > ${remotePreference.timeMillis}")
+                            null
+                        }
+                    }
+
+                    remoteData?.also {
+                        cachedInfo[remotePreference.key] = nowUTC().toEpochMilliseconds()
+                    }
                 }
             }
         }

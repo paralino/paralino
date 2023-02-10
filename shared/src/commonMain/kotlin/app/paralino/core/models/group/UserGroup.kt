@@ -1,6 +1,7 @@
 package app.paralino.core.models.group
 
 import app.paralino.core.config
+import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -14,14 +15,14 @@ import kotlinx.serialization.Serializable
 data class UserGroup constructor(
     val id: String,
     val ownerUserId: String,
-    val ownerPublicKey: String,
     val keyVersion: Long,
-    val shouldRotateKeys: Boolean,
     @Contextual
     val data: CryptoResource<UserGroupData>,
-    val memberCount: Int
+    val memberCount: Int,
+    val verification: VerificationResult,
 ) {
 
+    val isVerified get() = verification == VerificationResult.VERIFIED
     val name: String get() = data.data?.name ?: "---"
     val image: ImageModel get() = data.data?.image ?: ImageModel.emoji(Emojis.lock)
 
@@ -47,11 +48,10 @@ data class UserGroupWithMembers constructor(
     val members: List<MemberModelWithLocations>
 ) {
 
+    val isGroupVerified get() = group.isVerified && memberByUserId(config.userId).isVerified
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
-    val ownerPublicKey: String get() = group.ownerPublicKey
     val keyVersion: Long get() = group.keyVersion
-    val shouldRotateKeys: Boolean get() = group.shouldRotateKeys
     val data: CryptoResource<UserGroupData> get() = group.data
     val memberCount: Int get() = members.size
 

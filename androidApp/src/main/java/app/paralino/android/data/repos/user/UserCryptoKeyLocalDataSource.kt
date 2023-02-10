@@ -24,7 +24,7 @@ class UserCryptoKeyLocalDataSource constructor(
         appConfig.userKey = decryptedMainKey
         appConfig.dataStoreUserKeys.edit {
             it.clear()
-            it[stringPreferencesKey("publicKey")] = key.publicKey
+            it[stringPreferencesKey("encryptedPublicKey")] = key.encryptedPublicKey
             it[stringPreferencesKey("encryptedPrivateKey")] = key.encryptedPrivateKey
             it[stringPreferencesKey("encryptedSymmetricKey")] = key.encryptedSymmetricKey
             it[longPreferencesKey("version")] = key.version
@@ -47,7 +47,7 @@ class UserCryptoKeyLocalDataSource constructor(
             UserCryptoKeyRaw(
                 id = "",
                 ownerUserId = appConfig.userId,
-                publicKey = prefs[stringPreferencesKey("publicKey")]!!,
+                encryptedPublicKey = prefs[stringPreferencesKey("encryptedPublicKey")]!!,
                 encryptedPrivateKey = prefs[stringPreferencesKey("encryptedPrivateKey")]!!,
                 encryptedSymmetricKey = prefs[stringPreferencesKey("encryptedSymmetricKey")]!!,
                 version = prefs[longPreferencesKey("version")]!!,

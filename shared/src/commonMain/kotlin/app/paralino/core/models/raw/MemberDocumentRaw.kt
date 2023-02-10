@@ -10,12 +10,12 @@ data class MemberDocumentRaw constructor(
     val ownerUserId: String,
     val groupId: String,
 
-    val ownerPublicKey: String,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
-    val shouldRotateKeys: Boolean,
+    val verification: String,
 
     val data: String,
+    val settingsRaw: GroupSettingsRaw?,
     val locationIds: List<String>
 ) {
 
@@ -26,11 +26,11 @@ data class MemberDocumentRaw constructor(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 groupId = map["groupId"] as String,
-                ownerPublicKey = map["ownerPublicKey"] as String,
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
-                shouldRotateKeys = map["shouldRotateKeys"] as Boolean,
                 data = map["data"] as String,
+                verification = map["verification"] as String,
+                settingsRaw = null,
                 locationIds = map["locationIds"] as List<String>,
             )
         }

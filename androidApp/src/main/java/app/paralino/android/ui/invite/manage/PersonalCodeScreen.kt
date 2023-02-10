@@ -13,8 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import app.paralino.core.models.Payload
-import app.paralino.core.presentation.invite.manage.PersonalCodeScreenEvent
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.AppButtonState
@@ -24,16 +22,16 @@ import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.share
+import app.paralino.core.models.Payload
+import app.paralino.core.presentation.invite.manage.PersonalCodeScreenEvent
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun PersonalCodeScreen(
     appState: MainAppState,
-    createCode: Boolean = false,
-    vm: PersonalCodeViewModel = getViewModel { parametersOf(createCode) },
+    vm: PersonalCodeViewModel = getViewModel(),
 ) {
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)

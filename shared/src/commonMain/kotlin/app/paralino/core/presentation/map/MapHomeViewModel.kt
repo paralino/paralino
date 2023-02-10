@@ -52,6 +52,7 @@ class MapHomeViewModel constructor(
                     flowOf(Payload.Loading)
                 } else {
                     combine(
+                        // TODO if group is deleted, changes are not propagated here
                         groupRepo.getGroupWithMembersLocally(it),
                         placesRepo.getPlacesForGroupLocally(it),
                         getSharingContract(),

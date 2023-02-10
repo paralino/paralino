@@ -12,9 +12,7 @@ data class UserGroupEntity constructor(
     @PrimaryKey
     val id: String,
     val ownerUserId: String,
-    val ownerPublicKey: String,
     val keyVersion: Long,
-    val shouldRotateKeys: Boolean,
     val data: String
 ) : Parcelable {
 

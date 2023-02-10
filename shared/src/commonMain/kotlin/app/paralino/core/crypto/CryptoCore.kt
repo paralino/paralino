@@ -41,13 +41,17 @@ class CryptoCore(
             data = newKeyPair.privateKey.toData().asBase64String(hashProvider),
             key = newPersonalKey.content
         )
+        val encryptedPublicKey = encryptDataWithKey(
+            data = newKeyPair.publicKey.toData().asBase64String(hashProvider),
+            key = newPersonalKey.content
+        )
 
         val encryptedKeyData = UserCryptoKeyRaw(
             "",
             ownerUserId = userId,
             encryptedSymmetricKey = encryptedPersonalKey.asBase64String(hashProvider),
             encryptedPrivateKey = encryptedPrivateKey,
-            publicKey = newKeyPair.publicKey.toData().asBase64String(hashProvider),
+            encryptedPublicKey = encryptedPublicKey,
             version = keyVersion
         )
 
@@ -212,6 +216,30 @@ class CryptoCore(
             myPrivateKey = myPrivateKey.base64ToData(hashProvider).content,
             publicKey = publicKey.base64ToData(hashProvider).content
         )
+    }
+
+    fun signData(data: String, myPrivateKey: String): String {
+        return signData(data, myPrivateKey.base64ToData(hashProvider).content)
+    }
+
+    fun signData(data: String, myPrivateKey: ByteArray): String {
+        return signData(data.toData(hashProvider).content, myPrivateKey).asBase64String(hashProvider)
+    }
+
+    fun signData(data: ByteArray, myPrivateKey: ByteArray): Data {
+        return serviceProvider.signData(data, myPrivateKey)
+    }
+
+    fun verifySignature(data: String, publicKey: String): String? {
+        return verifySignature(data, publicKey.base64ToData(hashProvider).content)
+    }
+
+    fun verifySignature(data: String, publicKey: ByteArray): String? {
+        return verifySignature(data.base64ToData(hashProvider).content, publicKey)?.asString(hashProvider)
+    }
+
+    fun verifySignature(data: ByteArray, publicKey: ByteArray): Data? {
+        return serviceProvider.verifySignature(data, publicKey)
     }
 
     fun derivePassword(password: String): DerivedPasswords {

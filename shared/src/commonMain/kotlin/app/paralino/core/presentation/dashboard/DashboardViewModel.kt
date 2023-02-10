@@ -54,15 +54,14 @@ class DashboardViewModel(
             connectionStatus.status
         ) { user, location, groups, hasPlace, sharing, network ->
 
-            val active =
-                groups.filter { group -> sharing.any { it.groupId == group.id } }.map { group ->
-                    GroupItemData(group, uiType = GroupItemData.GroupUiType.ACTIVE)
-                }
-
-            val inactive =
-                groups.filter { group -> sharing.none { it.groupId == group.id } }.map { group ->
-                    GroupItemData(group, uiType = GroupItemData.GroupUiType.ACTIVE)
-                }
+            val allGroups = groups.map { group ->
+                    val uiType = when {
+                        !group.isVerified -> GroupItemData.GroupUiType.UNVERIFIED
+                        sharing.any { it.groupId == group.id } -> GroupItemData.GroupUiType.ACTIVE
+                        else -> GroupItemData.GroupUiType.INACTIVE
+                    }
+                    GroupItemData(group, uiType = uiType)
+                }.sortedBy { it.name }.sortedBy { it.uiType }
 
             val errors = buildList {
                 if(sharing.isNotEmpty() && !network.isOnline)
@@ -87,8 +86,7 @@ class DashboardViewModel(
 
             DashboardScreenState(
                 email = user.data?.email ?: "",
-                activeGroups = active,
-                inactiveGroups = inactive,
+                groups = allGroups,
                 errors = errors
             )
         }

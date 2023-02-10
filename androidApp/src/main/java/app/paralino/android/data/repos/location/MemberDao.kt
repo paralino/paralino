@@ -49,6 +49,10 @@ interface MemberDao {
     fun getMember(groupId: String, userId: String): Flow<MemberEntityWithLocations?>
 
     @Transaction
+    @Query("SELECT * FROM members WHERE groupId = :groupId AND userId = :userId")
+    suspend fun getMemberOnce(groupId: String, userId: String): MemberEntityWithLocations?
+
+    @Transaction
     @Query("SELECT * FROM members WHERE userId = :userId")
     fun getLocationsForUser(userId: String): Flow<List<MemberEntityWithLocations>>
 
@@ -70,9 +74,6 @@ interface MemberDao {
     @Query("SELECT id FROM members WHERE userId = :userId AND groupId = :groupId")
     suspend fun getUserMemberId(groupId: String, userId: String): String?
 
-
-    @Query("SELECT ownerPublicKey FROM members WHERE groupId = :groupId AND userId = :userId")
-    suspend fun getMemberPublicKeyOnce(groupId: String, userId: String): String?
 
     @Update(onConflict = OnConflictStrategy.IGNORE, entity = MemberLocationEntity::class)
     suspend fun updateMemberLocationData(data: MemberLocationDataUpdate)

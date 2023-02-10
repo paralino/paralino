@@ -25,8 +25,8 @@ interface UserGroupDao {
     @Query("SELECT * FROM groups WHERE id = :id")
     fun getGroup(id: String): Flow<UserGroupEntity?>
 
-    @Query("SELECT ownerPublicKey FROM groups WHERE id = :groupId")
-    suspend fun getGroupPublicKeyOnce(groupId: String): String?
+    @Query("SELECT ownerUserId FROM groups WHERE id = :groupId")
+    suspend fun getGroupOwnerIdOnce(groupId: String): String?
 
     @Query("DELETE FROM groups WHERE id = :id")
     suspend fun deleteGroup(id: String)

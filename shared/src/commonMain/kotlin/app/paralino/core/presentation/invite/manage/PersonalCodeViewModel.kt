@@ -1,15 +1,16 @@
 package app.paralino.core.presentation.invite.manage
 
 import app.paralino.core.models.Payload
+import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 
 class PersonalCodeViewModel(
     private val repo: PersonalCodesRepository,
-    createCode: Boolean,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PersonalCodeScreenState>>(Payload.Loading)
@@ -19,39 +20,34 @@ class PersonalCodeViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        var createCodeNow = createCode
+
         repo.getMyPersonalCodes()
             .onEach { result ->
                 _uiState.update {
-                    result.mapSuccess {
-                        val codeData = it.firstOrNull()?.let {
-                            PersonalCodeScreenCodeData(
-                                id = it.id,
-                                code = it.data.formattedCode,
-                                validityUnix = it.validityUnix
-                            )
-                        }
 
-                        // create code if no code is available
-                        if(createCodeNow) {
-                            createCodeNow = false
-                            if(codeData == null)
-                                createPersonalCode()
-                        }
+                    val codeData = result.firstOrNull()?.let {
+                        PersonalCodeScreenCodeData(
+                            id = it.id,
+                            code = it.data.data?.formattedCode ?: "---",
+                            validityUTC = it.validityUTC
+                        )
+                    }
 
+                    Payload.Success(
                         PersonalCodeScreenState(
                             code = codeData,
                             createLoading = false,
                             actionLoading = false
                         )
-                    }
+                    )
                 }
             }
             .launchIn(coroutineScope)
     }
 
     fun createPersonalCode() {
-        repo.createPersonalCode()
+        flow { emit(repo.createAndSavePersonalCode()) }
+            .mapToPayload { Unit }
             .onEach { result ->
                 _uiState.update {
                     it.mapSuccess { it.copy(createLoading = result is Payload.Loading) }
