@@ -14,10 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -28,12 +28,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.Visibility
 import androidx.core.net.toUri
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.Deeplink
-import app.paralino.android.ui.rememberAppState
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.openUri
@@ -119,49 +121,51 @@ fun SettingSectionInfo(
     onLicencesClick: () -> Unit
 ) {
     val context = LocalContext.current
-    SettingsSectionHeader(name = stringResource(id = R.string.settings_section_general_title))
+    Column {
+        SettingsSectionHeader(name = stringResource(id = R.string.settings_section_general_title))
 //    SettingsActionItem(
 //        name = stringResource(id = R.string.setting_title_rate),
 //        icon = Icons.Rounded.Celebration
 //    ) {}
-    SettingsActionItem(
-        name = stringResource(id = R.string.setting_title_share),
-        icon = Icons.Rounded.Share
-    ) {
-        context.share(Deeplink.homeUrl)
-    }
+        SettingsActionItem(
+            name = stringResource(id = R.string.setting_title_share),
+            icon = Icons.Rounded.Share
+        ) {
+            context.share(Deeplink.homeUrl)
+        }
 //    SettingsActionItem(
 //        name = stringResource(id = R.string.setting_title_help),
 //        icon = Icons.Rounded.Help
 //    ) {}
-    SettingsActionItem(
-        name = stringResource(id = R.string.setting_title_sourceCode),
-        icon = Icons.Rounded.Code
-    ) {
-        context.openUri(Deeplink.sourceCodeUrl.toUri())
-    }
-    SettingsActionItem(
-        name = stringResource(id = R.string.setting_title_privacy),
-        icon = Icons.Rounded.PrivacyTip
-    ) {
-        TODO()
-    }
-    SettingsActionItem(
-        name = stringResource(id = R.string.setting_title_libraries),
-        icon = Icons.Rounded.LibraryBooks
-    ) {
-        onLicencesClick()
-    }
+        SettingsActionItem(
+            name = stringResource(id = R.string.setting_title_sourceCode),
+            icon = Icons.Rounded.Code
+        ) {
+            context.openUri(Deeplink.sourceCodeUrl.toUri())
+        }
+        SettingsActionItem(
+            name = stringResource(id = R.string.setting_title_privacy),
+            icon = Icons.Rounded.PrivacyTip
+        ) {
+            TODO()
+        }
+        SettingsActionItem(
+            name = stringResource(id = R.string.setting_title_libraries),
+            icon = Icons.Rounded.LibraryBooks
+        ) {
+            onLicencesClick()
+        }
 
-    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-        Text(
-            text = "v${app.paralino.android.BuildConfig.VERSION_NAME} (${app.paralino.android.BuildConfig.VERSION_CODE})",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp),
-            style = MaterialTheme.typography.caption,
-            textAlign = TextAlign.Center
-        )
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            Text(
+                text = "v${app.paralino.android.BuildConfig.VERSION_NAME} (${app.paralino.android.BuildConfig.VERSION_CODE})",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                style = MaterialTheme.typography.caption,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -204,31 +208,63 @@ fun SettingsActionItem(
     modifier: Modifier = Modifier,
     name: String,
     icon: ImageVector,
+    iconTint: Color = MaterialTheme.colors.surface,
+    showEndArrow: Boolean = true,
     onClick: () -> Unit
 ) {
-    Row(
+    ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = 12.dp, vertical = 12.dp)
     ) {
+        val (iconMain, text, iconArrow) = createRefs()
+
         Icon(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier
+                .constrainAs(iconMain) {
+                    this.start.linkTo(parent.start)
+                    this.top.linkTo(parent.top)
+                    this.bottom.linkTo(parent.bottom)
+                }
                 .size(46.dp)
                 .background(
-                    MaterialTheme.colors.surface,
+                    color = iconTint,
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(12.dp)
         )
         Text(
+            modifier = Modifier
+                .constrainAs(text) {
+                    this.linkTo(
+                        start = iconMain.end,
+                        end = iconArrow.start,
+                        top = parent.top,
+                        bottom = parent.bottom,
+                        horizontalBias = 0f
+                    )
+                    width = Dimension.preferredWrapContent
+                }
+                .padding(horizontal = 12.dp),
             text = name,
-            style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
-            modifier = Modifier.padding(horizontal = 12.dp)
+            style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp)
+        )
+        Icon(
+            modifier = Modifier
+                .constrainAs(iconArrow) {
+                    this.end.linkTo(parent.end)
+                    this.top.linkTo(parent.top)
+                    this.bottom.linkTo(parent.bottom)
+                    visibility = if (showEndArrow) Visibility.Visible else Visibility.Gone
+                }
+                .width(20.dp),
+            imageVector = Icons.Rounded.ChevronRight,
+            tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+            contentDescription = null
         )
     }
 }
@@ -238,6 +274,8 @@ fun SettingsActionItem(
 @Composable
 fun MainPreview() {
     AppTheme {
-        SettingsScreen(rememberAppState())
+        Surface {
+            SettingSectionInfo(onLicencesClick = {})
+        }
     }
 }
