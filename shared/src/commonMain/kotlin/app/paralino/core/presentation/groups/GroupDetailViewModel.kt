@@ -175,8 +175,8 @@ class GroupDetailViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun removeMemberLocation(memberUserId: String, locationId: String) {
-        groupMemberRemove.deleteLocation(memberUserId, locationId)
+    fun removeMemberLocation(memberId: String, locationId: String) {
+        groupMemberRemove.deleteLocation(memberId, locationId)
             .mapToPayload { Unit }
             .onEach { result ->
                 _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }

@@ -121,7 +121,7 @@ val coreModule = module {
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
-    single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { GroupValidityVerification(get(), get(), get(), config) }
 

@@ -52,10 +52,10 @@ class UserMemberIdUseCase constructor(
     }
 
     suspend fun getCurrentUserMemberForGroup(groupId: String): MemberModelWithLocations? {
-        return memberLocal.getMember(
+        return memberLocal.getMemberOnce(
             groupId = groupId,
             userId = userRepository.cachedUserId
-        ).firstOrNull()
+        )
     }
 
     suspend fun getCurrentUserMemberIdForPlace(placeId: String): String? {

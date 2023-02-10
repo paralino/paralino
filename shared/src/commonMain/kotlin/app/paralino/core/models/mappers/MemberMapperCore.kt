@@ -6,6 +6,7 @@ import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.group.GroupSettings
 import app.paralino.core.models.location.*
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.utils.BaseRemoteModule
@@ -149,7 +150,15 @@ class MemberMapperCore constructor(
             groupKeyVersion = model.member.groupKeyVersion,
             memberKeyVersion = model.member.memberKeyVersion,
             verification = model.member.verification,
-            integrity = model.member.integrity,
+            settings = model.member.settingsRaw?.let {
+                GroupSettings(
+                    id = it.id,
+                    groupId = it.groupId,
+                    ownerUserId = it.ownerUserId,
+                    secretKey = it.secretKey,
+                    integrity = it.integrity
+                )
+            },
             memberData = memberData,
             verificationResult = verification
         )

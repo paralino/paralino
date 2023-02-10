@@ -1,10 +1,11 @@
 package app.paralino.android.data.models.location
 
-import android.os.Parcelable
-import androidx.room.*
-import kotlinx.parcelize.Parcelize
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.Relation
+import app.paralino.core.models.group.GroupSettings
 
-@Parcelize
 @Entity(tableName = "members")
 data class MemberEntity constructor(
     @PrimaryKey
@@ -14,9 +15,11 @@ data class MemberEntity constructor(
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
     val verification: String,
-    val integrity: String?,
     val data: String,
-) : Parcelable
+
+    @Embedded(prefix = "settings_")
+    val settings: GroupSettings?
+)
 
 data class MemberEntityWithLocations constructor(
     @Embedded

@@ -6,7 +6,7 @@ import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mappers.GroupMapperCore
-import app.paralino.core.models.raw.GroupWithMemberRaw
+import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.IGroupLocalDataSource
@@ -37,7 +37,7 @@ class GroupRefreshUseCase constructor(
         )
     }
 
-    suspend fun refreshRemoteGroupWithMembersAndPlaces(groupId: String): GroupWithMemberRaw {
+    suspend fun refreshRemoteGroupWithMembersAndPlaces(groupId: String): GroupWithMembersRaw {
         return getRemoteGroupWithMembers(groupId)
             .also {
                 local.updateOrCreateGroup(it)
@@ -46,7 +46,7 @@ class GroupRefreshUseCase constructor(
             }
     }
 
-    private suspend fun getRemoteGroupWithMembers(groupId: String): GroupWithMemberRaw {
+    private suspend fun getRemoteGroupWithMembers(groupId: String): GroupWithMembersRaw {
         return try {
             triggerRemoteOnly {
                 remote.getGroupWithMembers(groupId)
@@ -61,7 +61,7 @@ class GroupRefreshUseCase constructor(
         }
     }
 
-    suspend fun handleGroupKeysUpdate(group: GroupWithMemberRaw): GroupWithMemberRaw {
+    suspend fun handleGroupKeysUpdate(group: GroupWithMembersRaw): GroupWithMembersRaw {
         logg.tag("tag_crypto_key_group").w("group and member keys updated")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
 
@@ -74,7 +74,7 @@ class GroupRefreshUseCase constructor(
 
     suspend fun updateGroupAndMemberKeysAndRefresh(
         remoteGroup: UserGroupWithMembers,
-    ): GroupWithMemberRaw? {
+    ): GroupWithMembersRaw? {
         if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = true)) {
             return refreshRemoteGroupWithMembersAndPlaces(remoteGroup.id)
         } else {

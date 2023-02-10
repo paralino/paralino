@@ -13,9 +13,9 @@ data class MemberDocumentRaw constructor(
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
     val verification: String,
-    val integrity: String?,
 
     val data: String,
+    val settingsRaw: GroupSettingsRaw?,
     val locationIds: List<String>
 ) {
 
@@ -30,7 +30,7 @@ data class MemberDocumentRaw constructor(
                 memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
                 data = map["data"] as String,
                 verification = map["verification"] as String,
-                integrity = map["integrity"] as? String?,
+                settingsRaw = null,
                 locationIds = map["locationIds"] as List<String>,
             )
         }

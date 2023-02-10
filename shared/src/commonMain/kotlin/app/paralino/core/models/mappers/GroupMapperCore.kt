@@ -10,7 +10,7 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.GroupDocumentRaw
-import app.paralino.core.models.raw.GroupWithMemberRaw
+import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
@@ -86,7 +86,7 @@ class GroupMapperCore constructor(
         )
     }
 
-    suspend fun remote2CoreWithMembers(model: GroupWithMemberRaw): UserGroupWithMembers {
+    suspend fun remote2CoreWithMembers(model: GroupWithMembersRaw): UserGroupWithMembers {
         val members = model.members.map {
             memberMapperCore.remote2Core(
                 model = it,

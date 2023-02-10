@@ -1,15 +1,15 @@
 package app.paralino.android.data.repos.group
 
-import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.group.UserGroupWithMembers
-import app.paralino.core.models.raw.GroupDocumentRaw
-import app.paralino.core.models.raw.GroupWithMemberRaw
-import app.paralino.core.repo.group.IGroupLocalDataSource
-import app.paralino.core.repo.location.ILocationLocalDataSource
-import app.paralino.core.utils.extensions.distinctFlowOfList
 import app.paralino.android.data.mappers.GroupsMapperLocal
 import app.paralino.core.config
 import app.paralino.core.domain.crypto.VerificationResult
+import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.raw.GroupDocumentRaw
+import app.paralino.core.models.raw.GroupWithMembersRaw
+import app.paralino.core.repo.group.IGroupLocalDataSource
+import app.paralino.core.repo.location.ILocationLocalDataSource
+import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.flow.*
 
 class UserGroupLocalDataSource constructor(
@@ -18,12 +18,12 @@ class UserGroupLocalDataSource constructor(
     private val memberLocal: ILocationLocalDataSource
 ) : IGroupLocalDataSource {
 
-    override suspend fun recreateGroups(data: List<GroupWithMemberRaw>) {
+    override suspend fun recreateGroups(data: List<GroupWithMembersRaw>) {
         dao.replaceGroups(*data.map { mapper.remote2Local(it.group) }.toTypedArray())
         memberLocal.recreateAllMembers(data.flatMap { it.members })
     }
 
-    override suspend fun updateOrCreateGroup(group: GroupWithMemberRaw) {
+    override suspend fun updateOrCreateGroup(group: GroupWithMembersRaw) {
         dao.createOrUpdate(mapper.remote2Local(group.group))
         memberLocal.recreateMembersForGroup(group.group.id, group.members)
     }

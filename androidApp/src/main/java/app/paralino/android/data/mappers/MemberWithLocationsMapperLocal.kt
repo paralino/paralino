@@ -3,9 +3,11 @@ package app.paralino.android.data.mappers
 import app.paralino.android.data.models.location.MemberEntity
 import app.paralino.android.data.models.location.MemberEntityWithLocations
 import app.paralino.android.data.models.location.MemberLocationEntity
+import app.paralino.core.models.group.GroupSettings
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.mappers.IDataMapperLocal
 import app.paralino.core.models.mappers.MemberMapperCore
+import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
@@ -76,7 +78,15 @@ class MemberMapperLocal() : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
             memberKeyVersion = model.memberKeyVersion,
             data = model.data,
             verification = model.verification,
-            integrity = model.integrity,
+            settingsRaw = model.settings?.let {
+                GroupSettingsRaw(
+                    id = it.id,
+                    groupId = it.groupId,
+                    ownerUserId = it.ownerUserId,
+                    secretKey = it.secretKey,
+                    integrity = it.integrity
+                )
+            },
             locationIds = emptyList()
         )
     }
@@ -89,7 +99,15 @@ class MemberMapperLocal() : IDataMapperLocal<MemberEntity, MemberDocumentRaw> {
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
             verification = model.verification,
-            integrity = model.integrity,
+            settings = model.settingsRaw?.let {
+                GroupSettings(
+                    id = it.id,
+                    groupId = it.groupId,
+                    ownerUserId = it.ownerUserId,
+                    secretKey = it.secretKey,
+                    integrity = it.integrity
+                )
+            },
             data = model.data
         )
     }

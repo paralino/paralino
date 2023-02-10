@@ -87,7 +87,7 @@ class CreateAccountUseCase constructor(
             }
     }
 
-    suspend fun initAndSaveUserKeys(backupPassword: String, userId: String) {
+    private suspend fun initAndSaveUserKeys(backupPassword: String, userId: String) {
         try {
             val keys = createNewKey(backupPassword, userId)
             val remoteKey = userKeyRepository.uploadNewUserKey(keys.encryptedKeyData)
@@ -98,7 +98,7 @@ class CreateAccountUseCase constructor(
         }
     }
 
-    suspend fun createNewKey(backupPassword: String, userId: String): GeneratedUserKeys {
+    private suspend fun createNewKey(backupPassword: String, userId: String): GeneratedUserKeys {
         return cryptoCore.generateNewKeysForUser(
             backupPassword = backupPassword,
             userId = userId

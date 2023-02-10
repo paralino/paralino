@@ -52,7 +52,7 @@ class MemberCryptoKeyRotation(
             return false
         }
 
-        val integrity = validityVerification.checkIntegrityForMember(remoteGroup)
+        val integrity = validityVerification.checkIntegrityForMemberKey(remoteGroup)
         logg.tag("tag_crypto_key_group_member_rotation").v("Group ${remoteGroup.id} integrity: $integrity")
         if (integrity == IntegrityResult.CORRUPTED) {
             logg.tag("tag_crypto_key_group_member_rotation")

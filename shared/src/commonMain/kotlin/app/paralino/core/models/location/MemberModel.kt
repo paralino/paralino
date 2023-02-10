@@ -4,6 +4,7 @@ import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.group.GroupSettings
 import app.paralino.core.utils.Emojis
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -16,9 +17,9 @@ data class MemberModel constructor(
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
     val verification: String,
-    val integrity: String?,
     @Contextual
     val memberData: CryptoResource<MemberModelData>,
+    val settings: GroupSettings?,
     val verificationResult: VerificationResult
 ) {
 

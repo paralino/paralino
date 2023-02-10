@@ -1,7 +1,5 @@
 package app.paralino.core.models
 
-import app.paralino.core.domain.crypto.VerificationResult
-
 sealed class Payload<out R> {
 
     object Loading : Payload<Nothing>()

@@ -9,6 +9,7 @@ data class CreateGroupPayload constructor(
     val encryptedMemberKey: String,
     val encryptedPublicKey: String,
     val groupMemberIntegrity: String,
+    val secretKey: String,
     val memberVerification: String,
     val groupData: String,
     val memberData: String

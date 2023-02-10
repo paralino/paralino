@@ -2,13 +2,15 @@ package app.paralino.core.domain.crypto
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.Data
+import app.paralino.core.crypto.HashType
+import app.paralino.core.crypto.base64ToData
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberVerification
-import app.paralino.core.models.raw.GroupWithMemberRaw
+import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.IConfig
@@ -17,7 +19,7 @@ import kotlinx.serialization.decodeFromString
 class GroupValidityVerification(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore,
-    private val cryptoUserKeyRepo: CryptoUserKeyRepository,
+    private val userKeyRepo: CryptoUserKeyRepository,
     private val config: IConfig
 ) {
 
@@ -27,7 +29,7 @@ class GroupValidityVerification(
         groupKey: Data?,
         memberVerification: String,
         groupOwnerPublicKey: String?,
-        memberGroupIntegrity: String?
+        memberGroupSettings: GroupSettingsRaw?,
     ): VerificationResult {
         try {
             groupOwnerPublicKey?.takeIf { it.isNotBlank() }
@@ -45,7 +47,7 @@ class GroupValidityVerification(
                 return VerificationResult.WRONG_VERIFICATION_ENTRY_FORM
             }
 
-            try {
+            val secretKey = try {
                 cryptoCore.verifySignature(
                     data = verification.memberSecret,
                     publicKey = cryptoKEKRepo.getMemberPublicKey(
@@ -58,13 +60,16 @@ class GroupValidityVerification(
             }
 
             if (memberUserId == config.userId) {
-                if (memberGroupIntegrity.isNullOrBlank()) {
+                if (memberGroupSettings == null)
+                    return VerificationResult.MISSING_MEMBER_SETTINGS
+
+                if (memberGroupSettings.integrity.isBlank()) {
                     return VerificationResult.WRONG_MEMBER_INTEGRITY
                 } else {
-                    val myKey = cryptoUserKeyRepo.latestKeyPair()
+                    val myKey = userKeyRepo.latestKeyPair()
                     try {
                         cryptoCore.decryptDataWithKeyPair(
-                            data = memberGroupIntegrity,
+                            data = memberGroupSettings.integrity,
                             publicKey = myKey.publicKey,
                             myPrivateKey = myKey.privateKey
                         ).let {
@@ -75,7 +80,26 @@ class GroupValidityVerification(
                     }
                 }
 
-                // TODO maybe check for personal code content
+                if (memberGroupSettings.secretKey.isBlank()) {
+                    return VerificationResult.WRONG_MEMBER_SECRET
+                } else {
+                    try {
+                        val userOwnSecret = cryptoCore.decryptDataWithKey(
+                            data = memberGroupSettings.secretKey,
+                            key = userKeyRepo.personalKey.content
+                        )
+
+                        val hash = cryptoCore.hashProvider.computeHash(
+                            data = userOwnSecret.base64ToData(cryptoCore.hashProvider).content,
+                            type = HashType.SHA256
+                        ).asBase64String(cryptoCore.hashProvider)
+
+                        if (hash != secretKey)
+                            return VerificationResult.WRONG_MEMBER_SECRET
+                    } catch (e: Exception) {
+                        return VerificationResult.WRONG_MEMBER_SECRET
+                    }
+                }
             }
 
             return VerificationResult.VERIFIED
@@ -100,24 +124,24 @@ class GroupValidityVerification(
             memberVerification = member.verification,
             groupOwnerPublicKey = groupOwnerPublicKey,
             groupKey = groupKey,
-            memberGroupIntegrity = member.integrity
+            memberGroupSettings = member.settingsRaw
         )
     }
 
 
-    suspend fun checkIntegrityForGroup(group: UserGroupWithMembers): IntegrityResult {
+    suspend fun checkIntegrityForGroupKey(group: UserGroupWithMembers): IntegrityResult {
         return checkIntegrity(
             groupId = group.group.id,
-            myIntegrity = group.members.firstOrNull() { it.member.userId == config.userId }?.member?.integrity,
+            myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = true
         )
     }
 
-    suspend fun checkIntegrityForMember(group: UserGroupWithMembers): IntegrityResult {
+    suspend fun checkIntegrityForMemberKey(group: UserGroupWithMembers): IntegrityResult {
         return checkIntegrity(
             groupId = group.group.id,
-            myIntegrity = group.members.firstOrNull() { it.member.userId == config.userId }?.member?.integrity,
+            myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = false
         )
@@ -135,7 +159,7 @@ class GroupValidityVerification(
 
         val remoteIntegrity: GroupIntegrity
         val realIntegritySignature = try {
-            val myKey = cryptoUserKeyRepo.latestKeyPair()
+            val myKey = userKeyRepo.latestKeyPair()
             remoteIntegrity = try {
                 cryptoCore.decryptDataWithKeyPair(
                     data = myIntegrity,
@@ -161,8 +185,8 @@ class GroupValidityVerification(
             return IntegrityResult.CORRUPTED
         }
 
-        val valid = if(forGroup) remoteIntegrity.isValidForGroup(realIntegritySignature)
-            else remoteIntegrity.isValidForMember(realIntegritySignature)
+        val valid = if (forGroup) remoteIntegrity.isValidForGroup(realIntegritySignature)
+        else remoteIntegrity.isValidForMember(realIntegritySignature)
         if (valid) {
             return IntegrityResult.VALID
         } else {
@@ -186,5 +210,7 @@ enum class VerificationResult {
     WRONG_VERIFICATION_ENTRY_FORM,
     WRONG_OWNER_VERIFICATION,
     WRONG_MEMBER_VERIFICATION,
+    MISSING_MEMBER_SETTINGS,
     WRONG_MEMBER_INTEGRITY,
+    WRONG_MEMBER_SECRET,
 }
