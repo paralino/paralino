@@ -16,6 +16,7 @@ import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.decodeFromString
@@ -31,7 +32,7 @@ class PersonalCodesRemoteSource constructor(
     private val userKeyRepo: CryptoUserKeyRepository
 ) {
 
-    suspend fun tryCreatingCode(user: UserMe): PersonalCodeRaw {
+    suspend fun tryCreatingCode(user: UserMe) {
 
         val personalCode = createPersonalCodeString()
         val derivedCode = cryptoCore.derivePassword(personalCode)
@@ -71,8 +72,6 @@ class PersonalCodesRemoteSource constructor(
             integrity = integrity
         )
 
-        val validity = nowUTC().plus(2.days).toString()
-
         val payload = PersonalCodeFunctionData(
             keyId = derivedCode.loginPassword,
             encryptedCodeData = cryptoCore.encryptDataWithSimplePassword(
@@ -84,20 +83,22 @@ class PersonalCodesRemoteSource constructor(
                 key = userKeyRepo.personalKey.content
             ),
             verification = secretKeyForMe,
-            validityUTC = validity
+            validityUTC = null // nowUTC().plus(2.days).toString()
         )
 
-        val doc = functionsApi.runAndWait(
+        functionsApi.runAndWait(
             functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
             data = BaseRemoteModule.formatter.encodeToString(payload)
         )
-            .takeIf { it.isSuccess }
-            ?.also {
-                if (it.response.isBlank())
-                    throw NotFoundException("Code not created")
+            .let {
+                if (!it.isSuccess) {
+                    throw BaseRemoteException.fromCode(
+                        null,
+                        "Unable to delete group",
+                        Exception(it.stderr)
+                    )
+                }
             }
-
-        return PersonalCodeRaw.from(doc!!.responseMap)
     }
 
     private fun createPersonalCodeString(): String {
@@ -160,6 +161,22 @@ class PersonalCodesRemoteSource constructor(
             remoteConfig.resourceIds.collectionPersonalCodeID,
             id
         )
+    }
+
+    suspend fun revokeAllCodes() {
+        functionsApi.runAndWait(
+            functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
+            data = ""
+        )
+            .let {
+                if (!it.isSuccess) {
+                    throw BaseRemoteException.fromCode(
+                        null,
+                        "Unable to delete group",
+                        Exception(it.stderr)
+                    )
+                }
+            }
     }
 
 }

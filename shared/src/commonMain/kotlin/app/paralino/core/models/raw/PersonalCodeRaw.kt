@@ -14,10 +14,11 @@ data class PersonalCodeRaw constructor(
     val encryptedCode: String,
     val encryptedCodeData: String,
     val verification: String,
-    val validityUTC: String
+    val validityUTC: String?
 ) {
 
     fun isStillValid(): Boolean {
+        if(validityUTC.isNullOrBlank()) return true
         val now = nowUTC()
         val time = validityUTC.isoWithOffsetToInstant() ?: return false
         return time >= now
@@ -33,7 +34,7 @@ data class PersonalCodeRaw constructor(
                 encryptedCode = map["encryptedCode"] as String,
                 encryptedCodeData = map["encryptedCodeData"] as String,
                 verification = map["verification"] as String,
-                validityUTC = map["validityUTC"] as String
+                validityUTC = map["validityUTC"] as? String?
             )
         }
     }

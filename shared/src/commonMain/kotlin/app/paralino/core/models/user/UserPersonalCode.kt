@@ -12,13 +12,14 @@ import kotlinx.serialization.Serializable
 data class UserPersonalCode constructor(
     @SerialName("\$id")
     val id: String = "",
-    val validityUTC: String,
+    val validityUTC: String?,
     val verification: String,
     @Contextual
     val data: CryptoResource<UserPersonalCodeData>
 ) {
 
     fun isStillValid(): Boolean {
+        if(validityUTC.isNullOrBlank()) return true
         val now = nowUTC()
         val time = validityUTC.isoWithOffsetToInstant() ?: return false
         return time >= now

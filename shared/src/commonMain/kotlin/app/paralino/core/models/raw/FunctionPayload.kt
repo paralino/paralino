@@ -206,7 +206,7 @@ data class PersonalCodeFunctionData constructor(
     val keyId: String,
     val encryptedCodeData: String,
     val encryptedCode: String,
-    val validityUTC: String,
+    val validityUTC: String?,
     val verification: String
 )
 

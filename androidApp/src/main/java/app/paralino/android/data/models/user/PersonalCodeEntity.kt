@@ -11,6 +11,6 @@ data class PersonalCodeEntity(
     val ownerUserId: String,
     val encryptedCode: String,
     val encryptedCodeData: String,
-    val validityUTC: String,
+    val validityUTC: String?,
     val verification: String,
 )

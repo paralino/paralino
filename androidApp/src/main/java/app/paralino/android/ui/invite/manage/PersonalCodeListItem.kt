@@ -47,11 +47,10 @@ fun PersonalCodeItem(
         code = state.code,
         // TODO review date format
         validity = state.validityUTC
-            .isoWithOffsetToInstant()
+            ?.isoWithOffsetToInstant()
             ?.toLocalDateTime(TimeZone.UTC)
             ?.toJavaLocalDateTime()
-            ?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
-            ?: "-",
+            ?.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)),
         deleteLoading = deleteLoading,
         onCopy = onCopy,
         onShare = onShare,
@@ -63,7 +62,7 @@ fun PersonalCodeItem(
 fun PersonalCodeItem(
     modifier: Modifier = Modifier,
     code: String,
-    validity: String,
+    validity: String?,
     deleteLoading: Boolean,
     onCopy: () -> Unit,
     onShare: () -> Unit,
@@ -111,17 +110,19 @@ fun PersonalCodeItem(
 
         Spacer(modifier = Modifier.size(40.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.AccessTime,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(horizontal = 14.dp)
-                    .size(20.dp)
-            )
-            Text(text = validity)
+        if(!validity.isNullOrBlank()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.AccessTime,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(horizontal = 14.dp)
+                        .size(20.dp)
+                )
+                Text(text = validity)
+            }
         }
 
         Spacer(modifier = Modifier.size(5.dp))

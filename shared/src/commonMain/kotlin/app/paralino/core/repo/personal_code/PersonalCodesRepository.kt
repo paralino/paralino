@@ -18,44 +18,44 @@ class PersonalCodesRepository constructor(
     private val userRepo: UserRepository
 ) : BaseRepository() {
 
-    fun createPersonalCode(): Flow<PersonalCodeRaw> {
-        val user = userRepo.cachedUser
-            ?: return flow { throw Throwable("User not valid") }
-
-        return getDataOnce(
-            remote = {
-                try {
-                    remote.tryCreatingCode(user)
-                } catch (e: Exception) {
-                    if (e.asRemoteException() is ConflictException) {
-                        try {
-                            // in case of conflict try once more
-                            remote.tryCreatingCode(user)
-                        } catch (e: Exception) {
-                            if (e.asRemoteException() is ConflictException) {
-                                // if there is conflict again, throw generic exception
-                                throw Exception("Please try again")
-                            } else {
-                                throw e
-                            }
-                        }
-                    } else {
-                        throw e
-                    }
-                }
-            },
-            localUpdate = { local.addPersonalCode(it) }
-        )
+    suspend fun createAndSavePersonalCode() {
+        revokeAllCodes(createNewCode = true)
     }
 
-    fun getMyPersonalCodes(): Flow<Payload<List<UserPersonalCode>>> {
+    private suspend fun createPersonalCode() {
+        val user = userRepo.cachedUser
+            ?: throw Throwable("User not valid")
+
+        return triggerRemoteOnly {
+            try {
+                remote.tryCreatingCode(user)
+            } catch (e: Exception) {
+                if (e.asRemoteException() is ConflictException) {
+                    try {
+                        // in case of conflict try once more
+                        remote.tryCreatingCode(user)
+                    } catch (e: Exception) {
+                        if (e.asRemoteException() is ConflictException) {
+                            // if there is conflict again, throw generic exception
+                            throw Exception("Please try again")
+                        } else {
+                            throw e
+                        }
+                    }
+                } else {
+                    throw e
+                }
+            }
+        }
+    }
+
+    fun getMyPersonalCodes(): Flow<List<UserPersonalCode>> {
         return mergeDataWithRemote(
-            remote = { remote.getMyPersonalCodes() },
             local = local.getPersonalCodes(),
-            localUpdate = { local.replacePersonalCodes(it) }
+            remote = { remote.getMyPersonalCodes() },
+            localUpdate = { local.replacePersonalCodes(it) },
         )
             .map { it.filter { it.isStillValid() } }
-            .mapToPayload()
     }
 
     fun getUserInfoFromCode(code: String): Flow<Payload<UserPersonalCodeData>> {
@@ -74,25 +74,18 @@ class PersonalCodesRepository constructor(
         ) { remote.revokePersonalCode(id) }.mapToPayload()
     }
 
-    fun revokeAllCodes(): Flow<Payload<Boolean>> {
-        return getDataOnce(
-            remote = {
-                val allValidCodes = remote.getMyPersonalCodes()
-                allValidCodes.forEach {
-                    remote.revokePersonalCode(it.id)
-                }
-                allValidCodes
-            },
-            localUpdate = { local.clear() }
-        )
-            .flatMapLatest {
-                val flow = if (it.isNotEmpty()) {
-                    createPersonalCode().mapToPayload { true }
-                } else {
-                    flowOf(true).mapToPayload()
-                }
-                flow
+    suspend fun revokeAllCodes(createNewCode: Boolean = true) {
+        triggerRemoteOnly {
+            if(createNewCode) {
+                createPersonalCode()
+                remote.getMyPersonalCodes()
+            } else {
+                remote.revokeAllCodes()
+                emptyList()
             }
+        }.also {
+            local.replacePersonalCodes(it)
+        }
     }
 
     suspend fun clearLocally() {

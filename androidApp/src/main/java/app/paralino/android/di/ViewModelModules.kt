@@ -60,7 +60,7 @@ val viewModelModules = module {
     viewModel { (args: String?) ->
         SharingStartViewModel(args, get(), get(), get(), get(), get())
     }
-    viewModel { (createCode: Boolean) -> PersonalCodeViewModel(get(), createCode) }
+    viewModel { PersonalCodeViewModel(get()) }
     viewModel { (groupId: String?, code: String?) ->
         MemberInviteViewModel(
             groupId = groupId,

@@ -6,7 +6,6 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.models.Payload
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.UpdateMemberData
@@ -24,7 +23,6 @@ import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 
@@ -41,19 +39,20 @@ class UpdateUserDataUseCase constructor(
     private val userMemberIdUseCase: UserMemberIdUseCase
 ) : BaseRepository() {
 
-    fun updateUserData(data: UserMeData, deviceName: String): Flow<Boolean> {
+    fun updateUserData(data: UserMeData, deviceName: String): Flow<Unit> {
         return getDataOnce(
-            remote = { userRemoteSource.updateUserData(data) },
-            localUpdate = { userRepo.updateLocalUser(it) }
-        )
-            .map {
+            remote = {
+                val newData = userRemoteSource.updateUserData(data)
                 updateMemberDataInGroups(data, deviceName)
-            }
-            .flatMapLatest {
-                config.deviceName = deviceName
                 personalCodes.revokeAllCodes()
+                newData
+            },
+            localUpdate = {
+                config.deviceName = deviceName
+                userRepo.updateLocalUser(it)
             }
-            .map { it is Payload.Success }
+        )
+            .map { Unit }
     }
 
     private suspend fun updateMemberDataInGroups(data: UserMeData, deviceName: String) {
@@ -61,8 +60,13 @@ class UpdateUserDataUseCase constructor(
 
         val nodes = userMembers.map { member ->
 
-            val groupKey = cryptoKEKRepo.getGroupKey(member.member.groupId, member.member.groupKeyVersion)
-                ?: throw MissingGroupKeyException(member.member.groupId, member.member.groupKeyVersion)
+            val groupKey = cryptoKEKRepo.getGroupKey(
+                groupId = member.member.groupId,
+                keyVersion = member.member.groupKeyVersion
+            ) ?: throw MissingGroupKeyException(
+                groupId = member.member.groupId,
+                keyVersion = member.member.groupKeyVersion
+            )
 
             val memberData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
@@ -90,6 +94,9 @@ class UpdateUserDataUseCase constructor(
             )
         }
 
+        if (nodes.isEmpty())
+            return
+
         val payload = UpdateMemberFunctionPayload(
             data = nodes
         )
@@ -110,7 +117,7 @@ class UpdateUserDataUseCase constructor(
     }
 
     suspend fun registerPushTokenIfNeeded() {
-       userRepo.cachedUser?.data ?: let {
+        userRepo.cachedUser?.data ?: let {
             logg.tag("push_notifications").v("User not present, ignoring...")
             return
         }
