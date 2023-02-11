@@ -7,7 +7,7 @@ interface IGeofenceManager {
 
     fun registerGeofences(places: List<GroupPlaceGeofenceData>)
     fun deleteGeofences(placesIds: List<String>)
-    fun isLocationInGeofence(data: LocationDataModel, geofence: GroupPlaceGeofenceData): Boolean
+    fun distanceBetweenPoints(data: LocationDataModel, geofence: GroupPlaceGeofenceData): Float
     fun deleteAllGeofences()
 
 }

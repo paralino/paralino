@@ -77,15 +77,15 @@ class GeofenceManager(
             .build()
     }
 
-    override fun isLocationInGeofence(
+    override fun distanceBetweenPoints(
         data: LocationDataModel,
         geofence: GroupPlaceGeofenceData
-    ): Boolean {
+    ): Float {
         val result = FloatArray(1)
         Location.distanceBetween(
             data.lat, data.lng, geofence.lat, geofence.lng, result
         )
-        return result.first() < geofence.radiusMeters
+        return result.first()
     }
 
     override fun deleteGeofences(placesIds: List<String>) {

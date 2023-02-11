@@ -12,11 +12,9 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlin.math.absoluteValue
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class PlacesRepository constructor(
     private val local: IPlacesLocalDataSource,
@@ -27,7 +25,7 @@ class PlacesRepository constructor(
 ) : BaseRepository() {
 
     // TODO maybe clear place activity if location sharing stops?
-    private val placeActivity = hashMapOf<String, Pair<Long, Boolean>?>()
+    private val placeActivity = MutableStateFlow(mapOf<String, PlaceActivityState>())
 
     fun hasAnyPlace(): Flow<Boolean> {
         return local.getNumberOfPlaces().map { it > 0 }
@@ -102,9 +100,9 @@ class PlacesRepository constructor(
     fun updatePlace(place: GroupPlace): Flow<Unit> {
         return getDataOnce(
             remote = { remote.updatePlace(place) },
-            localUpdate = {
-                local.updatePlaceOnly(it)
-                placeActivity.remove(it.id)
+            localUpdate = { key ->
+                local.updatePlaceOnly(key)
+                placeActivity.update { it.toMutableMap().apply { remove(key.id) } }
             }
         ).map { Unit }
     }
@@ -163,7 +161,7 @@ class PlacesRepository constructor(
 
         places.forEach { place ->
             place.data.data?.let { placeData ->
-                val isEnter = geofenceManager.isLocationInGeofence(
+                val distance = geofenceManager.distanceBetweenPoints(
                     data,
                     GroupPlaceGeofenceData(
                         placeId = place.id,
@@ -172,8 +170,27 @@ class PlacesRepository constructor(
                         radiusMeters = placeData.radiusMeters
                     )
                 )
-                if(isEnter) entered.add(place.id)
-                else exited.add(place.id)
+
+                // user entered place only if location (lat, lng) fully entered place circle
+                val isEnter = distance < placeData.radiusMeters
+
+                // user exited place if user's accuracy circle is not overlapping place circle
+                // this is used to help filter location jumping when user stays in one closed place (like house)
+                // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
+                val isExit = distance > placeData.radiusMeters + data.accuracy.coerceAtMost(30f)
+                val previousState = placeActivity.value.get(place.id)
+
+                logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
+
+                if (isEnter) entered.add(place.id)
+                else if (isExit) exited.add(place.id)
+                else {
+                    // else -> there is no certain change to place activity, or it is the same as previous one
+                    if (previousState?.enter == true)
+                        entered.add(place.id)
+                    else if (previousState?.enter == false)
+                        exited.add(place.id)
+                }
             }
         }
 
@@ -184,7 +201,7 @@ class PlacesRepository constructor(
     suspend fun placesEnter(placesIds: List<String>) {
         placesIds.forEach {
             try {
-                placeEnter(it)
+                processPlaceActivity(it, enter = true)
             } catch (e: Exception) {
                 logg.e("Error notifying place enter", e)
             }
@@ -194,76 +211,87 @@ class PlacesRepository constructor(
     suspend fun placesExit(placesIds: List<String>) {
         placesIds.forEach {
             try {
-                placeExit(it)
+                processPlaceActivity(it, enter = false)
             } catch (e: Exception) {
                 logg.e("Error notifying place exit", e)
             }
         }
     }
 
-    suspend fun placeEnter(placeId: String) {
+    private suspend fun processPlaceActivity(placeId: String, enter: Boolean): Boolean {
 
-        logg.d("Try to notify place enter - $placeId")
+        val activityTag = if (enter) "enter" else "exit"
+//        logg.tag("place_activity").d("Try to notify place $activityTag - $placeId")
 
-        val placeActivityInfo = placeActivity.get(placeId)
-        val timeDiff = (placeActivityInfo?.first ?: 0L).minus(nowUTC().epochSeconds).absoluteValue
+        val previousState = placeActivity.value.get(placeId)
+        val newState = (previousState ?: PlaceActivityState())
+            .copy(enter = enter, activityTimeMillis = nowUTC().toEpochMilliseconds())
 
-        // there already was a request for this place in last 10 seconds
-        if(timeDiff < 10L) return
+        updatePlaceActivity(placeId, newState)
 
-        // TODO this needs more improvement. If location updates are slow and user didn't move -> this will trigger place alert
-        // maybe check for last location / persist place activity in case app is closed + increase this threshold
-        // if user stays in one place for some time, there should be only one place enter alert
-        // already entered the place within the last 15 minutes
-        if(placeActivityInfo?.second == true && timeDiff < 15L.minutes.inWholeSeconds) return
+        // never entered/exited or already out/inside this place
+        // only take into account if didn't notify it before
+        if (previousState == null || (previousState.enter == enter && previousState.lastNotifyState != !enter)) {
+            logg.tag("place_activity")
+                .d("Cancel place $activityTag notify (state: ${previousState?.enter}) - $placeId")
+            return false
+        }
 
-        val place = local.getPlaceWithoutSettingsOnce(placeId) ?: return
+        val notifyTimeDiff =
+            previousState.notifyTimeMillis.minus(nowUTC().toEpochMilliseconds()).absoluteValue
+
+        // already notified this place in last period - this will filter frequent updates
+        // but if user stays more than certain period inside the space, it will trigger notification
+        if (notifyTimeDiff < 10.seconds.inWholeMilliseconds) {
+            logg.tag("place_activity")
+                .d("Cancel place $activityTag notify (notify diff) - $placeId")
+            return false
+        }
+
+        val place = local.getPlaceWithoutSettingsOnce(placeId)
+
+        if (place == null) {
+            logg.tag("place_activity").d("Cancel place $activityTag notify (place null) - $placeId")
+            return false
+        }
+
         if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) {
             // reset place activity if sharing stops
-            placeActivity.remove(placeId)
-            return
+            updatePlaceActivity(placeId, null)
+            logg.tag("place_activity")
+                .d("Cancel place $activityTag notify (sharing off) - $placeId")
+            return false
         }
 
-        logg.d("Trigger notify place enter - $placeId")
-        placeActivity.set(placeId, nowUTC().epochSeconds to true)
+        logg.tag("place_activity").d("Trigger notify place $activityTag - $placeId")
+        updatePlaceActivity(
+            placeId,
+            newState.copy(lastNotifyState = enter, notifyTimeMillis = nowUTC().toEpochMilliseconds())
+        )
         try {
             triggerRemoteOnly {
-                remote.notifyPlaceEnter(placeId)
+                if (enter) {
+                    remote.notifyPlaceEnter(placeId)
+                } else {
+                    remote.notifyPlaceExit(placeId)
+                }
             }
         } catch (e: Exception) {
-            placeActivity.remove(placeId)
+            updatePlaceActivity(placeId, null)
             throw e
         }
+
+        return true
     }
 
-    suspend fun placeExit(placeId: String) {
-
-        logg.d("Try to notify place exit - $placeId")
-
-        val placeActivityInfo = placeActivity.get(placeId)
-        val timeDiff = (placeActivityInfo?.first ?: 0L).minus(nowUTC().epochSeconds).absoluteValue
-
-        // there already was a request for this place in last 10 seconds
-        if(timeDiff < 10L) return
-
-        // already exited the place
-        if(placeActivityInfo?.second == false) return
-
-        val place = local.getPlaceWithoutSettingsOnce(placeId) ?: return
-        if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) {
-            placeActivity.remove(placeId)
-            return
-        }
-
-        logg.d("Trigger notify place exit - $placeId")
-        placeActivity.set(placeId, nowUTC().epochSeconds to false)
-        try {
-            triggerRemoteOnly {
-                remote.notifyPlaceExit(placeId)
+    private fun updatePlaceActivity(placeId: String, state: PlaceActivityState?) {
+        placeActivity.update {
+            it.toMutableMap().apply {
+                if (state != null)
+                    set(placeId, state)
+                else
+                    remove(placeId)
             }
-        } catch (e: Exception) {
-            placeActivity.remove(placeId)
-            throw e
         }
     }
 
@@ -272,14 +300,14 @@ class PlacesRepository constructor(
             remote = { remote.deletePlace(id) },
             localUpdate = {
                 local.deletePlace(id)
-                placeActivity.remove(id)
+                updatePlaceActivity(id, state = null)
             }
         )
     }
 
     suspend fun clear() {
         local.clearAll()
-        placeActivity.clear()
+        placeActivity.update { emptyMap() }
     }
 
     suspend fun deleteLocallyForGroup(groupId: String) {
@@ -287,3 +315,10 @@ class PlacesRepository constructor(
     }
 
 }
+
+data class PlaceActivityState(
+    val enter: Boolean = true,
+    val lastNotifyState: Boolean? = null,
+    val activityTimeMillis: Long = 0L,
+    val notifyTimeMillis: Long = 0L,
+)
