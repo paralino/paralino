@@ -44,7 +44,7 @@ class UpdateUserDataUseCase constructor(
             remote = {
                 val newData = userRemoteSource.updateUserData(data)
                 updateMemberDataInGroups(data, deviceName)
-                personalCodes.revokeAllCodes()
+                personalCodes.revokeAllCodes(createNewCode = true, userMeData = data)
                 newData
             },
             localUpdate = {

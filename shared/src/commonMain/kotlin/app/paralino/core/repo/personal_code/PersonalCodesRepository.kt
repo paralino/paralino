@@ -3,6 +3,7 @@ package app.paralino.core.repo.personal_code
 import app.paralino.core.models.Payload
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.raw.PersonalCodeRaw
+import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.base.BaseRepository
@@ -22,18 +23,18 @@ class PersonalCodesRepository constructor(
         revokeAllCodes(createNewCode = true)
     }
 
-    private suspend fun createPersonalCode() {
+    private suspend fun createPersonalCode(userMeData: UserMeData?) {
         val user = userRepo.cachedUser
             ?: throw Throwable("User not valid")
 
         return triggerRemoteOnly {
             try {
-                remote.tryCreatingCode(user)
+                remote.tryCreatingCode(user, userMeData)
             } catch (e: Exception) {
                 if (e.asRemoteException() is ConflictException) {
                     try {
                         // in case of conflict try once more
-                        remote.tryCreatingCode(user)
+                        remote.tryCreatingCode(user, userMeData)
                     } catch (e: Exception) {
                         if (e.asRemoteException() is ConflictException) {
                             // if there is conflict again, throw generic exception
@@ -74,10 +75,10 @@ class PersonalCodesRepository constructor(
         ) { remote.revokePersonalCode(id) }.mapToPayload()
     }
 
-    suspend fun revokeAllCodes(createNewCode: Boolean = true) {
+    suspend fun revokeAllCodes(createNewCode: Boolean = true, userMeData: UserMeData? = null) {
         triggerRemoteOnly {
             if(createNewCode) {
-                createPersonalCode()
+                createPersonalCode(userMeData)
                 remote.getMyPersonalCodes()
             } else {
                 remote.revokeAllCodes()
