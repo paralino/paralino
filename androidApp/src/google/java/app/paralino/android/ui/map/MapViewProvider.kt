@@ -9,12 +9,14 @@ import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
+import app.paralino.android.ui.theme.AppColors
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
@@ -288,8 +290,18 @@ open class MapViewProviderState constructor(
                         TurfConstants.UNIT_METERS
                     )
                 )
-                .withFillColor(Color.BLUE)
-                .withFillOpacity(0.2)
+                .let {
+                    when(model.pinType) {
+                        MapPinType.MEMBER -> {
+                            it.withFillColor(Color.BLUE)
+                                .withFillOpacity(0.2)
+                        }
+                        MapPinType.PLACE -> {
+                            it.withFillColor(AppColors.accent.toArgb())
+                                .withFillOpacity(0.3)
+                        }
+                    }
+                }
                 .let {
                     polygonAnnotationsManager?.create(it)
                 }
