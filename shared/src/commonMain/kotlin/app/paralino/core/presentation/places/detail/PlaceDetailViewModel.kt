@@ -47,11 +47,10 @@ class PlaceDetailViewModel(
 
             val settings = group.members.map { member ->
                 val memberSetting =
-                    place.settings?.alertData?.firstOrNull { it.memberId == member.member.id }
+                    place.settings?.alertData?.firstOrNull { it.memberUserId == member.member.userId }
                 PlaceSettingsState(
                     groupId = groupId,
                     placeId = placeId,
-                    memberId = member.member.id,
                     memberUserId = member.member.userId,
                     name = member.member.name,
                     image = member.member.image ?: ImageModel.emoji(Emojis.robot),
@@ -121,10 +120,9 @@ class PlaceDetailViewModel(
         return group.isCurrentUserOwner || place.place.ownerUserId == config.userId
     }
 
-    fun toggleEnterSettings(memberId: String) {
-        toggleSetting(memberId, isEnter = true) { setting ->
+    fun toggleEnterSettings(userId: String) {
+        toggleSetting(userId, isEnter = true) { setting ->
             GroupPlaceSettingsData(
-                memberId = setting.memberId,
                 memberUserId = setting.memberUserId,
                 enter = !setting.notifyEnter,
                 exit = setting.notifyExit
@@ -132,10 +130,9 @@ class PlaceDetailViewModel(
         }
     }
 
-    fun toggleExitSettings(memberId: String) {
-        toggleSetting(memberId, isEnter = false) { setting ->
+    fun toggleExitSettings(userId: String) {
+        toggleSetting(userId, isEnter = false) { setting ->
             GroupPlaceSettingsData(
-                memberId = setting.memberId,
                 memberUserId = setting.memberUserId,
                 enter = setting.notifyEnter,
                 exit = !setting.notifyExit
@@ -144,27 +141,25 @@ class PlaceDetailViewModel(
     }
 
     private fun toggleSetting(
-        memberId: String,
+        userId: String,
         isEnter: Boolean,
         updateSetting: (PlaceSettingsState) -> GroupPlaceSettingsData
     ) {
         val state = _uiState.value.data ?: return
-        val group = groupFlow.value.data ?: return
         if (state.fullLoading) return
         if (state.settings.any { it.loading }) return
 
-        val setting = state.settings.firstOrNull { it.memberId == memberId } ?: return
+        val setting = state.settings.firstOrNull { it.memberUserId == userId } ?: return
         val newSetting = updateSetting(setting)
-        val currentMember = group.memberByUserId(config.userId)
 
-        placesRepo.updatePlaceSettings(state.placeId, currentMember.id, newSetting)
+        placesRepo.updatePlaceSettings(state.placeId, newSetting)
             .mapToPayload { it }
             .debounce(100)
             .onEach { result ->
                 _uiState.update {
                     it.mapSuccess {
                         val newList = it.settings.toMutableList().apply {
-                            removeAll { it.memberId == memberId }
+                            removeAll { it.memberUserId == userId }
                             add(
                                 setting.copy(
                                     loadingEnter = result is Payload.Loading && isEnter,

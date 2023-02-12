@@ -160,7 +160,6 @@ data class UpdatePlacePayload constructor(
 @Serializable
 data class PlaceEventPayload constructor(
     val placeId: String,
-    val memberId: String,
     val locationId: String?,
     val enter: Boolean
 )

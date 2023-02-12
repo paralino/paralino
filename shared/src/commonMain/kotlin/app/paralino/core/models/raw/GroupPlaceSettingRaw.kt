@@ -10,7 +10,6 @@ data class GroupPlaceSettingRaw(
     val groupId: String,
     val placeId: String,
     val ownerUserId: String,
-    val memberId: String,
     val alertData: String
 ) {
 
@@ -19,7 +18,6 @@ data class GroupPlaceSettingRaw(
             put("groupId", groupId)
             put("placeId", placeId)
             put("ownerUserId", ownerUserId)
-            put("memberId", memberId)
             put("alertData", alertData)
         }
     }
@@ -38,7 +36,6 @@ data class GroupPlaceSettingRaw(
                 groupId = map["groupId"] as String,
                 placeId = map["placeId"] as String,
                 ownerUserId = map["ownerUserId"] as String,
-                memberId = map["memberId"] as String,
                 alertData = map["alertData"] as String
             )
         }

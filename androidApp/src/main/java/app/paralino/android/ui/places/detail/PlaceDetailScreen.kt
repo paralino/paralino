@@ -296,7 +296,7 @@ fun PlaceDetailScreen(
 
         this.itemsIndexed(
             items = state.settings,
-            key = { index, item -> item.memberId }
+            key = { index, item -> item.memberUserId }
         ) { index, item ->
             PlaceDetailUserListItem(
                 modifier = Modifier.animateItemPlacement(),

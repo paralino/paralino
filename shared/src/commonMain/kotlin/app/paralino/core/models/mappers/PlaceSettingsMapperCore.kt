@@ -20,7 +20,6 @@ class PlaceSettingsMapperCore constructor(
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
-            memberId = model.memberId,
             alertData = BaseRemoteModule.formatter.decodeFromString(model.alertData)
         )
     }
@@ -31,7 +30,6 @@ class PlaceSettingsMapperCore constructor(
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
-            memberId = model.memberId,
             alertData = BaseRemoteModule.formatter.encodeToString(model.alertData)
         )
     }

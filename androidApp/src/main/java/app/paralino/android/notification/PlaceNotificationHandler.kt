@@ -23,7 +23,7 @@ class PlaceNotificationHandler(
     private val context: Context,
     private val locationRepo: LocationRepository,
     private val placeRepo: PlacesRepository,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val scopeProvider: ICoroutineScopeProvider,
 ): IPlaceNotificationsHandler {
 
     private val channelId = "place_activity_channel"
@@ -38,11 +38,9 @@ class PlaceNotificationHandler(
             var userName: String? = null
 
             try {
-                placeName = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()?.data?.data?.name
-                userName = locationRepo.getMembersByUserId(payload.memberUserId)
-                    .firstOrNull()
-                    ?.firstOrNull { it.member.id == payload.memberId }
-                    ?.member?.name
+                val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
+                placeName = place?.data?.data?.name
+                userName = locationRepo.getMember(place!!.groupId, payload.memberUserId)?.member?.name
             } catch (e: Exception) { }
 
             val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {

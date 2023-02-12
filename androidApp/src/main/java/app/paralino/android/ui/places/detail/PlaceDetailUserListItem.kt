@@ -78,7 +78,7 @@ fun PlaceDetailUserListItem(
                 text = stringResource(id = R.string.place_detail_setting_button_notify_enter),
                 loading = state.loadingEnter,
             ) {
-                onEnterChange(state.memberId)
+                onEnterChange(state.memberUserId)
             }
 
             Spacer(modifier = Modifier.size(8.dp))
@@ -88,7 +88,7 @@ fun PlaceDetailUserListItem(
                 text = stringResource(id = R.string.place_detail_setting_button_notify_exit),
                 loading = state.loadingExit,
             ) {
-                onExitChange(state.memberId)
+                onExitChange(state.memberUserId)
             }
         }
     }
@@ -140,7 +140,6 @@ fun PlaceListItemPreview() {
             val item = PlaceSettingsState(
                 groupId = "",
                 placeId = "",
-                memberId = "",
                 memberUserId = "",
                 name = "Some user",
                 image = ImageModel.emoji(Emojis.group1.first()),

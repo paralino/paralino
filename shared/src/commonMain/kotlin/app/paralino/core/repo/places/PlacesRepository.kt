@@ -113,7 +113,6 @@ class PlacesRepository constructor(
 
     fun updatePlaceSettings(
         placeId: String,
-        memberId: String,
         data: GroupPlaceSettingsData
     ): Flow<Unit> {
         return getDataOnce(
@@ -123,11 +122,11 @@ class PlacesRepository constructor(
 
                 val settings = if (currentSettings != null) {
                     val currentAlert =
-                        currentSettings.alertData.firstOrNull { it.memberId == data.memberId }
+                        currentSettings.alertData.firstOrNull { it.memberUserId == data.memberUserId }
 
                     val newAlerts = if (currentAlert != null) {
                         currentSettings.alertData.toMutableList().apply {
-                            removeAll { it.memberId == data.memberId }
+                            removeAll { it.memberUserId == data.memberUserId }
                             add(data)
                         }
                     } else {
@@ -141,7 +140,6 @@ class PlacesRepository constructor(
                         groupId = place.place.groupId,
                         placeId = placeId,
                         ownerUserId = userRepository.cachedUserId,
-                        memberId = memberId,
                         alertData = listOf(data)
                     )
                 }

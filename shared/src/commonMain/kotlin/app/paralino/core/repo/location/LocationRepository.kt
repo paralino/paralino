@@ -25,6 +25,10 @@ class LocationRepository constructor(
         return local.getMemberModelsForUser(userid)
     }
 
+    suspend fun getMember(groupId: String, userId: String): MemberModelWithLocations? {
+        return local.getMemberOnce(groupId, userId)
+    }
+
     suspend fun pushLocation(data: LocationDataModel) {
         triggerRemoteOnly {
             if (!sharingManager.isSharingActive()) throw NoValidContractsException()

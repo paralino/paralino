@@ -9,7 +9,6 @@ interface IPlaceNotificationsHandler {
 @Serializable
 data class PlaceActivityNotificationPayload constructor(
     val memberUserId: String,
-    val memberId: String,
     val locationId: String,
     val placeId: String,
     val enter: Boolean

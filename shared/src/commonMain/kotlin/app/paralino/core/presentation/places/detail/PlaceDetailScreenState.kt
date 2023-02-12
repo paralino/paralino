@@ -20,7 +20,6 @@ data class PlaceDetailScreenState constructor(
 data class PlaceSettingsState constructor(
     val groupId: String,
     val placeId: String,
-    val memberId: String,
     val memberUserId: String,
     val name: String,
     val image: ImageModel,
