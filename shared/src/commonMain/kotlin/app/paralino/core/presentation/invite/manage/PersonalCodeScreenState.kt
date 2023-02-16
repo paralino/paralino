@@ -9,6 +9,7 @@ data class PersonalCodeScreenState(
 data class PersonalCodeScreenCodeData(
     val id: String,
     val code: String,
+    val canDelete: Boolean,
     val validityUTC: String?
 )
 

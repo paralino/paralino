@@ -29,6 +29,7 @@ class PersonalCodeViewModel(
                         PersonalCodeScreenCodeData(
                             id = it.id,
                             code = it.data.data?.formattedCode ?: "---",
+                            canDelete = true,
                             validityUTC = it.validityUTC
                         )
                     }

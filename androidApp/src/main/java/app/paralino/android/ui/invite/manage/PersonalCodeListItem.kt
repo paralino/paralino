@@ -45,6 +45,7 @@ fun PersonalCodeItem(
     PersonalCodeItem(
         modifier = modifier,
         code = state.code,
+        hasDelete = state.canDelete,
         // TODO review date format
         validity = state.validityUTC
             ?.isoWithOffsetToInstant()
@@ -63,6 +64,7 @@ fun PersonalCodeItem(
     modifier: Modifier = Modifier,
     code: String,
     validity: String?,
+    hasDelete: Boolean,
     deleteLoading: Boolean,
     onCopy: () -> Unit,
     onShare: () -> Unit,
@@ -146,21 +148,23 @@ fun PersonalCodeItem(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(
-                onClick = { if (!deleteLoading) onDelete() }
-            ) {
-                if (deleteLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Rounded.Delete,
-                        tint = MaterialTheme.colors.onError,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
+            if(hasDelete) {
+                IconButton(
+                    onClick = { if (!deleteLoading) onDelete() }
+                ) {
+                    if (deleteLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Rounded.Delete,
+                            tint = MaterialTheme.colors.onError,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
         }
@@ -179,6 +183,7 @@ fun PersonalCodePreview() {
                     code = "XXXX-XXXX",
                     validity = "3 June 2022",
                     deleteLoading = false,
+                    hasDelete = true,
                     onCopy = { },
                     onShare = { },
                     onDelete = { }
