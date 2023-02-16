@@ -18,6 +18,7 @@ class LocationStartBroadcastReceiver: BroadcastReceiver() {
                 // TODO review and test if starting service from contract subscription is enough
 //                context?.let { LocationService.start(context) }
             } catch (e: IllegalStateException) {
+                // TODO show error to the user if location service can not be started
                 Logger.tag("location_service").e("Not allowed to start location service from action: ${intent?.action}", e)
             }
         }

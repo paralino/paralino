@@ -121,6 +121,8 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
                 logv("Location sharing status changed: $it")
                 if(it.data == true) {
                     logv("Location sharing contract ready, starting location service")
+                    // TODO show error to the user if location service can not be started
+                    // especially if started from background and user is missing all time location permission
                     LocationService.start(this, isForeground)
                 }
             }
