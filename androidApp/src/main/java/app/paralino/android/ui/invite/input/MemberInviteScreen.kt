@@ -19,8 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.invite.input.MemberInviteScreenEvent
@@ -155,6 +157,7 @@ fun MemberInviteScreen(
 
         MainInputField(
             text = state.code,
+            textStyle = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center),
             hint = stringResource(id = R.string.invite_connect_code_placeholder),
             hasError = state.hasInputError,
             keyboardType = KeyboardType.Text,

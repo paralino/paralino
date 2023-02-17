@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -24,15 +25,15 @@ fun MainInputField(
     text: String,
     hint: String,
     hasError: Boolean,
+    textStyle: TextStyle = LocalTextStyle.current,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Default,
     onKeyboardAction: () -> Unit = {},
     onInputChange: (String) -> Unit,
 ) {
     OutlinedTextField(
-        modifier = modifier
-            .fillMaxWidth(),
-        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start),
+        modifier = modifier.fillMaxWidth(),
+        textStyle = textStyle,
         value = text,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
