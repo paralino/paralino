@@ -42,7 +42,7 @@ class SettingsViewModel(
                                             image = userState.data.data?.userImage,
                                             isGuestUser = userState.data.isGuestUser,
                                             errorItem = if(userState.data.needsEmailVerification)
-                                                ConditionErrorType.EMAIL_VERIFICATION
+                                                ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
                                             else null
                                         ),
                                         logoutState = null,

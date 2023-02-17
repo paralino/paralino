@@ -7,6 +7,6 @@ sealed class ConditionErrorType {
     object PERMISSION_LOCATION_PRECISE: ConditionErrorType()
     object PERMISSION_LOCATION_BACKGROUND: ConditionErrorType()
     object NETWORK: ConditionErrorType()
-    object EMAIL_VERIFICATION: ConditionErrorType()
+    data class EMAIL_VERIFICATION(val email: String): ConditionErrorType()
     object GUEST_ACCOUNT: ConditionErrorType()
 }

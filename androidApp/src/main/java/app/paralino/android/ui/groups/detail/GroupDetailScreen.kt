@@ -155,12 +155,12 @@ fun GroupDetailScreen(
                 },
                 onGroupEdit = {
                     appState.navController.navigate(
-                        AppScreen.DashboardRoot.GroupCreate.route(groupId)
+                        AppScreen.MainHome.GroupCreate.route(groupId)
                     )
                 },
                 onAddGroupMember = {
                     appState.navController.navigate(
-                        AppScreen.DashboardRoot.GroupMemberAdd.route(groupId = groupId)
+                        AppScreen.MainHome.GroupMemberAdd.route(groupId = groupId)
                     )
                 },
                 onGroupDeleteOrLeave = {
@@ -182,25 +182,26 @@ fun GroupDetailScreen(
                     )
                 },
                 onOpenMap = {
-                    appState.navController.navigate(
-                        AppScreen.MapRoot.MainMap.route(groupId)
-                    )
+                    appState.navController.navigate(AppScreen.MainHome.MainMap.route(groupId)) {
+                        popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
+                        this.launchSingleTop = true
+                    }
                 },
                 openPlaces = {
                     appState.navController.navigate(
-                        AppScreen.DashboardRoot.PlacesList.route(groupId)
+                        AppScreen.MainHome.PlacesList.route(groupId)
                     )
                 },
                 openRawDataPresentation = {
                     appState.navController.navigate(
-                        AppScreen.DashboardRoot.RawDataScreen.route(
+                        AppScreen.MainHome.RawDataScreen.route(
                             RawPresentationDataType.GroupPresentation(groupId)
                         )
                     )
                 },
                 openMemberRawDataPresentation = {
                     appState.navController.navigate(
-                        AppScreen.DashboardRoot.RawDataScreen.route(
+                        AppScreen.MainHome.RawDataScreen.route(
                             RawPresentationDataType.GroupMemberPresentation(it)
                         )
                     )
@@ -210,7 +211,7 @@ fun GroupDetailScreen(
                         vm.stopSharing()
                     } else {
                         appState.navController.navigate(
-                            AppScreen.DashboardRoot.SharingStart.route(groupId)
+                            AppScreen.MainHome.SharingStart.route(groupId)
                         )
                     }
                 },
@@ -223,8 +224,7 @@ fun GroupDetailScreen(
                         ConditionErrorType.NETWORK -> appState.showSnackbar(
                             text = context.getString(R.string.error_no_connection_snackbar)
                         )
-                        else -> { /* TODO review or do nothing */
-                        }
+                        else -> { }
                     }
                 }
             )

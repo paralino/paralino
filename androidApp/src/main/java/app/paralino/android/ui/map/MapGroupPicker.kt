@@ -42,12 +42,13 @@ fun MapGroupPicker(
     groupImage: ImageModel,
     userCount: Int,
     inactiveUserCount: Int,
-    onClick: () -> Unit,
+    onGroupClick: () -> Unit,
+    onExpandClick: () -> Unit,
 ) {
     val height: Dp = remember { 46.dp }
     ConstraintLayout(
         modifier = modifier
-            .padding(horizontal = 30.dp)
+            .padding(horizontal = 50.dp)
             .shadow(1.dp, RoundedCornerShape(height))
             .clip(RoundedCornerShape(height))
             .background(MaterialTheme.colors.background)
@@ -56,7 +57,7 @@ fun MapGroupPicker(
                 MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                 RoundedCornerShape(height)
             )
-            .clickable { onClick() }
+            .clickable { onGroupClick() }
             .padding(4.dp)
             .animateContentSize(
                 animationSpec = spring(
@@ -103,7 +104,7 @@ fun MapGroupPicker(
         ) {
             Text(
                 text = groupName,
-                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Medium),
+                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Medium, lineHeight = 14.sp),
                 modifier = Modifier
             )
 
@@ -134,17 +135,33 @@ fun MapGroupPicker(
         }
 
         // expand icon
-        Icon(
-            imageVector = Icons.Rounded.ExpandMore,
-            contentDescription = null,
+        Box(
             modifier = Modifier
-                .size(20.dp)
                 .constrainAs(expand) {
-                    end.linkTo(parent.end, margin = 12.dp)
+                    end.linkTo(parent.end)
                     bottom.linkTo(image.bottom)
                     top.linkTo(image.top)
+                    this.height = Dimension.fillToConstraints
+                    this.width = Dimension.ratio("1:1")
                 }
-        )
+                .shadow(1.dp, RoundedCornerShape(percent = 100))
+                .clip(RoundedCornerShape(percent = 100))
+                .background(MaterialTheme.colors.background)
+                .border(
+                    0.5.dp,
+                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                    RoundedCornerShape(percent = 100)
+                )
+                .clickable { onExpandClick() }
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.ExpandMore,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 }
 
@@ -158,8 +175,10 @@ fun MemberPreview() {
                     groupName = "Robots in da house",
                     groupImage = ImageModel.emoji(Emojis.robot),
                     userCount = 5,
-                    inactiveUserCount = 2
-                ) { }
+                    inactiveUserCount = 2,
+                    onExpandClick = {},
+                    onGroupClick = {}
+                )
             }
         }
     }

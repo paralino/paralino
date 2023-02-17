@@ -240,10 +240,13 @@
     <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
 
     <string name="group_create_title">Create new group</string>
+    <string name="group_create_start_title">Connect with others</string>
     <string name="group_edit_title">Edit group</string>
     <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>
     <string name="group_create_button_text">Create group</string>
+    <string name="group_picker_button_create">Create</string>
+    <string name="group_picker_button_join">Join</string>
 
     <string name="group_members_last_active_status_now">Just now</string>
     <string name="group_members_status_inactive">INACTIVE</string>

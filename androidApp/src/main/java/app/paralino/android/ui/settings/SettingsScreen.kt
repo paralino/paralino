@@ -77,7 +77,7 @@ fun SettingsScreen(
                     isGuestUser = state.data.userState.isGuestUser,
                     errorItem = null,
                     onGuestAccountClick = {
-                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature)
+                        appState.navController.navigate(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature)
                     },
                     onErrorItemClick = { }
                 )
@@ -86,14 +86,14 @@ fun SettingsScreen(
                     name = stringResource(id = R.string.settings_section_account_title),
                     icon = Icons.Rounded.AccountCircle
                 ) {
-                    appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.routeSignature)
+                    appState.navController.navigate(AppScreen.Settings.ProfileDetails.routeSignature)
                 }
 
                 SettingsActionItem(
                     name = stringResource(id = R.string.settings_section_personal_code_title),
                     icon = Icons.Rounded.Key
                 ) {
-                    appState.navController.navigate(AppScreen.SettingsRoot.PersonalCodes.routeSignature)
+                    appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
                 }
 
 //                SettingsActionItem(
@@ -110,7 +110,7 @@ fun SettingsScreen(
 
         SettingSectionInfo(
             onLicencesClick = {
-                appState.navController.navigate(AppScreen.SettingsRoot.Licences.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.Licences.routeSignature)
             }
         )
     }

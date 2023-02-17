@@ -16,7 +16,7 @@ import app.paralino.core.domain.user.*
 import app.paralino.core.notifications.IPlaceNotificationsHandler
 import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.core.presentation.MainViewModel
-import app.paralino.core.presentation.dashboard.DashboardViewModel
+import app.paralino.core.presentation.groups.GroupInitViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
@@ -52,7 +52,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { DashboardViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { GroupInitViewModel(get(), get(), get()) }
     viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), config) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), startScreenType as LoginScreenUiType) }

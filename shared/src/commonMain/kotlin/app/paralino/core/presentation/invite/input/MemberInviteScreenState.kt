@@ -2,7 +2,7 @@ package app.paralino.core.presentation.invite.input
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.user.UserPersonalCodeData
-import app.paralino.core.presentation.dashboard.GroupItemData
+import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.utils.Emojis
 
 sealed class MemberInviteScreenState() {
@@ -19,7 +19,7 @@ sealed class MemberInviteScreenState() {
 
     data class Loaded constructor(
         val codeReadData: UserPersonalCodeData,
-        val group: GroupItemData?,
+        val group: GroupItemState?,
         val canChangeGroup: Boolean,
         override val hasInputError: Boolean,
         override val actionLoading: Boolean,

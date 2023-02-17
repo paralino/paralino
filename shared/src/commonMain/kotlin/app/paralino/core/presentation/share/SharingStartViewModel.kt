@@ -6,7 +6,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.dashboard.GroupItemData
+import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.utils.*
@@ -50,8 +50,8 @@ class SharingStartViewModel(
         }.launchIn(coroutineScope)
     }
 
-    suspend fun getAllGroups(): List<GroupItemData> {
-        return groupRepo.getAllGroupsLocally().firstOrNull()?.map { GroupItemData(it) }
+    suspend fun getAllGroups(): List<GroupItemState> {
+        return groupRepo.getAllGroupsLocally().firstOrNull()?.map { GroupItemState(it) }
             ?: emptyList()
     }
 
@@ -63,7 +63,7 @@ class SharingStartViewModel(
         }
     }
 
-    fun setSelectedGroup(group: GroupItemData) {
+    fun setSelectedGroup(group: GroupItemState) {
         _uiState.update { it.copy(groupState = Payload.Success(group)) }
     }
 

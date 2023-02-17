@@ -92,10 +92,10 @@ fun PlacesScreen(
                     appState.navController.popBackStack()
                 },
                 onPlaceClick = {
-                    appState.navController.navigate(AppScreen.DashboardRoot.PlaceDetail.route(groupId = groupId, placeId = it.id))
+                    appState.navController.navigate(AppScreen.MainHome.PlaceDetail.route(groupId = groupId, placeId = it.id))
                 },
                 onCreatePlace = {
-                    appState.navController.navigate(AppScreen.DashboardRoot.PlaceCreate.route(groupId = groupId, placeId = null))
+                    appState.navController.navigate(AppScreen.MainHome.PlaceCreate.route(groupId = groupId, placeId = null))
                 },
                 onErrorItemClick = {
                     notificationPermissionHandler.askNotificationPermission()

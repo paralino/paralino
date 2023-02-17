@@ -70,9 +70,9 @@ fun ResetPasswordScreen(
                     appState.showSnackbar(context.getString(R.string.reset_password_success_message))
                     delay(500)
                     appState.navController.navigate(
-                        AppScreen.AppStartRoot.Login.route(LoginScreenUiType.LOGIN),
+                        AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN),
                         navOptions {
-                            popUpTo(AppScreen.AppStartRoot.PasswordReset.routeSignature) {
+                            popUpTo(AppScreen.LoggedOut.PasswordReset.routeSignature) {
                                 inclusive = true
                             }
                         }

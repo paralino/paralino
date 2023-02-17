@@ -3,7 +3,7 @@ package app.paralino.core.presentation.invite.input
 import app.paralino.core.domain.group.GroupMemberAddUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.dashboard.GroupItemData
+import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.utils.exceptions.NotFoundException
@@ -25,8 +25,8 @@ class MemberInviteViewModel(
         MutableStateFlow<MemberInviteScreenState>(MemberInviteScreenState.Empty())
     val uiState: Flow<MemberInviteScreenState> = _uiState
 
-    private val groups = MutableStateFlow<List<GroupItemData>>(emptyList())
-    private val currentGroup = MutableStateFlow<GroupItemData?>(null)
+    private val groups = MutableStateFlow<List<GroupItemState>>(emptyList())
+    private val currentGroup = MutableStateFlow<GroupItemState?>(null)
 
     private val _eventChannel = Channel<MemberInviteScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -37,7 +37,7 @@ class MemberInviteViewModel(
             coroutineScope.launch {
                 groupRepo.getGroupWithoutMembersLocally(it)
                     .firstOrNull()
-                    ?.let { GroupItemData(it) }
+                    ?.let { GroupItemState(it) }
                     ?.let { selectGroup(it) }
             }
         }
@@ -148,15 +148,15 @@ class MemberInviteViewModel(
             .launchIn(coroutineScope)
     }
 
-    suspend fun getAllGroups(): List<GroupItemData> {
+    suspend fun getAllGroups(): List<GroupItemState> {
         return groupRepo.getAllGroupsLocally()
             .firstOrNull()
-            ?.map { GroupItemData(it) }
+            ?.map { GroupItemState(it) }
             ?.also { groups.value = it }
             ?: emptyList()
     }
 
-    fun selectGroup(group: GroupItemData) {
+    fun selectGroup(group: GroupItemState) {
         currentGroup.value = group
         _uiState.update {
             if (it is MemberInviteScreenState.Loaded) it.copy(group = group)

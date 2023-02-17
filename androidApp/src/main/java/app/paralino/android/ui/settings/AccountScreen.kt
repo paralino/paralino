@@ -124,7 +124,7 @@ fun AccountScreen(
             IconButton(
                 onClick = {
                     appState.navController.navigate(
-                        AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.route(
+                        AppScreen.Settings.ProfileDetails.RawDataScreen.route(
                             RawPresentationDataType.UserPresentation
                         )
                     )
@@ -148,11 +148,11 @@ fun AccountScreen(
                     isGuestUser = state.data.userState.isGuestUser,
                     errorItem = state.data.userState.errorItem,
                     onGuestAccountClick = {
-                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature)
+                        appState.navController.navigate(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature)
                     },
                     onErrorItemClick = {
                         when (it) {
-                            ConditionErrorType.EMAIL_VERIFICATION -> showDialog =
+                            is ConditionErrorType.EMAIL_VERIFICATION -> showDialog =
                                 MainAlertDialog.VerifyEmail(state.data.userState.email)
                             else -> {}
                         }
@@ -163,7 +163,7 @@ fun AccountScreen(
                     name = stringResource(id = R.string.settings_account_edit_profile),
                     icon = Icons.Rounded.Person
                 ) {
-                    appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.EditProfile.routeSignature)
+                    appState.navController.navigate(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature)
                 }
 
                 if (state.data.userState.isGuestUser) {
@@ -171,20 +171,20 @@ fun AccountScreen(
                         name = stringResource(id = R.string.settings_account_guest_convert),
                         icon = Icons.Rounded.HowToReg
                     ) {
-                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature)
+                        appState.navController.navigate(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature)
                     }
                 } else {
                     SettingsActionItem(
                         name = stringResource(id = R.string.settings_account_edit_email),
                         icon = Icons.Rounded.Email
                     ) {
-                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ChangeEmail.routeSignature)
+                        appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangeEmail.routeSignature)
                     }
                     SettingsActionItem(
                         name = stringResource(id = R.string.settings_account_edit_password),
                         icon = Icons.Rounded.Password
                     ) {
-                        appState.navController.navigate(AppScreen.SettingsRoot.ProfileDetails.ChangePassword.routeSignature)
+                        appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangePassword.routeSignature)
                     }
                     SettingsActionItem(
                         name = stringResource(id = R.string.setting_title_logout),

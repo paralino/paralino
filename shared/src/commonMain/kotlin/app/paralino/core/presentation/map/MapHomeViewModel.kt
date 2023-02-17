@@ -2,14 +2,12 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.models.Payload
+import app.paralino.core.models.Resource
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.dashboard.GroupItemData
-import app.paralino.core.presentation.groups.GroupMemberItemLocationState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
-import app.paralino.core.presentation.groups.GroupMemberState
-import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.presentation.groups.*
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
@@ -19,7 +17,6 @@ import app.paralino.core.utils.IConfig
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 class MapHomeViewModel constructor(
     private val locationRepo: LocationRepository,
@@ -44,8 +41,30 @@ class MapHomeViewModel constructor(
         .distinctUntilChanged()
         .flatMapLatest { locationRefreshUseCase.locationRefresh(it).mapToPayload { Unit } }
 
+    val allGroups: StateFlow<Resource<List<UserGroup>>> = groupRepo.getAllGroupsLocally()
+        .map { Resource.Ready(it) }
+        .conflate()
+        .distinctUntilChanged { old, new ->
+            old.data.sortedBy { it.id }.toTypedArray()
+                .contentDeepEquals(new.data.sortedBy { it.id }.toTypedArray())
+        }
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.Eagerly,
+            initialValue = Resource.NotInitialized
+        )
 
     init {
+
+        allGroups.onEach { groupsData ->
+            if (groupsData is Resource.Ready) {
+                val selectedGroup = groupIdData.value
+                if (!groupsData.data.any { it.id == selectedGroup }) {
+                    switchGroup(groupsData.data.firstOrNull()?.id ?: "")
+                }
+            }
+        }.launchIn(coroutineScope)
+
         groupIdData
             .flatMapLatest {
                 if (it.isBlank()) {
@@ -142,18 +161,16 @@ class MapHomeViewModel constructor(
             }
             .onEach { _uiState.value = it }
             .launchIn(coroutineScope)
-//        switchGroup("")
     }
 
     fun switchGroup(groupId: String) {
         if (groupId.isBlank()) {
-            _uiState.value = Payload.Loading
-            coroutineScope.launch {
-                val groupIds = groupRepo.getAllGroupIds().firstOrNull() ?: emptyList()
-                groupIdData.value = groupIds.firstOrNull { it == config.selectedGroupId }
-                        ?: groupIds.firstOrNull()
-                        ?: ""
-            }
+            val newGroupId =
+                allGroups.value.data?.firstOrNull { it.id == config.selectedGroupId }?.id
+                    ?: allGroups.value.data?.firstOrNull()?.id
+                    ?: ""
+            groupIdData.update { newGroupId }
+            config.selectedGroupId = newGroupId
         } else {
             groupIdData.value = groupId
             config.selectedGroupId = groupId
@@ -165,14 +182,20 @@ class MapHomeViewModel constructor(
     }
 
     private fun getSharingContract(): Flow<LocationSharingContract?> {
-        return locationRepo.sharingManager.allContractsFlow.combine(groupIdData) { contracts, group ->
+        return sharingManager.allContractsFlow.combine(groupIdData) { contracts, group ->
             contracts.data?.firstOrNull { it.groupId == group }?.asValidContract()
         }
     }
 
-    suspend fun getAllGroups(): List<GroupItemData> {
-        return groupRepo.getAllGroupsLocally().firstOrNull()?.map { GroupItemData(it) }
-            ?: emptyList()
+    suspend fun getAllGroups(): List<GroupItemState> {
+        return groupRepo.getAllGroupsLocally().firstOrNull()?.map { group ->
+            val uiType = when {
+                !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
+                sharingManager.isSharingActiveForGroup(group.id) -> GroupItemState.GroupUiType.ACTIVE
+                else -> GroupItemState.GroupUiType.INACTIVE
+            }
+            GroupItemState(group, uiType)
+        } ?: emptyList()
     }
 
     fun clearMyLocation(locationId: String) {

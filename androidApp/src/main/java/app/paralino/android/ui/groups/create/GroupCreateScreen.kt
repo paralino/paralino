@@ -21,16 +21,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import app.paralino.android.R
+import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.components.*
+import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.CreateGroupScreenEvent
 import app.paralino.core.presentation.groups.CreateGroupState
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.ButtonStyle
-import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -55,9 +56,15 @@ fun GroupCreateScreen(
                 is CreateGroupScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
                 }
-                CreateGroupScreenEvent.GroupUpdated -> {
+                is CreateGroupScreenEvent.GroupUpdated -> {
                     delay(400)
-                    appState.navController.popBackStack()
+                    if (groupId.isNullOrBlank())
+                        appState.navController.navigate(AppScreen.MainHome.GroupDetails.route(event.groupId)) {
+                            this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
+                                this.inclusive = false
+                            }
+                        }
+                    else appState.navController.popBackStack()
                 }
                 null -> {
                     /* do nothing */
@@ -71,7 +78,7 @@ fun GroupCreateScreen(
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 1.dp,
-                title = {  },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
@@ -83,7 +90,6 @@ fun GroupCreateScreen(
             )
         }
     ) {
-
         when (val finalState = state) {
             Payload.Loading -> {
                 Column(
@@ -116,7 +122,6 @@ fun GroupCreateScreen(
             }
         }
     }
-
 }
 
 @Composable

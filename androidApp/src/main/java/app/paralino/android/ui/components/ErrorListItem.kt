@@ -120,7 +120,7 @@ val ConditionErrorType.iconVector: ImageVector
         ConditionErrorType.PERMISSION_LOCATION_PRECISE -> Icons.Rounded.PhonelinkSetup
         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> Icons.Rounded.PhonelinkSetup
         ConditionErrorType.NETWORK -> Icons.Rounded.WifiOff
-        ConditionErrorType.EMAIL_VERIFICATION -> Icons.Rounded.Email
+        is ConditionErrorType.EMAIL_VERIFICATION -> Icons.Rounded.Email
         ConditionErrorType.GUEST_ACCOUNT -> ImageVector.vectorResource(id = R.drawable.ic_incognito)
     }
 
@@ -132,7 +132,7 @@ val ConditionErrorType.nameRes: Int
         ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.string.location_banner_error_no_permission_location
         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.string.location_banner_error_no_permission_location_background
         ConditionErrorType.NETWORK -> R.string.location_banner_error_offline
-        ConditionErrorType.EMAIL_VERIFICATION -> R.string.info_email_confirm
+        is ConditionErrorType.EMAIL_VERIFICATION -> R.string.info_email_confirm
         ConditionErrorType.GUEST_ACCOUNT -> R.string.settings_account_guest_badge
     }
 
@@ -144,6 +144,6 @@ val ConditionErrorType.endActionTextRes: Int
         ConditionErrorType.PERMISSION_LOCATION_PRECISE -> R.string.location_banner_fix
         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> R.string.location_banner_fix
         ConditionErrorType.NETWORK -> 0
-        ConditionErrorType.EMAIL_VERIFICATION -> R.string.button_verify
+        is ConditionErrorType.EMAIL_VERIFICATION -> R.string.button_verify
         ConditionErrorType.GUEST_ACCOUNT -> R.string.location_banner_fix
     }

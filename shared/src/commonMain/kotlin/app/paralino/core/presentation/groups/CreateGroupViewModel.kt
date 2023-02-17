@@ -78,12 +78,14 @@ class CreateGroupViewModel(
             }
             val newGroup = group.copy(data = newData)
             groupRepo.updateGroup(newGroup)
+                .map { group.id }
         } else {
             createGroup.createGroup(filteredName, image)
+                .map { it.group.id }
         }
 
         groupUpdateFlow
-            .mapToPayload<Unit, Unit>()
+            .mapToPayload { it }
             .onEach { data ->
                 _uiState.update {
                     it.mapSuccess { it.copy(isLoading = data is Payload.Loading, hasError = false) }
@@ -94,7 +96,7 @@ class CreateGroupViewModel(
                     }
                     Payload.Loading -> {}
                     is Payload.Success -> {
-                        _eventChannel.send(CreateGroupScreenEvent.GroupUpdated)
+                        _eventChannel.send(CreateGroupScreenEvent.GroupUpdated(data.data))
                     }
                 }
             }

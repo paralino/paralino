@@ -13,7 +13,7 @@ import app.paralino.core.repo.places.PlacesRepository
 import kotlinx.coroutines.flow.Flow
 
 class LocationRepository constructor(
-    val sharingManager: LocationSharingManager,
+    private val sharingManager: LocationSharingManager,
     private val local: ILocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val placesRepo: PlacesRepository,

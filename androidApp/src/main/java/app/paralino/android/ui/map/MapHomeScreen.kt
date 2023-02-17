@@ -1,51 +1,28 @@
 package app.paralino.android.ui.map
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
-import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.BottomSheetsScreen
-import app.paralino.android.ui.groups.members.GroupMember
+import app.paralino.android.ui.groups.init.GroupInitScreen
+import app.paralino.android.ui.groups.GroupPickerAction
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.theme.AppColors
-import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.Resource
 import app.paralino.core.models.data
-import app.paralino.core.presentation.dashboard.GroupItemData
-import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.map.*
-import app.paralino.core.utils.extensions.isoToLocalDateTime
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.datetime.toJavaLocalDateTime
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -53,6 +30,29 @@ fun MapHomeScreen(
     appState: MainAppState,
     groupId: String?,
     vm: MapHomeViewModel = getViewModel(),
+) {
+    val groupState by vm.allGroups.collectAsState()
+    when(val state = groupState) {
+        Resource.NotInitialized -> {}
+        is Resource.Ready -> {
+            if(state.data.isNotEmpty()) {
+                MapHomeContent(
+                    appState = appState,
+                    groupId = groupId,
+                    vm = vm
+                )
+            } else {
+                GroupInitScreen(appState = appState)
+            }
+        }
+    }
+}
+
+@Composable
+fun MapHomeContent(
+    appState: MainAppState,
+    groupId: String?,
+    vm: MapHomeViewModel,
 ) {
     val mapViewState = rememberMapViewHomeState(darkMode = isSystemInDarkTheme())
 
@@ -94,7 +94,7 @@ fun MapHomeScreen(
                             logg.tag("marker_click").v("Place marker clicked: $focusedMarker")
                             vm.trackMarker(it.asFocusedMarker())
                             appState.navController.navigate(
-                                AppScreen.MapRoot.PlaceDetail.route(
+                                AppScreen.MainHome.PlaceDetail.route(
                                     uiState.data?.groupId!!,
                                     it.markerId
                                 )
@@ -142,14 +142,30 @@ fun MapHomeScreen(
                                 val groups = vm.getAllGroups()
                                 appState.showBottomSheetForResult(
                                     BottomSheetsScreen.GroupPicker(groups)
-                                ).safeCast<GroupItemData>()?.let {
-                                    vm.switchGroup(it.id)
+                                ).safeCast<GroupPickerAction>()?.let {
+                                    when(it){
+                                        is GroupPickerAction.GroupPicked -> {
+                                            vm.switchGroup(it.group.id)
+                                        }
+                                        GroupPickerAction.NewGroup -> {
+                                            appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
+                                        }
+                                        GroupPickerAction.JoinGroup -> {
+                                            appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                                        }
+                                    }
                                 }
                             }
+                        },
+                        onGroupDetailsClick = {
+                            appState.navController.navigate(AppScreen.MainHome.GroupDetails.route(state.data.groupId))
                         },
                         onTrackGroupClick = {
                             trackGroup = !trackGroup
                             vm.trackMarker(null)
+                        },
+                        onSettingsClick = {
+                            appState.navController.navigate(AppScreen.Settings.routeSignature)
                         },
                         onClearMyLocationClick = {
                             vm.clearMyLocation(it)
@@ -169,186 +185,5 @@ fun MapHomeScreen(
             }
         }
 
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun MapHomeScreenElements(
-    modifier: Modifier = Modifier,
-    state: MapHomeScreenState,
-    isTrackingGroup: Boolean,
-    focusedMarker: FocusedMarkerData?,
-    onGroupPickerClick: () -> Unit,
-    onTrackGroupClick: () -> Unit,
-    onClearMyLocationClick: (String) -> Unit,
-    onMemberClick: (GroupMemberItemState) -> Unit,
-) {
-    ConstraintLayout(
-        modifier = modifier
-            .fillMaxSize()
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessMedium
-                )
-            )
-    ) {
-
-        val (groupSelect, groupTrack, userListButton, userList, shareTime) = createRefs()
-        var userListExpanded by remember(focusedMarker) { mutableStateOf(focusedMarker?.type == MapPinType.MEMBER) }
-
-        // group picker button
-        MapGroupPicker(
-            modifier = Modifier
-                .constrainAs(groupSelect) {
-                    top.linkTo(parent.top, margin = 8.dp)
-                    centerHorizontallyTo(parent)
-                }
-                .animateContentSize(
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
-                ),
-            groupName = state.groupName,
-            groupImage = state.groupImage,
-            userCount = state.userCount,
-            inactiveUserCount = state.inactiveUserCount
-        ) {
-            onGroupPickerClick()
-        }
-
-        // sharing time info
-        AnimatedVisibility(
-            visible = state.sharingStatus != null,
-            modifier = Modifier
-                .constrainAs(shareTime) {
-                    start.linkTo(parent.start, margin = 16.dp)
-                    bottom.linkTo(groupTrack.bottom)
-                }
-        ) {
-            Row(
-                modifier = Modifier
-                    .background(
-                        MaterialTheme.colors.surface,
-                        MaterialTheme.shapes.medium
-                    )
-                    .padding(vertical = 4.dp)
-                    .padding(start = 4.dp, end = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Timer,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = state.sharingStatus?.endTimeUTC
-                        ?.isoToLocalDateTime()
-                        ?.toJavaLocalDateTime()
-                        ?.fromUTCtoMapSharingTime(LocalContext.current)
-                        ?: stringResource(id = R.string.groups_sharing_duration_type_infinite),
-                    style = MaterialTheme.typography.caption.copy(fontSize = 10.sp)
-                )
-            }
-        }
-
-        // expand member list button
-        FloatingActionButton(
-            modifier = Modifier
-                .constrainAs(userListButton) {
-                    start.linkTo(groupTrack.start)
-                    end.linkTo(groupTrack.end)
-                    bottom.linkTo(groupTrack.top, margin = 16.dp)
-                }
-                .size(40.dp),
-            onClick = { userListExpanded = !userListExpanded },
-            backgroundColor = if (userListExpanded) AppColors.accent else MaterialTheme.colors.surface
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Groups,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = if (userListExpanded) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
-            )
-        }
-
-        // activate group tracking button
-        FloatingActionButton(
-            modifier = Modifier
-                .constrainAs(groupTrack) {
-                    end.linkTo(parent.end, margin = 8.dp)
-                    bottom.linkTo(userList.top, margin = 16.dp)
-                }
-                .size(50.dp),
-            onClick = onTrackGroupClick,
-            backgroundColor = if (isTrackingGroup) AppColors.accent else MaterialTheme.colors.surface
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.CenterFocusStrong,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp),
-                tint = if (isTrackingGroup) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
-            )
-        }
-
-        // user list
-        Box(
-            modifier = Modifier.constrainAs(userList) {
-                bottom.linkTo(parent.bottom, 14.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-            }
-        ) {
-            AnimatedVisibility(
-                modifier = Modifier.fillMaxWidth(),
-                visible = userListExpanded,
-                enter = fadeIn() + expandVertically(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                val pagerState = rememberPagerState()
-                HorizontalPager(
-                    state = pagerState,
-                    itemSpacing = 4.dp,
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    count = state.members.size,
-                    key = { state.members.get(it).keyId }
-                ) {
-                    val memberState = state.members[it]
-                    var expanded by remember {
-                        mutableStateOf(false)
-                    }
-                    GroupMember(
-                        state = memberState,
-                        backgroundColor = MaterialTheme.colors.background,
-                        collapseOnActionClick = true,
-                        forceExpandAction = expanded,
-                        onActionClick = {
-                            if (memberState is GroupMemberItemStateWithOneLocation && memberState.location != null) {
-                                onClearMyLocationClick(memberState.location!!.locationId)
-                            }
-                        },
-                        onClick = {
-                            expanded = !expanded
-                            onMemberClick(memberState)
-                        }
-                    )
-                }
-                LaunchedEffect(focusedMarker) {
-                    val page = state.members.indexOfFirst {
-                        when (it) {
-                            is GroupMemberItemStateWithLocations -> false
-                            is GroupMemberItemStateWithOneLocation -> {
-                                it.keyId == focusedMarker?.markerId
-                            }
-                        }
-                    }.takeIf { it > 0 } ?: 0
-                    pagerState.animateScrollToPage(page)
-                }
-            }
-        }
     }
 }

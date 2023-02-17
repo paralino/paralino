@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.dashboard.DashboardScreen
+import app.paralino.android.ui.groups.init.GroupInitScreen
 import app.paralino.android.ui.groups.create.GroupCreateScreen
 import app.paralino.android.ui.groups.detail.GroupDetailScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen
@@ -40,133 +40,116 @@ import app.paralino.core.presentation.rawdata.RawPresentationDataType
 fun MainNavHost(
     modifier: Modifier = Modifier,
     appState: MainAppState,
-    startDestination: AppScreen
 ) {
     NavHost(
         navController = appState.navController,
-        startDestination = startDestination.routeSignature,
+        startDestination = AppScreen.MainHome.routeSignature,
         modifier = modifier
     ) {
-        dashboardGraph(appState)
-        mapGraph(appState)
+        homeGraph(appState)
         settingsGraph(appState)
     }
 }
 
-fun NavGraphBuilder.dashboardGraph(appState: MainAppState) {
+fun NavGraphBuilder.homeGraph(appState: MainAppState) {
     navigation(
-        startDestination = AppScreen.DashboardRoot.Dashboard.routeSignature,
-        route = AppScreen.DashboardRoot.routeSignature
+        startDestination = AppScreen.MainHome.MainMap.routeSignature,
+        route = AppScreen.MainHome.routeSignature
     ) {
-        composable(AppScreen.DashboardRoot.Dashboard.routeSignature) {
-            DashboardScreen(appState)
+        composable(AppScreen.MainHome.GroupConnect.routeSignature) {
+            GroupInitScreen(appState)
         }
-        composable(AppScreen.DashboardRoot.GroupDetails.routeSignature) {
+        composable(AppScreen.MainHome.MainMap.routeSignature) {
             val groupId =
-                it.arguments!!.getString(AppScreen.DashboardRoot.GroupDetails.argumentGroupId)
+                it.arguments?.getString(AppScreen.MainHome.MainMap.argumentGroupId)
+            MapHomeScreen(appState = appState, groupId = groupId)
+        }
+        composable(AppScreen.MainHome.GroupDetails.routeSignature) {
+            val groupId =
+                it.arguments!!.getString(AppScreen.MainHome.GroupDetails.argumentGroupId)
             GroupDetailScreen(appState = appState, groupId = groupId)
         }
-        composable(AppScreen.DashboardRoot.GroupCreate.routeSignature) {
+        composable(AppScreen.MainHome.GroupCreate.routeSignature) {
             val groupId =
-                it.arguments?.getString(AppScreen.DashboardRoot.GroupCreate.argumentGroupId)
+                it.arguments?.getString(AppScreen.MainHome.GroupCreate.argumentGroupId)
             GroupCreateScreen(appState = appState, groupId = groupId)
         }
-        composable(AppScreen.DashboardRoot.GroupMemberAdd.routeSignature) {
+        composable(AppScreen.MainHome.GroupMemberAdd.routeSignature) {
             val groupId =
-                it.arguments?.getString(AppScreen.DashboardRoot.GroupMemberAdd.argumentGroupId)
+                it.arguments?.getString(AppScreen.MainHome.GroupMemberAdd.argumentGroupId)
             val code =
-                it.arguments?.getString(AppScreen.DashboardRoot.GroupMemberAdd.argumentCode)
+                it.arguments?.getString(AppScreen.MainHome.GroupMemberAdd.argumentCode)
             MemberInviteScreen(appState = appState, groupId = groupId, code = code)
         }
-        composable(AppScreen.DashboardRoot.SharingStart.routeSignature) {
+        composable(AppScreen.MainHome.SharingStart.routeSignature) {
             val groupId =
-                it.arguments?.getString(AppScreen.DashboardRoot.SharingStart.argumentGroupId)
+                it.arguments?.getString(AppScreen.MainHome.SharingStart.argumentGroupId)
             SharingStartScreen(appState = appState, groupId = groupId)
         }
-        composable(AppScreen.DashboardRoot.PlacesList.routeSignature) {
+        composable(AppScreen.MainHome.PlacesList.routeSignature) {
             val groupId =
-                it.arguments?.getString(AppScreen.DashboardRoot.PlacesList.argumentGroupId)!!
+                it.arguments?.getString(AppScreen.MainHome.PlacesList.argumentGroupId)!!
             PlacesScreen(appState = appState, groupId = groupId)
         }
-        composable(AppScreen.DashboardRoot.PlaceDetail.routeSignature) {
+        composable(AppScreen.MainHome.PlaceDetail.routeSignature) {
             val groupId =
-                it.arguments?.getString(AppScreen.DashboardRoot.PlaceDetail.argumentGroupId)!!
+                it.arguments?.getString(AppScreen.MainHome.PlaceDetail.argumentGroupId)!!
             val placeId =
-                it.arguments?.getString(AppScreen.DashboardRoot.PlaceDetail.argumentPlaceId)!!
+                it.arguments?.getString(AppScreen.MainHome.PlaceDetail.argumentPlaceId)!!
             PlaceDetailScreen(appState = appState, groupId = groupId, placeId = placeId)
         }
-        composable(AppScreen.DashboardRoot.PlaceCreate.routeSignature) {
+        composable(AppScreen.MainHome.PlaceCreate.routeSignature) {
             val groupId =
-                it.arguments?.getString(AppScreen.DashboardRoot.PlaceCreate.argumentGroupId)!!
+                it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentGroupId)!!
             val placeId =
-                it.arguments?.getString(AppScreen.DashboardRoot.PlaceCreate.argumentPlaceId)
+                it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentPlaceId)
             CreatePlaceScreen(appState = appState, groupId = groupId, placeId = placeId)
         }
-        composable(AppScreen.DashboardRoot.RawDataScreen.routeSignature) {
+        composable(AppScreen.MainHome.RawDataScreen.routeSignature) {
             val type =
-                it.arguments?.getString(AppScreen.DashboardRoot.RawDataScreen.argumentDataType)!!
+                it.arguments?.getString(AppScreen.MainHome.RawDataScreen.argumentDataType)!!
             val id =
-                it.arguments?.getString(AppScreen.DashboardRoot.RawDataScreen.argumentDataId)
+                it.arguments?.getString(AppScreen.MainHome.RawDataScreen.argumentDataId)
             val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
             RawDataScreen(appState = appState, type = rawDataType!!)
         }
     }
 }
 
-fun NavGraphBuilder.mapGraph(appState: MainAppState) {
-    navigation(
-        startDestination = AppScreen.MapRoot.MainMap.routeSignature,
-        route = AppScreen.MapRoot.routeSignature
-    ) {
-        composable(AppScreen.MapRoot.MainMap.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MapRoot.MainMap.argumentGroupId)
-            MapHomeScreen(appState = appState, groupId = groupId)
-        }
-        composable(AppScreen.MapRoot.PlaceDetail.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MapRoot.PlaceDetail.argumentGroupId)!!
-            val placeId =
-                it.arguments?.getString(AppScreen.MapRoot.PlaceDetail.argumentPlaceId)!!
-            PlaceDetailScreen(appState = appState, groupId = groupId, placeId = placeId)
-        }
-    }
-}
-
 fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
     navigation(
-        startDestination = AppScreen.SettingsRoot.Settings.routeSignature,
-        route = AppScreen.SettingsRoot.routeSignature
+        startDestination = AppScreen.Settings.SettingsRoot.routeSignature,
+        route = AppScreen.Settings.routeSignature
     ) {
-        composable(AppScreen.SettingsRoot.Settings.routeSignature) {
+        composable(AppScreen.Settings.SettingsRoot.routeSignature) {
             SettingsScreen(appState)
         }
-        composable(AppScreen.SettingsRoot.ProfileDetails.routeSignature) {
+        composable(AppScreen.Settings.ProfileDetails.routeSignature) {
             AccountScreen(appState)
         }
-        composable(AppScreen.SettingsRoot.PersonalCodes.routeSignature) {
+        composable(AppScreen.Settings.PersonalCodes.routeSignature) {
             PersonalCodeScreen(appState)
         }
-        composable(AppScreen.SettingsRoot.ProfileDetails.EditProfile.routeSignature) {
+        composable(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature) {
             EditProfileScreen(appState)
         }
-        composable(AppScreen.SettingsRoot.ProfileDetails.ChangeEmail.routeSignature) {
+        composable(AppScreen.Settings.ProfileDetails.ChangeEmail.routeSignature) {
             ChangeEmailScreen(appState)
         }
-        composable(AppScreen.SettingsRoot.ProfileDetails.ChangePassword.routeSignature) {
+        composable(AppScreen.Settings.ProfileDetails.ChangePassword.routeSignature) {
             ChangePasswordScreen(appState)
         }
-        composable(AppScreen.SettingsRoot.ProfileDetails.ConvertAccount.routeSignature) {
+        composable(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature) {
             ConvertAccountScreen(appState)
         }
-        composable(AppScreen.SettingsRoot.Licences.routeSignature) {
+        composable(AppScreen.Settings.Licences.routeSignature) {
             LicencesScreen(appState)
         }
-        composable(AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.routeSignature) {
+        composable(AppScreen.Settings.ProfileDetails.RawDataScreen.routeSignature) {
             val type =
-                it.arguments?.getString(AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.argumentDataType)!!
+                it.arguments?.getString(AppScreen.Settings.ProfileDetails.RawDataScreen.argumentDataType)!!
             val id =
-                it.arguments?.getString(AppScreen.SettingsRoot.ProfileDetails.RawDataScreen.argumentDataId)
+                it.arguments?.getString(AppScreen.Settings.ProfileDetails.RawDataScreen.argumentDataId)
             val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
             RawDataScreen(appState = appState, type = rawDataType!!)
         }
@@ -179,33 +162,33 @@ fun NavGraphBuilder.loggedOutGraph(
 ) {
     navigation(
         startDestination = start.routeSignature,
-        route = AppScreen.AppStartRoot.routeSignature
+        route = AppScreen.LoggedOut.routeSignature
     ) {
-        composable(AppScreen.AppStartRoot.Welcome.routeSignature) {
+        composable(AppScreen.LoggedOut.Welcome.routeSignature) {
             LoggedOutScreen(appState)
         }
-        composable(AppScreen.AppStartRoot.Login.routeSignature) {
-            val startScreen = it.arguments?.getString(AppScreen.AppStartRoot.Login.argumentStartScreenType)
+        composable(AppScreen.LoggedOut.Login.routeSignature) {
+            val startScreen = it.arguments?.getString(AppScreen.LoggedOut.Login.argumentStartScreenType)
                 ?.let { screenName -> LoginScreenUiType.values().firstOrNull { it.name == screenName } }
                 ?: LoginScreenState.defaultStartScreen
             LoginScreen(appState, startScreen)
         }
-        composable(AppScreen.AppStartRoot.ProfileSetup.routeSignature) {
+        composable(AppScreen.LoggedOut.ProfileSetup.routeSignature) {
             ProfileSetupScreen(appState)
         }
-        composable(AppScreen.AppStartRoot.AccountRecovery.routeSignature) {
+        composable(AppScreen.LoggedOut.AccountRecovery.routeSignature) {
             RecoverKeysScreen(appState)
         }
         composable(
-            AppScreen.AppStartRoot.PasswordReset.routeSignature,
+            AppScreen.LoggedOut.PasswordReset.routeSignature,
             deepLinks = listOf(
                 navDeepLink {
                     this.uriPattern = Deeplink.PasswordReset.uriPattern()
                 }
             )
         ) {
-            val userId = it.arguments?.getString(AppScreen.AppStartRoot.PasswordReset.argumentUserId)
-            val secret = it.arguments?.getString(AppScreen.AppStartRoot.PasswordReset.argumentSecret)
+            val userId = it.arguments?.getString(AppScreen.LoggedOut.PasswordReset.argumentUserId)
+            val secret = it.arguments?.getString(AppScreen.LoggedOut.PasswordReset.argumentSecret)
             ResetPasswordScreen(appState, userId = userId!!, secret = secret!!)
         }
     }

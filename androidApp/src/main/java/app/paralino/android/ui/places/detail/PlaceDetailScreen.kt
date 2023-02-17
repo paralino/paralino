@@ -24,7 +24,6 @@ import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
-import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.core.models.Payload
@@ -100,7 +99,7 @@ fun PlaceDetailScreen(
                     IconButton(
                         onClick = {
                             appState.navController.navigate(
-                                AppScreen.DashboardRoot.RawDataScreen.route(
+                                AppScreen.MainHome.RawDataScreen.route(
                                     RawPresentationDataType.GroupPlacePresentation(
                                         placeId = state.data!!.placeId
                                     )
@@ -118,7 +117,7 @@ fun PlaceDetailScreen(
                         IconButton(
                             onClick = {
                                 appState.navController.navigate(
-                                    AppScreen.DashboardRoot.PlaceCreate.route(
+                                    AppScreen.MainHome.PlaceCreate.route(
                                         groupId = state.data!!.groupId,
                                         placeId = state.data!!.placeId
                                     )

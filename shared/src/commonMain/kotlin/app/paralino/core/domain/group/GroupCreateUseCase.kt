@@ -41,7 +41,7 @@ class GroupCreateUseCase(
     override val executionState = MutableStateFlow(listOf<String>())
     private val groupKey = "group_create"
 
-    fun createGroup(name: String, image: ImageModel): Flow<Unit> {
+    fun createGroup(name: String, image: ImageModel): Flow<GroupWithMembersRaw> {
 
         if (isProcessing(groupKey)) {
             logg.tag("group_actions").v("Processing, can't create new group $groupKey")
@@ -59,7 +59,7 @@ class GroupCreateUseCase(
                     .also { stopProcessing(groupKey) }
             },
             localUpdate = { local.updateOrCreateGroup(it) }
-        ).map { Unit }
+        )
             .catch {
                 stopProcessing(groupKey)
                 throw it

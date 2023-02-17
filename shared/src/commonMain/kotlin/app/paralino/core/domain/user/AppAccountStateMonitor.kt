@@ -67,8 +67,7 @@ class AppAccountStateMonitor constructor(
                                 val decryptedUser = userMapper.remote2Core(user)
                                 if (decryptedUser.hasValidData) {
                                     logg.tag("account_state").v("User is ready")
-                                    val groupCount = groupRepo.getAllGroupIds().firstOrNull()?.size ?: 0
-                                    Resource.Ready(data = AppAccountState.USER_READY(decryptedUser, groupCount))
+                                    Resource.Ready(data = AppAccountState.USER_READY(decryptedUser))
                                 } else {
                                     logg.tag("account_state")
                                         .v("User is ready but profile is missing")
@@ -132,5 +131,5 @@ sealed class AppAccountState {
     object NO_USER_DATA : AppAccountState()
     data class NO_PROFILE(val user: UserMe) : AppAccountState()
     data class ACCOUNT_RESET(val userRaw: UserMeRaw) : AppAccountState()
-    data class USER_READY(val user: UserMe, val groupCount: Int) : AppAccountState()
+    data class USER_READY(val user: UserMe) : AppAccountState()
 }

@@ -16,11 +16,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.components.ImageModelImage
-import app.paralino.core.presentation.dashboard.GroupItemData
+import app.paralino.core.presentation.groups.GroupItemState
 
 @Composable
 fun GroupListItem(
-    data: GroupItemData,
+    data: GroupItemState,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
@@ -75,10 +75,9 @@ fun GroupListItem(
             }
 
             val status = when (data.uiType) {
-                GroupItemData.GroupUiType.UNVERIFIED -> GroupStatusTagType.UNVERIFIED
-                GroupItemData.GroupUiType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
-                GroupItemData.GroupUiType.INACTIVE -> null
-                GroupItemData.GroupUiType.NONE -> null
+                GroupItemState.GroupUiType.UNVERIFIED -> GroupStatusTagType.UNVERIFIED
+                GroupItemState.GroupUiType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
+                GroupItemState.GroupUiType.INACTIVE -> null
             }
             GroupStatusTag(status)
         }

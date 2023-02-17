@@ -33,7 +33,7 @@ import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
-import app.paralino.core.presentation.dashboard.GroupItemData
+import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.share.SharingStartScreenEvent
 import app.paralino.core.presentation.share.SharingStartScreenState
 import app.paralino.core.presentation.share.SharingStartViewModel
@@ -267,7 +267,7 @@ fun SharingStartScreen(
                         if (groupId.isNullOrBlank()) {
                             appState.uiScope.launch {
                                 appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
-                                    .safeCast<GroupItemData>()?.let {
+                                    .safeCast<GroupItemState>()?.let {
                                         vm.setSelectedGroup(it.id)
                                     }
                             }
@@ -286,7 +286,7 @@ fun SharingStartScreen(
                         onClick = {
                             appState.uiScope.launch {
                                 appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
-                                    .safeCast<GroupItemData>()?.let {
+                                    .safeCast<GroupItemState>()?.let {
                                         vm.setSelectedGroup(it.id)
                                     }
                             }

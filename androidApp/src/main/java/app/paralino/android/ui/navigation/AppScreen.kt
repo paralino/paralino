@@ -9,7 +9,7 @@ sealed class AppScreen {
 
     abstract val routeSignature: String
 
-    object AppStartRoot : AppScreen() {
+    object LoggedOut : AppScreen() {
         override val routeSignature: String = "appStart"
 
         object Welcome : AppScreen() {
@@ -50,11 +50,20 @@ sealed class AppScreen {
         }
     }
 
-    object DashboardRoot : AppScreen() {
+    object MainHome : AppScreen() {
         override val routeSignature: String = "home"
 
-        object Dashboard : AppScreen() {
-            override val routeSignature: String = "home-dashboard"
+        object GroupConnect : AppScreen() {
+            override val routeSignature: String = "home-connect"
+        }
+
+        object MainMap : AppScreen() {
+            override val routeSignature: String = "map-mainMap?$argumentGroupId={$argumentGroupId}"
+            fun route(groupId: String? = null): String {
+                if (groupId == null)
+                    return "map-mainMap"
+                return "map-mainMap?$argumentGroupId=$groupId"
+            }
         }
 
         object SharingStart : AppScreen() {
@@ -129,25 +138,10 @@ sealed class AppScreen {
         object RawDataScreen: Common.RawDataScreen("home")
     }
 
-    object MapRoot : AppScreen() {
-        override val routeSignature: String = "map"
-
-        object MainMap : AppScreen() {
-            override val routeSignature: String = "map-mainMap?$argumentGroupId={$argumentGroupId}"
-            fun route(groupId: String? = null): String {
-                if (groupId == null)
-                    return "map-mainMap"
-                return "map-mainMap?$argumentGroupId=$groupId"
-            }
-        }
-
-        object PlaceDetail : Common.PlaceDetail("map")
-    }
-
-    object SettingsRoot : AppScreen() {
+    object Settings : AppScreen() {
         override val routeSignature: String = "settings"
 
-        object Settings : AppScreen() {
+        object SettingsRoot : AppScreen() {
             override val routeSignature: String = "settings-main"
         }
 

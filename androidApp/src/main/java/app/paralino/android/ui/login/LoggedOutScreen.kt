@@ -78,7 +78,7 @@ fun LoggedOutScreen(
         Button(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-            onClick = { appState.navController.navigate(AppScreen.AppStartRoot.Login.routeSignature) }
+            onClick = { appState.navController.navigate(AppScreen.LoggedOut.Login.routeSignature) }
         ) {
             Icon(imageVector = Icons.Rounded.Login, contentDescription = null)
             Spacer(Modifier.size(8.dp))

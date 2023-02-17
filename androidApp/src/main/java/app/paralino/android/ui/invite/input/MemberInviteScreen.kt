@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.core.presentation.dashboard.GroupItemData
+import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.invite.input.MemberInviteScreenEvent
 import app.paralino.core.presentation.invite.input.MemberInviteScreenState
 import app.paralino.android.R
@@ -107,7 +107,7 @@ fun MemberInviteScreen(
                     val groups = vm.getAllGroups()
                     appState.showBottomSheetForResult(
                         BottomSheetsScreen.GroupPicker(groups)
-                    ).safeCast<GroupItemData>()?.let {
+                    ).safeCast<GroupItemState>()?.let {
                         vm.selectGroup(it)
                     }
                 }

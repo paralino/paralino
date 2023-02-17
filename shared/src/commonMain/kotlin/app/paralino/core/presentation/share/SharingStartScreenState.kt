@@ -2,12 +2,12 @@ package app.paralino.core.presentation.share
 
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.LocationSharingContract
-import app.paralino.core.presentation.dashboard.GroupItemData
+import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.SharingDurationPreset
 
 data class SharingStartScreenState constructor(
-    val groupState: Payload<GroupItemData?> = Payload.Loading,
+    val groupState: Payload<GroupItemState?> = Payload.Loading,
     val sharingTimeMillis: Long = SharingDurationPreset.infinite,
     val sharingPresetsMillis: List<Long> = SharingDurationPreset.presets,
     val approximateLocationMeters: Int = 200,
