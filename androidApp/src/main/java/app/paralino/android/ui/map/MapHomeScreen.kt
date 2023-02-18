@@ -168,6 +168,14 @@ fun MapHomeContent(
                     is MapHomeScreenState.Empty -> {}
                 }
             },
+            onSharingStartClick = {
+                when (val state = uiState) {
+                    is MapHomeScreenState.Ready -> {
+                        appState.navController.navigate(AppScreen.MainHome.SharingStart.route(state.groupId))
+                    }
+                    is MapHomeScreenState.Empty -> {}
+                }
+            },
             onTrackGroupClick = {
                 trackGroup = !trackGroup
                 vm.trackMarker(null)

@@ -200,37 +200,47 @@ fun SharingStartScreen(
                 }
             )
         },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = {
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.background)
+                    .padding(bottom = 20.dp, top = 8.dp)
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                FilledButton(
+                    modifier = Modifier,
+                    style = ButtonStyle.BIG(iconSize = 24.dp),
+                    state = AppButtonState.CONTENT,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = if (state.errors.isEmpty())
+                            MaterialTheme.colors.primary
+                        else MaterialTheme.colors.secondary
+                    ),
+                    icon = if (state.errors.isNotEmpty()) Icons.Rounded.NotListedLocation
+                    else Icons.Rounded.ShareLocation,
+                    onClick = { vm.startSharing() }
+                ) {
                     if (state.errors.isNotEmpty()) {
                         Text(text = stringResource(id = R.string.groups_sharing_button_enable))
                     } else {
                         Text(text = stringResource(id = R.string.groups_sharing_button_start))
                     }
-                },
-                icon = {
-                    if (state.errors.isNotEmpty()) {
-                        Icon(
-                            imageVector = Icons.Rounded.NotListedLocation,
-                            contentDescription = null
-                        )
-                    } else {
-                        Icon(imageVector = Icons.Rounded.PersonPinCircle, contentDescription = null)
-                    }
-                },
-                backgroundColor = if (state.errors.isEmpty()) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
-                elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
-                onClick = { vm.startSharing() }
-            )
-        }
+                }
+            }
+        },
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .animateContentSize()
-                .padding(start = 20.dp, end = 20.dp, bottom = it.calculateBottomPadding() + 100.dp),
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = it.calculateBottomPadding() + 100.dp,
+                ),
         ) {
 
             AnimatedVisibility(visible = state.errors.isNotEmpty()) {

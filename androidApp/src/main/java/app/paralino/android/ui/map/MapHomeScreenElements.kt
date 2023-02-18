@@ -4,19 +4,20 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CenterFocusStrong
 import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.material.icons.rounded.ShareLocation
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -51,6 +52,7 @@ fun MapHomeScreenElements(
     onGroupPickerClick: () -> Unit,
     onGroupDetailsClick: () -> Unit,
     onTrackGroupClick: () -> Unit,
+    onSharingStartClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onClearMyLocationClick: (String) -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
@@ -142,6 +144,30 @@ fun MapHomeScreenElements(
             }
         }
 
+        // sharing start
+        AnimatedVisibility(
+            visible = readyState != null && readyState.sharingStatus == null,
+            modifier = Modifier
+                .constrainAs(shareTime) {
+                    start.linkTo(parent.start, margin = 16.dp)
+                    bottom.linkTo(groupTrack.bottom)
+                },
+            enter = scaleIn(),
+            exit = scaleOut()
+        ) {
+            ExtendedFloatingActionButton(
+                text = {
+                    Text(text = stringResource(id = R.string.groups_sharing_button_start))
+                },
+                icon = {
+                    Icon(imageVector = Icons.Rounded.ShareLocation, contentDescription = null)
+                },
+                backgroundColor = MaterialTheme.colors.primary,
+                elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
+                onClick = onSharingStartClick
+            )
+        }
+
         // sharing time info
         AnimatedVisibility(
             visible = readyState?.sharingStatus != null,
@@ -149,7 +175,9 @@ fun MapHomeScreenElements(
                 .constrainAs(shareTime) {
                     start.linkTo(parent.start, margin = 16.dp)
                     bottom.linkTo(groupTrack.bottom)
-                }
+                },
+            enter = scaleIn(),
+            exit = scaleOut()
         ) {
             Row(
                 modifier = Modifier
@@ -157,6 +185,8 @@ fun MapHomeScreenElements(
                         MaterialTheme.colors.surface,
                         MaterialTheme.shapes.medium
                     )
+                    .clip(RoundedCornerShape(percent = 100))
+                    .clickable { onGroupDetailsClick() }
                     .padding(vertical = 4.dp)
                     .padding(start = 4.dp, end = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
