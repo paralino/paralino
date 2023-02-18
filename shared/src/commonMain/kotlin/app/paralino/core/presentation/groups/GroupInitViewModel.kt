@@ -1,11 +1,13 @@
 package app.paralino.core.presentation.groups
 
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.IConnectionStatusProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -50,6 +52,7 @@ class GroupInitViewModel(
             }
 
             GroupInitScreenState(
+                userImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                 personalCode = personalCode,
                 errors = errors
             )

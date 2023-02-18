@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +38,7 @@ fun LargeSeekbarSwitch(
     icon: ImageVector,
     title: String,
     description: String? = null,
+    titleStyle: TextStyle = MaterialTheme.typography.body2,
     focusDescription: Boolean = false,
     state: LargeSeekbarSwitchState.SeekbarSwitchState,
     onProgressChange: ((Int) -> Unit)? = null,
@@ -174,7 +176,7 @@ fun LargeSeekbarSwitch(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.body2,
+                    style = titleStyle,
                     color = contentColor
                 )
                 if (!description.isNullOrBlank()) {

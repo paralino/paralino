@@ -30,6 +30,7 @@ fun MapHomeScreen(
     appState: MainAppState,
     groupId: String?,
     vm: MapHomeViewModel = getViewModel(),
+    onClose: () -> Unit,
 ) {
     val groupState by vm.allGroups.collectAsState()
     when (val state = groupState) {
@@ -42,7 +43,10 @@ fun MapHomeScreen(
                     vm = vm
                 )
             } else {
-                GroupInitScreen(appState = appState)
+                GroupInitScreen(
+                    appState = appState,
+                    onClose = onClose
+                )
             }
         }
     }

@@ -40,7 +40,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { RootApp(vm) }
+        setContent {
+            RootApp(
+                vm = vm,
+                onAppClose = { finishAffinity() }
+            )
+        }
         handleExtraDeeplink(intent?.data)
     }
 
@@ -67,6 +72,7 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun RootApp(
     vm: MainViewModel = getViewModel(),
+    onAppClose: () -> Unit
 ) {
     AppTheme {
         val appState = rememberAppState()
@@ -139,7 +145,7 @@ fun RootApp(
                         }
                     }
                     is AppAccountState.USER_READY -> {
-                        MainAppScreen(appState)
+                        MainAppScreen(appState = appState, onAppClose = onAppClose)
                     }
                 }
             }
@@ -172,6 +178,7 @@ fun AppStartScreen(
 @Composable
 fun MainAppScreen(
     appState: MainAppState,
+    onAppClose: () -> Unit
 ) {
     RootAppScreen(appState) {
         Scaffold(
@@ -182,6 +189,7 @@ fun MainAppScreen(
             MainNavHost(
                 modifier = Modifier.padding(innerPadding),
                 appState = appState,
+                onAppClose = onAppClose
             )
         }
     }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,7 +25,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.TextViewCompat
 import app.paralino.android.R
+import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.theme.AppTheme
+import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlinx.datetime.TimeZone
@@ -133,19 +136,23 @@ fun PersonalCodeItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            IconButton(onClick = onCopy) {
-                Icon(
-                    imageVector = Icons.Rounded.ContentCopy,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
+            FilledButton(
+                style = ButtonStyle.SMALL,
+                icon = Icons.Rounded.ContentCopy,
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
+                elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+                onClick = onCopy
+            ) {
+                Text(text = stringResource(id = R.string.invite_code_button_copy))
             }
-            IconButton(onClick = onShare) {
-                Icon(
-                    imageVector = Icons.Rounded.Share,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
+            FilledButton(
+                style = ButtonStyle.SMALL,
+                icon = Icons.Rounded.Share,
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
+                elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+                onClick = onShare
+            ) {
+                Text(text = stringResource(id = R.string.invite_code_button_share))
             }
             Spacer(modifier = Modifier.weight(1f))
             if(hasDelete) {

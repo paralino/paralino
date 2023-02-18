@@ -1,30 +1,34 @@
 package app.paralino.android.ui.groups.init
 
+import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.GroupAdd
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.ConditionErrorItem
-import app.paralino.android.ui.components.FilledButton
-import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.android.ui.components.*
 import app.paralino.android.ui.invite.manage.PersonalCodeItem
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsBigHeader
+import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.android.utils.extensions.copy
+import app.paralino.android.utils.extensions.share
 import app.paralino.core.presentation.groups.GroupInitScreenEvent
 import app.paralino.core.presentation.groups.GroupInitScreenState
 import app.paralino.core.presentation.groups.GroupInitViewModel
@@ -37,6 +41,7 @@ import org.koin.androidx.compose.getViewModel
 fun GroupInitScreen(
     appState: MainAppState,
     vm: GroupInitViewModel = getViewModel(),
+    onClose: () -> Unit,
 ) {
 
     val vmState by vm.uiState.collectAsState(GroupInitScreenState())
@@ -62,7 +67,7 @@ fun GroupInitScreen(
         }
     }
 
-    when(val dialog = showDialog) {
+    when (val dialog = showDialog) {
         is MainAlertDialog.VerifyEmail -> {
             dialog.Show {
                 showDialog = null
@@ -74,77 +79,145 @@ fun GroupInitScreen(
         else -> {}
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        SettingsBigHeader(
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .padding(top = 20.dp),
-            name = stringResource(id = R.string.group_create_start_title)
-        )
-
-        DashboardGroupJoinButtons(appState)
-
-        if(state.personalCode !=  null) {
-            PersonalCodeItem(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                state = state.personalCode!!,
-                deleteLoading = false,
-                onCopy = {  },
-                onShare = {  },
-                onDelete = {}
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                backgroundColor = MaterialTheme.colors.background,
+                elevation = 1.dp,
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = onClose) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {
+                    ImageModelImage(
+                        imageModel = state.userImage,
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clickable { appState.navController.navigate(AppScreen.Settings.routeSignature) }
+                    )
+                    Spacer(modifier = Modifier.size(4.dp))
+                }
             )
-        }
-
-        val scrollState = rememberScrollState()
+        },
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(state = scrollState)
+                .verticalScroll(state = rememberScrollState())
+                .padding(it)
         ) {
+
+            if (state.errors.isNotEmpty())
+                Spacer(modifier = Modifier.size(20.dp))
+
             state.errors.forEach {
-                ConditionErrorItem(data = it) {
+                ConditionErrorItem(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    data = it
+                ) {
                     when (it) {
-                        is ConditionErrorType.EMAIL_VERIFICATION -> showDialog = MainAlertDialog.VerifyEmail(it.email)
+                        is ConditionErrorType.EMAIL_VERIFICATION -> showDialog =
+                            MainAlertDialog.VerifyEmail(it.email)
                         ConditionErrorType.NETWORK -> appState.showSnackbar(
                             text = context.getString(R.string.error_no_connection_snackbar)
                         )
-                        else -> { /* do nothing */ }
+                        else -> { /* do nothing */
+                        }
                     }
                 }
             }
+
+            SettingsBigHeader(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp),
+                name = stringResource(id = R.string.group_create_start_title)
+            )
+
+            Spacer(modifier = Modifier.size(20.dp))
+
+            LargeSeekbarSwitch(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .height(LargeSwitchDefaults.minHeight)
+                    .fillMaxWidth(1f),
+                icon = Icons.Rounded.Add,
+                title = stringResource(id = R.string.dashboard_groups_add_button),
+                titleStyle = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
+                description = null,
+                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                    switchState = LargeSeekbarSwitchState.Switch(
+                        checkState = false,
+                        unCheckedIcon = Icons.Rounded.ChevronRight
+                    ),
+                    seekbarState = null
+                ),
+                onStateChange = {
+                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.route())
+                }
+            )
+
+            Spacer(modifier = Modifier.size(20.dp))
+
+            if (state.personalCode != null) {
+                SettingsSectionHeader(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    name = stringResource(id = R.string.dashboard_groups_join_info)
+                )
+                PersonalCodeItem(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    state = state.personalCode!!,
+                    deleteLoading = false,
+                    onCopy = {
+                        context.copy(state.personalCode?.code ?: "")
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_copy_invite_code),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    onShare = {
+                        context.share(state.personalCode?.code ?: "")
+                    },
+                    onDelete = {}
+                )
+                Spacer(modifier = Modifier.size(10.dp))
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        text = stringResource(id = R.string.invite_manage_description).annotatedBold(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                LargeSeekbarSwitch(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .height(LargeSwitchDefaults.minHeight)
+                        .fillMaxWidth(1f),
+                    icon = Icons.Rounded.Key,
+                    title = stringResource(id = R.string.dashboard_groups_join_button),
+                    titleStyle = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
+                    description = null,
+                    state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                        switchState = LargeSeekbarSwitchState.Switch(
+                            checkState = false,
+                            unCheckedIcon = Icons.Rounded.ChevronRight
+                        ),
+                        seekbarState = null
+                    ),
+                    onStateChange = {
+                        appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.size(20.dp))
         }
-    }
-
-}
-
-@Composable
-fun ColumnScope.DashboardGroupJoinButtons(appState: MainAppState) {
-    FilledButton(
-        style = ButtonStyle.SMALL,
-        modifier = Modifier.align(Alignment.CenterHorizontally),
-        icon = Icons.Rounded.GroupAdd,
-        onClick = {
-            appState.navController.navigate(AppScreen.MainHome.GroupCreate.route())
-        }
-    ) {
-        Text(text = stringResource(id = R.string.dashboard_groups_add_button))
-    }
-
-    Spacer(modifier = Modifier.size(10.dp))
-
-    FilledButton(
-        modifier = Modifier.align(Alignment.CenterHorizontally),
-        style = ButtonStyle.SMALL,
-        icon = Icons.Rounded.Key,
-        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
-        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
-        onClick = {
-            appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
-        }
-    ) {
-        Text(text = stringResource(id = R.string.dashboard_groups_join_button))
     }
 }

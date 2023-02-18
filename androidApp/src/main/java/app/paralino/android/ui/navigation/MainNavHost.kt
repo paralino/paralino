@@ -8,7 +8,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.groups.init.GroupInitScreen
 import app.paralino.android.ui.groups.create.GroupCreateScreen
 import app.paralino.android.ui.groups.detail.GroupDetailScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen
@@ -40,29 +39,30 @@ import app.paralino.core.presentation.rawdata.RawPresentationDataType
 fun MainNavHost(
     modifier: Modifier = Modifier,
     appState: MainAppState,
+    onAppClose: () -> Unit
 ) {
     NavHost(
         navController = appState.navController,
         startDestination = AppScreen.MainHome.routeSignature,
         modifier = modifier
     ) {
-        homeGraph(appState)
+        homeGraph(appState = appState, onAppClose = onAppClose)
         settingsGraph(appState)
     }
 }
 
-fun NavGraphBuilder.homeGraph(appState: MainAppState) {
+fun NavGraphBuilder.homeGraph(
+    appState: MainAppState,
+    onAppClose: () -> Unit,
+) {
     navigation(
         startDestination = AppScreen.MainHome.MainMap.routeSignature,
         route = AppScreen.MainHome.routeSignature
     ) {
-        composable(AppScreen.MainHome.GroupConnect.routeSignature) {
-            GroupInitScreen(appState)
-        }
         composable(AppScreen.MainHome.MainMap.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.MainMap.argumentGroupId)
-            MapHomeScreen(appState = appState, groupId = groupId)
+            MapHomeScreen(appState = appState, groupId = groupId, onClose = onAppClose)
         }
         composable(AppScreen.MainHome.GroupDetails.routeSignature) {
             val groupId =

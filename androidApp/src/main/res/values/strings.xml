@@ -61,7 +61,9 @@
     <string name="dashboard_groups_section_inactive">Inactive</string>
     <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create new group</string>
-    <string name="dashboard_groups_join_button">Or join a group</string>
+    <string name="dashboard_groups_join_button">Join a group</string>
+    <string name="dashboard_groups_create_info">Or create a new group</string>
+    <string name="dashboard_groups_join_info">Or join a group</string>
     <string name="dashboard_info_logged_out">Log in to start sharing your location.</string>
     <string name="dashboard_info_no_groups">You don\'t have any groups yet.\nCreate one to start sharing your location.</string>
 
@@ -217,6 +219,8 @@
     <string name="invite_connect_title">To add new member, enter their **personal code**</string>
     <string name="invite_section_title_group">Group</string>
     <string name="invite_section_title_user">User</string>
+    <string name="invite_code_button_copy">Copy</string>
+    <string name="invite_code_button_share">Share code</string>
 
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
@@ -240,7 +244,7 @@
     <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
 
     <string name="group_create_title">Create new group</string>
-    <string name="group_create_start_title">Connect with others</string>
+    <string name="group_create_start_title">Connect with your family</string>
     <string name="group_edit_title">Edit group</string>
     <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>
