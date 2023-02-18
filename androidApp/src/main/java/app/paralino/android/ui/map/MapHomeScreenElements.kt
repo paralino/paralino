@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -12,7 +13,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CenterFocusStrong
 import androidx.compose.material.icons.rounded.Groups
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
+import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.groups.members.GroupMember
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
@@ -40,7 +41,7 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.datetime.toJavaLocalDateTime
 
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
@@ -65,53 +66,85 @@ fun MapHomeScreenElements(
             )
     ) {
 
-        val (groupSelect, groupTrack, userListButton, userList, shareTime, settings, groupDetails) = createRefs()
+        val readyState = state as? MapHomeScreenState.Ready
+        val (groupSelect, groupTrack, userListButton, userList, shareTime, settings, emptySpace) = createRefs()
         var userListExpanded by remember(focusedMarker) { mutableStateOf(focusedMarker?.type == MapPinType.MEMBER) }
 
         FloatingActionButton(
             modifier = Modifier
                 .constrainAs(settings) {
-                    end.linkTo(parent.end, margin = 8.dp)
+                    end.linkTo(parent.end, margin = 12.dp)
                     top.linkTo(groupSelect.top)
                     bottom.linkTo(groupSelect.bottom)
                 }
-                .size(36.dp),
+                .size(42.dp),
             onClick = onSettingsClick,
             backgroundColor = MaterialTheme.colors.surface
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Settings,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colors.onSurface
+            ImageModelImage(
+                imageModel = state.currentUserImage,
+                useBackgroundForEmoji = false,
+                modifier = Modifier
+                    .size(38.dp)
+                    .background(
+                        color = MaterialTheme.colors.surface,
+                        shape = CircleShape
+                    )
             )
         }
 
+        Spacer(
+            modifier = Modifier
+                .constrainAs(emptySpace) {
+                    start.linkTo(parent.start, margin = 12.dp)
+                    top.linkTo(groupSelect.top)
+                    bottom.linkTo(groupSelect.bottom)
+                }
+                .size(42.dp)
+        )
+
         // group picker button
-        MapGroupPicker(
+        AnimatedVisibility(
             modifier = Modifier
                 .constrainAs(groupSelect) {
                     top.linkTo(parent.top, margin = 8.dp)
-                    start.linkTo(parent.start, margin = 36.dp)
+                    start.linkTo(emptySpace.end)
                     end.linkTo(settings.start)
-                }
-                .animateContentSize(
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                        stiffness = Spring.StiffnessMedium
+                    width = Dimension.fillToConstraints
+                },
+            visible = state is MapHomeScreenState.Ready,
+            enter = fadeIn() + slideInVertically(),
+            exit = fadeOut() + slideOutVertically()
+        ) {
+            if (readyState != null) {
+                ConstraintLayout(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    val groupPicker = createRef()
+                    MapGroupPicker(
+                        modifier = Modifier.constrainAs(groupPicker) {
+                            linkTo(
+                                top = parent.top,
+                                bottom = parent.bottom,
+                                start = parent.start,
+                                end = parent.end
+                            )
+                            width = Dimension.preferredWrapContent
+                        },
+                        groupName = readyState.groupName,
+                        groupImage = readyState.groupImage,
+                        userCount = readyState.userCount,
+                        inactiveUserCount = readyState.inactiveUserCount,
+                        onGroupClick = onGroupDetailsClick,
+                        onExpandClick = onGroupPickerClick
                     )
-                ),
-            groupName = state.groupName,
-            groupImage = state.groupImage,
-            userCount = state.userCount,
-            inactiveUserCount = state.inactiveUserCount,
-            onGroupClick = onGroupDetailsClick,
-            onExpandClick = onGroupPickerClick
-        )
+                }
+            }
+        }
 
         // sharing time info
         AnimatedVisibility(
-            visible = state.sharingStatus != null,
+            visible = readyState?.sharingStatus != null,
             modifier = Modifier
                 .constrainAs(shareTime) {
                     start.linkTo(parent.start, margin = 16.dp)
@@ -135,7 +168,7 @@ fun MapHomeScreenElements(
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = state.sharingStatus?.endTimeUTC
+                    text = readyState?.sharingStatus?.endTimeUTC
                         ?.isoToLocalDateTime()
                         ?.toJavaLocalDateTime()
                         ?.fromUTCtoMapSharingTime(LocalContext.current)
@@ -146,42 +179,55 @@ fun MapHomeScreenElements(
         }
 
         // expand member list button
-        FloatingActionButton(
+        AnimatedVisibility(
             modifier = Modifier
                 .constrainAs(userListButton) {
                     start.linkTo(groupTrack.start)
                     end.linkTo(groupTrack.end)
                     bottom.linkTo(groupTrack.top, margin = 16.dp)
-                }
-                .size(40.dp),
-            onClick = { userListExpanded = !userListExpanded },
-            backgroundColor = if (userListExpanded) AppColors.accent else MaterialTheme.colors.surface
+                },
+            visible = readyState != null,
+            enter = scaleIn(),
+            exit = scaleOut()
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Groups,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = if (userListExpanded) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
-            )
+            FloatingActionButton(
+                modifier = Modifier.size(40.dp),
+                onClick = { userListExpanded = !userListExpanded },
+                backgroundColor = if (userListExpanded) AppColors.accent else MaterialTheme.colors.surface
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Groups,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = if (userListExpanded) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
+                )
+            }
         }
 
         // activate group tracking button
-        FloatingActionButton(
+        AnimatedVisibility(
             modifier = Modifier
                 .constrainAs(groupTrack) {
                     end.linkTo(parent.end, margin = 8.dp)
                     bottom.linkTo(userList.top, margin = 16.dp)
-                }
-                .size(50.dp),
-            onClick = onTrackGroupClick,
-            backgroundColor = if (isTrackingGroup) AppColors.accent else MaterialTheme.colors.surface
+                },
+            visible = readyState != null,
+            enter = scaleIn(),
+            exit = scaleOut()
         ) {
-            Icon(
-                imageVector = Icons.Rounded.CenterFocusStrong,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp),
-                tint = if (isTrackingGroup) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
-            )
+            FloatingActionButton(
+                modifier = Modifier
+                    .size(50.dp),
+                onClick = onTrackGroupClick,
+                backgroundColor = if (isTrackingGroup) AppColors.accent else MaterialTheme.colors.surface
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.CenterFocusStrong,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = if (isTrackingGroup) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
+                )
+            }
         }
 
         // user list
@@ -195,48 +241,50 @@ fun MapHomeScreenElements(
         ) {
             AnimatedVisibility(
                 modifier = Modifier.fillMaxWidth(),
-                visible = userListExpanded,
+                visible = userListExpanded && readyState != null,
                 enter = fadeIn() + expandVertically(),
                 exit = shrinkVertically() + fadeOut()
             ) {
-                val pagerState = rememberPagerState()
-                HorizontalPager(
-                    state = pagerState,
-                    itemSpacing = 4.dp,
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    count = state.members.size,
-                    key = { state.members.get(it).keyId }
-                ) {
-                    val memberState = state.members[it]
-                    var expanded by remember {
-                        mutableStateOf(false)
+                if (readyState != null) {
+                    val pagerState = rememberPagerState()
+                    HorizontalPager(
+                        state = pagerState,
+                        itemSpacing = 4.dp,
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        count = readyState.members.size,
+                        key = { readyState.members.get(it).keyId }
+                    ) {
+                        val memberState = readyState.members.get(it)
+                        var expanded by remember {
+                            mutableStateOf(false)
+                        }
+                        GroupMember(
+                            state = memberState,
+                            backgroundColor = MaterialTheme.colors.background,
+                            collapseOnActionClick = true,
+                            forceExpandAction = expanded,
+                            onActionClick = {
+                                if (memberState is GroupMemberItemStateWithOneLocation && memberState.location != null) {
+                                    onClearMyLocationClick(memberState.location!!.locationId)
+                                }
+                            },
+                            onClick = {
+                                expanded = !expanded
+                                onMemberClick(memberState)
+                            }
+                        )
                     }
-                    GroupMember(
-                        state = memberState,
-                        backgroundColor = MaterialTheme.colors.background,
-                        collapseOnActionClick = true,
-                        forceExpandAction = expanded,
-                        onActionClick = {
-                            if (memberState is GroupMemberItemStateWithOneLocation && memberState.location != null) {
-                                onClearMyLocationClick(memberState.location!!.locationId)
+                    LaunchedEffect(focusedMarker) {
+                        val page = readyState.members.indexOfFirst {
+                            when (it) {
+                                is GroupMemberItemStateWithLocations -> false
+                                is GroupMemberItemStateWithOneLocation -> {
+                                    it.keyId == focusedMarker?.markerId
+                                }
                             }
-                        },
-                        onClick = {
-                            expanded = !expanded
-                            onMemberClick(memberState)
-                        }
-                    )
-                }
-                LaunchedEffect(focusedMarker) {
-                    val page = state.members.indexOfFirst {
-                        when (it) {
-                            is GroupMemberItemStateWithLocations -> false
-                            is GroupMemberItemStateWithOneLocation -> {
-                                it.keyId == focusedMarker?.markerId
-                            }
-                        }
-                    }.takeIf { it > 0 } ?: 0
-                    pagerState.animateScrollToPage(page)
+                        }.takeIf { it > 0 } ?: 0
+                        pagerState.animateScrollToPage(page)
+                    }
                 }
             }
         }

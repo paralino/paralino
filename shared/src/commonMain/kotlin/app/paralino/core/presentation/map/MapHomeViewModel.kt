@@ -1,8 +1,8 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.domain.location.LocationRefreshUseCase
-import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
@@ -13,6 +13,8 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.IConfig
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
@@ -24,11 +26,12 @@ class MapHomeViewModel constructor(
     private val groupRepo: GroupRepository,
     private val placesRepo: PlacesRepository,
     private val locationRefreshUseCase: LocationRefreshUseCase,
+    private val userRepository: UserRepository,
     private val config: IConfig
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow<Payload<MapHomeScreenState>>(Payload.Loading)
-    val uiState: Flow<Payload<MapHomeScreenState>> = _uiState
+    private val _uiState = MutableStateFlow<MapHomeScreenState>(MapHomeScreenState.Empty())
+    val uiState: Flow<MapHomeScreenState> = _uiState
 
     private val _eventChannel = Channel<MapHomeScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -36,7 +39,7 @@ class MapHomeViewModel constructor(
     private val groupIdData = MutableStateFlow("")
     private val focusedMarker = MutableStateFlow<FocusedMarkerData?>(null)
 
-    val locationRefreshSubscription = uiState.map { it.data?.groupId }
+    val locationRefreshSubscription = uiState.map { (it as? MapHomeScreenState.Ready)?.groupId }
         .filterNotNull()
         .distinctUntilChanged()
         .flatMapLatest { locationRefreshUseCase.locationRefresh(it).mapToPayload { Unit } }
@@ -68,18 +71,22 @@ class MapHomeViewModel constructor(
         groupIdData
             .flatMapLatest {
                 if (it.isBlank()) {
-                    flowOf(Payload.Loading)
+                    userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
+                        .map {
+                            MapHomeScreenState.Empty(
+                                it?.userImage ?: ImageModel.emoji(Emojis.robot)
+                            )
+                        }
                 } else {
                     combine(
-                        // TODO if group is deleted, changes are not propagated here
                         groupRepo.getGroupWithMembersLocally(it),
                         placesRepo.getPlacesForGroupLocally(it),
                         getSharingContract(),
-                        focusedMarker
-                    ) { group, places, sharingStatus, focusedMarker ->
+                        focusedMarker,
+                        userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
+                    ) { group, places, sharingStatus, focusedMarker, userData ->
 
                         val membersData = group.members.flatMap { member ->
-
                             if (member.locations.isEmpty()) {
                                 listOf(
                                     GroupMemberItemStateWithOneLocation(
@@ -144,19 +151,20 @@ class MapHomeViewModel constructor(
                                     )
                                 }
 
-                        MapHomeScreenState(
+                        MapHomeScreenState.Ready(
                             groupId = group.id,
                             groupName = group.name,
                             groupImage = group.image,
                             userCount = group.memberCount,
                             inactiveUserCount = group.memberCount - group.members.filter { it.hasLocation }.size,
+                            currentUserImage = userData?.userImage
+                                ?: ImageModel.emoji(Emojis.robot),
                             members = membersData,
                             markers = memberMarkers + placeMarkers,
                             focusedMarker = focusedMarker,
                             sharingStatus = sharingStatus
                         )
                     }
-                        .mapToPayload { it }
                 }
             }
             .onEach { _uiState.value = it }
@@ -203,5 +211,4 @@ class MapHomeViewModel constructor(
             .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
             .launchIn(coroutineScope)
     }
-
 }

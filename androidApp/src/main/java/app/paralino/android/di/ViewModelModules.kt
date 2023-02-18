@@ -53,7 +53,7 @@ import org.koin.dsl.module
 
 val viewModelModules = module {
     viewModel { GroupInitViewModel(get(), get(), get()) }
-    viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), config) }
+    viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), startScreenType as LoginScreenUiType) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
