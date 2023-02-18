@@ -1,7 +1,6 @@
 package app.paralino.android.utils.extensions
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.text.Spannable
@@ -11,6 +10,7 @@ import android.text.style.ClickableSpan
 import android.text.style.TypefaceSpan
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -91,19 +91,19 @@ fun linkSpan(context: Context, onClick: () -> Unit): ClickableSpan {
             super.updateDrawState(ds)
             ds.color = ContextCompat.getColor(context, R.color.accentDark)
             ds.isUnderlineText = true
-            ds.bgColor = Color.TRANSPARENT
+            ds.bgColor = android.graphics.Color.TRANSPARENT
         }
     }
 }
 
 data class SpanContainer(val key: String, val span: Any)
 
-fun String.annotatedBold(): AnnotatedString {
+fun String.annotatedBold(fontWeight: FontWeight = FontWeight.Bold, textColor: Color = Color.Unspecified): AnnotatedString {
     val ranges = this.splitRanges("**")
     val cleanString = this.replace("**", "")
     return AnnotatedString(cleanString, spanStyles = ranges.map {
         AnnotatedString.Range(
-            item = SpanStyle(fontWeight = FontWeight.Bold),
+            item = SpanStyle(fontWeight = fontWeight, color = textColor),
             start = it.second.first,
             end = it.second.last
         )
