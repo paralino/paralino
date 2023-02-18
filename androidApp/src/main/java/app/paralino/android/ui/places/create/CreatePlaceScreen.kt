@@ -96,7 +96,37 @@ fun CreatePlaceScreen(
                     }
                 }
             )
-        }
+        },
+        bottomBar = {
+            when (val finalState = state) {
+                is Payload.Error -> {}
+                Payload.Loading -> {}
+                is Payload.Success -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colors.background)
+                            .padding(bottom = 20.dp, top = 8.dp)
+                            .padding(horizontal = 20.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        FilledButton(
+                            modifier = Modifier,
+                            style = ButtonStyle.BIG,
+                            state = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
+                            icon = if (finalState.data.isNewPlace) null else Icons.Rounded.Save,
+                            onClick = { vm.createPlace() }
+                        ) {
+                            if (finalState.data.isNewPlace) {
+                                Text(text = stringResource(id = R.string.places_create_button_create))
+                            } else {
+                                Text(text = stringResource(id = R.string.button_save))
+                            }
+                        }
+                    }
+                }
+            }
+        },
     ) {
 
         when (val finalState = state) {
@@ -131,7 +161,6 @@ fun CreatePlaceScreen(
                     onNameChange = { vm.updateName(it) },
                     onLocationChanged = { lat, lng -> vm.updatePosition(lat, lng) },
                     onRadiusChanged = { vm.updateRadius(it) },
-                    onCreatePlace = { vm.createPlace() },
                 )
 
                 AnimatedVisibility(
@@ -162,8 +191,7 @@ fun CreatePlaceScreen(
     onImageClick: () -> Unit,
     onNameChange: (String) -> Unit,
     onLocationChanged: (lat: Double, lng: Double) -> Unit,
-    onRadiusChanged: (radiusMeters: Int) -> Unit,
-    onCreatePlace: () -> Unit
+    onRadiusChanged: (radiusMeters: Int) -> Unit
 ) {
 
     val mapViewState = rememberMapViewPlaceCreateState(darkMode = isSystemInDarkTheme())
@@ -297,21 +325,5 @@ fun CreatePlaceScreen(
         )
 
         Spacer(modifier = Modifier.height(40.dp))
-        Spacer(modifier = Modifier.weight(1f))
-
-        FilledButton(
-            modifier = Modifier.padding(bottom = 30.dp),
-            style = ButtonStyle.BIG,
-            state = AppButtonState.loadingStateWithCheck(state.actionLoading),
-            icon = if (state.isNewPlace) null else Icons.Rounded.Save,
-            onClick = { onCreatePlace() }
-        ) {
-            if (state.isNewPlace) {
-                Text(text = stringResource(id = R.string.places_create_button_create))
-            } else {
-                Text(text = stringResource(id = R.string.button_save))
-            }
-        }
-
     }
 }
