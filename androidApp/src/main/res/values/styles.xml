@@ -30,7 +30,7 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
 
         <item name="android:navigationBarColor">@color/theme_lightest</item>
-        <item name="android:navigationBarDividerColor">@color/theme_lightest</item>
+        <item name="android:navigationBarDividerColor">@color/transparent</item>
         <item name="android:windowLightNavigationBar">@bool/app_windowLightNavigationBar</item>
 
     </style>

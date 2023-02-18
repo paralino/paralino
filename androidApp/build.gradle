@@ -227,6 +227,8 @@ dependencies {
 
     implementation "com.google.accompanist:accompanist-pager:0.28.0"
     implementation "com.google.accompanist:accompanist-permissions:0.28.0"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
+
 
 //    implementation "androidx.compose.material3:material3:1.0.0-alpha10"
 //    implementation "androidx.compose.foundation:foundation-layout:$composeVersion"
