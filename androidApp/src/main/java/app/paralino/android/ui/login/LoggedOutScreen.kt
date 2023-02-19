@@ -86,8 +86,13 @@ fun LoggedOutScreen(
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .background(color = MaterialTheme.colors.primary, shape = CircleShape)
-                        .size(150.dp)
-                        .scale(1.3f)
+                        .border(
+                            width = 8.dp,
+                            color = MaterialTheme.colors.background,
+                            shape = CircleShape
+                        )
+                        .size(120.dp)
+                        .scale(1.2f)
                         .align(alignment = Alignment.CenterHorizontally)
                 )
 

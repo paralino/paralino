@@ -280,7 +280,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s m/h</string>
-    <string name="welcome_screen_info_1">SECURE PRIVATE ENCRYPTED</string>
+    <string name="welcome_screen_info_1">SECURE - PRIVATE - ENCRYPTED</string>
     <string name="welcome_screen_info_app">location sharing</string>
     <string name="welcome_screen_button_join">JOIN</string>
 
