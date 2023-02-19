@@ -239,7 +239,7 @@ fun PlacesScreen(
                 this.item {
                     DefaultEmptyState(
                         content = stringResource(id = R.string.places_list_screen_empty_info),
-                        icon = AppIcons.Home,
+                        icon = AppIcons.MapsHomeWork,
                         buttonText = stringResource(id = R.string.places_create_button_create),
                         buttonIcon = AppIcons.Add
                     ) {

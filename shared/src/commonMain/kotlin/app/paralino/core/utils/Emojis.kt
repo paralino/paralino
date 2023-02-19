@@ -54,7 +54,7 @@ object Emojis {
         "\uD83D\uDCBB", // laptop
     )
 
-    private val groupSpecific = listOf(
+    val groupSpecific = listOf(
         "\uD83C\uDFE0", // house
         "\uD83C\uDFE9", // love hotel
         "\uD83C\uDFF0", // castle

@@ -14,7 +14,7 @@ data class CreateGroupState(
         fun empty(): CreateGroupState {
             return CreateGroupState(
                 isNewGroup = true,
-                image = ImageModel.emoji(Emojis.robot),
+                image = ImageModel.emoji(Emojis.groupSpecific.random()),
                 name = "",
                 hasError = false,
                 isLoading = false
