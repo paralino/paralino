@@ -22,9 +22,16 @@ class LocationLocalDataSource(
     private val mapper: MemberWithLocationsMapperLocal
 ) : ILocationLocalDataSource {
 
-    override suspend fun createOrUpdateMembers(vararg data: MemberDocumentRaw) {
-        dao.createOrUpdateMemberOnly(*data.map { mapper.memberMapper.remote2Local(it) }
-            .toTypedArray())
+    override suspend fun createOrUpdateMembersWithSettings(vararg data: MemberDocumentRaw) {
+        dao.createOrUpdateMemberOnly(
+            *data.map { mapper.memberMapper.remote2Local(it) }.toTypedArray()
+        )
+    }
+
+    override suspend fun createOrUpdateMembersWithoutSettings(vararg data: MemberDocumentRaw) {
+        dao.createOrUpdateMembersWithoutSettings(
+            *data.map { mapper.memberMapper.remote2Local(it) }.toTypedArray()
+        )
     }
 
     override suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw) {

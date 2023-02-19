@@ -100,7 +100,7 @@ class RealtimeEventsProcessor constructor(
                 } else {
                     logg.tag("realtime_events")
                         .v("Update member (${member.id}) event in group ${member.groupId}")
-                    memberLocal.createOrUpdateMembers(member)
+                    memberLocal.createOrUpdateMembersWithoutSettings(member)
                 }
             } else {
                 val groupId = response.payload["groupId"] as String

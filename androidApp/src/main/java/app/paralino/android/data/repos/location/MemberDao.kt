@@ -34,6 +34,14 @@ interface MemberDao {
         createOrUpdateMemberLocations(*data.flatMap { it.locations }.toTypedArray())
     }
 
+    @Transaction
+    suspend fun createOrUpdateMembersWithoutSettings(vararg data: MemberEntity) {
+        val newMembers = data.map {
+            it.copy(settings = getOnlyMemberOnce(it.id)?.settings)
+        }
+        createOrUpdateMemberOnly(*newMembers.toTypedArray())
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createOrUpdateMemberOnly(vararg data: MemberEntity)
 
@@ -51,6 +59,9 @@ interface MemberDao {
     @Transaction
     @Query("SELECT * FROM members WHERE groupId = :groupId AND userId = :userId")
     suspend fun getMemberOnce(groupId: String, userId: String): MemberEntityWithLocations?
+
+    @Query("SELECT * FROM members WHERE id = :memberId")
+    suspend fun getOnlyMemberOnce(memberId: String): MemberEntity?
 
     @Transaction
     @Query("SELECT * FROM members WHERE userId = :userId")
