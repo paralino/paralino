@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
@@ -151,6 +152,7 @@ fun EditProfileScreen(
             hasError = state.hasNameError,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done,
+            capitalization = KeyboardCapitalization.Words,
             focusManager = focusManager,
             onInputChange = onNameChange
         )
@@ -163,6 +165,7 @@ fun EditProfileScreen(
             hasError = false,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done,
+            capitalization = KeyboardCapitalization.Words,
             focusManager = focusManager,
             onInputChange = onDeviceNameChange
         )
