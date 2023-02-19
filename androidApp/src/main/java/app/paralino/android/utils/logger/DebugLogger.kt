@@ -40,17 +40,14 @@ internal open class DebugLogger(private val tagPrefix: String = "") : LoggerKind
 
 
     override fun getTag(): String {
-        val tag = super.getTag()
-        if (tag != null) {
-            return tag
-        }
-
+        val tag = super.getTag() ?: tagPrefix
         val stackTrace = Throwable().stackTrace
-        if (stackTrace.size <= 7) {
-            throw IllegalStateException(
-                    "Stacktrace didn't have enough elements: proguard?")
-        }
-        return "$tagPrefix(${stackTrace[6].fileName}:${stackTrace[6].lineNumber}) ${stackTrace[6].methodName}()"
+        val stackTraceTag = stackTrace.take(7).reversed().take(2).mapIndexed { index, it ->
+            if(index == 0)
+                "${it.fileName}:${it.methodName}:${it.lineNumber}"
+            else "${it.methodName}:${it.lineNumber}"
+        }.joinToString(separator = "-")
+        return "$tag($stackTraceTag)".take(80)
     }
 
 }

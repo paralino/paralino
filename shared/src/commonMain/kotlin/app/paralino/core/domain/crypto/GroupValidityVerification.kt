@@ -64,7 +64,7 @@ class GroupValidityVerification(
                     return VerificationResult.MISSING_MEMBER_SETTINGS
 
                 if (memberGroupSettings.integrity.isBlank()) {
-                    return VerificationResult.WRONG_MEMBER_INTEGRITY
+                    return VerificationResult.MISSING_MEMBER_INTEGRITY
                 } else {
                     val myKey = userKeyRepo.latestKeyPair()
                     try {
@@ -81,7 +81,7 @@ class GroupValidityVerification(
                 }
 
                 if (memberGroupSettings.secretKey.isBlank()) {
-                    return VerificationResult.WRONG_MEMBER_SECRET
+                    return VerificationResult.MISSING_MEMBER_SECRET
                 } else {
                     try {
                         val userOwnSecret = cryptoCore.decryptDataWithKey(
@@ -211,6 +211,8 @@ enum class VerificationResult {
     WRONG_OWNER_VERIFICATION,
     WRONG_MEMBER_VERIFICATION,
     MISSING_MEMBER_SETTINGS,
+    MISSING_MEMBER_INTEGRITY,
     WRONG_MEMBER_INTEGRITY,
+    MISSING_MEMBER_SECRET,
     WRONG_MEMBER_SECRET,
 }
