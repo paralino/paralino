@@ -61,6 +61,7 @@ class PersonalCodesRepository constructor(
 
     fun getUserInfoFromCode(code: String): Flow<Payload<UserPersonalCodeData>> {
         val cleanedCode = code
+            .trim()
             .replace("-", "")
             .replace(" ", "")
             .uppercase()

@@ -167,7 +167,7 @@ class MemberInviteViewModel(
     fun codeChanged(code: String) {
         _uiState.update {
             MemberInviteScreenState.Empty(
-                code = code.uppercase(),
+                code = code.trim().uppercase(),
                 hasInputError = if (it.hasInputError) code.isBlank() else false,
                 actionLoading = it.actionLoading
             )
