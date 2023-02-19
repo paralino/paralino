@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AddLink
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +18,7 @@ import app.paralino.android.ui.components.DefaultEmptyState
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.models.Payload
@@ -112,7 +111,7 @@ fun PersonalCodeScreen(
                 }
             } else {
                 DefaultEmptyState(
-                    icon = Icons.Rounded.AddLink,
+                    icon = AppIcons.AddLink,
                     content = stringResource(id = R.string.invite_manage_empty_description),
                     buttonText = stringResource(id = R.string.invite_create_button),
                     buttonState = if (state.data.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,

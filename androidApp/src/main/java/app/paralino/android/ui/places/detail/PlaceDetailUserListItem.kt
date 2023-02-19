@@ -9,9 +9,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.NotificationsActive
-import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,6 +27,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.utils.Emojis
 import app.paralino.android.R
+import app.paralino.android.ui.theme.AppIcons
 
 @Composable
 fun PlaceDetailUserListItem(
@@ -114,9 +112,9 @@ fun PlaceSettingNotifyButton(
             iconSpacing = 8.dp
         ),
         icon = if (state)
-            Icons.Rounded.NotificationsActive
+            AppIcons.NotificationsActive
         else
-            Icons.Rounded.NotificationsOff,
+            AppIcons.NotificationsOff,
         elevation = ButtonDefaults.elevation(defaultElevation = if (state) 2.dp else 0.dp),
         state = AppButtonState.loadingState(loading),
         colors = colors,

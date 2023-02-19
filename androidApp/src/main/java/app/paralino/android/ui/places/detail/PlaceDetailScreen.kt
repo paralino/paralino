@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +24,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenEvent
@@ -90,7 +89,7 @@ fun PlaceDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -108,7 +107,7 @@ fun PlaceDetailScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Security,
+                            imageVector = AppIcons.Security,
                             tint = AppColors.accent,
                             contentDescription = null
                         )
@@ -125,13 +124,13 @@ fun PlaceDetailScreen(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Edit,
+                                imageVector = AppIcons.Edit,
                                 contentDescription = null
                             )
                         }
                         IconButton(onClick = { optionMenuExpanded = true }) {
                             Icon(
-                                imageVector = Icons.Rounded.MoreVert,
+                                imageVector = AppIcons.MoreVert,
                                 contentDescription = null
                             )
                         }
@@ -309,7 +308,7 @@ fun PlaceDetailScreen(
             this.item {
                 DefaultEmptyState(
                     content = stringResource(id = R.string.places_list_screen_empty_info),
-                    icon = Icons.Rounded.Home,
+                    icon = AppIcons.Home,
                     buttonText = null
                 ) { }
             }

@@ -6,10 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Adjust
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Save
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +21,7 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.*
 import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
 import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.safeCast
@@ -91,7 +88,7 @@ fun CreatePlaceScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -115,7 +112,7 @@ fun CreatePlaceScreen(
                             modifier = Modifier,
                             style = ButtonStyle.BIG,
                             state = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
-                            icon = if (finalState.data.isNewPlace) null else Icons.Rounded.Save,
+                            icon = if (finalState.data.isNewPlace) null else AppIcons.Save,
                             onClick = { vm.createPlace() }
                         ) {
                             if (finalState.data.isNewPlace) {
@@ -315,7 +312,7 @@ fun CreatePlaceScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(LargeSwitchDefaults.minHeight),
-            icon = Icons.Rounded.Adjust,
+            icon = AppIcons.Adjust,
             title = stringResource(id = R.string.places_create_seekbar_info),
             description = "${state.radiusMeters}m",
             focusDescription = true,

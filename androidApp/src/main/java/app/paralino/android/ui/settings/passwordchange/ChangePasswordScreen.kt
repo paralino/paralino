@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +23,7 @@ import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.PasswordInputField
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -79,7 +78,7 @@ fun ChangePasswordScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }

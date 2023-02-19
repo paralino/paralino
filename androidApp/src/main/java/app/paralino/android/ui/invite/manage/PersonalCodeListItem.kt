@@ -7,11 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.ContentCopy
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +21,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.TextViewCompat
 import app.paralino.android.R
 import app.paralino.android.ui.components.FilledButton
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
@@ -120,7 +116,7 @@ fun PersonalCodeItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.AccessTime,
+                    imageVector = AppIcons.AccessTime,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(horizontal = 14.dp)
@@ -138,7 +134,7 @@ fun PersonalCodeItem(
         ) {
             FilledButton(
                 style = ButtonStyle.SMALL,
-                icon = Icons.Rounded.ContentCopy,
+                icon = AppIcons.ContentCopy,
                 colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
                 elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                 onClick = onCopy
@@ -147,7 +143,7 @@ fun PersonalCodeItem(
             }
             FilledButton(
                 style = ButtonStyle.SMALL,
-                icon = Icons.Rounded.Share,
+                icon = AppIcons.Share,
                 colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
                 elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                 onClick = onShare
@@ -166,7 +162,7 @@ fun PersonalCodeItem(
                         )
                     } else {
                         Icon(
-                            imageVector = Icons.Rounded.Delete,
+                            imageVector = AppIcons.Delete,
                             tint = MaterialTheme.colors.onError,
                             contentDescription = null,
                             modifier = Modifier.size(20.dp)

@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Login
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
@@ -27,6 +25,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.presentation.login.LoginScreenUiType
@@ -99,7 +98,7 @@ fun LoggedOutScreen(
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
                     onClick = { appState.navController.navigate(AppScreen.LoggedOut.Login.routeSignature) }
                 ) {
-                    Icon(imageVector = Icons.Rounded.Login, contentDescription = null)
+                    Icon(imageVector = AppIcons.Login, contentDescription = null)
                     Spacer(Modifier.size(8.dp))
                     Text(stringResource(R.string.welcome_screen_button_join))
                 }

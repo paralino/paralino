@@ -6,11 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Key
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +21,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.share
@@ -89,7 +85,7 @@ fun GroupInitScreen(
                 navigationIcon = {
                     IconButton(onClick = onClose) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -146,14 +142,14 @@ fun GroupInitScreen(
                     .padding(horizontal = 20.dp)
                     .height(LargeSwitchDefaults.minHeight)
                     .fillMaxWidth(1f),
-                icon = Icons.Rounded.Add,
+                icon = AppIcons.Add,
                 title = stringResource(id = R.string.dashboard_groups_add_button),
                 titleStyle = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
                 description = null,
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
                         checkState = false,
-                        unCheckedIcon = Icons.Rounded.ChevronRight
+                        unCheckedIcon = AppIcons.ChevronRight
                     ),
                     seekbarState = null
                 ),
@@ -200,14 +196,14 @@ fun GroupInitScreen(
                         .padding(horizontal = 20.dp)
                         .height(LargeSwitchDefaults.minHeight)
                         .fillMaxWidth(1f),
-                    icon = Icons.Rounded.Key,
+                    icon = AppIcons.Key,
                     title = stringResource(id = R.string.dashboard_groups_join_button),
                     titleStyle = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
                     description = null,
                     state = LargeSeekbarSwitchState.SeekbarSwitchState(
                         switchState = LargeSeekbarSwitchState.Switch(
                             checkState = false,
-                            unCheckedIcon = Icons.Rounded.ChevronRight
+                            unCheckedIcon = AppIcons.ChevronRight
                         ),
                         seekbarState = null
                     ),

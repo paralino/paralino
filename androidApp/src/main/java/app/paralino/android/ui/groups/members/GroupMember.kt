@@ -9,23 +9,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.PersonRemove
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import app.paralino.android.R
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
-import app.paralino.android.utils.extensions.fromUTCtoLocal
 import app.paralino.android.utils.extensions.fromUTCtoUserLastPing
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.*
@@ -107,8 +103,8 @@ fun GroupMemberItemLocationState.getLastPingText(): String? {
 
 val MemberAction.actionIcon: ImageVector
     get() = when (this) {
-        MemberAction.DELETE_MEMBER -> Icons.Rounded.PersonRemove
-        MemberAction.DELETE_LOCATION -> Icons.Rounded.Delete
+        MemberAction.DELETE_MEMBER -> AppIcons.PersonRemove
+        MemberAction.DELETE_LOCATION -> AppIcons.Delete
     }
 
 val MemberAction.actionText: Int

@@ -6,8 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Group
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -16,6 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.presentation.groups.GroupItemState
 
 @Composable
@@ -61,7 +60,7 @@ fun GroupListItem(
             ) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                     Icon(
-                        imageVector = Icons.Rounded.Group,
+                        imageVector = AppIcons.Group,
                         modifier = Modifier.size(16.dp),
                         contentDescription = null
                     )

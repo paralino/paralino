@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.Group
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -33,6 +30,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
 import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.quantityStringResource
@@ -139,7 +137,7 @@ fun MapGroupPicker(
             ) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                     Icon(
-                        imageVector = Icons.Rounded.Group,
+                        imageVector = AppIcons.Group,
                         modifier = Modifier.size(14.dp),
                         contentDescription = null
                     )
@@ -184,7 +182,7 @@ fun MapGroupPicker(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Rounded.ExpandMore,
+                imageVector = AppIcons.ExpandMore,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp)
             )

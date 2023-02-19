@@ -10,8 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +29,7 @@ import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
@@ -131,7 +130,7 @@ fun AccountScreen(
                 }
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Security,
+                    imageVector = AppIcons.Security,
                     tint = AppColors.accent,
                     contentDescription = null
                 )
@@ -161,7 +160,7 @@ fun AccountScreen(
 
                 SettingsActionItem(
                     name = stringResource(id = R.string.settings_account_edit_profile),
-                    icon = Icons.Rounded.Person
+                    icon = AppIcons.Person
                 ) {
                     appState.navController.navigate(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature)
                 }
@@ -169,26 +168,26 @@ fun AccountScreen(
                 if (state.data.userState.isGuestUser) {
                     SettingsActionItem(
                         name = stringResource(id = R.string.settings_account_guest_convert),
-                        icon = Icons.Rounded.HowToReg
+                        icon = AppIcons.HowToReg
                     ) {
                         appState.navController.navigate(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature)
                     }
                 } else {
                     SettingsActionItem(
                         name = stringResource(id = R.string.settings_account_edit_email),
-                        icon = Icons.Rounded.Email
+                        icon = AppIcons.Email
                     ) {
                         appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangeEmail.routeSignature)
                     }
                     SettingsActionItem(
                         name = stringResource(id = R.string.settings_account_edit_password),
-                        icon = Icons.Rounded.Password
+                        icon = AppIcons.Password
                     ) {
                         appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangePassword.routeSignature)
                     }
                     SettingsActionItem(
                         name = stringResource(id = R.string.setting_title_logout),
-                        icon = Icons.Rounded.Logout,
+                        icon = AppIcons.Logout,
                         iconTint = MaterialTheme.colors.error,
                         showEndArrow = false
                     ) {
@@ -201,7 +200,7 @@ fun AccountScreen(
                         SettingsSectionHeader(name = stringResource(id = R.string.setting_title_dangerZone))
                         SettingsActionItem(
                             name = stringResource(id = R.string.setting_title_delete_account),
-                            icon = Icons.Rounded.DeleteForever,
+                            icon = AppIcons.DeleteForever,
                             iconTint = MaterialTheme.colors.error,
                             showEndArrow = false
                         ) {
@@ -213,7 +212,7 @@ fun AccountScreen(
                 AnimatedVisibility(visible = !showDangerZoneContent) {
                     SettingsActionItem(
                         name = stringResource(id = R.string.setting_title_dangerZone),
-                        icon = Icons.Rounded.Warning,
+                        icon = AppIcons.Warning,
                         iconTint = MaterialTheme.colors.error,
                         showEndArrow = false
                     ) {

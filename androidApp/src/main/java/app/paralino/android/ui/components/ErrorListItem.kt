@@ -12,8 +12,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +25,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.android.R
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
 
 
@@ -114,13 +113,13 @@ fun ErrorItemPreview() {
 val ConditionErrorType.iconVector: ImageVector
     @Composable
     get() = when (this) {
-        ConditionErrorType.GPS -> Icons.Rounded.LocationOff
-        ConditionErrorType.PERMISSION_NOTIFICATIONS -> Icons.Rounded.NotificationsActive
-        ConditionErrorType.PERMISSION_LOCATION -> Icons.Rounded.PhonelinkSetup
-        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> Icons.Rounded.PhonelinkSetup
-        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> Icons.Rounded.PhonelinkSetup
-        ConditionErrorType.NETWORK -> Icons.Rounded.WifiOff
-        is ConditionErrorType.EMAIL_VERIFICATION -> Icons.Rounded.Email
+        ConditionErrorType.GPS -> AppIcons.LocationOff
+        ConditionErrorType.PERMISSION_NOTIFICATIONS -> AppIcons.NotificationsActive
+        ConditionErrorType.PERMISSION_LOCATION -> AppIcons.PhonelinkSetup
+        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> AppIcons.PhonelinkSetup
+        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> AppIcons.PhonelinkSetup
+        ConditionErrorType.NETWORK -> AppIcons.WifiOff
+        is ConditionErrorType.EMAIL_VERIFICATION -> AppIcons.Email
         ConditionErrorType.GUEST_ACCOUNT -> ImageVector.vectorResource(id = R.drawable.ic_incognito)
     }
 

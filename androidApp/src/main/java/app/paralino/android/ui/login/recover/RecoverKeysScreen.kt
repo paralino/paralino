@@ -10,9 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoFixHigh
-import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +31,7 @@ import app.paralino.android.ui.components.*
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
@@ -127,7 +125,7 @@ fun RecoverKeysScreen(
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Logout,
+                                    imageVector = AppIcons.Logout,
                                     contentDescription = null
                                 )
                             }
@@ -242,7 +240,7 @@ fun RecoverKeysScreen(
                     AppButtonState.CONTENT
                 else
                     AppButtonState.loadingStateWithCheck(state.checkLoading!!),
-                icon = if (state.recoverState.data != null) Icons.Rounded.AutoFixHigh else null,
+                icon = if (state.recoverState.data != null) AppIcons.AutoFixHigh else null,
                 onClick = {
                     focusManager.clearFocus()
                     onRecover()

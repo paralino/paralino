@@ -7,9 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Save
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +25,7 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.*
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
@@ -78,7 +76,7 @@ fun EditProfileScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -179,7 +177,7 @@ fun EditProfileScreen(
                 AppButtonState.CONTENT
             else
                 AppButtonState.loadingStateWithCheck(state.actionLoading!!),
-            icon = Icons.Rounded.Save,
+            icon = AppIcons.Save,
             onClick = {
                 focusManager.clearFocus()
                 onCreateGroupClick()

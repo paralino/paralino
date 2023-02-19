@@ -4,14 +4,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import kotlinx.coroutines.delay
 
@@ -102,7 +101,7 @@ fun FilledButton(
 
                 if (newState == AppButtonState.CHECK_THEN_CONTENT || checkAlpha > 0f) {
                     Icon(
-                        imageVector = Icons.Rounded.Check,
+                        imageVector = AppIcons.Check,
                         contentDescription = null,
                         tint = MaterialTheme.colors.onPrimary,
                         modifier = Modifier

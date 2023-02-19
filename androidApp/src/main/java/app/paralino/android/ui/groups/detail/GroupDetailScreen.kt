@@ -10,8 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +28,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.android.utils.extensions.toLocalDateTime
@@ -265,7 +264,7 @@ fun GroupDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onScreenClose) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -277,7 +276,7 @@ fun GroupDetailScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Security,
+                            imageVector = AppIcons.Security,
                             tint = AppColors.accent,
                             contentDescription = null
                         )
@@ -286,13 +285,13 @@ fun GroupDetailScreen(
                     if (state.canEdit) {
                         IconButton(onClick = onAddGroupMember) {
                             Icon(
-                                imageVector = Icons.Rounded.PersonAdd,
+                                imageVector = AppIcons.PersonAdd,
                                 contentDescription = null
                             )
                         }
                         IconButton(onClick = onGroupEdit) {
                             Icon(
-                                imageVector = Icons.Rounded.Edit,
+                                imageVector = AppIcons.Edit,
                                 contentDescription = null
                             )
                         }
@@ -300,7 +299,7 @@ fun GroupDetailScreen(
 
                     IconButton(onClick = { optionMenuExpanded = true }) {
                         Icon(
-                            imageVector = Icons.Rounded.MoreVert,
+                            imageVector = AppIcons.MoreVert,
                             contentDescription = null
                         )
                     }
@@ -335,9 +334,9 @@ fun GroupDetailScreen(
                 },
                 icon = {
                     if (state.sharingStatus != null) {
-                        Icon(imageVector = Icons.Rounded.StopCircle, contentDescription = null)
+                        Icon(imageVector = AppIcons.StopCircle, contentDescription = null)
                     } else {
-                        Icon(imageVector = Icons.Rounded.ShareLocation, contentDescription = null)
+                        Icon(imageVector = AppIcons.ShareLocation, contentDescription = null)
                     }
                 },
                 backgroundColor = MaterialTheme.colors.primary,
@@ -426,7 +425,7 @@ fun GroupDetailScreen(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Security,
+                                imageVector = AppIcons.Security,
                                 tint = AppColors.accent,
                                 contentDescription = null
                             )
@@ -485,13 +484,13 @@ fun GroupDetailsHeader(
                 modifier = Modifier
                     .padding(end = 10.dp)
                     .fillMaxWidth(0.5f),
-                icon = Icons.Rounded.Map,
+                icon = AppIcons.Map,
                 title = stringResource(id = R.string.title_map),
                 description = null,
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
                         checkState = false,
-                        unCheckedIcon = Icons.Rounded.ChevronRight
+                        unCheckedIcon = AppIcons.ChevronRight
                     ),
                     seekbarState = null
                 ),
@@ -501,13 +500,13 @@ fun GroupDetailsHeader(
             )
             LargeSeekbarSwitch(
                 modifier = Modifier.fillMaxWidth(),
-                icon = Icons.Rounded.MapsHomeWork,
+                icon = AppIcons.MapsHomeWork,
                 title = stringResource(id = R.string.places_list_screen_title),
                 description = null,
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
                         checkState = false,
-                        unCheckedIcon = Icons.Rounded.ChevronRight
+                        unCheckedIcon = AppIcons.ChevronRight
                     ),
                     seekbarState = null
                 ),
@@ -552,7 +551,7 @@ fun GroupDetailSharingStatusElement(
                 ?: stringResource(id = R.string.group_details_sharing_status_infinite)
 
             Icon(
-                imageVector = Icons.Rounded.Timer,
+                imageVector = AppIcons.Timer,
                 contentDescription = null,
                 modifier = Modifier.size(14.dp),
                 tint = contentColor
@@ -567,7 +566,7 @@ fun GroupDetailSharingStatusElement(
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (contract.shareBattery) {
                 Icon(
-                    imageVector = Icons.Rounded.BatteryChargingFull,
+                    imageVector = AppIcons.BatteryChargingFull,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(5.dp)
@@ -577,7 +576,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.shareSpeed) {
                 Icon(
-                    imageVector = Icons.Rounded.Speed,
+                    imageVector = AppIcons.Speed,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(5.dp)
@@ -587,7 +586,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.shareElevation) {
                 Icon(
-                    imageVector = Icons.Rounded.StackedLineChart,
+                    imageVector = AppIcons.StackedLineChart,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(5.dp)
@@ -597,7 +596,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.approximateLocationInMeters != null) {
                 Icon(
-                    imageVector = Icons.Rounded.ShareLocation,
+                    imageVector = AppIcons.ShareLocation,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 5.dp, end = 2.dp)

@@ -10,20 +10,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -33,6 +29,7 @@ import app.paralino.android.ui.components.*
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.presentation.login.*
@@ -177,7 +174,7 @@ fun LoginScreen(
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .fillMaxWidth(0.5f),
-                        icon = Icons.Rounded.Person,
+                        icon = AppIcons.Person,
                         title = stringResource(id = R.string.login_signup_account_type_regular),
                         description = stringResource(id = R.string.login_signup_account_type_regular_info),
                         focusDescription = false,
@@ -188,7 +185,7 @@ fun LoginScreen(
                     )
                     LargeSeekbarSwitch(
                         modifier = Modifier.fillMaxWidth(),
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_incognito),
+                        icon = AppIcons.Incognito,
                         title = stringResource(id = R.string.login_signup_account_type_guest),
                         description = stringResource(id = R.string.login_signup_account_type_guest_info),
                         focusDescription = false,

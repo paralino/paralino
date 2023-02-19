@@ -6,11 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.LockOpen
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,6 +22,7 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.DefaultEmptyState
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
@@ -70,7 +66,7 @@ fun RawDataScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -91,7 +87,7 @@ fun RawDataScreen(
                 }
             }
             is Payload.Error -> {
-                DefaultEmptyState(content = "", icon = Icons.Rounded.Warning)
+                DefaultEmptyState(content = "", icon = AppIcons.Warning)
             }
             is Payload.Success -> {
                 RawDataScreen(
@@ -124,7 +120,7 @@ fun RawDataScreen(
 
         RawDataChip(
             modifier = Modifier.padding(bottom = 8.dp),
-            icon = Icons.Outlined.Lock,
+            icon = AppIcons.Lock,
             text = stringResource(R.string.raw_data_section_encrypted)
         )
         Text(
@@ -140,7 +136,7 @@ fun RawDataScreen(
 
         RawDataChip(
             modifier = Modifier.padding(bottom = 8.dp),
-            icon = Icons.Rounded.LockOpen,
+            icon = AppIcons.LockOpen,
             text = stringResource(R.string.raw_data_section_decrypted)
         )
         Text(

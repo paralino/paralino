@@ -5,8 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.components.FilledButton
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.core.presentation.groups.GroupItemState
 
@@ -40,7 +39,7 @@ fun GroupPickerScreen(
                 IconButton(onClick = onClose) {
                     Icon(
                         modifier = Modifier.size(20.dp),
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = AppIcons.Close,
                         contentDescription = null
                     )
                 }
@@ -79,7 +78,7 @@ fun GroupPickerScreen(
                         .weight(1f)
                         .padding(end = 4.dp),
                     style = ButtonStyle.BIG,
-                    icon = Icons.Rounded.Add,
+                    icon = AppIcons.Add,
                     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
                     elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                     onClick = { onClick(GroupPickerAction.NewGroup) },
@@ -91,7 +90,7 @@ fun GroupPickerScreen(
                         .weight(1f)
                         .padding(start = 4.dp),
                     style = ButtonStyle.BIG,
-                    icon = Icons.Rounded.Key,
+                    icon = AppIcons.Key,
                     elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
                     onClick = { onClick(GroupPickerAction.JoinGroup) }

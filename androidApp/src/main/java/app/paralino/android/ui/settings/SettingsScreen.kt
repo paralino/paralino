@@ -8,8 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -36,6 +34,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.Deeplink
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.openUri
@@ -84,21 +83,21 @@ fun SettingsScreen(
 
                 SettingsActionItem(
                     name = stringResource(id = R.string.settings_section_account_title),
-                    icon = Icons.Rounded.AccountCircle
+                    icon = AppIcons.AccountCircle
                 ) {
                     appState.navController.navigate(AppScreen.Settings.ProfileDetails.routeSignature)
                 }
 
                 SettingsActionItem(
                     name = stringResource(id = R.string.settings_section_personal_code_title),
-                    icon = Icons.Rounded.Key
+                    icon = AppIcons.Key
                 ) {
                     appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
                 }
 
 //                SettingsActionItem(
 //                    name = stringResource(id = R.string.settings_section_general_title),
-//                    icon = Icons.Rounded.Share
+//                    icon = AppIcons.Share
 //                ) {
 //                    appState.navController.navigate(AppScreen.SettingsRoot.PersonalCodes.routeSignature)
 //                }
@@ -125,33 +124,33 @@ fun SettingSectionInfo(
         SettingsSectionHeader(name = stringResource(id = R.string.settings_section_general_title))
 //    SettingsActionItem(
 //        name = stringResource(id = R.string.setting_title_rate),
-//        icon = Icons.Rounded.Celebration
+//        icon = AppIcons.Celebration
 //    ) {}
         SettingsActionItem(
             name = stringResource(id = R.string.setting_title_share),
-            icon = Icons.Rounded.Share
+            icon = AppIcons.Share
         ) {
             context.share(Deeplink.homeUrl)
         }
 //    SettingsActionItem(
 //        name = stringResource(id = R.string.setting_title_help),
-//        icon = Icons.Rounded.Help
+//        icon = AppIcons.Help
 //    ) {}
         SettingsActionItem(
             name = stringResource(id = R.string.setting_title_sourceCode),
-            icon = Icons.Rounded.Code
+            icon = AppIcons.Code
         ) {
             context.openUri(Deeplink.sourceCodeUrl.toUri())
         }
         SettingsActionItem(
             name = stringResource(id = R.string.setting_title_privacy),
-            icon = Icons.Rounded.PrivacyTip
+            icon = AppIcons.PrivacyTip
         ) {
             TODO()
         }
         SettingsActionItem(
             name = stringResource(id = R.string.setting_title_libraries),
-            icon = Icons.Rounded.LibraryBooks
+            icon = AppIcons.LibraryBooks
         ) {
             onLicencesClick()
         }
@@ -262,7 +261,7 @@ fun SettingsActionItem(
                     visibility = if (showEndArrow) Visibility.Visible else Visibility.Gone
                 }
                 .width(20.dp),
-            imageVector = Icons.Rounded.ChevronRight,
+            imageVector = AppIcons.ChevronRight,
             tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
             contentDescription = null
         )

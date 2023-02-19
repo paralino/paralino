@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +26,7 @@ import app.paralino.android.ui.components.*
 import app.paralino.android.ui.groups.GroupListItem
 import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.android.utils.extensions.safeCast
@@ -193,7 +192,7 @@ fun SharingStartScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -218,8 +217,8 @@ fun SharingStartScreen(
                             MaterialTheme.colors.primary
                         else MaterialTheme.colors.secondary
                     ),
-                    icon = if (state.errors.isNotEmpty()) Icons.Rounded.NotListedLocation
-                    else Icons.Rounded.ShareLocation,
+                    icon = if (state.errors.isNotEmpty()) AppIcons.NotListedLocation
+                    else AppIcons.ShareLocation,
                     onClick = { vm.startSharing() }
                 ) {
                     if (state.errors.isNotEmpty()) {
@@ -292,7 +291,7 @@ fun SharingStartScreen(
                     FilledButton(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         style = ButtonStyle.SMALL,
-                        icon = Icons.Rounded.Groups,
+                        icon = AppIcons.Groups,
                         onClick = {
                             appState.uiScope.launch {
                                 appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
@@ -312,7 +311,7 @@ fun SharingStartScreen(
 
             LargeSeekbarSwitch(
                 modifier = Modifier.fillMaxWidth(),
-                icon = Icons.Rounded.AccessTime,
+                icon = AppIcons.AccessTime,
                 title = stringResource(id = R.string.groups_sharing_section_title_duration),
                 description = getTime(state.sharingTimeMillis),
                 focusDescription = true,
@@ -332,7 +331,7 @@ fun SharingStartScreen(
                     modifier = Modifier
                         .padding(end = 10.dp)
                         .fillMaxWidth(0.5f),
-                    icon = Icons.Rounded.Speed,
+                    icon = AppIcons.Speed,
                     title = stringResource(id = R.string.groups_sharing_setting_speed_share),
                     description = null,
                     state = shareSpeedState,
@@ -342,7 +341,7 @@ fun SharingStartScreen(
                 )
                 LargeSeekbarSwitch(
                     modifier = Modifier.fillMaxWidth(),
-                    icon = Icons.Rounded.StackedLineChart,
+                    icon = AppIcons.StackedLineChart,
                     title = stringResource(id = R.string.groups_sharing_setting_elevation_share),
                     description = null,
                     state = shareElevationState,
@@ -362,7 +361,7 @@ fun SharingStartScreen(
                     modifier = Modifier
                         .padding(end = 10.dp)
                         .fillMaxWidth(0.5f),
-                    icon = Icons.Rounded.BatteryChargingFull,
+                    icon = AppIcons.BatteryChargingFull,
                     title = stringResource(id = R.string.groups_sharing_setting_battery_share),
                     description = null,
                     state = shareBatteryState,
@@ -372,7 +371,7 @@ fun SharingStartScreen(
                 )
 //                LargeSeekbarSwitch(
 //                    modifier = Modifier.fillMaxWidth(),
-//                    icon = Icons.Rounded.ShareLocation,
+//                    icon = AppIcons.ShareLocation,
 //                    title = stringResource(id = R.string.groups_sharing_setting_approximate_location),
 //                    description = if (state.shareApproximateLocation)
 //                        DistanceFormatter.getDistanceSmall(

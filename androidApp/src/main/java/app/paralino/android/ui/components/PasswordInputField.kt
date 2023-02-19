@@ -7,9 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Visibility
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +21,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.paralino.android.ui.theme.AppIcons
 
 
 @Composable
@@ -76,7 +74,7 @@ fun PasswordInputField(
         trailingIcon = {
             IconButton(onClick = { passwordHidden.value = !passwordHidden.value }) {
                 Icon(
-                    imageVector = if (passwordHidden.value) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
+                    imageVector = if (passwordHidden.value) AppIcons.Visibility else AppIcons.VisibilityOff,
                     contentDescription = null
                 )
             }

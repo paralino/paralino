@@ -8,10 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Group
-import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +29,7 @@ import app.paralino.android.ui.components.*
 import app.paralino.android.ui.groups.GroupListItem
 import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.safeCast
@@ -84,7 +81,7 @@ fun MemberInviteScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -201,7 +198,7 @@ fun MemberInviteScreen(
                     FilledButton(
                         modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                         style = ButtonStyle.SMALL,
-                        icon = Icons.Rounded.Group,
+                        icon = AppIcons.Group,
                         onClick = onPickGroup
                     ) {
                         Text(text = stringResource(id = R.string.invite_connect_button_pickGroup))
@@ -237,7 +234,7 @@ fun MemberInviteScreen(
                 FilledButton(
                     style = ButtonStyle.BIG,
                     state = AppButtonState.loadingStateWithCheck(state.actionLoading),
-                    icon = Icons.Rounded.PersonAdd,
+                    icon = AppIcons.PersonAdd,
                     onClick = onAddMember
                 ) {
                     Text(text = stringResource(id = R.string.invite_connect_button_addToGroup))

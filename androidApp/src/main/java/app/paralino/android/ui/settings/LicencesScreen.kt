@@ -2,14 +2,13 @@ package app.paralino.android.ui.settings
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.theme.AppIcons
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 
 @Composable
@@ -24,7 +23,7 @@ fun LicencesScreen(appState: MainAppState) {
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }

@@ -9,11 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CenterFocusStrong
-import androidx.compose.material.icons.rounded.Groups
-import androidx.compose.material.icons.rounded.ShareLocation
-import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +23,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.groups.members.GroupMember
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
@@ -160,7 +156,7 @@ fun MapHomeScreenElements(
                     Text(text = stringResource(id = R.string.groups_sharing_button_start))
                 },
                 icon = {
-                    Icon(imageVector = Icons.Rounded.ShareLocation, contentDescription = null)
+                    Icon(imageVector = AppIcons.ShareLocation, contentDescription = null)
                 },
                 backgroundColor = MaterialTheme.colors.primary,
                 elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
@@ -192,7 +188,7 @@ fun MapHomeScreenElements(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Timer,
+                    imageVector = AppIcons.Timer,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
@@ -226,7 +222,7 @@ fun MapHomeScreenElements(
                 backgroundColor = if (userListExpanded) AppColors.accent else MaterialTheme.colors.surface
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Groups,
+                    imageVector = AppIcons.Groups,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                     tint = if (userListExpanded) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
@@ -252,7 +248,7 @@ fun MapHomeScreenElements(
                 backgroundColor = if (isTrackingGroup) AppColors.accent else MaterialTheme.colors.surface
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.CenterFocusStrong,
+                    imageVector = AppIcons.CenterFocusStrong,
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
                     tint = if (isTrackingGroup) AppColors.darkThemePrimary else MaterialTheme.colors.secondary

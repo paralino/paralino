@@ -7,10 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Home
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +26,7 @@ import app.paralino.android.ui.map.rememberMapViewPlacesOverviewState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
@@ -132,7 +129,7 @@ fun PlacesScreen(
                 navigationIcon = {
                     IconButton(onClick = onScreenClose) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -146,7 +143,7 @@ fun PlacesScreen(
                         Text(stringResource(id = R.string.places_list_add_button))
                     },
                     icon = {
-                        Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
+                        Icon(imageVector = AppIcons.Add, contentDescription = null)
                     },
                     backgroundColor = MaterialTheme.colors.primary,
                     elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
@@ -242,9 +239,9 @@ fun PlacesScreen(
                 this.item {
                     DefaultEmptyState(
                         content = stringResource(id = R.string.places_list_screen_empty_info),
-                        icon = Icons.Rounded.Home,
+                        icon = AppIcons.Home,
                         buttonText = stringResource(id = R.string.places_create_button_create),
-                        buttonIcon = Icons.Rounded.Add
+                        buttonIcon = AppIcons.Add
                     ) {
                         onCreatePlace()
                     }
