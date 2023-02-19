@@ -35,6 +35,7 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.theme.AppIcons
+import app.paralino.android.ui.theme.AppIcons.asPainterResource
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.openUri
@@ -261,7 +262,7 @@ fun SettingsActionItem(
                     visibility = if (showEndArrow) Visibility.Visible else Visibility.Gone
                 }
                 .width(20.dp),
-            imageVector = AppIcons.ChevronRight,
+            painter = AppIcons.ChevronRight.asPainterResource(),
             tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
             contentDescription = null
         )

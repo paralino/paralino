@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
+import app.paralino.android.ui.theme.AppIcons.asImageVector
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -119,7 +120,7 @@ fun LargeSeekbarSwitch(
                         colorFilter = ColorFilter.tint(AppColors.lightSurface)
                     )
                     Icon(
-                        imageVector = AppIcons.ChevronRight,
+                        imageVector = AppIcons.ChevronRight.asImageVector(),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = AppColors.lightSurface
@@ -212,7 +213,7 @@ fun LargeSeekbarSwitch(
                                 .fillMaxSize()
                                 .background(MaterialTheme.colors.onPrimary, shape = CircleShape)
                                 .padding(1.dp),
-                            imageVector = state.switchState.checkedIcon,
+                            imageVector = state.switchState.checkedIconRes.asImageVector(),
                             contentDescription = null,
                             tint = MaterialTheme.colors.primary
                         )
@@ -222,7 +223,7 @@ fun LargeSeekbarSwitch(
                                 .fillMaxSize()
                                 .background(backgroundColor, shape = CircleShape)
                                 .padding(2.dp),
-                            imageVector = state.switchState.unCheckedIcon,
+                            imageVector = state.switchState.unCheckedIconRes.asImageVector(),
                             contentDescription = null,
                             tint = contentColor.copy(alpha = ContentAlpha.disabled)
                         )
@@ -258,8 +259,8 @@ fun rememberSeekbarState(
 object LargeSeekbarSwitchState {
     data class Switch(
         val checkState: Boolean,
-        val checkedIcon: ImageVector = AppIcons.CheckCircle,
-        val unCheckedIcon: ImageVector = AppIcons.RadioButtonUnchecked
+        val checkedIconRes: Int = AppIcons.CheckCircle,
+        val unCheckedIconRes: Int = AppIcons.RadioButtonUnchecked
     )
 
     data class Seekbar(

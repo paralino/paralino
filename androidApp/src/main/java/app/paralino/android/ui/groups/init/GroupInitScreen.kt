@@ -149,7 +149,7 @@ fun GroupInitScreen(
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
                         checkState = false,
-                        unCheckedIcon = AppIcons.ChevronRight
+                        unCheckedIconRes = AppIcons.ChevronRight
                     ),
                     seekbarState = null
                 ),
@@ -203,7 +203,7 @@ fun GroupInitScreen(
                     state = LargeSeekbarSwitchState.SeekbarSwitchState(
                         switchState = LargeSeekbarSwitchState.Switch(
                             checkState = false,
-                            unCheckedIcon = AppIcons.ChevronRight
+                            unCheckedIconRes = AppIcons.ChevronRight
                         ),
                         seekbarState = null
                     ),

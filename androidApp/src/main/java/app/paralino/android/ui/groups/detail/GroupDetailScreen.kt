@@ -490,7 +490,7 @@ fun GroupDetailsHeader(
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
                         checkState = false,
-                        unCheckedIcon = AppIcons.ChevronRight
+                        unCheckedIconRes = AppIcons.ChevronRight
                     ),
                     seekbarState = null
                 ),
@@ -506,7 +506,7 @@ fun GroupDetailsHeader(
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
                         checkState = false,
-                        unCheckedIcon = AppIcons.ChevronRight
+                        unCheckedIconRes = AppIcons.ChevronRight
                     ),
                     seekbarState = null
                 ),

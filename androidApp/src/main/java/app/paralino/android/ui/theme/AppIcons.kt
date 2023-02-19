@@ -4,72 +4,84 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import app.paralino.android.R
 
 object AppIcons {
-    val Incognito @Composable get() = ImageVector.vectorResource(id = R.drawable.ic_incognito)
-    val NotListedLocation get() = Icons.Rounded.NotListedLocation
-    val LibraryBooks get() = Icons.Rounded.LibraryBooks
-    val PrivacyTip get() = Icons.Rounded.PrivacyTip
-    val Code get() = Icons.Rounded.Code
-    val AccountCircle get() = Icons.Rounded.AccountCircle
-    val DeleteForever get() = Icons.Rounded.DeleteForever
-    val Password get() = Icons.Rounded.Password
-    val HowToReg get() = Icons.Rounded.HowToReg
-    val Lock get() = Icons.Outlined.Lock
-    val LockOpen get() = Icons.Rounded.LockOpen
-    val NotificationsOff get() = Icons.Rounded.NotificationsOff
-    val Home get() = Icons.Rounded.Home
-    val Adjust get() = Icons.Rounded.Adjust
-    val CenterFocusStrong get() = Icons.Rounded.CenterFocusStrong
-    val Groups get() = Icons.Rounded.Groups
-    val Person get() = Icons.Rounded.Person
-    val Login get() = Icons.Rounded.Login
-    val AutoFixHigh get() = Icons.Rounded.AutoFixHigh
-    val Logout get() = Icons.Rounded.Logout
-    val Share get() = Icons.Rounded.Share
-    val ContentCopy get() = Icons.Rounded.ContentCopy
-    val Warning get() = Icons.Rounded.Warning
-    val LocationOn get() = Icons.Rounded.LocationOn
-    val Group get() = Icons.Rounded.Group
-    val BatteryFull get() = Icons.Rounded.BatteryFull
-    val PhoneAndroid get() = Icons.Rounded.PhoneAndroid
-    val ExpandMore get() = Icons.Rounded.ExpandMore
-    val ExpandLess get() = Icons.Rounded.ExpandLess
-    val AccessTime get() = Icons.Rounded.AccessTime
-    val Devices get() = Icons.Rounded.Devices
-    val Delete get() = Icons.Rounded.Delete
-    val PersonRemove get() = Icons.Rounded.PersonRemove
-    val StackedLineChart get() = Icons.Rounded.StackedLineChart
-    val Speed get() = Icons.Rounded.Speed
-    val BatteryChargingFull get() = Icons.Rounded.BatteryChargingFull
-    val Timer get() = Icons.Rounded.Timer
-    val MapsHomeWork get() = Icons.Rounded.MapsHomeWork
-    val Map get() = Icons.Rounded.Map
-    val ShareLocation get() = Icons.Rounded.ShareLocation
-    val StopCircle get() = Icons.Rounded.StopCircle
-    val MoreVert get() = Icons.Rounded.MoreVert
-    val Edit get() = Icons.Rounded.Edit
-    val PersonAdd get() = Icons.Rounded.PersonAdd
-    val Security get() = Icons.Rounded.Security
-    val Save get() = Icons.Rounded.Save
-    val Close get() = Icons.Rounded.Close
-    val VisibilityOff get() = Icons.Rounded.VisibilityOff
-    val Visibility get() = Icons.Rounded.Visibility
-    val RadioButtonUnchecked get() = Icons.Rounded.RadioButtonUnchecked
-    val CheckCircle get() = Icons.Rounded.CheckCircle
-    val DragIndicator get() = Icons.Rounded.DragIndicator
-    val ChevronLeft get() = Icons.Rounded.ChevronLeft
-    val Email get() = Icons.Rounded.Email
-    val WifiOff get() = Icons.Rounded.WifiOff
-    val PhonelinkSetup get() = Icons.Rounded.PhonelinkSetup
-    val NotificationsActive get() = Icons.Rounded.NotificationsActive
-    val LocationOff get() = Icons.Rounded.LocationOff
-    val Check get() = Icons.Rounded.Check
-    val ChevronRight get() = Icons.Rounded.ChevronRight
-    val Add get() = Icons.Rounded.Add
-    val AddLink get() = Icons.Rounded.AddLink
-    val Key get() = Icons.Rounded.Key
+    val Incognito @Composable get() = R.drawable.ic_incognito.asImageVector()
+    val NotListedLocation @Composable get() = R.drawable.ic_not_listed_location.asImageVector()
+    val LibraryBooks @Composable get() = R.drawable.ic_library_books.asImageVector()
+    val PrivacyTip @Composable get() = R.drawable.ic_privacy_tip.asImageVector()
+    val Code @Composable get() = R.drawable.ic_code.asImageVector()
+    val AccountCircle @Composable get() = R.drawable.ic_account_circle.asImageVector()
+    val DeleteForever @Composable get() = R.drawable.ic_delete_forever.asImageVector()
+    val Password @Composable get() = R.drawable.ic_password.asImageVector()
+    val HowToReg @Composable get() = R.drawable.ic_how_to_reg.asImageVector()
+    val Lock @Composable get() = R.drawable.ic_lock.asImageVector()
+    val LockOpen @Composable get() = R.drawable.ic_lock_open.asImageVector()
+    val NotificationsOff @Composable get() = R.drawable.ic_notifications_off.asImageVector()
+    val Home @Composable get() = R.drawable.ic_home.asImageVector()
+    val Adjust @Composable get() = R.drawable.ic_adjust.asImageVector()
+    val CenterFocusStrong @Composable get() = R.drawable.ic_center_focus_strong.asImageVector()
+    val Groups @Composable get() = R.drawable.ic_groups.asImageVector()
+    val Person @Composable get() = R.drawable.ic_person.asImageVector()
+    val Login @Composable get() = R.drawable.ic_login.asImageVector()
+    val AutoFixHigh @Composable get() = R.drawable.ic_auto_fix_high.asImageVector()
+    val Logout @Composable get() = R.drawable.ic_logout.asImageVector()
+    val Share @Composable get() = R.drawable.ic_share.asImageVector()
+    val ContentCopy @Composable get() = R.drawable.ic_content_copy.asImageVector()
+    val Warning @Composable get() = R.drawable.ic_warning.asImageVector()
+    val LocationOn @Composable get() = R.drawable.ic_location_on.asImageVector()
+    val Group @Composable get() = R.drawable.ic_group.asImageVector()
+    val BatteryFull @Composable get() = R.drawable.ic_battery_full.asImageVector()
+    val PhoneAndroid @Composable get() = R.drawable.ic_phone_android.asImageVector()
+    val ExpandMore @Composable get() = R.drawable.ic_expand_more.asImageVector()
+    val ExpandLess @Composable get() = R.drawable.ic_expand_less.asImageVector()
+    val AccessTime @Composable get() = R.drawable.ic_schedule.asImageVector()
+    val Devices @Composable get() = R.drawable.ic_devices.asImageVector()
+    val Delete @Composable get() = R.drawable.ic_delete.asImageVector()
+    val PersonRemove @Composable get() = R.drawable.ic_person_remove.asImageVector()
+    val StackedLineChart @Composable get() = R.drawable.ic_stacked_line_chart.asImageVector()
+    val Speed @Composable get() = R.drawable.ic_speed.asImageVector()
+    val BatteryChargingFull @Composable get() = R.drawable.ic_battery_charging_full.asImageVector()
+    val Timer @Composable get() = R.drawable.ic_timer.asImageVector()
+    val MapsHomeWork @Composable get() = R.drawable.ic_home_work.asImageVector()
+    val Map @Composable get() = R.drawable.ic_map.asImageVector()
+    val ShareLocation @Composable get() = R.drawable.ic_share_location.asImageVector()
+    val StopCircle @Composable get() = R.drawable.ic_stop_circle.asImageVector()
+    val MoreVert @Composable get() = R.drawable.ic_more_vert.asImageVector()
+    val Edit @Composable get() = R.drawable.ic_edit.asImageVector()
+    val PersonAdd @Composable get() = R.drawable.ic_person_add.asImageVector()
+    val Security @Composable get() = R.drawable.ic_security.asImageVector()
+    val Save @Composable get() = R.drawable.ic_save.asImageVector()
+    val Close @Composable get() = R.drawable.ic_close.asImageVector()
+    val VisibilityOff @Composable get() = R.drawable.ic_visibility_off.asImageVector()
+    val Visibility @Composable get() = R.drawable.ic_visibility.asImageVector()
+    val RadioButtonUnchecked get() = R.drawable.ic_radio_button_unchecked
+    val CheckCircle get() = R.drawable.ic_check_circle
+    val DragIndicator @Composable get() = R.drawable.ic_drag_indicator.asImageVector()
+    val ChevronLeft @Composable get() = R.drawable.ic_chevron_left.asImageVector()
+    val ChevronRight get() = R.drawable.ic_chevron_right
+    val Email @Composable get() = R.drawable.ic_mail.asImageVector()
+    val WifiOff @Composable get() = R.drawable.ic_wifi_off.asImageVector()
+    val PhonelinkSetup @Composable get() = R.drawable.ic_phonelink_setup.asImageVector()
+    val NotificationsActive @Composable get() = R.drawable.ic_notifications_active.asImageVector()
+    val LocationOff @Composable get() = R.drawable.ic_location_off.asImageVector()
+    val Check @Composable get() = R.drawable.ic_check.asImageVector()
+    val Add @Composable get() = R.drawable.ic_add.asImageVector()
+    val AddLink @Composable get() = R.drawable.ic_add_link.asImageVector()
+    val Key @Composable get() = R.drawable.ic_key.asImageVector()
+    
+    @Composable
+    fun Int.asImageVector(): ImageVector {
+        return ImageVector.vectorResource(id = this)
+    }
+
+    @Composable
+    fun Int.asPainterResource(): Painter {
+        return painterResource(id = this)
+    }
 }

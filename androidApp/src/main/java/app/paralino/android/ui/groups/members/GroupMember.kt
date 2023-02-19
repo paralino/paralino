@@ -102,7 +102,7 @@ fun GroupMemberItemLocationState.getLastPingText(): String? {
 }
 
 val MemberAction.actionIcon: ImageVector
-    get() = when (this) {
+    @Composable get() = when (this) {
         MemberAction.DELETE_MEMBER -> AppIcons.PersonRemove
         MemberAction.DELETE_LOCATION -> AppIcons.Delete
     }
