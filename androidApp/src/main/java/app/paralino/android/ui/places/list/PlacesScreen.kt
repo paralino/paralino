@@ -303,7 +303,7 @@ fun PlaceListItemPreview() {
             state = PlaceListItemData(
                 id = "",
                 name = "Home",
-                image = ImageModel.emoji(Emojis.group1.first()),
+                image = ImageModel.emoji(Emojis.lightBulb),
                 private = false,
                 lat = 0.0,
                 lng = 0.0,
@@ -322,7 +322,7 @@ fun PlacesScreenPreview() {
             PlaceListItemData(
                 id = "$it",
                 name = "Place $it",
-                image = ImageModel.emoji(Emojis.group1.random()),
+                image = ImageModel.emoji(Emojis.lightBulb),
                 private = false,
                 lat = 0.0,
                 lng = 0.0,

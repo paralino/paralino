@@ -31,6 +31,7 @@ import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
+import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -89,7 +90,7 @@ fun EditProfileScreen(
             state = uiState,
             onImageClick = {
                 appState.uiScope.launch {
-                    appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
+                    appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker(Emojis.userEmojis))
                         .safeCast<ImageModel>()?.let {
                             vm.onImageChange(it)
                         }

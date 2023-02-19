@@ -34,6 +34,7 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
+import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -152,7 +153,7 @@ fun CreatePlaceScreen(
                     state = finalState.data,
                     onImageClick = {
                         appState.uiScope.launch {
-                            appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
+                            appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker(Emojis.groupEmojis))
                                 .safeCast<ImageModel>()?.let {
                                     vm.updateImage(it)
                                 }

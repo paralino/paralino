@@ -33,6 +33,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.CreateGroupScreenEvent
 import app.paralino.core.presentation.groups.CreateGroupState
 import app.paralino.core.presentation.groups.CreateGroupViewModel
+import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -109,7 +110,7 @@ fun GroupCreateScreen(
                     nameLengthLimit = vm.groupNameLengthLimit,
                     onImageClick = {
                         appState.uiScope.launch {
-                            appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker)
+                            appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker(Emojis.groupEmojis))
                                 .safeCast<ImageModel>()?.let {
                                     vm.updateImage(it)
                                 }

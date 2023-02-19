@@ -142,7 +142,7 @@ fun PlaceListItemPreview() {
                 placeId = "",
                 memberUserId = "",
                 name = "Some user",
-                image = ImageModel.emoji(Emojis.group1.first()),
+                image = ImageModel.emoji(Emojis.lightBulb),
                 notifyEnter = false,
                 notifyExit = false,
                 loadingEnter = false,

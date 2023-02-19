@@ -29,7 +29,7 @@ data class CreatePlaceScreenState constructor(
                 groupId = groupId,
                 isNewPlace = true,
                 name = "",
-                image = ImageModel.emoji(Emojis.group1.random()),
+                image = ImageModel.emoji(Emojis.lightBulb),
                 private = false,
                 lat = null,
                 lng = null,

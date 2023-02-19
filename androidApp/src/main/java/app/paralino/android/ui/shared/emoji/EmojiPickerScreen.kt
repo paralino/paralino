@@ -16,18 +16,18 @@ fun EmojiPickerScreen(
     onClick: (ImageModel) -> Unit
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 50.dp),
+        columns = GridCells.Fixed(6),
         contentPadding = PaddingValues(20.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         items(images.size) {
             val image = images[it]
-            Box(modifier = Modifier.padding(0.dp)) {
+            Box(modifier = Modifier.fillMaxWidth().aspectRatio(1f).padding(2.dp)) {
                 ImageModelImage(
                     imageModel = image,
                     useBackgroundForEmoji = false,
                     modifier = Modifier
-                        .size(50.dp)
+                        .fillMaxSize()
                         .clickable { onClick(image) }
                 )
             }

@@ -10,11 +10,11 @@ import app.paralino.android.ui.shared.emoji.EmojiPickerScreen
 
 sealed class BottomSheetsScreen {
 
-    object EmojiPicker : BottomSheetsScreen() {
+    data class EmojiPicker(val emojis: List<String>) : BottomSheetsScreen() {
         @Composable
         fun MakeScreen(onClose: () -> Unit, onResult: (ImageModel) -> Unit) {
             EmojiPickerScreen(
-                images = Emojis.allEmojis.map { ImageModel.emoji(it) },
+                images = emojis.map { ImageModel.emoji(it) },
                 onClick = {
                     onResult(it)
                     onClose()
