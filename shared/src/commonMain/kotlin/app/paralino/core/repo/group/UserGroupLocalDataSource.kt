@@ -8,17 +8,17 @@ import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mappers.GroupsMapperLocal
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupWithMembersRaw
-import app.paralino.core.repo.location.ILocationLocalDataSource
+import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.flow.*
 
 class UserGroupLocalDataSource constructor(
     private val database: AppDatabaseHelper,
     private val mapper: GroupsMapperLocal,
-    private val memberLocal: ILocationLocalDataSource
-) : IGroupLocalDataSource {
+    private val memberLocal: LocationLocalDataSource
+) {
 
-    override suspend fun recreateGroups(data: List<GroupWithMembersRaw>) {
+    suspend fun recreateGroups(data: List<GroupWithMembersRaw>) {
         database.groupQueries.transaction {
             database.groupQueries.clearAll()
             data.forEach {
@@ -28,18 +28,18 @@ class UserGroupLocalDataSource constructor(
         memberLocal.recreateAllMembers(data.flatMap { it.members })
     }
 
-    override suspend fun updateOrCreateGroup(group: GroupWithMembersRaw) {
+    suspend fun updateOrCreateGroup(group: GroupWithMembersRaw) {
         database.groupQueries.createGroup(mapper.remote2Local(group.group))
         memberLocal.recreateMembersForGroup(group.group.id, group.members)
     }
 
-    override suspend fun updateGroupOnly(group: GroupDocumentRaw) {
+    suspend fun updateGroupOnly(group: GroupDocumentRaw) {
         database.groupQueries.createGroup(mapper.remote2Local(group))
     }
 
     // TODO if group is deleted, changes are not propagated because of filterNotNull()
 
-    override fun getGroupRawPresentation(groupId: String): Flow<Pair<GroupDocumentRaw, UserGroup>> {
+    fun getGroupRawPresentation(groupId: String): Flow<Pair<GroupDocumentRaw, UserGroup>> {
         return database.mapToOneOrNull { groupQueries.getGroup(groupId) }
             .filterNotNull()
             .let {
@@ -49,7 +49,7 @@ class UserGroupLocalDataSource constructor(
             }
     }
 
-    override fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
+    fun getGroupWithoutMembers(groupId: String): Flow<UserGroup> {
         return database.mapToOneOrNull { groupQueries.getGroup(groupId) }
             .filterNotNull().let {
                 combine(it, memberLocal.getMemberCountInGroup(groupId), memberLocal.getMember(groupId, config.userId)) { group, memberCount, member ->
@@ -58,7 +58,7 @@ class UserGroupLocalDataSource constructor(
             }
     }
 
-    override fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
+    fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
         return database.mapToOneOrNull { groupQueries.getGroup(groupId) }
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
                 if(group != null) {
@@ -73,7 +73,7 @@ class UserGroupLocalDataSource constructor(
             .filterNotNull()
     }
 
-    override fun getAllGroups(): Flow<List<UserGroup>> {
+    fun getAllGroups(): Flow<List<UserGroup>> {
         return database.mapToList { groupQueries.getAllGroups() }
             .flatMapLatest { groups ->
                 if(groups.isEmpty()) {
@@ -96,20 +96,20 @@ class UserGroupLocalDataSource constructor(
             .map { it.sortedBy { it.name } }
     }
 
-    override fun getAllGroupIds(): Flow<List<String>> {
+    fun getAllGroupIds(): Flow<List<String>> {
         return database.mapToList { groupQueries.getAllGroupIds() }
     }
 
-    override suspend fun deleteGroup(groupId: String) {
+    suspend fun deleteGroup(groupId: String) {
         database.groupQueries.deleteGroup(groupId)
         memberLocal.removeAllMembersForGroup(groupId)
     }
 
-    override suspend fun removeMember(groupId: String, userId: String) {
+    suspend fun removeMember(groupId: String, userId: String) {
         memberLocal.removeMemberFromGroup(groupId, userId)
     }
 
-    override suspend fun clearAll() {
+    suspend fun clearAll() {
         database.groupQueries.clearAll()
         memberLocal.clearAll()
     }

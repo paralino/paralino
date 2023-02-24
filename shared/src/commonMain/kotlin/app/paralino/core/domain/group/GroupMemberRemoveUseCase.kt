@@ -5,17 +5,17 @@ import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
-import app.paralino.core.repo.group.IGroupLocalDataSource
-import app.paralino.core.repo.location.ILocationLocalDataSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.*
 
 class GroupMemberRemoveUseCase(
-    private val local: IGroupLocalDataSource,
+    private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val memberRemote: LocationRemoteSource,
-    private val memberLocal: ILocationLocalDataSource,
+    private val memberLocal: LocationLocalDataSource,
     private val userRepository: UserRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupRemoveUseCase: GroupRemoveUseCase,

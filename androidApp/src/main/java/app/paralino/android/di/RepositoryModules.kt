@@ -20,7 +20,6 @@ import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
-import app.paralino.core.crypto.group.ICryptoKeyLocalDataSource
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.crypto.user.ICryptoUserKeyLocalDataSource
 import app.paralino.core.data.db.AppDatabaseHelper
@@ -32,14 +31,11 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.group.GroupsRemoteSource
-import app.paralino.core.repo.group.IGroupLocalDataSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.*
-import app.paralino.core.repo.personal_code.IPersonalCodelLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodeLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
-import app.paralino.core.repo.places.GroupPlacesLocalDataSource
-import app.paralino.core.repo.places.IPlacesLocalDataSource
+import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.user.*
 import app.paralino.core.utils.IConnectionStatusProvider
@@ -119,12 +115,12 @@ val coreDependencyModules = module {
     single<IFunctionsApi> { FunctionsApi(get()) }
     single<IRealtimeApi> { RealtimeApi(get()) }
 
-    single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get()) }
-    single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }
-    single<IUserLocalDataSource> { UserLocalDataSource(get(), get()) }
-    single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get()) }
-    single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get()) }
-    single<IPersonalCodelLocalDataSource> { PersonalCodeLocalDataSource(get(), get()) }
+    single { LocationLocalDataSource(get(), get()) }
+    single { SharingContractsLocalDataSource(get(), get()) }
+    single { UserLocalDataSource(get(), get()) }
+    single { CryptoKeyLocalDataSource(get(), get()) }
+    single { UserGroupLocalDataSource(get(), get(), get()) }
+    single { PersonalCodeLocalDataSource(get(), get()) }
     single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), config as Config) }
-    single<IPlacesLocalDataSource> { GroupPlacesLocalDataSource(get(), get()) }
+    single { PlacesLocalDataSource(get(), get()) }
 }

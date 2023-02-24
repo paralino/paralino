@@ -11,7 +11,7 @@ import app.paralino.core.repo.places.PlacesRepository
 import kotlinx.coroutines.flow.*
 
 class GroupRepository constructor(
-    private val local: IGroupLocalDataSource,
+    private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val placesRepo: PlacesRepository,

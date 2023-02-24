@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.map
 class CryptoKeyLocalDataSource constructor(
     private val database: AppDatabaseHelper,
     private val keysMapper: GroupKeysMapper,
-) : ICryptoKeyLocalDataSource {
+) {
 
-    override suspend fun recreateAllGroupKeys(
+    suspend fun recreateAllGroupKeys(
         groupKeys: List<GroupCryptoKeyDataRaw>,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>,
     ) {
@@ -28,7 +28,7 @@ class CryptoKeyLocalDataSource constructor(
         }
     }
 
-    override suspend fun recreateAllGroupKeys(keys: List<GroupCryptoKeyDataRaw>) {
+    suspend fun recreateAllGroupKeys(keys: List<GroupCryptoKeyDataRaw>) {
         database.groupKeysQueries.transaction {
             database.groupKeysQueries.clearAll()
             keys.forEach {
@@ -37,7 +37,7 @@ class CryptoKeyLocalDataSource constructor(
         }
     }
 
-    override suspend fun recreateAllMemberKeys(keys: List<GroupMemberCryptoKeyDataRaw>) {
+    suspend fun recreateAllMemberKeys(keys: List<GroupMemberCryptoKeyDataRaw>) {
         database.memberKeysQueries.transaction {
             database.memberKeysQueries.clearAll()
             keys.forEach {
@@ -46,7 +46,7 @@ class CryptoKeyLocalDataSource constructor(
         }
     }
 
-    override suspend fun recreateGroupKeyForGroup(
+    suspend fun recreateGroupKeyForGroup(
         groupId: String,
         groupKeys: List<GroupCryptoKeyDataRaw>,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>
@@ -63,7 +63,7 @@ class CryptoKeyLocalDataSource constructor(
         }
     }
 
-    override suspend fun recreateGroupKeyForGroup(
+    suspend fun recreateGroupKeyForGroup(
         groupId: String,
         keys: List<GroupCryptoKeyDataRaw>,
     ) {
@@ -75,7 +75,7 @@ class CryptoKeyLocalDataSource constructor(
         }
     }
 
-    override suspend fun recreateMemberKeysForGroup(
+    suspend fun recreateMemberKeysForGroup(
         groupId: String,
         keys: List<GroupMemberCryptoKeyDataRaw>,
     ) {
@@ -87,36 +87,36 @@ class CryptoKeyLocalDataSource constructor(
         }
     }
 
-    override fun getAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
+    fun getAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
         return database.mapToList { groupKeysQueries.getAll() }
 //            .distinctFlowOfList()
             .map { it.map { keysMapper.local2Remote(it) } }
     }
 
-    override fun getAllMemberKeys(): Flow<List<GroupMemberCryptoKeyDataRaw>> {
+    fun getAllMemberKeys(): Flow<List<GroupMemberCryptoKeyDataRaw>> {
         return database.mapToList { memberKeysQueries.getAll() }
 //            .distinctFlowOfList()
             .map { it.map { keysMapper.local2Remote(it) } }
     }
 
-    override suspend fun getGroupOwnerId(groupId: String): String? {
+    suspend fun getGroupOwnerId(groupId: String): String? {
         return database.groupQueries.getGroupOwnerId(groupId).executeAsOneOrNull()
     }
 
-    override suspend fun deleteAllKeysForGroup(groupId: String) {
+    suspend fun deleteAllKeysForGroup(groupId: String) {
         database.transaction {
             database.groupKeysQueries.deleteForGroup(groupId)
             database.memberKeysQueries.deleteForGroup(groupId)
         }
     }
 
-    override suspend fun deleteKeysForUser(groupId: String, userId: String) {
+    suspend fun deleteKeysForUser(groupId: String, userId: String) {
         database.memberKeysQueries.transaction {
             database.memberKeysQueries.deleteForMember(groupId = groupId, userId = userId)
         }
     }
 
-    override suspend fun deleteAllKeys() {
+    suspend fun deleteAllKeys() {
         database.transaction {
             database.groupKeysQueries.clearAll()
             database.memberKeysQueries.clearAll()

@@ -5,12 +5,12 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.toResource
-import app.paralino.core.repo.location.ISharingContractsLocalDataSource
+import app.paralino.core.repo.location.SharingContractsLocalDataSource
 import kotlinx.coroutines.flow.*
 
 class LocationSharingManager(
     scopeProvider: ICoroutineScopeProvider,
-    private val contractsDataSource: ISharingContractsLocalDataSource
+    private val contractsDataSource: SharingContractsLocalDataSource
 ) {
 
     val allContractsFlow: StateFlow<Resource<List<LocationSharingContract>>> =

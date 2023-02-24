@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.firstOrNull
 
 class CryptoKEKRepository(
     private val remote: CryptoKeyRemoteDataSource,
-    private val local: ICryptoKeyLocalDataSource,
+    private val local: CryptoKeyLocalDataSource,
     private val userKeyRepository: CryptoUserKeyRepository,
     private val userRepository: UserRepository,
     private val cryptoCore: CryptoCore,

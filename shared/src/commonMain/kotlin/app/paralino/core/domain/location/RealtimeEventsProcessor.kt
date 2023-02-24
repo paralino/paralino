@@ -10,7 +10,7 @@ import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.location.ILocationLocalDataSource
+import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
 
@@ -18,7 +18,7 @@ class RealtimeEventsProcessor constructor(
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val placesRepo: PlacesRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val memberLocal: ILocationLocalDataSource,
+    private val memberLocal: LocationLocalDataSource,
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager
 ) {

@@ -5,8 +5,8 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
-import app.paralino.core.repo.location.ILocationLocalDataSource
-import app.paralino.core.repo.places.IPlacesLocalDataSource
+import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.IDeviceApiProvider
 import kotlinx.coroutines.flow.first
@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.firstOrNull
 
 class UserMemberIdUseCase constructor(
     private val userRepository: UserRepository,
-    private val memberLocal: ILocationLocalDataSource,
-    private val placeLocal: IPlacesLocalDataSource,
+    private val memberLocal: LocationLocalDataSource,
+    private val placeLocal: PlacesLocalDataSource,
     private val deviceApiProvider: IDeviceApiProvider
 ) {
 

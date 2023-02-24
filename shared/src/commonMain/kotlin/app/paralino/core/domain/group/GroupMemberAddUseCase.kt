@@ -8,11 +8,11 @@ import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
-import app.paralino.core.repo.group.IGroupLocalDataSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import kotlinx.coroutines.flow.*
 
 class GroupMemberAddUseCase constructor(
-    private val local: IGroupLocalDataSource,
+    private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,

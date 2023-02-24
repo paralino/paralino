@@ -10,12 +10,12 @@ import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.flow.*
 
-class GroupPlacesLocalDataSource(
+class PlacesLocalDataSource(
     private val database: AppDatabaseHelper,
     private val mapper: GroupPlaceMapperLocal,
-): IPlacesLocalDataSource {
+) {
 
-    override suspend fun recreatePlaces(places: List<GroupPlacesWithSettingsRaw>) {
+    suspend fun recreatePlaces(places: List<GroupPlacesWithSettingsRaw>) {
         database.transaction {
             placesQueries.clearAll()
             placeSettingsQueries.clearAll()
@@ -28,7 +28,7 @@ class GroupPlacesLocalDataSource(
         }
     }
 
-    override suspend fun updateOrCreatePlace(place: GroupPlacesWithSettingsRaw) {
+    suspend fun updateOrCreatePlace(place: GroupPlacesWithSettingsRaw) {
         database.transaction {
             placesQueries.createPlace(mapper.remote2Local(place.place))
             if(place.settings == null)
@@ -38,7 +38,7 @@ class GroupPlacesLocalDataSource(
         }
     }
 
-    override suspend fun recreatePlacesForGroup(
+    suspend fun recreatePlacesForGroup(
         groupId: String,
         places: List<GroupPlacesWithSettingsRaw>
     ) {
@@ -54,29 +54,29 @@ class GroupPlacesLocalDataSource(
         }
     }
 
-    override suspend fun updatePlaceOnly(place: GroupPlaceRaw) {
+    suspend fun updatePlaceOnly(place: GroupPlaceRaw) {
         database.placesQueries.createPlace(mapper.remote2Local(place))
     }
 
-    override suspend fun updatePlaceSettings(settings: GroupPlaceSettingRaw) {
+    suspend fun updatePlaceSettings(settings: GroupPlaceSettingRaw) {
         database.placeSettingsQueries.createPlaceSettings(mapper.remote2Local(settings))
     }
 
-    override fun getPlaceRawPresentation(placeId: String): Flow<Pair<GroupPlaceRaw, GroupPlace>> {
+    fun getPlaceRawPresentation(placeId: String): Flow<Pair<GroupPlaceRaw, GroupPlace>> {
         return database.mapToOneOrNull { placesQueries.getPlace(placeId) }
             .filterNotNull()
             .distinctUntilChanged()
             .map { mapper.local2Remote(it) to mapper.local2Core(it) }
     }
 
-    override fun getPlaceWithoutSettings(placeId: String): Flow<GroupPlace> {
+    fun getPlaceWithoutSettings(placeId: String): Flow<GroupPlace> {
         return database.mapToOneOrNull { placesQueries.getPlace(placeId) }
             .filterNotNull()
             .distinctUntilChanged()
             .map { mapper.local2Core(it) }
     }
 
-    override fun getPlaceWithSettings(placeId: String): Flow<GroupPlaceWithSettings> {
+    fun getPlaceWithSettings(placeId: String): Flow<GroupPlaceWithSettings> {
         return combine(
             database.mapToOneOrNull { placesQueries.getPlace(placeId) },
             database.mapToOneOrNull { placeSettingsQueries.getSettingsForPlace(placeId) }
@@ -91,7 +91,7 @@ class GroupPlacesLocalDataSource(
             .filterNotNull()
     }
 
-    override fun getPlacesForGroup(groupId: String): Flow<List<GroupPlace>> {
+    fun getPlacesForGroup(groupId: String): Flow<List<GroupPlace>> {
         return database.mapToList { placesQueries.getAllForGroup(groupId) }
             .distinctFlowOfList()
             .map {
@@ -99,7 +99,7 @@ class GroupPlacesLocalDataSource(
             }
     }
 
-    override fun getAllPlaces(): Flow<List<GroupPlace>> {
+    fun getAllPlaces(): Flow<List<GroupPlace>> {
         return database.mapToList { placesQueries.getAll() }
             .distinctFlowOfList()
             .map {
@@ -107,31 +107,31 @@ class GroupPlacesLocalDataSource(
             }
     }
 
-    override fun getNumberOfPlaces(): Flow<Int> {
+    fun getNumberOfPlaces(): Flow<Int> {
         return database.mapToOneOrNull { placesQueries.getPlacesCount() }
             .filterNotNull()
             .map { it.toInt() }
     }
 
-    override suspend fun getPlaceWithoutSettingsOnce(placeId: String): GroupPlace? {
+    suspend fun getPlaceWithoutSettingsOnce(placeId: String): GroupPlace? {
         return database.placesQueries.getPlace(placeId).executeAsOneOrNull()?.let { mapper.local2Core(it) }
     }
 
-    override suspend fun deletePlace(placeId: String) {
+    suspend fun deletePlace(placeId: String) {
         database.transaction {
             placesQueries.deletePlace(placeId)
             placeSettingsQueries.deleteForPlace(placeId)
         }
     }
 
-    override suspend fun deletePlaceForGroup(groupId: String) {
+    suspend fun deletePlaceForGroup(groupId: String) {
         database.transaction {
             placesQueries.deleteForGroup(groupId)
             placeSettingsQueries.deleteForGroup(groupId)
         }
     }
 
-    override suspend fun clearAll() {
+    suspend fun clearAll() {
         database.transaction {
             placesQueries.clearAll()
             placeSettingsQueries.clearAll()

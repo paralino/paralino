@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.map
 class PersonalCodeLocalDataSource(
     private val database: AppDatabaseHelper,
     private val mapper: PersonalCodeMapperLocal,
-) : IPersonalCodelLocalDataSource {
+) {
 
-    override suspend fun replacePersonalCodes(data: List<PersonalCodeRaw>) {
+    suspend fun replacePersonalCodes(data: List<PersonalCodeRaw>) {
         database.personalCodeQueries.transaction {
             database.personalCodeQueries.clearAll()
             data.forEach {
@@ -22,21 +22,21 @@ class PersonalCodeLocalDataSource(
         }
     }
 
-    override suspend fun addPersonalCode(data: PersonalCodeRaw) {
+    suspend fun addPersonalCode(data: PersonalCodeRaw) {
         database.personalCodeQueries.createCode(mapper.remote2Local(data))
     }
 
-    override fun getPersonalCodes(): Flow<List<UserPersonalCode>> {
+    fun getPersonalCodes(): Flow<List<UserPersonalCode>> {
         return database.mapToList { personalCodeQueries.getAllCodes() }
             .distinctFlowOfList()
             .map { it.map { mapper.local2Core(it) } }
     }
 
-    override suspend fun deletePersonalCode(id: String) {
+    suspend fun deletePersonalCode(id: String) {
         database.personalCodeQueries.deleteCode(id)
     }
 
-    override suspend fun clear() {
+    suspend fun clear() {
         database.personalCodeQueries.clearAll()
     }
 }

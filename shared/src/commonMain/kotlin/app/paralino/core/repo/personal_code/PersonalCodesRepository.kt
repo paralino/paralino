@@ -1,8 +1,6 @@
 package app.paralino.core.repo.personal_code
 
 import app.paralino.core.models.Payload
-import app.paralino.core.models.mapSuccess
-import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
@@ -11,11 +9,12 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PersonalCodesRepository constructor(
     private val remote: PersonalCodesRemoteSource,
-    private val local: IPersonalCodelLocalDataSource,
+    private val local: PersonalCodeLocalDataSource,
     private val userRepo: UserRepository
 ) : BaseRepository() {
 

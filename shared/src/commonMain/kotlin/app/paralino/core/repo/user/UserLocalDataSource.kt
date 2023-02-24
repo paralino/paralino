@@ -11,30 +11,30 @@ import kotlinx.coroutines.flow.map
 class UserLocalDataSource(
     private val database: AppDatabaseHelper,
     private val mapper: UserMapperLocal,
-) : IUserLocalDataSource {
+) {
 
-    override fun getMe(): Flow<UserMe?> {
+    fun getMe(): Flow<UserMe?> {
         return database.mapToOneOrNull { userQueries.getUser() }
             .map { it?.let { mapper.local2Core(it) } }
     }
 
-    override fun getMeRaw(): Flow<UserMeRaw?> {
+    fun getMeRaw(): Flow<UserMeRaw?> {
         return database.mapToOneOrNull { userQueries.getUser() }
             .map { it?.let { mapper.local2Remote(it) } }
             .distinctUntilChanged()
     }
 
-    override fun getMeRawPresentation(): Flow<Pair<UserMeRaw, UserMe>?> {
+    fun getMeRawPresentation(): Flow<Pair<UserMeRaw, UserMe>?> {
         return database.mapToOneOrNull { userQueries.getUser() }
             .map { it?.let { mapper.local2Remote(it) to mapper.local2Core(it) } }
             .distinctUntilChanged()
     }
 
-    override suspend fun update(data: UserMeRaw) {
+    suspend fun update(data: UserMeRaw) {
         database.userQueries.createUser(mapper.remote2Local(data))
     }
 
-    override suspend fun clear() {
+    suspend fun clear() {
         database.userQueries.clear()
     }
 

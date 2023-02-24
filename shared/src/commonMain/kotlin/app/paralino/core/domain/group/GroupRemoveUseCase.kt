@@ -5,13 +5,13 @@ import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
-import app.paralino.core.repo.group.IGroupLocalDataSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.*
 
 class GroupRemoveUseCase(
-    private val local: IGroupLocalDataSource,
+    private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val placesRepo: PlacesRepository,
     private val userRepository: UserRepository,

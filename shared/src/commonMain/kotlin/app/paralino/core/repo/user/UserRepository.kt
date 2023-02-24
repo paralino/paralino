@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.*
 
 class UserRepository constructor(
     private val scopeProvider: ICoroutineScopeProvider,
-    private val local: IUserLocalDataSource,
+    private val local: UserLocalDataSource,
     private val remote: UserRemoteSource,
     private val sessionMonitor: UserSessionMonitor,
     private val userKeyRepo: CryptoUserKeyRepository,

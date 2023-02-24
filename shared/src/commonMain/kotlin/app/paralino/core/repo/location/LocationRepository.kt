@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 
 class LocationRepository constructor(
     private val sharingManager: LocationSharingManager,
-    private val local: ILocationLocalDataSource,
+    private val local: LocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val placesRepo: PlacesRepository,
     private val memberIdUseCase: UserMemberIdUseCase,

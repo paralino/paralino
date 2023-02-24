@@ -7,26 +7,26 @@ import app.paralino.core.data.db.AppDatabaseHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class SharingContractsLocalDataSourceImpl(
+class SharingContractsLocalDataSource(
     private val database: AppDatabaseHelper,
     private val mapper: SharingContractsMapper,
-) : ISharingContractsLocalDataSource {
+) {
 
-    override suspend fun createContract(contract: LocationSharingContract) {
+    suspend fun createContract(contract: LocationSharingContract) {
         database.sharingContractQueries.createContract(mapper.remote2Local(contract))
     }
 
-    override fun getAllContracts(): Flow<List<LocationSharingContract>> {
+    fun getAllContracts(): Flow<List<LocationSharingContract>> {
         return database.mapToList { sharingContractQueries.getAllContracts() }
             .distinctFlowOfList()
             .map { it.map { mapper.local2Remote(it) } }
     }
 
-    override suspend fun cancelContracts(ids: List<String>) {
+    suspend fun cancelContracts(ids: List<String>) {
         database.sharingContractQueries.deleteContract(ids)
     }
 
-    override suspend fun cancelAll() {
+    suspend fun cancelAll() {
         database.sharingContractQueries.clearAll()
     }
 }

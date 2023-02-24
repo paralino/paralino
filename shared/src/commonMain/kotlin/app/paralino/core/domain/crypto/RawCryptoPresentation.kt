@@ -4,20 +4,20 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.repo.group.IGroupLocalDataSource
-import app.paralino.core.repo.location.ILocationLocalDataSource
-import app.paralino.core.repo.places.IPlacesLocalDataSource
-import app.paralino.core.repo.user.IUserLocalDataSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.places.PlacesLocalDataSource
+import app.paralino.core.repo.user.UserLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 
 class RawCryptoPresentation constructor(
-    private val placeLocal: IPlacesLocalDataSource,
-    private val groupLocal: IGroupLocalDataSource,
-    private val memberLocal: ILocationLocalDataSource,
-    private val userLocal: IUserLocalDataSource
+    private val placeLocal: PlacesLocalDataSource,
+    private val groupLocal: UserGroupLocalDataSource,
+    private val memberLocal: LocationLocalDataSource,
+    private val userLocal: UserLocalDataSource
 ) {
 
     fun getGroupRawPresentation(groupId: String): Flow<RawPresentationModel> {

@@ -17,7 +17,7 @@ import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
-import app.paralino.core.repo.group.IGroupLocalDataSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.Constants
@@ -33,7 +33,7 @@ class GroupCreateUseCase(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore,
     private val remote: GroupsRemoteSource,
-    private val local: IGroupLocalDataSource,
+    private val local: UserGroupLocalDataSource,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
 ) : BaseRepository(), ILimitedExecution<String> {

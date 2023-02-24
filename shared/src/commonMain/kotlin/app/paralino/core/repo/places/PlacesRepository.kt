@@ -17,7 +17,7 @@ import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.seconds
 
 class PlacesRepository constructor(
-    private val local: IPlacesLocalDataSource,
+    private val local: PlacesLocalDataSource,
     private val remote: PlacesRemoteSource,
     private val userRepository: UserRepository,
     private val locationSharingManager: LocationSharingManager,

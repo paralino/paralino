@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.*
 class LocationLocalDataSource(
     private val database: AppDatabaseHelper,
     private val mapper: MemberWithLocationsMapperLocal
-) : ILocationLocalDataSource {
+) {
 
-    override suspend fun createOrUpdateMembersWithSettings(vararg data: MemberDocumentRaw) {
+    suspend fun createOrUpdateMembersWithSettings(vararg data: MemberDocumentRaw) {
         database.memberQueries.transaction {
             data.forEach {
                 database.memberQueries.create(mapper.remote2Local(it))
@@ -23,7 +23,7 @@ class LocationLocalDataSource(
         }
     }
 
-    override suspend fun createOrUpdateMembersWithoutSettings(vararg data: MemberDocumentRaw) {
+    suspend fun createOrUpdateMembersWithoutSettings(vararg data: MemberDocumentRaw) {
         database.memberQueries.transaction {
             data.forEach {
                 val currentMember = database.memberQueries.getMemberById(it.id).executeAsOneOrNull()
@@ -39,7 +39,7 @@ class LocationLocalDataSource(
         }
     }
 
-    override suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw) {
+    suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw) {
         database.locationQueries.update(
             id = data.id,
             deviceId = data.deviceId,
@@ -48,7 +48,7 @@ class LocationLocalDataSource(
         )
     }
 
-    override suspend fun recreateMembers(vararg data: MemberWithLocationsRaw) {
+    suspend fun recreateMembers(vararg data: MemberWithLocationsRaw) {
         database.transaction {
             data.forEach { member ->
                 memberQueries.create(mapper.remote2Local(member.member))
@@ -60,7 +60,7 @@ class LocationLocalDataSource(
         }
     }
 
-    override suspend fun recreateAllMembers(data: List<MemberWithLocationsRaw>) {
+    suspend fun recreateAllMembers(data: List<MemberWithLocationsRaw>) {
         database.transaction {
             memberQueries.clearAll()
             locationQueries.clearAll()
@@ -73,7 +73,7 @@ class LocationLocalDataSource(
         }
     }
 
-    override suspend fun recreateMembersForGroup(
+    suspend fun recreateMembersForGroup(
         groupId: String,
         data: List<MemberWithLocationsRaw>
     ) {
@@ -89,7 +89,7 @@ class LocationLocalDataSource(
         }
     }
 
-    override fun getMemberRawPresentation(memberId: String): Flow<Pair<MemberWithLocationsRaw, MemberModelWithLocations>> {
+    fun getMemberRawPresentation(memberId: String): Flow<Pair<MemberWithLocationsRaw, MemberModelWithLocations>> {
         return combine(
             database.mapToOneOrNull { memberQueries.getMemberById(memberId) }.filterNotNull(),
             database.mapToList { locationQueries.getForMember(memberId) }
@@ -101,14 +101,14 @@ class LocationLocalDataSource(
         }
     }
 
-    override suspend fun getMemberModelsForUser(userId: String): List<MemberModel> {
+    suspend fun getMemberModelsForUser(userId: String): List<MemberModel> {
         return database.memberQueries.getAllMembersForUser(userId).executeAsList().map {
             val ownerId = getGroupOwnerId(groupId = it.groupId)!!
             mapper.local2Core(it, emptyList(), ownerId).member
         }
     }
 
-    override fun getMembersForGroup(groupId: String): Flow<List<MemberModelWithLocations>> {
+    fun getMembersForGroup(groupId: String): Flow<List<MemberModelWithLocations>> {
         return combine(
             database.mapToList { memberQueries.getAllMembersForGroup(groupId) },
             database.mapToList { locationQueries.getForGroup(groupId) }
@@ -121,7 +121,7 @@ class LocationLocalDataSource(
             .distinctFlowOfList()
     }
 
-    override fun getMember(groupId: String, userId: String): Flow<MemberModel> {
+    fun getMember(groupId: String, userId: String): Flow<MemberModel> {
         return database.mapToOneOrNull { memberQueries.getMember(groupId = groupId, userId = userId) }
             .filterNotNull()
             .map {
@@ -130,7 +130,7 @@ class LocationLocalDataSource(
             }
     }
 
-    override suspend fun getMemberOnce(groupId: String, userId: String): MemberModel? {
+    suspend fun getMemberOnce(groupId: String, userId: String): MemberModel? {
         return database.memberQueries.getMember(
             groupId = groupId,
             userId = userId
@@ -140,7 +140,7 @@ class LocationLocalDataSource(
         }
     }
 
-    override suspend fun getMemberWithLocationsOnce(
+    suspend fun getMemberWithLocationsOnce(
         groupId: String,
         userId: String
     ): MemberModelWithLocations? {
@@ -156,39 +156,39 @@ class LocationLocalDataSource(
         return mapper.local2Core(result.first, result.second, ownerId)
     }
 
-    override fun getMemberCountInGroup(groupId: String): Flow<Int> {
+    fun getMemberCountInGroup(groupId: String): Flow<Int> {
         return database.mapToOneOrNull { memberQueries.getMemberCount(groupId) }
             .mapNotNull { it?.toInt() }
             .distinctUntilChanged()
     }
 
-    override suspend fun getMemberCountInGroupOnce(groupId: String): Int {
+    suspend fun getMemberCountInGroupOnce(groupId: String): Int {
         return database.memberQueries.getMemberCount(groupId).executeAsOneOrNull()?.toInt() ?: 0
     }
 
-    override suspend fun getUserMemberId(groupId: String, userId: String): String? {
+    suspend fun getUserMemberId(groupId: String, userId: String): String? {
         return database.memberQueries.getUserMemberId(groupId = groupId, userId = userId).executeAsOneOrNull()
     }
 
-    override suspend fun clearMemberLocationData(locationId: String) {
+    suspend fun clearMemberLocationData(locationId: String) {
         database.locationQueries.updateLocationData(locationData = null, id = locationId)
     }
 
-    override suspend fun removeAllMembersForGroup(groupId: String) {
+    suspend fun removeAllMembersForGroup(groupId: String) {
         database.transaction {
             memberQueries.clearForGroup(groupId)
             locationQueries.clearForGroup(groupId)
         }
     }
 
-    override suspend fun removeMemberFromGroup(groupId: String, userId: String) {
+    suspend fun removeMemberFromGroup(groupId: String, userId: String) {
         database.transaction {
             memberQueries.deleteMember(groupId = groupId, userId = userId)
             locationQueries.clearForUserInGroup(groupId = groupId, userId = userId)
         }
     }
 
-    override suspend fun clearAll() {
+    suspend fun clearAll() {
         database.transaction {
             memberQueries.clearAll()
             locationQueries.clearAll()
