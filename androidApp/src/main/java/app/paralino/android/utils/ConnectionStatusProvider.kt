@@ -49,6 +49,7 @@ class ConnectionStatusProvider constructor(
                     val uri = Uri.parse(url)
                     !InetAddress.getByName(uri.host).equals("")
                 } catch (e: Exception) {
+                    Logger.w("Error check for connection")
                     false
                 }
             }
