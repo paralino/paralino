@@ -17,7 +17,6 @@ object KoinSetup {
         coreDependencyModules,
         mappersModule,
         databaseModules,
-        daoModules,
         remoteDataSourceModule,
         viewModelModules,
         utilModule,

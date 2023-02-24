@@ -40,6 +40,7 @@
 -keep class app.paralino.android.data.** { *; }
 -keep class app.paralino.android.remote.** { *; }
 -keep class app.paralino.core.models.** { *; }
+-keep class app.paralino.core.data.** { *; }
 -keep class io.appwrite.models.** { *; }
 
 # keep parcelables

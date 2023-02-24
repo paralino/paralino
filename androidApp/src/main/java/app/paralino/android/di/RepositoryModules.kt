@@ -5,16 +5,7 @@ import app.paralino.android.crpyto.CryptoFrameworkProvider
 import app.paralino.android.crpyto.CryptoHashProvider
 import app.paralino.android.crpyto.CryptoKeyProvider
 import app.paralino.android.data.config.Config
-import app.paralino.android.data.database.MainAppDatabase
-import app.paralino.android.data.mappers.*
-import app.paralino.android.data.repos.group.CryptoKeyLocalDataSource
-import app.paralino.android.data.repos.group.UserGroupLocalDataSource
-import app.paralino.android.data.repos.location.LocationLocalDataSource
-import app.paralino.android.data.repos.location.SharingContractsLocalDataSourceImpl
-import app.paralino.android.data.repos.personal_code.PersonalCodeLocalDataSource
-import app.paralino.android.data.repos.places.GroupPlacesLocalDataSource
 import app.paralino.android.data.repos.user.UserCryptoKeyLocalDataSource
-import app.paralino.android.data.repos.user.UserLocalDataSource
 import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.remote.appwrite.*
 import app.paralino.android.utils.ConnectionStatusProvider
@@ -27,10 +18,13 @@ import app.paralino.core.crypto.ICryptoHashProvider
 import app.paralino.core.crypto.ICryptoKeyProvider
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.group.ICryptoKeyLocalDataSource
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.crypto.user.ICryptoUserKeyLocalDataSource
+import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.mappers.*
 import app.paralino.core.repo.api.IDocumentsApi
@@ -39,11 +33,12 @@ import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.IGroupLocalDataSource
-import app.paralino.core.repo.location.ILocationLocalDataSource
-import app.paralino.core.repo.location.ISharingContractsLocalDataSource
-import app.paralino.core.repo.location.LocationRemoteSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.*
 import app.paralino.core.repo.personal_code.IPersonalCodelLocalDataSource
+import app.paralino.core.repo.personal_code.PersonalCodeLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
+import app.paralino.core.repo.places.GroupPlacesLocalDataSource
 import app.paralino.core.repo.places.IPlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.user.*
@@ -55,17 +50,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val databaseModules = module {
-    single { MainAppDatabase.create(androidContext()) }
-}
-
-val daoModules = module {
-    single { get<MainAppDatabase>().memberDao() }
-    single { get<MainAppDatabase>().sharingContractDao() }
-    single { get<MainAppDatabase>().userDao() }
-    single { get<MainAppDatabase>().groupsDao() }
-    single { get<MainAppDatabase>().personalCodeDao() }
-    single { get<MainAppDatabase>().groupKeysDao() }
-    single { get<MainAppDatabase>().placesDao() }
+    single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
 }
 
 val cryptoModule = module {
@@ -87,17 +72,14 @@ val mappersModule = module {
     single { GroupsMapperLocal(get()) }
     single { GroupMapperCore(get(), get(), get()) }
     single { MemberMapperCore(get(), get(), get()) }
-    single { MemberWithLocationsMapperLocal(get(), get()) }
-    single { MemberMapperLocal() }
+    single { MemberWithLocationsMapperLocal(get()) }
     single { GroupKeysMapper() }
-    single { MemberKeysMapper() }
     single { UserKeyMapperCore(get()) }
     single { PersonalCodeMapperCore(get(), get()) }
     single { PersonalCodeMapperLocal(get()) }
     single { PlaceSettingsMapperCore(get(), get()) }
     single { PlaceMapperCore(get(), get(), get()) }
-    single { GroupPlaceMapperLocal(get()) }
-    single { GroupPlaceSettingsMapperLocal(get()) }
+    single { GroupPlaceMapperLocal(get(), get()) }
 }
 
 val remoteDataSourceModule = module {
@@ -137,12 +119,12 @@ val coreDependencyModules = module {
     single<IFunctionsApi> { FunctionsApi(get()) }
     single<IRealtimeApi> { RealtimeApi(get()) }
 
-    single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get(), get()) }
+    single<ILocationLocalDataSource> { LocationLocalDataSource(get(), get()) }
     single<ISharingContractsLocalDataSource> { SharingContractsLocalDataSourceImpl(get(), get()) }
     single<IUserLocalDataSource> { UserLocalDataSource(get(), get()) }
-    single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get(), get(), get(), get()) }
+    single<ICryptoKeyLocalDataSource> { CryptoKeyLocalDataSource(get(), get()) }
     single<IGroupLocalDataSource> { UserGroupLocalDataSource(get(), get(), get()) }
     single<IPersonalCodelLocalDataSource> { PersonalCodeLocalDataSource(get(), get()) }
     single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), config as Config) }
-    single<IPlacesLocalDataSource> { GroupPlacesLocalDataSource(get(), get(), get()) }
+    single<IPlacesLocalDataSource> { GroupPlacesLocalDataSource(get(), get()) }
 }
