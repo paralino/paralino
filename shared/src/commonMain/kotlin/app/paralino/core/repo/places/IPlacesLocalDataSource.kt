@@ -23,6 +23,5 @@ interface IPlacesLocalDataSource {
 
     suspend fun deletePlace(placeId: String)
     suspend fun deletePlaceForGroup(groupId: String)
-    suspend fun removeSetting(placeId: String, settingId: String)
     suspend fun clearAll()
 }
