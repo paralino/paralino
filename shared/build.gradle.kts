@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.android.library")
+    id("app.cash.sqldelight")
 }
 
 kotlin {
@@ -23,6 +24,8 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+                api("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
+                api("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
             }
         }
         val commonTest by getting {
@@ -33,6 +36,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 api("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+                implementation("app.cash.sqldelight:android-driver:2.0.0-alpha05")
             }
         }
         val androidTest by getting
@@ -41,6 +45,9 @@ kotlin {
         val iosSimulatorArm64Main by getting
         val iosMain by creating {
             dependsOn(commonMain)
+            dependencies {
+                implementation("app.cash.sqldelight:native-driver:2.0.0-alpha05")
+            }
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
@@ -63,5 +70,13 @@ android {
     defaultConfig {
         minSdk = 29
         targetSdk = 33
+    }
+}
+
+sqldelight {
+    databases {
+        create("AppDatabase") {
+            packageName.set("app.paralino.core.data.db")
+        }
     }
 }
