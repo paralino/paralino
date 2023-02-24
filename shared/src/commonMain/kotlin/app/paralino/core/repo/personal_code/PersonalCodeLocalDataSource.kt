@@ -1,37 +1,42 @@
-package app.paralino.android.data.repos.personal_code
+package app.paralino.core.repo.personal_code
 
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.raw.PersonalCodeRaw
-import app.paralino.core.repo.personal_code.IPersonalCodelLocalDataSource
 import app.paralino.core.utils.extensions.distinctFlowOfList
-import app.paralino.android.data.mappers.PersonalCodeMapperLocal
+import app.paralino.core.models.mappers.PersonalCodeMapperLocal
+import app.paralino.core.data.db.AppDatabaseHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class PersonalCodeLocalDataSource(
-    private val dao: PersonalCodeDao,
+    private val database: AppDatabaseHelper,
     private val mapper: PersonalCodeMapperLocal,
 ) : IPersonalCodelLocalDataSource {
 
     override suspend fun replacePersonalCodes(data: List<PersonalCodeRaw>) {
-        dao.replaceAll(*data.map { mapper.remote2Local(it) }.toTypedArray())
+        database.personalCodeQueries.transaction {
+            database.personalCodeQueries.clearAll()
+            data.forEach {
+                database.personalCodeQueries.createCode(mapper.remote2Local(it))
+            }
+        }
     }
 
     override suspend fun addPersonalCode(data: PersonalCodeRaw) {
-        dao.createOrUpdate(mapper.remote2Local(data))
+        database.personalCodeQueries.createCode(mapper.remote2Local(data))
     }
 
     override fun getPersonalCodes(): Flow<List<UserPersonalCode>> {
-        return dao.getAll()
+        return database.mapToList { personalCodeQueries.getAllCodes() }
             .distinctFlowOfList()
             .map { it.map { mapper.local2Core(it) } }
     }
 
     override suspend fun deletePersonalCode(id: String) {
-        dao.delete(id)
+        database.personalCodeQueries.deleteCode(id)
     }
 
     override suspend fun clear() {
-        dao.clear()
+        database.personalCodeQueries.clearAll()
     }
 }
