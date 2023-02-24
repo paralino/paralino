@@ -39,10 +39,10 @@ class RegisterDeviceForSharingUseCase constructor(
             val member = userMemberId.getCurrentUserMemberForGroup(groupId)
                 ?: throw IllegalStateException("Missing member for a group $groupId")
 
-            val groupKey = cryptoKEKRepo.getGroupKey(groupId, member.member.groupKeyVersion)
+            val groupKey = cryptoKEKRepo.getGroupKey(groupId, member.groupKeyVersion)
                 ?: throw MissingGroupKeyException(
-                    member.member.groupId,
-                    member.member.groupKeyVersion
+                    member.groupId,
+                    member.groupKeyVersion
                 )
 
             val deviceData = cryptoCore.encryptDataWithKey(

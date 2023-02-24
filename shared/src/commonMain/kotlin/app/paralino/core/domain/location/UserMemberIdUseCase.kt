@@ -3,6 +3,7 @@ package app.paralino.core.domain.location
 import app.paralino.core.config
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.location.MemberLocation
+import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.repo.location.ILocationLocalDataSource
 import app.paralino.core.repo.places.IPlacesLocalDataSource
@@ -31,7 +32,7 @@ class UserMemberIdUseCase constructor(
     }
 
     suspend fun getCurrentLocationForGroup(groupId: String): MemberLocation? {
-        val locationsForGroup = getCurrentUserMemberForGroup(groupId)!!.locations
+        val locationsForGroup = getCurrentUserMemberWithLocationsForGroup(groupId)!!.locations
 
         val locationForDeviceId = locationsForGroup.firstOrNull {
             it.deviceId == config.deviceId
@@ -51,8 +52,15 @@ class UserMemberIdUseCase constructor(
         )
     }
 
-    suspend fun getCurrentUserMemberForGroup(groupId: String): MemberModelWithLocations? {
+    suspend fun getCurrentUserMemberForGroup(groupId: String): MemberModel? {
         return memberLocal.getMemberOnce(
+            groupId = groupId,
+            userId = userRepository.cachedUserId
+        )
+    }
+
+    suspend fun getCurrentUserMemberWithLocationsForGroup(groupId: String): MemberModelWithLocations? {
+        return memberLocal.getMemberWithLocationsOnce(
             groupId = groupId,
             userId = userRepository.cachedUserId
         )

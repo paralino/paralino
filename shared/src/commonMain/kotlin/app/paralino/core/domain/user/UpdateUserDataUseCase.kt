@@ -56,16 +56,16 @@ class UpdateUserDataUseCase constructor(
     }
 
     private suspend fun updateMemberDataInGroups(data: UserMeData, deviceName: String) {
-        val userMembers = locationRepo.getMembersByUserId(userRepo.cachedUserId).first()
+        val userMembers = locationRepo.getMembersByUserId(userRepo.cachedUserId)
 
         val nodes = userMembers.map { member ->
 
             val groupKey = cryptoKEKRepo.getGroupKey(
-                groupId = member.member.groupId,
-                keyVersion = member.member.groupKeyVersion
+                groupId = member.groupId,
+                keyVersion = member.groupKeyVersion
             ) ?: throw MissingGroupKeyException(
-                groupId = member.member.groupId,
-                keyVersion = member.member.groupKeyVersion
+                groupId = member.groupId,
+                keyVersion = member.groupKeyVersion
             )
 
             val memberData = cryptoCore.encryptDataWithKey(
@@ -86,9 +86,9 @@ class UpdateUserDataUseCase constructor(
             )
 
             UpdateMemberData(
-                memberId = member.member.id,
-                locationId = userMemberIdUseCase.getCurrentLocationIdForGroup(member.member.groupId) ?: "",
-                groupKeyVersion = member.member.groupKeyVersion,
+                memberId = member.id,
+                locationId = userMemberIdUseCase.getCurrentLocationIdForGroup(member.groupId) ?: "",
+                groupKeyVersion = member.groupKeyVersion,
                 memberData = memberData,
                 deviceData = deviceData
             )

@@ -5,6 +5,7 @@ import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
@@ -21,11 +22,11 @@ class LocationRepository constructor(
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase
 ) : BaseRepository() {
 
-    fun getMembersByUserId(userid: String): Flow<List<MemberModelWithLocations>> {
+    suspend fun getMembersByUserId(userid: String): List<MemberModel> {
         return local.getMemberModelsForUser(userid)
     }
 
-    suspend fun getMember(groupId: String, userId: String): MemberModelWithLocations? {
+    suspend fun getMember(groupId: String, userId: String): MemberModel? {
         return local.getMemberOnce(groupId, userId)
     }
 

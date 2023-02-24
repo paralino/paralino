@@ -40,7 +40,7 @@ class PlaceNotificationHandler(
             try {
                 val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
                 placeName = place?.data?.data?.name
-                userName = locationRepo.getMember(place!!.groupId, payload.memberUserId)?.member?.name
+                userName = locationRepo.getMember(place!!.groupId, payload.memberUserId)?.name
             } catch (e: Exception) { }
 
             val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
