@@ -1,29 +1,28 @@
-package app.paralino.android.data.mappers
+package app.paralino.core.models.mappers
 
+import app.paralino.core.data.db.SharingContractEntity
 import app.paralino.core.models.location.LocationSharingContract
-import app.paralino.core.models.mappers.IDataMapperLocal
-import app.paralino.android.data.models.location.SharingContractEntity
 
-object SharingContractsMapper : IDataMapperLocal<SharingContractEntity, LocationSharingContract> {
-    override suspend fun local2Remote(model: SharingContractEntity): LocationSharingContract {
+object SharingContractsMapper {
+    fun local2Remote(model: SharingContractEntity): LocationSharingContract {
         return LocationSharingContract(
             groupId = model.groupId,
             endTimeUTC = model.endTimeUTC,
             shareBattery = model.shareBattery,
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,
-            approximateLocationInMeters = model.approximateLocationInMeters
+            approximateLocationInMeters = model.approximateLocationInMeters?.toInt()
         )
     }
 
-    override suspend fun remote2Local(model: LocationSharingContract): SharingContractEntity {
+    fun remote2Local(model: LocationSharingContract): SharingContractEntity {
         return SharingContractEntity(
             groupId = model.groupId,
             endTimeUTC = model.endTimeUTC,
             shareBattery = model.shareBattery,
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,
-            approximateLocationInMeters = model.approximateLocationInMeters
+            approximateLocationInMeters = model.approximateLocationInMeters?.toLong()
         )
     }
 }
