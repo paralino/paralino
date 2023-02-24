@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS groupEntity (
+`id` TEXT NOT NULL PRIMARY KEY ,
+`ownerUserId` TEXT NOT NULL,
+`keyVersion` INTEGER NOT NULL,
+`data` TEXT NOT NULL
+);
+
+createGroup:
+INSERT OR REPLACE INTO groupEntity
+VALUES ?;
+
+getGroup:
+SELECT * FROM groupEntity
+WHERE id = ?;
+
+getGroupOwnerId:
+SELECT groupEntity.ownerUserId FROM groupEntity
+WHERE id = :groupId;
+
+getAllGroups:
+SELECT * FROM groupEntity;
+
+getAllGroupIds:
+SELECT groupEntity.id FROM groupEntity;
+
+deleteGroup:
+DELETE FROM groupEntity
+WHERE id = ?;
+
+clearAll:
+DELETE FROM groupEntity;

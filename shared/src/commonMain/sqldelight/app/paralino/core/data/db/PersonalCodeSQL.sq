@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS personalCodeEntity (
+`id` TEXT NOT NULL PRIMARY KEY ,
+`keyId` TEXT NOT NULL,
+`ownerUserId` TEXT NOT NULL,
+`encryptedCode` TEXT NOT NULL,
+`encryptedCodeData` TEXT NOT NULL,
+`validityUTC` TEXT,
+`verification` TEXT NOT NULL
+);
+
+createCode:
+INSERT OR REPLACE INTO personalCodeEntity
+VALUES ?;
+
+getAllCodes:
+SELECT * FROM personalCodeEntity;
+
+deleteCode:
+DELETE FROM personalCodeEntity
+WHERE id = ?;
+
+clearAll:
+DELETE FROM personalCodeEntity;

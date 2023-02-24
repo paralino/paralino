@@ -1,0 +1,20 @@
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS userEntity (
+`id` TEXT NOT NULL PRIMARY KEY,
+`email` TEXT NOT NULL,
+`registration` TEXT NOT NULL,
+`emailVerification` INTEGER AS kotlin.Boolean NOT NULL,
+`user_data_userImage` TEXT,
+`user_data_userName` TEXT
+);
+
+createUser:
+INSERT OR REPLACE INTO userEntity
+VALUES ?;
+
+getUser:
+SELECT * FROM userEntity;
+
+clear:
+DELETE FROM userEntity;

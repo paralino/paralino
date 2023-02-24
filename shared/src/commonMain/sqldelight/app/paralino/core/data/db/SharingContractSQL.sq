@@ -1,0 +1,28 @@
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS sharingContractEntity (
+`groupId` TEXT NOT NULL PRIMARY KEY,
+`endTimeUTC` TEXT,
+`shareBattery` INTEGER AS kotlin.Boolean NOT NULL,
+`shareSpeed` INTEGER AS kotlin.Boolean NOT NULL,
+`shareElevation` INTEGER AS kotlin.Boolean NOT NULL,
+`approximateLocationInMeters` INTEGER
+);
+
+createContract:
+INSERT OR REPLACE INTO sharingContractEntity
+VALUES ?;
+
+getContract:
+SELECT * FROM sharingContractEntity
+WHERE groupId = ?;
+
+getAllContracts:
+SELECT * FROM sharingContractEntity;
+
+deleteContract:
+DELETE FROM sharingContractEntity
+WHERE groupId IN ?;
+
+clearAll:
+DELETE FROM sharingContractEntity;
