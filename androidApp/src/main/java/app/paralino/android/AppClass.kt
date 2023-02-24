@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import logv
 import org.koin.android.ext.android.inject
+import kotlin.coroutines.CoroutineContext
 
 class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserver {
 
@@ -64,6 +65,8 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     override val defaultScope = CoroutineScope(Dispatchers.Default + applicationJob)
     override val defaultIOScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     override val userSessionIOScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    override val defaultDispatcher: CoroutineContext get() = Dispatchers.Default
+    override val ioDispatcher: CoroutineContext get() = Dispatchers.IO
 
     private val launcher: PreCheckControl by inject()
     private val userRepo: UserRepository by inject()
