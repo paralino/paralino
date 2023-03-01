@@ -6,6 +6,7 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -44,7 +45,8 @@ class GroupMapperCore constructor(
             id = model.id,
             ownerUserId = model.ownerUserId,
             keyVersion = model.keyVersion,
-            data = groupData
+            data = groupData,
+            planType = model.planType.key
         )
     }
 
@@ -81,8 +83,9 @@ class GroupMapperCore constructor(
             ownerUserId = model.ownerUserId,
             keyVersion = model.keyVersion,
             data = groupData,
+            planType = PlanType.fromKey(model.planType) ?: PlanType.fallback,
             memberCount = memberCount,
-            verification = verification
+            verification = verification,
         )
     }
 

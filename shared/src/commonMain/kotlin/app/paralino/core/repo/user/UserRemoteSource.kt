@@ -46,6 +46,10 @@ class UserRemoteSource constructor(
         return api.getCurrentSession()
     }
 
+    suspend fun getAllSessions(): List<UserSession> {
+        return api.getAllSessions()
+    }
+
     suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw {
         return api.changePassword(newPassword, oldPassword)
     }

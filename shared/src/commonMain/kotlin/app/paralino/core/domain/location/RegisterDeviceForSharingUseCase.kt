@@ -26,6 +26,10 @@ class RegisterDeviceForSharingUseCase constructor(
     private val cryptoCore: CryptoCore
 ) : BaseRepository() {
 
+    suspend fun canRegister(groupId: String): Boolean {
+        return !userMemberId.getCurrentLocationIdForGroup(groupId).isNullOrBlank()
+    }
+
     suspend fun registerDevice(
         groupId: String
     ) {

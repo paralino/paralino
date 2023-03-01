@@ -31,6 +31,10 @@ class UserMemberIdUseCase constructor(
         return config.sessionId
     }
 
+    suspend fun getAllSessionCount(): Int {
+        return userRepository.getAllSessionsFromRemote().size
+    }
+
     suspend fun getCurrentLocationForGroup(groupId: String): MemberLocation? {
         val locationsForGroup = getCurrentUserMemberWithLocationsForGroup(groupId)!!.locations
 

@@ -112,6 +112,7 @@ class GroupDetailViewModel(
                 image = group.image,
                 sharingStatus = sharingStatus,
                 members = members,
+                memberLimit = group.group.planType.membersLimit,
                 errors = errors
             )
         }
@@ -191,6 +192,16 @@ class GroupDetailViewModel(
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    fun tryAddMember() {
+        val state = _uiState.value.data ?: return
+        coroutineScope.launch {
+            if(state.members.size >= state.memberLimit)
+                _eventChannel.send(GroupDetailScreenEvent.GroupMembersLimitReached(state.memberLimit))
+            else
+                _eventChannel.send(GroupDetailScreenEvent.GroupMemberAdd)
+        }
     }
 
     fun stopSharing() {

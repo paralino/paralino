@@ -28,6 +28,10 @@ class UserApi constructor(
         return remoteModule.execute { account.getSession("current").parseSession() }
     }
 
+    override suspend fun getAllSessions(): List<UserSession> {
+        return remoteModule.execute { account.listSessions().sessions.map { it.parseSession() } }
+    }
+
     override suspend fun getMe(): UserMeRaw {
         return remoteModule.execute { account.get().parseUser() }
     }
@@ -84,9 +88,7 @@ class UserApi constructor(
     }
 
     override suspend fun logout() {
-        // TODO when multiple devices are supported only log out current device
-//        return remoteModule.execute { account.deleteSession("current") }
-        return remoteModule.execute { account.deleteSessions() }
+        return remoteModule.execute { account.deleteSession("current") }
     }
 
     private fun Account.parseUser(): UserMeRaw {

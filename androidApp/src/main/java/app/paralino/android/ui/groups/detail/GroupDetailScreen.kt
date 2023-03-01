@@ -13,8 +13,10 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,7 +27,6 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.*
 import app.paralino.android.ui.groups.members.GroupMember
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
@@ -77,6 +78,17 @@ fun GroupDetailScreen(
                 }
                 GroupDetailScreenEvent.GroupDeleted -> {
                     appState.navController.popBackStack()
+                }
+                GroupDetailScreenEvent.GroupMemberAdd -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.GroupMemberAdd.route(groupId = groupId)
+                    )
+                }
+                is GroupDetailScreenEvent.GroupMembersLimitReached -> {
+                    showDialog = MainAlertDialog.PlanLimit(
+                        context.getString(R.string.plan_limit_members_alert_info),
+                        limit = event.limit
+                    )
                 }
                 GroupDetailScreenEvent.GroupMemberDeleted -> {}
                 GroupDetailScreenEvent.MemberLocationDeleted -> {}
@@ -144,6 +156,11 @@ fun GroupDetailScreen(
                             )
                     }
                 }
+                is MainAlertDialog.PlanLimit -> {
+                    dialog.Show {
+                        showDialog = null
+                    }
+                }
                 else -> {}
             }
 
@@ -158,9 +175,7 @@ fun GroupDetailScreen(
                     )
                 },
                 onAddGroupMember = {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.GroupMemberAdd.route(groupId = groupId)
-                    )
+                    vm.tryAddMember()
                 },
                 onGroupDeleteOrLeave = {
                     if (state.data.canEdit) {
@@ -170,7 +185,10 @@ fun GroupDetailScreen(
                     }
                 },
                 onMemberDelete = {
-                    showDialog = MainAlertDialog.DeleteGroupMember(it.memberState.userId, it.memberState.name)
+                    showDialog = MainAlertDialog.DeleteGroupMember(
+                        it.memberState.userId,
+                        it.memberState.name
+                    )
                 },
                 onMemberDeviceDelete = { member, location ->
                     showDialog = MainAlertDialog.DeleteMemberLocation(
@@ -223,7 +241,7 @@ fun GroupDetailScreen(
                         ConditionErrorType.NETWORK -> appState.showSnackbar(
                             text = context.getString(R.string.error_no_connection_snackbar)
                         )
-                        else -> { }
+                        else -> {}
                     }
                 }
             )
@@ -387,12 +405,18 @@ fun GroupDetailScreen(
             }
 
             this.stickyHeader(key = "member_list_header") {
-                SettingsSectionHeader(
-                    name = stringResource(
-                        id = R.string.group_details_section_members_title,
-                        state.members.size
+                Row(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.group_details_section_members_title),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.alpha(ContentAlpha.medium)
                     )
-                )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    PlanLimitCount(count = state.members.size, limit = state.memberLimit)
+                }
                 Spacer(modifier = Modifier.size(4.dp))
             }
 

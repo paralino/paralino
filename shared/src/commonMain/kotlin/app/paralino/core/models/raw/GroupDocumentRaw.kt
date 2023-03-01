@@ -9,7 +9,8 @@ data class GroupDocumentRaw constructor(
     val id: String,
     val ownerUserId: String,
     val keyVersion: Long,
-    val data: String = ""
+    val data: String,
+    val planType: String,
 ) {
 
     companion object {
@@ -19,7 +20,8 @@ data class GroupDocumentRaw constructor(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 keyVersion = (map["keyVersion"] as Number).toLong(),
-                data = map["data"] as String
+                data = map["data"] as String,
+                planType = map["planType"] as String,
             )
         }
     }

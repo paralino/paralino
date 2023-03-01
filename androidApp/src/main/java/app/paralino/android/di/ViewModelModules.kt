@@ -58,7 +58,7 @@ val viewModelModules = module {
     viewModel { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), startScreenType as LoginScreenUiType) }
     viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
     viewModel { (args: String?) ->
-        SharingStartViewModel(args, get(), get(), get(), get(), get())
+        SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
     }
     viewModel { PersonalCodeViewModel(get()) }
     viewModel { (groupId: String?, code: String?) ->

@@ -30,6 +30,10 @@ class LocationRepository constructor(
         return local.getMemberOnce(groupId, userId)
     }
 
+    fun getLocationCountForMember(memberId: String): Flow<Int> {
+        return local.getLocationCountForMember(memberId)
+    }
+
     suspend fun pushLocation(data: LocationDataModel) {
         triggerRemoteOnly {
             if (!sharingManager.isSharingActive()) throw NoValidContractsException()

@@ -22,7 +22,8 @@ class GroupsMapperLocal(
             id = model.id,
             ownerUserId = model.ownerUserId,
             keyVersion = model.keyVersion,
-            data = model.data_
+            data = model.data_,
+            planType = model.planType
         )
     }
 
@@ -31,7 +32,8 @@ class GroupsMapperLocal(
             id = model.id,
             ownerUserId = model.ownerUserId,
             keyVersion = model.keyVersion,
-            data_ = model.data
+            data_ = model.data,
+            planType = model.planType
         )
     }
 }

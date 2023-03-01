@@ -538,4 +538,27 @@ sealed interface MainAlertDialog {
         }
     }
 
+    data class PlanLimit(
+        val content: String,
+        val limit: Int
+    ) : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.plan_limit_alert_title),
+                message = stringResource(id = R.string.plan_limit_alert_message, content, limit),
+                buttons = listOf(
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.button_ok),
+                        AlertDialogButtonData.positiveColor
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
 }

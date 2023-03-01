@@ -1,14 +1,18 @@
 package app.paralino.core.presentation.share
 
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
+import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.*
 import app.paralino.core.utils.exceptions.TimeoutException
 import kotlinx.coroutines.channels.Channel
@@ -22,12 +26,21 @@ class SharingStartViewModel(
     val locationStatusProvider: ILocationStatusProvider,
     private val connectionStatus: IConnectionStatusProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
+    private val userMemberIdUseCase: UserMemberIdUseCase,
+    private val locationRepository: LocationRepository
 ) : CoreViewModel() {
 
     private val _uiState =
-        MutableStateFlow(SharingStartScreenState(groupState = if (groupId.isNullOrBlank()) Payload.Success(
-            null) else Payload.Loading))
+        MutableStateFlow(
+            SharingStartScreenState(
+                groupState = if (groupId.isNullOrBlank())
+                    Payload.Success(null)
+                else Payload.Loading
+            )
+        )
     val uiState: Flow<SharingStartScreenState> = _uiState
+
+    private val currentGroup = MutableStateFlow<UserGroup?>(null)
 
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -36,9 +49,19 @@ class SharingStartViewModel(
 
         groupId?.let { setSelectedGroup(it) }
 
-        combine(locationStatusProvider.status, connectionStatus.status) { location, connection ->
+        combine(
+            locationStatusProvider.status,
+            connectionStatus.status,
+            currentGroup.flatMapMerge {
+                if(it == null)
+                    flowOf(0)
+                else
+                    locationRepository.getLocationCountForMember(userMemberIdUseCase.getCurrentUserMemberIdForGroup(it.id)!!)
+            }
+        ) { location, connection, locationCount ->
             _uiState.update {
                 it.copy(
+                    devicesCount = locationCount,
                     errors = buildList {
                         addAll(location.getPossibleErrors(it.isLongTerm))
                         if (!connection.isOnline) {
@@ -50,21 +73,34 @@ class SharingStartViewModel(
         }.launchIn(coroutineScope)
     }
 
-    suspend fun getAllGroups(): List<GroupItemState> {
-        return groupRepo.getAllGroupsLocally().firstOrNull()?.map { GroupItemState(it) }
-            ?: emptyList()
+    suspend fun getAllGroupItems(): List<GroupItemState> {
+        return getAllGroups().map { GroupItemState(it) }
+    }
+
+    private suspend fun getAllGroups(): List<UserGroup> {
+        return groupRepo.getAllGroupsLocally().firstOrNull() ?: emptyList()
     }
 
     fun setSelectedGroup(groupId: String) {
         coroutineScope.launch {
             getAllGroups().firstOrNull { it.id == groupId }?.let { group ->
                 setSelectedGroup(group)
-            } ?: _uiState.update { it.copy(groupState = Payload.Success(null)) }
+            } ?: let {
+                currentGroup.update { null }
+                _uiState.update { it.copy(groupState = Payload.Success(null)) }
+            }
         }
     }
 
-    fun setSelectedGroup(group: GroupItemState) {
-        _uiState.update { it.copy(groupState = Payload.Success(group)) }
+    private fun setSelectedGroup(group: UserGroup) {
+        val groupItem = GroupItemState(group)
+        currentGroup.update { group }
+        _uiState.update {
+            it.copy(
+                groupState = Payload.Success(groupItem),
+                devicesLimit = group.planType.devicesLimit
+            )
+        }
     }
 
     fun startSharing() {
@@ -103,6 +139,14 @@ class SharingStartViewModel(
 
         coroutineScope.launch {
             _uiState.update { it.copy(loadingAction = true) }
+
+            if(_uiState.value.devicesCount >= _uiState.value.devicesLimit && !registerDevice.canRegister(groupId = group.id)) {
+                coroutineScope.launch {
+                    _eventChannel.send(SharingStartScreenEvent.DevicesLimitReached(_uiState.value.devicesLimit))
+                }
+                _uiState.update { it.copy(loadingAction = false) }
+                return@launch
+            }
 
             try {
                 registerDevice.registerDevice(group.id)

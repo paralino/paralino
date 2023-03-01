@@ -19,9 +19,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.android.R
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.ConditionErrorItem
-import app.paralino.android.ui.components.DefaultEmptyState
-import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.android.ui.components.*
 import app.paralino.android.ui.map.rememberMapViewPlacesOverviewState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsBigHeader
@@ -49,6 +47,7 @@ fun PlacesScreen(
 ) {
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
+    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
@@ -62,11 +61,33 @@ fun PlacesScreen(
                 is PlacesScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
                 }
-                null -> {
-                    /* do nothing */
+                PlacesScreenEvent.AddPlace -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlaceCreate.route(
+                            groupId = groupId,
+                            placeId = null
+                        )
+                    )
+                }
+                is PlacesScreenEvent.GroupPlacesLimitReached -> {
+                    showDialog = MainAlertDialog.PlanLimit(
+                        context.getString(R.string.plan_limit_places_alert_info),
+                        limit = event.limit
+                    )
+                }
+                null -> { /* do nothing */
                 }
             }
         }
+    }
+
+    when (val dialog = showDialog) {
+        is MainAlertDialog.PlanLimit -> {
+            dialog.Show {
+                showDialog = null
+            }
+        }
+        else -> {}
     }
 
     when (val state = uiState) {
@@ -89,10 +110,15 @@ fun PlacesScreen(
                     appState.navController.popBackStack()
                 },
                 onPlaceClick = {
-                    appState.navController.navigate(AppScreen.MainHome.PlaceDetail.route(groupId = groupId, placeId = it.id))
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlaceDetail.route(
+                            groupId = groupId,
+                            placeId = it.id
+                        )
+                    )
                 },
                 onCreatePlace = {
-                    appState.navController.navigate(AppScreen.MainHome.PlaceCreate.route(groupId = groupId, placeId = null))
+                    vm.tryCreatePlace()
                 },
                 onErrorItemClick = {
                     notificationPermissionHandler.askNotificationPermission()
@@ -137,7 +163,7 @@ fun PlacesScreen(
             )
         },
         floatingActionButton = {
-            if(state.places.isNotEmpty()) {
+            if (state.places.isNotEmpty()) {
                 ExtendedFloatingActionButton(
                     text = {
                         Text(stringResource(id = R.string.places_list_add_button))
@@ -170,9 +196,19 @@ fun PlacesScreen(
             if (state.places.isNotEmpty()) {
 
                 this.item(key = "main_header") {
-                    SettingsBigHeader(
-                        name = stringResource(id = R.string.places_list_screen_title)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SettingsBigHeader(
+                            name = stringResource(id = R.string.places_list_screen_title)
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        PlanLimitCount(
+                            modifier = Modifier.padding(top = 4.dp),
+                            count = state.places.size,
+                            limit = state.placesLimit
+                        )
+                    }
                 }
 
                 this.items(items = state.errors, key = { it.toString() }) {
@@ -332,6 +368,7 @@ fun PlacesScreenPreview() {
                 groupId = "",
                 groupName = "Family",
                 places = items,
+                placesLimit = 10,
                 errors = listOf(ConditionErrorType.PERMISSION_NOTIFICATIONS)
             ),
             onCreatePlace = {},

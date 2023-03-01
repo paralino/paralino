@@ -28,6 +28,10 @@ getForMember:
 SELECT * FROM memberLocationEntity
 WHERE memberId = :memberId;
 
+getLocationCountForMember:
+SELECT COUNT(id) FROM memberLocationEntity
+WHERE memberId = :memberId;
+
 getForUser:
 SELECT * FROM memberLocationEntity
 WHERE memberLocationEntity.userId = :userId;

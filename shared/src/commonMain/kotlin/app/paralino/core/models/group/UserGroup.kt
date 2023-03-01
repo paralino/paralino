@@ -4,6 +4,7 @@ import app.paralino.core.config
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
@@ -18,6 +19,7 @@ data class UserGroup constructor(
     val keyVersion: Long,
     @Contextual
     val data: CryptoResource<UserGroupData>,
+    val planType: PlanType,
     val memberCount: Int,
     val verification: VerificationResult,
 ) {

@@ -2,6 +2,7 @@ package app.paralino.core.presentation.share
 
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.SharingDurationPreset
@@ -16,6 +17,8 @@ data class SharingStartScreenState constructor(
     val shareBattery: Boolean = true,
     val shareSpeed: Boolean = true,
     val shareElevation: Boolean = true,
+    val devicesLimit: Int = 0,
+    val devicesCount: Int = 0,
     val errors: List<ConditionErrorType> = emptyList(),
     val loadingAction: Boolean = false
 ) {
@@ -38,6 +41,7 @@ sealed class SharingStartScreenEvent() {
     data class Error(val error: Throwable): SharingStartScreenEvent()
     object Started: SharingStartScreenEvent()
     object SelectGroupInfo: SharingStartScreenEvent()
+    data class DevicesLimitReached(val limit: Int) : SharingStartScreenEvent()
     object LocationStatusInsufficient: SharingStartScreenEvent()
     object MissingBackgroundPermission: SharingStartScreenEvent()
     object CanNotRegisterDevice: SharingStartScreenEvent()

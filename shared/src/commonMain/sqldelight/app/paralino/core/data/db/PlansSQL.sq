@@ -1,0 +1,28 @@
+CREATE TABLE IF NOT EXISTS subscriptionPlanEntity (
+`id` TEXT NOT NULL PRIMARY KEY,
+`planType` TEXT NOT NULL,
+`billingPeriod` TEXT NOT NULL,
+`placesLimitOverride` INTEGER DEFAULT NULL,
+`membersLimitOverride` INTEGER DEFAULT NULL,
+`devicesLimitOverride` INTEGER DEFAULT NULL,
+`groupId` TEXT DEFAULT NULL,
+`validityUTC` TEXT DEFAULT NULL
+);
+
+createPlan:
+INSERT OR REPLACE INTO subscriptionPlanEntity
+VALUES ?;
+
+getForGroup:
+SELECT * FROM subscriptionPlanEntity
+WHERE groupId = :groupId;
+
+getAllPlans:
+SELECT * FROM subscriptionPlanEntity;
+
+clearForGroup:
+DELETE FROM subscriptionPlanEntity
+WHERE groupId = :groupId;
+
+clearAll:
+DELETE FROM subscriptionPlanEntity;

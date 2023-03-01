@@ -16,6 +16,7 @@ class AppDatabaseHelper(
     private val database = AppDatabase(driverFactory.createDriver())
 
     val userQueries = database.userMeSQLQueries
+    val subscriptionPlanQueries = database.plansSQLQueries
     val sharingContractQueries = database.sharingContractSQLQueries
     val personalCodeQueries = database.personalCodeSQLQueries
     val groupQueries = database.groupsSQLQueries

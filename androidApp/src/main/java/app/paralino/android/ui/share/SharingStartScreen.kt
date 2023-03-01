@@ -5,19 +5,19 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.tracking.rememberLocationPermissionHandler
@@ -140,6 +140,12 @@ fun SharingStartScreen(
                 null -> {
                     /* do nothing */
                 }
+                is SharingStartScreenEvent.DevicesLimitReached -> {
+                    showDialog = MainAlertDialog.PlanLimit(
+                        context.getString(R.string.plan_limit_devices_alert_info),
+                        limit = event.limit
+                    )
+                }
             }
         }
     }
@@ -177,6 +183,11 @@ fun SharingStartScreen(
                         else -> {}
                     }
                 }
+            }
+        }
+        is MainAlertDialog.PlanLimit -> {
+            dialog.Show {
+                showDialog = null
             }
         }
         else -> {}
@@ -275,7 +286,7 @@ fun SharingStartScreen(
                     ) {
                         if (groupId.isNullOrBlank()) {
                             appState.uiScope.launch {
-                                appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
+                                appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroupItems()))
                                     .safeCast<GroupItemState>()?.let {
                                         vm.setSelectedGroup(it.id)
                                     }
@@ -294,7 +305,7 @@ fun SharingStartScreen(
                         icon = AppIcons.Groups,
                         onClick = {
                             appState.uiScope.launch {
-                                appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroups()))
+                                appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroupItems()))
                                     .safeCast<GroupItemState>()?.let {
                                         vm.setSelectedGroup(it.id)
                                     }
@@ -305,6 +316,27 @@ fun SharingStartScreen(
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                 }
+            }
+
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colors.surface,
+                        shape = RoundedCornerShape(percent = 20)
+                    )
+                    .padding(vertical = 8.dp, horizontal = 8.dp)
+                ,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.groups_sharing_devices),
+                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.alpha(ContentAlpha.medium)
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
             }
 
             SettingsSectionHeader(name = stringResource(id = R.string.title_settings))

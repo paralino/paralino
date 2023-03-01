@@ -76,6 +76,10 @@ class UserRepository constructor(
         return triggerRemoteOnly { remote.login(email, password) }
     }
 
+    suspend fun getAllSessionsFromRemote(): List<UserSession> {
+        return triggerRemoteOnly { remote.getAllSessions() }
+    }
+
     suspend fun remoteSignUp(
         email: String,
         password: String,

@@ -156,6 +156,12 @@ class LocationLocalDataSource(
         return mapper.local2Core(result.first, result.second, ownerId)
     }
 
+    fun getLocationCountForMember(memberId: String): Flow<Int> {
+        return database.mapToOneOrNull { locationQueries.getLocationCountForMember(memberId) }
+            .mapNotNull { it?.toInt() }
+            .distinctUntilChanged()
+    }
+
     fun getMemberCountInGroup(groupId: String): Flow<Int> {
         return database.mapToOneOrNull { memberQueries.getMemberCount(groupId) }
             .mapNotNull { it?.toInt() }

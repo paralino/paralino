@@ -195,6 +195,7 @@
     <string name="groups_sharing_button_enable">Enable sharing</string>
     <string name="groups_sharing_title">Share location</string>
     <string name="groups_sharing_device_name_placeholder">Device name</string>
+    <string name="groups_sharing_devices">Devices</string>
     <string name="groups_sharing_potential_error_title">Warning</string>
     <string name="groups_sharing_potential_error_button_enable">Enable anyway</string>
     <string name="groups_sharing_potential_error_message">To share your location please resolve all the errors: \n\n%s\n</string>
@@ -229,7 +230,7 @@
     <string name="group_members_device_own_remove_alert_title">Are you sure you want remove your device from group?\n\nThis will not remove you from a group.</string>
     <string name="group_members_device_name_default">Device</string>
     <string name="group_members_empty_info">This group is lonely!\nAdd someone to securely share your location with.</string>
-    <string name="group_details_section_members_title">Members **(%d)**</string>
+    <string name="group_details_section_members_title">Members</string>
     <string name="group_details_menu_edit">Edit</string>
     <string name="group_details_menu_delete">Delete group</string>
     <string name="group_details_menu_leave">Leave group</string>
@@ -307,5 +308,11 @@
     <string name="raw_data_screen_info">Here you can preview your data as it is stored on the server.\nOnly your device can unlock (decrypt) and see this information.</string>
     <string name="raw_data_section_encrypted">Encrypted data on server</string>
     <string name="raw_data_section_decrypted">Decrypted data on device</string>
+
+    <string name="plan_limit_alert_title">BETA version</string>
+    <string name="plan_limit_alert_message">You reached the maximum number of %1$s (**%2$d**) while in BETA.\n\nThank you for your patience while we scale up our infrastructure!</string>
+    <string name="plan_limit_members_alert_info">group members</string>
+    <string name="plan_limit_places_alert_info">group places</string>
+    <string name="plan_limit_devices_alert_info">devices</string>
 
 </resources>
