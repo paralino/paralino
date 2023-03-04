@@ -154,9 +154,11 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
         logg.tag("app_state").v("App is in foreground")
         updateLocationStatus()
         updateConnectionStatus()
+        updateConfig()
 
         if(wasInBackground) {
             wasInBackground = false
+
             userSessionIOScope.launch {
                 groupRepo.scheduleRefreshAllGroupsWithPlaces(
                     time = 60_000
@@ -177,6 +179,16 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private fun updateConnectionStatus() {
         defaultIOScope.launch {
             connectionStatusProvider.initAndGetStatus()
+        }
+    }
+
+    private fun updateConfig() {
+        defaultIOScope.launch {
+            try {
+                launcher.refreshConfig()
+            } catch (e: Exception) {
+                Logger.e("Error updating config", e)
+            }
         }
     }
 

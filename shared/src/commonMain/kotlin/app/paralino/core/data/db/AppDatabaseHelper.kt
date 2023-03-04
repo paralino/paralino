@@ -26,6 +26,7 @@ class AppDatabaseHelper(
     val placeSettingsQueries = database.placeSettingsSQLQueries
     val memberQueries = database.membersSQLQueries
     val locationQueries = database.membersLocationsSQLQueries
+    val configQueries = database.configDataSQLQueries
 
 
     internal fun clearDatabase() {

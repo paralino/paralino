@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS configNodeEntity (
+`id` TEXT NOT NULL PRIMARY KEY,
+`value` TEXT
+);
+
+createConfig:
+INSERT OR REPLACE INTO configNodeEntity
+VALUES ?;
+
+getForId:
+SELECT * FROM configNodeEntity
+WHERE id = :id;
+
+getAll:
+SELECT * FROM configNodeEntity;
+
+clearAll:
+DELETE FROM configNodeEntity;

@@ -315,4 +315,10 @@
     <string name="plan_limit_places_alert_info">group places</string>
     <string name="plan_limit_devices_alert_info">devices</string>
 
+    <string name="app_version_alert_title">New app update</string>
+    <string name="app_version_alert_message">New version of Paralino is available, please update for a better experience!</string>
+    <string name="app_version_alert_title_mandatory">Please update</string>
+    <string name="app_version_alert_message_mandatory">This app version is deprecated!\n\nTo continue using the app, please update to the latest version!</string>
+    <string name="app_version_alert_button_update">Update</string>
+
 </resources>

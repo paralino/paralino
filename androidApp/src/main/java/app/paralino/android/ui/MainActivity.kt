@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
 import app.paralino.android.R
 import app.paralino.android.ui.components.AppSnackbar
@@ -24,10 +25,12 @@ import app.paralino.android.ui.navigation.MainNavHost
 import app.paralino.android.ui.navigation.loggedOutGraph
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppTheme
+import app.paralino.android.utils.extensions.openUri
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.models.Resource
 import app.paralino.core.presentation.MainScreenEvent
 import app.paralino.core.presentation.MainViewModel
+import app.paralino.core.repo.base.AppUpdateType
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -76,9 +79,8 @@ fun RootApp(
     AppTheme {
         val appState = rememberAppState()
         val userState by vm.userState.collectAsState(initial = Resource.NotInitialized)
-        var showDialog: MainAlertDialog? by remember {
-            mutableStateOf(null)
-        }
+        var showDialog: MainAlertDialog? by remember { mutableStateOf(null) }
+        var showAppUpdateDialog: MainAlertDialog.AppVersionInfo? by remember { mutableStateOf(null) }
 
         val context = LocalContext.current
         LaunchedEffect(context) {
@@ -90,13 +92,19 @@ fun RootApp(
                     is MainScreenEvent.Error -> {
                         appState.showSnackbar(event.error.errorString(context))
                     }
+                    is MainScreenEvent.NewAppVersion -> {
+                        showAppUpdateDialog = when(event.updateType) {
+                            AppUpdateType.NONE -> null
+                            AppUpdateType.SOFT -> MainAlertDialog.AppVersionInfo(forceUpdate = false)
+                            AppUpdateType.FORCE -> MainAlertDialog.AppVersionInfo(forceUpdate = true)
+                        }
+                    }
+                    MainScreenEvent.SessionExpired -> {
+                        showDialog = MainAlertDialog.SessionExpired
+                    }
                     null -> {}
                 }
             }
-        }
-
-        LaunchedEffect(LocalContext.current) {
-            vm.sessionExpiredFlow.collectLatest { showDialog = MainAlertDialog.SessionExpired }
         }
 
         when (val state = userState) {
@@ -106,6 +114,18 @@ fun RootApp(
                 }
             }
             is Resource.Ready -> {
+
+                if(showAppUpdateDialog != null) {
+                    showAppUpdateDialog?.Show {
+                        if(it == MainAlertDialog.Buttons.buttonCancel) {
+                            vm.cancelVersion()
+                            showAppUpdateDialog = null
+                        } else if(it == MainAlertDialog.Buttons.buttonOk) {
+                            // TODO update
+                            context.openUri(Deeplink.homeUrl.toUri())
+                        }
+                    }
+                }
 
                 when (val dialog = showDialog) {
                     is MainAlertDialog.SessionExpired -> {

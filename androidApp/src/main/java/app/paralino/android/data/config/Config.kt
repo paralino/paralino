@@ -29,6 +29,7 @@ class Config(context: Context) : IConfig {
         const val keyDeviceName = "prefs.device.name"
         const val keyDeviceID = "prefs.device.ID"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
+        const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
     }
 
     private val secureSharedData by lazy {
@@ -111,6 +112,11 @@ class Config(context: Context) : IConfig {
             secureSharedData.edit { putString(keySelectedGroupID, value) }
         }
 
+    override var dismissedAppVersion: Long
+        get() = persistentSharedData.getLong(keyDismissedAppVersionID, 0)
+        set(value) {
+            persistentSharedData.edit { putLong(keyDismissedAppVersionID, value) }
+        }
 
     override fun clear() {
         secureSharedData.edit(commit = true) { clear() }

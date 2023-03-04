@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import app.paralino.android.R
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppTheme
@@ -22,6 +23,7 @@ import app.paralino.android.utils.extensions.annotatedBold
 fun MainAlertDialog(
     title: String,
     message: String,
+    canDismiss: Boolean = true,
     buttons: List<AlertDialogButtonData> = listOf(
         AlertDialogButtonData(
             "ok",
@@ -32,6 +34,7 @@ fun MainAlertDialog(
 ) {
     AppTheme {
         AlertDialog(
+            properties = DialogProperties(dismissOnBackPress = canDismiss, dismissOnClickOutside = canDismiss),
             onDismissRequest = { onAction(null) },
             title = {
                 Text(
@@ -556,6 +559,40 @@ sealed interface MainAlertDialog {
                         AlertDialogButtonData.positiveColor
                     ),
                 ),
+                onAction = onAction
+            )
+        }
+    }
+
+    data class AppVersionInfo(
+        val forceUpdate: Boolean
+    ) : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = if (forceUpdate) R.string.app_version_alert_title_mandatory else R.string.app_version_alert_title),
+                message = stringResource(id = if (forceUpdate) R.string.app_version_alert_message_mandatory else R.string.app_version_alert_message),
+                buttons = buildList {
+                    add(
+                        AlertDialogButtonData(
+                            Buttons.buttonOk,
+                            stringResource(id = R.string.app_version_alert_button_update),
+                            AlertDialogButtonData.positiveColor
+                        )
+                    )
+                    if (!forceUpdate) {
+                        add(
+                            AlertDialogButtonData(
+                                Buttons.buttonCancel,
+                                stringResource(id = R.string.button_cancel),
+                                AlertDialogButtonData.destructiveColor
+                            )
+                        )
+                    }
+                },
+                canDismiss = !forceUpdate,
                 onAction = onAction
             )
         }

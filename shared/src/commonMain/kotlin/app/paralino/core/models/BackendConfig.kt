@@ -11,7 +11,8 @@ data class BackendConfig constructor(
 
 enum class BackendDatabaseType(val id: String) {
     DATA(id = BackendResourceIDs.databaseDataID),
-    KEYS(id = BackendResourceIDs.databaseKeysID)
+    KEYS(id = BackendResourceIDs.databaseKeysID),
+    PRODUCT(id = BackendResourceIDs.databaseProductID)
 }
 
 object BackendResourceIDs {
@@ -23,6 +24,7 @@ object BackendResourceIDs {
 
     const val databaseKeysID = "data_keys"
     const val databaseDataID = "data_main"
+    const val databaseProductID = "product"
 
     const val collectionGroupsID: String = "groups"
     const val collectionGroupMembersID: String = "group_members"
@@ -38,6 +40,7 @@ object BackendResourceIDs {
     const val collectionUserKeysID: String = "user_keys"
     const val collectionUserDevicesID: String = "devices"
     const val collectionPushNotificationID: String = "push_notifications"
+    const val collectionConfigID: String = "config"
 
     const val functionPersonalCodeReadID: String = "personal_code_read"
     const val functionPersonalCodeCreateID: String = "personal_code_create"

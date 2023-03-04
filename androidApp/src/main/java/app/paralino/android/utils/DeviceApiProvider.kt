@@ -3,6 +3,7 @@ package app.paralino.android.utils
 import androidx.work.WorkManager
 import androidx.work.await
 import app.paralino.android.AppClass
+import app.paralino.android.BuildConfig
 import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
@@ -29,6 +30,9 @@ class DeviceApiProvider constructor(
 
     override val randomUUID: String
         get() = UUID.randomUUID().toString()
+
+    override val appVersionCode: Long
+        get() = BuildConfig.VERSION_CODE.toLong()
 
     override suspend fun logout() {
         try {

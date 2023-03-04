@@ -87,6 +87,17 @@ abstract class BaseRepository {
         }
     }
 
+    suspend fun <T> triggerRemoteMaybe(
+        remotePreference: RemotePreference.CACHE,
+        remote: (suspend () -> T)
+    ): T? {
+        return triggerRemote(
+            localValue = remotePreference.key,
+            remotePreference = remotePreference,
+            remote = remote
+        )
+    }
+
     private suspend fun <T, U> triggerRemote(
         localValue: T? = null,
         remotePreference: RemotePreference,
