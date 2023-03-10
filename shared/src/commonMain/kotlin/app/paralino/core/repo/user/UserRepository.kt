@@ -10,6 +10,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
+import app.paralino.core.models.user.BlocklistModel
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserSession
@@ -170,6 +171,19 @@ class UserRepository constructor(
 
     suspend fun confirmEmail(userId: String, secret: String) {
         triggerRemoteOnly { remote.confirmEmail(userId, secret) }
+    }
+
+    fun getBlocklist(): Flow<List<BlocklistModel>> {
+        return mergeDataWithRemote(
+            local = local.getBlocklist(),
+            remote = { remote.getBlocklist() },
+            localUpdate = { local.recreateBlocklist(it) }
+        )
+    }
+
+    suspend fun removeFromBlocklist(id: String) {
+        triggerRemoteOnly { remote.unblock(id) }
+            .also { local.removeFromBlocklist(id) }
     }
 
     suspend fun logoutLocally() {

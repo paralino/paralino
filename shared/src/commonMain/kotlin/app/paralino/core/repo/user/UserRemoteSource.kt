@@ -1,12 +1,15 @@
 package app.paralino.core.repo.user
 
 import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
+import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserSession
+import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.utils.BaseRemoteModule
@@ -17,6 +20,7 @@ import kotlinx.serialization.encodeToString
 class UserRemoteSource constructor(
     private val api: IUserApi,
     private val functionsApi: IFunctionsApi,
+    private val docApi: IDocumentsApi,
     private val remoteConfig: BackendConfig,
     private val userMapper: UserMapperCore,
 ) {
@@ -77,6 +81,23 @@ class UserRemoteSource constructor(
 
     suspend fun updateEmail(email: String, password: String): UserMeRaw {
         return api.updateEmail(email, password)
+    }
+
+    suspend fun getBlocklist(): List<BlocklistRaw> {
+        return docApi.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionBlockedID
+        ).map {
+            BlocklistRaw.from(it)
+        }
+    }
+
+    suspend fun unblock(blockId: String) {
+        docApi.deleteDocument(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionBlockedID,
+            documentId = blockId
+        )
     }
 
     suspend fun deleteAccount() {

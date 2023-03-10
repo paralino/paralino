@@ -9,6 +9,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.*
+import app.paralino.core.models.user.BlockListModelData
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.runAndWait
@@ -192,7 +193,13 @@ class GroupsRemoteSource constructor(
                 throw PermissionDeniedException("Owner can not block the group")
 
             val groupData = group.data.data?.let {
-                cryptoCore.encryptModel(it, cryptoUserKeyRepo.personalKey.content)
+                cryptoCore.encryptModel(
+                    data = BlockListModelData(
+                        name = it.name,
+                        image = it.image
+                    ),
+                    key = cryptoUserKeyRepo.personalKey.content
+                )
             } ?: ""
 
             val payload = BlockGroupFunctionData(

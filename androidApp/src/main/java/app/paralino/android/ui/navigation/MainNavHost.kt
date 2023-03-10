@@ -23,6 +23,7 @@ import app.paralino.android.ui.places.detail.PlaceDetailScreen
 import app.paralino.android.ui.places.list.PlacesScreen
 import app.paralino.android.ui.rawdata.RawDataScreen
 import app.paralino.android.ui.settings.AccountScreen
+import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.SettingsScreen
 import app.paralino.android.ui.settings.convertaccount.ConvertAccountScreen
@@ -129,6 +130,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.Settings.PersonalCodes.routeSignature) {
             PersonalCodeScreen(appState)
+        }
+        composable(AppScreen.Settings.BlockList.routeSignature) {
+            BlocklistScreen(appState)
         }
         composable(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature) {
             EditProfileScreen(appState)

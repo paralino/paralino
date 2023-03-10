@@ -324,4 +324,15 @@
     <string name="app_version_alert_button_update">Update</string>
     <string name="group_details_menu_block">Block group</string>
 
+    <string name="blocklist_screen_title">Blocklist</string>
+    <string name="blocklist_screen_empty_title">Your blocklist is empty</string>
+    <string name="blocklist_screen_title_groups">Blocked groups</string>
+    <string name="blocklist_screen_title_users">Blocked users</string>
+    <string name="blocklist_unblock_group_alert_title">Unblock group?</string>
+    <string name="blocklist_unblock_group_alert_message">Unblocking will allow you to rejoin the group again.</string>
+    <string name="blocklist_unblock_user_alert_title">Unblock user?</string>
+    <string name="blocklist_unblock_user_alert_message">Unblocking will allow user to add you to new groups and you will be notified about users\' location updates.</string>
+    <string name="blocklist_unblock_alert_button">Unblock</string>
+    <string name="blocklist_unblock_alert_unknown">Remove unknown blocked type?</string>
+
 </resources>

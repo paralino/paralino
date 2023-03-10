@@ -96,6 +96,13 @@ fun SettingsScreen(
                     appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
                 }
 
+                SettingsActionItem(
+                    name = stringResource(id = R.string.blocklist_screen_title),
+                    icon = AppIcons.Block
+                ) {
+                    appState.navController.navigate(AppScreen.Settings.BlockList.routeSignature)
+                }
+
 //                SettingsActionItem(
 //                    name = stringResource(id = R.string.settings_section_general_title),
 //                    icon = AppIcons.Share

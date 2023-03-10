@@ -149,6 +149,10 @@ sealed class AppScreen {
             override val routeSignature: String = "personal-codes"
         }
 
+        object BlockList : AppScreen() {
+            override val routeSignature: String = "blocklist"
+        }
+
         object ProfileDetails : AppScreen() {
             override val routeSignature: String = "profile"
 

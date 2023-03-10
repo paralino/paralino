@@ -1,8 +1,11 @@
 package app.paralino.core.models.mappers
 
+import app.paralino.core.data.db.BlocklistEntity
 import app.paralino.core.data.db.UserEntity
+import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
+import app.paralino.core.models.user.BlocklistModel
 import app.paralino.core.models.user.UserMe
 
 class UserMapperLocal constructor(
@@ -10,6 +13,10 @@ class UserMapperLocal constructor(
 ) {
 
     suspend fun local2Core(model: UserEntity): UserMe {
+        return coreMapper.remote2Core(local2Remote(model))
+    }
+
+    suspend fun local2Core(model: BlocklistEntity): BlocklistModel {
         return coreMapper.remote2Core(local2Remote(model))
     }
 
@@ -34,6 +41,26 @@ class UserMapperLocal constructor(
             emailVerification = model.emailVerification,
             user_data_userImage = model.data?.userImage,
             user_data_userName = model.data?.userName
+        )
+    }
+
+    fun remote2Local(model: BlocklistRaw): BlocklistEntity {
+        return BlocklistEntity(
+            id = model.id,
+            ownerUserId = model.ownerUserId,
+            resourceId = model.resourceId,
+            resourceType = model.resourceType,
+            data_ = model.data
+        )
+    }
+
+    fun local2Remote(model: BlocklistEntity): BlocklistRaw {
+        return BlocklistRaw(
+            id = model.id,
+            ownerUserId = model.ownerUserId,
+            resourceId = model.resourceId,
+            resourceType = model.resourceType,
+            data = model.data_
         )
     }
 }

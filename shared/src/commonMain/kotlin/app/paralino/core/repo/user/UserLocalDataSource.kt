@@ -2,7 +2,9 @@ package app.paralino.core.repo.user
 
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.models.mappers.UserMapperLocal
+import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserMeRaw
+import app.paralino.core.models.user.BlocklistModel
 import app.paralino.core.models.user.UserMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -30,12 +32,33 @@ class UserLocalDataSource(
             .distinctUntilChanged()
     }
 
+    fun getBlocklist(): Flow<List<BlocklistModel>> {
+        return database.mapToList { blocklistQueries.getAll() }
+            .map { it.map { mapper.local2Core(it) } }
+    }
+
+    suspend fun recreateBlocklist(blocklist: List<BlocklistRaw>) {
+        database.blocklistQueries.transaction {
+            database.blocklistQueries.clearAll()
+            blocklist.forEach {
+                database.blocklistQueries.createBlocklist(mapper.remote2Local(it))
+            }
+        }
+    }
+
+    suspend fun removeFromBlocklist(id: String) {
+        database.blocklistQueries.remove(id)
+    }
+
     suspend fun update(data: UserMeRaw) {
         database.userQueries.createUser(mapper.remote2Local(data))
     }
 
     suspend fun clear() {
-        database.userQueries.clear()
+        database.transaction {
+            userQueries.clear()
+            blocklistQueries.clearAll()
+        }
     }
 
 }

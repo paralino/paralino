@@ -18,6 +18,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.models.user.BlocklistType
 
 @Composable
 fun MainAlertDialog(
@@ -243,6 +244,41 @@ sealed interface MainAlertDialog {
                         Buttons.buttonOk,
                         stringResource(id = R.string.group_details_block_group_alert_button),
                         AlertDialogButtonData.destructiveColor
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
+    data class UnblockGroupOrUser(
+        val id: String,
+        val type: BlocklistType
+    ) : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = when(type){
+                    BlocklistType.GROUP -> stringResource(id = R.string.blocklist_unblock_group_alert_title)
+                    BlocklistType.USER -> stringResource(id = R.string.blocklist_unblock_user_alert_title)
+                    BlocklistType.UNKNOWN -> stringResource(id = R.string.blocklist_unblock_alert_button)
+                },
+                message = when(type){
+                    BlocklistType.GROUP -> stringResource(id = R.string.blocklist_unblock_group_alert_message)
+                    BlocklistType.USER -> stringResource(id = R.string.blocklist_unblock_user_alert_message)
+                    BlocklistType.UNKNOWN -> stringResource(id = R.string.blocklist_unblock_alert_unknown)
+                },
+                buttons = listOf(
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.blocklist_unblock_alert_button),
+                        AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
