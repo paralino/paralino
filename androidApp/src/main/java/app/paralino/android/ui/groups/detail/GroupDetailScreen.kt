@@ -37,6 +37,7 @@ import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.presentation.groups.*
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.utils.ConditionErrorType
@@ -90,6 +91,7 @@ fun GroupDetailScreen(
                         limit = event.limit
                     )
                 }
+                GroupDetailScreenEvent.UserBlockActionCompleted -> {}
                 GroupDetailScreenEvent.GroupMemberDeleted -> {}
                 GroupDetailScreenEvent.MemberLocationDeleted -> {}
                 null -> {
@@ -146,6 +148,20 @@ fun GroupDetailScreen(
                             vm.blockGroup()
                     }
                 }
+                is MainAlertDialog.BlockUser -> {
+                    dialog.Show {
+                        showDialog = null
+                        if (it == MainAlertDialog.Buttons.buttonOk)
+                            vm.blockUser(userId = dialog.userId)
+                    }
+                }
+                is MainAlertDialog.UnblockGroupOrUser -> {
+                    dialog.Show {
+                        showDialog = null
+                        if (it == MainAlertDialog.Buttons.buttonOk)
+                            vm.unblockUser(userId = dialog.id)
+                    }
+                }
                 is MainAlertDialog.DeleteGroupMember -> {
                     dialog.Show {
                         showDialog = null
@@ -193,6 +209,15 @@ fun GroupDetailScreen(
                 },
                 onGroupBlock = {
                     showDialog = MainAlertDialog.BlockGroup
+                },
+                onUserBlock = {
+                    showDialog = MainAlertDialog.BlockUser(userId = it.memberState.userId)
+                },
+                onUserUnblock = {
+                    showDialog = MainAlertDialog.UnblockGroupOrUser(
+                        id = it.memberState.userId,
+                        type = BlocklistType.USER
+                    )
                 },
                 onMemberDelete = {
                     showDialog = MainAlertDialog.DeleteGroupMember(
@@ -269,6 +294,8 @@ fun GroupDetailScreen(
     onAddGroupMember: () -> Unit,
     onGroupDeleteOrLeave: () -> Unit,
     onGroupBlock: () -> Unit,
+    onUserBlock: (GroupMemberItemState) -> Unit,
+    onUserUnblock: (GroupMemberItemState) -> Unit,
     onMemberDelete: (GroupMemberItemState) -> Unit,
     onMemberDeviceDelete: (GroupMemberItemState, GroupMemberItemLocationState) -> Unit,
     onOpenMap: () -> Unit,
@@ -344,7 +371,7 @@ fun GroupDetailScreen(
                             }
                         ) {
                             Icon(
-                                imageVector = if(state.canEdit) AppIcons.Delete else AppIcons.Logout,
+                                imageVector = if (state.canEdit) AppIcons.Delete else AppIcons.Logout,
                                 tint = MaterialTheme.colors.onError,
                                 contentDescription = null
                             )
@@ -354,7 +381,7 @@ fun GroupDetailScreen(
                                 else stringResource(id = R.string.group_details_menu_leave)
                             )
                         }
-                        if(!state.canEdit) {
+                        if (!state.canEdit) {
                             DropdownMenuItem(
                                 onClick = {
                                     optionMenuExpanded = false
@@ -473,7 +500,14 @@ fun GroupDetailScreen(
                     forceExpandAction = expanded,
                     collapseOnActionClick = false,
                     onClick = { expanded = !expanded },
-                    onActionClick = { onMemberDelete(item) },
+                    onActionClick = {
+                        when (it) {
+                            MemberAction.DELETE_MEMBER -> onMemberDelete(item)
+                            MemberAction.BLOCK_USER -> onUserBlock(item)
+                            MemberAction.UNBLOCK_USER -> onUserUnblock(item)
+                            MemberAction.DELETE_LOCATION -> {}
+                        }
+                    },
                     onDeleteDeviceClick = {
                         onMemberDeviceDelete(item, it)
                     },

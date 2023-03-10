@@ -255,6 +255,32 @@ sealed interface MainAlertDialog {
         }
     }
 
+    data class BlockUser(
+        val userId: String
+    ) : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.group_members_block_user),
+                message = stringResource(id = R.string.group_members_block_user_alert_message),
+                buttons = listOf(
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_block_group_alert_button),
+                        AlertDialogButtonData.destructiveColor
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
     data class UnblockGroupOrUser(
         val id: String,
         val type: BlocklistType

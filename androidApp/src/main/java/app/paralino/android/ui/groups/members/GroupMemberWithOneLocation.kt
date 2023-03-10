@@ -31,6 +31,7 @@ import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberStatus
+import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.utils.Emojis
 
 @Composable
@@ -38,7 +39,7 @@ fun ConstraintLayoutScope.GroupMemberWithOneLocation(
     state: GroupMemberItemStateWithOneLocation,
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
-    onActionClick: (() -> Unit)? = null,
+    onActionClick: ((MemberAction) -> Unit)? = null,
     extraActions: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val (image, center, expand, actions) = createRefs()
@@ -225,7 +226,7 @@ fun ConstraintLayoutScope.GroupMemberWithOneLocation(
             top.linkTo(image.top)
         }
     ) {
-        if (state.memberState.actionItem != null || extraActions != null) {
+        if (state.memberState.actionItems.isNotEmpty() || extraActions != null) {
             Icon(
                 imageVector = if (expanded) AppIcons.ExpandLess else AppIcons.ExpandMore,
                 contentDescription = null
@@ -247,28 +248,29 @@ fun ConstraintLayoutScope.GroupMemberWithOneLocation(
             width = Dimension.fillToConstraints
         }
     ) {
-        if (state.memberState.actionItem != null || extraActions != null) {
+        if (state.memberState.actionItems.isNotEmpty() || extraActions != null) {
             AnimatedVisibility(visible = expanded) {
                 Row(
                     modifier = Modifier.padding(top = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (state.memberState.actionItem != null) {
+                    state.memberState.actionItems.forEach { action ->
                         FilledButton(
                             style = ButtonStyle.SMALL_ACTION,
-                            icon = state.memberState.actionItem!!.actionIcon,
+                            icon = action.actionIcon,
                             elevation = ButtonDefaults.elevation(pressedElevation = 2.dp),
                             onClick = {
                                 if (collapseOnActionClick)
                                     expanded = !expanded
-                                onActionClick?.invoke()
+                                onActionClick?.invoke(action)
                             }
                         ) {
                             Text(
-                                text = stringResource(id = state.memberState.actionItem!!.actionText),
+                                text = stringResource(id = action.actionText),
                                 style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
                             )
                         }
+                        Spacer(modifier = Modifier.size(4.dp))
                     }
 
                     if (extraActions != null) {

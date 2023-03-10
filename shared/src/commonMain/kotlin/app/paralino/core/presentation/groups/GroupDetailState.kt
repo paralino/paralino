@@ -24,5 +24,6 @@ sealed class GroupDetailScreenEvent() {
     object GroupMemberAdd : GroupDetailScreenEvent()
     data class GroupMembersLimitReached(val limit: Int) : GroupDetailScreenEvent()
     object GroupMemberDeleted : GroupDetailScreenEvent()
+    object UserBlockActionCompleted : GroupDetailScreenEvent()
     object MemberLocationDeleted : GroupDetailScreenEvent()
 }

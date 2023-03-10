@@ -50,7 +50,7 @@ data class UserGroupWithMembers constructor(
     val members: List<MemberModelWithLocations>
 ) {
 
-    val isGroupVerified get() = group.isVerified && memberByUserId(config.userId).isVerified
+    val isGroupVerified get() = group.isVerified && memberByUserId(config.userId)!!.isVerified
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
     val keyVersion: Long get() = group.keyVersion
@@ -62,8 +62,8 @@ data class UserGroupWithMembers constructor(
 
     val isCurrentUserOwner: Boolean get() = group.isCurrentUserOwner
 
-    fun memberByUserId(userId: String): MemberModel {
-        return members.first { it.member.userId == userId }.member
+    fun memberByUserId(userId: String): MemberModel? {
+        return members.firstOrNull { it.member.userId == userId }?.member
     }
 
 }

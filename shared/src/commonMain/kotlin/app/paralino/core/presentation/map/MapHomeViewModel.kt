@@ -108,7 +108,9 @@ class MapHomeViewModel constructor(
                                             !sharingManager.isSharingActiveForGroup(groupIdData.value)
                                     GroupMemberItemStateWithOneLocation(
                                         memberState = memberState.copy(
-                                            actionItem = MemberAction.DELETE_LOCATION.takeIf { canDelete }
+                                            actionItems = buildList {
+                                                if(canDelete) add(MemberAction.DELETE_LOCATION)
+                                            }
                                         ),
                                         location = GroupMemberItemLocationState(
                                             memberLocation = location,

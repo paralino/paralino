@@ -173,12 +173,30 @@ class UserRepository constructor(
         triggerRemoteOnly { remote.confirmEmail(userId, secret) }
     }
 
+    fun getBlocklistLocally(): Flow<List<BlocklistModel>> {
+        return local.getBlocklist()
+    }
+
     fun getBlocklist(): Flow<List<BlocklistModel>> {
         return mergeDataWithRemote(
             local = local.getBlocklist(),
             remote = { remote.getBlocklist() },
             localUpdate = { local.recreateBlocklist(it) }
         )
+    }
+
+    suspend fun refreshBlocklist() {
+        triggerRemoteOnly { remote.getBlocklist() }
+            .also { local.recreateBlocklist(it) }
+    }
+
+    suspend fun removeUserFromBlocklist(userId: String) {
+        triggerRemoteOnly {
+            val id = local.getBlocklist().first().first { it.resourceId == userId }.id
+            remote.unblock(id)
+            id
+        }
+            .also { local.removeFromBlocklist(it) }
     }
 
     suspend fun removeFromBlocklist(id: String) {

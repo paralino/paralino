@@ -17,7 +17,7 @@ data class GroupMemberState constructor(
     val groupId: String,
     val memberId: String,
     val userId: String,
-    val actionItem: MemberAction? = null,
+    val actionItems: List<MemberAction>,
     val name: String,
     val image: ImageModel?,
     val isCurrentUser: Boolean,
@@ -27,7 +27,7 @@ data class GroupMemberState constructor(
         groupId = member.groupId,
         memberId = member.id,
         userId = member.userId,
-        actionItem = null,
+        actionItems = emptyList(),
         name = member.name,
         image = member.image,
         isCurrentUser = isCurrentUser,
@@ -90,5 +90,5 @@ enum class GroupMemberStatus {
 }
 
 enum class MemberAction {
-    DELETE_MEMBER, DELETE_LOCATION;
+    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER;
 }

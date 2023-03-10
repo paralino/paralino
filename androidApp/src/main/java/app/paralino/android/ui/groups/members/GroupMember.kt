@@ -37,7 +37,7 @@ fun GroupMember(
     backgroundColor: Color = MaterialTheme.colors.surface,
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
-    onActionClick: (() -> Unit)? = null,
+    onActionClick: ((MemberAction) -> Unit)? = null,
     onDeleteDeviceClick: ((GroupMemberItemLocationState) -> Unit)? = null,
     extraActions: (@Composable RowScope.() -> Unit)? = null,
     onClick: () -> Unit,
@@ -105,12 +105,16 @@ val MemberAction.actionIcon: ImageVector
     @Composable get() = when (this) {
         MemberAction.DELETE_MEMBER -> AppIcons.PersonRemove
         MemberAction.DELETE_LOCATION -> AppIcons.Delete
+        MemberAction.BLOCK_USER -> AppIcons.Block
+        MemberAction.UNBLOCK_USER -> AppIcons.LockOpen
     }
 
 val MemberAction.actionText: Int
     get() = when (this) {
         MemberAction.DELETE_MEMBER -> R.string.group_members_item_remove_button
         MemberAction.DELETE_LOCATION -> R.string.group_members_item_clear_location_button
+        MemberAction.BLOCK_USER -> R.string.group_details_block_group_alert_button
+        MemberAction.UNBLOCK_USER -> R.string.blocklist_unblock_alert_button
     }
 
 val GroupMemberStatus.actionText: Int?
@@ -154,7 +158,7 @@ val dummyMemberState = GroupMemberState(
     groupId = "",
     memberId = "",
     userId = "",
-    actionItem = MemberAction.DELETE_MEMBER,
+    actionItems = listOf(MemberAction.DELETE_MEMBER),
     name = "User name",
     image = ImageModel.emoji(Emojis.robot),
     isCurrentUser = true,

@@ -3,6 +3,7 @@ package app.paralino.core.domain.group
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.logg
+import app.paralino.core.models.location.MemberModel
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -72,6 +73,17 @@ class GroupMemberRemoveUseCase(
             },
             localUpdate = {
                 local.updateOrCreateMember(it)
+            }
+        ).map { Unit }
+    }
+
+    fun blockUser(member: MemberModel): Flow<Unit> {
+        return getDataOnce(
+            remote = {
+                remote.blockUser(member)
+            },
+            localUpdate = {
+                userRepository.refreshBlocklist()
             }
         ).map { Unit }
     }

@@ -225,6 +225,8 @@
 
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
+    <string name="group_members_block_user">Block user</string>
+    <string name="group_members_block_user_alert_message">If you proceed, user will not be able to add you to a group and you will not receive users\' location notification in any shared groups.</string>
     <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>
     <string name="group_members_device_other_remove_alert_title">Are you sure you want remove %ss\' device from group?\n\nThis will not remove user from a group.</string>
     <string name="group_members_device_own_remove_alert_title">Are you sure you want remove your device from group?\n\nThis will not remove you from a group.</string>
@@ -234,6 +236,7 @@
     <string name="group_details_menu_edit">Edit</string>
     <string name="group_details_menu_delete">Delete group</string>
     <string name="group_details_menu_leave">Leave group</string>
+    <string name="group_details_menu_block">Block group</string>
     <string name="group_details_delete_group_alert_title">Are you sure you want delete this group?\nThis is irreversible and will delete all group data and remove all connection with members!</string>
     <string name="group_details_delete_group_alert_button">Delete</string>
     <string name="group_details_leave_group_alert_title">Are you sure you want leave this group?\nThis is irreversible and will delete all data you shared and remove all connection with members!</string>
@@ -322,7 +325,6 @@
     <string name="app_version_alert_title_mandatory">Please update</string>
     <string name="app_version_alert_message_mandatory">This app version is deprecated!\n\nTo continue using the app, please update to the latest version!</string>
     <string name="app_version_alert_button_update">Update</string>
-    <string name="group_details_menu_block">Block group</string>
 
     <string name="blocklist_screen_title">Blocklist</string>
     <string name="blocklist_screen_empty_title">Your blocklist is empty</string>

@@ -5,8 +5,10 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.*
 import app.paralino.core.models.user.BlockListModelData
@@ -14,6 +16,7 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.PermissionDeniedException
 import app.paralino.core.utils.extensions.blocking
@@ -220,6 +223,47 @@ class GroupsRemoteSource constructor(
                 throw BaseRemoteException.fromCode(
                     null,
                     "Unable to block group",
+                    Exception(data.stderr)
+                )
+            }
+        }
+    }
+
+    suspend fun blockUser(user: MemberModel) {
+        return blocking {
+
+            if (config.userId == user.userId)
+                throw PermissionDeniedException("You can not block yourself")
+
+            val userData = user.memberData.data?.let {
+                cryptoCore.encryptModel(
+                    data = BlockListModelData(
+                        name = it.name,
+                        image = it.image ?: ImageModel.emoji(Emojis.robot)
+                    ),
+                    key = cryptoUserKeyRepo.personalKey.content
+                )
+            } ?: ""
+
+            val payload = BlockGroupMemberFunctionData(
+                groupId = user.groupId,
+                userId = user.userId,
+                userData = userData
+            )
+
+            val data = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionDeleteGroupMemberID,
+                data = GenericFunctionPayload(
+                    route = "block-user",
+                    payload = payload
+                )
+            )
+
+            if (!data.isSuccess) {
+                // TODO throw better exception
+                throw BaseRemoteException.fromCode(
+                    null,
+                    "Unable to block user",
                     Exception(data.stderr)
                 )
             }

@@ -6,10 +6,12 @@ import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.ILocationStatusProvider
@@ -23,6 +25,7 @@ import kotlinx.coroutines.launch
 class GroupDetailViewModel(
     private val groupId: String,
     private val placesRepo: PlacesRepository,
+    private val userRepo: UserRepository,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
     private val connectionStatus: IConnectionStatusProvider,
@@ -31,22 +34,23 @@ class GroupDetailViewModel(
     private val groupRefresh: GroupRefreshUseCase,
 ) : CoreViewModel() {
 
+    private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
     private val _uiState = MutableStateFlow<Payload<GroupDetailScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<GroupDetailScreenState>> = _uiState
 
     private val _eventChannel = Channel<GroupDetailScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
-
     init {
-        combine(
+        app.paralino.core.utils.extensions.combine(
             locationStatusProvider.status,
             connectionStatus.status,
             groupRefresh.getGroupWithMembers(groupId),
             placesRepo.hasAnyPlace(),
-            sharingManager.sharingContractForGroup(groupId)
-        ) { locationStatus, network, group, hasPlaces, sharingStatus ->
-
+            sharingManager.sharingContractForGroup(groupId),
+            userRepo.getBlocklistLocally()
+        ) { locationStatus, network, group, hasPlaces, sharingStatus, blocklist ->
+            groupData.update { group }
             val members = group.members
                 .sortedBy { it.member.name }
                 .sortedBy { it.member.userId != config.userId }
@@ -57,8 +61,17 @@ class GroupDetailViewModel(
                         member = member.member,
                         isCurrentUser = member.member.userId == config.userId
                     ).copy(
-                        actionItem = MemberAction.DELETE_MEMBER.takeIf {
-                            group.isCurrentUserOwner && member.member.userId != group.ownerUserId
+                        actionItems = buildList {
+                            if (group.isCurrentUserOwner && member.member.userId != group.ownerUserId) {
+                                add(MemberAction.DELETE_MEMBER)
+                            }
+                            if (member.member.userId != config.userId) {
+                                if (blocklist.any { it.resourceId == member.member.userId }) {
+                                    add(MemberAction.UNBLOCK_USER)
+                                } else {
+                                    add(MemberAction.BLOCK_USER)
+                                }
+                            }
                         }
                     )
                     if (member.locations.size <= 1) {
@@ -94,7 +107,7 @@ class GroupDetailViewModel(
 
             val errors = buildList {
                 sharingStatus?.let {
-                    if(!network.isOnline)
+                    if (!network.isOnline)
                         add(ConditionErrorType.NETWORK)
                     addAll(locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
                 }
@@ -142,6 +155,46 @@ class GroupDetailViewModel(
 
     fun blockGroup() {
         processGroupRemoval { groupRemove.blockGroup(groupId).mapToPayload { it } }
+    }
+
+    fun blockUser(userId: String) {
+        val member = groupData.value?.memberByUserId(userId = userId) ?: return
+        groupMemberRemove.blockUser(member)
+            .mapToPayload { Unit }
+            .onEach { result ->
+                _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }
+                when (result) {
+                    Payload.Loading -> {}
+                    is Payload.Error -> {
+                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                    }
+                    is Payload.Success -> {
+                        _eventChannel.send(GroupDetailScreenEvent.UserBlockActionCompleted)
+                    }
+                }
+            }
+            .launchIn(coroutineScope)
+    }
+
+    fun unblockUser(userId: String) {
+        flow {
+            userRepo.removeUserFromBlocklist(userId = userId)
+            emit(Unit)
+        }
+            .mapToPayload { Unit }
+            .onEach { result ->
+                _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }
+                when (result) {
+                    Payload.Loading -> {}
+                    is Payload.Error -> {
+                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                    }
+                    is Payload.Success -> {
+                        _eventChannel.send(GroupDetailScreenEvent.UserBlockActionCompleted)
+                    }
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun processGroupRemoval(
@@ -211,7 +264,7 @@ class GroupDetailViewModel(
     fun tryAddMember() {
         val state = _uiState.value.data ?: return
         coroutineScope.launch {
-            if(state.members.size >= state.memberLimit)
+            if (state.members.size >= state.memberLimit)
                 _eventChannel.send(GroupDetailScreenEvent.GroupMembersLimitReached(state.memberLimit))
             else
                 _eventChannel.send(GroupDetailScreenEvent.GroupMemberAdd)
