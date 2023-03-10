@@ -119,7 +119,7 @@ val coreDependencyModules = module {
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
     single { CryptoKeyLocalDataSource(get(), get()) }
-    single { UserGroupLocalDataSource(get(), get(), get()) }
+    single { UserGroupLocalDataSource(get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), config as Config) }
     single { PlacesLocalDataSource(get(), get()) }

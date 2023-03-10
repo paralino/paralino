@@ -41,8 +41,26 @@ class GroupRemoveUseCase(
     fun leaveGroup(groupId: String): Flow<Unit> {
         return getDataOnce(
             remote = {
+                val groupOwnerId = local.getGroupOwnerId(groupId)
+                remote.removeUserFromGroup(groupId, groupOwnerId!!, userRepository.cachedUserId)
+            },
+            localUpdate = {
+                clearGroupLocally(groupId)
+            }
+        )
+            .onStart { setAsProcessing(groupId) }
+            .onEach { stopProcessing(groupId) }
+            .catch {
+                stopProcessing(groupId)
+                throw it
+            }
+    }
+
+    fun blockGroup(groupId: String): Flow<Unit> {
+        return getDataOnce(
+            remote = {
                 val group = local.getGroupWithoutMembers(groupId).first()
-                remote.removeUserFromGroup(group, userRepository.cachedUserId)
+                remote.blockGroup(group)
             },
             localUpdate = {
                 clearGroupLocally(groupId)

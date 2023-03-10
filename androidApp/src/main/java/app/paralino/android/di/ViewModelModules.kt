@@ -117,8 +117,8 @@ val coreModule = module {
 
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupMemberAddUseCase(get(), get(), get(), get()) }
+    single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }

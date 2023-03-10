@@ -131,6 +131,22 @@ class GroupDetailViewModel(
 
 
     fun leaveOrDeleteGroup() {
+        processGroupRemoval { data ->
+            if (data.canEdit) {
+                groupRemove.deleteGroup(groupId).mapToPayload { it }
+            } else {
+                groupRemove.leaveGroup(groupId).mapToPayload { it }
+            }
+        }
+    }
+
+    fun blockGroup() {
+        processGroupRemoval { groupRemove.blockGroup(groupId).mapToPayload { it } }
+    }
+
+    private fun processGroupRemoval(
+        action: (GroupDetailScreenState) -> Flow<Payload<Unit>>
+    ) {
         val data = _uiState.value.data
 
         if (data == null) {
@@ -138,10 +154,8 @@ class GroupDetailViewModel(
                 _eventChannel.send(GroupDetailScreenEvent.Error(NotFoundException("Group not loaded")))
             }
             flowOf(Payload.Error<Unit>(NotFoundException("Group not loaded")))
-        } else if (data.canEdit) {
-            groupRemove.deleteGroup(groupId).mapToPayload { it }
         } else {
-            groupRemove.leaveGroup(groupId).mapToPayload { it }
+            action(data)
         }
             .onEach { result ->
                 _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }

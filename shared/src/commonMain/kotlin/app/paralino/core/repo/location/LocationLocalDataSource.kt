@@ -15,14 +15,6 @@ class LocationLocalDataSource(
     private val mapper: MemberWithLocationsMapperLocal
 ) {
 
-    suspend fun createOrUpdateMembersWithSettings(vararg data: MemberDocumentRaw) {
-        database.memberQueries.transaction {
-            data.forEach {
-                database.memberQueries.create(mapper.remote2Local(it))
-            }
-        }
-    }
-
     suspend fun createOrUpdateMembersWithoutSettings(vararg data: MemberDocumentRaw) {
         database.memberQueries.transaction {
             data.forEach {
@@ -46,47 +38,6 @@ class LocationLocalDataSource(
             deviceData = data.deviceData,
             locationData = data.locationData
         )
-    }
-
-    suspend fun recreateMembers(vararg data: MemberWithLocationsRaw) {
-        database.transaction {
-            data.forEach { member ->
-                memberQueries.create(mapper.remote2Local(member.member))
-                locationQueries.clearForMember(member.member.id)
-                member.locations.forEach {
-                    locationQueries.create(mapper.remote2Local(member.member, it))
-                }
-            }
-        }
-    }
-
-    suspend fun recreateAllMembers(data: List<MemberWithLocationsRaw>) {
-        database.transaction {
-            memberQueries.clearAll()
-            locationQueries.clearAll()
-            data.forEach { member ->
-                memberQueries.create(mapper.remote2Local(member.member))
-                member.locations.forEach {
-                    locationQueries.create(mapper.remote2Local(member.member, it))
-                }
-            }
-        }
-    }
-
-    suspend fun recreateMembersForGroup(
-        groupId: String,
-        data: List<MemberWithLocationsRaw>
-    ) {
-        database.transaction {
-            memberQueries.clearForGroup(groupId)
-            locationQueries.clearForGroup(groupId)
-            data.forEach { member ->
-                memberQueries.create(mapper.remote2Local(member.member))
-                member.locations.forEach {
-                    locationQueries.create(mapper.remote2Local(member.member, it))
-                }
-            }
-        }
     }
 
     fun getMemberRawPresentation(memberId: String): Flow<Pair<MemberWithLocationsRaw, MemberModelWithLocations>> {

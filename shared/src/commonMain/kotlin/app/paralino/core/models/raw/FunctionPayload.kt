@@ -4,6 +4,12 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
+data class GenericFunctionPayload<T>(
+    val route: String,
+    val payload: T
+)
+
+@Serializable
 data class CreateGroupPayload constructor(
     val encryptedGroupKey: String,
     val encryptedMemberKey: String,
@@ -46,6 +52,19 @@ data class GroupMemberGroupKeysData constructor(
 data class DeleteGroupMemberPayload constructor(
     val groupId: String,
     val userId: String
+)
+
+@Serializable
+data class BlockGroupFunctionData(
+    val groupId: String,
+    val groupData: String
+)
+
+@Serializable
+data class BlockGroupMemberFunctionData(
+    val groupId: String,
+    val userId: String,
+    val userData: String
 )
 
 @Serializable

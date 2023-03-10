@@ -8,6 +8,7 @@ import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.raw.LocationCreatePayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.repo.user.UserRepository
@@ -21,7 +22,7 @@ class RegisterDeviceForSharingUseCase constructor(
     private val remoteConfig: BackendConfig,
     private val memberRemote: LocationRemoteSource,
     private val userMemberId: UserMemberIdUseCase,
-    private val memberLocal: LocationLocalDataSource,
+    private val groupLocal: UserGroupLocalDataSource,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore
 ) : BaseRepository() {
@@ -72,7 +73,7 @@ class RegisterDeviceForSharingUseCase constructor(
 
             if (data.isSuccess) {
                 memberRemote.getMember(userMemberId.getCurrentUserMemberIdForGroup(groupId)!!)
-                    .also { memberLocal.recreateMembers(it) }
+                    .also { groupLocal.updateOrCreateMember(it) }
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(

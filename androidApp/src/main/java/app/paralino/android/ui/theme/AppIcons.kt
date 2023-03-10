@@ -74,7 +74,8 @@ object AppIcons {
     val Add @Composable get() = R.drawable.ic_add.asImageVector()
     val AddLink @Composable get() = R.drawable.ic_add_link.asImageVector()
     val Key @Composable get() = R.drawable.ic_key.asImageVector()
-    
+    val Block @Composable get() = R.drawable.ic_block.asImageVector()
+
     @Composable
     fun Int.asImageVector(): ImageVector {
         return ImageVector.vectorResource(id = this)

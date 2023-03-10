@@ -239,6 +239,8 @@
     <string name="group_details_leave_group_alert_title">Are you sure you want leave this group?\nThis is irreversible and will delete all data you shared and remove all connection with members!</string>
     <string name="group_details_leave_group_alert_button">Leave</string>
     <string name="group_details_remove_member_alert_button">Remove</string>
+    <string name="group_details_block_group_alert_title">Are you sure you want to block this group?\nThis is irreversible, will delete all data you shared to group and you will not be able to rejoin the group!</string>
+    <string name="group_details_block_group_alert_button">Block</string>
     <string name="group_details_add_member_button">Add new member</string>
     <string name="group_details_map_action_button">Open map</string>
     <string name="group_details_sharing_status_time">Sharing until: **%s**</string>
@@ -320,5 +322,6 @@
     <string name="app_version_alert_title_mandatory">Please update</string>
     <string name="app_version_alert_message_mandatory">This app version is deprecated!\n\nTo continue using the app, please update to the latest version!</string>
     <string name="app_version_alert_button_update">Update</string>
+    <string name="group_details_menu_block">Block group</string>
 
 </resources>

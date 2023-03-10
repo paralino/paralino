@@ -15,7 +15,6 @@ class GroupMemberRemoveUseCase(
     private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val memberRemote: LocationRemoteSource,
-    private val memberLocal: LocationLocalDataSource,
     private val userRepository: UserRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupRemoveUseCase: GroupRemoveUseCase,
@@ -39,8 +38,8 @@ class GroupMemberRemoveUseCase(
 
         return getDataOnce(
             remote = {
-                val group = local.getGroupWithoutMembers(groupId).first()
-                remote.removeUserFromGroup(group, memberUserId)
+                val groupOwnerId = local.getGroupOwnerId(groupId)
+                remote.removeUserFromGroup(groupId, groupOwnerId!!, memberUserId)
             },
             localUpdate = {
                 local.removeMember(groupId, memberUserId)
@@ -72,7 +71,7 @@ class GroupMemberRemoveUseCase(
                 memberRemote.getMember(memberId)
             },
             localUpdate = {
-                memberLocal.recreateMembers(it)
+                local.updateOrCreateMember(it)
             }
         ).map { Unit }
     }

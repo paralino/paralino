@@ -230,6 +230,30 @@ sealed interface MainAlertDialog {
         }
     }
 
+    object BlockGroup : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.group_details_menu_block),
+                message = stringResource(id = R.string.group_details_block_group_alert_title),
+                buttons = listOf(
+                    AlertDialogButtonData(
+                        Buttons.buttonOk,
+                        stringResource(id = R.string.group_details_block_group_alert_button),
+                        AlertDialogButtonData.destructiveColor
+                    ),
+                    AlertDialogButtonData(
+                        Buttons.buttonCancel,
+                        stringResource(id = R.string.button_cancel)
+                    ),
+                ),
+                onAction = onAction
+            )
+        }
+    }
+
     data class DeleteGroupMember(
         val memberUserId: String,
         val memberName: String,

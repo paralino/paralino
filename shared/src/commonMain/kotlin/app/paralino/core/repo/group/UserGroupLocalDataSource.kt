@@ -6,8 +6,10 @@ import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mappers.GroupsMapperLocal
+import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupWithMembersRaw
+import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.flow.*
@@ -15,22 +17,49 @@ import kotlinx.coroutines.flow.*
 class UserGroupLocalDataSource constructor(
     private val database: AppDatabaseHelper,
     private val mapper: GroupsMapperLocal,
+    private val memberMapper: MemberWithLocationsMapperLocal,
     private val memberLocal: LocationLocalDataSource
 ) {
 
     suspend fun recreateGroups(data: List<GroupWithMembersRaw>) {
-        database.groupQueries.transaction {
-            database.groupQueries.clearAll()
+        database.transaction {
+            groupQueries.clearAll()
+            memberQueries.clearAll()
+            locationQueries.clearAll()
             data.forEach {
-                database.groupQueries.createGroup(mapper.remote2Local(it.group))
+                groupQueries.createGroup(mapper.remote2Local(it.group))
+                it.members.forEach { member ->
+                    memberQueries.create(memberMapper.remote2Local(member.member))
+                    member.locations.forEach {
+                        locationQueries.create(memberMapper.remote2Local(member.member, it))
+                    }
+                }
             }
         }
-        memberLocal.recreateAllMembers(data.flatMap { it.members })
     }
 
     suspend fun updateOrCreateGroup(group: GroupWithMembersRaw) {
-        database.groupQueries.createGroup(mapper.remote2Local(group.group))
-        memberLocal.recreateMembersForGroup(group.group.id, group.members)
+        database.transaction {
+            groupQueries.createGroup(mapper.remote2Local(group.group))
+            memberQueries.clearForGroup(groupId = group.group.id)
+            locationQueries.clearForGroup(groupId = group.group.id)
+            group.members.forEach { member ->
+                memberQueries.create(memberMapper.remote2Local(member.member))
+                member.locations.forEach {
+                    locationQueries.create(memberMapper.remote2Local(member.member, it))
+                }
+            }
+        }
+    }
+
+    suspend fun updateOrCreateMember(member: MemberWithLocationsRaw) {
+        database.transaction {
+            memberQueries.create(memberMapper.remote2Local(member.member))
+            locationQueries.clearForMember(member.member.id)
+            member.locations.forEach {
+                locationQueries.create(memberMapper.remote2Local(member.member, it))
+            }
+        }
     }
 
     suspend fun updateGroupOnly(group: GroupDocumentRaw) {
@@ -107,6 +136,10 @@ class UserGroupLocalDataSource constructor(
 
     suspend fun removeMember(groupId: String, userId: String) {
         memberLocal.removeMemberFromGroup(groupId, userId)
+    }
+
+    suspend fun getGroupOwnerId(groupId: String): String? {
+        return database.groupQueries.getGroupOwnerId(groupId).executeAsOne()
     }
 
     suspend fun clearAll() {

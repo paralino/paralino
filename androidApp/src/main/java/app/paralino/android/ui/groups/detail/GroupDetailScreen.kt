@@ -139,6 +139,13 @@ fun GroupDetailScreen(
                             vm.leaveOrDeleteGroup()
                     }
                 }
+                is MainAlertDialog.BlockGroup -> {
+                    dialog.Show {
+                        showDialog = null
+                        if (it == MainAlertDialog.Buttons.buttonOk)
+                            vm.blockGroup()
+                    }
+                }
                 is MainAlertDialog.DeleteGroupMember -> {
                     dialog.Show {
                         showDialog = null
@@ -183,6 +190,9 @@ fun GroupDetailScreen(
                     } else {
                         showDialog = MainAlertDialog.LeaveGroup
                     }
+                },
+                onGroupBlock = {
+                    showDialog = MainAlertDialog.BlockGroup
                 },
                 onMemberDelete = {
                     showDialog = MainAlertDialog.DeleteGroupMember(
@@ -258,6 +268,7 @@ fun GroupDetailScreen(
     onGroupEdit: () -> Unit,
     onAddGroupMember: () -> Unit,
     onGroupDeleteOrLeave: () -> Unit,
+    onGroupBlock: () -> Unit,
     onMemberDelete: (GroupMemberItemState) -> Unit,
     onMemberDeviceDelete: (GroupMemberItemState, GroupMemberItemLocationState) -> Unit,
     onOpenMap: () -> Unit,
@@ -332,10 +343,34 @@ fun GroupDetailScreen(
                                 onGroupDeleteOrLeave()
                             }
                         ) {
+                            Icon(
+                                imageVector = if(state.canEdit) AppIcons.Delete else AppIcons.Logout,
+                                tint = MaterialTheme.colors.onError,
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.size(8.dp))
                             Text(
                                 text = if (state.canEdit) stringResource(id = R.string.group_details_menu_delete)
                                 else stringResource(id = R.string.group_details_menu_leave)
                             )
+                        }
+                        if(!state.canEdit) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    optionMenuExpanded = false
+                                    onGroupBlock()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = AppIcons.Block,
+                                    tint = MaterialTheme.colors.onError,
+                                    contentDescription = null
+                                )
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text(
+                                    text = stringResource(id = R.string.group_details_menu_block)
+                                )
+                            }
                         }
                     }
                 }
