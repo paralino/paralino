@@ -155,7 +155,7 @@ fun RootApp(
                             start = AppScreen.LoggedOut.Welcome
                         )
                     }
-                    is AppAccountState.NO_USER_DATA -> {
+                    is AppAccountState.NO_USER_DATA, AppAccountState.DATA_REFRESH -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center

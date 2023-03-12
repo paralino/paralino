@@ -86,7 +86,7 @@ val viewModelModules = module {
 }
 
 val utilModule = module {
-    single { PreCheckControl(get(), get()) }
+    single { PreCheckControl(get()) }
     single { UserSessionMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get()) }
 }
@@ -122,15 +122,16 @@ val coreModule = module {
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get()) }
+    single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { GroupValidityVerification(get(), get(), get(), config) }
 
     single { LocationSharingManager(get(), get()) }
     single { PersonalCodesRepository(get(), get(), get()) }
-    single { GroupRepository(get(), get(), get(), get(), get()) }
+    single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
     single { LocationRepository(get(), get(), get(), get(), get(), get()) }
     single { PlacesRepository(get(), get(), get(), get(), get()) }

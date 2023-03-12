@@ -77,7 +77,7 @@ class CreateGroupViewModel(
                 else -> group.data
             }
             val newGroup = group.copy(data = newData)
-            groupRepo.updateGroup(newGroup)
+            createGroup.updateGroup(newGroup)
                 .map { group.id }
         } else {
             createGroup.createGroup(filteredName, image)

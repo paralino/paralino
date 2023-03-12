@@ -9,7 +9,6 @@ import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMe
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.delay
@@ -20,7 +19,7 @@ class AppAccountStateMonitor constructor(
     private val userRepo: UserRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val userMapper: UserMapperCore,
-    private val groupRepo: GroupRepository,
+    private val refreshEverything: RefreshEverythingUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val pushManager: IPushProviderManager,
     private val scopeProvider: ICoroutineScopeProvider
@@ -92,14 +91,36 @@ class AppAccountStateMonitor constructor(
         }
             .onStart { emit(Resource.NotInitialized) }
             .conflate()
-            .onEach {
+            .transform {
                 // we are delaying when user state changes from true to false
                 // so in case of login, navigation is delayed a bit
                 val wasUserNull = oldUserState.data is AppAccountState.NO_USER
                 oldUserState = it
+
                 if (wasUserNull && it.data is AppAccountState.USER_READY) {
+                    logg.tag("account_state").v("${it.data} - User ready - delay for ui")
                     delay(500)
                 }
+
+                if ((wasUserNull && it.data is AppAccountState.USER_READY) || it.data is AppAccountState.NO_USER_DATA) {
+                    logg.tag("account_state").v("${it.data} - User data needs refresh")
+                    emit(Resource.Ready(AppAccountState.DATA_REFRESH))
+                    refreshEverything.refreshEverything(force = true)
+                } else if (it.data is AppAccountState.USER_READY) {
+                    logg.tag("account_state")
+                        .v("${it.data} - Refresh user data in background - don't force")
+                    scopeProvider.userSessionIOScope.launch {
+                        try {
+                            logg.tag("account_state").v("Refresh user on different scope")
+                            refreshEverything.refreshEverything(force = false)
+                        } catch (e: Exception) {
+                            logg.tag("account_state").v("Unable to refresh user: ${e.message}")
+                        }
+                    }
+                } else {
+                    logg.tag("account_state").v("${it.data} - Not refreshing user data")
+                }
+                emit(it)
             }
             .distinctUntilChanged()
             .onEach {
@@ -110,17 +131,6 @@ class AppAccountStateMonitor constructor(
                         pushManager.syncPushToken()
                         pushManager.syncPushNotifications()
                     }
-                    is AppAccountState.NO_USER_DATA -> {
-                        logg.tag("account_state").v("Launch different scope to refresh user")
-                        scopeProvider.userSessionIOScope.launch {
-                            try {
-                                logg.tag("account_state").v("Refresh user on different scope")
-                                userRepo.refreshUserIfAvailable()
-                            } catch (e: Exception) {
-                                logg.tag("account_state").v("Unable to refresh user: ${e.message}")
-                            }
-                        }
-                    }
                     else -> {}
                 }
             }
@@ -129,6 +139,7 @@ class AppAccountStateMonitor constructor(
 sealed class AppAccountState {
     object NO_USER : AppAccountState()
     object NO_USER_DATA : AppAccountState()
+    object DATA_REFRESH : AppAccountState()
     data class NO_PROFILE(val user: UserMe) : AppAccountState()
     data class ACCOUNT_RESET(val userRaw: UserMeRaw) : AppAccountState()
     data class USER_READY(val user: UserMe) : AppAccountState()

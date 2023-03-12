@@ -61,6 +61,7 @@ class GroupRefreshUseCase constructor(
         }
     }
 
+    // TODO handle recursive callback to getRemoteGroupWithMembers
     suspend fun handleGroupKeysUpdate(group: GroupWithMembersRaw): GroupWithMembersRaw {
         logg.tag("tag_crypto_key_group").w("group and member keys updated")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)

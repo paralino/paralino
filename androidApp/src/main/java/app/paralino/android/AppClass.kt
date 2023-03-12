@@ -27,11 +27,11 @@ import app.paralino.core.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.connectionStatus
 import app.paralino.core.domain.user.LogoutUseCase
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.IConnectionStatusProvider
 import app.paralino.core.utils.IDeviceApiProvider
@@ -70,7 +70,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     private val launcher: PreCheckControl by inject()
     private val userRepo: UserRepository by inject()
-    private val groupRepo: GroupRepository by inject()
+    private val refreshManager: RefreshEverythingUseCase by inject()
     private val sessionMonitor: UserSessionMonitor by inject()
     private val logoutUseCase: LogoutUseCase by inject()
     private val connectionStatusProvider: IConnectionStatusProvider by inject()
@@ -116,8 +116,6 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
             .launchIn(defaultScope)
 
         launcher.start()
-            .catch { logg.d("Error with initial refresh: ${it.message}") }
-            .launchIn(defaultScope)
 
         locationSharing.sharingStatus
             .onEach {
@@ -154,16 +152,11 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
         logg.tag("app_state").v("App is in foreground")
         updateLocationStatus()
         updateConnectionStatus()
-        updateConfig()
 
         if(wasInBackground) {
             wasInBackground = false
-
-            userSessionIOScope.launch {
-                groupRepo.scheduleRefreshAllGroupsWithPlaces(
-                    time = 60_000
-                )
-            }
+            updateConfig()
+            updateGroups()
         }
     }
 
@@ -179,6 +172,14 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private fun updateConnectionStatus() {
         defaultIOScope.launch {
             connectionStatusProvider.initAndGetStatus()
+        }
+    }
+
+    private fun updateGroups() {
+        userSessionIOScope.launch {
+            refreshManager.scheduleRefreshAllGroupsWithPlaces(
+                time = 60_000
+            )
         }
     }
 

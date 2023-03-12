@@ -20,8 +20,7 @@ class PersonalCodeViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-
-        repo.getMyPersonalCodes()
+        repo.getAndRefreshMyPersonalCodes()
             .onEach { result ->
                 _uiState.update {
 

@@ -14,6 +14,7 @@ class LocationRefreshUseCase constructor(
 ) {
 
     fun locationRefresh(groupId: String): Flow<Unit> {
+        logg.tag("location_refresh").v("Start realtime subscription for group $groupId")
         val locationSubscriptionFlow = realtimeApi.subscribeWithFilter(
             channels = listOf(
                 realtimeEventsProcessor.membersChannel,
@@ -24,7 +25,10 @@ class LocationRefreshUseCase constructor(
                 "${realtimeEventsProcessor.locationsChannel}.*"
             )
         )
-            .onStart { groupPreRefresh.refreshGroupWithMembers(groupId) }
+            .onStart {
+                logg.tag("location_refresh").v("Try refreshing group first")
+                groupPreRefresh.refreshGroupWithMembers(groupId)
+            }
             .onEach {
                 realtimeEventsProcessor.processEvent(it)
             }

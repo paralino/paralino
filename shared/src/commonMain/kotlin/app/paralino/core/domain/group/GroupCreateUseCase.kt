@@ -9,6 +9,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.group.GroupIntegrity
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.location.MemberVerification
@@ -66,6 +67,27 @@ class GroupCreateUseCase(
             }
     }
 
+    fun updateGroup(userGroup: UserGroup): Flow<Unit> {
+
+        val groupId = userGroup.id
+
+        if(isProcessing(groupId)) {
+            logg.tag("group_actions").v("Processing, can't update group $groupId")
+            return flow { throw IllegalStateException("Group update already in progress") }
+        }
+
+        return getDataOnce(
+            remote = { remote.updateGroup(userGroup) },
+            localUpdate = { local.updateGroupOnly(it) }
+        )
+            .onStart { setAsProcessing(groupId) }
+            .onEach { stopProcessing(groupId) }
+            .catch {
+                stopProcessing(groupId)
+                throw it
+            }
+            .map { Unit }
+    }
 
     private suspend fun createGroupImpl(
         name: String,

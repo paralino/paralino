@@ -129,6 +129,10 @@ class UserGroupLocalDataSource constructor(
         return database.mapToList { groupQueries.getAllGroupIds() }
     }
 
+    suspend fun getAllGroupsCount(): Int {
+        return database.groupQueries.getGroupsCount().executeAsOneOrNull()?.toInt() ?: 0
+    }
+
     suspend fun deleteGroup(groupId: String) {
         database.groupQueries.deleteGroup(groupId)
         memberLocal.removeAllMembersForGroup(groupId)

@@ -21,6 +21,9 @@ WHERE id = :groupId;
 getAllGroups:
 SELECT * FROM groupEntity;
 
+getGroupsCount:
+SELECT COUNT(id) FROM groupEntity;
+
 getAllGroupIds:
 SELECT groupEntity.id FROM groupEntity;
 

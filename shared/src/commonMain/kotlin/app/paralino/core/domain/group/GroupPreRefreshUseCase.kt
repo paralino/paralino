@@ -3,6 +3,7 @@ package app.paralino.core.domain.group
 import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
@@ -14,13 +15,15 @@ class GroupPreRefreshUseCase constructor(
     private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupMemberAdd: GroupMemberAddUseCase,
-    private val groupRefresh: GroupRefreshUseCase
+    private val groupRefresh: GroupRefreshUseCase,
+    private val refreshEverything: RefreshEverythingUseCase
 ) : BaseRepository(), ILimitedExecution<String> {
 
     override val executionState = MutableStateFlow(listOf<String>())
 
     override fun isProcessing(key: String): Boolean {
         val selfProcessing = super.isProcessing(key)
+        val fullProcessing = refreshEverything.isProcessing()
         val groupRemoveProcessing = groupRemove.isProcessing(key)
         val groupMemberRemoveProcessing = groupMemberRemove.isProcessing(key)
         val groupMemberAddProcessing = groupMemberAdd.isProcessing(key)
@@ -30,6 +33,7 @@ class GroupPreRefreshUseCase constructor(
         logg.tag("group_actions").v(
             "Group pre-refresh processing:" +
                     " self: $selfProcessing" +
+                    " full: $fullProcessing" +
                     " groupRemove: $groupRemoveProcessing" +
                     " groupMemberRemove: $groupMemberRemoveProcessing" +
                     " groupAddRemove: $groupMemberAddProcessing" +
@@ -37,7 +41,7 @@ class GroupPreRefreshUseCase constructor(
                     " memberKeyRotation: $memberCryptoKeyRotationProcessing"
         )
 
-        return selfProcessing || groupRemoveProcessing || groupMemberRemoveProcessing || groupMemberAddProcessing || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing
+        return selfProcessing || fullProcessing || groupRemoveProcessing || groupMemberRemoveProcessing || groupMemberAddProcessing || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing
     }
 
     suspend fun refreshGroupWithMembers(groupId: String) {

@@ -49,13 +49,21 @@ class PersonalCodesRepository constructor(
         }
     }
 
-    fun getMyPersonalCodes(): Flow<List<UserPersonalCode>> {
+    fun getAndRefreshMyPersonalCodes(): Flow<List<UserPersonalCode>> {
         return mergeDataWithRemote(
             local = local.getPersonalCodes(),
             remote = { remote.getMyPersonalCodes() },
             localUpdate = { local.replacePersonalCodes(it) },
         )
             .map { it.filter { it.isStillValid() } }
+    }
+
+    suspend fun refreshPersonalCodes() {
+        triggerRemoteOnly {
+            remote.getMyPersonalCodes()
+        }.also {
+            local.replacePersonalCodes(it)
+        }
     }
 
     fun getUserInfoFromCode(code: String): Flow<Payload<UserPersonalCodeData>> {

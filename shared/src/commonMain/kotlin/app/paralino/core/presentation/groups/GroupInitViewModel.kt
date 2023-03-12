@@ -29,7 +29,7 @@ class GroupInitViewModel(
         combine(
             userRepo.localUser,
             connectionStatus.status,
-            personalCodesRepo.getMyPersonalCodes()
+            personalCodesRepo.getAndRefreshMyPersonalCodes()
         ) { user, network, codes ->
 
             val errors = buildList {

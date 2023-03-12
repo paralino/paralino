@@ -2,6 +2,7 @@ package app.paralino.core.domain.group
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.logg
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
@@ -22,6 +23,12 @@ class GroupRemoveUseCase(
     override val executionState = MutableStateFlow(listOf<String>())
 
     fun deleteGroup(groupId: String): Flow<Unit> {
+
+        if(isProcessing(groupId)) {
+            logg.tag("group_actions").v("Processing, can't delete group $groupId")
+            return flow { throw IllegalStateException("Group action already in progress") }
+        }
+
         return getDataOnce(
             remote = {
                 remote.deleteGroup(groupId)
@@ -39,6 +46,12 @@ class GroupRemoveUseCase(
     }
 
     fun leaveGroup(groupId: String): Flow<Unit> {
+
+        if(isProcessing(groupId)) {
+            logg.tag("group_actions").v("Processing, can't leave group $groupId")
+            return flow { throw IllegalStateException("Group action already in progress") }
+        }
+
         return getDataOnce(
             remote = {
                 val groupOwnerId = local.getGroupOwnerId(groupId)
@@ -57,6 +70,12 @@ class GroupRemoveUseCase(
     }
 
     fun blockGroup(groupId: String): Flow<Unit> {
+
+        if(isProcessing(groupId)) {
+            logg.tag("group_actions").v("Processing, can't block group $groupId")
+            return flow { throw IllegalStateException("Group action already in progress") }
+        }
+
         return getDataOnce(
             remote = {
                 val group = local.getGroupWithoutMembers(groupId).first()

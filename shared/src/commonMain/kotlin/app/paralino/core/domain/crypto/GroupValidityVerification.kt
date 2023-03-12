@@ -154,8 +154,11 @@ class GroupValidityVerification(
         forGroup: Boolean,
     ): IntegrityResult {
 
-        if (myIntegrity.isNullOrBlank())
+        val tag = "integrity_check${if(forGroup) "_group" else "_member"}"
+        if (myIntegrity.isNullOrBlank()) {
+            logg.tag(tag).w("CORRUPTED for $groupId - Missing own integrity")
             return IntegrityResult.CORRUPTED
+        }
 
         val remoteIntegrity: GroupIntegrity
         val realIntegritySignature = try {
@@ -167,6 +170,7 @@ class GroupValidityVerification(
                     myPrivateKey = myKey.privateKey
                 ).let { BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it) }
             } catch (e: Exception) {
+                logg.tag(tag).w("CORRUPTED for $groupId - Error parsing: ${e.message}")
                 return IntegrityResult.CORRUPTED
             }
 
@@ -182,14 +186,17 @@ class GroupValidityVerification(
                 encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMemberPublicKeys(groupId)
             )
         } catch (e: Exception) {
+            logg.tag(tag).w("CORRUPTED for $groupId - Generic error: ${e.message}")
             return IntegrityResult.CORRUPTED
         }
 
         val valid = if (forGroup) remoteIntegrity.isValidForGroup(realIntegritySignature)
         else remoteIntegrity.isValidForMember(realIntegritySignature)
         if (valid) {
+            logg.tag(tag).v("VALID for $groupId")
             return IntegrityResult.VALID
         } else {
+            logg.tag(tag).v("VALID_EXPIRED for $groupId")
             return IntegrityResult.VALID_EXPIRED
         }
     }
