@@ -49,7 +49,7 @@ class MemberWithLocationsMapperLocal(
                     integrity = integrity
                 )
             },
-            locationIds = emptyList()
+            locationIds = memberLocations.map { it.id }
         )
 
         val locations = memberLocations.map { location ->

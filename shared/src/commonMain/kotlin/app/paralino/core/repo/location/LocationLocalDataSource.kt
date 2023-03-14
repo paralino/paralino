@@ -66,7 +66,10 @@ class LocationLocalDataSource(
         ) { members, locations ->
             members.map { member ->
                 val ownerId = getGroupOwnerId(groupId = member.groupId)!!
-                mapper.local2Core(member, locations, ownerId)
+                val memberLocations = locations.filter {
+                    it.memberId == member.id
+                }
+                mapper.local2Core(member, memberLocations, ownerId)
             }
         }
             .distinctFlowOfList()

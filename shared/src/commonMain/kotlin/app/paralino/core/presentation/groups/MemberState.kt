@@ -40,7 +40,7 @@ data class GroupMemberItemStateWithOneLocation constructor(
     val location: GroupMemberItemLocationState?,
 ) : GroupMemberItemState {
     override val keyId: String
-        get() = location?.locationId?.takeIf { it.isNotBlank() } ?: memberState.memberId
+        get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId) ?: memberState.memberId
     val status: GroupMemberStatus get() = location?.status ?: GroupMemberStatus.INACTIVE
 }
 
