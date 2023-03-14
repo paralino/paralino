@@ -138,10 +138,10 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     private fun initLogger() {
         logg = Logger
+        SentryAndroid.init(this) {
+            it.isSendDefaultPii = false
+        }
         if (!BuildConfig.forceLogToSystem) {
-            SentryAndroid.init(this) {
-                it.isSendDefaultPii = false
-            }
             Logger.setLogger(externalLogTree)
         } else {
             Logger.setLogger(DebugLogger(getString(R.string.app_name)))
