@@ -128,10 +128,12 @@ class GroupCryptoKeyRotation constructor(
         blocking {
             val newGroupKey = cryptoCore.getNewSymmetricKey()
 
-            val groupData = cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(group.data.data!!),
-                key = newGroupKey.content
-            )
+            val groupData = group.data.data?.let {
+                cryptoCore.encryptDataWithKey(
+                    data = BaseRemoteModule.formatter.encodeToString(it),
+                    key = newGroupKey.content
+                )
+            } ?: ""
 
             val placesData = places.mapNotNull { place ->
                 place.data.data?.let {

@@ -6,9 +6,11 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.utils.Constants
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -71,8 +73,8 @@ class CreateGroupViewModel(
         val group = groupFlow.value.data
         val groupUpdateFlow = if (group != null) {
             val newData = when(group.data) {
-                is CryptoResource.Ready -> {
-                    CryptoResource.Ready(group.data.data.copy(name = filteredName, image = image))
+                is CryptoResource.Ready, is CryptoResource.WrongKeyOrData, is CryptoResource.NotInitialized -> {
+                    CryptoResource.Ready(group.data.data?.copy(name = filteredName, image = image) ?: UserGroupData(filteredName, image, Constants.collectionGroupUser))
                 }
                 else -> group.data
             }

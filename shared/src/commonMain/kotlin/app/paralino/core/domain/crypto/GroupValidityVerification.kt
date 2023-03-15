@@ -33,7 +33,7 @@ class GroupValidityVerification(
     ): VerificationResult {
         try {
             groupOwnerPublicKey?.takeIf { it.isNotBlank() }
-                ?: return VerificationResult.MISSING_PUBLIC_KEY
+                ?: return VerificationResult.MISSING_GROUP_OWNER_PUBLIC_KEY
             groupKey ?: return VerificationResult.MISSING_GROUP_KEY
 
             val verification = try {
@@ -54,9 +54,9 @@ class GroupValidityVerification(
                         groupId = groupId,
                         memberUserId = memberUserId
                     ) ?: return VerificationResult.MISSING_PUBLIC_KEY
-                ) ?: return VerificationResult.WRONG_MEMBER_VERIFICATION
+                ) ?: return VerificationResult.WRONG_MEMBER_VERIFICATION_SIGNATURE
             } catch (e: Exception) {
-                return VerificationResult.WRONG_MEMBER_VERIFICATION
+                return VerificationResult.WRONG_MEMBER_VERIFICATION_FORM
             }
 
             if (memberUserId == config.userId) {
@@ -97,7 +97,7 @@ class GroupValidityVerification(
                         if (hash != secretKey)
                             return VerificationResult.WRONG_MEMBER_SECRET
                     } catch (e: Exception) {
-                        return VerificationResult.WRONG_MEMBER_SECRET
+                        return VerificationResult.INVALID_MEMBER_SECRET
                     }
                 }
             }
@@ -213,13 +213,16 @@ enum class VerificationResult {
     GENERIC_ERROR,
     MISSING_GROUP_KEY,
     MISSING_PUBLIC_KEY,
+    MISSING_GROUP_OWNER_PUBLIC_KEY,
     WRONG_VERIFICATION_ENTRY_SIGNATURE,
     WRONG_VERIFICATION_ENTRY_FORM,
     WRONG_OWNER_VERIFICATION,
-    WRONG_MEMBER_VERIFICATION,
+    WRONG_MEMBER_VERIFICATION_SIGNATURE,
+    WRONG_MEMBER_VERIFICATION_FORM,
     MISSING_MEMBER_SETTINGS,
     MISSING_MEMBER_INTEGRITY,
     WRONG_MEMBER_INTEGRITY,
     MISSING_MEMBER_SECRET,
     WRONG_MEMBER_SECRET,
+    INVALID_MEMBER_SECRET,
 }
