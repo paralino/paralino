@@ -148,13 +148,13 @@ fun SettingSectionInfo(
             name = stringResource(id = R.string.setting_title_sourceCode),
             icon = AppIcons.Code
         ) {
-            context.openUri(Deeplink.sourceCodeUrl.toUri())
+            context.openUri(Deeplink.sourceCodeUrl)
         }
         SettingsActionItem(
             name = stringResource(id = R.string.setting_title_privacy),
             icon = AppIcons.PrivacyTip
         ) {
-            TODO()
+            context.openUri(Deeplink.privacyPolicyUrl)
         }
         SettingsActionItem(
             name = stringResource(id = R.string.setting_title_libraries),
