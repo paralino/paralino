@@ -105,7 +105,7 @@ class SharingStartViewModel(
 
     fun startSharing() {
 
-        if (getErrors(forLongTerm = _uiState.value.isLongTerm).isEmpty()) {
+        if (getErrors(forLongTerm = _uiState.value.isLongTerm).isEmpty() && _uiState.value.canShare) {
             proceedWithSharing()
             return
         }
@@ -117,7 +117,11 @@ class SharingStartViewModel(
             return
         }
 
-        if (getErrors(forLongTerm = false).isEmpty() && _uiState.value.isLongTerm) {
+        if(_uiState.value.groupState.data?.uiType == GroupItemState.GroupUiType.UNVERIFIED) {
+            coroutineScope.launch {
+                _eventChannel.send(SharingStartScreenEvent.UnverifiedGroup)
+            }
+        } else if (getErrors(forLongTerm = false).isEmpty() && _uiState.value.isLongTerm) {
             // only background location permission is missing
             coroutineScope.launch {
                 _eventChannel.send(SharingStartScreenEvent.MissingBackgroundPermission)

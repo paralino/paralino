@@ -684,4 +684,26 @@ sealed interface MainAlertDialog {
         }
     }
 
+    object UnverifiedGroupInfo : MainAlertDialog {
+        override val key: String = this.javaClass.simpleName
+
+        @Composable
+        fun Show(onAction: (buttonId: String?) -> Unit) {
+            MainAlertDialog(
+                title = stringResource(id = R.string.groups_sharing_error_unverified_group_title),
+                message = stringResource(id = R.string.groups_sharing_error_unverified_group_message),
+                buttons = buildList {
+                    add(
+                        AlertDialogButtonData(
+                            Buttons.buttonOk,
+                            stringResource(id = R.string.button_ok),
+                            AlertDialogButtonData.positiveColor
+                        )
+                    )
+                },
+                onAction = onAction
+            )
+        }
+    }
+
 }

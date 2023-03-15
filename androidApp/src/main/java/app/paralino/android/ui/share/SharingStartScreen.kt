@@ -140,6 +140,9 @@ fun SharingStartScreen(
                 null -> {
                     /* do nothing */
                 }
+                is SharingStartScreenEvent.UnverifiedGroup -> {
+                    showDialog = MainAlertDialog.UnverifiedGroupInfo
+                }
                 is SharingStartScreenEvent.DevicesLimitReached -> {
                     showDialog = MainAlertDialog.PlanLimit(
                         context.getString(R.string.plan_limit_devices_alert_info),
@@ -160,6 +163,11 @@ fun SharingStartScreen(
                 } else {
                     vm.proceedWithSharing()
                 }
+            }
+        }
+        is MainAlertDialog.UnverifiedGroupInfo -> {
+            dialog.Show {
+                showDialog = null
             }
         }
         is MainAlertDialog.SharingErrors -> {
@@ -224,19 +232,15 @@ fun SharingStartScreen(
                     style = ButtonStyle.BIG(iconSize = 24.dp),
                     state = AppButtonState.CONTENT,
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (state.errors.isEmpty())
+                        backgroundColor = if (state.canShare)
                             MaterialTheme.colors.primary
                         else MaterialTheme.colors.secondary
                     ),
-                    icon = if (state.errors.isNotEmpty()) AppIcons.NotListedLocation
-                    else AppIcons.ShareLocation,
+                    icon = if (state.canShare) AppIcons.ShareLocation
+                    else AppIcons.NotListedLocation,
                     onClick = { vm.startSharing() }
                 ) {
-                    if (state.errors.isNotEmpty()) {
-                        Text(text = stringResource(id = R.string.groups_sharing_button_enable))
-                    } else {
-                        Text(text = stringResource(id = R.string.groups_sharing_button_start))
-                    }
+                    Text(text = stringResource(id = R.string.groups_sharing_button_start))
                 }
             }
         },
@@ -326,8 +330,7 @@ fun SharingStartScreen(
                         color = MaterialTheme.colors.surface,
                         shape = RoundedCornerShape(percent = 20)
                     )
-                    .padding(vertical = 8.dp, horizontal = 8.dp)
-                ,
+                    .padding(vertical = 8.dp, horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(

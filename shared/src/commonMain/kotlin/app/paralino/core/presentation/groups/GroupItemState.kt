@@ -12,7 +12,11 @@ data class GroupItemState constructor(
 ) {
 
     constructor(group: UserGroup, uiType: GroupUiType? = null) : this(
-        group.id, group.name, group.image, group.memberCount, uiType ?: if(!group.isVerified) GroupUiType.UNVERIFIED else GroupUiType.INACTIVE
+        id = group.id,
+        name = group.name,
+        image = group.image,
+        userCount = group.memberCount,
+        uiType = uiType ?: if (!group.isVerified) GroupUiType.UNVERIFIED else GroupUiType.INACTIVE
     )
 
     enum class GroupUiType {
