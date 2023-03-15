@@ -133,6 +133,7 @@ fun MapHomeScreenElements(
                         groupImage = readyState.groupImage,
                         userCount = readyState.userCount,
                         inactiveUserCount = readyState.inactiveUserCount,
+                        verified = readyState.allMembersVerified,
                         onGroupClick = onGroupDetailsClick,
                         onExpandClick = onGroupPickerClick
                     )

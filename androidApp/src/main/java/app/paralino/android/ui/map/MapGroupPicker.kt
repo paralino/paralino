@@ -44,6 +44,7 @@ fun MapGroupPicker(
     groupImage: ImageModel,
     userCount: Int,
     inactiveUserCount: Int,
+    verified: Boolean,
     onGroupClick: () -> Unit,
     onExpandClick: () -> Unit,
 ) {
@@ -181,11 +182,20 @@ fun MapGroupPicker(
                 .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = AppIcons.ExpandMore,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
+            if(verified) {
+                Icon(
+                    imageVector = AppIcons.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = AppIcons.Warning,
+                    tint = MaterialTheme.colors.onError,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }
@@ -199,6 +209,7 @@ fun MemberPreview() {
                 MapGroupPicker(
                     groupName = "Robots in da house",
                     groupImage = ImageModel.emoji(Emojis.robot),
+                    verified = false,
                     userCount = 5,
                     inactiveUserCount = 2,
                     onExpandClick = {},

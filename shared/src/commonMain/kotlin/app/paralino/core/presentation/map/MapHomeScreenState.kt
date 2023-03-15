@@ -19,7 +19,9 @@ sealed class MapHomeScreenState {
         val markers: List<MapPinData>,
         val focusedMarker: FocusedMarkerData?,
         val sharingStatus: LocationSharingContract?
-    ): MapHomeScreenState()
+    ): MapHomeScreenState() {
+        val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
+    }
     data class Empty(
         override val currentUserImage: ImageModel = ImageModel.emoji(Emojis.robot),
     ): MapHomeScreenState()
