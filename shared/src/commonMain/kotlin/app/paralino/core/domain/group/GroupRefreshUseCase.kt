@@ -7,6 +7,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.GroupWithMembersRaw
+import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -25,6 +26,7 @@ class GroupRefreshUseCase constructor(
     private val groupMapperCore: GroupMapperCore,
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
     private val groupRemove: GroupRemoveUseCase,
+    private val locationSharingManager: LocationSharingManager
 ) : BaseRepository(), ILimitedExecution<String> {
 
     override val executionState = MutableStateFlow(listOf<String>())
@@ -65,6 +67,9 @@ class GroupRefreshUseCase constructor(
     suspend fun handleGroupKeysUpdate(group: GroupWithMembersRaw): GroupWithMembersRaw {
         logg.tag("tag_crypto_key_group").w("group and member keys updated")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
+
+        if(!remoteGroup.isGroupVerified)
+            locationSharingManager.stopSharing(remoteGroup.id)
 
         if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = false)) {
             return getRemoteGroupWithMembers(remoteGroup.id)
