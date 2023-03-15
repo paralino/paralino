@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -20,24 +21,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.*
+import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.android.utils.extensions.openUri
 import app.paralino.core.presentation.login.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun LoginScreen(
     appState: MainAppState,
@@ -50,7 +57,7 @@ fun LoginScreen(
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     LaunchedEffect(key1 = vm) {
-        showDialog = if(uiState.hasGuestAccount) MainAlertDialog.GuestAccountRecover else null
+        showDialog = if (uiState.hasGuestAccount) MainAlertDialog.GuestAccountRecover else null
     }
 
     val signUpRegularSwitchState by rememberSeekbarState(
@@ -115,7 +122,7 @@ fun LoginScreen(
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk)
                     vm.recoverGuestAccount()
-                else if(it == MainAlertDialog.Buttons.buttonCancel) {
+                else if (it == MainAlertDialog.Buttons.buttonCancel) {
                     vm.dismissGuestAccount()
                 } else {
                     vm.hideGuestAccountDialog()
@@ -197,7 +204,7 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.size(40.dp))
+            Spacer(modifier = Modifier.size(30.dp))
 
             AnimatedVisibility(
                 visible = uiState.uiType != LoginScreenUiType.SIGNUP_GUEST,
@@ -214,7 +221,7 @@ fun LoginScreen(
                         onInputChange = { vm.onEmailChange(it) }
                     )
 
-                    Spacer(modifier = Modifier.size(8.dp))
+                    Spacer(modifier = Modifier.size(4.dp))
 
                     AnimatedVisibility(
                         visible = uiState.uiType != LoginScreenUiType.FORGOT_PASSWORD,
@@ -234,7 +241,7 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         PasswordInputField(
-                            modifier = Modifier.padding(top = 8.dp),
+                            modifier = Modifier.padding(top = 4.dp),
                             password = uiState.passwordConfirm,
                             hint = stringResource(id = R.string.login_placeholder_password_confirm),
                             hasError = uiState.hasPasswordConfirmError,
@@ -313,6 +320,8 @@ fun LoginScreen(
             }
         }
 
+        TermsAndPrivacyElement(uiType = uiState.uiType)
+
         Spacer(modifier = Modifier.weight(1f))
 
         val switchText = when (uiState.uiType) {
@@ -332,6 +341,61 @@ fun LoginScreen(
                 }
                 .padding(horizontal = 12.dp, vertical = 8.dp),
         )
+    }
+}
+
+@Composable
+fun ColumnScope.TermsAndPrivacyElement(uiType: LoginScreenUiType) {
+    val text = stringResource(id = R.string.login_signup_terms_privacy_text)
+    val privacy = stringResource(id = R.string.login_signup_terms_privacy_privacy)
+    val terms = stringResource(id = R.string.login_signup_terms_privacy_terms)
+    val privacyStart = text.indexOf(privacy)
+    val privacyEnd = text.indexOf(privacy) + privacy.length
+    val termsStart = text.indexOf(terms)
+    val termsEnd = text.indexOf(terms) + terms.length
+
+    val context = LocalContext.current
+    AnimatedVisibility(
+        visible = uiType == LoginScreenUiType.SIGNUP || uiType == LoginScreenUiType.SIGNUP_GUEST,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        ClickableText(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .padding(top = 10.dp, bottom = 30.dp)
+                .align(Alignment.CenterHorizontally),
+            text = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.6f)
+                    )
+                ) {
+                    append(text)
+                }
+                addStyle(
+                    style = SpanStyle(
+                        color = if (!isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ), start = privacyStart, end = privacyEnd
+                )
+                addStyle(
+                    style = SpanStyle(
+                        color = if (!isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ), start = termsStart, end = termsEnd
+                )
+            }
+        ) {
+            if (it in privacyStart..privacyEnd) {
+                context.openUri(Deeplink.privacyPolicyUrl)
+            } else if (it in termsStart..termsEnd) {
+                context.openUri(Deeplink.termsOfUseUrl)
+            }
+        }
     }
 }
 

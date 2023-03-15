@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 
 
 val Context.batterLevel: Int
@@ -43,6 +44,10 @@ fun Context.copy(data: String, copyKey: String = app.paralino.android.BuildConfi
 fun Context.openUri(uri: Uri) {
     val intent = Intent(Intent.ACTION_VIEW, uri)
     startActivity(Intent.createChooser(intent, "Open"))
+}
+
+fun Context.openUri(uri: String) {
+    openUri(uri.toUri())
 }
 
 fun Context.hideKeyboardFrom(view: View) {

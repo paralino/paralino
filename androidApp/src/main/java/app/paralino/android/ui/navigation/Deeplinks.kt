@@ -119,6 +119,8 @@ sealed class Deeplink() {
 
         const val homeUrl = "https://paralino.app"
         const val sourceCodeUrl = "https://github.com/paralino"
+        const val privacyPolicyUrl = "https://paralino.app/privacy"
+        const val termsOfUseUrl = "https://paralino.app/terms"
 
         fun parse(deeplink: String?): Deeplink? {
             deeplink ?: return null
