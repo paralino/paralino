@@ -24,7 +24,7 @@ data class MemberLocation constructor(
     @Contextual
     val locationData: CryptoResource<LocationDataModel>
 ) {
-    val name: String? get() = deviceData.data?.deviceName
+    val name: String? get() = deviceData.data?.deviceName ?: "---"
 
     val isActive: Boolean
         get() {

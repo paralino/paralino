@@ -81,7 +81,7 @@ class GroupDetailViewModel(
                                 GroupMemberItemLocationState(
                                     memberLocation = it,
                                     // don't show device name if there is only one location
-                                    name = null,
+                                    name = it.name,
                                     image = member.member.image,
                                     canEdit = false,
                                     currentDevice = it.deviceId == config.deviceId,
