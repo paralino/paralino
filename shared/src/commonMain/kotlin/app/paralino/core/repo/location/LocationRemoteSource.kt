@@ -71,11 +71,10 @@ class LocationRemoteSource constructor(
 
             ids.forEach {
 
-                // TODO if key is missing, create new one
                 val memberKey = cryptoKEKRepo.getMemberKey(it.groupId, config.userId)
                     ?: throw MissingMemberKeyException(it.groupId, config.userId)
 
-                val groupKey = cryptoKEKRepo.getGroupKey(it.groupId)
+                val groupKey = cryptoKEKRepo.getGroupKey(it.groupId, it.member.groupKeyVersion)
                     ?: throw MissingGroupKeyException(it.groupId)
 
                 val locationData = it.data?.let {
@@ -85,7 +84,6 @@ class LocationRemoteSource constructor(
                     )
                 }
 
-                // TODO use member key for device data
                 val deviceData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
                         MemberDeviceData(

@@ -52,7 +52,9 @@ class LocationRepository constructor(
                 locationId =
                     memberIdUseCase.getCurrentLocationIdForGroup(groupId = contract.groupId)
 
-                if (locationId.isNullOrBlank()) {
+                val member = memberIdUseCase.getCurrentUserMemberForGroup(groupId = contract.groupId)
+
+                if (locationId.isNullOrBlank() || member == null) {
                     logg.d("Location device can not be established for current device, abort sharing")
                     sharingManager.stopSharing(contract.groupId)
                     null
@@ -60,6 +62,7 @@ class LocationRepository constructor(
                     MemberGroupId(
                         locationId = locationId,
                         groupId = contract.groupId,
+                        member = member,
                         // TODO share approximate location if selected
                         data = LocationDataModel(
                             timeUTC = data.timeUTC,

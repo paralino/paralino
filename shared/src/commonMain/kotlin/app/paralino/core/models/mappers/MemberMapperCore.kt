@@ -46,9 +46,7 @@ class MemberMapperCore constructor(
 
         // data encrypted with user senderKey DEK
         val locations = model.locations.map { location ->
-
-            // TODO review if we need to check for member key
-            val deviceData = if (memberKey != null && groupKey != null) {
+            val deviceData = if (groupKey != null) {
                 if (location.deviceData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {
