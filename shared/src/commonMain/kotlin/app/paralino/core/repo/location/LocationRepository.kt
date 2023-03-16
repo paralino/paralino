@@ -58,6 +58,10 @@ class LocationRepository constructor(
                     logg.d("Location device can not be established for current device, abort sharing")
                     sharingManager.stopSharing(contract.groupId)
                     null
+                } else if(!member.isVerified) {
+                    logg.d("Current member is unverified, stop sharing")
+                    sharingManager.stopSharing(contract.groupId)
+                    null
                 } else {
                     MemberGroupId(
                         locationId = locationId,
