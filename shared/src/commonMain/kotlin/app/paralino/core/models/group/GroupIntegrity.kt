@@ -22,7 +22,7 @@ data class GroupIntegrity(
     fun isValidForMember(signature: String): Boolean {
         val threshold = 30.toDuration(DurationUnit.DAYS)
         val timeValidity = timeUtc.isoWithOffsetToInstant()?.plus(threshold)?.let { it > nowUTC() } ?: false
-        return isValidForGroup(signature) && timeValidity
+        return this.signature == signature && timeValidity
     }
 
     companion object {
