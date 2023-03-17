@@ -180,6 +180,10 @@ class MemberCryptoKeyRotation(
                 if (memberPublicKey != null) {
                     GroupMemberKeyPayload(
                         userId = groupMember.member.userId,
+                        encryptedPublicKey = cryptoCore.encryptDataWithKey(
+                            data = myKey.publicKey,
+                            key = memberPublicKey
+                        ),
                         encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                             data = newSenderKey,
                             // sign with owner private key
@@ -228,7 +232,7 @@ class MemberCryptoKeyRotation(
             val memberKey = memberKeysCreatedByMe.firstOrNull {
                 it.memberUserId == member.member.userId
             }
-            member.member.isVerified && memberKey != null && memberKey.encryptedSenderKey.isNullOrBlank()
+            member.member.isVerified && (memberKey == null || memberKey.encryptedSenderKey.isNullOrBlank())
         }
 
         if (membersThatNeedKeyUpdate.isNotEmpty()) {
@@ -276,6 +280,10 @@ class MemberCryptoKeyRotation(
                 if (memberPublicKey != null) {
                     GroupMemberKeyPayload(
                         userId = groupMember.userId,
+                        encryptedPublicKey = cryptoCore.encryptDataWithKey(
+                            data = myKey.publicKey,
+                            key = memberPublicKey
+                        ),
                         encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                             data = newSenderKey,
                             // sign with owner private key

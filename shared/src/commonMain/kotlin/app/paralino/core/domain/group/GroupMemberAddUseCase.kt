@@ -122,9 +122,6 @@ class GroupMemberAddUseCase constructor(
 
         val keysForNewUser = group.members.mapNotNull { groupMember ->
 
-            // TODO if member later becomes verified - it will never get the key set
-            // keys are currently only created once, when new member is added
-            // there should be a fallback that would recreate keys
             if (!groupMember.member.isVerified)
                 return@mapNotNull null
 

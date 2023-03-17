@@ -107,6 +107,7 @@ data class UpdateGroupMemberKeysPayload(
 @Serializable
 data class GroupMemberKeyPayload constructor(
     val userId: String,
+    val encryptedPublicKey: String?,
     val encryptedSenderKey: String,
     val keyVersion: Long? = null
 )
