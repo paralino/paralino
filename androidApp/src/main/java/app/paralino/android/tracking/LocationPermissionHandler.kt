@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.R
 import app.paralino.core.utils.ILocationStatusProvider
@@ -33,11 +34,13 @@ fun rememberLocationPermissionHandler(
 
     val context = LocalContext.current
 
-    val state = LocationPermissionHandlerState(
-        appState = appState,
-        context = context,
-        locationStatusProvider = locationStatusProvider
-    )
+    val state = remember(context, appState, locationStatusProvider) {
+        LocationPermissionHandlerState(
+            appState = appState,
+            context = context,
+            locationStatusProvider = locationStatusProvider
+        )
+    }
 
     val gpsLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -91,7 +94,7 @@ fun rememberLocationPermissionHandler(
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
-class LocationPermissionHandlerState constructor(
+data class LocationPermissionHandlerState constructor(
     val appState: MainAppState,
     val context: Context,
     val locationStatusProvider: ILocationStatusProvider,
