@@ -8,9 +8,11 @@ import androidx.core.content.ContextCompat
 import app.paralino.android.AppClass
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
@@ -26,12 +28,12 @@ import logv
 import logw
 import org.koin.android.ext.android.inject
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.ExperimentalTime
 
 
 class LocationService : Service() {
 
     private val serviceDefaultScope = CoroutineScope(Dispatchers.Default + Job())
+    private var realtimeJob: Job? = null
 
     private val notificationHandler: LocationNotificationHandler by inject()
     private val locationInitHandler: LocationInitHandler by inject()
@@ -41,6 +43,7 @@ class LocationService : Service() {
     private val locationStatus: ILocationStatusProvider by inject()
     private val placesRepository: PlacesRepository by inject()
     private val geofenceManager: IGeofenceManager by inject()
+    private val fullRefresh: RefreshEverythingUseCase by inject()
 
     private var launchedInForeground: Boolean = false
 
@@ -82,14 +85,15 @@ class LocationService : Service() {
             .launchIn(serviceDefaultScope)
 
         locationSharingManager.allContractsFlow
+            .filterIsInstance<Resource.Ready<List<LocationSharingContract>>>()
+            .map { it.data.isNotEmpty() }
+            .distinctUntilChanged()
             .onEach {
                 logv(this.hashCode().toString(), "Location sharing status: $it")
-                if (it is Resource.Ready) {
-                    if (it.data.isNotEmpty()) {
-                        startTracking()
-                    } else {
-                        stopAll()
-                    }
+                if (it) {
+                    startTracking()
+                } else {
+                    stopAll()
                 }
             }
             .catch {
@@ -114,6 +118,20 @@ class LocationService : Service() {
 
         logv(this.hashCode().toString(), "Subscribing to location updates")
 
+        serviceDefaultScope.launch {
+            while(isActive) {
+                // try refreshing everything every 4 hours
+                // if refresh already occurred in last 20 hours it will be skipped
+                fullRefresh.refreshEverything(
+                    forceGroupRefresh = false,
+                    minimumDelayMillis = 20.hours.inWholeMilliseconds
+                )
+                delay(2_000)
+                reInitRealtime()
+                delay(4.hours.inWholeMilliseconds)
+            }
+        }
+
         locationInitHandler.currentLocation
             .onEach {
                 logv(this.hashCode().toString(), "Got location: $it")
@@ -124,25 +142,28 @@ class LocationService : Service() {
                 }
             }
             .launchIn(serviceDefaultScope)
-
-        sharingRealtimeEvents.listenForEventsWhileSharing()
-            .launchIn(serviceDefaultScope)
     }
 
     private fun saveLocation(data: LocationDataModel) {
-        flow {
-            locationRepository.pushLocation(data)
-            emit(Unit)
-        }.catch {
-            logw("Error saving saving location")
-            if (it is NoValidContractsException) {
+        serviceDefaultScope.launch {
+            try {
+                locationRepository.pushLocation(data)
+            } catch (e: NoValidContractsException) {
+                logw("Error saving saving location - sharing expired")
                 // We can stop service since all sharing contracts are expired
                 stopAll()
+            } catch (e: Exception) {
+                logw("Error saving saving location")
             }
-        }.launchIn(serviceDefaultScope)
+        }
     }
 
-    @OptIn(ExperimentalTime::class)
+    private fun reInitRealtime() {
+        realtimeJob?.cancel()
+        realtimeJob = sharingRealtimeEvents.listenForEventsWhileSharing()
+            .launchIn(serviceDefaultScope)
+    }
+
     private fun listenForPlaces() {
 
         // timer to reregister places after certain time

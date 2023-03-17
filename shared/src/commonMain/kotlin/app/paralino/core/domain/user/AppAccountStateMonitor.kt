@@ -105,14 +105,14 @@ class AppAccountStateMonitor constructor(
                 if ((wasUserNull && it.data is AppAccountState.USER_READY) || it.data is AppAccountState.NO_USER_DATA) {
                     logg.tag("account_state").v("${it.data} - User data needs refresh")
                     emit(Resource.Ready(AppAccountState.DATA_REFRESH))
-                    refreshEverything.refreshEverything(force = true)
+                    refreshEverything.refreshEverything(forceGroupRefresh = true)
                 } else if (it.data is AppAccountState.USER_READY) {
                     logg.tag("account_state")
                         .v("${it.data} - Refresh user data in background - don't force")
                     scopeProvider.userSessionIOScope.launch {
                         try {
                             logg.tag("account_state").v("Refresh user on different scope")
-                            refreshEverything.refreshEverything(force = false)
+                            refreshEverything.refreshEverything(forceGroupRefresh = false)
                         } catch (e: Exception) {
                             logg.tag("account_state").v("Unable to refresh user: ${e.message}")
                         }

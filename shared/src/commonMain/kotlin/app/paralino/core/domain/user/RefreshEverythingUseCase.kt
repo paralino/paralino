@@ -33,26 +33,38 @@ class RefreshEverythingUseCase(
     }
 
     suspend fun refreshEverything(
-       force: Boolean = false
+        forceGroupRefresh: Boolean = false,
+        minimumDelayMillis: Long = 0
     ) {
 
         if (isProcessing(executionKey)) {
             logg.tag("full_refresh").v("Processing, can't refresh data")
-            throw IllegalStateException("data already in progress")
+            return
         }
 
         setAsProcessing(executionKey)
 
-        logg.tag("full_refresh").v("Start full refresh")
+        logg.tag("full_refresh").v("Try full refresh with delay $minimumDelayMillis")
         try {
-            userRepository.refreshUserIfAvailable()
-            personalCodesRepo.refreshPersonalCodes()
-            userRepository.refreshBlocklist()
-            configRepo.refreshConfig()
-            scheduleRefreshAllGroupsWithPlaces(
-                key = executionKey,
-                time = if(force) 0 else 60_000
-            )
+            getDataOnce(
+                local = flowOf(executionKey),
+                remotePreference = RemotePreference.CACHE(
+                    key = executionKey,
+                    timeMillis = minimumDelayMillis
+                )
+            ) {
+                logg.tag("full_refresh").v("Start full refresh")
+                userRepository.refreshUserIfAvailable()
+                personalCodesRepo.refreshPersonalCodes()
+                userRepository.refreshBlocklist()
+                configRepo.refreshConfig()
+                scheduleRefreshAllGroupsWithPlaces(
+                    key = executionKey,
+                    time = if (forceGroupRefresh) 0 else 60_000
+                )
+            }
+                .catch { }
+                .collect()
         } catch (e: Exception) {
             logg.tag("full_refresh").e("Error with full refresh", e)
         }
@@ -65,9 +77,10 @@ class RefreshEverythingUseCase(
         key: String = "groups_refresh",
         time: Long = 15_000
     ) {
+        val refreshKey = "${executionKey}_${key}"
         getDataOnce(
-            local = flowOf(key),
-            remotePreference = RemotePreference.CACHE(key = key, timeMillis = time)
+            local = flowOf(refreshKey),
+            remotePreference = RemotePreference.CACHE(key = refreshKey, timeMillis = time)
         ) {
             refreshAllGroupsWithPlaces()
         }
