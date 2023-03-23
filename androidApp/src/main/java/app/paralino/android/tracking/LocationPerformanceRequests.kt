@@ -2,11 +2,12 @@ package app.paralino.android.tracking
 
 import app.paralino.core.models.location.LocationPerformanceType
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.Priority
 
 object LocationPerformanceRequests {
 
     fun getRequest(type: LocationPerformanceType): LocationRequest {
-        return when(type) {
+        return when (type) {
             LocationPerformanceType.HIGH -> locationRequestHigh
             LocationPerformanceType.MEDIUM_HIGH -> locationRequestMediumHigh
             LocationPerformanceType.BALANCED -> locationRequestBalanced
@@ -15,35 +16,23 @@ object LocationPerformanceRequests {
     }
 
     private val locationRequestLow: LocationRequest
-        get() = LocationRequest.create().apply {
-        interval = 30 * 60 * 1000
-        fastestInterval = 10 * 60 * 1000
-//        smallestDisplacement = 200f
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
+        get() = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 30 * 60 * 1000L)
+            .setMinUpdateIntervalMillis(10 * 60 * 1000L)
+            .build()
 
     private val locationRequestBalanced: LocationRequest
-        get() = LocationRequest.create().apply {
-        interval = 15 * 60 * 1000L
-        fastestInterval = 2 * 60 * 1000L
-//        smallestDisplacement = 50f
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
+        get() = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 15 * 60 * 1000L)
+            .setMinUpdateIntervalMillis(2 * 60 * 1000L)
+            .build()
 
     private val locationRequestMediumHigh: LocationRequest
-        get() = LocationRequest.create().apply {
-        interval = 5 * 60 * 1000L
-        fastestInterval = 10_000
-//        smallestDisplacement = 10f
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
+        get() = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5 * 60 * 1000L)
+            .setMinUpdateIntervalMillis(10_000L)
+            .build()
 
     private val locationRequestHigh: LocationRequest
-        get() = LocationRequest.create().apply {
-        interval = 3_000
-        fastestInterval = 2_000
-//        smallestDisplacement = 10f
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
+        get() = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3_000L)
+            .setMinUpdateIntervalMillis(2_000L)
+            .build()
 
 }
