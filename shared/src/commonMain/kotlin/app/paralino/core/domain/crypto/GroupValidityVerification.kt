@@ -13,7 +13,7 @@ import app.paralino.core.models.location.MemberVerification
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.IConfig
+import app.paralino.core.provider.IConfig
 import kotlinx.serialization.decodeFromString
 
 class GroupValidityVerification(

@@ -1,4 +1,4 @@
-package app.paralino.android.utils
+package app.paralino.android.provider
 
 import androidx.work.WorkManager
 import androidx.work.await
@@ -7,8 +7,8 @@ import app.paralino.android.BuildConfig
 import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
-import app.paralino.core.utils.IConfig
-import app.paralino.core.utils.IDeviceApiProvider
+import app.paralino.core.provider.IConfig
+import app.paralino.core.provider.IDeviceApiProvider
 import loge
 import java.util.*
 

@@ -15,8 +15,8 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.AppSnackbarData
 import app.paralino.android.ui.components.SnackbarDuration
 import app.paralino.android.ui.components.onAction
-import app.paralino.core.utils.ILocationStatusProvider
-import app.paralino.core.utils.LocationConditionStatus
+import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.LocationConditionStatus
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState

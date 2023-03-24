@@ -3,8 +3,7 @@ package app.paralino.android.tracking.geofence
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import app.paralino.core.ICoroutineScopeProvider
-import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.places.PlacesRepository
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes

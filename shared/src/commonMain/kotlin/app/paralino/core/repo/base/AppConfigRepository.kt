@@ -8,8 +8,8 @@ import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.ConfigNode
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.repo.api.IDocumentsApi
-import app.paralino.core.utils.IConfig
-import app.paralino.core.utils.IDeviceApiProvider
+import app.paralino.core.provider.IConfig
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

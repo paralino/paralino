@@ -1,6 +1,6 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
@@ -8,7 +8,7 @@ import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.utils.IDeviceApiProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.nowUTC

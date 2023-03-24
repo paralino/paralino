@@ -8,9 +8,7 @@ import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.IDeviceApiProvider
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
+import app.paralino.core.provider.IDeviceApiProvider
 
 class UserMemberIdUseCase constructor(
     private val userRepository: UserRepository,

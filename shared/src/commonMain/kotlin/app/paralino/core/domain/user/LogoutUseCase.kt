@@ -9,8 +9,8 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.IConfig
-import app.paralino.core.utils.IDeviceApiProvider
+import app.paralino.core.provider.IConfig
+import app.paralino.core.provider.IDeviceApiProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onEach

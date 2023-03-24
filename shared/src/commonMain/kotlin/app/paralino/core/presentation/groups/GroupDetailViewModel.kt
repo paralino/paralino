@@ -13,8 +13,8 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.IConnectionStatusProvider
-import app.paralino.core.utils.ILocationStatusProvider
+import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload

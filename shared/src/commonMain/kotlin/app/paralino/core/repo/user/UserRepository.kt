@@ -1,6 +1,6 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.user.UserSessionMonitor

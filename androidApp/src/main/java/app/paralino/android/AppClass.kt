@@ -23,7 +23,7 @@ import app.paralino.android.tracking.LocationService
 import app.paralino.android.tracking.getLocationStatus
 import app.paralino.android.utils.logger.DebugLogger
 import app.paralino.android.utils.logger.LoggerKind
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.connectionStatus
 import app.paralino.core.domain.user.LogoutUseCase
@@ -33,14 +33,13 @@ import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.IConnectionStatusProvider
-import app.paralino.core.utils.IDeviceApiProvider
-import app.paralino.core.utils.ILocationStatusProvider
-import app.paralino.core.utils.LocationConditionStatus
+import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.LocationConditionStatus
 import io.sentry.*
 import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import logv

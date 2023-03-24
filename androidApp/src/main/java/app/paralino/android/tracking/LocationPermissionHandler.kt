@@ -15,8 +15,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.R
-import app.paralino.core.utils.ILocationStatusProvider
-import app.paralino.core.utils.LocationConditionStatus
+import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.AppSnackbarData
 import app.paralino.android.ui.components.SnackbarDuration

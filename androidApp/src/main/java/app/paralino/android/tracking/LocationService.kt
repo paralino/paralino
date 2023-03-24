@@ -19,7 +19,7 @@ import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.utils.ILocationStatusProvider
+import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*

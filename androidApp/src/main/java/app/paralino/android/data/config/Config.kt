@@ -8,7 +8,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import app.paralino.core.utils.IConfig
+import app.paralino.core.provider.IConfig
 
 private val Context.dataStoreUserKeys: DataStore<Preferences> by preferencesDataStore(name = "datastore_user_keys")
 

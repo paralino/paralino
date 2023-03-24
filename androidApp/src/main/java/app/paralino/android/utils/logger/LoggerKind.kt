@@ -1,7 +1,7 @@
 package app.paralino.android.utils.logger
 
 import android.util.Log
-import app.paralino.core.utils.ILogger
+import app.paralino.core.provider.ILogger
 
 abstract class LoggerKind: ILogger {
     internal val explicitTag = ThreadLocal<String>()

@@ -9,10 +9,11 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.*
 import app.paralino.core.utils.exceptions.TimeoutException
 import kotlinx.coroutines.channels.Channel

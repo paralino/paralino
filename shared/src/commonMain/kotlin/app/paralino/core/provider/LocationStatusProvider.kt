@@ -1,5 +1,6 @@
-package app.paralino.core.utils
+package app.paralino.core.provider
 
+import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface ILocationStatusProvider {

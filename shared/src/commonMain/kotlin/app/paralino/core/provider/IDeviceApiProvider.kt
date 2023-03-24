@@ -1,4 +1,4 @@
-package app.paralino.core.utils
+package app.paralino.core.provider
 
 import app.paralino.core.models.base.DeviceType
 

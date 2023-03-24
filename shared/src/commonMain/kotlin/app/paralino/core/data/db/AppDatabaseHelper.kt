@@ -4,7 +4,7 @@ import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 

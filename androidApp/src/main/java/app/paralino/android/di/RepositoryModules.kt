@@ -8,10 +8,10 @@ import app.paralino.android.data.config.Config
 import app.paralino.android.data.repos.user.UserCryptoKeyLocalDataSource
 import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.remote.appwrite.*
-import app.paralino.android.utils.ConnectionStatusProvider
-import app.paralino.android.utils.DeviceApiProvider
-import app.paralino.android.utils.LocationStatusProvider
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.android.provider.ConnectionStatusProvider
+import app.paralino.android.provider.DeviceApiProvider
+import app.paralino.android.provider.LocationStatusProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.ICryptoHashProvider
@@ -38,9 +38,9 @@ import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.user.*
-import app.paralino.core.utils.IConnectionStatusProvider
-import app.paralino.core.utils.IDeviceApiProvider
-import app.paralino.core.utils.ILocationStatusProvider
+import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.ILocationStatusProvider
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module

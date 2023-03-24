@@ -10,7 +10,7 @@ import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.android.ui.theme.AppColors
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.models.data
 import app.paralino.core.notifications.IPlaceNotificationsHandler
 import app.paralino.core.notifications.PlaceActivityNotificationPayload

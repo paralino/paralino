@@ -7,7 +7,7 @@ import android.location.LocationManager
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import app.paralino.core.utils.LocationConditionStatus
+import app.paralino.core.provider.LocationConditionStatus
 
 fun LocationConditionStatus.Companion.isLocationOn(context: Context): Boolean {
     return ContextCompat.getSystemService(context, LocationManager::class.java)

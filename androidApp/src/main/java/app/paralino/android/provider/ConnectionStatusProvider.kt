@@ -1,12 +1,12 @@
-package app.paralino.android.utils
+package app.paralino.android.provider
 
 import android.app.Application
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.utils.ConnectionStatus
-import app.paralino.core.utils.IConnectionStatusProvider
+import app.paralino.core.provider.ConnectionStatus
+import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withTimeoutOrNull
@@ -16,13 +16,13 @@ import java.net.InetAddress
 class ConnectionStatusProvider constructor(
     private val app: Application,
     private val backendConfig: BackendConfig,
-
 ): IConnectionStatusProvider {
 
     private val checkData = InternetCheckData()
 
     // assume we are connected for first time
-    override var status: MutableStateFlow<ConnectionStatus> = MutableStateFlow(ConnectionStatus.CONNECTED)
+    override var status: MutableStateFlow<ConnectionStatus> =
+        MutableStateFlow(ConnectionStatus.CONNECTED)
 
     override suspend fun initAndGetStatus(): ConnectionStatus {
         val networkStatus = if(!isNetworkAvailable()) ConnectionStatus.OFFLINE

@@ -1,6 +1,6 @@
 package app.paralino.core.repo
 
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
