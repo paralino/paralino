@@ -1,5 +1,5 @@
 //
-//  paralino_iosApp.swift
+//  MainApp.swift
 //  paralino-ios
 //
 //  Created by Zelimir on 23.03.23.
@@ -8,7 +8,9 @@
 import SwiftUI
 
 @main
-struct paralino_iosApp: App {
+struct MainApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

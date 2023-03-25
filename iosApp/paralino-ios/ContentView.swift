@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import shared
 
 struct ContentView: View {
     var body: some View {
@@ -16,6 +17,9 @@ struct ContentView: View {
             Text("Hello, world!")
         }
         .padding()
+        .task {
+            Logr.v(tag: "ContentView", message: "View is shown")
+        }
     }
 }
 

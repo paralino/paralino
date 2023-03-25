@@ -7,18 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */; };
+		252E361529CF60BA008FC635 /* Logr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361429CF60BA008FC635 /* Logr.swift */; };
+		252E361729CF63B6008FC635 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361629CF63B6008FC635 /* Config.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
 		25C03A6A29CCE77100646364 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6929CCE77100646364 /* ContentView.swift */; };
 		25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6B29CCE77200646364 /* Assets.xcassets */; };
 		25C03A6F29CCE77200646364 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6E29CCE77200646364 /* Preview Assets.xcassets */; };
+		25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D8A43429CE24A00023A0E5 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceApiProvider.swift; sourceTree = "<group>"; };
+		252E361429CF60BA008FC635 /* Logr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logr.swift; sourceTree = "<group>"; };
+		252E361629CF63B6008FC635 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C03A6729CCE77100646364 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
 		25C03A6929CCE77100646364 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		25C03A6B29CCE77200646364 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		25C03A6E29CCE77200646364 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		25D8A43429CE24A00023A0E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +40,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		252E361129CF5EB0008FC635 /* Provider */ = {
+			isa = PBXGroup;
+			children = (
+				252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */,
+				252E361429CF60BA008FC635 /* Logr.swift */,
+				252E361629CF63B6008FC635 /* Config.swift */,
+			);
+			path = Provider;
+			sourceTree = "<group>";
+		};
 		25C03A5B29CCE77100646364 = {
 			isa = PBXGroup;
 			children = (
@@ -51,10 +69,12 @@
 		25C03A6629CCE77100646364 /* paralino-ios */ = {
 			isa = PBXGroup;
 			children = (
+				252E361129CF5EB0008FC635 /* Provider */,
 				25C03A6729CCE77100646364 /* MainApp.swift */,
 				25C03A6929CCE77100646364 /* ContentView.swift */,
 				25C03A6B29CCE77200646364 /* Assets.xcassets */,
 				25C03A6D29CCE77200646364 /* Preview Content */,
+				25D8A43429CE24A00023A0E5 /* AppDelegate.swift */,
 			);
 			path = "paralino-ios";
 			sourceTree = "<group>";
@@ -158,8 +178,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
+				252E361529CF60BA008FC635 /* Logr.swift in Sources */,
 				25C03A6A29CCE77100646364 /* ContentView.swift in Sources */,
 				25C03A6829CCE77100646364 /* MainApp.swift in Sources */,
+				252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */,
+				252E361729CF63B6008FC635 /* Config.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
