@@ -1,6 +1,5 @@
 package app.paralino.android
 
-import Logger
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.BroadcastReceiver
@@ -17,42 +16,31 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import app.paralino.android.data.PreCheckControl
-import app.paralino.android.data.config.Config
 import app.paralino.android.di.KoinSetup
 import app.paralino.android.tracking.LocationService
 import app.paralino.android.tracking.getLocationStatus
-import app.paralino.android.utils.logger.DebugLogger
-import app.paralino.android.utils.logger.LoggerKind
-import app.paralino.core.provider.ICoroutineScopeProvider
-import app.paralino.core.config
+import app.paralino.core.ParalinoCore
 import app.paralino.core.connectionStatus
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.data
+import app.paralino.core.provider.*
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.provider.IConnectionStatusProvider
-import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.provider.ILocationStatusProvider
-import app.paralino.core.provider.LocationConditionStatus
 import io.sentry.*
 import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import logv
 import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
 import kotlin.coroutines.CoroutineContext
 
 class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserver {
 
     companion object {
-        @SuppressLint("StaticFieldLeak")
-        lateinit var context: Context
-            private set
-
         @SuppressLint("StaticFieldLeak")
         lateinit var instance: AppClass
             private set
@@ -73,7 +61,6 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private val sessionMonitor: UserSessionMonitor by inject()
     private val logoutUseCase: LogoutUseCase by inject()
     private val connectionStatusProvider: IConnectionStatusProvider by inject()
-    private val deviceApiProvider: IDeviceApiProvider by inject()
 
     private val locationSharing: LocationSharingManager by inject()
     val locationStatus: ILocationStatusProvider by inject()
@@ -88,19 +75,17 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
     private fun init() {
         instance = this
-        context = applicationContext
 
-        initLogger()
-        KoinSetup.initKoin(this)
+        initCrashReporting()
+        ParalinoCore.init(
+            { androidContext(this@AppClass) },
+            KoinSetup.modules
+        )
 
         locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
         connectionStatus = connectionStatusProvider
-        config = Config(context)
-
-        deviceApiProvider.initialize()
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
-
 
         sessionMonitor.listenForSessionExpired()
             .onEach {
@@ -118,9 +103,9 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
 
         locationSharing.sharingStatus
             .onEach {
-                logv("Location sharing status changed: $it")
+                logg.v("Location sharing status changed: $it")
                 if(it.data == true) {
-                    logv("Location sharing contract ready, starting location service")
+                    logg.v("Location sharing contract ready, starting location service")
                     // TODO show error to the user if location service can not be started
                     // especially if started from background and user is missing all time location permission
                     LocationService.start(this, isForeground)
@@ -129,21 +114,15 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
             .launchIn(defaultScope)
 
         registerReceiver(gpsReceiver, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION).apply { addAction(Intent.ACTION_PROVIDER_CHANGED) })
-        context.getSystemService<ConnectivityManager>()?.registerDefaultNetworkCallback(object: NetworkCallback() {
+        getSystemService<ConnectivityManager>()?.registerDefaultNetworkCallback(object: NetworkCallback() {
             override fun onAvailable(network: Network) { updateConnectionStatus() }
             override fun onLost(network: Network) { updateConnectionStatus() }
         })
     }
 
-    private fun initLogger() {
-        logg = Logger
+    private fun initCrashReporting() {
         SentryAndroid.init(this) {
             it.isSendDefaultPii = false
-        }
-        if (!BuildConfig.forceLogToSystem) {
-            Logger.setLogger(externalLogTree)
-        } else {
-            Logger.setLogger(DebugLogger(getString(R.string.app_name)))
         }
     }
 
@@ -187,14 +166,14 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
             try {
                 launcher.refreshConfig()
             } catch (e: Exception) {
-                Logger.e("Error updating config", e)
+                logg.e("Error updating config", e)
             }
         }
     }
 
-    private val externalLogTree: LoggerKind by lazy {
-        object : LoggerKind() {
-            override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+    val externalLogTree: SystemLogr by lazy {
+        object : SystemLogr() {
+            override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
                 if(t != null) {
                     Sentry.captureException(t)
                 }

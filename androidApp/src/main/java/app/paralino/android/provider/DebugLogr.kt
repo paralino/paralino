@@ -2,19 +2,28 @@
  * Copyright (c) 2020 - Zelimir
  */
 
-package app.paralino.android.utils.logger
+package app.paralino.android.provider
 
 import android.util.Log
+import app.paralino.core.provider.LogPriority
+import app.paralino.core.provider.SystemLogr
 
-internal open class DebugLogger(private val tagPrefix: String = "") : LoggerKind() {
+internal open class DebugLogr(private val tagPrefix: String = "") : SystemLogr() {
+
     private val MAX_LOG_LENGTH = 4000
-    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+    override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
+
+        val androidPriority = when(priority) {
+            LogPriority.VERBOSE -> Log.VERBOSE
+            LogPriority.DEBUG -> Log.DEBUG
+            LogPriority.INFO -> Log.INFO
+            LogPriority.WARN -> Log.WARN
+            LogPriority.ERROR -> Log.ERROR
+        }
+        val debugTag = getDebugTag(tag)
+
         if (message.length < MAX_LOG_LENGTH) {
-            if (priority == Log.ASSERT) {
-                Log.wtf(tag, message)
-            } else {
-                Log.println(priority, tag, message)
-            }
+            Log.println(androidPriority, debugTag, message)
             return
         }
 
@@ -27,11 +36,7 @@ internal open class DebugLogger(private val tagPrefix: String = "") : LoggerKind
             do {
                 val end = Math.min(newline, i + MAX_LOG_LENGTH)
                 val part = message.substring(i, end)
-                if (priority == Log.ASSERT) {
-                    Log.wtf(tag, part)
-                } else {
-                    Log.println(priority, tag, part)
-                }
+                Log.println(androidPriority, debugTag, part)
                 i = end
             } while (i < newline)
             i++
@@ -39,8 +44,8 @@ internal open class DebugLogger(private val tagPrefix: String = "") : LoggerKind
     }
 
 
-    override fun getTag(): String {
-        val tag = super.getTag() ?: tagPrefix
+    private fun getDebugTag(userTag: String?): String {
+        val tag = userTag ?: tagPrefix
         val stackTrace = Throwable().stackTrace
         val stackTraceTag = stackTrace.take(7).reversed().take(2).mapIndexed { index, it ->
             if(index == 0)

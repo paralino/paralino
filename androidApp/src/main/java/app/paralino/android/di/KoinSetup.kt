@@ -17,7 +17,6 @@ import app.paralino.android.provider.LocationStatusProvider
 import app.paralino.android.remote.appwrite.*
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
-import app.paralino.core.ParalinoCore
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoHashProvider
 import app.paralino.core.crypto.ICryptoKeyProvider
@@ -63,19 +62,12 @@ import app.paralino.core.repo.user.IPushProviderManager
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.context.startKoin
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 object KoinSetup {
 
-    fun initKoin(app: AppClass){
-        ParalinoCore.start(
-            listOf(coreDependencyModule, appSpecificModule)
-        ).apply {
-            androidContext(app)
-        }
-    }
+    val modules get() = listOf(coreDependencyModule, appSpecificModule)
 
     private val coreDependencyModule = module {
         single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
@@ -103,7 +95,7 @@ object KoinSetup {
         single<ICoroutineScopeProvider> { androidApplication() as AppClass }
         single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
         single<ILocationStatusProvider> { LocationStatusProvider(androidApplication() as AppClass) }
-        single<IDeviceApiProvider> { DeviceApiProvider(androidApplication() as AppClass, config) }
+        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
 
         single<IUserApi> { UserApi(get()) }

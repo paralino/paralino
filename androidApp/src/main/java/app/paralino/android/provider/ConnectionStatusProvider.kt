@@ -4,13 +4,13 @@ import android.app.Application
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
+import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.provider.ConnectionStatus
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withTimeoutOrNull
-import logv
 import java.net.InetAddress
 
 class ConnectionStatusProvider constructor(
@@ -29,7 +29,7 @@ class ConnectionStatusProvider constructor(
         else if(isInternetAvailable(backendConfig.serverUrl)) ConnectionStatus.CONNECTED
         else ConnectionStatus.CONNECTED_NO_INTERNET
 
-        logv("app_state", "Network status: $networkStatus")
+        logg.v("app_state", "Network status: $networkStatus")
 
         status.value = networkStatus
         return networkStatus
@@ -49,7 +49,7 @@ class ConnectionStatusProvider constructor(
                     val uri = Uri.parse(url)
                     !InetAddress.getByName(uri.host).equals("")
                 } catch (e: Exception) {
-                    Logger.w("Error check for connection")
+                    logg.w("Error check for connection")
                     false
                 }
             }

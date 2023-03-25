@@ -3,13 +3,13 @@ package app.paralino.android.tracking.geofence
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import app.paralino.core.logg
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.places.PlacesRepository
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
 import kotlinx.coroutines.launch
-import logv
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -25,27 +25,27 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
         if(geofencingEvent == null) {
-            logv("geofences", "Geofence event is null")
+            logg.v("geofences", "Geofence event is null")
             return
         }
 
         if (geofencingEvent.hasError()) {
             val errorMessage = GeofenceStatusCodes.getStatusCodeString(geofencingEvent.errorCode)
-            logv("geofences", "Geofence error: $errorMessage")
+            logg.v("geofences", "Geofence error: $errorMessage")
             return
         }
 
         when (val transition = geofencingEvent.geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
-                logv("geofences", "User entered geofence")
+                logg.v("geofences", "User entered geofence")
                 geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceEnter(it.map { it.requestId }) }
             }
             Geofence.GEOFENCE_TRANSITION_EXIT -> {
-                logv("geofences", "User exited geofence")
+                logg.v("geofences", "User exited geofence")
                 geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceExit(it.map { it.requestId }) }
             }
             else -> {
-                logv("geofences", "Invalid geofence type: $transition")
+                logg.v("geofences", "Invalid geofence type: $transition")
             }
         }
     }

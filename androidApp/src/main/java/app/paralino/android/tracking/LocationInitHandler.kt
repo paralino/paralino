@@ -1,6 +1,5 @@
 package app.paralino.android.tracking
 
-import Logger
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
@@ -110,12 +109,12 @@ class LocationInitHandler constructor(
 //    }
 
     fun startLocationUpdates() {
-        Logger.tag("location_request").v("start location updates")
+        logg.tag("location_request").v("start location updates")
         locationTrackingFlag.value = true
     }
 
     fun stopLocationUpdates() {
-        Logger.tag("location_request").v("stopping all location updates")
+        logg.tag("location_request").v("stopping all location updates")
         locationTrackingFlag.value = false
         currentLocation.value = Payload.Error(LocationStoppedException())
         fusedLocationClient.removeLocationUpdates(locationCallback)

@@ -9,23 +9,21 @@ import app.paralino.android.AppClass
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
+import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.places.GroupPlaceGeofenceData
+import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import loge
-import logv
-import logw
 import org.koin.android.ext.android.inject
 import kotlin.time.Duration.Companion.hours
 
@@ -53,7 +51,7 @@ class LocationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        logv(this.hashCode().toString(), "Location service created")
+        logg.v(this.hashCode().toString(), "Location service created")
         startForeground(
             notificationHandler.notificationId,
             notificationHandler.notify(this, groupCount = 0, emptyList())
@@ -62,7 +60,7 @@ class LocationService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        logv(this.hashCode().toString(), "Location service started - action: ${intent.action}")
+        logg.v(this.hashCode().toString(), "Location service started - action: ${intent.action}")
         launchedInForeground = intent.getBooleanExtra(startedInForeground, false)
         isServiceActive = true
         serviceDefaultScope.coroutineContext.cancelChildren()
@@ -71,7 +69,7 @@ class LocationService : Service() {
     }
 
     private fun initTracking() {
-        logv(this.hashCode().toString(), "Subscribe to location and sharing status")
+        logg.v(this.hashCode().toString(), "Subscribe to location and sharing status")
 
         (application as AppClass).locationStatus.status
             .onEach {
@@ -89,7 +87,7 @@ class LocationService : Service() {
             .map { it.data.isNotEmpty() }
             .distinctUntilChanged()
             .onEach {
-                logv(this.hashCode().toString(), "Location sharing status: $it")
+                logg.v(this.hashCode().toString(), "Location sharing status: $it")
                 if (it) {
                     startTracking()
                 } else {
@@ -97,7 +95,7 @@ class LocationService : Service() {
                 }
             }
             .catch {
-                loge(it)
+                logg.e(it)
                 stopAll()
             }
             .launchIn(serviceDefaultScope)
@@ -116,7 +114,7 @@ class LocationService : Service() {
     private fun startTracking() {
         updateNotification()
 
-        logv(this.hashCode().toString(), "Subscribing to location updates")
+        logg.v(this.hashCode().toString(), "Subscribing to location updates")
 
         serviceDefaultScope.launch {
             while(isActive) {
@@ -134,7 +132,7 @@ class LocationService : Service() {
 
         locationInitHandler.currentLocation
             .onEach {
-                logv(this.hashCode().toString(), "Got location: $it")
+                logg.v(this.hashCode().toString(), "Got location: $it")
                 it.data?.let {
                     launchedInForeground = true
                     updateNotification()
@@ -149,11 +147,11 @@ class LocationService : Service() {
             try {
                 locationRepository.pushLocation(data)
             } catch (e: NoValidContractsException) {
-                logw("Error saving saving location - sharing expired")
+                logg.w("Error saving saving location - sharing expired")
                 // We can stop service since all sharing contracts are expired
                 stopAll()
             } catch (e: Exception) {
-                logw("Error saving saving location")
+                logg.w("Error saving saving location")
             }
         }
     }
@@ -205,13 +203,13 @@ class LocationService : Service() {
     }
 
     private fun stopAll() {
-        logv(this.hashCode().toString(), "Stop all - location service")
+        logg.v(this.hashCode().toString(), "Stop all - location service")
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
     override fun onDestroy() {
-        logv(this.hashCode().toString(), "onDestroy - Killing location service")
+        logg.v(this.hashCode().toString(), "onDestroy - Killing location service")
         isServiceActive = false
         serviceDefaultScope.cancel()
         locationInitHandler.stopLocationUpdates()

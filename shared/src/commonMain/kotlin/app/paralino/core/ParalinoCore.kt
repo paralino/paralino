@@ -14,6 +14,7 @@ import app.paralino.core.domain.location.*
 import app.paralino.core.domain.user.*
 import app.paralino.core.models.mappers.*
 import app.paralino.core.notifications.PushNotificationHandler
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.group.GroupRepository
@@ -34,15 +35,26 @@ import org.koin.dsl.module
 
 object ParalinoCore {
 
-    fun start(appModules: List<Module>): KoinApplication {
-        return startKoin {
-            buildList {
-                addAll(appModules)
-                add(coreModule)
-                add(dataSourceModule)
-                add(mappersModule)
-            }
+    fun init(
+        preLaunch: KoinApplication.() -> KoinApplication,
+        appModules: List<Module>
+    ): KoinApplication {
+        val koinApp = startKoin {
+            preLaunch()
+            modules(
+                buildList {
+                    addAll(appModules)
+                    add(coreModule)
+                    add(dataSourceModule)
+                    add(mappersModule)
+                }
+            )
         }
+
+        val deviceProvider = koinApp.koin.get<IDeviceApiProvider>()
+        deviceProvider.initialize()
+
+        return koinApp
     }
 }
 
