@@ -198,7 +198,7 @@ fun CreatePlaceScreen(
         LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = LargeSeekbarSwitchState.Seekbar(
                 seekbarProgress = state.currentStep + 1,
-                seekbarRange = IntRange(1, CreatePlaceScreenState.steps)
+                seekbarRange = IntRange(1, CreatePlaceScreenState.steps.size)
             ),
             switchState = null
         )
@@ -318,7 +318,7 @@ fun CreatePlaceScreen(
             focusDescription = true,
             state = seekbarState,
             onProgressChange = {
-                onRadiusChanged(it * CreatePlaceScreenState.minRadiusMeters)
+                onRadiusChanged(CreatePlaceScreenState.radiusForIndex(it))
             }
         )
 
