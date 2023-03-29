@@ -72,6 +72,7 @@ class LoginUseCase constructor(
                             encryptedKeyData = it
                         )
                     } catch (e: Exception) {
+                        logg.e(e)
                         null
                     }
                 }

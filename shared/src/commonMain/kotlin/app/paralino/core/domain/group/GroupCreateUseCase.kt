@@ -136,7 +136,7 @@ class GroupCreateUseCase(
 
             val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
             val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
-                data = cryptoCore.keyProvider.createNewSymmetricKey().content,
+                data = cryptoCore.getNewSymmetricKey().content,
                 type = HashType.SHA256
             ).asBase64String(cryptoCore.hashProvider)
 

@@ -4,6 +4,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.base64ToData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.user.UserPersonalCode
@@ -17,13 +18,14 @@ class PersonalCodeMapperCore(
     private val userKeyRepo: CryptoUserKeyRepository,
 ) {
 
-    suspend fun remote2CoreRead(code: String, encryptedCodeData: String): UserPersonalCodeData {
+    suspend fun remote2CoreRead(code: String, encryptedCodeData: String, userId: String): UserPersonalCodeData {
 
         val derivedCode = cryptoCore.derivePassword(code)
 
         val codeData = cryptoCore.decryptDataWithSimplePassword(
             data = encryptedCodeData,
-            password = derivedCode.backupPassword
+            password = derivedCode.backupPassword,
+            userId = userId
         ).let {
             BaseRemoteModule.formatter.decodeFromString<UserPersonalCodeData>(it)
         }
@@ -44,8 +46,9 @@ class PersonalCodeMapperCore(
         )
 
         var codeData = try {
-            CryptoResource.Ready(remote2CoreRead(code, model.encryptedCodeData))
+            CryptoResource.Ready(remote2CoreRead(code, model.encryptedCodeData, model.ownerUserId))
         } catch (e: Exception) {
+            logg.w(e)
             CryptoResource.WrongKeyOrData
         }
 

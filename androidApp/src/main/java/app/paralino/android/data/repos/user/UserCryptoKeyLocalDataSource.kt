@@ -52,7 +52,10 @@ class UserCryptoKeyLocalDataSource constructor(
                 encryptedSymmetricKey = prefs[stringPreferencesKey("encryptedSymmetricKey")]!!,
                 version = prefs[longPreferencesKey("version")]!!,
             )
-        }.catch { emit(null) }
+        }.catch {
+            logg.w("Error mapping user raw keys", it)
+            emit(null)
+        }
     }
 
     override fun userKeyState(): Flow<Boolean> {
@@ -63,7 +66,7 @@ class UserCryptoKeyLocalDataSource constructor(
                     logg.v("User keys can be parsed and decrypted")
                     true
                 } catch (e: Exception) {
-                    logg.v("User keys can not be parsed or decrypted")
+                    logg.v("User keys can not be parsed or decrypted", e)
                     false
                 }
             }

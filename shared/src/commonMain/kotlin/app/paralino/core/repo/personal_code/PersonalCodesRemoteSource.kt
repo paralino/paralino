@@ -77,7 +77,8 @@ class PersonalCodesRemoteSource constructor(
             keyId = derivedCode.loginPassword,
             encryptedCodeData = cryptoCore.encryptDataWithSimplePassword(
                 data = BaseRemoteModule.formatter.encodeToString(codeData),
-                password = derivedCode.backupPassword
+                password = derivedCode.backupPassword,
+                userId = user.id
             ),
             encryptedCode = cryptoCore.encryptDataWithKey(
                 data = codeData.code,
@@ -150,7 +151,7 @@ class PersonalCodesRemoteSource constructor(
             ?.let {
                 val response =
                     BaseRemoteModule.formatter.decodeFromString<PersonalCodeResponse>(it.response)
-                personalCodeMapper.remote2CoreRead(code, response.codeData).takeIf {
+                personalCodeMapper.remote2CoreRead(code, response.codeData, response.userId).takeIf {
                     it.ownerId == response.userId
                 }
             }!!

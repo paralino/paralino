@@ -160,7 +160,7 @@ class GroupMemberAddUseCase constructor(
 
         // just to provide randomness from group owner
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
-            data = cryptoCore.keyProvider.createNewSymmetricKey().content,
+            data = cryptoCore.getNewSymmetricKey().content,
             type = HashType.SHA256
         ).asBase64String(cryptoCore.hashProvider)
 //            .let {

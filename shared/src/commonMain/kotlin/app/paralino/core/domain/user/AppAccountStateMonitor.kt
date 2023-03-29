@@ -73,12 +73,13 @@ class AppAccountStateMonitor constructor(
                                     Resource.Ready(data = AppAccountState.NO_PROFILE(decryptedUser))
                                 }
                             } catch (e: Exception) {
+                                logg.w("Error decrypting user", e)
                                 if (config.temporaryBackupPassword.isNotBlank()) {
                                     logg.tag("account_state").v("User needs to reset account")
                                     Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                                 } else {
                                     logg.tag("account_state")
-                                        .v("User can not be initialized, reset (${e.message}")
+                                        .v("User can not be initialized, reset (${e.message})")
                                     logoutUseCase.logoutLocally()
                                     Resource.Ready(data = AppAccountState.NO_USER)
                                 }

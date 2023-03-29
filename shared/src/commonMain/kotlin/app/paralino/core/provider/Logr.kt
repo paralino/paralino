@@ -93,6 +93,7 @@ interface ILogr {
     fun e(tag: String, message: String, t: Throwable?) =
         log(priority = LogPriority.ERROR, tag = tag, message = message, t = t)
 
+    fun w(t: Throwable?) = w(message = t?.message ?: "Error", t = t)
     fun e(t: Throwable?) = e(message = t?.message ?: "Error", t = t)
 
     abstract fun log(priority: LogPriority, tag: String?, message: String, t: Throwable?)

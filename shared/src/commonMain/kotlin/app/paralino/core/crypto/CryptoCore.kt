@@ -13,15 +13,14 @@ import kotlinx.serialization.encodeToString
 class CryptoCore(
     val serviceProvider: ICryptoServiceProvider,
     val hashProvider: ICryptoHashProvider,
-    val keyProvider: ICryptoKeyProvider,
 ) {
 
     fun getNewSymmetricKey(): Data {
-        return keyProvider.createNewSymmetricKey()
+        return serviceProvider.createNewSymmetricKey()
     }
 
     fun getNewAsymmetricKey(): KeyPair {
-        return keyProvider.createNewAsymmetricKey()
+        return serviceProvider.createNewAsymmetricKey()
     }
 
     suspend fun generateNewKeysForUser(
@@ -55,7 +54,33 @@ class CryptoCore(
             version = keyVersion
         )
 
-        return GeneratedUserKeys(newPersonalKey, encryptedKeyData)
+        val keys = GeneratedUserKeys(newPersonalKey, encryptedKeyData)
+
+        verifyKeys(keys, newKeyPair, backupPassword, userId)
+
+        return keys
+    }
+
+    private suspend fun verifyKeys(keys: GeneratedUserKeys, keyPair: KeyPair, password: String, userId: String) {
+        check(
+            serviceProvider.decryptDataWithPassword(
+                data = keys.encryptedKeyData.encryptedSymmetricKey.base64ToData(hashProvider).content,
+                password = password,
+                context = userId.toData(hashProvider).content
+            ).content.contentEquals(keys.userPersonalKey.content)
+        )
+        check(
+            decryptDataWithKey(
+                data = keys.encryptedKeyData.encryptedPrivateKey,
+                key = keys.userPersonalKey.content
+            ).base64ToData(hashProvider).content.contentEquals(keyPair.privateKey)
+        )
+        check(
+            decryptDataWithKey(
+                data = keys.encryptedKeyData.encryptedPublicKey,
+                key = keys.userPersonalKey.content
+            ).base64ToData(hashProvider).content.contentEquals(keyPair.publicKey)
+        )
     }
 
     fun generateNewAsymmetricUserKey(version: Long): AsymmetricCryptoKeyData {
@@ -137,24 +162,23 @@ class CryptoCore(
     suspend fun encryptDataWithKey(data: ByteArray, key: ByteArray): String {
         return serviceProvider.encryptDataWithSymmetricKey(
             data = data,
-            key = key,
-            context = null
+            key = key
         ).asBase64String(hashProvider)
     }
 
-    suspend fun encryptDataWithSimplePassword(data: String, password: String): String {
+    suspend fun encryptDataWithSimplePassword(data: String, password: String, userId: String): String {
         return serviceProvider.encryptDataWithPassword(
             data = data.toData(hashProvider).content,
             password = password,
-            context = null
+            context= userId.toData(hashProvider).content
         ).asBase64String(hashProvider)
     }
 
-    suspend fun decryptDataWithSimplePassword(data: String, password: String): String {
+    suspend fun decryptDataWithSimplePassword(data: String, password: String, userId: String): String {
         return serviceProvider.decryptDataWithPassword(
             data = data.base64ToData(hashProvider).content,
             password = password,
-            context = null
+            context= userId.toData(hashProvider).content
         ).asString(hashProvider)
     }
 
@@ -169,8 +193,7 @@ class CryptoCore(
     suspend fun decryptDataWithKey(data: ByteArray, key: ByteArray): String {
         return serviceProvider.decryptDataWithSymmetricKey(
             data = data,
-            key = key,
-            context = null
+            key = key
         ).asString(hashProvider)
     }
 

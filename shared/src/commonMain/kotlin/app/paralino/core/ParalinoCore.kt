@@ -135,7 +135,7 @@ val coreModule = module {
     single { UserSessionMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get()) }
 
-    single { CryptoCore(get(), get(), get()) }
+    single { CryptoCore(get(), get()) }
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get(), get()) }
 

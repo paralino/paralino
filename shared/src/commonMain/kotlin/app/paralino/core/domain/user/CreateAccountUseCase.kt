@@ -28,7 +28,7 @@ class CreateAccountUseCase constructor(
     fun signUpAsGuest(): Flow<SignUpStep> {
         val email = "${deviceApi.randomUUID}${UserMe.guestUserEmail}"
         val password =
-            cryptoCore.keyProvider.createNewSymmetricKey().asString(cryptoCore.hashProvider)
+            cryptoCore.getNewSymmetricKey().asString(cryptoCore.hashProvider)
         return signUp(email, password)
             .onEach {
                 if (it == SignUpStep.ALL_DONE) {
@@ -51,6 +51,10 @@ class CreateAccountUseCase constructor(
 
             try {
                 delay(500)
+
+                // test encryption before proceeding
+                createNewKey(derivedPasswords.backupPassword, userId = email)
+
                 val response = userRepo.remoteSignUp(email, derivedPasswords.loginPassword)
                 user = response.first
                 session = response.second

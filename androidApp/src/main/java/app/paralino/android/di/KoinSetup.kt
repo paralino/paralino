@@ -4,7 +4,6 @@ import app.paralino.android.AppClass
 import app.paralino.android.BuildConfig
 import app.paralino.android.crpyto.CryptoFrameworkProvider
 import app.paralino.android.crpyto.CryptoHashProvider
-import app.paralino.android.crpyto.CryptoKeyProvider
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.data.config.Config
 import app.paralino.android.data.repos.user.UserCryptoKeyLocalDataSource
@@ -19,7 +18,6 @@ import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoHashProvider
-import app.paralino.core.crypto.ICryptoKeyProvider
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.user.ICryptoUserKeyLocalDataSource
 import app.paralino.core.data.db.AppDatabaseHelper
@@ -75,7 +73,6 @@ object KoinSetup {
 
         single { CryptoFrameworkProvider() } bind ICryptoServiceProvider::class
         single { CryptoHashProvider() } bind ICryptoHashProvider::class
-        single { CryptoKeyProvider() } bind ICryptoKeyProvider::class
 
         single {
             BackendConfig(
