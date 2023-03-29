@@ -148,13 +148,6 @@ class LocationLocalDataSource(
         }
     }
 
-    suspend fun clearAll() {
-        database.transaction {
-            memberQueries.clearAll()
-            locationQueries.clearAll()
-        }
-    }
-
     private suspend fun getGroupOwnerId(groupId: String): String? {
         return database.groupQueries.getGroupOwnerId(groupId).executeAsOne()
     }

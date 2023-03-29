@@ -11,6 +11,7 @@ import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.provider.IConfig
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.repo.LocationSharingManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onEach
@@ -19,7 +20,7 @@ class LogoutUseCase(
     private val userRepo: UserRepository,
     private val groupsRepo: GroupRepository,
     private val placesRepo: PlacesRepository,
-    private val locationRepo: LocationRepository,
+    private val sharingManager: LocationSharingManager,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val codeRepo: PersonalCodesRepository,
@@ -73,8 +74,8 @@ class LogoutUseCase(
         deviceStatus.logout()
         groupsRepo.clear()
         placesRepo.clear()
-        locationRepo.clear()
         codeRepo.clearLocally()
+        sharingManager.stopAllSharing()
     }
 
 }

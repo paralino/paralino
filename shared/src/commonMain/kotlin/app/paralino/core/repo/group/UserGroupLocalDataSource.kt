@@ -147,8 +147,11 @@ class UserGroupLocalDataSource constructor(
     }
 
     suspend fun clearAll() {
-        database.groupQueries.clearAll()
-        memberLocal.clearAll()
+        database.transaction {
+            groupQueries.clearAll()
+            memberQueries.clearAll()
+            locationQueries.clearAll()
+        }
     }
 
 }
