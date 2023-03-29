@@ -13,17 +13,12 @@ object SharingDurationPreset {
 
     val presets = listOf(
         15 * minute,
-        30 * minute,
         hour,
-        2 * hour,
         4 * hour,
         8 * hour,
-        12 * hour,
         day,
-        2 * day,
         3 * day,
         5 * day,
-        7 * day,
         10 * day,
         15 * day,
         30 * day,
