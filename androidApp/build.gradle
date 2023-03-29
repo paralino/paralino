@@ -258,6 +258,8 @@ dependencies {
     }
 
     implementation 'com.cossacklabs.com:themis:0.14.0'
+    implementation "com.goterl:lazysodium-android:5.1.0@aar"
+    implementation "net.java.dev.jna:jna:5.13.0@aar"
 
     implementation "com.mikepenz:aboutlibraries-compose:10.5.1"
     implementation 'io.sentry:sentry-android:6.9.1'
