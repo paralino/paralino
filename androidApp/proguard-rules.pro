@@ -24,6 +24,9 @@
 -keep class com.cossacklabs.themis.**
 -keep class com.cossacklabs.themis.** {*;}
 
+-keep class com.sun.jna.* { *; }
+-keepclassmembers class * extends com.sun.jna.* { public *; }
+
 -dontwarn org.jetbrains.annotations.**
 
 #retaning R.java resources names
