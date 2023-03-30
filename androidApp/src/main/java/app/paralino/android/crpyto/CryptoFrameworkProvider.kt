@@ -5,7 +5,6 @@ import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KeyPair
 import app.paralino.core.crypto.toData
-import app.paralino.core.logg
 
 class CryptoFrameworkProvider : ICryptoServiceProvider {
 
@@ -22,47 +21,36 @@ class CryptoFrameworkProvider : ICryptoServiceProvider {
         data: ByteArray,
         key: ByteArray
     ): Data {
-        logg.v("libs", "Start encrypt")
-
         val symKey = SymmetricKey(key)
         val cell = SecureCell.SealWithKey(symKey.toByteArray())
-        val res = cell.encrypt(data).toData()
-
-        logg.v("libs", "End encrypt")
-        return res
+        return cell.encrypt(data).toData()
     }
 
     override fun decryptDataWithSymmetricKey(
         data: ByteArray,
         key: ByteArray
     ): Data {
-        logg.v("libs", "Start decrypt")
-
         val symKey = SymmetricKey(key)
         val cell = SecureCell.SealWithKey(symKey.toByteArray())
-        val res = cell.decrypt(data).toData()
-
-        logg.v("libs", "End decrypt")
-        return res
+        return cell.decrypt(data).toData()
     }
 
-    override fun encryptDataWithPassword(data: ByteArray, password: String, context: ByteArray): Data {
-        logg.v("libs", "Start encrypt with password")
-
+    override fun encryptDataWithPassword(
+        data: ByteArray,
+        password: String,
+        context: ByteArray
+    ): Data {
         val cell = SecureCell.SealWithPassphrase(password)
-        val res = cell.encrypt(data, context).toData()
-
-        logg.v("libs", "End encrypt with password")
-        return res
+        return cell.encrypt(data, context).toData()
     }
 
-    override fun decryptDataWithPassword(data: ByteArray, password: String, context: ByteArray): Data {
-        logg.v("libs", "Start decrypt with password")
+    override fun decryptDataWithPassword(
+        data: ByteArray,
+        password: String,
+        context: ByteArray
+    ): Data {
         val cell = SecureCell.SealWithPassphrase(password)
-        val res = cell.decrypt(data, context).toData()
-
-        logg.v("libs", "End decrypt with password")
-        return res
+        return cell.decrypt(data, context).toData()
     }
 
     override fun encryptDataWithKeyPair(data: ByteArray, myPrivateKey: ByteArray, publicKey: ByteArray): Data {

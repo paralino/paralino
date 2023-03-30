@@ -4,7 +4,6 @@ import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KeyPair
 import app.paralino.core.crypto.toData
-import app.paralino.core.logg
 import com.goterl.lazysodium.LazySodiumAndroid
 import com.goterl.lazysodium.SodiumAndroid
 import com.goterl.lazysodium.exceptions.SodiumException
@@ -31,34 +30,26 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
     }
 
     override fun encryptDataWithSymmetricKey(data: ByteArray, key: ByteArray): Data {
-        logg.v("libs", "Start encrypt")
+
         val nonce = lazySodium.nonce(SecretBox.XSALSA20POLY1305_NONCEBYTES)
 
-        val res = lazySodium.cryptoSecretBoxEasy(
+        return lazySodium.cryptoSecretBoxEasy(
             lazySodium.encodeToString(data),
             nonce,
             Key.fromBytes(key)
         ).let { nonce.plus(lazySodium.decodeFromString(it)).toData() }
-
-        logg.v("libs", "End encrypt")
-        return res
     }
 
     override fun decryptDataWithSymmetricKey(data: ByteArray, key: ByteArray): Data {
-        logg.v("libs", "Start decrypt")
 
         val nonce = data.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
         val content = data.sliceArray(SecretBox.XSALSA20POLY1305_NONCEBYTES until data.size)
 
-        val res = lazySodium.cryptoSecretBoxOpenEasy(
+        return lazySodium.cryptoSecretBoxOpenEasy(
             lazySodium.encodeToString(content),
             nonce,
             Key.fromBytes(key)
         ).let { lazySodium.decodeFromString(it).toData() }
-
-        logg.v("libs", "End decrypt")
-
-        return res
     }
 
     override fun encryptDataWithPassword(
@@ -66,7 +57,6 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         password: String,
         context: ByteArray
     ): Data {
-        logg.v("libs", "Start encrypt with password")
 
         val out = lazySodium.randomBytesBuf(GenericHash.BYTES_MIN)
         if (!lazySodium.cryptoGenericHash(
@@ -75,8 +65,9 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                 context,
                 context.size.toLong()
             )
-        )
+        ) {
             throw SodiumException("Error creating password context hash")
+        }
 
         val key = lazySodium.cryptoPwHash(
             password,
@@ -86,10 +77,8 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             PwHash.MEMLIMIT_INTERACTIVE,
             PwHash.Alg.PWHASH_ALG_ARGON2ID13
         )
-        val res = encryptDataWithSymmetricKey(data, lazySodium.decodeFromString(key))
 
-        logg.v("libs", "End encrypt with password")
-        return res
+        return encryptDataWithSymmetricKey(data, lazySodium.decodeFromString(key))
     }
 
     override fun decryptDataWithPassword(
@@ -97,7 +86,6 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         password: String,
         context: ByteArray
     ): Data {
-        logg.v("libs", "Start decrypt with password")
 
         val out = lazySodium.randomBytesBuf(GenericHash.BYTES_MIN)
         if (!lazySodium.cryptoGenericHash(
@@ -106,8 +94,9 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                 context,
                 context.size.toLong()
             )
-        )
+        ) {
             throw SodiumException("Error creating password context hash")
+        }
 
         val key = lazySodium.cryptoPwHash(
             password,
@@ -117,10 +106,8 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             PwHash.MEMLIMIT_INTERACTIVE,
             PwHash.Alg.PWHASH_ALG_ARGON2ID13
         )
-        val res = decryptDataWithSymmetricKey(data, lazySodium.decodeFromString(key))
 
-        logg.v("libs", "End decrypt with password")
-        return res
+        return decryptDataWithSymmetricKey(data, lazySodium.decodeFromString(key))
     }
 
     override fun encryptDataWithKeyPair(
@@ -128,7 +115,6 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         myPrivateKey: ByteArray,
         publicKey: ByteArray
     ): Data {
-        logg.v("libs", "Start encrypt with keypair")
         val nonce = lazySodium.nonce(SecretBox.XSALSA20POLY1305_NONCEBYTES)
         val keyPair = com.goterl.lazysodium.utils.KeyPair(
             Key.fromBytes(publicKey),
@@ -136,14 +122,11 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         )
         val cryptoKeyPair = lazySodium.convertKeyPairEd25519ToCurve25519(keyPair)
 
-        val res = lazySodium.cryptoBoxEasy(
+        return lazySodium.cryptoBoxEasy(
             lazySodium.encodeToString(data),
             nonce,
             cryptoKeyPair
         ).let { nonce.plus(lazySodium.decodeFromString(it)).toData() }
-
-        logg.v("libs", "End encrypt with keypair")
-        return res
     }
 
     override fun decryptDataWithKeyPair(
@@ -151,7 +134,6 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         myPrivateKey: ByteArray,
         publicKey: ByteArray
     ): Data {
-        logg.v("libs", "Start decrypt with keypair")
 
         val nonce = data.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
         val content = data.sliceArray(SecretBox.XSALSA20POLY1305_NONCEBYTES until data.size)
@@ -161,14 +143,11 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         )
         val cryptoKeyPair = lazySodium.convertKeyPairEd25519ToCurve25519(keyPair)
 
-        val res = lazySodium.cryptoBoxOpenEasy(
+        return lazySodium.cryptoBoxOpenEasy(
             lazySodium.encodeToString(content),
             nonce,
             cryptoKeyPair
         ).let { lazySodium.decodeFromString(it).toData() }
-
-        logg.v("libs", "End decrypt with keypair")
-        return res
     }
 
     override fun signData(data: ByteArray, myPrivateKey: ByteArray): Data {
