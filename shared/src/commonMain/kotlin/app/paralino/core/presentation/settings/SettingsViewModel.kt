@@ -1,10 +1,7 @@
 package app.paralino.core.presentation.settings
 
 import app.paralino.core.domain.user.LogoutUseCase
-import app.paralino.core.models.Payload
-import app.paralino.core.models.Resource
-import app.paralino.core.models.exception
-import app.paralino.core.models.mapSuccess
+import app.paralino.core.models.*
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
@@ -17,6 +14,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository,
+    private val appConfig: BackendConfig,
 ) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(Payload.Loading)
@@ -45,6 +43,7 @@ class SettingsViewModel(
                                                 ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
                                             else null
                                         ),
+                                        canUseEmail = appConfig.canUseEmail,
                                         logoutState = null,
                                         deleteAccountState = null
                                     )

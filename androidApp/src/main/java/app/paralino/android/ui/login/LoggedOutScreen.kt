@@ -7,6 +7,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,17 +30,22 @@ import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.presentation.login.LoggedOutScreenState
+import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun LoggedOutScreen(
     appState: MainAppState,
+    vm: LoggedOutViewModel = getViewModel()
 ) {
 
     val systemUiController = rememberSystemUiController()
     val defaultColor = MaterialTheme.colors.background
     val darkIconsDefault = !isSystemInDarkTheme()
+    val state by vm.uiState.collectAsState(LoggedOutScreenState())
 
     DisposableEffect(systemUiController) {
         systemUiController.setSystemBarsColor(
@@ -109,19 +116,21 @@ fun LoggedOutScreen(
                 }
                 Spacer(Modifier.size(10.dp))
 
-                Text(
-                    text = stringResource(id = R.string.login_signup_switch_button_login).annotatedBold(),
-                    style = MaterialTheme.typography.body2,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable {
-                            appState.navController.navigate(
-                                AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN)
-                            )
-                        }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                )
+                if(state.hasLogin) {
+                    Text(
+                        text = stringResource(id = R.string.login_signup_switch_button_login).annotatedBold(),
+                        style = MaterialTheme.typography.body2,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                appState.navController.navigate(
+                                    AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN)
+                                )
+                            }
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                    )
+                }
                 Spacer(Modifier.size(20.dp))
             }
         }

@@ -4,8 +4,10 @@ import app.paralino.core.config
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
+import app.paralino.core.models.BackendConfig
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -18,10 +20,17 @@ class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase,
     private val createAccountUseCase: CreateAccountUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
+    private val appConfig: BackendConfig,
     startScreenUiType: LoginScreenUiType,
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow(LoginScreenState(uiType = startScreenUiType, hasGuestAccount = hasGuestAccount()))
+    private val _uiState = MutableStateFlow(
+        LoginScreenState(
+            canUseEmail = appConfig.canUseEmail,
+            uiType = startScreenUiType,
+            hasGuestAccount = hasGuestAccount()
+        )
+    )
     val uiState: Flow<LoginScreenState> = _uiState
 
     private val _eventChannel = Channel<LoginScreenEvent?>()
@@ -29,6 +38,12 @@ class LoginViewModel constructor(
 
 
     fun proceed() {
+
+        if(_uiState.value.uiType != LoginScreenUiType.SIGNUP_GUEST && !appConfig.canUseEmail) {
+            _uiState.update { it.copy(uiType = LoginScreenUiType.SIGNUP_GUEST) }
+            return
+        }
+
         when (_uiState.value.uiType) {
             LoginScreenUiType.LOGIN -> login()
             LoginScreenUiType.SIGNUP -> signUp()
@@ -282,6 +297,10 @@ class LoginViewModel constructor(
 
         if(type == _uiState.value.uiType)
             return
+
+        if(type != LoginScreenUiType.SIGNUP_GUEST && !appConfig.canUseEmail) {
+            return
+        }
 
         resetValidationState()
 

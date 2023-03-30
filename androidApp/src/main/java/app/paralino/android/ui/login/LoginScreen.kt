@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
@@ -179,6 +180,7 @@ fun LoginScreen(
                 ) {
                     LargeSeekbarSwitch(
                         modifier = Modifier
+                            .alpha(if(uiState.canUseEmail) 1f else 0.4f)
                             .padding(end = 10.dp)
                             .fillMaxWidth(0.5f),
                         icon = AppIcons.Person,
@@ -324,23 +326,25 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        val switchText = when (uiState.uiType) {
-            LoginScreenUiType.LOGIN -> stringResource(id = R.string.login_signup_switch_button_signup)
-            LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> stringResource(id = R.string.login_signup_switch_button_login)
-            LoginScreenUiType.FORGOT_PASSWORD -> stringResource(id = R.string.login_signup_switch_button_login)
-        }
+        if(uiState.canUseEmail) {
+            val switchText = when (uiState.uiType) {
+                LoginScreenUiType.LOGIN -> stringResource(id = R.string.login_signup_switch_button_signup)
+                LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> stringResource(id = R.string.login_signup_switch_button_login)
+                LoginScreenUiType.FORGOT_PASSWORD -> stringResource(id = R.string.login_signup_switch_button_login)
+            }
 
-        Text(
-            text = switchText.annotatedBold(),
-            style = MaterialTheme.typography.button,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .clip(RoundedCornerShape(8.dp))
-                .clickable {
-                    vm.toggleLoginSignup()
-                }
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-        )
+            Text(
+                text = switchText.annotatedBold(),
+                style = MaterialTheme.typography.button,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        vm.toggleLoginSignup()
+                    }
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+            )
+        }
     }
 }
 

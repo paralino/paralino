@@ -171,16 +171,6 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
         }
     }
 
-    val externalLogTree: SystemLogr by lazy {
-        object : SystemLogr() {
-            override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
-                if(t != null) {
-                    Sentry.captureException(t)
-                }
-            }
-        }
-    }
-
     private val gpsReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if(intent?.action == LocationManager.PROVIDERS_CHANGED_ACTION) {

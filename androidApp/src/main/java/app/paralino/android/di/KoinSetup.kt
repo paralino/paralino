@@ -30,6 +30,7 @@ import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
+import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
@@ -78,7 +79,10 @@ object KoinSetup {
             BackendConfig(
                 serverUrl = BuildConfig.serverUrl,
                 projectId = BuildConfig.serverKey,
-                debug = BuildConfig.internalTesting
+                debug = BuildConfig.internalTesting,
+                canUseEmail = BuildConfig.internalTesting && BuildConfig.BUILD_TYPE == "debug",
+                logToConsole = BuildConfig.forceLogToSystem,
+                logErrorsToRemote = BuildConfig.BUILD_TYPE == "release"
             )
         }
         single {
@@ -92,7 +96,7 @@ object KoinSetup {
         single<ICoroutineScopeProvider> { androidApplication() as AppClass }
         single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
         single<ILocationStatusProvider> { LocationStatusProvider(androidApplication() as AppClass) }
-        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass) }
+        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get()) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
 
         single<IUserApi> { UserApi(get()) }
@@ -110,12 +114,13 @@ object KoinSetup {
 
         viewModel { GroupInitViewModel(get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
-        viewModel { SettingsViewModel(get(), get()) }
-        viewModel { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), startScreenType as LoginScreenUiType) }
+        viewModel { SettingsViewModel(get(), get(), get()) }
+        viewModel { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), get(), startScreenType as LoginScreenUiType) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
         viewModel { (args: String?) ->
             SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
         }
+        viewModel { LoggedOutViewModel(get()) }
         viewModel { PersonalCodeViewModel(get()) }
         viewModel { (groupId: String?, code: String?) ->
             MemberInviteViewModel(

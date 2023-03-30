@@ -31,6 +31,7 @@ import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.android.utils.extensions.copy
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -147,7 +148,11 @@ fun AccountScreen(
                     isGuestUser = state.data.userState.isGuestUser,
                     errorItem = state.data.userState.errorItem,
                     onGuestAccountClick = {
-                        appState.navController.navigate(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature)
+                        if(state.data.canUseEmail) {
+                            appState.navController.navigate(
+                                AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature
+                            )
+                        }
                     },
                     onErrorItemClick = {
                         when (it) {
@@ -166,11 +171,13 @@ fun AccountScreen(
                 }
 
                 if (state.data.userState.isGuestUser) {
-                    SettingsActionItem(
-                        name = stringResource(id = R.string.settings_account_guest_convert),
-                        icon = AppIcons.HowToReg
-                    ) {
-                        appState.navController.navigate(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature)
+                    if(state.data.canUseEmail) {
+                        SettingsActionItem(
+                            name = stringResource(id = R.string.settings_account_guest_convert),
+                            icon = AppIcons.HowToReg
+                        ) {
+                            appState.navController.navigate(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature)
+                        }
                     }
                 } else {
                     SettingsActionItem(
@@ -254,6 +261,7 @@ fun AccountInfoHeader(
     onErrorItemClick: (ConditionErrorType) -> Unit,
     onGuestAccountClick: () -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -312,6 +320,9 @@ fun AccountInfoHeader(
             }
             if (userId.isNotBlank()) {
                 Text(
+                    modifier = Modifier.clickable {
+                        context.copy(userId)
+                    },
                     text = "ID: **$userId**".annotatedBold(),
                     style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
                 )

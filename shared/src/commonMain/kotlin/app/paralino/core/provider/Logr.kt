@@ -15,6 +15,8 @@ abstract class LogrImpl : ILogr {
     }
 
     override fun log(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
+        systemLogr ?: return
+
         val output = if (t != null) {
             message.takeIf { it.isNotEmpty() }
                 ?.let {

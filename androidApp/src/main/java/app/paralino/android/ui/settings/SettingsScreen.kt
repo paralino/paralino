@@ -77,7 +77,11 @@ fun SettingsScreen(
                     isGuestUser = state.data.userState.isGuestUser,
                     errorItem = null,
                     onGuestAccountClick = {
-                        appState.navController.navigate(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature)
+                        if(state.data.canUseEmail) {
+                            appState.navController.navigate(
+                                AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature
+                            )
+                        }
                     },
                     onErrorItemClick = { }
                 )
