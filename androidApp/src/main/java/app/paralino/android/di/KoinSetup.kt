@@ -2,6 +2,7 @@ package app.paralino.android.di
 
 import app.paralino.android.AppClass
 import app.paralino.android.BuildConfig
+import app.paralino.android.crpyto.CryptoFrameworkLibsodium
 import app.paralino.android.crpyto.CryptoFrameworkProvider
 import app.paralino.android.crpyto.CryptoHashProvider
 import app.paralino.android.data.PreCheckControl
@@ -74,7 +75,8 @@ object KoinSetup {
         single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
         single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), config as Config) }
 
-        single { CryptoFrameworkProvider() } bind ICryptoServiceProvider::class
+//        single { CryptoFrameworkProvider() } bind ICryptoServiceProvider::class
+        single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
         single { CryptoHashProvider() } bind ICryptoHashProvider::class
 
         single {
