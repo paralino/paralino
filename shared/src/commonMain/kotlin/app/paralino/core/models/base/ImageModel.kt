@@ -19,6 +19,10 @@ data class ImageModel(val image: String = "") {
         return getImageType()?.let { image.replaceFirst("${it.name}:", "") }
     }
 
+    fun getImageValue(type: ImageType): String? {
+        return getImageType()?.takeIf { it == type }?.let { image.replaceFirst("${it.name}:", "") }
+    }
+
     fun takeIfValid(): ImageModel? {
         return this.takeIf { it.getImageType() != null }
     }

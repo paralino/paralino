@@ -1,15 +1,19 @@
 package app.paralino.android.notification
 
+import android.Manifest
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.logg
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.models.data
 import app.paralino.core.notifications.IPlaceNotificationsHandler
@@ -57,7 +61,16 @@ class PlaceNotificationHandler(
         }
     }
 
-    private fun notify(notificationId: Int, title: String): Notification {
+    private fun notify(notificationId: Int, title: String): Notification? {
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            logg.w("push_notifications", "Missing push notification permission!")
+            return null
+        }
 
         val notificationManager = NotificationManagerCompat.from(context)
 
@@ -106,7 +119,7 @@ class PlaceNotificationHandler(
         val channel = NotificationChannel(
             channelId,
             context.getString(R.string.notifications_channel_place_alert),
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_HIGH
         )
 
         channel.setShowBadge(true)
