@@ -65,7 +65,7 @@ fun MapHomeScreenElements(
     ) {
 
         val readyState = state as? MapHomeScreenState.Ready
-        val (groupSelect, groupTrack, userListButton, userList, shareTime, settings, emptySpace) = createRefs()
+        val (groupSelect, groupTrack, userListButton, userList, shareTime, settings) = createRefs()
         var userListExpanded by remember(focusedMarker) { mutableStateOf(focusedMarker?.type == MapPinType.MEMBER) }
 
         FloatingActionButton(
@@ -75,7 +75,7 @@ fun MapHomeScreenElements(
                     top.linkTo(groupSelect.top)
                     bottom.linkTo(groupSelect.bottom)
                 }
-                .size(42.dp),
+                .size(46.dp),
             onClick = onSettingsClick,
             backgroundColor = MaterialTheme.colors.surface
         ) {
@@ -83,7 +83,7 @@ fun MapHomeScreenElements(
                 imageModel = state.currentUserImage,
                 useBackgroundForEmoji = false,
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(42.dp)
                     .background(
                         color = MaterialTheme.colors.surface,
                         shape = CircleShape
@@ -91,23 +91,13 @@ fun MapHomeScreenElements(
             )
         }
 
-        Spacer(
-            modifier = Modifier
-                .constrainAs(emptySpace) {
-                    start.linkTo(parent.start, margin = 12.dp)
-                    top.linkTo(groupSelect.top)
-                    bottom.linkTo(groupSelect.bottom)
-                }
-                .size(42.dp)
-        )
-
         // group picker button
         AnimatedVisibility(
             modifier = Modifier
                 .constrainAs(groupSelect) {
                     top.linkTo(parent.top, margin = 8.dp)
-                    start.linkTo(emptySpace.end)
-                    end.linkTo(settings.start)
+                    start.linkTo(parent.start, margin = 12.dp)
+                    end.linkTo(settings.start, margin = 8.dp)
                     width = Dimension.fillToConstraints
                 },
             visible = state is MapHomeScreenState.Ready,
@@ -125,7 +115,8 @@ fun MapHomeScreenElements(
                                 top = parent.top,
                                 bottom = parent.bottom,
                                 start = parent.start,
-                                end = parent.end
+                                end = parent.end,
+                                horizontalBias = 0f
                             )
                             width = Dimension.preferredWrapContent
                         },

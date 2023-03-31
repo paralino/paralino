@@ -75,6 +75,7 @@ object AppIcons {
     val AddLink @Composable get() = R.drawable.ic_add_link.asImageVector()
     val Key @Composable get() = R.drawable.ic_key.asImageVector()
     val Block @Composable get() = R.drawable.ic_block.asImageVector()
+    val List @Composable get() = Icons.Rounded.FormatListBulleted
 
     @Composable
     fun Int.asImageVector(): ImageVector {

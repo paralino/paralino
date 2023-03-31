@@ -14,9 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
@@ -31,6 +29,7 @@ import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.theme.AppIcons
+import app.paralino.android.ui.theme.AppIcons.asImageVector
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.quantityStringResource
@@ -51,7 +50,6 @@ fun MapGroupPicker(
     val height: Dp = remember { 56.dp }
     ConstraintLayout(
         modifier = modifier
-            .padding(horizontal = 8.dp)
             .height(height)
 
     ) {
@@ -74,10 +72,19 @@ fun MapGroupPicker(
                 .clip(RoundedCornerShape(height))
                 .clickable { onExpandClick() },
             onDraw = {
-                val pos = this.size.minDimension.div(2)
-                val diff = height.plus(12.dp).div(height)
+                val pos = this.size.minDimension
+                val factor = 1.1f
+                val offset = (pos * factor - pos) / 2
                 val circlePath = Path().apply {
-                    addOval(Rect(Offset(pos, pos), pos * diff))
+                    addRoundRect(
+                        RoundRect(
+                            rect = Rect(
+                                Offset(x = 0f - offset, y = 0f - offset),
+                                Size(width = pos * 2 * factor, height = pos * factor)
+                            ),
+                            cornerRadius = CornerRadius(pos * factor, pos * factor)
+                        )
+                    )
                 }
                 clipPath(circlePath, clipOp = ClipOp.Difference) {
                     drawRoundRect(backgroundColor, cornerRadius = CornerRadius(pos, pos))
@@ -86,12 +93,9 @@ fun MapGroupPicker(
         )
 
         // image
-        ImageModelImage(
-            imageModel = groupImage,
-            useBackgroundForEmoji = false,
-            cornerSize = height,
+        Row(
             modifier = Modifier
-                .size(height)
+                .height(height)
                 .constrainAs(image) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
@@ -101,8 +105,39 @@ fun MapGroupPicker(
                     color = MaterialTheme.colors.surface,
                     shape = CircleShape
                 )
+                .clip(RoundedCornerShape(height))
                 .clickable { onGroupClick() }
-        )
+                .padding(horizontal = 8.dp)
+        ) {
+            ImageModelImage(
+                imageModel = groupImage,
+                useBackgroundForEmoji = false,
+                cornerSize = height,
+                modifier = Modifier
+                    .size(height)
+            )
+            Box(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxHeight()
+//                    .aspectRatio(1f)
+//                    .border(
+//                        0.5.dp,
+//                        MaterialTheme.colors.background.copy(alpha = ContentAlpha.disabled),
+//                        RoundedCornerShape(percent = 100)
+//                    )
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = AppIcons.ChevronRight.asImageVector(),
+                    tint = MaterialTheme.colors.primary,
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
+                )
+            }
+        }
+
 
         // center content
         Column(
@@ -182,7 +217,7 @@ fun MapGroupPicker(
                 .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {
-            if(verified) {
+            if (verified) {
                 Icon(
                     imageVector = AppIcons.ExpandMore,
                     contentDescription = null,
