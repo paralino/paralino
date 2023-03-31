@@ -97,7 +97,7 @@ fun MapHomeScreenElements(
                 .constrainAs(groupSelect) {
                     top.linkTo(parent.top, margin = 8.dp)
                     start.linkTo(parent.start, margin = 12.dp)
-                    end.linkTo(settings.start, margin = 8.dp)
+                    end.linkTo(settings.start, margin = 24.dp)
                     width = Dimension.fillToConstraints
                 },
             visible = state is MapHomeScreenState.Ready,
