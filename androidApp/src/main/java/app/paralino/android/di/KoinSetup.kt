@@ -85,7 +85,7 @@ object KoinSetup {
                 projectId = BuildConfig.serverKey,
                 debug = BuildConfig.internalTesting,
                 canUseEmail = BuildConfig.internalTesting && BuildConfig.BUILD_TYPE == "debug",
-                logToConsole = BuildConfig.forceLogToSystem,
+                logToConsole = BuildConfig.forceLogToSystem && BuildConfig.BUILD_TYPE == "debug",
                 logErrorsToRemote = BuildConfig.BUILD_TYPE == "release"
             )
         }
