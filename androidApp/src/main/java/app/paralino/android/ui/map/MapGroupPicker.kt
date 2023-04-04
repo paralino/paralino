@@ -70,7 +70,7 @@ fun MapGroupPicker(
                     this.height = Dimension.fillToConstraints
                 }
                 .clip(RoundedCornerShape(height))
-                .clickable { onExpandClick() },
+                .clickable { onGroupClick() },
             onDraw = {
                 val pos = this.size.minDimension
                 val factor = 1.1f
@@ -106,7 +106,7 @@ fun MapGroupPicker(
                     shape = CircleShape
                 )
                 .clip(RoundedCornerShape(height))
-                .clickable { onGroupClick() }
+                .clickable { onExpandClick() }
                 .padding(horizontal = 8.dp)
         ) {
             ImageModelImage(
@@ -120,20 +120,13 @@ fun MapGroupPicker(
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxHeight()
-//                    .aspectRatio(1f)
-//                    .border(
-//                        0.5.dp,
-//                        MaterialTheme.colors.background.copy(alpha = ContentAlpha.disabled),
-//                        RoundedCornerShape(percent = 100)
-//                    )
                     .padding(4.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = AppIcons.ChevronRight.asImageVector(),
-                    tint = MaterialTheme.colors.primary,
+                    imageVector = AppIcons.ExpandMore,
                     contentDescription = null,
-                    modifier = Modifier.size(25.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -219,9 +212,9 @@ fun MapGroupPicker(
         ) {
             if (verified) {
                 Icon(
-                    imageVector = AppIcons.ExpandMore,
+                    imageVector = AppIcons.ChevronRight.asImageVector(),
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             } else {
                 Icon(
