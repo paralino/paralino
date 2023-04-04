@@ -284,8 +284,10 @@
     <string name="place_notification_enter">%s arrived at %s</string>
     <string name="place_notification_exit">%s left %s</string>
     <string name="place_notification_default">Your place have activity</string>
-    <string name="group_member_add_notification">🙌 You just joined %s</string>
-    <string name="group_member_add_notification_default">🙌 You just joined a new group</string>
+    <string name="group_member_current_add_notification">🙌 You just joined %s</string>
+    <string name="group_member_current_add_notification_default">🙌 You just joined a new group</string>
+    <string name="group_member_add_notification">%1$s just joined %2$s</string>
+    <string name="group_member_add_notification_default">🙌 New member just joined your group</string>
 
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>

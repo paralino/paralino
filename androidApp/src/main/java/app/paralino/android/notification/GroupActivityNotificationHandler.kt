@@ -13,6 +13,7 @@ import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.config
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.models.data
@@ -37,18 +38,29 @@ class GroupActivityNotificationHandler(
     override fun process(payload: GroupMemberAddedNotificationPayload) {
         scopeProvider.userSessionIOScope.launch {
 
-            var groupName: String? = null
+            val title = try {
+                val group = groupRepo.getGroupWithMembersLocally(payload.groupId).firstOrNull()
+                val member = group?.memberByUserId(payload.memberUserId)
+                val groupEmoji = group?.data?.data?.image?.getImageValue(ImageType.emoji)?.let { "$it " } ?: ""
+                val memberEmoji = member?.image?.getImageValue(ImageType.emoji)?.let { "$it " } ?: ""
+                val groupName = group?.data?.data?.name?.let { "$groupEmoji$it" }
+                val memberName = member?.name?.let { "$memberEmoji$it" }
 
-            try {
-                val group = groupRepo.getGroupWithoutMembersLocally(payload.groupId).firstOrNull()
-                val emoji = group?.data?.data?.image?.getImageValue(ImageType.emoji)?.let { "$it " } ?: ""
-                groupName = group?.data?.data?.name?.let { "$emoji$it" }
-            } catch (e: Exception) { }
-
-            val title = if (groupName.isNullOrBlank()) {
+                if(payload.memberUserId == config.userId) {
+                    if (groupName.isNullOrBlank()) {
+                        context.getString(R.string.group_member_current_add_notification_default)
+                    } else {
+                        context.getString(R.string.group_member_current_add_notification, groupName)
+                    }
+                } else {
+                    if (groupName.isNullOrBlank() || memberName.isNullOrBlank()) {
+                        context.getString(R.string.group_member_add_notification_default)
+                    } else {
+                        context.getString(R.string.group_member_add_notification, memberName, group)
+                    }
+                }
+            } catch (e: Exception) {
                 context.getString(R.string.group_member_add_notification_default)
-            } else {
-                context.getString(R.string.group_member_add_notification, groupName)
             }
 
             val notificationId = payload.hashCode()
