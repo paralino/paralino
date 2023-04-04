@@ -28,11 +28,7 @@ class AppAccountStateMonitor constructor(
     private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
 
     val userState: Flow<Resource<AppAccountState>> =
-        combine(
-            userRepo.localUserRaw,
-            userKeyRepo.userKeyState()
-        ) { userState, isKeyValid ->
-
+        userRepo.localUserRaw.map { userState ->
             when (userState) {
                 Resource.NotInitialized -> Resource.NotInitialized
                 is Resource.Ready -> {
@@ -49,7 +45,7 @@ class AppAccountStateMonitor constructor(
                                 Resource.Ready(data = AppAccountState.NO_USER)
                             }
                         }
-                        !isKeyValid -> {
+                        userKeyRepo.userKeyState().firstOrNull() != true -> {
                             if (config.temporaryBackupPassword.isNotBlank()) {
                                 logg.tag("account_state")
                                     .v("Key is not valid but backup password is active")
