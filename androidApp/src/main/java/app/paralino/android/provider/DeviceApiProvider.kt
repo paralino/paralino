@@ -13,7 +13,9 @@ import app.paralino.core.provider.IConfig
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.SystemLogr
+import app.paralino.core.utils.exceptions.InternalConnectionException
 import io.sentry.Sentry
+import java.net.SocketTimeoutException
 import java.util.*
 
 class DeviceApiProvider constructor(
@@ -39,8 +41,9 @@ class DeviceApiProvider constructor(
         } else {
             object : SystemLogr() {
                 override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
-                    if(t != null && appConfig.logErrorsToRemote) {
-                        Sentry.captureException(t)
+                    if(t != null && appConfig.logErrorsToRemote && priority == LogPriority.ERROR) {
+                        if(t !is SocketTimeoutException && t !is InternalConnectionException)
+                            Sentry.captureException(t)
                     }
                 }
             }
