@@ -54,7 +54,10 @@ class UserRepository constructor(
         )
 
     val localUserRaw: StateFlow<Resource<UserMeRaw?>> = local.getMeRaw()
-        .map<UserMeRaw?, Resource<UserMeRaw?>> { Resource.Ready(it) }
+        .map<UserMeRaw?, Resource<UserMeRaw?>> {
+            logg.v("Local raw user changed, valid (${it != null})")
+            Resource.Ready(it)
+        }
         .catch { emit(Resource.NotInitialized) }
         .stateIn(
             scope = scopeProvider.defaultScope,

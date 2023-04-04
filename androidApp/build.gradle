@@ -236,8 +236,6 @@ dependencies {
     // endregion
 
     // region di
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
-
     def koinVersion = '3.2.0'
     implementation "io.insert-koin:koin-android:$koinVersion"
     implementation "io.insert-koin:koin-androidx-compose:$koinVersion"

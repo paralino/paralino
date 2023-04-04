@@ -3,11 +3,8 @@ package app.paralino.android.di
 import app.paralino.android.AppClass
 import app.paralino.android.BuildConfig
 import app.paralino.android.crpyto.CryptoFrameworkLibsodium
-import app.paralino.android.crpyto.CryptoFrameworkProvider
 import app.paralino.android.crpyto.CryptoHashProvider
 import app.paralino.android.data.PreCheckControl
-import app.paralino.android.data.config.Config
-import app.paralino.android.data.repos.user.UserCryptoKeyLocalDataSource
 import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.notification.GroupActivityNotificationHandler
 import app.paralino.android.notification.LocationNotificationHandler
@@ -21,7 +18,6 @@ import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoHashProvider
 import app.paralino.core.crypto.ICryptoServiceProvider
-import app.paralino.core.crypto.user.ICryptoUserKeyLocalDataSource
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.models.BackendConfig
@@ -73,11 +69,31 @@ object KoinSetup {
 
     private val coreDependencyModule = module {
         single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
-        single<ICryptoUserKeyLocalDataSource> { UserCryptoKeyLocalDataSource(get(), config as Config) }
 
 //        single { CryptoFrameworkProvider() } bind ICryptoServiceProvider::class
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
         single { CryptoHashProvider() } bind ICryptoHashProvider::class
+
+        single<ICoroutineScopeProvider> { androidApplication() as AppClass }
+        single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
+        single<ILocationStatusProvider> { LocationStatusProvider(androidApplication() as AppClass) }
+        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get()) }
+        single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
+
+        single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
+        factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) } bind IPlaceNotificationsHandler::class
+        factory { GroupActivityNotificationHandler(androidContext(), get(), get()) } bind IGroupMemberAddedNotificationsHandler::class
+
+        single<IUserApi> { UserApi(get()) }
+        single<IDocumentsApi> { DocumentsApi(get()) }
+        single<IFunctionsApi> { FunctionsApi(get()) }
+        single<IRealtimeApi> { RealtimeApi(get()) }
+    }
+
+    private val appSpecificModule = module {
+        single { PreCheckControl(get()) }
+        single { LocationInitHandler(androidContext(), get(), get()) }
+        factory { LocationNotificationHandler(androidContext()) }
 
         single {
             BackendConfig(
@@ -96,26 +112,6 @@ object KoinSetup {
                 sessionMonitor = get()
             )
         }
-
-        single<ICoroutineScopeProvider> { androidApplication() as AppClass }
-        single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
-        single<ILocationStatusProvider> { LocationStatusProvider(androidApplication() as AppClass) }
-        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get()) }
-        single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
-
-        single<IUserApi> { UserApi(get()) }
-        single<IDocumentsApi> { DocumentsApi(get()) }
-        single<IFunctionsApi> { FunctionsApi(get()) }
-        single<IRealtimeApi> { RealtimeApi(get()) }
-    }
-
-    private val appSpecificModule = module {
-        single { PreCheckControl(get()) }
-        factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) } bind IPlaceNotificationsHandler::class
-        factory { GroupActivityNotificationHandler(androidContext(), get(), get()) } bind IGroupMemberAddedNotificationsHandler::class
-        single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
-        single { LocationInitHandler(androidContext(), get(), get()) }
-        factory { LocationNotificationHandler(androidContext()) }
 
         viewModel { GroupInitViewModel(get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }

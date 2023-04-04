@@ -1,25 +1,43 @@
 package app.paralino.core.provider
 
-interface IConfig {
+abstract class IConfig {
 
-    var deviceId: String
-    var sessionId: String
-    var deviceName: String
-    var email: String
-    var userId: String
-    var emailConfirmed: Boolean
-    var temporaryBackupPassword: String
+    companion object {
+        const val keyToken = "prefs.profile.token"
+        const val keyUserKey = "prefs.user.cryptKey"
+        const val keyEmail = "prefs.profile.email"
+        const val keyUserId = "prefs.profile.user_id"
+        const val keyTempPassword = "prefs.user.temp_password"
+        const val keyEmailConfirmed = "prefs.profile.email.confirmed"
+        const val keyEmailGuest = "prefs.profile.guest.email"
+        const val keyPasswordGuest = "prefs.profile.guest.password"
+        const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
+        const val keyDeviceName = "prefs.device.name"
+        const val keyDeviceID = "prefs.device.ID"
+        const val keySelectedGroupID = "prefs.group.selectedGroupID"
+        const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
+    }
 
-    var pushTokenUnsynced: String
+    abstract var userKey: String
 
-    var guestEmail: String
-    var guestPassword: String
+    abstract var deviceId: String
+    abstract var sessionId: String
+    abstract var deviceName: String
+    abstract var email: String
+    abstract var userId: String
+    abstract var emailConfirmed: Boolean
+    abstract var temporaryBackupPassword: String
 
-    var selectedGroupId: String?
-    var dismissedAppVersion: Long
+    abstract var pushTokenUnsynced: String
+
+    abstract var guestEmail: String
+    abstract var guestPassword: String
+
+    abstract var selectedGroupId: String?
+    abstract var dismissedAppVersion: Long
 
     val isTokenValid: Boolean
         get() = sessionId.isNotBlank()
 
-    fun clear()
+    abstract fun clear()
 }

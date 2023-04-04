@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS userKeysEntity (
+`id` TEXT NOT NULL PRIMARY KEY,
+`version` INTEGER,
+`encryptedSymmetricKey` TEXT NOT NULL,
+`encryptedPrivateKey` TEXT NOT NULL,
+`encryptedPublicKey` TEXT NOT NULL,
+`isActive` INTEGER AS kotlin.Boolean NOT NULL
+);
+
+createUserKey:
+INSERT OR REPLACE INTO userKeysEntity
+VALUES ?;
+
+getAll:
+SELECT * FROM userKeysEntity;
+
+getActive:
+SELECT * FROM userKeysEntity WHERE isActive = 1 LIMIT 1;
+
+clearAll:
+DELETE FROM userKeysEntity;

@@ -1,4 +1,4 @@
-package app.paralino.core.repo.user
+package app.paralino.core.crypto.user
 
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType

@@ -3,34 +3,12 @@ package app.paralino.android.data.config
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import app.paralino.core.provider.IConfig
 
-private val Context.dataStoreUserKeys: DataStore<Preferences> by preferencesDataStore(name = "datastore_user_keys")
 
-class Config(context: Context) : IConfig {
-
-    val dataStoreUserKeys = context.dataStoreUserKeys
-
-    companion object {
-        const val keyToken = "prefs.profile.token"
-        const val keyUserKey = "prefs.user.cryptKey"
-        const val keyEmail = "prefs.profile.email"
-        const val keyUserId = "prefs.profile.user_id"
-        const val keyTempPassword = "prefs.user.temp_password"
-        const val keyEmailConfirmed = "prefs.profile.email.confirmed"
-        const val keyEmailGuest = "prefs.profile.guest.email"
-        const val keyPasswordGuest = "prefs.profile.guest.password"
-        const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
-        const val keyDeviceName = "prefs.device.name"
-        const val keyDeviceID = "prefs.device.ID"
-        const val keySelectedGroupID = "prefs.group.selectedGroupID"
-        const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
-    }
+class Config(context: Context) : IConfig() {
 
     private val secureSharedData by lazy {
         EncryptedSharedPreferences(context, "shared_prefs_user", MasterKey(context))
@@ -94,10 +72,10 @@ class Config(context: Context) : IConfig {
             persistentSharedData.edit { putString(keyPasswordGuest, value) }
         }
 
-    var userKey: String
+    override var userKey: String
         get() = secureSharedData.getString(keyUserKey, "") ?: ""
         set(value) {
-            secureSharedData.edit { putString(keyUserKey, value) }
+            secureSharedData.edit(commit = true) { putString(keyUserKey, value) }
         }
 
     override var pushTokenUnsynced: String

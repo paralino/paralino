@@ -5,6 +5,8 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
+import app.paralino.core.crypto.user.UserCryptoKeyLocalDataSource
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
@@ -81,6 +83,7 @@ val dataSourceModule = module {
     single { LocationLocalDataSource(get(), get()) }
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
+    single { UserCryptoKeyLocalDataSource(get(), config, get()) }
     single { CryptoKeyLocalDataSource(get(), get()) }
     single { UserGroupLocalDataSource(get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }

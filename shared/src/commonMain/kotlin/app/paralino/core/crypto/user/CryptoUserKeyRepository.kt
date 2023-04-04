@@ -6,13 +6,12 @@ import app.paralino.core.crypto.base64ToData
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.repo.user.CryptoUserKeysRemoteSource
 import app.paralino.core.utils.exceptions.MissingUserKeyException
 import kotlinx.coroutines.flow.Flow
 
 class CryptoUserKeyRepository(
     private val cryptoCore: CryptoCore,
-    private val local: ICryptoUserKeyLocalDataSource,
+    private val local: UserCryptoKeyLocalDataSource,
     private val remote: CryptoUserKeysRemoteSource,
 ) : BaseRepository() {
 
