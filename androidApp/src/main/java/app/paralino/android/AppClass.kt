@@ -18,7 +18,6 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.di.KoinSetup
 import app.paralino.android.tracking.LocationService
-import app.paralino.android.tracking.getLocationStatus
 import app.paralino.core.ParalinoCore
 import app.paralino.core.connectionStatus
 import app.paralino.core.domain.user.LogoutUseCase
@@ -82,7 +81,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
             KoinSetup.modules
         )
 
-        locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
+        locationStatus.refreshLocationStatus()
         connectionStatus = connectionStatusProvider
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
@@ -144,7 +143,7 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     }
 
     private fun updateLocationStatus() {
-        locationStatus.status.value = LocationConditionStatus.getLocationStatus(this)
+        locationStatus.refreshLocationStatus()
     }
 
     private fun updateConnectionStatus() {

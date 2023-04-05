@@ -4,59 +4,25 @@ import android.app.Application
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.provider.ConnectionStatus
 import app.paralino.core.provider.IConnectionStatusProvider
-import app.paralino.core.utils.extensions.blocking
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.net.InetAddress
 
 class ConnectionStatusProvider constructor(
     private val app: Application,
-    private val backendConfig: BackendConfig,
-): IConnectionStatusProvider {
+    backendConfig: BackendConfig,
+): IConnectionStatusProvider(backendConfig) {
 
-    private val checkData = InternetCheckData()
-
-    // assume we are connected for first time
-    override var status: MutableStateFlow<ConnectionStatus> =
-        MutableStateFlow(ConnectionStatus.CONNECTED)
-
-    override suspend fun initAndGetStatus(): ConnectionStatus {
-        val networkStatus = if(!isNetworkAvailable()) ConnectionStatus.OFFLINE
-        else if(isInternetAvailable(backendConfig.serverUrl)) ConnectionStatus.CONNECTED
-        else ConnectionStatus.CONNECTED_NO_INTERNET
-
-        logg.v("app_state", "Network status: $networkStatus")
-
-        status.value = networkStatus
-        return networkStatus
+    override suspend fun isInternetAvailable(url: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            val uri = Uri.parse(url)
+            !InetAddress.getByName(uri.host).equals("")
+        }
     }
 
-    private suspend fun isInternetAvailable(url: String): Boolean {
-        checkData.checkCount = checkData.checkCount + 1
-
-        if(!checkData.shouldCheck)
-            return status.value == ConnectionStatus.CONNECTED
-
-        return blocking {
-            withTimeoutOrNull(3_000) {
-                try {
-                    checkData.lastCheckTime = System.currentTimeMillis()
-                    checkData.checkCount = 0
-                    val uri = Uri.parse(url)
-                    !InetAddress.getByName(uri.host).equals("")
-                } catch (e: Exception) {
-                    logg.w("Error check for connection")
-                    false
-                }
-            }
-        } == true
-    }
-
-    private fun isNetworkAvailable(): Boolean {
+    override suspend fun isNetworkAvailable(): Boolean {
         val cm = app.getSystemService(Application.CONNECTIVITY_SERVICE) as ConnectivityManager
         val actNw = cm.getNetworkCapabilities(cm.activeNetwork ?: return false) ?: return false
         return when {
@@ -67,11 +33,4 @@ class ConnectionStatusProvider constructor(
             else -> false
         }
     }
-}
-
-private data class InternetCheckData(
-    var checkCount: Int = 0,
-    var lastCheckTime: Long = 0
-) {
-    val shouldCheck: Boolean get() = System.currentTimeMillis() - lastCheckTime > 4_000 || checkCount >= 3
 }

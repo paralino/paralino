@@ -178,7 +178,7 @@ data class LocationPermissionHandlerState constructor(
     }
 
     private fun updateStatus() {
-        locationStatusProvider.status.update { LocationConditionStatus.getLocationStatus(context) }
+        locationStatusProvider.refreshLocationStatus()
     }
 
     private fun showGPSOffInfo() {

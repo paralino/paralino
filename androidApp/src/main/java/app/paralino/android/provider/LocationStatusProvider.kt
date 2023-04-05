@@ -7,9 +7,9 @@ import app.paralino.core.provider.LocationConditionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class LocationStatusProvider(
-    appClass: AppClass
-) : ILocationStatusProvider {
-    override val status: MutableStateFlow<LocationConditionStatus> = MutableStateFlow(
-        LocationConditionStatus.getLocationStatus(appClass)
-    )
+    private val appClass: AppClass
+) : ILocationStatusProvider() {
+    override fun getCurrentStatus(): LocationConditionStatus {
+        return LocationConditionStatus.getLocationStatus(appClass)
+    }
 }

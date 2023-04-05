@@ -2,9 +2,22 @@ package app.paralino.core.provider
 
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
-interface ILocationStatusProvider {
-    val status: MutableStateFlow<LocationConditionStatus>
+abstract class ILocationStatusProvider {
+    protected val mutableStatus = MutableStateFlow<LocationConditionStatus>(getCurrentStatus())
+    val status: StateFlow<LocationConditionStatus> = mutableStatus
+
+    init {
+        refreshLocationStatus()
+    }
+
+    fun refreshLocationStatus() {
+        mutableStatus.update { getCurrentStatus() }
+    }
+
+    abstract fun getCurrentStatus(): LocationConditionStatus
 }
 
 data class LocationConditionStatus constructor(
