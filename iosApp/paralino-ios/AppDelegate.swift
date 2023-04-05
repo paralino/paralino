@@ -8,16 +8,32 @@
 import Foundation
 import UIKit
 import shared
+import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    
+    let locationStatusProvider = LocationStatusProvider()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         ParalinoCore.shared.doInit(
             preLaunch: { koinApp in koinApp },
-            appModules: KoinIOS.shared.createIOSKoinModules(deviceProvider: DeviceApiProvider())
+            appModules: createKoinModules(locationStatusProvider: locationStatusProvider)
         )
         Logr.i(tag:"delegate", message: "App start")
         return true
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+            switch settings.authorizationStatus {
+            case .denied:
+                self?.locationStatusProvider.hasNotificationPermission = false
+            case .authorized:
+                self?.locationStatusProvider.hasNotificationPermission = true
+            default:
+                self?.locationStatusProvider.hasNotificationPermission = false
+            }
+        }
     }
 
 }
