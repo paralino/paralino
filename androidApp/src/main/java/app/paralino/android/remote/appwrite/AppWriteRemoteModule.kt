@@ -27,8 +27,6 @@ class AppWriteRemoteModule(
     internal val functions: Functions by lazy { Functions(client) }
     internal val realtime: Realtime by lazy { Realtime(client) }
 
-    val uniqueIdPlaceholder = "unique()"
-
     private val client: Client by lazy {
         Client(app, selfSigned = false)
             .setEndpoint(backendConfig.endpoint)
@@ -41,15 +39,7 @@ class AppWriteRemoteModule(
             return action(this)
         } catch (e: Exception) {
             throw mapException(e).also {
-                logg.w("Remote exception - ${it.javaClass.simpleName} - ${it.message}")
-                when ((it as? UnauthorizedException)?.type) {
-                    "general_unauthorized_scope", "user_blocked" -> {
-                        // user session is invalid
-                        logg.w("Remote exception - user session expired")
-                        sessionMonitor.updateSessionState(sessionValid = false)
-                    }
-                    else -> {}
-                }
+                sessionMonitor.processNetworkError(it)
             }
         }
     }

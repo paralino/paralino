@@ -8,7 +8,7 @@ import io.appwrite.models.DocumentList
 
 class DocumentsApi constructor(
     private val remoteModule: AppWriteRemoteModule
-) : IDocumentsApi {
+) : IDocumentsApi() {
 
     override suspend fun createDocument(
         databaseType: BackendDatabaseType,
@@ -20,7 +20,7 @@ class DocumentsApi constructor(
             database.createDocument(
                 databaseId = databaseType.id,
                 collectionId = collectionId,
-                documentId = docId ?: uniqueIdPlaceholder,
+                documentId = docId ?: this.backendConfig.resourceIds.uniqueIdPlaceholder,
                 data = data
             ).parseDocument()
         }
@@ -54,25 +54,6 @@ class DocumentsApi constructor(
                 documentId = documentId
             ).parseDocument()
         }
-    }
-
-    override suspend fun listAllDocuments(
-        databaseType: BackendDatabaseType,
-        collectionId: String,
-        keyValues: List<Pair<String, Any>>,
-    ): List<Map<String, Any>> {
-        val result = mutableListOf<Map<String, Any>>()
-        listDocuments(
-            databaseType = databaseType,
-            collectionId = collectionId,
-            keyValues = keyValues,
-            limit = 25,
-            onNewValues = {
-                result.addAll(it)
-                true
-            },
-        )
-        return result.toList()
     }
 
     override suspend fun listDocuments(

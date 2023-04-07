@@ -24,6 +24,7 @@ object BackendResourceIDs {
     const val emailConfirmationUrl = "https://paralino.app/verify"
 
     const val databaseIdMaxLength = 36
+    const val uniqueIdPlaceholder = "unique()"
 
     const val databaseKeysID = "data_keys"
     const val databaseDataID = "data_main"
