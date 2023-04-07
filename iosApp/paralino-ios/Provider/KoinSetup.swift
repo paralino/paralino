@@ -27,7 +27,12 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         placeNotificationHandler: PlaceNotificationHandler(),
         groupActivityNotificationHandler: GroupActivityNotificationHandler(),
         geofenceManager: GeofenceManager(),
-        backendConfig: backendConfig
+        backendConfig: backendConfig,
+        remoteModule: { sessionMonitor in AppwriteRemoteModule(sessionMonitor: sessionMonitor, backendConfig: backendConfig) },
+        documentsApi: { module, _ in DocumentsApi(remoteModule: module as! AppwriteRemoteModule) },
+        userApi: { module, _ in UserApi(remoteModule: module as! AppwriteRemoteModule) },
+        functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule) },
+        realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) }
     )
     return coreIOSModules
 }

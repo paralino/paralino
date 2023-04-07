@@ -29,31 +29,3 @@ abstract class IRealtimeApi {
         filters: List<String> = listOf()
     ): Flow<RealtimeResponse<Map<String, Any>>>
 }
-
-class RealtimeApiWrapperIOS(
-    val api: IRealtimeApiIOS
-) : IRealtimeApi() {
-
-    override fun subscribeWithFilter(
-        channels: List<String>,
-        filters: List<String>
-    ): Flow<RealtimeResponse<Map<String, Any>>> {
-        return callbackFlow {
-            val action = api.subscribeWithFilter(channels, filters) {
-                trySend(it)
-            }
-            awaitClose { action() }
-        }
-    }
-
-}
-
-interface IRealtimeApiIOS {
-    fun subscribeWithFilter(
-        channels: List<String>,
-        filters: List<String> = listOf(),
-        onResult: (
-            RealtimeResponse<Map<String, Any>>
-        ) -> Unit
-    ): () -> Unit
-}
