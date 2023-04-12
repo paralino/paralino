@@ -2,6 +2,7 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.domain.LimitedExecutionState
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.repo.base.AppConfigRepository
@@ -12,6 +13,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 
 class RefreshEverythingUseCase(
@@ -25,7 +27,7 @@ class RefreshEverythingUseCase(
     private val configRepo: AppConfigRepository
 ) : BaseRepository(), ILimitedExecution<String> {
 
-    override val executionState = MutableStateFlow(listOf<String>())
+    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
     private val executionKey = "full_refresh"
 
     fun isProcessing(): Boolean {
@@ -78,13 +80,24 @@ class RefreshEverythingUseCase(
         time: Long = 15_000
     ) {
         val refreshKey = "${executionKey}_${key}"
+
+        if (isProcessing(refreshKey)) {
+            logg.tag("full_refresh").v("Processing, can't refresh data")
+            return
+        }
+
         getDataOnce(
             local = flowOf(refreshKey),
             remotePreference = RemotePreference.CACHE(key = refreshKey, timeMillis = time)
         ) {
-            refreshAllGroupsWithPlaces()
+            setAsProcessing(refreshKey)
+            refreshAllGroupsWithPlaces().also {
+                stopProcessing(refreshKey)
+            }
         }
-            .catch { }
+            .catch {
+                stopProcessing(refreshKey)
+            }
             .collect()
     }
 

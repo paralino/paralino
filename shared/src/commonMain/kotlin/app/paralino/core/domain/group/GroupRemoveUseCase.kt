@@ -2,6 +2,7 @@ package app.paralino.core.domain.group
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.domain.LimitedExecutionState
 import app.paralino.core.logg
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
@@ -20,7 +21,7 @@ class GroupRemoveUseCase(
     private val locationSharingManager: LocationSharingManager,
 ): BaseRepository(), ILimitedExecution<String> {
 
-    override val executionState = MutableStateFlow(listOf<String>())
+    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
 
     fun deleteGroup(groupId: String): Flow<Unit> {
 

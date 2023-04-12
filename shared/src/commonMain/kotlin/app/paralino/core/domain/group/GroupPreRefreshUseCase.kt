@@ -1,6 +1,7 @@
 package app.paralino.core.domain.group
 
 import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.domain.LimitedExecutionState
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -19,7 +20,7 @@ class GroupPreRefreshUseCase constructor(
     private val refreshEverything: RefreshEverythingUseCase
 ) : BaseRepository(), ILimitedExecution<String> {
 
-    override val executionState = MutableStateFlow(listOf<String>())
+    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
 
     override fun isProcessing(key: String): Boolean {
         val selfProcessing = super.isProcessing(key)

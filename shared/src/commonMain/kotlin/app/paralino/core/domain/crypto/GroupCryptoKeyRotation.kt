@@ -5,6 +5,7 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.toData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.domain.LimitedExecutionState
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.CryptoResource
@@ -40,7 +41,7 @@ class GroupCryptoKeyRotation constructor(
     private val validityVerification: GroupValidityVerification
 ): ILimitedExecution<String> {
 
-    override val executionState = MutableStateFlow(listOf<String>())
+    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
 
     suspend fun rotateGroupAndMemberKeys(
         remoteGroup: UserGroupWithMembers,

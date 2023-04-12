@@ -56,7 +56,7 @@ class CryptoKEKRepository(
                 cachedMemberKeys.value = it.second
                 local.recreateAllGroupKeys(it.first, it.second)
 
-                logg.tag("tag_crypto_key").w("updated group and member keys")
+                logg.tag("tag_crypto_key").w("updated group (${it.first.size}) and member (${it.second.size}) keys")
             }
         )
     }
@@ -66,7 +66,7 @@ class CryptoKEKRepository(
             logg.tag("tag_crypto_key_group").w("refreshing only group key")
             remote.getGroupKeyForGroup(groupId)
         }.also {
-            logg.tag("tag_crypto_key_group").w("updated only group key")
+            logg.tag("tag_crypto_key_group").w("updated only group keys (${it.size})")
 
             cachedGroupKeys.value = emptyList()
             local.recreateGroupKeyForGroup(groupId, it)
@@ -78,7 +78,7 @@ class CryptoKEKRepository(
             logg.tag("tag_crypto_key_group_member").w("refreshing only group member key")
             remote.getAllGroupMemberKeysForGroup(groupId)
         }.also {
-            logg.tag("tag_crypto_key_group_member").w("updated only group member key")
+            logg.tag("tag_crypto_key_group_member").w("updated only group member (${it.size}) keys")
 
             cachedMemberKeys.value = emptyList()
             local.recreateMemberKeysForGroup(groupId, it)
