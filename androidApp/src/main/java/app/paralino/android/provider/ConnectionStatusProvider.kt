@@ -1,6 +1,7 @@
 package app.paralino.android.provider
 
 import android.app.Application
+import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
@@ -11,7 +12,7 @@ import kotlinx.coroutines.withContext
 import java.net.InetAddress
 
 class ConnectionStatusProvider constructor(
-    private val app: Application,
+    private val context: Context,
     backendConfig: BackendConfig,
 ): IConnectionStatusProvider(backendConfig) {
 
@@ -23,7 +24,7 @@ class ConnectionStatusProvider constructor(
     }
 
     override suspend fun isNetworkAvailable(): Boolean {
-        val cm = app.getSystemService(Application.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val cm = context.getSystemService(Application.CONNECTIVITY_SERVICE) as ConnectivityManager
         val actNw = cm.getNetworkCapabilities(cm.activeNetwork ?: return false) ?: return false
         return when {
             actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true

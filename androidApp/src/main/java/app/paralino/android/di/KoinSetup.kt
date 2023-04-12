@@ -75,8 +75,8 @@ object KoinSetup {
         single { CryptoHashProvider() } bind ICryptoHashProvider::class
 
         single<ICoroutineScopeProvider> { androidApplication() as AppClass }
-        single<IConnectionStatusProvider> { ConnectionStatusProvider(androidApplication(), get()) }
-        single<ILocationStatusProvider> { LocationStatusProvider(androidApplication() as AppClass) }
+        single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }
+        single<ILocationStatusProvider>(createdAtStart = true) { LocationStatusProvider(androidContext()) }
         single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get()) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
 

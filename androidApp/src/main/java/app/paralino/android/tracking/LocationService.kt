@@ -104,7 +104,7 @@ class LocationService : Service() {
     }
 
     private fun updateNotification() {
-        val errors = (application as AppClass).locationStatus.status.value.getPossibleErrors(
+        val errors = (application as AppClass).locationStatus.currentStatus.getPossibleErrors(
             forBackground = !launchedInForeground
         )
         val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0

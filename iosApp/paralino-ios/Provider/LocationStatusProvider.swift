@@ -12,7 +12,13 @@ import UIKit
 
 class LocationStatusProvider: ILocationStatusProvider {
     var hasNotificationPermission: Bool = false
-    override func getCurrentStatus() -> LocationConditionStatus {
+    
+    override init() {
+        super.init()
+        refreshLocationStatus()
+    }
+    
+    override func createCurrentStatus() -> LocationConditionStatus {
         let locationManager = CLLocationManager()
         let permissionStatus = locationManager.authorizationStatus
         let locationAccuracy = locationManager.accuracyAuthorization

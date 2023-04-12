@@ -243,7 +243,7 @@ class SharingStartViewModel(
     private fun getErrors(forLongTerm: Boolean): List<ConditionErrorType> {
         return buildList {
             addAll(
-                locationStatusProvider.status.value.getPossibleErrors(forLongTerm)
+                locationStatusProvider.currentStatus.getPossibleErrors(forLongTerm)
             )
             if(!connectionStatus.status.value.isOnline) {
                 add(ConditionErrorType.NETWORK)

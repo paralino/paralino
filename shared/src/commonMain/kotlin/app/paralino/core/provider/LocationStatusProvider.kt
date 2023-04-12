@@ -1,23 +1,21 @@
 package app.paralino.core.provider
 
+import app.paralino.core.models.Resource
+import app.paralino.core.models.data
+import app.paralino.core.models.toResource
 import app.paralino.core.utils.ConditionErrorType
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 
 abstract class ILocationStatusProvider {
-    protected val mutableStatus = MutableStateFlow<LocationConditionStatus>(getCurrentStatus())
-    val status: StateFlow<LocationConditionStatus> = mutableStatus
-
-    init {
-        refreshLocationStatus()
-    }
+    protected val mutableStatus = MutableStateFlow<Resource<LocationConditionStatus>>(Resource.NotInitialized)
+    val status: Flow<LocationConditionStatus> = mutableStatus.mapNotNull { it.data }
+    val currentStatus get() = mutableStatus.value.data ?: createCurrentStatus()
 
     fun refreshLocationStatus() {
-        mutableStatus.update { getCurrentStatus() }
+        mutableStatus.update { createCurrentStatus().toResource() }
     }
 
-    abstract fun getCurrentStatus(): LocationConditionStatus
+    protected abstract fun createCurrentStatus(): LocationConditionStatus
 }
 
 data class LocationConditionStatus constructor(

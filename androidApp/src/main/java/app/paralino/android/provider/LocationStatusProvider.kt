@@ -1,15 +1,19 @@
 package app.paralino.android.provider
 
-import app.paralino.android.AppClass
+import android.content.Context
 import app.paralino.android.tracking.getLocationStatus
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LocationConditionStatus
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class LocationStatusProvider(
-    private val appClass: AppClass
+    private val context: Context
 ) : ILocationStatusProvider() {
-    override fun getCurrentStatus(): LocationConditionStatus {
-        return LocationConditionStatus.getLocationStatus(appClass)
+
+    init {
+        refreshLocationStatus()
+    }
+
+    override fun createCurrentStatus(): LocationConditionStatus {
+        return LocationConditionStatus.getLocationStatus(context)
     }
 }
