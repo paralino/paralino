@@ -30,7 +30,7 @@ abstract class IDocumentsApi {
             databaseType = databaseType,
             collectionId = collectionId,
             keyValues = keyValues,
-            limit = 25,
+            limit = 50,
             onNewValues = {
                 result.addAll(it)
                 true
@@ -43,7 +43,7 @@ abstract class IDocumentsApi {
         databaseType: BackendDatabaseType,
         collectionId: String,
         keyValues: List<Pair<String, Any>> = emptyList(),
-        limit: Int = 25,
+        limit: Int = 50,
         onNewValues: (List<Map<String, Any>>) -> Boolean,
     )
 
