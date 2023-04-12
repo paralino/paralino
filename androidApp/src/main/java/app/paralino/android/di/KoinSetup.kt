@@ -77,7 +77,7 @@ object KoinSetup {
         single<ICoroutineScopeProvider> { androidApplication() as AppClass }
         single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }
         single<ILocationStatusProvider>(createdAtStart = true) { LocationStatusProvider(androidContext()) }
-        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get()) }
+        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get()) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
 
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class

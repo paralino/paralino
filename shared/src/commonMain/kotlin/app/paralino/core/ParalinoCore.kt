@@ -29,7 +29,10 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.repo.user.*
+import app.paralino.core.repo.user.UserDevicesRemoteSource
+import app.paralino.core.repo.user.UserLocalDataSource
+import app.paralino.core.repo.user.UserRemoteSource
+import app.paralino.core.repo.user.UserRepository
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module

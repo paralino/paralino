@@ -1,10 +1,14 @@
 package app.paralino.core.provider
 
 import app.paralino.core.config
+import app.paralino.core.connectionStatus
 import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 
-abstract class IDeviceApiProvider {
+abstract class IDeviceApiProvider(
+    protected val locationStatusProvider: ILocationStatusProvider,
+    protected val connectionStatusProvider: IConnectionStatusProvider
+) {
 
     fun initialize() {
         config = createConfig()
@@ -15,6 +19,9 @@ abstract class IDeviceApiProvider {
 
         if(config.deviceId.isBlank())
             config.deviceId = randomUUID
+
+        locationStatusProvider.refreshLocationStatus()
+        connectionStatus = connectionStatusProvider
     }
 
     abstract val batteryLevel: Int

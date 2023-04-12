@@ -19,9 +19,11 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         logErrorsToRemote: true
     )
     
+    let connectionStatusProvider = ConnectionStatusProvider(backendConfig: backendConfig)
+    
     let coreIOSModules = KoinIOS.shared.createIOSKoinModules(
-        deviceProvider: DeviceApiProvider(),
-        connectionStatusProvider: ConnectionStatusProvider(backendConfig: backendConfig),
+        deviceProvider: DeviceApiProvider(locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider),
+        connectionStatusProvider: connectionStatusProvider,
         locationStatusProvider: locationStatusProvider,
         pushSetupProvider: PushSetupProvider(),
         placeNotificationHandler: PlaceNotificationHandler(),

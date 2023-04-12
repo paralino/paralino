@@ -9,10 +9,7 @@ import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.base.DeviceType
-import app.paralino.core.provider.IConfig
-import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.provider.LogPriority
-import app.paralino.core.provider.SystemLogr
+import app.paralino.core.provider.*
 import app.paralino.core.utils.exceptions.InternalConnectionException
 import io.sentry.Sentry
 import java.net.SocketTimeoutException
@@ -20,8 +17,10 @@ import java.util.*
 
 class DeviceApiProvider constructor(
     private val appClass: AppClass,
-    private val appConfig: BackendConfig
-): IDeviceApiProvider() {
+    private val appConfig: BackendConfig,
+    locationStatusProvider: ILocationStatusProvider,
+    connectionStatusProvider: IConnectionStatusProvider
+): IDeviceApiProvider(locationStatusProvider, connectionStatusProvider) {
 
     override val deviceType: DeviceType
         get() = DeviceType.Android

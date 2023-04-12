@@ -81,9 +81,6 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
             KoinSetup.modules
         )
 
-        locationStatus.refreshLocationStatus()
-        connectionStatus = connectionStatusProvider
-
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         sessionMonitor.listenForSessionExpired()
