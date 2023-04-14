@@ -8,6 +8,14 @@
 import Foundation
 import shared
 
+func initKoin(locationStatusProvider: LocationStatusProvider) {
+    let koinApp = ParalinoCore.shared.doInit(
+        preLaunch: { koinApp in koinApp },
+        appModules: createKoinModules(locationStatusProvider: locationStatusProvider)
+    )
+    _koin = koinApp.koin
+}
+
 func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_coreModule] {
     
     let backendConfig = BackendConfig(
@@ -34,7 +42,15 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         documentsApi: { module, _ in DocumentsApi(remoteModule: module as! AppwriteRemoteModule) },
         userApi: { module, _ in UserApi(remoteModule: module as! AppwriteRemoteModule) },
         functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule) },
-        realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) }
+        realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) },
+        hashProvider: CryptoHashProvider(),
+        cryptoServiceProvider: CryptoFrameworkProvider()
     )
+    
     return coreIOSModules
+}
+
+private var _koin: Koin_coreKoin?
+var koin: Koin_coreKoin {
+    return _koin!
 }

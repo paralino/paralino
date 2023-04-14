@@ -17,6 +17,10 @@ class CryptoFrameworkProvider: ICryptoServiceProvider {
         self.sodium = sodium
     }
     
+    init() {
+        sodium = Sodium()
+    }
+    
     func createNewAsymmetricKey() -> KeyPair {
         let keys = sodium.sign.keyPair()
         return KeyPair(

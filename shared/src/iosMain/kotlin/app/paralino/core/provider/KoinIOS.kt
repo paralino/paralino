@@ -1,15 +1,46 @@
 package app.paralino.core.provider
 
+import app.paralino.core.config
+import app.paralino.core.crypto.ICryptoHashProvider
+import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupMemberAddedNotificationsHandler
 import app.paralino.core.notifications.IPlaceNotificationsHandler
+import app.paralino.core.presentation.MainViewModel
+import app.paralino.core.presentation.groups.CreateGroupViewModel
+import app.paralino.core.presentation.groups.GroupDetailViewModel
+import app.paralino.core.presentation.groups.GroupInitViewModel
+import app.paralino.core.presentation.invite.input.MemberInviteViewModel
+import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
+import app.paralino.core.presentation.login.LoggedOutViewModel
+import app.paralino.core.presentation.login.LoginScreenUiType
+import app.paralino.core.presentation.login.LoginViewModel
+import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
+import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
+import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.places.create.CreatePlaceViewModel
+import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
+import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.presentation.settings.SettingsViewModel
+import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
+import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
+import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
+import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
+import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
+import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.api.*
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.IPushProviderManager
+import org.koin.core.KoinApplication
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 object KoinIOS {
@@ -28,6 +59,8 @@ object KoinIOS {
         userApi: (IRemoteModule, BackendConfig) -> IUserApi,
         functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApi,
         realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
+        hashProvider: ICryptoHashProvider,
+        cryptoServiceProvider: ICryptoServiceProvider
     ): List<Module> {
         return listOf(
             module {
@@ -44,10 +77,54 @@ object KoinIOS {
                 single { userApi(get(), get()) }
                 single { functionsApi(get(), get()) }
                 single { RealtimeApiWrapperIOS(realtimeApi(get(), get())) }
-                single { CoroutineScopeProvider() }
+                single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
-            }
+                single { hashProvider }
+                single { cryptoServiceProvider }
+            },
+            createViewModelModule()
         )
+    }
+    
+    private fun createViewModelModule(): Module {
+        return module {
+            factory { GroupInitViewModel(get(), get(), get()) }
+            factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
+            factory { SettingsViewModel(get(), get(), get()) }
+            factory { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), get(), startScreenType as LoginScreenUiType) }
+            factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
+            factory { (args: String?) ->
+                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
+            }
+            factory { LoggedOutViewModel(get()) }
+            factory { PersonalCodeViewModel(get()) }
+            factory { (groupId: String?, code: String?) ->
+                MemberInviteViewModel(
+                    groupId = groupId,
+                    code = code,
+                    codeRepo = get(),
+                    groupRepo = get(),
+                    groupMemberAdd = get()
+                )
+            }
+            factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { MainViewModel(get(), get(), get(), get()) }
+            factory { ChangeEmailViewModel(get(), get()) }
+            factory { ChangePasswordViewModel(get()) }
+            factory { ConvertAccountViewModel(get()) }
+            factory { EditProfileViewModel(get(), get()) }
+            factory { RecoverKeysViewModel(get(), get()) }
+            factory { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
+            factory { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
+            factory { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
+            factory { (groupID: String, placeId: String?) -> CreatePlaceViewModel(groupID, placeId, get(), get()) }
+            factory { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
+            factory { BlocklistVideModel(get()) }
+        }
+    }
+
+    object ViewModels: KoinComponent {
+        val mainVM get() = get<MainViewModel>()
     }
 
 }

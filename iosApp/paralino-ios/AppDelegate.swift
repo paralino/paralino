@@ -15,10 +15,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     let locationStatusProvider = LocationStatusProvider()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        ParalinoCore.shared.doInit(
-            preLaunch: { koinApp in koinApp },
-            appModules: createKoinModules(locationStatusProvider: locationStatusProvider)
-        )
+        initKoin(locationStatusProvider: locationStatusProvider)
         Logr.i(tag:"delegate", message: "App start")
         return true
     }
