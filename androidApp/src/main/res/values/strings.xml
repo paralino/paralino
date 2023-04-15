@@ -1,7 +1,6 @@
 <resources>
 
     <string name="app_name">Paralino</string>
-    <string name="title_activity_main">MainActivity</string>
     <string name="title_dashboard">Groups</string>
     <string name="title_map">Location</string>
     <string name="title_settings">Settings</string>
@@ -29,7 +28,6 @@
     <string name="error_something_wrong">Something went wrong!</string>
     <string name="error_something_wrong_http">Something went wrong! [%d]</string>
     <string name="error_generic_snacbar">Ups, please try again.</string>
-    <string name="error_user_not_found">User does not exist</string>
     <string name="error_location_permission_missing_sheet_message">Location permission is **required** in order to successfully track and share your location with others.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Please grant **precise location permission** in order to successfully track and share your location with others.</string>
     <string name="error_location_background_permission_missing_sheet_message">Please allow **all the time** location access in order to **reliably and always** track and share your location with others.</string>
@@ -50,23 +48,14 @@
     <string name="notifications_channel_group_activity">Group activity</string>
     <string name="notifications_channel_push_sync">Notification sync</string>
 
-    <string name="location_banner_sharing_active">Sharing location</string>
-    <string name="location_banner_sharing_start">Share</string>
     <string name="location_banner_info_stop">Stop sharing</string>
-    <string name="location_banner_info_error">Tap to fix</string>
-    <string name="location_banner_tracking_active">Tracking location</string>
-    <string name="location_banner_tracking_start">Start tracking</string>
     <string name="location_banner_fix">Fix</string>
 
     <string name="dashboard_groups_section_active">Active</string>
-    <string name="dashboard_groups_section_inactive">Inactive</string>
     <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create new group</string>
     <string name="dashboard_groups_join_button">Join a group</string>
-    <string name="dashboard_groups_create_info">Or create a new group</string>
     <string name="dashboard_groups_join_info">Or join a group</string>
-    <string name="dashboard_info_logged_out">Log in to start sharing your location.</string>
-    <string name="dashboard_info_no_groups">You don\'t have any groups yet.\nCreate one to start sharing your location.</string>
 
     <string name="location_banner_error_gps_off">Device location is disabled</string>
     <string name="location_banner_error_no_permission_notifications">Missing notifications permission</string>
@@ -79,7 +68,6 @@
     <string name="settings_account_edit_profile">Edit profile</string>
     <string name="settings_account_edit_email">Change email</string>
     <string name="settings_account_edit_password">Change password</string>
-    <string name="settings_account_edit_email_current_email">Current email: %s</string>
     <string name="settings_account_edit_email_button">CHANGE EMAIL</string>
     <string name="settings_account_edit_email_placeholder_email">New email*</string>
     <string name="settings_account_edit_email_placeholder_password">Current password*</string>
@@ -103,17 +91,10 @@
     <string name="settings_account_delete_alert_cancel_button4">Close</string>
 
     <string name="settings_profile_name_placeholder">Your name*</string>
-    <string name="settings_profile_username_placeholder">Your email</string>
-
-    <string name="settings_section_location_title">Location</string>
-    <string name="setting_title_location_defaults">Default location settings</string>
-    <string name="setting_title_location_sharing">Location sharing</string>
-    <string name="setting_title_location_history">Location history</string>
 
     <string name="settings_section_general_title">Info</string>
     <string name="setting_title_share">Share with friends</string>
     <string name="setting_title_rate">Give some stars 🌟🌟🌟🌟🌟</string>
-    <string name="setting_title_feedback">Contact us</string>
     <string name="setting_title_help">Help &amp; support</string>
     <string name="setting_title_sourceCode">Check out source code</string>
     <string name="setting_title_privacy">Privacy &amp; Terms</string>
@@ -122,10 +103,8 @@
     <string name="setting_title_delete_account">Delete account</string>
     <string name="setting_title_dangerZone">Danger zone</string>
 
-    <string name="login_placeholder_server">Server url</string>
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>
-    <string name="login_placeholder_email_username">Email*</string>
     <string name="login_placeholder_password">Password*</string>
     <string name="login_placeholder_password_old">Old password*</string>
     <string name="login_placeholder_password_confirm">Confirm password*</string>
@@ -162,23 +141,16 @@
     <string name="login_info_password_reset_done">Check your email for password reset instructions</string>
 
     <string name="login_step_error_user_setup_signUp">Unable to setup user data, try logging in with current credentials!</string>
-    <string name="login_step_error_user_save_signUp">Error while saving user data, try logging in with current credentials!</string>
     <string name="login_step_error_logIn">Error while logging you in</string>
     <string name="login_step_error_recoverGuest">Unable to recover guest account</string>
     <string name="login_step_error_encryption_logIn">Your encryption keys seems to be corrupted or non existent, please try again or reset your password (This will delete all your previous data)</string>
-    <string name="login_step_error_user_setup_logIn">Your encryption keys seems to be corrupted, please try again or reset your password (This will delete all your previous data)</string>
-    <string name="login_step_error_user_save_logIn">Unable to save user data, please try again!</string>
 
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
-    <string name="form_invalid_username_description">Please try another username.</string>
     <string name="form_invalid_credentials_description">Please check your credentials and try again.</string>
     <string name="form_invalid_email_conflict_description">Please use another email.</string>
-    <string name="form_invalid_username_email_description">Your e-mail is not valid.</string>
-    <string name="form_invalid_username_length_description">Your username has to be at least 6 characters long.</string>
     <string name="form_invalid_password_length_description">Your password has to be at least 8 characters long.</string>
     <string name="form_invalid_password_match_description">Passwords don\'t match.</string>
     <string name="form_invalid_name_description">Your name is not valid.</string>
-    <string name="form_invalid_server_url">Please enter a valid server url.</string>
     <string name="form_generic_validation">Please fill in all the details.</string>
 
     <string name="info_email_confirm">Please verify your email address!</string>
@@ -190,21 +162,16 @@
 
     <string name="groups_sharing_section_title_group">Group</string>
     <string name="groups_sharing_section_title_duration">Duration</string>
-    <string name="groups_sharing_section_title_extra">Extra</string>
     <string name="groups_sharing_setting_battery_share">Battery level</string>
-    <string name="groups_sharing_setting_approximate_location">Approximate location</string>
     <string name="groups_sharing_setting_speed_share">Speed</string>
     <string name="groups_sharing_setting_elevation_share">Elevation</string>
     <string name="groups_sharing_button_start">Start sharing</string>
-    <string name="groups_sharing_button_enable">Enable sharing</string>
     <string name="groups_sharing_title">Share location</string>
     <string name="groups_sharing_device_name_placeholder">Device name</string>
     <string name="groups_sharing_devices">Devices</string>
     <string name="groups_sharing_potential_error_title">Warning</string>
-    <string name="groups_sharing_potential_error_button_enable">Enable anyway</string>
     <string name="groups_sharing_potential_error_message">To share your location please resolve all the errors: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Your location can not be shared if you restart your phone!\n\nPlease allow **all the time** location access for reliable sharing.</string>
-    <string name="groups_sharing_error_registration_generic">Unable to register you device, please try again.</string>
     <string name="groups_sharing_error_unverified_group_title">Unverified group or member</string>
     <string name="groups_sharing_error_unverified_group_message">You can not share location to unverified group or member.\n\nTry refreshing the group data.</string>
 
@@ -216,10 +183,8 @@
     <string name="invite_manage_empty_description">You don\'t have an active **personal code**.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
     <string name="invite_manage_description">Share this code to join a group and start securely sharing your location.</string>
     <string name="invite_connect_code_placeholder">User personal code</string>
-    <string name="invite_connect_disclaimer_group">By accepting this invite you will be added to **%s** group and all group members will see your presence. After that you can start securely sharing your location.\n\nYour location will not be shared unless you explicitly decide so and will always be **end-to-end encrypted**.</string>
     <string name="invite_connect_disclaimer_user">You are about to add **%1$s** to **%2$s** group.\nAfter that you can start securely sharing your location.</string>
     <string name="invite_connect_button_addToGroup">ADD TO GROUP</string>
-    <string name="invite_connect_button_request">REQUEST ACCESS</string>
     <string name="invite_connect_button_pickGroup">Choose a group</string>
     <string name="invite_connect_alert_pickGroup">Please choose a group</string>
     <string name="invite_connect_alert_wrongCode">Please check your code or try another one</string>
@@ -237,9 +202,7 @@
     <string name="group_members_device_other_remove_alert_title">Are you sure you want remove %ss\' device from group?\n\nThis will not remove user from a group.</string>
     <string name="group_members_device_own_remove_alert_title">Are you sure you want remove your device from group?\n\nThis will not remove you from a group.</string>
     <string name="group_members_device_name_default">Device</string>
-    <string name="group_members_empty_info">This group is lonely!\nAdd someone to securely share your location with.</string>
     <string name="group_details_section_members_title">Members</string>
-    <string name="group_details_menu_edit">Edit</string>
     <string name="group_details_menu_delete">Delete group</string>
     <string name="group_details_menu_leave">Leave group</string>
     <string name="group_details_menu_block">Block group</string>
@@ -251,13 +214,10 @@
     <string name="group_details_block_group_alert_title">Are you sure you want to block this group?\nThis is irreversible, will delete all data you shared to group and you will not be able to rejoin the group!</string>
     <string name="group_details_block_group_alert_button">Block</string>
     <string name="group_details_add_member_button">Add new member</string>
-    <string name="group_details_map_action_button">Open map</string>
     <string name="group_details_sharing_status_time">Sharing until: **%s**</string>
     <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
 
-    <string name="group_create_title">Create new group</string>
     <string name="group_create_start_title">Connect with your family</string>
-    <string name="group_edit_title">Edit group</string>
     <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>
     <string name="group_create_button_text">Create group</string>
@@ -297,7 +257,6 @@
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s m/h</string>
     <string name="welcome_screen_info_1">SECURE - PRIVATE - ENCRYPTED</string>
-    <string name="welcome_screen_info_app">location sharing</string>
     <string name="welcome_screen_button_join">JOIN</string>
 
     <string name="welcome_account_edit_profile">Complete your profile</string>
