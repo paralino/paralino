@@ -13,8 +13,23 @@ public enum ResourceSwift<T : AnyObject> {
     case notInitialized
     case ready(data: T)
     
+    var data: T? {
+        switch self {
+        case .notInitialized: return nil
+        case .ready(let content): return content
+        }
+    }
+    
     public init(data: Any?) {
-        self.init(data as! shared.Resource<T>)
+        if data == nil {
+            self = .notInitialized
+        } else if let data = data as? shared.Resource<T> {
+            self.init(data)
+        } else if let data = data as? T {
+            self = .ready(data: data)
+        } else {
+            self = .notInitialized
+        }
     }
     
     public init(_ sealedClass: shared.Resource<T>) {
@@ -35,7 +50,15 @@ public enum PayloadSwift<T : AnyObject> {
     case error(error: KotlinThrowable)
     
     public init(data: Any?) {
-        self.init(data as! shared.Payload<T>)
+        if data == nil {
+            self = .loading
+        } else if let data = data as? shared.Payload<T> {
+            self.init(data)
+        } else if let data = data as? T {
+            self = .success(data: data)
+        } else {
+            self = .error(error: KotlinThrowable(message: "Invalid payload type"))
+        }
     }
     
     public init(_ sealedClass: shared.Payload<T>) {
