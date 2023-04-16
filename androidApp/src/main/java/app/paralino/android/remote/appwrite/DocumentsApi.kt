@@ -66,7 +66,7 @@ class DocumentsApi constructor(
             databaseType = databaseType,
             collectionId = collectionId,
             keyValues = keyValues,
-            limit = 25,
+            limit = 50,
             onNewValues = {
                 result.addAll(it)
                 true
