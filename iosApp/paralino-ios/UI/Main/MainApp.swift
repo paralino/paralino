@@ -11,13 +11,15 @@ import shared
 @main
 struct MainApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject var appState = MainAppState()
+    @StateObject var appState = MainAppObject()
     
     var body: some Scene {
         WindowGroup {
-            switch appState.uiState {
-            case .notInitialized: ContentView(state: "not ready")
-            case .ready(let state): ContentView(state: state.debugDescription)
+            NavigationView {
+                switch appState.uiState {
+                case .notInitialized: ContentView(state: "not ready")
+                case .ready: WelcomeScreen()
+                }
             }
         }
     }

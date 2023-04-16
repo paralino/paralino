@@ -8,7 +8,7 @@
 import Foundation
 import shared
 
-class MainAppState: ObservableObject {
+class MainAppObject: ObservableObject {
     
     let vm: MainViewModel
     @Published

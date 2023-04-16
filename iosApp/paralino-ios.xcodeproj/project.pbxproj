@@ -30,7 +30,7 @@
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
 		254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */; };
 		254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2729EC7C50008B1458 /* Image+Extensions.swift */; };
-		256C5A5B29E8938900FCF0B7 /* MainAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppState.swift */; };
+		256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */; };
 		258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258E9BF629EBDEBF006BD46C /* AlertDialog.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
 		25C03A6A29CCE77100646364 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6929CCE77100646364 /* ContentView.swift */; };
@@ -58,9 +58,9 @@
 		252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoFrameworkProvider.swift; sourceTree = "<group>"; };
 		25356A8F29E9452300CD32F5 /* SealedClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SealedClasses.swift; sourceTree = "<group>"; };
 		25356A9929EAB8E100CD32F5 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
-		254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WelcomeScreen.swift"; sourceTree = "<group>"; };
+		254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
 		254B6F2729EC7C50008B1458 /* Image+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+Extensions.swift"; sourceTree = "<group>"; };
-		256C5A5A29E8938900FCF0B7 /* MainAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppState.swift; sourceTree = "<group>"; };
+		256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppObject.swift; sourceTree = "<group>"; };
 		258E9BF629EBDEBF006BD46C /* AlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C03A6729CCE77100646364 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
@@ -149,6 +149,7 @@
 		256C5A5829E8934E00FCF0B7 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				25C03A6929CCE77100646364 /* ContentView.swift */,
 				254B6F2629EC7C50008B1458 /* Utils */,
 				252EA00329DC333500338956 /* Login */,
 				258E9BF529EBDEAF006BD46C /* Components */,
@@ -161,7 +162,8 @@
 		256C5A5929E8937600FCF0B7 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				256C5A5A29E8938900FCF0B7 /* MainAppState.swift */,
+				25C03A6729CCE77100646364 /* MainApp.swift */,
+				256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -197,8 +199,6 @@
 				252EA02329E03D2400338956 /* Crypto */,
 				252EA01029DDA66400338956 /* Remote */,
 				252E361129CF5EB0008FC635 /* Provider */,
-				25C03A6729CCE77100646364 /* MainApp.swift */,
-				25C03A6929CCE77100646364 /* ContentView.swift */,
 				25C03A6B29CCE77200646364 /* Assets.xcassets */,
 				25C03A6D29CCE77200646364 /* Preview Content */,
 				25D8A43429CE24A00023A0E5 /* AppDelegate.swift */,
@@ -314,7 +314,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				256C5A5B29E8938900FCF0B7 /* MainAppState.swift in Sources */,
+				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				252EA02529E03D3600338956 /* CryptoHashProvider.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
