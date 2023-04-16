@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
@@ -41,11 +42,30 @@ fun LoggedOutScreen(
     appState: MainAppState,
     vm: LoggedOutViewModel = getViewModel()
 ) {
+    val state by vm.uiState.collectAsState(LoggedOutScreenState())
+    LoggedOutScreen(
+        hasLogin = state.hasLogin,
+        onLoginClick = {
+            appState.navController.navigate(AppScreen.LoggedOut.Login.routeSignature)
+        },
+        onStartClick = {
+            appState.navController.navigate(
+                AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN)
+            )
+        }
+    )
+}
+
+@Composable
+fun LoggedOutScreen(
+    hasLogin: Boolean,
+    onLoginClick: () -> Unit,
+    onStartClick: () -> Unit,
+) {
 
     val systemUiController = rememberSystemUiController()
     val defaultColor = MaterialTheme.colors.background
     val darkIconsDefault = !isSystemInDarkTheme()
-    val state by vm.uiState.collectAsState(LoggedOutScreenState())
 
     DisposableEffect(systemUiController) {
         systemUiController.setSystemBarsColor(
@@ -108,7 +128,7 @@ fun LoggedOutScreen(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-                    onClick = { appState.navController.navigate(AppScreen.LoggedOut.Login.routeSignature) }
+                    onClick = onLoginClick
                 ) {
                     Icon(imageVector = AppIcons.Login, contentDescription = null)
                     Spacer(Modifier.size(8.dp))
@@ -116,7 +136,7 @@ fun LoggedOutScreen(
                 }
                 Spacer(Modifier.size(10.dp))
 
-                if(state.hasLogin) {
+                if(hasLogin) {
                     Text(
                         text = stringResource(id = R.string.login_signup_switch_button_login).annotatedBold(),
                         style = MaterialTheme.typography.body2,
@@ -124,9 +144,7 @@ fun LoggedOutScreen(
                             .align(Alignment.CenterHorizontally)
                             .clip(RoundedCornerShape(8.dp))
                             .clickable {
-                                appState.navController.navigate(
-                                    AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN)
-                                )
+                                onStartClick()
                             }
                             .padding(horizontal = 12.dp, vertical = 8.dp),
                     )
@@ -231,6 +249,16 @@ fun MainBackground() {
                     modifier = Modifier.weight(1f)
                 )
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun LoggedOutScreenPreview() {
+    AppTheme() {
+        Surface {
+            LoggedOutScreen(hasLogin = false, onLoginClick = {}, onStartClick = {})
         }
     }
 }
