@@ -39,7 +39,7 @@ struct WelcomeScreen: View {
                         .frame(width: 80, height: 80)
                 }
                 Spacer()
-//                NavigationLink(destination: LoginScreen()) {
+                NavigationLink(destination: LoginScreen()) {
                     Label("Join", systemImage: "ipad.and.arrow.forward")
                         .font(.subheadline)
                         .foregroundColor(.white)
@@ -47,7 +47,7 @@ struct WelcomeScreen: View {
                         .frame(height: 64)
                         .background(Color.themePrimary)
                         .cornerRadius(15)
-//                }
+                }
             }
             .padding()
         }

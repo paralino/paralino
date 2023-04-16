@@ -43,7 +43,7 @@ struct AlertDialogButton: Identifiable {
 
 extension AlertDialogData {
     static func guestAccountWarning() -> AlertDialogData {
-        AlertDialogData(title: "guest_account_title", message: "guest_account_message", buttons: [AlertDialogButton.buttonOK(), AlertDialogButton.buttonCancel(), AlertDialogButton(key: "keyPositive", text: "button_ok2")])
+        AlertDialogData(title: "guest_account_title", message: "guest_account_message", buttons: [AlertDialogButton.buttonOK(), AlertDialogButton.buttonCancel()])
     }
     static func genericError() -> AlertDialogData {
         AlertDialogData(title: "alert_error_generic_title", message: "alert_error_generic_message", buttons: [AlertDialogButton.buttonOK()])
@@ -56,11 +56,7 @@ struct AlertDialog: ViewModifier {
     var onAction: ((String) -> Void)?
     
     var isShowingAlert: Binding<Bool> {
-        Binding {
-            alertData != nil
-        } set: { _ in
-            alertData = nil
-        }
+        Binding(get: { alertData != nil }, set: { _ in alertData = nil })
     }
     
     func body(content: Content) -> some View {

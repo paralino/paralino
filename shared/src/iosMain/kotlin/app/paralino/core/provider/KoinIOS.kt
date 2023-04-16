@@ -40,6 +40,7 @@ import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.module.Module
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -91,7 +92,7 @@ object KoinIOS {
             factory { GroupInitViewModel(get(), get(), get()) }
             factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
             factory { SettingsViewModel(get(), get(), get()) }
-            factory { (startScreenType: Any) -> LoginViewModel(get(), get(), get(), get(), startScreenType as LoginScreenUiType) }
+            factory { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
                 SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
@@ -125,6 +126,7 @@ object KoinIOS {
 
     object ViewModels: KoinComponent {
         val mainVM get() = get<MainViewModel>()
+        fun loginVM(screenUiType: LoginScreenUiType) = get<LoginViewModel> { parametersOf(screenUiType) }
     }
 
 }

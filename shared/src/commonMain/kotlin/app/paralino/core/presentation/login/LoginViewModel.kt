@@ -31,7 +31,7 @@ class LoginViewModel constructor(
             hasGuestAccount = hasGuestAccount()
         )
     )
-    val uiState: Flow<LoginScreenState> = _uiState
+    val uiState: StateFlow<LoginScreenState> = _uiState
 
     private val _eventChannel = Channel<LoginScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
