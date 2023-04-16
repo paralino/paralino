@@ -27,8 +27,10 @@
 		252EA02529E03D3600338956 /* CryptoHashProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA02429E03D3600338956 /* CryptoHashProvider.swift */; };
 		252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */; };
 		25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A8F29E9452300CD32F5 /* SealedClasses.swift */; };
-		256C5A5B29E8938900FCF0B7 /* MainAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppState.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
+		254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */; };
+		254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2729EC7C50008B1458 /* Image+Extensions.swift */; };
+		256C5A5B29E8938900FCF0B7 /* MainAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppState.swift */; };
 		258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258E9BF629EBDEBF006BD46C /* AlertDialog.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
 		25C03A6A29CCE77100646364 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6929CCE77100646364 /* ContentView.swift */; };
@@ -55,8 +57,10 @@
 		252EA02429E03D3600338956 /* CryptoHashProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHashProvider.swift; sourceTree = "<group>"; };
 		252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoFrameworkProvider.swift; sourceTree = "<group>"; };
 		25356A8F29E9452300CD32F5 /* SealedClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SealedClasses.swift; sourceTree = "<group>"; };
-		256C5A5A29E8938900FCF0B7 /* MainAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppState.swift; sourceTree = "<group>"; };
 		25356A9929EAB8E100CD32F5 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WelcomeScreen.swift"; sourceTree = "<group>"; };
+		254B6F2729EC7C50008B1458 /* Image+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+Extensions.swift"; sourceTree = "<group>"; };
+		256C5A5A29E8938900FCF0B7 /* MainAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppState.swift; sourceTree = "<group>"; };
 		258E9BF629EBDEBF006BD46C /* AlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C03A6729CCE77100646364 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
@@ -100,6 +104,7 @@
 		252EA00329DC333500338956 /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -133,9 +138,19 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
+		254B6F2629EC7C50008B1458 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				254B6F2729EC7C50008B1458 /* Image+Extensions.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		256C5A5829E8934E00FCF0B7 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				254B6F2629EC7C50008B1458 /* Utils */,
+				252EA00329DC333500338956 /* Login */,
 				258E9BF529EBDEAF006BD46C /* Components */,
 				25356A9829EAB8CD00CD32F5 /* Theme */,
 				256C5A5929E8937600FCF0B7 /* Main */,
@@ -181,7 +196,6 @@
 				256C5A5829E8934E00FCF0B7 /* UI */,
 				252EA02329E03D2400338956 /* Crypto */,
 				252EA01029DDA66400338956 /* Remote */,
-				252EA00329DC333500338956 /* Login */,
 				252E361129CF5EB0008FC635 /* Provider */,
 				25C03A6729CCE77100646364 /* MainApp.swift */,
 				25C03A6929CCE77100646364 /* ContentView.swift */,
@@ -316,8 +330,10 @@
 				25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */,
 				252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */,
 				252EA01229DDA67700338956 /* AppwriteRemoteModule.swift in Sources */,
+				254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */,
 				252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */,
 				252EA00D29DD9AF500338956 /* PushNotificationHandlerIOS.swift in Sources */,
+				254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */,
 				252EA01729DDE5A800338956 /* DocumentsApi.swift in Sources */,
 				252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */,
 				252E361729CF63B6008FC635 /* Config.swift in Sources */,
