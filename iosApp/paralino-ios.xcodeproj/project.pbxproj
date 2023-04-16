@@ -32,6 +32,8 @@
 		254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2729EC7C50008B1458 /* Image+Extensions.swift */; };
 		254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2929EC7F6A008B1458 /* LoginScreenObject.swift */; };
 		254B6F2C29EC7F6A008B1458 /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2A29EC7F6A008B1458 /* LoginScreen.swift */; };
+		254B6F3329EC8039008B1458 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 254B6F2E29EC8039008B1458 /* Localizable.strings */; };
+		254B6F3429EC8039008B1458 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 254B6F3129EC8039008B1458 /* Localizable.strings */; };
 		256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */; };
 		258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258E9BF629EBDEBF006BD46C /* AlertDialog.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
@@ -64,6 +66,8 @@
 		254B6F2729EC7C50008B1458 /* Image+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+Extensions.swift"; sourceTree = "<group>"; };
 		254B6F2929EC7F6A008B1458 /* LoginScreenObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginScreenObject.swift; sourceTree = "<group>"; };
 		254B6F2A29EC7F6A008B1458 /* LoginScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
+		254B6F2F29EC8039008B1458 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Localizable.strings; sourceTree = "<group>"; };
+		254B6F3229EC8039008B1458 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Localizable.strings; sourceTree = "<group>"; };
 		256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppObject.swift; sourceTree = "<group>"; };
 		258E9BF629EBDEBF006BD46C /* AlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -152,6 +156,31 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		254B6F2D29EC8039008B1458 /* Base.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				254B6F2E29EC8039008B1458 /* Localizable.strings */,
+			);
+			path = Base.lproj;
+			sourceTree = "<group>";
+		};
+		254B6F3029EC8039008B1458 /* de.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				254B6F3129EC8039008B1458 /* Localizable.strings */,
+			);
+			path = de.lproj;
+			sourceTree = "<group>";
+		};
+		254B6F3529EC8056008B1458 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				254B6F2D29EC8039008B1458 /* Base.lproj */,
+				254B6F3029EC8039008B1458 /* de.lproj */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
 		256C5A5829E8934E00FCF0B7 /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -201,6 +230,7 @@
 		25C03A6629CCE77100646364 /* paralino-ios */ = {
 			isa = PBXGroup;
 			children = (
+				254B6F3529EC8056008B1458 /* Localization */,
 				256C5A5829E8934E00FCF0B7 /* UI */,
 				252EA02329E03D2400338956 /* Crypto */,
 				252EA01029DDA66400338956 /* Remote */,
@@ -268,6 +298,7 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
 			);
 			mainGroup = 25C03A5B29CCE77100646364;
 			packageReferences = (
@@ -289,6 +320,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				25C03A6F29CCE77200646364 /* Preview Assets.xcassets in Resources */,
+				254B6F3429EC8039008B1458 /* Localizable.strings in Resources */,
+				254B6F3329EC8039008B1458 /* Localizable.strings in Resources */,
 				25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -351,6 +384,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		254B6F2E29EC8039008B1458 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				254B6F2F29EC8039008B1458 /* Base */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		254B6F3129EC8039008B1458 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				254B6F3229EC8039008B1458 /* de */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		25C03A7029CCE77200646364 /* Debug */ = {
