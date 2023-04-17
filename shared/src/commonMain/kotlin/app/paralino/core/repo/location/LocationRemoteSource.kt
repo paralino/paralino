@@ -80,7 +80,7 @@ class LocationRemoteSource constructor(
                 val locationData = it.data?.let {
                     cryptoCore.encryptDataWithKey(
                         data = BaseRemoteModule.formatter.encodeToString(it),
-                        key = memberKey.data.content
+                        key = memberKey.data
                     )
                 }
 
@@ -91,7 +91,7 @@ class LocationRemoteSource constructor(
                             deviceType = userMemberIdUseCase.getCurrentDeviceType().key
                         )
                     ),
-                    key = groupKey.data.content
+                    key = groupKey.data
                 )
 
                 documentApi.updateDocument(

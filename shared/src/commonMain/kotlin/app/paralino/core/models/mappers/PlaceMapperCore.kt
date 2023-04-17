@@ -4,7 +4,6 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceWithSettings
@@ -33,7 +32,7 @@ class PlaceMapperCore constructor(
             is CryptoResource.Ready -> {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(model.data.data),
-                    key = groupKey.data.content
+                    key = groupKey.data
                 )
             }
             else -> throw CryptoException("Place data is missing: ${model.id}")
@@ -63,7 +62,7 @@ class PlaceMapperCore constructor(
             try {
                 cryptoCore.decryptDataWithKey(
                     data = model.data,
-                    key = groupKey.data.content
+                    key = groupKey.data
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<GroupPlaceData>(it)
                 }.let {

@@ -71,7 +71,7 @@ class LoginUseCase constructor(
                         // check if keypair is valid by decrypting
                         keyMapper.mapKeyPair(
                             model = it,
-                            userKey = personalKeyData.asBase64String(cryptoCore.hashProvider)
+                            userKey = personalKeyData
                         )
 
                         // key is valid

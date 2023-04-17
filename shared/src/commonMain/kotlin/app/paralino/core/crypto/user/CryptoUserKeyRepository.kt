@@ -1,8 +1,6 @@
 package app.paralino.core.crypto.user
 
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.Data
-import app.paralino.core.crypto.base64ToData
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.base.BaseRepository
@@ -15,16 +13,15 @@ class CryptoUserKeyRepository(
     private val remote: CryptoUserKeysRemoteSource,
 ) : BaseRepository() {
 
-    val personalKey: Data
+    val personalKey: String
         get() {
             return personalKeyOrNull ?: throw MissingUserKeyException(localCache = true)
         }
 
-    val personalKeyOrNull: Data?
+    val personalKeyOrNull: String?
         get() {
             return local.getCachedUserKey().takeIf { it.isNotBlank() }
-                ?.base64ToData(cryptoCore.hashProvider)
-                ?.takeIf { it.content.isNotEmpty() }
+                ?.takeIf { it.isNotEmpty() }
         }
 
     suspend fun latestKeyPair(): AsymmetricCryptoKeyData {
@@ -43,8 +40,8 @@ class CryptoUserKeyRepository(
         return local.getMyKey()
     }
 
-    suspend fun saveUserKeyLocally(keyRaw: UserCryptoKeyRaw, decryptedKey: Data) {
-        local.saveKey(keyRaw, decryptedKey.asBase64String(cryptoCore.hashProvider))
+    suspend fun saveUserKeyLocally(keyRaw: UserCryptoKeyRaw, decryptedKey: String) {
+        local.saveKey(keyRaw, decryptedKey)
     }
 
     suspend fun uploadNewUserKey(keyRaw: UserCryptoKeyRaw, removeOldKeys: Boolean = true): UserCryptoKeyRaw {

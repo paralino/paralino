@@ -40,16 +40,15 @@ class PersonalCodesRemoteSource constructor(
         val myKey = userKeyRepo.latestKeyPair()
 
         val secretKey = cryptoCore.getNewSymmetricKey()
-        val secretHash = cryptoCore.hashProvider.computeHash(secretKey.content, HashType.SHA256)
-            .asBase64String(cryptoCore.hashProvider)
+        val secretHash = cryptoCore.hashProvider.computeHash(secretKey, HashType.SHA256)
 
         val secretKeyForOthers = cryptoCore.signData(
             data = secretHash,
             myPrivateKey = myKey.privateKey
         )
         val secretKeyForMe = cryptoCore.encryptDataWithKey(
-            data = secretKey.asBase64String(cryptoCore.hashProvider),
-            key = userKeyRepo.personalKey.content
+            data = secretKey,
+            key = userKeyRepo.personalKey
         )
 
         val integrity = GroupIntegrity(
@@ -82,7 +81,7 @@ class PersonalCodesRemoteSource constructor(
             ),
             encryptedCode = cryptoCore.encryptDataWithKey(
                 data = codeData.code,
-                key = userKeyRepo.personalKey.content
+                key = userKeyRepo.personalKey
             ),
             verification = secretKeyForMe,
             validityUTC = null // nowUTC().plus(2.days).toString()
@@ -104,7 +103,7 @@ class PersonalCodesRemoteSource constructor(
     }
 
     private fun createPersonalCodeString(): String {
-        val key = cryptoCore.getNewSymmetricKey().asBase64String(cryptoCore.hashProvider)
+        val key = cryptoCore.getNewSymmetricKey()
         val derivedKey = cryptoCore.derivePassword(key).backupPassword
 
         // without similar characters: 0,O,1,I

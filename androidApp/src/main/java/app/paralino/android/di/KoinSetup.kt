@@ -3,7 +3,6 @@ package app.paralino.android.di
 import app.paralino.android.AppClass
 import app.paralino.android.BuildConfig
 import app.paralino.android.crpyto.CryptoFrameworkLibsodium
-import app.paralino.android.crpyto.CryptoHashProvider
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.notification.GroupActivityNotificationHandler
@@ -16,7 +15,6 @@ import app.paralino.android.remote.appwrite.*
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.config
-import app.paralino.core.crypto.ICryptoHashProvider
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
@@ -72,7 +70,7 @@ object KoinSetup {
 
 //        single { CryptoFrameworkProvider() } bind ICryptoServiceProvider::class
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
-        single { CryptoHashProvider() } bind ICryptoHashProvider::class
+//        single { CryptoHashProvider() } bind ICryptoHashProvider::class
 
         single<ICoroutineScopeProvider> { androidApplication() as AppClass }
         single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }

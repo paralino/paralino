@@ -55,8 +55,8 @@ class RecoverAccountUseCase(
 
                 // check if keypair is valid by decrypting
                 keyMapper.mapKeyPair(
-                    it,
-                    personalKeyData.asBase64String(cryptoCore.hashProvider)
+                    model = it,
+                    userKey = personalKeyData
                 )
 
                 // key is valid

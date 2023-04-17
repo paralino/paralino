@@ -53,7 +53,7 @@ class MemberMapperCore constructor(
                     try {
                         cryptoCore.decryptDataWithKey(
                             data = location.deviceData,
-                            key = groupKey.data.content
+                            key = groupKey.data
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
                         }.let {
@@ -84,7 +84,7 @@ class MemberMapperCore constructor(
                     try {
                         cryptoCore.decryptDataWithKey(
                             data = location.locationData,
-                            key = memberKey.data.content
+                            key = memberKey.data
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
                         }.let {
@@ -124,7 +124,7 @@ class MemberMapperCore constructor(
             try {
                 cryptoCore.decryptDataWithKey(
                     data = model.member.data,
-                    key = groupKey.data.content
+                    key = groupKey.data
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
                 }.let {

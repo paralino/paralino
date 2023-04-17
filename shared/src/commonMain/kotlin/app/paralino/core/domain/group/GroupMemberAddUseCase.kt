@@ -90,7 +90,7 @@ class GroupMemberAddUseCase constructor(
             ?: throw MissingMemberKeyException(groupId, config.userId)
 
         val encryptedMemberKey = cryptoCore.encryptDataWithKeyPair(
-            data = memberKey.data.content,
+            data = memberKey.data,
             // sign with owner private key
             myPrivateKey = myKey.privateKey,
             // encrypt with user public key
@@ -104,7 +104,7 @@ class GroupMemberAddUseCase constructor(
                 GroupMemberGroupKeysData(
                     version = key.version,
                     encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                        data = key.data.content,
+                        data = key.data,
                         // sign with owner private key
                         myPrivateKey = myKey.privateKey,
                         // encrypt with user public key
@@ -161,9 +161,9 @@ class GroupMemberAddUseCase constructor(
 
         // just to provide randomness from group owner
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
-            data = cryptoCore.getNewSymmetricKey().content,
+            data = cryptoCore.getNewSymmetricKey(),
             type = HashType.SHA256
-        ).asBase64String(cryptoCore.hashProvider)
+        )
 //            .let {
 //                cryptoCore.encryptDataWithKeyPair(
 //                    data = it,
@@ -194,7 +194,7 @@ class GroupMemberAddUseCase constructor(
             signature = GroupIntegrity.createSignature(
                 hashProvider = cryptoCore.hashProvider,
                 memberVerifications = group.members.map { it.member.verification } + memberVerification,
-                groupKey = groupKey.data.asBase64String(cryptoCore.hashProvider),
+                groupKey = groupKey.data,
                 encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMemberPublicKeys(groupId) + newUserOwnPublicKey.encryptedPublicKey
             )
         ).let {
@@ -220,7 +220,7 @@ class GroupMemberAddUseCase constructor(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberModelData(codeData.ownerName, codeData.ownerImage)
                 ),
-                key = groupKey.data.content
+                key = groupKey.data
             )
         )
 

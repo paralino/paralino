@@ -38,7 +38,7 @@ data class GroupIntegrity(
                 addAll(encryptedMemberPublicKeys)
             }
             val seed = ids.joinToString(separator = ",")
-            return hashProvider.computeHash(seed.toData(hashProvider).content, HashType.SHA256).asBase64String(hashProvider)
+            return hashProvider.computeHash(seed, HashType.SHA256)
         }
     }
 }

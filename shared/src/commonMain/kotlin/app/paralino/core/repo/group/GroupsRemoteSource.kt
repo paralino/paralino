@@ -201,7 +201,7 @@ class GroupsRemoteSource constructor(
                         name = it.name,
                         image = it.image
                     ),
-                    key = cryptoUserKeyRepo.personalKey.content
+                    key = cryptoUserKeyRepo.personalKey
                 )
             } ?: ""
 
@@ -241,7 +241,7 @@ class GroupsRemoteSource constructor(
                         name = it.name,
                         image = it.image ?: ImageModel.emoji(Emojis.robot)
                     ),
-                    key = cryptoUserKeyRepo.personalKey.content
+                    key = cryptoUserKeyRepo.personalKey
                 )
             } ?: ""
 

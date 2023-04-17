@@ -27,8 +27,7 @@ class CreateAccountUseCase constructor(
 
     fun signUpAsGuest(): Flow<SignUpStep> {
         val email = "${deviceApi.randomUUID}${UserMe.guestUserEmail}"
-        val password =
-            cryptoCore.getNewSymmetricKey().asString(cryptoCore.hashProvider)
+        val password = cryptoCore.getNewSymmetricKey()
         return signUp(email, password)
             .onEach {
                 if (it == SignUpStep.ALL_DONE) {

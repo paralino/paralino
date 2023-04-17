@@ -57,7 +57,7 @@ class RegisterDeviceForSharingUseCase constructor(
                         deviceType = userMemberId.getCurrentDeviceType().key
                     )
                 ),
-                key = groupKey.data.content
+                key = groupKey.data
             )
 
             val payload = LocationCreatePayload(

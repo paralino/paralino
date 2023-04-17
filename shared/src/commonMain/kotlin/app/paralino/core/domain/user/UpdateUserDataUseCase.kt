@@ -72,7 +72,7 @@ class UpdateUserDataUseCase constructor(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberModelData(data.userName, data.userImage)
                 ),
-                key = groupKey.data.content
+                key = groupKey.data
             )
 
             val deviceData = cryptoCore.encryptDataWithKey(
@@ -82,7 +82,7 @@ class UpdateUserDataUseCase constructor(
                         deviceType = userMemberIdUseCase.getCurrentDeviceType().key
                     )
                 ),
-                key = groupKey.data.content
+                key = groupKey.data
             )
 
             UpdateMemberData(

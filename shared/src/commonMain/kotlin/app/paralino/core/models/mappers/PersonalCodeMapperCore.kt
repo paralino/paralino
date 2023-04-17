@@ -2,7 +2,6 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
-import app.paralino.core.crypto.base64ToData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
@@ -42,7 +41,7 @@ class PersonalCodeMapperCore(
 
         val code = cryptoCore.decryptDataWithKey(
             data = model.encryptedCode,
-            key = userKeyRepo.personalKey.content
+            key = userKeyRepo.personalKey
         )
 
         var codeData = try {
@@ -56,13 +55,13 @@ class PersonalCodeMapperCore(
             is CryptoResource.Ready -> {
                 val userOwnSecret = cryptoCore.decryptDataWithKey(
                     data = model.verification,
-                    key = userKeyRepo.personalKey.content
+                    key = userKeyRepo.personalKey
                 )
 
                 val hash = cryptoCore.hashProvider.computeHash(
-                    data = userOwnSecret.base64ToData(cryptoCore.hashProvider).content,
+                    data = userOwnSecret,
                     type = HashType.SHA256
-                ).asBase64String(cryptoCore.hashProvider)
+                )
 
                 val hashFromCodeData = cryptoCore.verifySignature(
                     data = codeData.data.secretKey,

@@ -1,69 +1,69 @@
 package app.paralino.android.crpyto
 
-import app.paralino.core.crypto.Data
+import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KeyPair
-import app.paralino.core.crypto.toData
 import com.goterl.lazysodium.LazySodiumAndroid
 import com.goterl.lazysodium.SodiumAndroid
 import com.goterl.lazysodium.exceptions.SodiumException
 import com.goterl.lazysodium.interfaces.GenericHash
 import com.goterl.lazysodium.interfaces.PwHash
 import com.goterl.lazysodium.interfaces.SecretBox
+import com.goterl.lazysodium.utils.HexMessageEncoder
 import com.goterl.lazysodium.utils.Key
 import java.nio.charset.StandardCharsets
 
 class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
-    val lazySodium = LazySodiumAndroid(SodiumAndroid(), StandardCharsets.UTF_8)
+    private val lazySodium = LazySodiumAndroid(SodiumAndroid(), StandardCharsets.UTF_8, HexMessageEncoder())
 
-    override fun createNewSymmetricKey(): Data {
-        return lazySodium.cryptoSecretBoxKeygen().asBytes.toData()
+    override fun createNewSymmetricKey(): String {
+        return lazySodium.cryptoSecretBoxKeygen().asHexString
     }
 
     override fun createNewAsymmetricKey(): KeyPair {
         val keyPair = lazySodium.cryptoSignKeypair()
         return KeyPair(
-            privateKey = keyPair.secretKey.asBytes,
-            publicKey = keyPair.publicKey.asBytes
+            privateKey = keyPair.secretKey.asHexString,
+            publicKey = keyPair.publicKey.asHexString
         )
     }
 
-    override fun encryptDataWithSymmetricKey(data: ByteArray, key: ByteArray): Data {
-
+    override fun encryptDataWithSymmetricKey(data: String, key: String): String {
         val nonce = lazySodium.nonce(SecretBox.XSALSA20POLY1305_NONCEBYTES)
-
         return lazySodium.cryptoSecretBoxEasy(
-            lazySodium.encodeToString(data),
+            data,
             nonce,
-            Key.fromBytes(key)
-        ).let { nonce.plus(lazySodium.decodeFromString(it)).toData() }
+            Key.fromHexString(key)
+        ).let { lazySodium.encodeToString(nonce).plus(it) }
     }
 
-    override fun decryptDataWithSymmetricKey(data: ByteArray, key: ByteArray): Data {
+    override fun decryptDataWithSymmetricKey(data: String, key: String): String {
 
-        val nonce = data.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
-        val content = data.sliceArray(SecretBox.XSALSA20POLY1305_NONCEBYTES until data.size)
+        val source = lazySodium.decodeFromString(data)
+        val nonce = source.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
+        val content = source.sliceArray(SecretBox.XSALSA20POLY1305_NONCEBYTES until source.size)
 
         return lazySodium.cryptoSecretBoxOpenEasy(
             lazySodium.encodeToString(content),
             nonce,
-            Key.fromBytes(key)
-        ).let { lazySodium.decodeFromString(it).toData() }
+            Key.fromHexString(key)
+        )
     }
 
     override fun encryptDataWithPassword(
-        data: ByteArray,
+        data: String,
         password: String,
-        context: ByteArray
-    ): Data {
+        context: String
+    ): String {
 
         val out = lazySodium.randomBytesBuf(GenericHash.BYTES_MIN)
+        val input = lazySodium.bytes(context)
         if (!lazySodium.cryptoGenericHash(
                 out,
                 GenericHash.BYTES_MIN,
-                context,
-                context.size.toLong()
+                input,
+                input.size.toLong()
             )
         ) {
             throw SodiumException("Error creating password context hash")
@@ -78,21 +78,22 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             PwHash.Alg.PWHASH_ALG_ARGON2ID13
         )
 
-        return encryptDataWithSymmetricKey(data, lazySodium.decodeFromString(key))
+        return encryptDataWithSymmetricKey(data, key)
     }
 
     override fun decryptDataWithPassword(
-        data: ByteArray,
+        data: String,
         password: String,
-        context: ByteArray
-    ): Data {
+        context: String
+    ): String {
 
         val out = lazySodium.randomBytesBuf(GenericHash.BYTES_MIN)
+        val input = lazySodium.bytes(context)
         if (!lazySodium.cryptoGenericHash(
                 out,
                 GenericHash.BYTES_MIN,
-                context,
-                context.size.toLong()
+                input,
+                input.size.toLong()
             )
         ) {
             throw SodiumException("Error creating password context hash")
@@ -107,39 +108,41 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             PwHash.Alg.PWHASH_ALG_ARGON2ID13
         )
 
-        return decryptDataWithSymmetricKey(data, lazySodium.decodeFromString(key))
+        return decryptDataWithSymmetricKey(data, key)
     }
 
     override fun encryptDataWithKeyPair(
-        data: ByteArray,
-        myPrivateKey: ByteArray,
-        publicKey: ByteArray
-    ): Data {
+        data: String,
+        myPrivateKey: String,
+        publicKey: String
+    ): String {
         val nonce = lazySodium.nonce(SecretBox.XSALSA20POLY1305_NONCEBYTES)
         val keyPair = com.goterl.lazysodium.utils.KeyPair(
-            Key.fromBytes(publicKey),
-            Key.fromBytes(myPrivateKey)
+            Key.fromHexString(publicKey),
+            Key.fromHexString(myPrivateKey)
         )
         val cryptoKeyPair = lazySodium.convertKeyPairEd25519ToCurve25519(keyPair)
 
         return lazySodium.cryptoBoxEasy(
-            lazySodium.encodeToString(data),
+            data,
             nonce,
             cryptoKeyPair
-        ).let { nonce.plus(lazySodium.decodeFromString(it)).toData() }
+        ).let { lazySodium.encodeToString(nonce).plus(it) }
     }
 
     override fun decryptDataWithKeyPair(
-        data: ByteArray,
-        myPrivateKey: ByteArray,
-        publicKey: ByteArray
-    ): Data {
+        data: String,
+        myPrivateKey: String,
+        publicKey: String
+    ): String {
 
-        val nonce = data.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
-        val content = data.sliceArray(SecretBox.XSALSA20POLY1305_NONCEBYTES until data.size)
+        val source = lazySodium.decodeFromString(data)
+        val nonce = source.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
+        val content = source.sliceArray(SecretBox.XSALSA20POLY1305_NONCEBYTES until source.size)
+
         val keyPair = com.goterl.lazysodium.utils.KeyPair(
-            Key.fromBytes(publicKey),
-            Key.fromBytes(myPrivateKey)
+            Key.fromHexString(publicKey),
+            Key.fromHexString(myPrivateKey)
         )
         val cryptoKeyPair = lazySodium.convertKeyPairEd25519ToCurve25519(keyPair)
 
@@ -147,21 +150,28 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             lazySodium.encodeToString(content),
             nonce,
             cryptoKeyPair
-        ).let { lazySodium.decodeFromString(it).toData() }
+        )
     }
 
-    override fun signData(data: ByteArray, myPrivateKey: ByteArray): Data {
+    override fun signData(data: String, myPrivateKey: String): String {
         return lazySodium.cryptoSign(
-            lazySodium.encodeToString(data),
-            Key.fromBytes(myPrivateKey)
-        ).let { lazySodium.decodeFromString(it).toData() }
+            data,
+            Key.fromHexString(myPrivateKey)
+        )
     }
 
-    override fun verifySignature(data: ByteArray, publicKey: ByteArray): Data? {
+    override fun verifySignature(data: String, publicKey: String): String? {
         return lazySodium.cryptoSignOpen(
-            lazySodium.encodeToString(data),
-            Key.fromBytes(publicKey)
-        )?.let { lazySodium.decodeFromString(it).toData() }
+            data,
+            Key.fromHexString(publicKey)
+        )
+    }
+
+    override fun computeHash(data: String, type: HashType): String {
+        return when(type) {
+            HashType.SHA256 -> lazySodium.cryptoHashSha256(data)
+            HashType.SHA512 -> lazySodium.cryptoHashSha512(data)
+        }
     }
 
 }

@@ -1,9 +1,7 @@
 package app.paralino.core.domain.crypto
 
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.HashType
-import app.paralino.core.crypto.base64ToData
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
@@ -26,7 +24,7 @@ class GroupValidityVerification(
     private suspend fun verifyUser(
         groupId: String,
         memberUserId: String,
-        groupKey: Data?,
+        groupKey: String?,
         memberVerification: String,
         groupOwnerPublicKey: String?,
         memberGroupSettings: GroupSettingsRaw?,
@@ -86,13 +84,13 @@ class GroupValidityVerification(
                     try {
                         val userOwnSecret = cryptoCore.decryptDataWithKey(
                             data = memberGroupSettings.secretKey,
-                            key = userKeyRepo.personalKey.content
+                            key = userKeyRepo.personalKey
                         )
 
                         val hash = cryptoCore.hashProvider.computeHash(
-                            data = userOwnSecret.base64ToData(cryptoCore.hashProvider).content,
+                            data = userOwnSecret,
                             type = HashType.SHA256
-                        ).asBase64String(cryptoCore.hashProvider)
+                        )
 
                         if (hash != secretKey)
                             return VerificationResult.WRONG_MEMBER_SECRET
@@ -111,7 +109,7 @@ class GroupValidityVerification(
 
     suspend fun verifyGroupMember(
         member: MemberDocumentRaw,
-        groupKey: Data?,
+        groupKey: String?,
         groupOwnerId: String
     ): VerificationResult {
         val groupOwnerPublicKey = cryptoKEKRepo.getMemberPublicKey(
@@ -182,7 +180,7 @@ class GroupValidityVerification(
             GroupIntegrity.createSignature(
                 hashProvider = cryptoCore.hashProvider,
                 memberVerifications = memberVerifications,
-                groupKey = groupKey.asBase64String(cryptoCore.hashProvider),
+                groupKey = groupKey,
                 encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMemberPublicKeys(groupId)
             )
         } catch (e: Exception) {

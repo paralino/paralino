@@ -132,7 +132,7 @@ class GroupCryptoKeyRotation constructor(
             val groupData = group.data.data?.let {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(it),
-                    key = newGroupKey.content
+                    key = newGroupKey
                 )
             } ?: ""
 
@@ -142,7 +142,7 @@ class GroupCryptoKeyRotation constructor(
                         placeId = place.id,
                         placeData = cryptoCore.encryptDataWithKey(
                             data = BaseRemoteModule.formatter.encodeToString(place.data.data),
-                            key = newGroupKey.content
+                            key = newGroupKey
                         )
                     )
                 }
@@ -162,7 +162,7 @@ class GroupCryptoKeyRotation constructor(
                     GroupKeysPayload(
                         userId = groupMember.member.userId,
                         encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                            data = newGroupKey.content,
+                            data = newGroupKey,
                             // sign with owner private key
                             myPrivateKey = myKey.privateKey,
                             // encrypt with user public key
@@ -180,7 +180,7 @@ class GroupCryptoKeyRotation constructor(
                 signature = GroupIntegrity.createSignature(
                     hashProvider = cryptoCore.hashProvider,
                     memberVerifications = group.members.map { it.member.verification },
-                    groupKey = newGroupKey.asBase64String(cryptoCore.hashProvider),
+                    groupKey = newGroupKey,
                     encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMemberPublicKeys(group.id)
                 )
             ).let {

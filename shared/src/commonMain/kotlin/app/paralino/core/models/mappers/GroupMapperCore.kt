@@ -35,7 +35,7 @@ class GroupMapperCore constructor(
             is CryptoResource.Ready -> {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(model.data.data),
-                    key = groupKey.data.content
+                    key = groupKey.data
                 )
             }
             else -> throw CryptoException("Group data is missing: ${model.id}")
@@ -65,7 +65,7 @@ class GroupMapperCore constructor(
             try {
                 cryptoCore.decryptDataWithKey(
                     data = model.data,
-                    key = groupKey.data.content
+                    key = groupKey.data
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<UserGroupData>(it)
                 }.let {

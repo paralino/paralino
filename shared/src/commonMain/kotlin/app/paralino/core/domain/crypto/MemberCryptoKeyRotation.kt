@@ -113,7 +113,7 @@ class MemberCryptoKeyRotation(
     ) {
         blocking {
 
-            val newSenderKey = cryptoCore.getNewSymmetricKey().content
+            val newSenderKey = cryptoCore.getNewSymmetricKey()
 
             // update data for every user device
             // this way any device from user that gets to update the keys will update data for all other devices
@@ -125,7 +125,7 @@ class MemberCryptoKeyRotation(
                 signature = GroupIntegrity.createSignature(
                     hashProvider = cryptoCore.hashProvider,
                     memberVerifications = group.members.map { it.member.verification },
-                    groupKey = groupKey.data.asBase64String(cryptoCore.hashProvider),
+                    groupKey = groupKey.data,
                     encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMemberPublicKeys(
                         group.id
                     )
@@ -147,7 +147,7 @@ class MemberCryptoKeyRotation(
                 integrity = groupIntegrity,
                 memberData = cryptoCore.encryptDataWithKey(
                     BaseRemoteModule.formatter.encodeToString(member.member.memberData.data),
-                    groupKey.data.content
+                    groupKey.data
                 ),
                 locations = member.locations.map { location ->
                     MemberLocationDataPayload(
@@ -155,7 +155,7 @@ class MemberCryptoKeyRotation(
                         deviceData = location.deviceData.data?.let {
                             cryptoCore.encryptDataWithKey(
                                 BaseRemoteModule.formatter.encodeToString(it),
-                                groupKey.data.content
+                                groupKey.data
                             )
                         } ?: "",
                         locationData = location.locationData.data?.let {
@@ -269,7 +269,7 @@ class MemberCryptoKeyRotation(
 
             // if no key is passed, create new one
             val newSenderKey =
-                currentSenderKey?.data?.content ?: cryptoCore.getNewSymmetricKey().content
+                currentSenderKey?.data ?: cryptoCore.getNewSymmetricKey()
 
             val keys = members.mapNotNull { groupMember ->
 

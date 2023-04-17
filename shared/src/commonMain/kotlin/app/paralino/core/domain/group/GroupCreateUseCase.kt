@@ -103,29 +103,28 @@ class GroupCreateUseCase(
 
             val secretKey = cryptoCore.getNewSymmetricKey()
             val secretHash = cryptoCore.hashProvider
-                .computeHash(secretKey.content, HashType.SHA256)
-                .asBase64String(cryptoCore.hashProvider)
+                .computeHash(secretKey, HashType.SHA256)
 
             val secretKeyForVerification = cryptoCore.signData(
                 data = secretHash,
                 myPrivateKey = myKey.privateKey
             )
             val secretKeyForMe = cryptoCore.encryptDataWithKey(
-                data = secretKey.asBase64String(cryptoCore.hashProvider),
-                key = userKeyRepo.personalKey.content
+                data = secretKey,
+                key = userKeyRepo.personalKey
             )
 
             val groupKey = cryptoCore.getNewSymmetricKey()
             val memberSenderKey = cryptoCore.getNewSymmetricKey()
 
             val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                data = groupKey.content,
+                data = groupKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = myKey.publicKey
             )
 
             val encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
-                data = memberSenderKey.content,
+                data = memberSenderKey,
                 myPrivateKey = myKey.privateKey,
                 publicKey = myKey.publicKey
             )
@@ -137,9 +136,9 @@ class GroupCreateUseCase(
 
             val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
             val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
-                data = cryptoCore.getNewSymmetricKey().content,
+                data = cryptoCore.getNewSymmetricKey(),
                 type = HashType.SHA256
-            ).asBase64String(cryptoCore.hashProvider)
+            )
 
             val memberVerification = MemberVerification(
                 groupOwnerSecret = ownerVerificationSecret,
@@ -158,7 +157,7 @@ class GroupCreateUseCase(
                 signature = GroupIntegrity.createSignature(
                     hashProvider = cryptoCore.hashProvider,
                     memberVerifications = listOf(memberVerification),
-                    groupKey = groupKey.asBase64String(cryptoCore.hashProvider),
+                    groupKey = groupKey,
                     encryptedMemberPublicKeys = listOf(encryptedPublicKey)
                 )
             )
@@ -168,8 +167,8 @@ class GroupCreateUseCase(
                 encryptedMemberKey = encryptedSenderKey,
                 encryptedPublicKey = encryptedPublicKey,
                 groupData = cryptoCore.encryptDataWithKey(
-                    BaseRemoteModule.formatter.encodeToString(groupData),
-                    groupKey.content
+                    data = BaseRemoteModule.formatter.encodeToString(groupData),
+                    key = groupKey
                 ),
                 groupMemberIntegrity = cryptoCore.encryptDataWithKeyPair(
                     data = BaseRemoteModule.formatter.encodeToString(groupIntegrity),
@@ -179,8 +178,8 @@ class GroupCreateUseCase(
                 secretKey = secretKeyForMe,
                 memberVerification = memberVerification,
                 memberData = cryptoCore.encryptDataWithKey(
-                    BaseRemoteModule.formatter.encodeToString(myData),
-                    groupKey.content
+                    data = BaseRemoteModule.formatter.encodeToString(myData),
+                    key = groupKey
                 )
             )
 

@@ -1,29 +1,25 @@
 package app.paralino.core.crypto
 
-interface ICryptoServiceProvider {
-    fun createNewSymmetricKey(): Data
+interface ICryptoServiceProvider: ICryptoHashProvider {
+    fun createNewSymmetricKey(): String
     fun createNewAsymmetricKey(): KeyPair
 
-    fun encryptDataWithSymmetricKey(data: ByteArray, key: ByteArray): Data
-    fun decryptDataWithSymmetricKey(data: ByteArray, key: ByteArray): Data
+    fun encryptDataWithSymmetricKey(data: String, key: String): String
+    fun decryptDataWithSymmetricKey(data: String, key: String): String
 
-    fun encryptDataWithPassword(data: ByteArray, password: String, context: ByteArray): Data
-    fun decryptDataWithPassword(data: ByteArray, password: String, context: ByteArray): Data
+    fun encryptDataWithPassword(data: String, password: String, context: String): String
+    fun decryptDataWithPassword(data: String, password: String, context: String): String
 
-    fun encryptDataWithKeyPair(data: ByteArray, myPrivateKey: ByteArray, publicKey: ByteArray): Data
-    fun decryptDataWithKeyPair(data: ByteArray, myPrivateKey: ByteArray, publicKey: ByteArray): Data
+    fun encryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String
+    fun decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String
 
-    fun signData(data: ByteArray, myPrivateKey: ByteArray): Data
-    fun verifySignature(data: ByteArray, publicKey: ByteArray): Data?
+    fun signData(data: String, myPrivateKey: String): String
+    fun verifySignature(data: String, publicKey: String): String?
+
 }
 
 interface ICryptoHashProvider {
-    fun toBase64(data: ByteArray): String
-    fun fromBase64(data: String): Data
-    fun toByteArray(data: String): Data
-    fun byteArrayToString(data: ByteArray): String
-
-    fun computeHash(data: ByteArray, type: HashType): Data
+    fun computeHash(data: String, type: HashType): String
 }
 
 enum class HashType {

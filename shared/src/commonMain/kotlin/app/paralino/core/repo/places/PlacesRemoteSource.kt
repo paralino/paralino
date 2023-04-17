@@ -41,7 +41,7 @@ class PlacesRemoteSource(
 
             val encryptedData = cryptoCore.encryptModel(
                 data = data,
-                key = groupKey.data.content
+                key = groupKey.data
             )
 
             val payload = CreatePlacePayload(
