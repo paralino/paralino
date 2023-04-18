@@ -37,7 +37,7 @@ abstract class IConnectionStatusProvider(
                     checkData.checkCount = 0
                     isInternetAvailable(url)
                 } catch (e: Exception) {
-                    logg.w("Error check for connection")
+                    logg.w("app_state", "Error checking for connection")
                     false
                 }
             }

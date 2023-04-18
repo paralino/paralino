@@ -17,10 +17,10 @@ import java.util.*
 
 class DeviceApiProvider constructor(
     private val appClass: AppClass,
-    private val appConfig: BackendConfig,
+    appConfig: BackendConfig,
     locationStatusProvider: ILocationStatusProvider,
     connectionStatusProvider: IConnectionStatusProvider
-): IDeviceApiProvider(locationStatusProvider, connectionStatusProvider) {
+): IDeviceApiProvider(appConfig, locationStatusProvider, connectionStatusProvider) {
 
     override val deviceType: DeviceType
         get() = DeviceType.Android

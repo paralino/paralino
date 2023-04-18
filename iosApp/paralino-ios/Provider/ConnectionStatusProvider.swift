@@ -23,12 +23,14 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
                 URLSession(configuration: .default)
                     .dataTask(with: request) { (_, response, error) -> Void in
                         guard error == nil else {
+                            Logr.v(tag: "app_state", message: "Network check - error")
                             cont.resume(returning: false)
                             return
                         }
                         
                         guard (response as? HTTPURLResponse)?
                             .statusCode == 200 else {
+                            Logr.v(tag: "app_state", message: "Network check - http error")
                             cont.resume(returning: false)
                             return
                         }
@@ -37,6 +39,7 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
                     }
                     .resume()
             } else {
+                Logr.v(tag: "app_state", message: "Network check - wrong url")
                 cont.resume(returning: false)
             }
         }

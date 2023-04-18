@@ -58,7 +58,10 @@ class UserRepository constructor(
             logg.v("Local raw user changed, valid (${it != null})")
             Resource.Ready(it)
         }
-        .catch { emit(Resource.NotInitialized) }
+        .catch {
+            logg.w("Local raw user error: ${it.message}")
+            emit(Resource.NotInitialized)
+        }
         .stateIn(
             scope = scopeProvider.defaultScope,
             started = SharingStarted.WhileSubscribed(),
