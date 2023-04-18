@@ -24,7 +24,6 @@
 		252EA01D29DDF93B00338956 /* RealtimeApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01C29DDF93B00338956 /* RealtimeApi.swift */; };
 		252EA02029E03B4D00338956 /* Clibsodium in Frameworks */ = {isa = PBXBuildFile; productRef = 252EA01F29E03B4D00338956 /* Clibsodium */; };
 		252EA02229E03B4D00338956 /* Sodium in Frameworks */ = {isa = PBXBuildFile; productRef = 252EA02129E03B4D00338956 /* Sodium */; };
-		252EA02529E03D3600338956 /* CryptoHashProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA02429E03D3600338956 /* CryptoHashProvider.swift */; };
 		252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */; };
 		25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A8F29E9452300CD32F5 /* SealedClasses.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
@@ -58,7 +57,6 @@
 		252EA01829DDEFC400338956 /* FunctionsApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionsApi.swift; sourceTree = "<group>"; };
 		252EA01A29DDF1B500338956 /* UserApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserApi.swift; sourceTree = "<group>"; };
 		252EA01C29DDF93B00338956 /* RealtimeApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeApi.swift; sourceTree = "<group>"; };
-		252EA02429E03D3600338956 /* CryptoHashProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHashProvider.swift; sourceTree = "<group>"; };
 		252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoFrameworkProvider.swift; sourceTree = "<group>"; };
 		25356A8F29E9452300CD32F5 /* SealedClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SealedClasses.swift; sourceTree = "<group>"; };
 		25356A9929EAB8E100CD32F5 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
@@ -134,7 +132,6 @@
 		252EA02329E03D2400338956 /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
-				252EA02429E03D3600338956 /* CryptoHashProvider.swift */,
 				252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */,
 			);
 			path = Crypto;
@@ -355,7 +352,6 @@
 			files = (
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
-				252EA02529E03D3600338956 /* CryptoHashProvider.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
 				252EA01B29DDF1B500338956 /* UserApi.swift in Sources */,
 				252E361529CF60BA008FC635 /* Logr.swift in Sources */,

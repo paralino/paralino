@@ -8,8 +8,9 @@
 import Foundation
 import shared
 import Sodium
+import CryptoKit
 
-class CryptoFrameworkProvider: ICryptoServiceProvider {
+class CryptoFrameworkProvider: ICryptoServiceProvider, ICryptoHashProvider {
     
     let sodium: Sodium
     
@@ -24,85 +25,114 @@ class CryptoFrameworkProvider: ICryptoServiceProvider {
     func createNewAsymmetricKey() -> KeyPair {
         let keys = sodium.sign.keyPair()
         return KeyPair(
-            privateKey: keys!.secretKey.toSharedData().content,
-            publicKey: keys!.secretKey.toSharedData().content
+            privateKey: keys!.secretKey.toHex(sodium),
+            publicKey: keys!.secretKey.toHex(sodium)
         )
     }
     
-    func createNewSymmetricKey() -> shared.Data {
-        return sodium.secretBox.key().toSharedData()
+    func createNewSymmetricKey() -> String {
+        return sodium.secretBox.key().toHex(sodium)
     }
     
-    func decryptDataWithKeyPair(data: KotlinByteArray, myPrivateKey: KotlinByteArray, publicKey: KotlinByteArray) -> shared.Data {
+    func decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String) -> String {
         sodium.box.open(
-            nonceAndAuthenticatedCipherText: data.toBytes(),
-            senderPublicKey: publicKey.toBytes(),
-            recipientSecretKey: myPrivateKey.toBytes()
-        )!.toSharedData()
+            nonceAndAuthenticatedCipherText: data.hex2Bin(sodium),
+            senderPublicKey: publicKey.hex2Bin(sodium),
+            recipientSecretKey: myPrivateKey.hex2Bin(sodium)
+        )!.utf8String!
     }
     
-    func decryptDataWithPassword(data: KotlinByteArray, password: String, context: KotlinByteArray) -> shared.Data {
+    func decryptDataWithPassword(data: String, password: String, context: String) -> String {
         let salt = sodium.genericHash.hash(
-            message: context.toBytes(),
+            message: context.bytes,
             outputLength: sodium.genericHash.BytesMin
         )
-
+        
         let key = sodium.pwHash.hash(
-            outputLength: sodium.pwHash.StrBytes,
+            outputLength: sodium.secretBox.KeyBytes,
             passwd: password.bytes,
             salt: salt!,
             opsLimit: sodium.pwHash.OpsLimitInteractive,
             memLimit: sodium.pwHash.MemLimitInteractive
         )
         
-        return decryptDataWithSymmetricKey(data: data, key: key!.toSharedData().content)
+        return decryptDataWithSymmetricKey(data: data, key: key!.toHex(sodium))
     }
     
-    func decryptDataWithSymmetricKey(data: KotlinByteArray, key: KotlinByteArray) -> shared.Data {
+    func decryptDataWithSymmetricKey(data: String, key: String) -> String {
         sodium.secretBox.open(
-            nonceAndAuthenticatedCipherText: data.toBytes(),
-            secretKey: key.toBytes()
-        )!.toSharedData()
+            nonceAndAuthenticatedCipherText: data.hex2Bin(sodium),
+            secretKey: key.hex2Bin(sodium)
+        )!.utf8String!
     }
     
-    func encryptDataWithKeyPair(data: KotlinByteArray, myPrivateKey: KotlinByteArray, publicKey: KotlinByteArray) -> shared.Data {
+    func encryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String) -> String {
         sodium.box.seal(
-            message: data.toBytes(),
-            recipientPublicKey: publicKey.toBytes(),
-            senderSecretKey: myPrivateKey.toBytes()
-        )!.toSharedData()
+            message: data.bytes,
+            recipientPublicKey: publicKey.hex2Bin(sodium),
+            senderSecretKey: myPrivateKey.hex2Bin(sodium)
+        )!.toHex(sodium)
     }
     
-    func encryptDataWithPassword(data: KotlinByteArray, password: String, context: KotlinByteArray) -> shared.Data {
+    func encryptDataWithPassword(data: String, password: String, context: String) -> String {
         
         let salt = sodium.genericHash.hash(
-            message: context.toBytes(),
+            message: context.bytes,
             outputLength: sodium.genericHash.BytesMin
         )
-
+        
         let key = sodium.pwHash.hash(
-            outputLength: sodium.pwHash.StrBytes,
+            outputLength: sodium.secretBox.KeyBytes,
             passwd: password.bytes,
             salt: salt!,
             opsLimit: sodium.pwHash.OpsLimitInteractive,
             memLimit: sodium.pwHash.MemLimitInteractive
         )
         
-        return encryptDataWithSymmetricKey(data: data, key: key!.toSharedData().content)
+        return encryptDataWithSymmetricKey(data: data, key: key!.toHex(sodium))
     }
     
-    func encryptDataWithSymmetricKey(data: KotlinByteArray, key: KotlinByteArray) -> shared.Data {
+    func encryptDataWithSymmetricKey(data: String, key: String) -> String {
         sodium.secretBox.seal(
-            message: data.toBytes(),
-            secretKey: key.toBytes()
-        )!.toSharedData()
+            message: data.bytes,
+            secretKey: key.hex2Bin(sodium)
+        )!.toHex(sodium)
     }
     
-    func signData(data: KotlinByteArray, myPrivateKey: KotlinByteArray) -> shared.Data {
-        sodium.sign.sign(message: data.toBytes(), secretKey: myPrivateKey.toBytes())!.toSharedData()
+    func signData(data: String, myPrivateKey: String) -> String {
+        sodium.sign.sign(message: data.bytes, secretKey: myPrivateKey.hex2Bin(sodium))!.toHex(sodium)
     }
     
-    func verifySignature(data: KotlinByteArray, publicKey: KotlinByteArray) -> shared.Data? {
-        sodium.sign.open(signedMessage: data.toBytes(), publicKey: publicKey.toBytes())!.toSharedData()
+    func verifySignature(data: String, publicKey: String) -> String? {
+        sodium.sign.open(signedMessage: data.hex2Bin(sodium), publicKey: publicKey.hex2Bin(sodium))!.utf8String
+    }
+    
+    func computeHash(data: String, type: HashType) -> String {
+        let content = data.data(using: .utf8)!
+        
+        var hash: any Digest
+        switch type {
+        case .sha256:
+            hash = SHA256.hash(data: content)
+        case .sha512:
+            hash = SHA512.hash(data: content)
+        default:
+            hash = SHA512.hash(data: content)
+        }
+        
+        let bytes: [UInt8] = Array(hash.makeIterator())
+        return bytes.toHex(sodium)
+    }
+}
+
+extension Bytes {
+    func toHex(_ sodium: Sodium) -> String {
+        sodium.utils.bin2hex(self)!.uppercased()
+    }
+}
+
+extension String {
+    func hex2Bin(_ sodium: Sodium) -> Bytes {
+        sodium.utils.hex2bin(self.lowercased())!
     }
 }

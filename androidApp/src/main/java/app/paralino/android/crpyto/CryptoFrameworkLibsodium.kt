@@ -71,7 +71,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
         val key = lazySodium.cryptoPwHash(
             password,
-            PwHash.ARGON2ID_STR_BYTES,
+            SecretBox.KEYBYTES,
             out,
             PwHash.OPSLIMIT_INTERACTIVE,
             PwHash.MEMLIMIT_INTERACTIVE,
@@ -101,7 +101,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
         val key = lazySodium.cryptoPwHash(
             password,
-            PwHash.ARGON2ID_STR_BYTES,
+            SecretBox.KEYBYTES,
             out,
             PwHash.OPSLIMIT_INTERACTIVE,
             PwHash.MEMLIMIT_INTERACTIVE,

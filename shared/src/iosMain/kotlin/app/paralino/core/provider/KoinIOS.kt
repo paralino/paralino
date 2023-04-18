@@ -1,7 +1,6 @@
 package app.paralino.core.provider
 
 import app.paralino.core.config
-import app.paralino.core.crypto.ICryptoHashProvider
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
@@ -36,7 +35,6 @@ import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.api.*
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.IPushProviderManager
-import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.module.Module
@@ -60,7 +58,6 @@ object KoinIOS {
         userApi: (IRemoteModule, BackendConfig) -> IUserApi,
         functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApi,
         realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
-        hashProvider: ICryptoHashProvider,
         cryptoServiceProvider: ICryptoServiceProvider
     ): List<Module> {
         return listOf(
@@ -80,7 +77,6 @@ object KoinIOS {
                 single { RealtimeApiWrapperIOS(realtimeApi(get(), get())) }
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
-                single { hashProvider }
                 single { cryptoServiceProvider }
             },
             createViewModelModule()
