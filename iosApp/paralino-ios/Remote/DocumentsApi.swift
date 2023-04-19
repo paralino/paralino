@@ -24,7 +24,7 @@ class DocumentsApi: IDocumentsApi {
                 collectionId: collectionId,
                 documentId: docId ?? module.backendConfig.resourceIds.uniqueIdPlaceholder,
                 data: data
-            ).data
+            ).parseDocument()
         }
     }
     
@@ -44,7 +44,7 @@ class DocumentsApi: IDocumentsApi {
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: documentId
-            ).data
+            ).parseDocument()
         }
     }
     
@@ -73,7 +73,7 @@ class DocumentsApi: IDocumentsApi {
                     queries: queries
                 )
                 
-                let shouldLoadMore = onNewValues(results.documents.map { $0.data }) == true
+                let shouldLoadMore = onNewValues(results.documents.map { $0.parseDocument() }) == true
                 if shouldLoadMore && results.documents.count >= Int(limit) {
                     cursor = results.documents.last?.id ?? ""
                 } else {
@@ -90,7 +90,14 @@ class DocumentsApi: IDocumentsApi {
                 collectionId: collectionId,
                 documentId: docId,
                 data: data
-            ).data
+            ).parseDocument()
         }
+    }
+}
+
+private extension Appwrite.Document {
+    func parseDocument() -> [String: Any] {
+        let result = try! self.data.toJson()
+        return SerializationExtKt.fromJsonObjectToMapOfPrimitives(result)
     }
 }
