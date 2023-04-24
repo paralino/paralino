@@ -107,7 +107,9 @@ class UserApi: IUserApi {
 
 extension AppwriteModels.Account {
     func parseUser() -> UserMeRaw {
-        return UserMeRaw(id: self.id, email: self.email, registration: self.registration, emailVerification: self.emailVerification, data: UserMeDataRaw.companion.parseData(prefs: self.prefs.toMap()))
+        let prefsData = try? self.prefs.data.toJson()
+        let prefs = prefsData != nil ? UserMeDataRaw.companion.parseData(prefs: SerializationExtKt.fromJsonObjectToMapOfPrimitives(prefsData!)) : nil
+        return UserMeRaw(id: self.id, email: self.email, registration: self.registration, emailVerification: self.emailVerification, data: prefs)
     }
 }
 
