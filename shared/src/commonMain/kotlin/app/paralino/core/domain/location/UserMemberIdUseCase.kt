@@ -47,6 +47,10 @@ class UserMemberIdUseCase constructor(
         return getCurrentLocationForGroup(groupId)?.id
     }
 
+    suspend fun hasCurrentLocationIdForGroup(groupId: String): Boolean {
+        return !getCurrentLocationForGroup(groupId)?.id.isNullOrBlank()
+    }
+
     suspend fun getCurrentUserMemberIdForGroup(groupId: String): String? {
         return memberLocal.getUserMemberId(
             groupId = groupId,

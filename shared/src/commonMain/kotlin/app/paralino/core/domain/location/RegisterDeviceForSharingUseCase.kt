@@ -28,7 +28,7 @@ class RegisterDeviceForSharingUseCase constructor(
 ) : BaseRepository() {
 
     suspend fun canRegister(groupId: String): Boolean {
-        return !userMemberId.getCurrentLocationIdForGroup(groupId).isNullOrBlank()
+        return userMemberId.hasCurrentLocationIdForGroup(groupId)
     }
 
     suspend fun registerDevice(
@@ -36,7 +36,7 @@ class RegisterDeviceForSharingUseCase constructor(
     ) {
         triggerRemoteOnly {
 
-            if (!userMemberId.getCurrentLocationIdForGroup(groupId).isNullOrBlank()) {
+            if (userMemberId.hasCurrentLocationIdForGroup(groupId)) {
                 // current device is already registered
                 return@triggerRemoteOnly
             }
