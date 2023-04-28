@@ -11,6 +11,9 @@ import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.raw.PersonalCodeFunctionData
 import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.raw.PersonalCodeResponse
+import app.paralino.core.models.user.PersonalCodeKeyData
+import app.paralino.core.models.user.PersonalCodeUserData
+import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCodeData
@@ -22,7 +25,6 @@ import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlin.time.Duration.Companion.days
 
 class PersonalCodesRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
@@ -39,52 +41,69 @@ class PersonalCodesRemoteSource constructor(
         val derivedCode = cryptoCore.derivePassword(personalCode)
         val myKey = userKeyRepo.latestKeyPair()
 
-        val secretKey = cryptoCore.getNewSymmetricKey()
-        val secretHash = cryptoCore.hashProvider.computeHash(secretKey, HashType.SHA256)
+        val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
+        val secretHash =
+            cryptoCore.hashProvider.computeHash(exchangeKeyPair.publicKey, HashType.SHA256)
 
-        val secretKeyForOthers = cryptoCore.signData(
+        val memberVerificationSecret = cryptoCore.signData(
             data = secretHash,
             myPrivateKey = myKey.privateKey
-        )
-        val secretKeyForMe = cryptoCore.encryptDataWithKey(
-            data = secretKey,
-            key = userKeyRepo.personalKey
         )
 
         val integrity = GroupIntegrity(
             timeUtc = nowUTC().toString(),
+            // this signature will always be invalid, but we are passing some for consistency
+            // this also ensures user will always rotate keys when added to new group
             signature = secretHash
         ).let {
             cryptoCore.encryptDataWithKeyPair(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                myPrivateKey = myKey.privateKey,
-                publicKey = myKey.publicKey
+                myPrivateKey = exchangeKeyPair.privateKey,
+                publicKey = exchangeKeyPair.publicKey
             )
+        }.let {
+            cryptoCore.signData(data = it, myPrivateKey = myKey.privateKey)
         }
 
-        val codeData = UserPersonalCodeData(
-            ownerId = user.id,
+        val codeUserData = PersonalCodeUserData(
+            ownerUserId = user.id,
             ownerName = (userMeData ?: user.data)?.userName ?: "",
             ownerImage = (userMeData ?: user.data)?.userImage,
-            ownerPublicKey = myKey.publicKey,
+            ownerIdentityKey = myKey.publicKey,
+        )
+
+        val codeKeyData = PersonalCodeKeyData(
+            ownerExchangeKey = exchangeKeyPair.publicKey,
             code = personalCode,
-            secretKey = secretKeyForOthers,
-            integrity = integrity
+            memberVerificationSecret = memberVerificationSecret
+        )
+
+        val userKeys = SimpleKeyPairData(
+            privateKey = exchangeKeyPair.privateKey,
+            publicKey = exchangeKeyPair.publicKey
         )
 
         val payload = PersonalCodeFunctionData(
             keyId = derivedCode.loginPassword,
-            encryptedCodeData = cryptoCore.encryptDataWithSimplePassword(
-                data = BaseRemoteModule.formatter.encodeToString(codeData),
+            encryptedCodeUserData = cryptoCore.encryptDataWithSimplePassword(
+                data = BaseRemoteModule.formatter.encodeToString(codeUserData),
+                password = derivedCode.backupPassword,
+                userId = user.id
+            ),
+            encryptedCodeKeyData = cryptoCore.encryptDataWithSimplePassword(
+                data = BaseRemoteModule.formatter.encodeToString(codeKeyData),
                 password = derivedCode.backupPassword,
                 userId = user.id
             ),
             encryptedCode = cryptoCore.encryptDataWithKey(
-                data = codeData.code,
+                data = personalCode,
                 key = userKeyRepo.personalKey
             ),
-            verification = secretKeyForMe,
-            validityUTC = null // nowUTC().plus(2.days).toString()
+            encryptedUserKeys = cryptoCore.encryptModel(
+                data = userKeys,
+                key = userKeyRepo.personalKey
+            ),
+            integrity = integrity
         )
 
         functionsApi.runAndWait(
@@ -103,6 +122,8 @@ class PersonalCodesRemoteSource constructor(
     }
 
     private fun createPersonalCodeString(): String {
+        // TODO key could be in hex format - use more characters
+        // create crypto function to return random key encoded with wider character set
         val key = cryptoCore.getNewSymmetricKey()
         val derivedKey = cryptoCore.derivePassword(key).backupPassword
 
@@ -150,9 +171,12 @@ class PersonalCodesRemoteSource constructor(
             ?.let {
                 val response =
                     BaseRemoteModule.formatter.decodeFromString<PersonalCodeResponse>(it.response)
-                personalCodeMapper.remote2CoreRead(code, response.codeData, response.userId).takeIf {
-                    it.ownerId == response.userId
-                }
+                personalCodeMapper.remote2CoreRead(
+                    code = code,
+                    encryptedUserData = response.encryptedCodeUserData,
+                    encryptedKeyData = response.encryptedCodeKeyData,
+                    userId = response.userId
+                ).takeIf { it.userData.ownerUserId == response.userId }
             }!!
     }
 

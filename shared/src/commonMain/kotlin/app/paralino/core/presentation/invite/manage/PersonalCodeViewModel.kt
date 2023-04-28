@@ -27,9 +27,9 @@ class PersonalCodeViewModel(
                     val codeData = result.firstOrNull()?.let {
                         PersonalCodeScreenCodeData(
                             id = it.id,
-                            code = it.data.data?.formattedCode ?: "---",
+                            code = it.formattedCode ?: "---",
                             canDelete = true,
-                            validityUTC = it.validityUTC
+                            validityUTC = null
                         )
                     }
 

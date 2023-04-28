@@ -38,14 +38,14 @@ class MemberWithLocationsMapperLocal(
                 model.settings_id,
                 model.settings_groupId,
                 model.settings_ownerUserId,
-                model.settings_secretKey,
+                model.settings_encryptedUserKeys,
                 model.settings_integrity
-            ) { id, groupId, userId, secretKey, integrity ->
+            ) { id, groupId, userId, userKeys, integrity ->
                 GroupSettingsRaw(
                     id = id,
                     groupId = groupId,
                     ownerUserId = userId,
-                    secretKey = secretKey,
+                    encryptedUserKeys = userKeys,
                     integrity = integrity
                 )
             },
@@ -93,7 +93,7 @@ class MemberWithLocationsMapperLocal(
             settings_id = model.settingsRaw?.id,
             settings_groupId = model.settingsRaw?.groupId,
             settings_ownerUserId = model.settingsRaw?.ownerUserId,
-            settings_secretKey = model.settingsRaw?.secretKey,
+            settings_encryptedUserKeys = model.settingsRaw?.encryptedUserKeys,
             settings_integrity = model.settingsRaw?.integrity,
             data_ = model.data
         )

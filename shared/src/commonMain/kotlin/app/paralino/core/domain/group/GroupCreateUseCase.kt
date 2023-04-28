@@ -141,8 +141,8 @@ class GroupCreateUseCase(
             )
 
             val memberVerification = MemberVerification(
-                groupOwnerSecret = ownerVerificationSecret,
-                memberSecret = secretKeyForVerification
+                groupOwnerVerificationSecret = ownerVerificationSecret,
+                memberVerificationSecret = secretKeyForVerification
             ).let {
                 BaseRemoteModule.formatter.encodeToString(it)
             }.let {

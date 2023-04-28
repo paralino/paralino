@@ -9,18 +9,17 @@ data class GroupSettingsRaw(
     val id: String,
     val ownerUserId: String,
     val groupId: String,
-    val secretKey: String,
+    val encryptedUserKeys: String,
     val integrity: String,
 ) {
 
     companion object {
-        @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): GroupSettingsRaw {
             return GroupSettingsRaw(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 groupId = map["groupId"] as String,
-                secretKey = map["secretKey"] as String,
+                encryptedUserKeys = map["encryptedUserKeys"] as String,
                 integrity = map["integrity"] as String,
             )
         }

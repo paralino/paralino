@@ -153,7 +153,7 @@ class MemberMapperCore constructor(
                     id = it.id,
                     groupId = it.groupId,
                     ownerUserId = it.ownerUserId,
-                    secretKey = it.secretKey,
+                    encryptedUserKeys = it.encryptedUserKeys,
                     integrity = it.integrity
                 )
             },

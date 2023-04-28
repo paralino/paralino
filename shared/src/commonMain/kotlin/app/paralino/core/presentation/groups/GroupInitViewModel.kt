@@ -42,12 +42,12 @@ class GroupInitViewModel(
             }
 
             val code = codes.firstOrNull()
-            val personalCode = code?.data?.data?.let {
+            val personalCode = code?.formattedCode?.let {
                 PersonalCodeScreenCodeData(
                     id = code.id,
-                    code = it.formattedCode,
+                    code = it,
                     canDelete = false,
-                    validityUTC = code.validityUTC
+                    validityUTC = null
                 )
             }
 

@@ -10,8 +10,9 @@ import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberVerification
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.provider.IConfig
+import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.decodeFromString
 
 class GroupValidityVerification(
@@ -45,9 +46,9 @@ class GroupValidityVerification(
                 return VerificationResult.WRONG_VERIFICATION_ENTRY_FORM
             }
 
-            val secretKey = try {
+            val memberVerificationSecret = try {
                 cryptoCore.verifySignature(
-                    data = verification.memberSecret,
+                    data = verification.memberVerificationSecret,
                     publicKey = cryptoKEKRepo.getMemberPublicKey(
                         groupId = groupId,
                         memberUserId = memberUserId
@@ -61,39 +62,53 @@ class GroupValidityVerification(
                 if (memberGroupSettings == null)
                     return VerificationResult.MISSING_MEMBER_SETTINGS
 
-                if (memberGroupSettings.integrity.isBlank()) {
-                    return VerificationResult.MISSING_MEMBER_INTEGRITY
-                } else {
-                    val myKey = userKeyRepo.latestKeyPair()
-                    try {
-                        cryptoCore.decryptDataWithKeyPair(
-                            data = memberGroupSettings.integrity,
-                            publicKey = myKey.publicKey,
-                            myPrivateKey = myKey.privateKey
-                        ).let {
-                            BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it)
-                        }
-                    } catch (e: Exception) {
-                        return VerificationResult.WRONG_MEMBER_INTEGRITY
-                    }
-                }
-
-                if (memberGroupSettings.secretKey.isBlank()) {
+                if (memberGroupSettings.encryptedUserKeys.isBlank()) {
                     return VerificationResult.MISSING_MEMBER_SECRET
                 } else {
                     try {
-                        val userOwnSecret = cryptoCore.decryptDataWithKey(
-                            data = memberGroupSettings.secretKey,
+                        val myKey = userKeyRepo.latestKeyPair()
+
+                        val userKeys = cryptoCore.decryptDataWithKey(
+                            data = memberGroupSettings.encryptedUserKeys,
                             key = userKeyRepo.personalKey
-                        )
+                        ).let { BaseRemoteModule.formatter.decodeFromString<SimpleKeyPairData>(it) }
 
                         val hash = cryptoCore.hashProvider.computeHash(
-                            data = userOwnSecret,
+                            data = userKeys.publicKey,
                             type = HashType.SHA256
                         )
 
-                        if (hash != secretKey)
+                        val hashFromCodeData = cryptoCore.verifySignature(
+                            data = memberVerificationSecret,
+                            publicKey = myKey.privateKey
+                        )
+
+                        if (hash != hashFromCodeData)
                             return VerificationResult.WRONG_MEMBER_SECRET
+
+                        if (memberGroupSettings.integrity.isBlank()) {
+                            return VerificationResult.MISSING_MEMBER_INTEGRITY
+                        } else {
+                            cryptoCore.verifySignature(
+                                data = memberGroupSettings.integrity,
+                                publicKey = myKey.privateKey
+                            )?.let {
+                                try {
+                                    cryptoCore.decryptDataWithKeyPair(
+                                        data = it,
+                                        myPrivateKey = userKeys.privateKey,
+                                        publicKey = userKeys.publicKey
+                                    ).let {
+                                        BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(
+                                            it
+                                        )
+                                    }
+                                } catch (e: Exception) {
+                                    return VerificationResult.WRONG_MEMBER_INTEGRITY
+                                }
+                            } ?: return VerificationResult.WRONG_MEMBER_INTEGRITY_SIGNATURE
+                        }
+
                     } catch (e: Exception) {
                         return VerificationResult.INVALID_MEMBER_SECRET
                     }
@@ -152,7 +167,7 @@ class GroupValidityVerification(
         forGroup: Boolean,
     ): IntegrityResult {
 
-        val tag = "integrity_check${if(forGroup) "_group" else "_member"}"
+        val tag = "integrity_check${if (forGroup) "_group" else "_member"}"
         if (myIntegrity.isNullOrBlank()) {
             logg.tag(tag).w("CORRUPTED for $groupId - Missing own integrity")
             return IntegrityResult.CORRUPTED
@@ -220,6 +235,7 @@ enum class VerificationResult {
     MISSING_MEMBER_SETTINGS,
     MISSING_MEMBER_INTEGRITY,
     WRONG_MEMBER_INTEGRITY,
+    WRONG_MEMBER_INTEGRITY_SIGNATURE,
     MISSING_MEMBER_SECRET,
     WRONG_MEMBER_SECRET,
     INVALID_MEMBER_SECRET,

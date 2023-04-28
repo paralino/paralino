@@ -25,11 +25,11 @@ sealed class MemberInviteScreenState() {
         override val actionLoading: Boolean,
     ) : MemberInviteScreenState() {
 
-        override val code: String get() = codeReadData.formattedCode
-        val userId: String get() = codeReadData.ownerId
-        val userName: String get() = codeReadData.ownerName
+        override val code: String get() = codeReadData.keyData.formattedCode
+        val userId: String get() = codeReadData.userData.ownerUserId
+        val userName: String get() = codeReadData.userData.ownerName
         val userImage: ImageModel
-            get() = codeReadData.ownerImage ?: ImageModel.emoji(Emojis.robot)
+            get() = codeReadData.userData.ownerImage ?: ImageModel.emoji(Emojis.robot)
     }
 }
 
