@@ -7,7 +7,7 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.encodeToString
 
 class CryptoCore(
-    val serviceProvider: ICryptoServiceProvider,
+    private val serviceProvider: ICryptoServiceProvider,
 ) {
     val hashProvider: ICryptoHashProvider = serviceProvider
 
@@ -15,8 +15,8 @@ class CryptoCore(
         return serviceProvider.createNewSymmetricKey()
     }
 
-    fun getNewAsymmetricKey(): KeyPair {
-        return serviceProvider.createNewAsymmetricKey()
+    fun getNewCryptoKeyPair(): KeyPair {
+        return serviceProvider.createNewCryptoKeyPair()
     }
 
     suspend fun generateNewKeysForUser(
@@ -31,13 +31,13 @@ class CryptoCore(
             context = userId
         )
 
-        val newKeyPair = getNewAsymmetricKey()
-        val encryptedPrivateKey = encryptDataWithKey(
-            data = newKeyPair.privateKey,
+        val newSignatureKeyPair = serviceProvider.createNewSignatureKeyPair()
+        val encryptedPrivateIdentityKey = encryptDataWithKey(
+            data = newSignatureKeyPair.privateKey,
             key = newPersonalKey
         )
-        val encryptedPublicKey = encryptDataWithKey(
-            data = newKeyPair.publicKey,
+        val encryptedPublicIdentityKey = encryptDataWithKey(
+            data = newSignatureKeyPair.publicKey,
             key = newPersonalKey
         )
 
@@ -45,19 +45,19 @@ class CryptoCore(
             "",
             ownerUserId = userId,
             encryptedSymmetricKey = encryptedPersonalKey,
-            encryptedPrivateKey = encryptedPrivateKey,
-            encryptedPublicKey = encryptedPublicKey,
+            encryptedPrivateKey = encryptedPrivateIdentityKey,
+            encryptedPublicKey = encryptedPublicIdentityKey,
             version = keyVersion
         )
 
         val keys = GeneratedUserKeys(newPersonalKey, encryptedKeyData)
 
-        verifyKeys(keys, newKeyPair, backupPassword, userId)
+        verifyKeys(keys, newSignatureKeyPair, backupPassword, userId)
 
         return keys
     }
 
-    private suspend fun verifyKeys(keys: GeneratedUserKeys, keyPair: KeyPair, password: String, userId: String) {
+    private suspend fun verifyKeys(keys: GeneratedUserKeys, identityKeyPair: KeyPair, password: String, userId: String) {
         check(
             serviceProvider.decryptDataWithPassword(
                 data = keys.encryptedKeyData.encryptedSymmetricKey,
@@ -69,13 +69,13 @@ class CryptoCore(
             decryptDataWithKey(
                 data = keys.encryptedKeyData.encryptedPrivateKey,
                 key = keys.userPersonalKey
-            ).contentEquals(keyPair.privateKey)
+            ).contentEquals(identityKeyPair.privateKey)
         )
         check(
             decryptDataWithKey(
                 data = keys.encryptedKeyData.encryptedPublicKey,
                 key = keys.userPersonalKey
-            ).contentEquals(keyPair.publicKey)
+            ).contentEquals(identityKeyPair.publicKey)
         )
     }
 

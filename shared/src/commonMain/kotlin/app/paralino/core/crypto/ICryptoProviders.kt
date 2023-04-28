@@ -2,7 +2,8 @@ package app.paralino.core.crypto
 
 interface ICryptoServiceProvider: ICryptoHashProvider {
     fun createNewSymmetricKey(): String
-    fun createNewAsymmetricKey(): KeyPair
+    fun createNewCryptoKeyPair(): KeyPair
+    fun createNewSignatureKeyPair(): KeyPair
 
     fun encryptDataWithSymmetricKey(data: String, key: String): String
     fun decryptDataWithSymmetricKey(data: String, key: String): String

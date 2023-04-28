@@ -21,7 +21,15 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         return lazySodium.cryptoSecretBoxKeygen().asHexString
     }
 
-    override fun createNewAsymmetricKey(): KeyPair {
+    override fun createNewCryptoKeyPair(): KeyPair {
+        val keyPair = lazySodium.cryptoBoxKeypair()
+        return KeyPair(
+            privateKey = keyPair.secretKey.asHexString,
+            publicKey = keyPair.publicKey.asHexString
+        )
+    }
+
+    override fun createNewSignatureKeyPair(): KeyPair {
         val keyPair = lazySodium.cryptoSignKeypair()
         return KeyPair(
             privateKey = keyPair.secretKey.asHexString,
