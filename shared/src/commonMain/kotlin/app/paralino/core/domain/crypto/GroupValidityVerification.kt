@@ -80,7 +80,7 @@ class GroupValidityVerification(
 
                         val hashFromCodeData = cryptoCore.verifySignature(
                             data = memberVerificationSecret,
-                            publicKey = myKey.privateKey
+                            publicKey = myKey.publicKey
                         )
 
                         if (hash != hashFromCodeData)
@@ -91,7 +91,7 @@ class GroupValidityVerification(
                         } else {
                             cryptoCore.verifySignature(
                                 data = memberGroupSettings.integrity,
-                                publicKey = myKey.privateKey
+                                publicKey = myKey.publicKey
                             )?.let {
                                 try {
                                     cryptoCore.decryptDataWithKeyPair(

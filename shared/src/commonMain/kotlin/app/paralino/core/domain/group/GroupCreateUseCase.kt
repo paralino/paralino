@@ -16,6 +16,7 @@ import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.location.MemberVerification
 import app.paralino.core.models.raw.CreateGroupPayload
 import app.paralino.core.models.raw.GroupWithMembersRaw
+import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
@@ -101,17 +102,13 @@ class GroupCreateUseCase(
             val myData = MemberModelData(userData.userName, userData.userImage)
             val myKey = userKeyRepo.latestKeyPair()
 
-            val secretKey = cryptoCore.getNewSymmetricKey()
-            val secretHash = cryptoCore.hashProvider
-                .computeHash(secretKey, HashType.SHA256)
+            val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
+            val secretHash =
+                cryptoCore.hashProvider.computeHash(exchangeKeyPair.publicKey, HashType.SHA256)
 
-            val secretKeyForVerification = cryptoCore.signData(
+            val memberVerificationSecret = cryptoCore.signData(
                 data = secretHash,
                 myPrivateKey = myKey.privateKey
-            )
-            val secretKeyForMe = cryptoCore.encryptDataWithKey(
-                data = secretKey,
-                key = userKeyRepo.personalKey
             )
 
             val groupKey = cryptoCore.getNewSymmetricKey()
@@ -119,19 +116,29 @@ class GroupCreateUseCase(
 
             val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                 data = groupKey,
-                myPrivateKey = myKey.privateKey,
-                publicKey = myKey.publicKey
+                myPrivateKey = exchangeKeyPair.privateKey,
+                publicKey = exchangeKeyPair.publicKey
             )
 
             val encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                 data = memberSenderKey,
-                myPrivateKey = myKey.privateKey,
-                publicKey = myKey.publicKey
+                myPrivateKey = exchangeKeyPair.privateKey,
+                publicKey = exchangeKeyPair.publicKey
             )
 
             val encryptedPublicKey = cryptoCore.encryptDataWithKey(
+                data = exchangeKeyPair.publicKey,
+                key = exchangeKeyPair.publicKey,
+            )
+
+            val encryptedIdentityKey = cryptoCore.encryptDataWithKey(
                 data = myKey.publicKey,
-                key = myKey.publicKey
+                key = exchangeKeyPair.privateKey
+            )
+
+            val userKeys = SimpleKeyPairData(
+                privateKey = exchangeKeyPair.privateKey,
+                publicKey = exchangeKeyPair.publicKey
             )
 
             val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
@@ -142,7 +149,7 @@ class GroupCreateUseCase(
 
             val memberVerification = MemberVerification(
                 groupOwnerVerificationSecret = ownerVerificationSecret,
-                memberVerificationSecret = secretKeyForVerification
+                memberVerificationSecret = memberVerificationSecret
             ).let {
                 BaseRemoteModule.formatter.encodeToString(it)
             }.let {
@@ -160,22 +167,30 @@ class GroupCreateUseCase(
                     groupKey = groupKey,
                     encryptedMemberPublicKeys = listOf(encryptedPublicKey)
                 )
-            )
+            ).let {
+                cryptoCore.encryptDataWithKeyPair(
+                    data = BaseRemoteModule.formatter.encodeToString(it),
+                    myPrivateKey = exchangeKeyPair.privateKey,
+                    publicKey = exchangeKeyPair.publicKey
+                )
+            }.let {
+                cryptoCore.signData(data = it, myPrivateKey = myKey.privateKey)
+            }
 
             val payload = CreateGroupPayload(
                 encryptedGroupKey = encryptedGroupKey,
-                encryptedMemberKey = encryptedSenderKey,
+                encryptedSenderKey = encryptedSenderKey,
                 encryptedPublicKey = encryptedPublicKey,
+                ownerIdentityKey = encryptedIdentityKey,
                 groupData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(groupData),
                     key = groupKey
                 ),
-                groupMemberIntegrity = cryptoCore.encryptDataWithKeyPair(
-                    data = BaseRemoteModule.formatter.encodeToString(groupIntegrity),
-                    myPrivateKey = myKey.privateKey,
-                    publicKey = myKey.publicKey
+                groupMemberIntegrity = groupIntegrity,
+                encryptedUserKeys = cryptoCore.encryptModel(
+                    data = userKeys,
+                    key = userKeyRepo.personalKey
                 ),
-                secretKey = secretKeyForMe,
                 memberVerification = memberVerification,
                 memberData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(myData),

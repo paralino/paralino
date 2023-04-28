@@ -12,10 +12,11 @@ data class GenericFunctionPayload<T>(
 @Serializable
 data class CreateGroupPayload constructor(
     val encryptedGroupKey: String,
-    val encryptedMemberKey: String,
+    val encryptedSenderKey: String,
     val encryptedPublicKey: String,
+    val ownerIdentityKey: String,
     val groupMemberIntegrity: String,
-    val secretKey: String,
+    val encryptedUserKeys: String,
     val memberVerification: String,
     val groupData: String,
     val memberData: String
