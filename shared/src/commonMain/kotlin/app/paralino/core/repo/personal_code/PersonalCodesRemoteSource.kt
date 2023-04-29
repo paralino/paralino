@@ -73,7 +73,10 @@ class PersonalCodesRemoteSource constructor(
         )
 
         val codeKeyData = PersonalCodeKeyData(
-            ownerKxPublicKey = exchangeKeyPair.publicKey,
+            signedOwnerKxPublicKey = cryptoCore.signData(
+                data = exchangeKeyPair.publicKey,
+                myPrivateKey = myKey.privateKey
+            ),
             code = personalCode,
             memberVerificationSecret = memberVerificationSecret
         )
@@ -176,7 +179,7 @@ class PersonalCodesRemoteSource constructor(
                     encryptedUserData = response.encryptedCodeUserData,
                     encryptedKeyData = response.encryptedCodeKeyData,
                     userId = response.userId
-                ).takeIf { it.userData.ownerUserId == response.userId }
+                )
             }!!
     }
 

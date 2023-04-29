@@ -127,7 +127,10 @@ class GroupCreateUseCase(
             )
 
             val encryptedPublicKey = cryptoCore.encryptDataWithKey(
-                data = exchangeKeyPair.publicKey,
+                data = cryptoCore.signData(
+                    data = exchangeKeyPair.publicKey,
+                    myPrivateKey = myKey.privateKey
+                ),
                 key = exchangeKeyPair.publicKey,
             )
 

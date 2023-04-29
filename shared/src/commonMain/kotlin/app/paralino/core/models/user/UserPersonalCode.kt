@@ -48,7 +48,7 @@ data class PersonalCodeUserData constructor(
 
 @Serializable
 data class PersonalCodeKeyData constructor(
-    val ownerKxPublicKey: String,
+    val signedOwnerKxPublicKey: String,
     val code: String,
     val memberVerificationSecret: String
 ) {

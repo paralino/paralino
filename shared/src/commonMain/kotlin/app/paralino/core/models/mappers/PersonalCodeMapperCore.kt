@@ -43,15 +43,19 @@ class PersonalCodeMapperCore(
             password = derivedCode.backupPassword,
             userId = userId
         ).let {
-            val content = cryptoCore.verifySignature(
-                data = it,
-                publicKey = userData.ownerIdentityKey
-            ) ?: throw DecryptionException("User personal code can not be verified")
-            BaseRemoteModule.formatter.decodeFromString<PersonalCodeKeyData>(content)
+            BaseRemoteModule.formatter.decodeFromString<PersonalCodeKeyData>(it)
         }
+
+        if(userId != userData.ownerUserId) throw DecryptionException("User personal code can not be verified")
+        if(code != keyData.code) throw DecryptionException("User personal code can not be verified")
 
         cryptoCore.verifySignature(
             data = keyData.memberVerificationSecret,
+            publicKey = userData.ownerIdentityKey
+        ) ?: throw DecryptionException("User personal code can not be verified")
+
+        cryptoCore.verifySignature(
+            data = keyData.signedOwnerKxPublicKey,
             publicKey = userData.ownerIdentityKey
         ) ?: throw DecryptionException("User personal code can not be verified")
 

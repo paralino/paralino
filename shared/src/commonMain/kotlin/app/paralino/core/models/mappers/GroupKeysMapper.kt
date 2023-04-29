@@ -34,7 +34,8 @@ class GroupKeysMapper {
             ownerUserId = model.ownerUserId,
             version = model.version,
             encryptedSenderKey = model.encryptedSenderKey,
-            encryptedPublicKey = model.encryptedPublicKey
+            encryptedPublicKey = model.encryptedPublicKey,
+            ownerIdentityKey = model.ownerIdentityKey
         )
     }
 
@@ -46,7 +47,8 @@ class GroupKeysMapper {
             ownerUserId = model.ownerUserId,
             version = model.version,
             encryptedSenderKey = model.encryptedSenderKey,
-            encryptedPublicKey = model.encryptedPublicKey
+            encryptedPublicKey = model.encryptedPublicKey,
+            ownerIdentityKey = model.ownerIdentityKey
         )
     }
 

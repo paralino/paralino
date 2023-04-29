@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS groupMembersKeysEntity (
 `ownerUserId` TEXT NOT NULL,
 `version` INTEGER,
 `encryptedSenderKey` TEXT,
-`encryptedPublicKey` TEXT NOT NULL
+`encryptedPublicKey` TEXT NOT NULL,
+`ownerIdentityKey` TEXT NOT NULL
 );
 
 createGroupMemberKey:

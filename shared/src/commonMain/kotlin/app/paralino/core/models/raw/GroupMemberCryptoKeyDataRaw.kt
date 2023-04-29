@@ -23,7 +23,8 @@ data class GroupMemberCryptoKeyDataRaw constructor(
     val version: Long?,
     // owner sender key K encrypted with member public key, signed with owner private key
     val encryptedSenderKey: String?,
-    val encryptedPublicKey: String
+    val encryptedPublicKey: String,
+    val ownerIdentityKey: String,
 ) {
     companion object {
         fun from(map: Map<String, Any>): GroupMemberCryptoKeyDataRaw {
@@ -35,6 +36,7 @@ data class GroupMemberCryptoKeyDataRaw constructor(
                 version = (map["version"] as? Number)?.toLong(),
                 encryptedSenderKey = map["encryptedSenderKey"] as? String?,
                 encryptedPublicKey = map["encryptedPublicKey"] as String,
+                ownerIdentityKey = map["ownerIdentityKey"] as String,
             )
         }
     }
