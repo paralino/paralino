@@ -73,7 +73,7 @@ class PersonalCodesRemoteSource constructor(
         )
 
         val codeKeyData = PersonalCodeKeyData(
-            ownerExchangeKey = exchangeKeyPair.publicKey,
+            ownerKxPublicKey = exchangeKeyPair.publicKey,
             code = personalCode,
             memberVerificationSecret = memberVerificationSecret
         )
