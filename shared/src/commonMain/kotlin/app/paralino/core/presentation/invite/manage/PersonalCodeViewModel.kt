@@ -65,8 +65,8 @@ class PersonalCodeViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun deletePersonalCode(codeId: String) {
-        repo.revokePersonalCode(codeId)
+    fun deletePersonalCode() {
+        repo.revokePersonalCode()
             .onEach { result ->
                 when (result) {
                     Payload.Loading -> {

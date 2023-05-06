@@ -11,15 +11,13 @@ data class UserPersonalCode constructor(
     @SerialName("\$id")
     val id: String = "",
     val code: String,
-    val encryptedUserKeys: String?,
-    val integrity: String?,
 
     @Contextual
-    val codeData: CryptoResource<UserPersonalCodeData>,
+    val codeData: CryptoResource<PersonalCodeUserData>,
 ) {
 
     fun isStillValid(): Boolean {
-        return !encryptedUserKeys.isNullOrBlank() && !integrity.isNullOrBlank() && codeData is CryptoResource.Ready
+        return codeData is CryptoResource.Ready
     }
 
     val formattedCode: String? get() = when {
@@ -49,8 +47,7 @@ data class PersonalCodeUserData constructor(
 @Serializable
 data class PersonalCodeKeyData constructor(
     val signedOwnerKxPublicKey: String,
-    val code: String,
-    val memberVerificationSecret: String
+    val code: String
 ) {
     val formattedCode get() = when {
         code.length <= 5 -> code

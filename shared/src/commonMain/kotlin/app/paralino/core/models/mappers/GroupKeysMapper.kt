@@ -2,8 +2,10 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.data.db.GroupKeysEntity
 import app.paralino.core.data.db.GroupMembersKeysEntity
+import app.paralino.core.data.db.PersonalPreKeyEntity
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
+import app.paralino.core.models.raw.PersonalPreKeyRaw
 
 class GroupKeysMapper {
     fun local2Remote(model: GroupKeysEntity): GroupCryptoKeyDataRaw {
@@ -49,6 +51,28 @@ class GroupKeysMapper {
             encryptedSenderKey = model.encryptedSenderKey,
             encryptedPublicKey = model.encryptedPublicKey,
             ownerIdentityKey = model.ownerIdentityKey
+        )
+    }
+
+    fun local2Remote(model: PersonalPreKeyEntity): PersonalPreKeyRaw {
+        return PersonalPreKeyRaw(
+            id = model.id,
+            ownerUserId = model.ownerUserId,
+            encryptedCodeKeyData = model.encryptedCodeKeyData,
+            encryptedUserKeys = model.encryptedUserKeys,
+            integrity = model.integrity,
+            groupId = model.groupId
+        )
+    }
+
+    fun remote2Local(model: PersonalPreKeyRaw): PersonalPreKeyEntity {
+        return PersonalPreKeyEntity(
+            id = model.id,
+            ownerUserId = model.ownerUserId,
+            encryptedCodeKeyData = model.encryptedCodeKeyData,
+            encryptedUserKeys = model.encryptedUserKeys,
+            integrity = model.integrity,
+            groupId = model.groupId
         )
     }
 

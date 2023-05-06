@@ -1,5 +1,7 @@
 package app.paralino.core.crypto
 
+import app.paralino.core.models.user.SimpleKeyPairData
+
 
 class KeyPair(
     val privateKey: String,
@@ -11,27 +13,47 @@ data class DerivedPasswords(
     val backupPassword: String
 )
 
-data class DecryptedGroupKeyData(
-    val version: Long,
-    val data: String
-)
-
-class Data(val content: ByteArray) {
-//    fun asString(hashProvider: ICryptoHashProvider): String {
-//        return hashProvider.byteArrayToString(content)
-//    }
-//
-//    fun asBase64String(hashProvider: ICryptoHashProvider): String {
-//        return hashProvider.toBase64(content)
-//    }
+sealed class GroupMemberSenderKey {
+    sealed class Error: GroupMemberSenderKey() {
+        object MissingKeys: Error()
+        object MissingSenderKey: Error()
+        object Invalid: Error()
+        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error): Error()
+        data class InvalidOwnerPublicKey(val reason: GroupMemberMainPublicKey.Error): Error()
+    }
+    data class Valid(val key: String, val version: Long?): GroupMemberSenderKey()
 }
 
-fun ByteArray.toData() = Data(this)
+sealed class GroupMasterKey {
+    sealed class Error: GroupMasterKey() {
+        object Missing: Error()
+        object Invalid: Error()
+        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error): Error()
+        data class InvalidOwnerPublicKey(val reason: GroupMemberMainPublicKey.Error): Error()
+    }
+    data class Valid(val key: String, val version: Long): GroupMasterKey()
+}
 
-//fun String.base64ToData(hashProvider: ICryptoHashProvider): Data {
-//    return hashProvider.fromBase64(this)
-//}
-//
-//fun String.toData(hashProvider: ICryptoHashProvider): Data {
-//    return hashProvider.toByteArray(this)
-//}
+sealed class GroupMemberMainPublicKey {
+    open val key: String? = null
+
+    sealed class Error: GroupMemberMainPublicKey() {
+        object WrongIdentity: Error()
+        object InvalidPublicKey: Error()
+        object WrongPublicKey: Error()
+        object Missing: Error()
+        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error): Error()
+    }
+    data class Valid(override val key: String): GroupMemberMainPublicKey()
+}
+
+
+sealed class UserGroupPersonalKeyPair {
+    open val key: SimpleKeyPairData? = null
+
+    sealed class Error: UserGroupPersonalKeyPair() {
+        object Missing: Error()
+        object Invalid: Error()
+    }
+    data class Valid(override val key: SimpleKeyPairData): UserGroupPersonalKeyPair()
+}

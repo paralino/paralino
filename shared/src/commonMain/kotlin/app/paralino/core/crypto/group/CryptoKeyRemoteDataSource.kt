@@ -4,6 +4,7 @@ import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
+import app.paralino.core.models.raw.PersonalPreKeyRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.utils.extensions.blocking
 
@@ -50,12 +51,35 @@ class CryptoKeyRemoteDataSource constructor(
         }
     }
 
+    suspend fun getAllGroupPreKeys(): List<PersonalPreKeyRaw> {
+        return blocking {
+            api.listAllDocuments(
+                databaseType = BackendDatabaseType.KEYS,
+                collectionId = remoteConfig.resourceIds.collectionPersonalIdKeysID
+            ).map { it.parseGroupPreKey() }
+        }
+    }
+
+    suspend fun getAllGroupPreKeysForGroup(groupId: String): List<PersonalPreKeyRaw> {
+        return blocking {
+            api.listAllDocuments(
+                databaseType = BackendDatabaseType.KEYS,
+                collectionId = remoteConfig.resourceIds.collectionPersonalIdKeysID,
+                keyValues = listOf("groupId" to groupId)
+            ).map { it.parseGroupPreKey() }
+        }
+    }
+
     private fun Map<String, Any>.parseGroupKey(): GroupCryptoKeyDataRaw {
         return GroupCryptoKeyDataRaw.from(this)
     }
 
     private fun Map<String, Any>.parseGroupMemberKey(): GroupMemberCryptoKeyDataRaw {
         return GroupMemberCryptoKeyDataRaw.from(this)
+    }
+
+    private fun Map<String, Any>.parseGroupPreKey(): PersonalPreKeyRaw {
+        return PersonalPreKeyRaw.from(this)
     }
 
 }

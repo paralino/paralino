@@ -129,12 +129,11 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             Key.fromHexString(publicKey),
             Key.fromHexString(myPrivateKey)
         )
-        val cryptoKeyPair = lazySodium.convertKeyPairEd25519ToCurve25519(keyPair)
 
         return lazySodium.cryptoBoxEasy(
             data,
             nonce,
-            cryptoKeyPair
+            keyPair
         ).let { lazySodium.encodeToString(nonce).plus(it) }
     }
 
@@ -152,12 +151,11 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             Key.fromHexString(publicKey),
             Key.fromHexString(myPrivateKey)
         )
-        val cryptoKeyPair = lazySodium.convertKeyPairEd25519ToCurve25519(keyPair)
 
         return lazySodium.cryptoBoxOpenEasy(
             lazySodium.encodeToString(content),
             nonce,
-            cryptoKeyPair
+            keyPair
         )
     }
 

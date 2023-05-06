@@ -1,20 +1,18 @@
 package app.paralino.core.domain.crypto
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.crypto.toData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.domain.LimitedExecutionState
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.raw.GroupKeysPayload
-import app.paralino.core.models.raw.GroupMemberKeyPayload
 import app.paralino.core.models.raw.GroupPlaceDataUpdatePayload
 import app.paralino.core.models.raw.UpdateGroupKeysPayload
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
@@ -158,7 +156,7 @@ class GroupCryptoKeyRotation constructor(
                     return@mapNotNull null
 
                 val memberPublicKey = cryptoKEKRepository.getMemberPublicKey(group.id, groupMember.member.userId)
-                if(memberPublicKey != null) {
+                if(memberPublicKey is GroupMemberMainPublicKey.Valid) {
                     GroupKeysPayload(
                         userId = groupMember.member.userId,
                         encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
@@ -166,7 +164,7 @@ class GroupCryptoKeyRotation constructor(
                             // sign with owner private key
                             myPrivateKey = myKey.privateKey,
                             // encrypt with user public key
-                            publicKey = memberPublicKey
+                            publicKey = memberPublicKey.key
                         )
                     )
                 } else {

@@ -1,10 +1,8 @@
 package app.paralino.android.crpyto
 
 import com.cossacklabs.themis.*
-import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KeyPair
-import app.paralino.core.crypto.toData
 
 //class CryptoFrameworkProvider : ICryptoServiceProvider {
 //

@@ -1,16 +1,19 @@
 package app.paralino.core.repo.personal_code
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.DerivedPasswords
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
-import app.paralino.core.models.raw.PersonalCodeFunctionData
+import app.paralino.core.models.raw.GenericFunctionPayload
+import app.paralino.core.models.raw.PersonalCodeCreateData
+import app.paralino.core.models.raw.PersonalCodePreKeyData
 import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.raw.PersonalCodeResponse
+import app.paralino.core.models.raw.PersonalCodeUpdateData
 import app.paralino.core.models.user.PersonalCodeKeyData
 import app.paralino.core.models.user.PersonalCodeUserData
 import app.paralino.core.models.user.SimpleKeyPairData
@@ -35,78 +38,42 @@ class PersonalCodesRemoteSource constructor(
     private val userKeyRepo: CryptoUserKeyRepository
 ) {
 
-    suspend fun tryCreatingCode(user: UserMe, userMeData: UserMeData?) {
-
-        val personalCode = createPersonalCodeString()
+    suspend fun updateCodeUserData(personalCode: String, userId: String, userMeData: UserMeData) {
         val derivedCode = cryptoCore.derivePassword(personalCode)
         val myKey = userKeyRepo.latestKeyPair()
 
-        val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
-        val secretHash =
-            cryptoCore.hashProvider.computeHash(exchangeKeyPair.publicKey, HashType.SHA256)
-
-        val memberVerificationSecret = cryptoCore.signData(
-            data = secretHash,
-            myPrivateKey = myKey.privateKey
+        val codeUserData = PersonalCodeUserData(
+            ownerUserId = userId,
+            ownerName = userMeData.userName,
+            ownerImage = userMeData.userImage,
+            ownerIdentityKey = myKey.publicKey,
         )
 
         val integrity = GroupIntegrity(
             timeUtc = nowUTC().toString(),
-            // this signature will always be invalid, but we are passing some for consistency
+            // this signature will always be invalid, but we are passing it for consistency
             // this also ensures user will always rotate keys when added to new group
-            signature = secretHash
+            signature = ""
         ).let {
-            cryptoCore.encryptDataWithKeyPair(
+            cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                myPrivateKey = exchangeKeyPair.privateKey,
-                publicKey = exchangeKeyPair.publicKey
+                key = userKeyRepo.personalKey,
             )
-        }.let {
-            cryptoCore.signData(data = it, myPrivateKey = myKey.privateKey)
         }
 
-        val codeUserData = PersonalCodeUserData(
-            ownerUserId = user.id,
-            ownerName = (userMeData ?: user.data)?.userName ?: "",
-            ownerImage = (userMeData ?: user.data)?.userImage,
-            ownerIdentityKey = myKey.publicKey,
-        )
-
-        val codeKeyData = PersonalCodeKeyData(
-            signedOwnerKxPublicKey = cryptoCore.signData(
-                data = exchangeKeyPair.publicKey,
-                myPrivateKey = myKey.privateKey
-            ),
-            code = personalCode,
-            memberVerificationSecret = memberVerificationSecret
-        )
-
-        val userKeys = SimpleKeyPairData(
-            privateKey = exchangeKeyPair.privateKey,
-            publicKey = exchangeKeyPair.publicKey
-        )
-
-        val payload = PersonalCodeFunctionData(
+        val data = PersonalCodeUpdateData(
             keyId = derivedCode.loginPassword,
             encryptedCodeUserData = cryptoCore.encryptDataWithSimplePassword(
                 data = BaseRemoteModule.formatter.encodeToString(codeUserData),
                 password = derivedCode.backupPassword,
-                userId = user.id
+                userId = userId
             ),
-            encryptedCodeKeyData = cryptoCore.encryptDataWithSimplePassword(
-                data = BaseRemoteModule.formatter.encodeToString(codeKeyData),
-                password = derivedCode.backupPassword,
-                userId = user.id
-            ),
-            encryptedCode = cryptoCore.encryptDataWithKey(
-                data = personalCode,
-                key = userKeyRepo.personalKey
-            ),
-            encryptedUserKeys = cryptoCore.encryptModel(
-                data = userKeys,
-                key = userKeyRepo.personalKey
-            ),
-            integrity = integrity
+            keys = createPreKeys(userId, personalCode, integrity)
+        )
+
+        val payload = GenericFunctionPayload(
+            route = "update",
+            payload = data
         )
 
         functionsApi.runAndWait(
@@ -117,11 +84,113 @@ class PersonalCodesRemoteSource constructor(
                 if (!it.isSuccess) {
                     throw BaseRemoteException.fromCode(
                         null,
-                        "Unable to delete group",
+                        "Unable to update personal code",
                         Exception(it.stderr)
                     )
                 }
             }
+    }
+
+    suspend fun tryCreatingCode(user: UserMe) {
+
+        val personalCode = createPersonalCodeString()
+        val derivedCode = cryptoCore.derivePassword(personalCode)
+        val myKey = userKeyRepo.latestKeyPair()
+
+        val codeUserData = PersonalCodeUserData(
+            ownerUserId = user.id,
+            ownerName = user.data?.userName ?: "",
+            ownerImage = user.data?.userImage,
+            ownerIdentityKey = myKey.publicKey,
+        )
+
+        val integrity = GroupIntegrity(
+            timeUtc = nowUTC().toString(),
+            // this signature will always be invalid, but we are passing it for consistency
+            // this also ensures user will always rotate keys when added to new group
+            signature = ""
+        ).let {
+            cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(it),
+                key = userKeyRepo.personalKey,
+            )
+        }
+
+        val keys = createPreKeys(user.id, personalCode, integrity)
+
+        val data = PersonalCodeCreateData(
+            keyId = derivedCode.loginPassword,
+            encryptedCodeUserData = cryptoCore.encryptDataWithSimplePassword(
+                data = BaseRemoteModule.formatter.encodeToString(codeUserData),
+                password = derivedCode.backupPassword,
+                userId = user.id
+            ),
+            encryptedCode = cryptoCore.encryptDataWithKey(
+                data = personalCode,
+                key = userKeyRepo.personalKey
+            ),
+            keys = keys
+        )
+
+        val payload = GenericFunctionPayload(
+            route = "create",
+            payload = data
+        )
+
+        functionsApi.runAndWait(
+            functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
+            data = BaseRemoteModule.formatter.encodeToString(payload)
+        )
+            .let {
+                if (!it.isSuccess) {
+                    throw BaseRemoteException.fromCode(
+                        null,
+                        "Unable to create personal code",
+                        Exception(it.stderr)
+                    )
+                }
+            }
+    }
+
+    private suspend fun createPreKeys(
+        userId: String,
+        personalCode: String,
+        integrity: String,
+        count: Int = 2
+    ): List<PersonalCodePreKeyData> {
+        val myKey = userKeyRepo.latestKeyPair()
+        val derivedCode = cryptoCore.derivePassword(personalCode)
+
+        return (0..count).map {
+
+            val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
+
+            val codeKeyData = PersonalCodeKeyData(
+                signedOwnerKxPublicKey = cryptoCore.signData(
+                    data = exchangeKeyPair.publicKey,
+                    myPrivateKey = myKey.privateKey
+                ),
+                code = personalCode
+            )
+
+            val userKeys = SimpleKeyPairData(
+                privateKey = exchangeKeyPair.privateKey,
+                publicKey = exchangeKeyPair.publicKey
+            )
+
+            PersonalCodePreKeyData(
+                encryptedUserKeys = cryptoCore.encryptModel(
+                    data = userKeys,
+                    key = userKeyRepo.personalKey
+                ),
+                encryptedCodeKeyData = cryptoCore.encryptDataWithSimplePassword(
+                    data = BaseRemoteModule.formatter.encodeToString(codeKeyData),
+                    password = derivedCode.backupPassword,
+                    userId = userId
+                ),
+                integrity = integrity
+            )
+        }
     }
 
     private fun createPersonalCodeString(): String {
@@ -146,18 +215,6 @@ class PersonalCodesRemoteSource constructor(
             collectionId = remoteConfig.resourceIds.collectionPersonalCodeID
         )
             .map { PersonalCodeRaw.from(it) }
-            .mapNotNull {
-                if (it.isStillValid()) {
-                    it
-                } else {
-                    try {
-                        revokePersonalCode(it.id)
-                    } catch (e: Exception) {
-                        logg.e("Error deleting expired personal code", e)
-                    }
-                    null
-                }
-            }
     }
 
     suspend fun getUserInfoFromCode(code: String): UserPersonalCodeData {
@@ -183,28 +240,23 @@ class PersonalCodesRemoteSource constructor(
             }!!
     }
 
-    suspend fun revokePersonalCode(id: String) {
-        docApi.deleteDocument(
-            databaseType = BackendDatabaseType.DATA,
-            remoteConfig.resourceIds.collectionPersonalCodeID,
-            id
-        )
-    }
-
     suspend fun revokeAllCodes() {
+        val payload = GenericFunctionPayload(
+            route = "revoke",
+            payload = ""
+        )
         functionsApi.runAndWait(
             functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
-            data = ""
+            data = BaseRemoteModule.formatter.encodeToString(payload)
         )
             .let {
                 if (!it.isSuccess) {
                     throw BaseRemoteException.fromCode(
                         null,
-                        "Unable to delete group",
+                        "Unable to revoke personal code",
                         Exception(it.stderr)
                     )
                 }
             }
     }
-
 }

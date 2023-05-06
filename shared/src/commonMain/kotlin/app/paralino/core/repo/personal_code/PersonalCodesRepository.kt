@@ -19,21 +19,26 @@ class PersonalCodesRepository constructor(
 ) : BaseRepository() {
 
     suspend fun createAndSavePersonalCode() {
-        revokeAllCodes(createNewCode = true)
+        triggerRemoteOnly {
+            createPersonalCode()
+            remote.getMyPersonalCodes()
+        }.also {
+            local.replacePersonalCodes(it)
+        }
     }
 
-    private suspend fun createPersonalCode(userMeData: UserMeData?) {
+    private suspend fun createPersonalCode() {
         val user = userRepo.cachedUser
             ?: throw Throwable("User not valid")
 
         return triggerRemoteOnly {
             try {
-                remote.tryCreatingCode(user, userMeData)
+                remote.tryCreatingCode(user)
             } catch (e: Exception) {
                 if (e.asRemoteException() is ConflictException) {
                     try {
                         // in case of conflict try once more
-                        remote.tryCreatingCode(user, userMeData)
+                        remote.tryCreatingCode(user)
                     } catch (e: Exception) {
                         if (e.asRemoteException() is ConflictException) {
                             // if there is conflict again, throw generic exception
@@ -77,21 +82,28 @@ class PersonalCodesRepository constructor(
         ).mapToPayload()
     }
 
-    fun revokePersonalCode(id: String): Flow<Payload<Unit>> {
+    fun revokePersonalCode(): Flow<Payload<Unit>> {
         return getDataOnce(
-            localUpdate = { local.deletePersonalCode(id) }
-        ) { remote.revokePersonalCode(id) }.mapToPayload()
+            localUpdate = { local.replacePersonalCodes(it) }
+        ) {
+            remote.revokeAllCodes()
+            remote.getMyPersonalCodes()
+        }.mapToPayload()
     }
 
-    suspend fun revokeAllCodes(createNewCode: Boolean = true, userMeData: UserMeData? = null) {
+    suspend fun updateUserCode(userMeData: UserMeData) {
         triggerRemoteOnly {
-            if(createNewCode) {
-                createPersonalCode(userMeData)
-                remote.getMyPersonalCodes()
+            val currentCode = local.getActivePersonalCodesOnce()
+            if (currentCode != null) {
+                remote.updateCodeUserData(
+                    personalCode = currentCode.code,
+                    userId = userRepo.cachedUserId,
+                    userMeData = userMeData
+                )
             } else {
-                remote.revokeAllCodes()
-                emptyList()
+                createPersonalCode()
             }
+            remote.getMyPersonalCodes()
         }.also {
             local.replacePersonalCodes(it)
         }

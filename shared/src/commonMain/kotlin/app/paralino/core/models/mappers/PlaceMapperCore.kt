@@ -1,6 +1,7 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
@@ -26,13 +27,16 @@ class PlaceMapperCore constructor(
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.groupId,
             keyVersion = model.keyVersion
-        ) ?: throw MissingGroupKeyException(model.groupId, model.keyVersion)
+        )
+
+        if(groupKey !is GroupMasterKey.Valid)
+            throw MissingGroupKeyException(model.groupId, model.keyVersion)
 
         val placeData = when (model.data) {
             is CryptoResource.Ready -> {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(model.data.data),
-                    key = groupKey.data
+                    key = groupKey.key
                 )
             }
             else -> throw CryptoException("Place data is missing: ${model.id}")
@@ -55,14 +59,14 @@ class PlaceMapperCore constructor(
             keyVersion = model.keyVersion
         )
 
-        if(groupKey == null)
+        if(groupKey !is GroupMasterKey.Valid)
             logg.e(MissingGroupKeyException(model.id, model.keyVersion))
 
-        val placeData = if (groupKey != null) {
+        val placeData = if (groupKey is GroupMasterKey.Valid) {
             try {
                 cryptoCore.decryptDataWithKey(
                     data = model.data,
-                    key = groupKey.data
+                    key = groupKey.key
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<GroupPlaceData>(it)
                 }.let {

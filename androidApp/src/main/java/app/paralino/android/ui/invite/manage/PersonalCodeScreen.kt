@@ -71,7 +71,7 @@ fun PersonalCodeScreen(
                     dialog.Show {
                         showDialog = null
                         if (it == MainAlertDialog.Buttons.buttonOk)
-                            vm.deletePersonalCode(dialog.codeId)
+                            vm.deletePersonalCode()
                     }
                 }
                 else -> {}

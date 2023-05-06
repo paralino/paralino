@@ -23,7 +23,6 @@ class LocationLocalDataSource(
                     settings_id = currentMember?.settings_id,
                     settings_groupId = currentMember?.settings_groupId,
                     settings_ownerUserId = currentMember?.settings_ownerUserId,
-                    settings_encryptedUserKeys = currentMember?.settings_encryptedUserKeys,
                     settings_integrity = currentMember?.settings_integrity,
                 )
                 database.memberQueries.create(newMember)

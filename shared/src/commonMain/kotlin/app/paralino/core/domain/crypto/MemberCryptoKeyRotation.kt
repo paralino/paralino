@@ -2,7 +2,9 @@ package app.paralino.core.domain.crypto
 
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.DecryptedGroupKeyData
+import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.GroupMemberMainPublicKey
+import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.ILimitedExecution
@@ -25,7 +27,6 @@ import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 
 class MemberCryptoKeyRotation(
@@ -81,14 +82,14 @@ class MemberCryptoKeyRotation(
             setAsProcessing(remoteGroup.id)
             val myKey = userKeyRepo.latestKeyPair()
             val groupKey =
-                cryptoKEKRepository.getGroupKey(remoteGroup.id, remoteGroup.ownerUserId)!!
+                cryptoKEKRepository.getGroupKey(remoteGroup.id, remoteGroup.ownerUserId)
             try {
-                rotateMemberKeysForGroup(remoteGroup, groupKey, myKey)
+                rotateMemberKeysForGroup(remoteGroup, groupKey as GroupMasterKey.Valid, myKey)
 
                 if (refresh) {
                     logg.tag("tag_crypto_key_group_member_rotation")
                         .d("Member keys for group ${remoteGroup.id}, rotated, refresh keys")
-                    cryptoKEKRepository.refreshKeysForGroup(remoteGroup.id).first()
+                    cryptoKEKRepository.refreshKeysForGroup(remoteGroup.id)
                 }
 
                 stopProcessing(remoteGroup.id)
@@ -108,7 +109,7 @@ class MemberCryptoKeyRotation(
 
     private suspend fun rotateMemberKeysForGroup(
         group: UserGroupWithMembers,
-        groupKey: DecryptedGroupKeyData,
+        groupKey: GroupMasterKey.Valid,
         myKey: AsymmetricCryptoKeyData
     ) {
         blocking {
@@ -125,7 +126,7 @@ class MemberCryptoKeyRotation(
                 signature = GroupIntegrity.createSignature(
                     hashProvider = cryptoCore.hashProvider,
                     memberVerifications = group.members.map { it.member.verification },
-                    groupKey = groupKey.data,
+                    groupKey = groupKey.key,
                     encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMemberPublicKeys(
                         group.id
                     )
@@ -147,7 +148,7 @@ class MemberCryptoKeyRotation(
                 integrity = groupIntegrity,
                 memberData = cryptoCore.encryptDataWithKey(
                     BaseRemoteModule.formatter.encodeToString(member.member.memberData.data),
-                    groupKey.data
+                    groupKey.key
                 ),
                 locations = member.locations.map { location ->
                     MemberLocationDataPayload(
@@ -155,7 +156,7 @@ class MemberCryptoKeyRotation(
                         deviceData = location.deviceData.data?.let {
                             cryptoCore.encryptDataWithKey(
                                 BaseRemoteModule.formatter.encodeToString(it),
-                                groupKey.data
+                                groupKey.key
                             )
                         } ?: "",
                         locationData = location.locationData.data?.let {
@@ -178,19 +179,19 @@ class MemberCryptoKeyRotation(
 
                 val memberPublicKey =
                     cryptoKEKRepository.getMemberPublicKey(group.id, groupMember.member.userId)
-                if (memberPublicKey != null) {
+                if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
                     GroupMemberKeyPayload(
                         userId = groupMember.member.userId,
                         encryptedPublicKey = cryptoCore.encryptDataWithKey(
                             data = myKey.publicKey,
-                            key = memberPublicKey
+                            key = memberPublicKey.key
                         ),
                         encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                             data = newSenderKey,
                             // sign with owner private key
                             myPrivateKey = myKey.privateKey,
                             // encrypt with user public key
-                            publicKey = memberPublicKey
+                            publicKey = memberPublicKey.key
                         ),
                         keyVersion = null
                     )
@@ -263,13 +264,13 @@ class MemberCryptoKeyRotation(
         groupId: String,
         members: List<MemberModel>,
         myKey: AsymmetricCryptoKeyData,
-        currentSenderKey: DecryptedGroupKeyData?
+        currentSenderKey: GroupMemberSenderKey
     ) {
         blocking {
 
             // if no key is passed, create new one
-            val newSenderKey =
-                currentSenderKey?.data ?: cryptoCore.getNewSymmetricKey()
+            val validSenderKey = currentSenderKey as? GroupMemberSenderKey.Valid?
+            val newSenderKey = validSenderKey?.key ?: cryptoCore.getNewSymmetricKey()
 
             val keys = members.mapNotNull { groupMember ->
 
@@ -278,21 +279,21 @@ class MemberCryptoKeyRotation(
 
                 val memberPublicKey =
                     cryptoKEKRepository.getMemberPublicKey(groupId, groupMember.userId)
-                if (memberPublicKey != null) {
+                if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
                     GroupMemberKeyPayload(
                         userId = groupMember.userId,
                         encryptedPublicKey = cryptoCore.encryptDataWithKey(
                             data = myKey.publicKey,
-                            key = memberPublicKey
+                            key = memberPublicKey.key
                         ),
                         encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                             data = newSenderKey,
                             // sign with owner private key
                             myPrivateKey = myKey.privateKey,
                             // encrypt with user public key
-                            publicKey = memberPublicKey
+                            publicKey = memberPublicKey.key
                         ),
-                        keyVersion = currentSenderKey?.version
+                        keyVersion = validSenderKey?.version
                     )
                 } else {
                     null

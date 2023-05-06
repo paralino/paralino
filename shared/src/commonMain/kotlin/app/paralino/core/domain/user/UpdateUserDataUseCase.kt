@@ -2,6 +2,7 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
@@ -22,7 +23,6 @@ import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 
@@ -44,7 +44,7 @@ class UpdateUserDataUseCase constructor(
             remote = {
                 val newData = userRemoteSource.updateUserData(data)
                 updateMemberDataInGroups(data, deviceName)
-                personalCodes.revokeAllCodes(createNewCode = true, userMeData = data)
+                personalCodes.updateUserCode(data)
                 newData
             },
             localUpdate = {
@@ -63,16 +63,16 @@ class UpdateUserDataUseCase constructor(
             val groupKey = cryptoKEKRepo.getGroupKey(
                 groupId = member.groupId,
                 keyVersion = member.groupKeyVersion
-            ) ?: throw MissingGroupKeyException(
-                groupId = member.groupId,
-                keyVersion = member.groupKeyVersion
             )
+
+            if(groupKey !is GroupMasterKey.Valid)
+                throw MissingGroupKeyException(member.groupId, member.groupKeyVersion)
 
             val memberData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberModelData(data.userName, data.userImage)
                 ),
-                key = groupKey.data
+                key = groupKey.key
             )
 
             val deviceData = cryptoCore.encryptDataWithKey(
@@ -82,7 +82,7 @@ class UpdateUserDataUseCase constructor(
                         deviceType = userMemberIdUseCase.getCurrentDeviceType().key
                     )
                 ),
-                key = groupKey.data
+                key = groupKey.key
             )
 
             UpdateMemberData(

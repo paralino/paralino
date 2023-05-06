@@ -1,6 +1,8 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.VerificationResult
@@ -30,13 +32,13 @@ class MemberMapperCore constructor(
             keyVersion = model.member.groupKeyVersion
         )
 
-        if (groupKey == null)
+        if (groupKey !is GroupMasterKey.Valid)
             logg.e(MissingGroupKeyException(model.member.groupId, model.member.groupKeyVersion))
 
         val verification = groupVerification.verifyGroupMember(
             member = model.member,
             groupOwnerId = groupOwnerId,
-            groupKey = groupKey?.data
+            groupKey = groupKey
         )
 
         val memberKey = cryptoKEKRepo.getMemberKey(
@@ -46,14 +48,14 @@ class MemberMapperCore constructor(
 
         // data encrypted with user senderKey DEK
         val locations = model.locations.map { location ->
-            val deviceData = if (groupKey != null) {
+            val deviceData = if (groupKey is GroupMasterKey.Valid) {
                 if (location.deviceData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {
                     try {
                         cryptoCore.decryptDataWithKey(
                             data = location.deviceData,
-                            key = groupKey.data
+                            key = groupKey.key
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
                         }.let {
@@ -77,14 +79,14 @@ class MemberMapperCore constructor(
                 CryptoResource.MissingKey
             }
 
-            val locationData = if (memberKey != null) {
+            val locationData = if (memberKey is GroupMemberSenderKey.Valid) {
                 if (location.locationData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {
                     try {
                         cryptoCore.decryptDataWithKey(
                             data = location.locationData,
-                            key = memberKey.data
+                            key = memberKey.key
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
                         }.let {
@@ -120,11 +122,11 @@ class MemberMapperCore constructor(
         }
 
         // data encrypted with group DEK
-        val memberData = if (groupKey != null) {
+        val memberData = if (groupKey is GroupMasterKey.Valid) {
             try {
                 cryptoCore.decryptDataWithKey(
                     data = model.member.data,
-                    key = groupKey.data
+                    key = groupKey.key
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
                 }.let {
@@ -153,7 +155,6 @@ class MemberMapperCore constructor(
                     id = it.id,
                     groupId = it.groupId,
                     ownerUserId = it.ownerUserId,
-                    encryptedUserKeys = it.encryptedUserKeys,
                     integrity = it.integrity
                 )
             },

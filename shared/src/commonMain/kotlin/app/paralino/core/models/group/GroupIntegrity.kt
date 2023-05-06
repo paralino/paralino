@@ -2,7 +2,6 @@ package app.paralino.core.models.group
 
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoHashProvider
-import app.paralino.core.crypto.toData
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable

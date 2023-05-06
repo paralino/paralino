@@ -53,7 +53,7 @@ class GroupRefreshUseCase constructor(
         return try {
             triggerRemoteOnly {
                 remote.getGroupWithMembers(groupId)
-                    .also { cryptoKEKRepo.refreshKeysForGroup(groupId).first() }
+                    .also { cryptoKEKRepo.refreshKeysForGroup(groupId) }
                     .let { handleGroupKeysUpdate(it) }
             }
         } catch (e: Exception) {

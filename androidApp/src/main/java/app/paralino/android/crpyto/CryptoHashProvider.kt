@@ -1,10 +1,8 @@
 package app.paralino.android.crpyto
 
 import android.util.Base64
-import app.paralino.core.crypto.Data
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoHashProvider
-import app.paralino.core.crypto.toData
 import java.security.MessageDigest
 
 //class CryptoHashProvider: ICryptoHashProvider {

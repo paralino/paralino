@@ -1,5 +1,6 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
@@ -89,10 +90,10 @@ class RealtimeEventsProcessor constructor(
                         memberUserId = member.ownerUserId
                     )
                 } catch (e: Exception) {
-                    null
+                    GroupMemberSenderKey.Error.Invalid
                 }
 
-                if (memberKey == null || member.memberKeyVersion != memberKey.version) {
+                if (memberKey !is GroupMemberSenderKey.Valid || member.memberKeyVersion != memberKey.version) {
                     logg.tag("realtime_events")
                         .v("Refresh group - update member (${member.id}) event in group ${member.groupId}")
                     // this is either new member so we are missing keys, or keys are obsolete

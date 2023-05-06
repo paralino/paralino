@@ -1,6 +1,7 @@
 package app.paralino.core.repo.places
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.BackendConfig
@@ -10,7 +11,12 @@ import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceSettings
-import app.paralino.core.models.raw.*
+import app.paralino.core.models.raw.CreatePlacePayload
+import app.paralino.core.models.raw.GroupPlaceRaw
+import app.paralino.core.models.raw.GroupPlaceSettingRaw
+import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
+import app.paralino.core.models.raw.PlaceEventPayload
+import app.paralino.core.models.raw.UpdatePlacePayload
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.utils.BaseRemoteModule
@@ -37,11 +43,11 @@ class PlacesRemoteSource(
         data: GroupPlaceData,
     ): GroupPlacesWithSettingsRaw {
         return blocking {
-            val groupKey = cryptoKEKRepo.getGroupKey(groupId, keyVersion = null)!!
+            val groupKey = cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
 
             val encryptedData = cryptoCore.encryptModel(
                 data = data,
-                key = groupKey.data
+                key = groupKey.key
             )
 
             val payload = CreatePlacePayload(

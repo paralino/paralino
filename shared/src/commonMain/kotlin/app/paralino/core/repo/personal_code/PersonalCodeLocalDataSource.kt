@@ -32,6 +32,14 @@ class PersonalCodeLocalDataSource(
             .map { it.map { mapper.local2Core(it) } }
     }
 
+    suspend fun getActivePersonalCodesOnce(): UserPersonalCode? {
+        return database.personalCodeQueries
+            .getAllCodes()
+            .executeAsList()
+            .firstOrNull { it.encryptedCodeUserData != null }
+            ?.let { mapper.local2Core(it) }
+    }
+
     suspend fun deletePersonalCode(id: String) {
         database.personalCodeQueries.deleteCode(id)
     }

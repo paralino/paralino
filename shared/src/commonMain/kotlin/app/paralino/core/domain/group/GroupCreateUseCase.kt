@@ -13,7 +13,6 @@ import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.location.MemberModelData
-import app.paralino.core.models.location.MemberVerification
 import app.paralino.core.models.raw.CreateGroupPayload
 import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.models.user.SimpleKeyPairData
@@ -27,7 +26,14 @@ import app.paralino.core.utils.Constants
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.encodeToString
 
 class GroupCreateUseCase(
@@ -58,7 +64,7 @@ class GroupCreateUseCase(
                     name = name,
                     image = image
                 )
-                    .also { cryptoKEKRepo.refreshKeysForGroup(it.group.id).first() }
+                    .also { cryptoKEKRepo.refreshKeysForGroup(it.group.id) }
                     .also { stopProcessing(groupKey) }
             },
             localUpdate = { local.updateOrCreateGroup(it) }
@@ -103,13 +109,6 @@ class GroupCreateUseCase(
             val myKey = userKeyRepo.latestKeyPair()
 
             val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
-            val secretHash =
-                cryptoCore.hashProvider.computeHash(exchangeKeyPair.publicKey, HashType.SHA256)
-
-            val memberVerificationSecret = cryptoCore.signData(
-                data = secretHash,
-                myPrivateKey = myKey.privateKey
-            )
 
             val groupKey = cryptoCore.getNewSymmetricKey()
             val memberSenderKey = cryptoCore.getNewSymmetricKey()
@@ -126,17 +125,10 @@ class GroupCreateUseCase(
                 publicKey = exchangeKeyPair.publicKey
             )
 
-            val encryptedPublicKey = cryptoCore.encryptDataWithKey(
-                data = cryptoCore.signData(
-                    data = exchangeKeyPair.publicKey,
-                    myPrivateKey = myKey.privateKey
-                ),
-                key = exchangeKeyPair.publicKey,
-            )
-
-            val encryptedIdentityKey = cryptoCore.encryptDataWithKey(
-                data = myKey.publicKey,
-                key = exchangeKeyPair.privateKey
+            val encryptedPublicKey = cryptoCore.encryptDataWithKeyPair(
+                data = exchangeKeyPair.publicKey,
+                publicKey = exchangeKeyPair.publicKey,
+                myPrivateKey = myKey.privateKey
             )
 
             val userKeys = SimpleKeyPairData(
@@ -146,21 +138,14 @@ class GroupCreateUseCase(
 
             val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
             val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
-                data = cryptoCore.getNewSymmetricKey(),
+                data = myKey.publicKey,
                 type = HashType.SHA256
             )
 
-            val memberVerification = MemberVerification(
-                groupOwnerVerificationSecret = ownerVerificationSecret,
-                memberVerificationSecret = memberVerificationSecret
-            ).let {
-                BaseRemoteModule.formatter.encodeToString(it)
-            }.let {
-                cryptoCore.signData(
-                    data = it,
-                    myPrivateKey = myKey.privateKey,
-                )
-            }
+            val memberVerification = cryptoCore.signData(
+                data = ownerVerificationSecret,
+                myPrivateKey = myKey.privateKey,
+            )
 
             val groupIntegrity = GroupIntegrity(
                 timeUtc = nowUTC().toString(),
@@ -184,7 +169,7 @@ class GroupCreateUseCase(
                 encryptedGroupKey = encryptedGroupKey,
                 encryptedSenderKey = encryptedSenderKey,
                 encryptedPublicKey = encryptedPublicKey,
-                ownerIdentityKey = encryptedIdentityKey,
+                ownerIdentityKey = myKey.publicKey,
                 groupData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(groupData),
                     key = groupKey

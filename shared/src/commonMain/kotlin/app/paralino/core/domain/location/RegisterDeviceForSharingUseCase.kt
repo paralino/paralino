@@ -2,6 +2,7 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.location.MemberDeviceData
@@ -9,9 +10,7 @@ import app.paralino.core.models.raw.LocationCreatePayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
@@ -45,10 +44,9 @@ class RegisterDeviceForSharingUseCase constructor(
                 ?: throw IllegalStateException("Missing member for a group $groupId")
 
             val groupKey = cryptoKEKRepo.getGroupKey(groupId, member.groupKeyVersion)
-                ?: throw MissingGroupKeyException(
-                    member.groupId,
-                    member.groupKeyVersion
-                )
+
+            if(groupKey !is GroupMasterKey.Valid)
+                throw MissingGroupKeyException(member.groupId, member.groupKeyVersion)
 
             val deviceData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
@@ -57,7 +55,7 @@ class RegisterDeviceForSharingUseCase constructor(
                         deviceType = userMemberId.getCurrentDeviceType().key
                     )
                 ),
-                key = groupKey.data
+                key = groupKey.key
             )
 
             val payload = LocationCreatePayload(

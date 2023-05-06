@@ -35,7 +35,7 @@ data class CreateGroupMemberPayload constructor(
     val groupOwnerIntegrity: String,
     val memberVerification: String,
     val userToAddId: String,
-    val encryptedOwnerKey: String,
+    val encryptedSenderKey: String,
     val groupKeys: List<GroupMemberGroupKeysData>,
     val keysForNewUser: List<GroupMemberPublicKeyPayload>,
     val userKeyForOtherUsers: List<GroupMemberPublicKeyPayload>,
@@ -92,7 +92,8 @@ data class GroupKeysPayload(
 @Serializable
 data class GroupMemberPublicKeyPayload(
     val userId: String,
-    val encryptedPublicKey: String
+    val encryptedPublicKey: String,
+    val ownerIdentityKey: String,
 )
 
 
@@ -221,12 +222,24 @@ data class UpdateUserDeviceFunctionData constructor(
 )
 
 @Serializable
-data class PersonalCodeFunctionData constructor(
+data class PersonalCodeUpdateData(
+    val keyId: String,
+    val encryptedCodeUserData: String?,
+    val keys: List<PersonalCodePreKeyData>
+)
+
+@Serializable
+data class PersonalCodeCreateData(
     val keyId: String,
     val encryptedCode: String,
+    val encryptedCodeUserData: String,
+    val keys: List<PersonalCodePreKeyData>
+)
+
+@Serializable
+data class PersonalCodePreKeyData(
     val encryptedCodeKeyData: String?,
-    val encryptedCodeUserData: String?,
-    val encryptedUserKeys: String?,
+    val encryptedUserKeys: String,
     val integrity: String
 )
 

@@ -2,6 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
@@ -29,13 +30,15 @@ class GroupMapperCore constructor(
             groupId = model.id,
             groupOwnerId = model.ownerUserId,
             keyVersion = model.keyVersion
-        ) ?: throw MissingGroupKeyException(model.id, model.keyVersion)
+        )
+        if(groupKey !is GroupMasterKey.Valid)
+            throw MissingGroupKeyException(model.id, model.keyVersion)
 
         val groupData = when (model.data) {
             is CryptoResource.Ready -> {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(model.data.data),
-                    key = groupKey.data
+                    key = groupKey.key
                 )
             }
             else -> throw CryptoException("Group data is missing: ${model.id}")
@@ -58,14 +61,14 @@ class GroupMapperCore constructor(
             keyVersion = model.keyVersion
         )
 
-        if(groupKey == null)
+        if(groupKey !is GroupMasterKey.Valid)
             logg.e(MissingGroupKeyException(model.id, model.keyVersion))
 
-        val groupData = if (groupKey != null) {
+        val groupData = if (groupKey is GroupMasterKey.Valid) {
             try {
                 cryptoCore.decryptDataWithKey(
                     data = model.data,
-                    key = groupKey.data
+                    key = groupKey.key
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<UserGroupData>(it)
                 }.let {
