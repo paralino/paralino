@@ -3,6 +3,7 @@ package app.paralino.android.ui.components
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,9 +13,11 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -28,11 +31,30 @@ import app.paralino.android.R
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
 
-
 @Composable
 fun ConditionErrorItem(
     modifier: Modifier = Modifier,
     data: ConditionErrorType,
+    onClick: () -> Unit,
+) {
+    ConditionErrorItem(
+        modifier = modifier,
+        backgroundColor = MaterialTheme.colors.error,
+        iconVector = data.iconVector,
+        text = stringResource(id = data.nameRes),
+        endAction = if(data.endActionTextRes != 0) stringResource(id = data.endActionTextRes) else "",
+        onClick = onClick
+    )
+}
+
+@Composable
+fun ConditionErrorItem(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colors.error,
+    contentColor: Color = contentColorFor(backgroundColor = backgroundColor),
+    iconVector: ImageVector?,
+    text: String,
+    endAction: String?,
     onClick: () -> Unit,
 ) {
     ConstraintLayout(
@@ -40,29 +62,35 @@ fun ConditionErrorItem(
             .fillMaxWidth()
             .padding(vertical = 2.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colors.error)
+            .background(backgroundColor)
             .clickable { onClick() }
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
 
-        val (icon, text, action) = createRefs()
+        val (icon, infoText, action) = createRefs()
 
-        Icon(
-            imageVector = data.iconVector,
+        Box(
             modifier = Modifier
-                .size(16.dp)
                 .constrainAs(icon) {
                     centerVerticallyTo(parent)
                     start.linkTo(parent.start)
                 },
-            tint = MaterialTheme.colors.onError,
-            contentDescription = null
-        )
+        ) {
+            if(iconVector != null) {
+                Icon(
+                    imageVector = iconVector,
+                    modifier = Modifier
+                        .size(16.dp),
+                    tint = contentColor,
+                    contentDescription = null
+                )
+            }
+        }
 
         Text(
-            text = stringResource(id = data.nameRes),
-            color = MaterialTheme.colors.onError,
-            modifier = Modifier.constrainAs(text) {
+            text = text,
+            color = contentColor,
+            modifier = Modifier.constrainAs(infoText) {
                 centerVerticallyTo(parent)
                 linkTo(
                     start = icon.end,
@@ -76,9 +104,9 @@ fun ConditionErrorItem(
             }
         )
 
-        if (data.endActionTextRes != 0) {
+        if (endAction != null) {
             Text(
-                text = stringResource(id = data.endActionTextRes),
+                text = endAction,
                 color = MaterialTheme.colors.onPrimary,
                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier
