@@ -121,7 +121,11 @@ class GroupValidityVerification(
                         data = memberGroupSettings.integrity,
                         key = userKeyRepo.personalKey,
                     ).let {
-                        BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it)
+                        try {
+                            BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it)
+                        } catch (e: Exception) {
+                            return VerificationResult.INVALID_MEMBER_INTEGRITY_FORMAT
+                        }
                     }
                 } catch (e: Exception) {
                     return VerificationResult.WRONG_MEMBER_INTEGRITY
@@ -271,5 +275,6 @@ enum class VerificationResult {
     MISSING_MEMBER_SETTINGS,
     MISSING_MEMBER_INTEGRITY,
     WRONG_MEMBER_INTEGRITY,
+    INVALID_MEMBER_INTEGRITY_FORMAT,
     GENERIC_ERROR
 }

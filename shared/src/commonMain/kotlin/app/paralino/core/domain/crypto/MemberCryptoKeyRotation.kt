@@ -5,6 +5,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
+import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.ILimitedExecution
@@ -24,6 +25,8 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
+import app.paralino.core.utils.exceptions.MissingGroupKeyException
+import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -80,11 +83,9 @@ class MemberCryptoKeyRotation(
             }
 
             setAsProcessing(remoteGroup.id)
-            val myKey = userKeyRepo.latestKeyPair()
-            val groupKey =
-                cryptoKEKRepository.getGroupKey(remoteGroup.id, remoteGroup.ownerUserId)
+
             try {
-                rotateMemberKeysForGroup(remoteGroup, groupKey as GroupMasterKey.Valid, myKey)
+                rotateMemberKeysForGroup(remoteGroup)
 
                 if (refresh) {
                     logg.tag("tag_crypto_key_group_member_rotation")
@@ -108,11 +109,19 @@ class MemberCryptoKeyRotation(
     }
 
     private suspend fun rotateMemberKeysForGroup(
-        group: UserGroupWithMembers,
-        groupKey: GroupMasterKey.Valid,
-        myKey: AsymmetricCryptoKeyData
+        group: UserGroupWithMembers
     ) {
         blocking {
+
+            val myKey = userKeyRepo.latestKeyPair()
+            val myExchangeKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id)
+            val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId)
+
+            if(myExchangeKeys !is UserGroupPersonalKeyPair.Valid)
+                throw MissingMemberKeyException(group.id, config.userId)
+
+            if(groupKey !is GroupMasterKey.Valid)
+                throw MissingGroupKeyException(group.id)
 
             val newSenderKey = cryptoCore.getNewSymmetricKey()
 
@@ -132,10 +141,9 @@ class MemberCryptoKeyRotation(
                     )
                 )
             ).let {
-                cryptoCore.encryptDataWithKeyPair(
+                cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(it),
-                    myPrivateKey = myKey.privateKey,
-                    publicKey = myKey.publicKey
+                    key = userKeyRepo.personalKey
                 )
             }
 
@@ -182,14 +190,14 @@ class MemberCryptoKeyRotation(
                 if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
                     GroupMemberKeyPayload(
                         userId = groupMember.member.userId,
-                        encryptedPublicKey = cryptoCore.encryptDataWithKey(
-                            data = myKey.publicKey,
-                            key = memberPublicKey.key
+                        encryptedPublicKey = cryptoCore.signData(
+                            data = myExchangeKeys.key.publicKey,
+                            myPrivateKey = myKey.privateKey
                         ),
                         encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                             data = newSenderKey,
                             // sign with owner private key
-                            myPrivateKey = myKey.privateKey,
+                            myPrivateKey = myExchangeKeys.key.privateKey,
                             // encrypt with user public key
                             publicKey = memberPublicKey.key
                         ),

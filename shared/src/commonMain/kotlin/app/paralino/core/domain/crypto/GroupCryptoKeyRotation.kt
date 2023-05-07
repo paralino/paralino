@@ -1,7 +1,9 @@
 package app.paralino.core.domain.crypto
 
+import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberMainPublicKey
+import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.ILimitedExecution
@@ -15,12 +17,12 @@ import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.raw.GroupKeysPayload
 import app.paralino.core.models.raw.GroupPlaceDataUpdatePayload
 import app.paralino.core.models.raw.UpdateGroupKeysPayload
-import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
+import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,14 +100,12 @@ class GroupCryptoKeyRotation constructor(
         remoteGroup: UserGroupWithMembers
     ) {
 
-        val myKey = userKeyRepo.latestKeyPair()
         val places = placesRepo.getPlacesForGroupLocally(remoteGroup.id).first()
 
         // 1. rotate group key
         rotateGroupKeys(
             group = remoteGroup,
             places = places,
-            myKey = myKey
         )
 
         // new group key is required first since we are re-encrypting user data with it
@@ -121,10 +121,15 @@ class GroupCryptoKeyRotation constructor(
 
     private suspend fun rotateGroupKeys(
         group: UserGroupWithMembers,
-        places: List<GroupPlace>,
-        myKey: AsymmetricCryptoKeyData
+        places: List<GroupPlace>
     ) {
         blocking {
+
+            val myExchangeKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id)
+
+            if(myExchangeKeys !is UserGroupPersonalKeyPair.Valid)
+                throw MissingMemberKeyException(group.id, config.userId)
+
             val newGroupKey = cryptoCore.getNewSymmetricKey()
 
             val groupData = group.data.data?.let {
@@ -162,7 +167,7 @@ class GroupCryptoKeyRotation constructor(
                         encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                             data = newGroupKey,
                             // sign with owner private key
-                            myPrivateKey = myKey.privateKey,
+                            myPrivateKey = myExchangeKeys.key.privateKey,
                             // encrypt with user public key
                             publicKey = memberPublicKey.key
                         )
@@ -171,7 +176,6 @@ class GroupCryptoKeyRotation constructor(
                     null
                 }
             }
-
 
             val groupIntegrity = GroupIntegrity(
                 timeUtc = nowUTC().toString(),
@@ -182,10 +186,9 @@ class GroupCryptoKeyRotation constructor(
                     encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMemberPublicKeys(group.id)
                 )
             ).let {
-                cryptoCore.encryptDataWithKeyPair(
+                cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(it),
-                    myPrivateKey = myKey.privateKey,
-                    publicKey = myKey.publicKey
+                    key = userKeyRepo.personalKey
                 )
             }
 
