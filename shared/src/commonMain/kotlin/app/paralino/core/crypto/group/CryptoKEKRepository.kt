@@ -2,6 +2,7 @@ package app.paralino.core.crypto.group
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.GroupMemberIdentityKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
@@ -276,46 +277,59 @@ class CryptoKEKRepository(
     ): GroupMemberMainPublicKey {
         val currentUserId = userRepository.cachedUserId
 
-        // always return own public key from secure storage but ensure no one tampered with key from server
-        val identityKey = if (keyRaw.ownerUserId == currentUserId) {
-            keyRaw.ownerIdentityKey
-                .takeIf { it == userKeyRepository.latestKeyPair().publicKey }
-                .also {
-                    if (it == null) logg.tag("tag_crypto_key_group_member")
-                        .w("User ${keyRaw.ownerUserId} own identity key do not match in group ${keyRaw.groupId}")
-                } ?: return GroupMemberMainPublicKey.Error.WrongIdentity
-        } else {
-            keyRaw.ownerIdentityKey
-        }
+        val identityKey = getMemberIdentityKey(keyRaw)
 
-        val myGroupKeyPair = when(val myPreKey = getMyPreKeyForGroup(keyRaw.groupId)) {
-            is UserGroupPersonalKeyPair.Error -> {
-                return GroupMemberMainPublicKey.Error.InvalidPersonalKeyPair(myPreKey)
-            }
-            is UserGroupPersonalKeyPair.Valid -> myPreKey.key
-        }
+        if(identityKey !is GroupMemberIdentityKey.Valid)
+            return GroupMemberMainPublicKey.Error.WrongIdentity
 
         val kxPublicKey = try {
-            cryptoCore.decryptDataWithKeyPair(
+            cryptoCore.verifySignature(
                 data = keyRaw.encryptedPublicKey,
-                publicKey = identityKey,
-                myPrivateKey = myGroupKeyPair.privateKey
-            ).let { key ->
+                publicKey = identityKey.key
+            )?.let { key ->
                 // always return own public key from secure storage but ensure no one tampered with key from server
                 if(keyRaw.ownerUserId == currentUserId) {
+                    val myGroupKeyPair = when(val myPreKey = getMyPreKeyForGroup(keyRaw.groupId)) {
+                        is UserGroupPersonalKeyPair.Error -> {
+                            return GroupMemberMainPublicKey.Error.InvalidPersonalKeyPair(myPreKey)
+                        }
+                        is UserGroupPersonalKeyPair.Valid -> myPreKey.key
+                    }
                     myGroupKeyPair.publicKey.takeIf { it == key }.also {
                         if(it == null) logg.tag("tag_crypto_key_group_member").w("User ${keyRaw.ownerUserId} own public key does not match in group ${keyRaw.groupId}")
                     } ?: return GroupMemberMainPublicKey.Error.WrongPublicKey
                 } else {
                     key
                 }
-            }
+            } ?: return GroupMemberMainPublicKey.Error.UnverifiedPublicKey
         } catch (e: Exception) {
             logg.tag("tag_crypto_key_group_member").w("Can not decrypt user ${keyRaw.ownerUserId} public key in group ${keyRaw.groupId}")
             return GroupMemberMainPublicKey.Error.InvalidPublicKey
         }
 
-        return GroupMemberMainPublicKey.Valid(kxPublicKey)
+        return GroupMemberMainPublicKey.Valid(
+            key = kxPublicKey,
+            signedKey = keyRaw.encryptedPublicKey,
+            identityKey = identityKey
+        )
+    }
+
+    suspend fun getMemberIdentityKey(
+        keyRaw: GroupMemberCryptoKeyDataRaw
+    ): GroupMemberIdentityKey {
+        val currentUserId = userRepository.cachedUserId
+        // always return own identity key from secure storage but ensure no one tampered with key from server
+        val identityKey = if (keyRaw.ownerUserId == currentUserId) {
+            keyRaw.ownerIdentityKey
+                .takeIf { it == userKeyRepository.latestKeyPair().publicKey }
+                .also {
+                    if (it == null) logg.tag("tag_crypto_key_group_member")
+                        .w("User ${keyRaw.ownerUserId} own identity key do not match in group ${keyRaw.groupId}")
+                } ?: return GroupMemberIdentityKey.Error.Invalid
+        } else {
+            keyRaw.ownerIdentityKey
+        }
+        return GroupMemberIdentityKey.Valid(identityKey)
     }
 
     suspend fun getMyPreKeyForGroup(

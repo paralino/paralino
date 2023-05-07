@@ -40,13 +40,28 @@ sealed class GroupMemberMainPublicKey {
     sealed class Error: GroupMemberMainPublicKey() {
         object WrongIdentity: Error()
         object InvalidPublicKey: Error()
+        object UnverifiedPublicKey: Error()
         object WrongPublicKey: Error()
         object Missing: Error()
         data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error): Error()
     }
-    data class Valid(override val key: String): GroupMemberMainPublicKey()
+
+    data class Valid(
+        override val key: String,
+        val signedKey: String,
+        val identityKey: GroupMemberIdentityKey.Valid
+    ) : GroupMemberMainPublicKey()
 }
 
+sealed class GroupMemberIdentityKey {
+    open val key: String? = null
+
+    sealed class Error: GroupMemberIdentityKey() {
+        object Missing: Error()
+        object Invalid: Error()
+    }
+    data class Valid(override val key: String): GroupMemberIdentityKey()
+}
 
 sealed class UserGroupPersonalKeyPair {
     open val key: SimpleKeyPairData? = null
