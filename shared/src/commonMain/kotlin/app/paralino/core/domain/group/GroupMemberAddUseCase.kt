@@ -3,6 +3,7 @@ package app.paralino.core.domain.group
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.GroupMemberIdentityKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.HashType
@@ -141,14 +142,8 @@ class GroupMemberAddUseCase constructor(
 
         val newUserOwnPublicKey = GroupMemberPublicKeyPayload(
             userId = codeData.userData.ownerUserId,
-            encryptedPublicKey = cryptoCore.encryptDataWithKey(
-                data = memberPublicKey,
-                key = memberPublicKey
-            ),
-            ownerIdentityKey = cryptoCore.encryptDataWithKey(
-                data = codeData.userData.ownerIdentityKey,
-                key = memberPublicKey
-            )
+            signedPublicKey = codeData.keyData.signedOwnerKxPublicKey,
+            ownerIdentityKey = codeData.userData.ownerIdentityKey
         )
 
         val keysForNewUser = group.members.mapNotNull { groupMember ->
@@ -156,39 +151,12 @@ class GroupMemberAddUseCase constructor(
             if (!groupMember.member.isVerified)
                 return@mapNotNull null
 
-            val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
-            if (key is GroupMemberMainPublicKey.Valid) {
-                val encryptedKey = cryptoCore.encryptDataWithKey(
-                    data = key.key,
-                    key = memberPublicKey
-                )
+            val groupMemberPublicKey = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
+            if (groupMemberPublicKey is GroupMemberMainPublicKey.Valid) {
                 GroupMemberPublicKeyPayload(
                     userId = groupMember.member.userId,
-                    encryptedPublicKey = encryptedKey,
-                    ownerIdentityKey = cryptoCore.encryptDataWithKey(
-                        data = codeData.userData.ownerIdentityKey,
-                        key = memberPublicKey
-                    )
-                )
-            } else {
-                null
-            }
-        } + newUserOwnPublicKey
-
-        val userKeyForOtherUsers = group.members.mapNotNull { groupMember ->
-            val key = cryptoKEKRepo.getMemberPublicKey(groupId, groupMember.member.userId)
-            if (key is GroupMemberMainPublicKey.Valid) {
-                val encryptedKey = cryptoCore.encryptDataWithKey(
-                    data = memberPublicKey,
-                    key = key.key
-                )
-                GroupMemberPublicKeyPayload(
-                    userId = groupMember.member.userId,
-                    encryptedPublicKey = encryptedKey,
-                    ownerIdentityKey = cryptoCore.encryptDataWithKey(
-                        data = codeData.userData.ownerIdentityKey,
-                        key = memberPublicKey
-                    )
+                    signedPublicKey = groupMemberPublicKey.signedKey,
+                    ownerIdentityKey = groupMemberPublicKey.identityKey.key
                 )
             } else {
                 null
@@ -213,26 +181,27 @@ class GroupMemberAddUseCase constructor(
                 hashProvider = cryptoCore.hashProvider,
                 memberVerifications = group.members.map { it.member.verification } + memberVerification,
                 groupKey = groupKey.key,
-                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMemberPublicKeys(groupId) + newUserOwnPublicKey.encryptedPublicKey
+                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMemberPublicKeys(groupId) + newUserOwnPublicKey.signedPublicKey
             )
         ).let {
-            cryptoCore.encryptDataWithKeyPair(
+            cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                myPrivateKey = myKey.privateKey,
-                publicKey = myKey.publicKey
+                key = userKeyRepo.personalKey
             )
         }
 
         val payload = CreateGroupMemberPayload(
             groupId = groupId,
-            keyId = keyId,
+            codeKeyId = keyId,
+            keyId = codeData.keyData.keyId,
             groupOwnerIntegrity = groupIntegrity,
             memberVerification = memberVerification,
             userToAddId = codeData.userData.ownerUserId,
             encryptedSenderKey = encryptedSenderKey,
             groupKeys = encryptedOldKeys,
             keysForNewUser = keysForNewUser,
-            userKeyForOtherUsers = userKeyForOtherUsers,
+            memberSignedPublicKey = codeData.keyData.signedOwnerKxPublicKey,
+            memberIdentityKey = codeData.userData.ownerIdentityKey,
             memberData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberModelData(codeData.userData.ownerName, codeData.userData.ownerImage)

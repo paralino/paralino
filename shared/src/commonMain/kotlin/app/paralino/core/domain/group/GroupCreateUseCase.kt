@@ -29,7 +29,6 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -106,7 +105,7 @@ class GroupCreateUseCase(
             val user = userRepository.cachedUser!!
             val userData = user.data!!
             val myData = MemberModelData(userData.userName, userData.userImage)
-            val myKey = userKeyRepo.latestKeyPair()
+            val myIdentityKeys = userKeyRepo.latestKeyPair()
 
             val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
 
@@ -125,10 +124,9 @@ class GroupCreateUseCase(
                 publicKey = exchangeKeyPair.publicKey
             )
 
-            val encryptedPublicKey = cryptoCore.encryptDataWithKeyPair(
+            val signedPublicKey = cryptoCore.signData(
                 data = exchangeKeyPair.publicKey,
-                publicKey = exchangeKeyPair.publicKey,
-                myPrivateKey = myKey.privateKey
+                myPrivateKey = myIdentityKeys.privateKey
             )
 
             val userKeys = SimpleKeyPairData(
@@ -138,13 +136,13 @@ class GroupCreateUseCase(
 
             val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
             val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
-                data = myKey.publicKey,
+                data = myIdentityKeys.publicKey,
                 type = HashType.SHA256
             )
 
             val memberVerification = cryptoCore.signData(
                 data = ownerVerificationSecret,
-                myPrivateKey = myKey.privateKey,
+                myPrivateKey = myIdentityKeys.privateKey,
             )
 
             val groupIntegrity = GroupIntegrity(
@@ -153,28 +151,29 @@ class GroupCreateUseCase(
                     hashProvider = cryptoCore.hashProvider,
                     memberVerifications = listOf(memberVerification),
                     groupKey = groupKey,
-                    encryptedMemberPublicKeys = listOf(encryptedPublicKey)
+                    encryptedMemberPublicKeys = listOf(signedPublicKey)
                 )
             ).let {
-                cryptoCore.encryptDataWithKeyPair(
+                cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(it),
-                    myPrivateKey = exchangeKeyPair.privateKey,
-                    publicKey = exchangeKeyPair.publicKey
+                    key = userKeyRepo.personalKey
                 )
-            }.let {
-                cryptoCore.signData(data = it, myPrivateKey = myKey.privateKey)
             }
 
             val payload = CreateGroupPayload(
                 encryptedGroupKey = encryptedGroupKey,
                 encryptedSenderKey = encryptedSenderKey,
-                encryptedPublicKey = encryptedPublicKey,
-                ownerIdentityKey = myKey.publicKey,
+                signedPublicKey = signedPublicKey,
+                ownerIdentityKey = myIdentityKeys.publicKey,
                 groupData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(groupData),
                     key = groupKey
                 ),
                 groupMemberIntegrity = groupIntegrity,
+                keyId = cryptoCore.hashProvider.computeHash(
+                    data = exchangeKeyPair.publicKey,
+                    type = HashType.SHA256
+                ),
                 encryptedUserKeys = cryptoCore.encryptModel(
                     data = userKeys,
                     key = userKeyRepo.personalKey

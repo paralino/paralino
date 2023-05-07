@@ -101,6 +101,7 @@ class PersonalCodesRepository constructor(
                     userMeData = userMeData
                 )
             } else {
+                // TODO pass data since user details are missing first time code is created
                 createPersonalCode()
             }
             remote.getMyPersonalCodes()

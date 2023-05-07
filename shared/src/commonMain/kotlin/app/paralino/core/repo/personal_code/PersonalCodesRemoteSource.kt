@@ -165,12 +165,18 @@ class PersonalCodesRemoteSource constructor(
 
             val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
 
+            val keyId = cryptoCore.hashProvider.computeHash(
+                data = exchangeKeyPair.publicKey,
+                type = HashType.SHA256
+            )
+
             val codeKeyData = PersonalCodeKeyData(
                 signedOwnerKxPublicKey = cryptoCore.signData(
                     data = exchangeKeyPair.publicKey,
                     myPrivateKey = myKey.privateKey
                 ),
-                code = personalCode
+                code = personalCode,
+                keyId = keyId
             )
 
             val userKeys = SimpleKeyPairData(
@@ -188,7 +194,8 @@ class PersonalCodesRemoteSource constructor(
                     password = derivedCode.backupPassword,
                     userId = userId
                 ),
-                integrity = integrity
+                integrity = integrity,
+                keyId = keyId
             )
         }
     }
