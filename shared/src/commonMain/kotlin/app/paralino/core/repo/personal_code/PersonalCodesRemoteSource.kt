@@ -156,12 +156,12 @@ class PersonalCodesRemoteSource constructor(
         userId: String,
         personalCode: String,
         integrity: String,
-        count: Int = 2
+        count: Int = 4
     ): List<PersonalCodePreKeyData> {
         val myKey = userKeyRepo.latestKeyPair()
         val derivedCode = cryptoCore.derivePassword(personalCode)
 
-        return (0..count).map {
+        return (0 until count).map {
 
             val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
 

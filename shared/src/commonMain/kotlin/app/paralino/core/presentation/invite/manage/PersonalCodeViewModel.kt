@@ -1,10 +1,12 @@
 package app.paralino.core.presentation.invite.manage
 
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -24,18 +26,25 @@ class PersonalCodeViewModel(
             .onEach { result ->
                 _uiState.update {
 
-                    val codeData = result.firstOrNull()?.let {
-                        PersonalCodeScreenCodeData(
-                            id = it.id,
-                            code = it.formattedCode ?: "---",
-                            canDelete = true,
-                            validityUTC = null
-                        )
-                    }
+                    val codeData = result
+                        .map {
+                            PersonalCodeScreenCodeData(
+                                id = it.id,
+                                code = it.formattedCode,
+                                userImage = it.codeData.data?.ownerImage ?: ImageModel.emoji(Emojis.robot),
+                                userName = it.codeData.data?.ownerName ?: "---",
+                                canDelete = it.isStillValid(),
+                                isValid = it.isStillValid(),
+                                validityUTC = null
+                            )
+                        }
 
                     Payload.Success(
                         PersonalCodeScreenState(
-                            code = codeData,
+                            activeCode = codeData.firstOrNull { it.isValid },
+                            inactiveCodes = codeData.filter { !it.isValid },
+                            canCreate = codeData.size < 10,
+                            maxCodes = 10,
                             createLoading = false,
                             actionLoading = false
                         )
@@ -46,6 +55,9 @@ class PersonalCodeViewModel(
     }
 
     fun createPersonalCode() {
+        if(_uiState.value is Payload.Loading || _uiState.value.data?.loading == true)
+            return
+
         flow { emit(repo.createAndSavePersonalCode()) }
             .mapToPayload { Unit }
             .onEach { result ->
@@ -66,6 +78,9 @@ class PersonalCodeViewModel(
     }
 
     fun deletePersonalCode() {
+        if(_uiState.value is Payload.Loading || _uiState.value.data?.loading == true)
+            return
+
         repo.revokePersonalCode()
             .onEach { result ->
                 when (result) {
@@ -78,6 +93,29 @@ class PersonalCodeViewModel(
                     }
                     is Payload.Success -> {
                         _eventChannel.send(PersonalCodeScreenEvent.CodeDeleted)
+                    }
+                }
+            }
+            .launchIn(coroutineScope)
+    }
+
+    fun activatePersonalCode(code: String) {
+        if(_uiState.value is Payload.Loading || _uiState.value.data?.loading == true)
+            return
+
+        repo.activateUserCode(code)
+            .onEach { result ->
+                _uiState.update {
+                    val loading = result is Payload.Loading
+                    it.mapSuccess { it.copy(createLoading = loading, actionLoading = loading) }
+                }
+                when (result) {
+                    Payload.Loading -> {}
+                    is Payload.Error -> {
+                        _eventChannel.send(PersonalCodeScreenEvent.Error(result.exception))
+                    }
+                    is Payload.Success -> {
+                        _eventChannel.send(PersonalCodeScreenEvent.CodeCreated)
                     }
                 }
             }

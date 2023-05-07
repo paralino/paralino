@@ -166,7 +166,6 @@ fun GroupInitScreen(
                     name = stringResource(id = R.string.dashboard_groups_join_info)
                 )
                 PersonalCodeItem(
-                    modifier = Modifier.padding(horizontal = 20.dp),
                     state = state.personalCode!!,
                     deleteLoading = false,
                     onCopy = {
@@ -182,14 +181,6 @@ fun GroupInitScreen(
                     },
                     onDelete = {}
                 )
-                Spacer(modifier = Modifier.size(10.dp))
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                        text = stringResource(id = R.string.invite_manage_description).annotatedBold(),
-                        textAlign = TextAlign.Center
-                    )
-                }
             } else {
                 LargeSeekbarSwitch(
                     modifier = Modifier

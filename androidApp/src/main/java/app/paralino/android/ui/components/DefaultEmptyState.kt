@@ -56,7 +56,7 @@ fun DefaultEmptyState(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(40.dp),
+            .padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -74,7 +74,11 @@ fun DefaultEmptyState(
         Spacer(modifier = Modifier.size(50.dp))
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(text = content.annotatedBold(), textAlign = TextAlign.Center)
+            Text(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                text = content.annotatedBold(),
+                textAlign = TextAlign.Center
+            )
         }
 
         Spacer(modifier = Modifier.size(50.dp))

@@ -20,8 +20,7 @@ data class UserPersonalCode constructor(
         return codeData is CryptoResource.Ready
     }
 
-    val formattedCode: String? get() = when {
-        !isStillValid() -> null
+    val formattedCode: String get() = when {
         code.length <= 5 -> code
         else -> code.chunked(code.length / 2).joinToString(separator = "-")
     }

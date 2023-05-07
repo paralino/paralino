@@ -60,7 +60,6 @@ class PersonalCodesRepository constructor(
             remote = { remote.getMyPersonalCodes() },
             localUpdate = { local.replacePersonalCodes(it) },
         )
-            .map { it.filter { it.isStillValid() } }
     }
 
     suspend fun refreshPersonalCodes() {
@@ -72,13 +71,8 @@ class PersonalCodesRepository constructor(
     }
 
     fun getUserInfoFromCode(code: String): Flow<Payload<UserPersonalCodeData>> {
-        val cleanedCode = code
-            .trim()
-            .replace("-", "")
-            .replace(" ", "")
-            .uppercase()
         return getDataOnce(
-            remote = { remote.getUserInfoFromCode(cleanedCode) }
+            remote = { remote.getUserInfoFromCode(code.cleanCode()) }
         ).mapToPayload()
     }
 
@@ -87,6 +81,19 @@ class PersonalCodesRepository constructor(
             localUpdate = { local.replacePersonalCodes(it) }
         ) {
             remote.revokeAllCodes()
+            remote.getMyPersonalCodes()
+        }.mapToPayload()
+    }
+
+    fun activateUserCode(code: String): Flow<Payload<Unit>> {
+        return getDataOnce(
+            localUpdate = { local.replacePersonalCodes(it) }
+        ) {
+            remote.updateCodeUserData(
+                personalCode = code.cleanCode(),
+                userId = userRepo.cachedUserId,
+                userMeData = userRepo.cachedUser!!.data!!
+            )
             remote.getMyPersonalCodes()
         }.mapToPayload()
     }
@@ -112,6 +119,13 @@ class PersonalCodesRepository constructor(
 
     suspend fun clearLocally() {
         local.clear()
+    }
+
+    private fun String.cleanCode(): String {
+        return this
+            .trim()
+            .replace(Regex("[^a-zA-Z0-9]"), "")
+            .uppercase()
     }
 
 }

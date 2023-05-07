@@ -227,7 +227,7 @@ data class UpdateUserDeviceFunctionData constructor(
 @Serializable
 data class PersonalCodeUpdateData(
     val keyId: String,
-    val encryptedCodeUserData: String?,
+    val encryptedCodeUserData: String,
     val keys: List<PersonalCodePreKeyData>
 )
 

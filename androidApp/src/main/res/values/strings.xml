@@ -65,6 +65,7 @@
 
     <string name="settings_section_account_title">Account</string>
     <string name="settings_section_personal_code_title">Personal code</string>
+    <string name="settings_section_personal_code_inactive_title">Inactive codes</string>
     <string name="settings_account_edit_profile">Edit profile</string>
     <string name="settings_account_edit_email">Change email</string>
     <string name="settings_account_edit_password">Change password</string>
@@ -178,8 +179,9 @@
     <string name="groups_sharing_duration_type_infinite">Always on</string>
 
     <string name="invite_create_button">CREATE PERSONAL CODE</string>
+    <string name="invite_create_new_button">CREATE NEW CODE</string>
     <string name="toast_copy_invite_code">Code copied</string>
-    <string name="invite_delete_alert_title">Are you sure you want to delete this code?</string>
+    <string name="invite_delete_alert_title">Are you sure you want to disable this code?</string>
     <string name="invite_manage_empty_description">You don\'t have an active **personal code**.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
     <string name="invite_manage_description">Share this code to join a group and start securely sharing your location.</string>
     <string name="invite_connect_code_placeholder">User personal code</string>
@@ -193,6 +195,7 @@
     <string name="invite_section_title_user">User</string>
     <string name="invite_code_button_copy">Copy</string>
     <string name="invite_code_button_share">Share code</string>
+    <string name="invite_code_button_activate">Activate</string>
 
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>

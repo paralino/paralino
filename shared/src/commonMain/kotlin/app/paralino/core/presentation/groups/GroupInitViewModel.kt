@@ -41,12 +41,15 @@ class GroupInitViewModel(
                 }
             }
 
-            val code = codes.firstOrNull()
-            val personalCode = code?.formattedCode?.let {
+            val code = codes.firstOrNull { it.isStillValid() }
+            val personalCode = code?.let {
                 PersonalCodeScreenCodeData(
                     id = code.id,
-                    code = it,
+                    code = it.formattedCode,
+                    userImage = it.codeData.data?.ownerImage ?: ImageModel.emoji(Emojis.robot),
+                    userName = it.codeData.data?.ownerName ?: "---",
                     canDelete = false,
+                    isValid = true,
                     validityUTC = null
                 )
             }
