@@ -42,6 +42,7 @@ object BackendResourceIDs {
     const val collectionGroupKeysID: String = "group_keys"
     const val collectionGroupMembersKeysID: String = "group_member_keys"
     const val collectionPersonalIdKeysID: String = "personal_id_keys"
+    const val collectionPersonalGroupKeysID: String = "personal_group_keys"
     const val collectionUserKeysID: String = "user_keys"
     const val collectionUserDevicesID: String = "devices"
     const val collectionPushNotificationID: String = "push_notifications"

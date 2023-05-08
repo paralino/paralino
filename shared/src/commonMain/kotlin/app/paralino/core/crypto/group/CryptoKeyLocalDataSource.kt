@@ -1,10 +1,10 @@
 package app.paralino.core.crypto.group
 
-import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
-import app.paralino.core.models.raw.PersonalPreKeyRaw
+import app.paralino.core.models.raw.PersonalGroupKeyRaw
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -16,12 +16,12 @@ class CryptoKeyLocalDataSource constructor(
     suspend fun recreateAllGroupKeys(
         groupKeys: List<GroupCryptoKeyDataRaw>,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>,
-        personalKeys: List<PersonalPreKeyRaw>
+        personalKeys: List<PersonalGroupKeyRaw>
     ) {
         database.transaction {
             database.groupKeysQueries.clearAll()
             database.memberKeysQueries.clearAll()
-            database.preKeysQueries.clearAll()
+            database.personalGroupKeysQueries.clearAll()
             groupKeys.forEach {
                 database.groupKeysQueries.createGroupKey(keysMapper.remote2Local(it))
             }
@@ -29,7 +29,7 @@ class CryptoKeyLocalDataSource constructor(
                 database.memberKeysQueries.createGroupMemberKey(keysMapper.remote2Local(it))
             }
             personalKeys.forEach {
-                database.preKeysQueries.createKey(keysMapper.remote2Local(it))
+                database.personalGroupKeysQueries.createKey(keysMapper.remote2Local(it))
             }
         }
     }
@@ -38,12 +38,12 @@ class CryptoKeyLocalDataSource constructor(
         groupId: String,
         groupKeys: List<GroupCryptoKeyDataRaw>,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>,
-        preKeys: List<PersonalPreKeyRaw>
+        preKeys: List<PersonalGroupKeyRaw>
     ) {
         database.transaction {
             database.groupKeysQueries.deleteForGroup(groupId)
             database.memberKeysQueries.deleteForGroup(groupId)
-            database.preKeysQueries.deleteForGroup(groupId)
+            database.personalGroupKeysQueries.deleteForGroup(groupId)
             groupKeys.forEach {
                 database.groupKeysQueries.createGroupKey(keysMapper.remote2Local(it))
             }
@@ -51,7 +51,7 @@ class CryptoKeyLocalDataSource constructor(
                 database.memberKeysQueries.createGroupMemberKey(keysMapper.remote2Local(it))
             }
             preKeys.forEach {
-                database.preKeysQueries.createKey(keysMapper.remote2Local(it))
+                database.personalGroupKeysQueries.createKey(keysMapper.remote2Local(it))
             }
         }
     }
@@ -71,28 +71,16 @@ class CryptoKeyLocalDataSource constructor(
     suspend fun recreateMemberKeysForGroup(
         groupId: String,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>,
-        preKeys: List<PersonalPreKeyRaw>,
+        preKeys: List<PersonalGroupKeyRaw>,
     ) {
         database.transaction {
             database.memberKeysQueries.deleteForGroup(groupId)
-            database.preKeysQueries.deleteForGroup(groupId)
+            database.personalGroupKeysQueries.deleteForGroup(groupId)
             memberKeys.forEach {
                 database.memberKeysQueries.createGroupMemberKey(keysMapper.remote2Local(it))
             }
             preKeys.forEach {
-                database.preKeysQueries.createKey(keysMapper.remote2Local(it))
-            }
-        }
-    }
-
-    suspend fun recreatePreKeysForGroup(
-        groupId: String,
-        keys: List<PersonalPreKeyRaw>,
-    ) {
-        database.transaction {
-            database.preKeysQueries.deleteForGroup(groupId)
-            keys.forEach {
-                database.preKeysQueries.createKey(keysMapper.remote2Local(it))
+                database.personalGroupKeysQueries.createKey(keysMapper.remote2Local(it))
             }
         }
     }
@@ -107,8 +95,8 @@ class CryptoKeyLocalDataSource constructor(
             .map { it.map { keysMapper.local2Remote(it) } }
     }
 
-    fun getAllPreKeys(): Flow<List<PersonalPreKeyRaw>> {
-        return database.mapToList { preKeysQueries.getAllKeys() }
+    fun getAllPersonalGroupKeys(): Flow<List<PersonalGroupKeyRaw>> {
+        return database.mapToList { personalGroupKeysQueries.getAllKeys() }
             .map { it.map { keysMapper.local2Remote(it) } }
     }
 
@@ -120,7 +108,7 @@ class CryptoKeyLocalDataSource constructor(
         database.transaction {
             database.groupKeysQueries.deleteForGroup(groupId)
             database.memberKeysQueries.deleteForGroup(groupId)
-            database.preKeysQueries.deleteForGroup(groupId)
+            database.personalGroupKeysQueries.deleteForGroup(groupId)
         }
     }
 
@@ -134,7 +122,7 @@ class CryptoKeyLocalDataSource constructor(
         database.transaction {
             database.groupKeysQueries.clearAll()
             database.memberKeysQueries.clearAll()
-            database.preKeysQueries.clearAll()
+            database.personalGroupKeysQueries.clearAll()
         }
     }
 }

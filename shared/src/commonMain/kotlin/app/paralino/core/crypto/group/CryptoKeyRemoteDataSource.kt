@@ -4,6 +4,7 @@ import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
+import app.paralino.core.models.raw.PersonalGroupKeyRaw
 import app.paralino.core.models.raw.PersonalPreKeyRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.utils.extensions.blocking
@@ -51,22 +52,22 @@ class CryptoKeyRemoteDataSource constructor(
         }
     }
 
-    suspend fun getAllGroupPreKeys(): List<PersonalPreKeyRaw> {
+    suspend fun getAllPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = remoteConfig.resourceIds.collectionPersonalIdKeysID
-            ).map { it.parseGroupPreKey() }
+                collectionId = remoteConfig.resourceIds.collectionPersonalGroupKeysID
+            ).map { it.parseGPersonalGroupKey() }
         }
     }
 
-    suspend fun getAllGroupPreKeysForGroup(groupId: String): List<PersonalPreKeyRaw> {
+    suspend fun getAllPersonalGroupKeysForGroup(groupId: String): List<PersonalGroupKeyRaw> {
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = remoteConfig.resourceIds.collectionPersonalIdKeysID,
+                collectionId = remoteConfig.resourceIds.collectionPersonalGroupKeysID,
                 keyValues = listOf("groupId" to groupId)
-            ).map { it.parseGroupPreKey() }
+            ).map { it.parseGPersonalGroupKey() }
         }
     }
 
@@ -80,6 +81,10 @@ class CryptoKeyRemoteDataSource constructor(
 
     private fun Map<String, Any>.parseGroupPreKey(): PersonalPreKeyRaw {
         return PersonalPreKeyRaw.from(this)
+    }
+
+    private fun Map<String, Any>.parseGPersonalGroupKey(): PersonalGroupKeyRaw {
+        return PersonalGroupKeyRaw.from(this)
     }
 
 }

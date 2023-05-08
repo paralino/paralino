@@ -10,7 +10,7 @@ import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
-import app.paralino.core.models.raw.PersonalPreKeyRaw
+import app.paralino.core.models.raw.PersonalGroupKeyRaw
 import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.user.UserRepository
@@ -29,7 +29,7 @@ class CryptoKEKRepository(
 
     private var cachedGroupKeys = MutableStateFlow<List<GroupCryptoKeyDataRaw>>(emptyList())
     private var cachedMemberKeys = MutableStateFlow<List<GroupMemberCryptoKeyDataRaw>>(emptyList())
-    private var cachedPreKeys = MutableStateFlow<List<PersonalPreKeyRaw>>(emptyList())
+    private var cachedPersonalGroupKeys = MutableStateFlow<List<PersonalGroupKeyRaw>>(emptyList())
 
     suspend fun getGroupKeys(): List<GroupCryptoKeyDataRaw> {
         return cachedGroupKeys.value.ifEmpty {
@@ -49,11 +49,11 @@ class CryptoKEKRepository(
         }
     }
 
-    suspend fun getPreKeys(): List<PersonalPreKeyRaw> {
-        return cachedPreKeys.value.ifEmpty {
-            local.getAllPreKeys()
+    suspend fun getPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
+        return cachedPersonalGroupKeys.value.ifEmpty {
+            local.getAllPersonalGroupKeys()
                 .firstOrNull()
-                ?.also { cachedPreKeys.value = it }
+                ?.also { cachedPersonalGroupKeys.value = it }
                 ?: emptyList()
         }
     }
@@ -66,11 +66,11 @@ class CryptoKEKRepository(
             logg.tag("tag_crypto_key").w("refreshing member keys")
             val memberKeys = remote.getAllGroupMemberKeys()
             logg.tag("tag_crypto_key").w("refreshing pre keys")
-            val preKeys = remote.getAllGroupPreKeys()
+            val preKeys = remote.getAllPersonalGroupKeys()
 
             cachedGroupKeys.value = groupKeys
             cachedMemberKeys.value = memberKeys
-            cachedPreKeys.value = preKeys
+            cachedPersonalGroupKeys.value = preKeys
 
             local.recreateAllGroupKeys(groupKeys, memberKeys, preKeys)
 
@@ -95,11 +95,11 @@ class CryptoKEKRepository(
             logg.tag("tag_crypto_key_group_member").w("refreshing only group member key")
             val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
             logg.tag("tag_crypto_key_group_member").w("refreshing group pre keys")
-            val preKeys = remote.getAllGroupPreKeysForGroup(groupId)
+            val preKeys = remote.getAllPersonalGroupKeysForGroup(groupId)
             logg.tag("tag_crypto_key_group_member").w("updated member (${memberKeys.size}), pre (${preKeys.size}) keys")
 
             cachedMemberKeys.value = emptyList()
-            cachedPreKeys.value = emptyList()
+            cachedPersonalGroupKeys.value = emptyList()
             local.recreateMemberKeysForGroup(groupId, memberKeys, preKeys)
         }
     }
@@ -111,13 +111,13 @@ class CryptoKEKRepository(
             logg.tag("tag_crypto_key_group").d("refreshing group member key")
             val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
             logg.tag("tag_crypto_key_group").w("refreshing group pre keys")
-            val preKeys = remote.getAllGroupPreKeysForGroup(groupId)
+            val preKeys = remote.getAllPersonalGroupKeysForGroup(groupId)
 
             logg.tag("tag_crypto_key_group").d("Got new group (${groupKeys.size}), member (${memberKeys.size}), pre (${preKeys.size}) for group $groupId")
 
             cachedGroupKeys.value = emptyList()
             cachedMemberKeys.value = emptyList()
-            cachedPreKeys.value = emptyList()
+            cachedPersonalGroupKeys.value = emptyList()
             local.recreateGroupKeyForGroup(groupId, groupKeys, memberKeys, preKeys)
 
             logg.tag("tag_crypto_key_group").d("updated group and member keys for group")
@@ -335,7 +335,7 @@ class CryptoKEKRepository(
     suspend fun getMyPreKeyForGroup(
         groupId: String
     ): UserGroupPersonalKeyPair {
-        val allKeys = getPreKeys()
+        val allKeys = getPersonalGroupKeys()
         val key = allKeys.firstOrNull { it.groupId == groupId }
             ?.encryptedUserKeys
             ?: return UserGroupPersonalKeyPair.Error.Missing
@@ -358,7 +358,7 @@ class CryptoKEKRepository(
     suspend fun deleteAllKeysForGroup(groupId: String) {
         cachedGroupKeys.value = cachedGroupKeys.value.filter { it.groupId != groupId }
         cachedMemberKeys.value = cachedMemberKeys.value.filter { it.groupId != groupId }
-        cachedPreKeys.value = cachedPreKeys.value.filter { it.groupId != groupId }
+        cachedPersonalGroupKeys.value = cachedPersonalGroupKeys.value.filter { it.groupId != groupId }
         local.deleteAllKeysForGroup(groupId)
     }
 
@@ -373,7 +373,7 @@ class CryptoKEKRepository(
     suspend fun clearKeys() {
         cachedMemberKeys.value = emptyList()
         cachedGroupKeys.value = emptyList()
-        cachedPreKeys.value = emptyList()
+        cachedPersonalGroupKeys.value = emptyList()
         local.deleteAllKeys()
     }
 }

@@ -166,6 +166,9 @@ fun PersonalCodeScreen(
                             vm.activatePersonalCode(code = it)
                         }
                     }
+                    this.item(key = "inactive_spacer") {
+                        Spacer(modifier = Modifier.size(40.dp))
+                    }
                 }
 
                 if (state.data.inactiveCodes.isNotEmpty() || state.data.activeCode != null) {

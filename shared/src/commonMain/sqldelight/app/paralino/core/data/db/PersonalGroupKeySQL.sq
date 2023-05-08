@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS personalGroupKeyEntity (
+`id` TEXT NOT NULL PRIMARY KEY ,
+`ownerUserId` TEXT NOT NULL,
+`encryptedUserKeys` TEXT NOT NULL,
+`groupId` TEXT NOT NULL,
+`version` INTEGER NOT NULL
+);
+
+createKey:
+INSERT OR REPLACE INTO personalGroupKeyEntity
+VALUES ?;
+
+getAllKeys:
+SELECT * FROM personalGroupKeyEntity;
+
+deleteForGroup:
+DELETE FROM personalGroupKeyEntity
+WHERE personalGroupKeyEntity.groupId = ?;
+
+clearAll:
+DELETE FROM personalGroupKeyEntity;

@@ -29,7 +29,7 @@ class AppDatabaseHelper(
     val configQueries = database.configDataSQLQueries
     val blocklistQueries = database.blocklistSQLQueries
     val userKeysQueries = database.userKeysSQLQueries
-    val preKeysQueries = database.personalPreKeySQLQueries
+    val personalGroupKeysQueries = database.personalGroupKeySQLQueries
 
 
     internal fun clearDatabase() {

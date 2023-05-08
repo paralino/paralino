@@ -11,7 +11,6 @@ data class PersonalPreKeyRaw(
     val encryptedUserKeys: String,
     val integrity: String,
     val encryptedCodeKeyData: String?,
-    val groupId: String?
 ) {
 
     companion object {
@@ -22,7 +21,6 @@ data class PersonalPreKeyRaw(
                 encryptedUserKeys = map["encryptedUserKeys"] as String,
                 integrity = map["integrity"] as String,
                 encryptedCodeKeyData = map["encryptedCodeKeyData"] as? String?,
-                groupId = map["groupId"] as? String?,
             )
         }
     }
