@@ -279,7 +279,7 @@ class CryptoKEKRepository(
             // filter keys that memberUserId created for current user
             .filter { it.groupId == groupId && it.ownerUserId == memberUserId && it.memberUserId == currentUserId }
             .let { keys ->
-                logg.tag("tag_crypto_key_group_member").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
+                logg.tag("tag_crypto_key_group_member_public").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
                 keys
             }
             .maxByOrNull { it.version ?: -1 }
@@ -312,14 +312,14 @@ class CryptoKEKRepository(
                         is UserGroupPersonalKeyPair.Valid -> myPreKey.key
                     }
                     myGroupKeyPair.publicKey.takeIf { it == key }.also {
-                        if(it == null) logg.tag("tag_crypto_key_group_member").w("User ${keyRaw.ownerUserId} own public key does not match in group ${keyRaw.groupId}")
+                        if(it == null) logg.tag("tag_crypto_key_group_member_public").w("User ${keyRaw.ownerUserId} own public key does not match in group ${keyRaw.groupId}")
                     } ?: return GroupMemberMainPublicKey.Error.WrongPublicKey
                 } else {
                     key
                 }
             } ?: return GroupMemberMainPublicKey.Error.UnverifiedPublicKey
         } catch (e: Exception) {
-            logg.tag("tag_crypto_key_group_member").w("Can not decrypt user ${keyRaw.ownerUserId} public key in group ${keyRaw.groupId}")
+            logg.tag("tag_crypto_key_group_member_public").w("Can not decrypt user ${keyRaw.ownerUserId} public key in group ${keyRaw.groupId}")
             return GroupMemberMainPublicKey.Error.InvalidPublicKey
         }
 

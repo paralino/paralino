@@ -122,6 +122,7 @@ class UpdateUserDataUseCase constructor(
             return
         }
 
+        // FIXME Same token is always sent to backend on every app start
         val unsyncedToken = config.pushTokenUnsynced
             .takeIf { it.isNotBlank() }
             ?: let {
