@@ -139,8 +139,8 @@ class CryptoKEKRepository(
         keyVersion: Long? = null
     ): GroupMasterKey {
         val allGroupKeys = getGroupKeys()
-        val keyRaw = allGroupKeys
             .filter { it.groupId == groupId }
+        val keyRaw = allGroupKeys
             .let { keys ->
                 val matchingKey = if (keyVersion != null)
                 // if key version is passed get matching key
@@ -153,7 +153,6 @@ class CryptoKEKRepository(
 
                 matchingKey
             }
-            ?: return GroupMasterKey.Error.Missing
 
         val ownerPublicKey = when(val ownerPublicKey = getMemberPublicKey(groupId, memberUserId = groupOwnerId)) {
             is GroupMemberMainPublicKey.Error -> {
@@ -170,17 +169,34 @@ class CryptoKEKRepository(
         }
 
         val groupKey = try {
-            cryptoCore.decryptKeyWithKeyPair(
-                key = keyRaw.encryptedGroupKey,
-                myPrivateKey = myPreKey.privateKey,
-                publicKey = ownerPublicKey
-            )
+            if(keyRaw != null) {
+                cryptoCore.decryptKeyWithKeyPair(
+                    key = keyRaw.encryptedGroupKey,
+                    myPrivateKey = myPreKey.privateKey,
+                    publicKey = ownerPublicKey
+                ) to keyRaw.version
+            } else {
+                // Try to find matching key
+                allGroupKeys
+                    .sortedByDescending { it.version }
+                    .firstNotNullOfOrNull { key ->
+                        try {
+                            cryptoCore.decryptKeyWithKeyPair(
+                                key = key.encryptedGroupKey,
+                                myPrivateKey = myPreKey.privateKey,
+                                publicKey = ownerPublicKey
+                            ) to key.version
+                        } catch (e: Exception) {
+                            null
+                        }
+                    } ?: return GroupMasterKey.Error.Missing
+            }
         } catch (e: Exception) {
             logg.tag("tag_crypto_key_group").d("Invalid group key for group $groupId")
             return GroupMasterKey.Error.Invalid
         }
 
-        return GroupMasterKey.Valid(groupKey, keyRaw.version)
+        return GroupMasterKey.Valid(groupKey.first, groupKey.second)
     }
 
     suspend fun getAllGroupKeys(groupId: String): List<GroupMasterKey.Valid> {
