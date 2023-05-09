@@ -22,16 +22,25 @@ class CryptoFrameworkProvider: ICryptoServiceProvider, ICryptoHashProvider {
         sodium = Sodium()
     }
     
-    func createNewAsymmetricKey() -> KeyPair {
-        let keys = sodium.sign.keyPair()
-        return KeyPair(
-            privateKey: keys!.secretKey.toHex(sodium),
-            publicKey: keys!.secretKey.toHex(sodium)
-        )
-    }
     
     func createNewSymmetricKey() -> String {
         return sodium.secretBox.key().toHex(sodium)
+    }
+    
+    func createNewCryptoKeyPair() -> KeyPair {
+        let keys = sodium.box.keyPair()
+        return KeyPair(
+            privateKey: keys!.secretKey.toHex(sodium),
+            publicKey: keys!.publicKey.toHex(sodium)
+        )
+    }
+    
+    func createNewSignatureKeyPair() -> KeyPair {
+        let keys = sodium.sign.keyPair()
+        return KeyPair(
+            privateKey: keys!.secretKey.toHex(sodium),
+            publicKey: keys!.publicKey.toHex(sodium)
+        )
     }
     
     func decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String) -> String {
