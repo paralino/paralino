@@ -21,25 +21,25 @@ class PersonalCodesRepository constructor(
 
     suspend fun createAndSavePersonalCode() {
         triggerRemoteOnly {
-            createPersonalCode()
+            createPersonalCode(null)
             remote.getMyPersonalCodes()
         }.also {
             local.replacePersonalCodes(it)
         }
     }
 
-    private suspend fun createPersonalCode() {
+    private suspend fun createPersonalCode(userMeData: UserMeData? = null) {
         val user = userRepo.cachedUser
             ?: throw Throwable("User not valid")
 
         return triggerRemoteOnly {
             try {
-                remote.tryCreatingCode(user)
+                remote.tryCreatingCode(user, userMeData)
             } catch (e: Exception) {
                 if (e.asRemoteException() is ConflictException) {
                     try {
                         // in case of conflict try once more
-                        remote.tryCreatingCode(user)
+                        remote.tryCreatingCode(user, userMeData)
                     } catch (e: Exception) {
                         if (e.asRemoteException() is ConflictException) {
                             // if there is conflict again, throw generic exception
@@ -114,8 +114,7 @@ class PersonalCodesRepository constructor(
                     userMeData = userMeData
                 )
             } else {
-                // TODO pass data since user details are missing first time code is created
-                createPersonalCode()
+                createPersonalCode(userMeData)
             }
             remote.getMyPersonalCodes()
         }.also {

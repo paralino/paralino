@@ -1,7 +1,6 @@
 package app.paralino.core.repo.personal_code
 
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.DerivedPasswords
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
@@ -94,7 +93,7 @@ class PersonalCodesRemoteSource constructor(
             }
     }
 
-    suspend fun tryCreatingCode(user: UserMe) {
+    suspend fun tryCreatingCode(user: UserMe, userMeData: UserMeData?) {
 
         val personalCode = createPersonalCodeString()
         val derivedCode = cryptoCore.derivePassword(personalCode)
@@ -102,8 +101,8 @@ class PersonalCodesRemoteSource constructor(
 
         val codeUserData = PersonalCodeUserData(
             ownerUserId = user.id,
-            ownerName = user.data?.userName ?: "",
-            ownerImage = user.data?.userImage,
+            ownerName = userMeData?.userName ?: user.data?.userName ?: "",
+            ownerImage =  userMeData?.userImage ?: user.data?.userImage,
             ownerIdentityKey = myKey.publicKey,
         )
 
