@@ -16,5 +16,5 @@ dependencyResolutionManagement {
 rootProject.name = "Paralino"
 include(":androidApp")
 include(":shared")
-include(":appwrite")
-project(":appwrite").projectDir = File("appwrite-android/library")
+//include(":appwrite")
+//project(":appwrite").projectDir = File("appwrite-android/library")

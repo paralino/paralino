@@ -6,7 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 object RemoteClient {
     fun setup(client: Client, debug: Boolean): Client {
-        return client.setSelfSigned(false, client = okHttpClient(debug))
+        return client.setSelfSigned(false)
     }
 
     private fun okHttpClient(debug: Boolean): OkHttpClient {
