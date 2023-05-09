@@ -36,7 +36,7 @@ class PersonalCodeLocalDataSource(
         return database.personalCodeQueries
             .getAllCodes()
             .executeAsList()
-            .firstOrNull { it.encryptedCodeUserData != null }
+            .firstOrNull { !it.encryptedCodeUserData.isNullOrBlank() }
             ?.let { mapper.local2Core(it) }
     }
 

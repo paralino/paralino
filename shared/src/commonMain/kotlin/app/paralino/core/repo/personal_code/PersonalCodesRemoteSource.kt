@@ -4,6 +4,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.DerivedPasswords
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.group.GroupIntegrity
@@ -14,6 +15,8 @@ import app.paralino.core.models.raw.PersonalCodePreKeyData
 import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.raw.PersonalCodeResponse
 import app.paralino.core.models.raw.PersonalCodeUpdateData
+import app.paralino.core.models.raw.PersonalPreKeyRaw
+import app.paralino.core.models.raw.PersonalPreKeyUpdateData
 import app.paralino.core.models.user.PersonalCodeKeyData
 import app.paralino.core.models.user.PersonalCodeUserData
 import app.paralino.core.models.user.SimpleKeyPairData
@@ -152,6 +155,62 @@ class PersonalCodesRemoteSource constructor(
             }
     }
 
+    suspend fun restockPreKeysIfNeeded(
+        userId: String,
+        personalCode: String
+    ) {
+
+        val currentUnusedKeys = docApi.listAllDocuments(
+            databaseType = BackendDatabaseType.KEYS,
+            collectionId = remoteConfig.resourceIds.collectionPersonalIdKeysID,
+        ).map { it.parsePreKey() }
+            .filter { !it.encryptedCodeKeyData.isNullOrBlank() }
+
+        if(currentUnusedKeys.size > 3) {
+            logg.v("Found ${currentUnusedKeys.size} unused pre keys, skip restock")
+            return
+        }
+        logg.v("Found ${currentUnusedKeys.size} unused pre keys, try to restock")
+
+        val derivedCode = cryptoCore.derivePassword(personalCode)
+        val integrity = GroupIntegrity(
+            timeUtc = nowUTC().toString(),
+            // this signature will always be invalid, but we are passing it for consistency
+            // this also ensures user will always rotate keys when added to new group
+            signature = ""
+        ).let {
+            cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(it),
+                key = userKeyRepo.personalKey,
+            )
+        }
+        val keys = createPreKeys(userId, personalCode, integrity)
+
+        val data = PersonalPreKeyUpdateData(
+            personalCodeKeyId = derivedCode.loginPassword,
+            keys = keys
+        )
+
+        val payload = GenericFunctionPayload(
+            route = "restock-keys",
+            payload = data
+        )
+
+        functionsApi.runAndWait(
+            functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
+            data = BaseRemoteModule.formatter.encodeToString(payload)
+        )
+            .let {
+                if (!it.isSuccess) {
+                    throw BaseRemoteException.fromCode(
+                        null,
+                        "Unable to upload pre keys",
+                        Exception(it.stderr)
+                    )
+                }
+            }
+    }
+
     private suspend fun createPreKeys(
         userId: String,
         personalCode: String,
@@ -265,5 +324,9 @@ class PersonalCodesRemoteSource constructor(
                     )
                 }
             }
+    }
+
+    private fun Map<String, Any>.parsePreKey(): PersonalPreKeyRaw {
+        return PersonalPreKeyRaw.from(this)
     }
 }

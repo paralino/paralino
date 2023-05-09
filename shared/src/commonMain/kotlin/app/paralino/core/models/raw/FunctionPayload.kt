@@ -248,6 +248,12 @@ data class PersonalCodePreKeyData(
 )
 
 @Serializable
+data class PersonalPreKeyUpdateData(
+    val personalCodeKeyId: String,
+    val keys: List<PersonalCodePreKeyData>
+)
+
+@Serializable
 data class PersonalCodeResponse constructor(
     val userId: String,
     val encryptedCodeUserData: String,

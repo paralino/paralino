@@ -64,6 +64,7 @@ class RefreshEverythingUseCase(
                     key = executionKey,
                     time = if (forceGroupRefresh) 0 else 60_000
                 )
+                personalCodesRepo.tryToRestockPreKeys()
             }
                 .catch { }
                 .collect()
