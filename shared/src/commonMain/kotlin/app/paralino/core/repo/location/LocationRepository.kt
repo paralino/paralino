@@ -59,8 +59,9 @@ class LocationRepository constructor(
                     sharingManager.stopSharing(contract.groupId)
                     null
                 } else if(!member.isVerified) {
+                    // TODO Notify user and keep sharing contract active for cases where data is not synced yet
+                    // that way sharing could continue after refresh if member becomes verified
                     logg.d("Current member is unverified, stop sharing")
-                    sharingManager.stopSharing(contract.groupId)
                     null
                 } else {
                     MemberGroupId(
