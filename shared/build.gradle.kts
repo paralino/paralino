@@ -47,7 +47,7 @@ kotlin {
                 implementation("app.cash.sqldelight:android-driver:2.0.0-alpha05")
             }
         }
-        val androidTest by getting
+//        val androidTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
