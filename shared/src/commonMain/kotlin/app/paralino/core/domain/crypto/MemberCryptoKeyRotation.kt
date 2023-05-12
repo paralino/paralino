@@ -248,7 +248,6 @@ class MemberCryptoKeyRotation(
         if (membersThatNeedKeyUpdate.isNotEmpty()) {
             logg.tag("tag_crypto_key_group_member_rotation")
                 .d("Creating missing member keys for users (${membersThatNeedKeyUpdate.map { it.member.userId }}) in group ${remoteGroup.id}")
-            val userKey = userKeyRepo.latestKeyPair()
             val myMemberKey = cryptoKEKRepository.getMemberKey(
                 groupId = remoteGroup.id,
                 memberUserId = userRepository.cachedUserId
@@ -256,7 +255,6 @@ class MemberCryptoKeyRotation(
             createMemberKeysForSpecificMembers(
                 groupId = remoteGroup.id,
                 members = membersThatNeedKeyUpdate.map { it.member },
-                myKey = userKey,
                 // if member key is null, it will be created in next step
                 // this means that this user has no keys yet like if it just added to a group
                 currentSenderKey = myMemberKey
@@ -271,7 +269,6 @@ class MemberCryptoKeyRotation(
     private suspend fun createMemberKeysForSpecificMembers(
         groupId: String,
         members: List<MemberModel>,
-        myKey: AsymmetricCryptoKeyData,
         currentSenderKey: GroupMemberSenderKey
     ) {
         blocking {
@@ -279,6 +276,12 @@ class MemberCryptoKeyRotation(
             // if no key is passed, create new one
             val validSenderKey = currentSenderKey as? GroupMemberSenderKey.Valid?
             val newSenderKey = validSenderKey?.key ?: cryptoCore.getNewSymmetricKey()
+
+            val myKey = userKeyRepo.latestKeyPair()
+            val myExchangeKeys = cryptoKEKRepository.getMyPreKeyForGroup(groupId)
+
+            if(myExchangeKeys !is UserGroupPersonalKeyPair.Valid)
+                throw MissingMemberKeyException(groupId, config.userId)
 
             val keys = members.mapNotNull { groupMember ->
 
@@ -290,14 +293,14 @@ class MemberCryptoKeyRotation(
                 if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
                     GroupMemberKeyPayload(
                         userId = groupMember.userId,
-                        encryptedPublicKey = cryptoCore.encryptDataWithKey(
-                            data = myKey.publicKey,
-                            key = memberPublicKey.key
+                        encryptedPublicKey = cryptoCore.signData(
+                            data = myExchangeKeys.key.publicKey,
+                            myPrivateKey = myKey.privateKey
                         ),
                         encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
                             data = newSenderKey,
                             // sign with owner private key
-                            myPrivateKey = myKey.privateKey,
+                            myPrivateKey = myExchangeKeys.key.privateKey,
                             // encrypt with user public key
                             publicKey = memberPublicKey.key
                         ),
