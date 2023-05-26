@@ -1,6 +1,7 @@
 package app.paralino.core.crypto.group
 
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.GroupDeviceIntegrityEntity
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -108,10 +109,14 @@ class CryptoKeyLocalDataSource constructor(
         }
     }
 
-    suspend fun updateGroupDeviceKey(keyRaw: GroupDeviceCryptoKeyRaw) {
-        database.groupDeviceKeysQueries.transaction {
-            database.groupDeviceKeysQueries.createKey(keysMapper.remote2Local(keyRaw))
-        }
+    suspend fun getGroupDeviceIntegrity(groupId: String): GroupDeviceIntegrityEntity? {
+        return database.groupDeviceIntegrityQueries.getForGroup(groupId).executeAsOneOrNull()
+    }
+
+    suspend fun updateGroupDeviceIntegrity(groupId: String, integrity: String) {
+        database.groupDeviceIntegrityQueries.createKey(
+            GroupDeviceIntegrityEntity(id = groupId, integrity = integrity)
+        )
     }
 
     fun getAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
@@ -144,6 +149,7 @@ class CryptoKeyLocalDataSource constructor(
             database.memberKeysQueries.deleteForGroup(groupId)
             database.groupDeviceKeysQueries.deleteForGroup(groupId)
             database.personalGroupKeysQueries.deleteForGroup(groupId)
+            database.groupDeviceIntegrityQueries.deleteForGroup(groupId)
         }
     }
 
@@ -160,6 +166,7 @@ class CryptoKeyLocalDataSource constructor(
             database.memberKeysQueries.clearAll()
             database.groupDeviceKeysQueries.clearAll()
             database.personalGroupKeysQueries.clearAll()
+            database.groupDeviceIntegrityQueries.clearAll()
         }
     }
 }

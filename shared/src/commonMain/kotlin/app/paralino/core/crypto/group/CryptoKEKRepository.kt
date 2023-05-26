@@ -7,6 +7,7 @@ import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.data.db.GroupDeviceIntegrityEntity
 import app.paralino.core.logg
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -303,7 +304,7 @@ class CryptoKEKRepository(
             return GroupMemberSenderKey.Error.Invalid
         }
 
-        return GroupMemberSenderKey.Valid(memberKey, keyRaw.memberKeyVersion, keyRaw.keyIntegrity)
+        return GroupMemberSenderKey.Valid(memberKey, keyRaw.memberKeyVersion)
     }
 
     suspend fun getMemberPublicKey(
@@ -468,17 +469,14 @@ class CryptoKEKRepository(
     }
 
     suspend fun updateIntegrity(
-        locationId: String,
+        groupId: String,
         integrity: String
     ) {
-        val key = getGroupDeviceKeys().firstOrNull {
-            it.locationId == locationId
-                    && it.ownerUserId == userRepository.cachedUserId
-                    && it.memberUserId == userRepository.cachedUserId
-        }?.copy(keyIntegrity = integrity) ?: return
+        local.updateGroupDeviceIntegrity(groupId, integrity)
+    }
 
-        local.updateGroupDeviceKey(key)
-        cachedGroupDeviceKeys.value = emptyList()
+    suspend fun getDeviceIntegrityForGroup(groupId: String): String? {
+        return local.getGroupDeviceIntegrity(groupId)?.integrity
     }
 
     suspend fun deleteAllKeysForGroup(groupId: String) {

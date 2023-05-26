@@ -5,8 +5,7 @@ CREATE TABLE IF NOT EXISTS groupDeviceKeysEntity (
 `ownerUserId` TEXT NOT NULL,
 `locationId` TEXT NOT NULL,
 `memberKeyVersion` INTEGER NOT NULL,
-`encryptedSenderKey` TEXT NOT NULL,
-`keyIntegrity` TEXT
+`encryptedSenderKey` TEXT NOT NULL
 );
 
 createKey:

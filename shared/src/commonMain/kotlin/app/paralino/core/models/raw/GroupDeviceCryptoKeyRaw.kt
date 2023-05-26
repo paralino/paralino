@@ -13,7 +13,6 @@ data class GroupDeviceCryptoKeyRaw constructor(
     val locationId: String,
     val memberKeyVersion: Long,
     val encryptedSenderKey: String,
-    val keyIntegrity: String?
 ) {
     companion object {
         fun from(map: Map<String, Any>): GroupDeviceCryptoKeyRaw {
@@ -25,7 +24,6 @@ data class GroupDeviceCryptoKeyRaw constructor(
                 locationId = map["locationId"] as String,
                 memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
                 encryptedSenderKey = map["encryptedSenderKey"] as String,
-                keyIntegrity = null
             )
         }
     }

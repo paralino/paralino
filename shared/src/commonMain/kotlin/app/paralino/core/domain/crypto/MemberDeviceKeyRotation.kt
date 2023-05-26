@@ -41,7 +41,6 @@ class MemberDeviceKeyRotation(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val cryptoKEKRepository: CryptoKEKRepository,
     private val validityVerification: GroupValidityVerification,
-    private val userMemberIdUseCase: UserMemberIdUseCase
 ) : ILimitedExecution<String> {
 
     override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
@@ -55,6 +54,12 @@ class MemberDeviceKeyRotation(
         if (!remoteGroup.isGroupVerified) {
             logg.tag("tag_crypto_key_group_device_rotation")
                 .v("Group ${remoteGroup.id} not verified")
+            return false
+        }
+
+        if(remoteGroup.currentDeviceLocation == null) {
+            logg.tag("tag_crypto_key_group_device_rotation")
+                .v("Current device doesn't have location in ${remoteGroup.id}, skip key rotation")
             return false
         }
 
@@ -81,7 +86,7 @@ class MemberDeviceKeyRotation(
 
         if (force || deviceIntegrity == IntegrityResult.VALID_EXPIRED || unverifiedMembersRotation) {
             logg.tag("tag_crypto_key_group_device_rotation")
-                .w("group member key is deprecated - rotating: ${remoteGroup.id}")
+                .w("member device key is deprecated - rotating: ${remoteGroup.id}")
 
             if (isProcessing(remoteGroup.id)) {
                 logg.tag("tag_crypto_key_group_device_rotation")
@@ -109,14 +114,13 @@ class MemberDeviceKeyRotation(
         group: UserGroupWithMembers
     ) {
 
+        val currentDeviceLocation = group.currentDeviceLocation!!
+
         val groupKey =
             cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId, keyVersion = null)
 
         if (groupKey !is GroupMasterKey.Valid)
             throw MissingGroupKeyException(group.id)
-
-        val currentDeviceLocation =
-            userMemberIdUseCase.getCurrentLocationForGroup(group.id) ?: return
 
         val newLocationData = getNewLocationData(
             group = group,
@@ -164,7 +168,7 @@ class MemberDeviceKeyRotation(
                 )
             }
             cryptoKEKRepository.updateIntegrity(
-                locationId = newLocationData.locationId,
+                groupId = group.id,
                 integrity = groupDeviceIntegrity
             )
         }
@@ -173,15 +177,14 @@ class MemberDeviceKeyRotation(
     private suspend fun getNewLocationData(
         group: UserGroupWithMembers,
         groupKey: GroupMasterKey.Valid,
-        currentDeviceLocation: MemberLocation?,
+        currentDeviceLocation: MemberLocation,
         forceSenderKeyCreation: Boolean = false
     ): MemberLocationDataPayload {
 
         // rotate current keys if location is available
         // keys will be rotated anyway when location sharing restarts
 
-        val locationDataValid = when (currentDeviceLocation?.locationData) {
-            null,
+        val locationDataValid = when (currentDeviceLocation.locationData) {
             CryptoResource.MissingKey,
             CryptoResource.NotInitialized,
             is CryptoResource.Ready -> true
@@ -197,7 +200,7 @@ class MemberDeviceKeyRotation(
         }
 
         val newLocationData = safeLet(
-            p1 = currentDeviceLocation?.locationData?.data,
+            p1 = currentDeviceLocation.locationData.data,
             p2 = senderKeys.first,
             block = { locationData, key ->
                 suspend {
@@ -210,10 +213,10 @@ class MemberDeviceKeyRotation(
         )?.invoke()
 
         return MemberLocationDataPayload(
-            locationId = currentDeviceLocation?.id ?: "",
+            locationId = currentDeviceLocation.id,
             deviceId = config.deviceId,
             groupKeyVersion = groupKey.version,
-            deviceData = currentDeviceLocation?.deviceData?.data?.let {
+            deviceData = currentDeviceLocation.deviceData.data?.let {
                 cryptoCore.encryptDataWithKey(
                     BaseRemoteModule.formatter.encodeToString(it),
                     groupKey.key

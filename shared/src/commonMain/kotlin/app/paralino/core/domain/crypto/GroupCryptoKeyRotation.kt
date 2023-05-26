@@ -51,7 +51,7 @@ class GroupCryptoKeyRotation constructor(
         return if(rotateGroupAndMemberKeysIfNeeded(remoteGroup, force)) {
            true
         } else {
-            memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false)
+            memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false) ||
             deviceKeyRotation.rotateDeviceKeys(remoteGroup, force = false)
         }
     }

@@ -63,7 +63,6 @@ class GroupKeysMapper {
             locationId = model.locationId,
             memberKeyVersion = model.memberKeyVersion,
             encryptedSenderKey = model.encryptedSenderKey,
-            keyIntegrity = model.keyIntegrity
         )
     }
 
@@ -76,7 +75,6 @@ class GroupKeysMapper {
             locationId = model.locationId,
             memberKeyVersion = model.memberKeyVersion,
             encryptedSenderKey = model.encryptedSenderKey,
-            keyIntegrity = model.keyIntegrity
         )
     }
 

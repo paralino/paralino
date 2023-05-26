@@ -203,31 +203,16 @@ class GroupValidityVerification(
     }
 
     suspend fun checkIntegrityForDeviceKey(group: UserGroupWithMembers): IntegrityResult {
-        val locationId = group.members.firstOrNull { it.member.userId == config.userId }?.locations?.firstOrNull {
-            it.deviceId == config.deviceId
-        }?.id ?: return IntegrityResult.CORRUPTED
 
-        val keyIntegrity = cryptoKEKRepo.getMemberSenderKey(
-            groupId = group.id,
-            memberUserId = config.userId,
-            locationId = locationId
-        )
-
-        when(keyIntegrity) {
-            GroupMemberSenderKey.Error.Invalid -> return IntegrityResult.CORRUPTED
-            is GroupMemberSenderKey.Error.InvalidOwnerPublicKey -> return IntegrityResult.CORRUPTED
-            is GroupMemberSenderKey.Error.InvalidPersonalKeyPair -> return IntegrityResult.CORRUPTED
-            GroupMemberSenderKey.Error.MissingKeys -> return IntegrityResult.VALID_EXPIRED
-            GroupMemberSenderKey.Error.MissingSenderKey -> return IntegrityResult.VALID_EXPIRED
-            is GroupMemberSenderKey.Valid -> {
-                if(keyIntegrity.integrity.isNullOrBlank())
-                    return IntegrityResult.VALID_EXPIRED
-            }
+        val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = group.id)
+        if(keyIntegrity.isNullOrBlank()) {
+            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id} (missing)")
+            return IntegrityResult.VALID_EXPIRED
         }
 
         val integrity = getIntegrity(
             groupId = group.group.id,
-            myIntegrity = keyIntegrity.integrity,
+            myIntegrity = keyIntegrity,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = false
         )

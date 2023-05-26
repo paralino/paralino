@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS groupDeviceIntegrityEntity (
+`id` TEXT NOT NULL PRIMARY KEY,
+`integrity` TEXT
+);
+
+createKey:
+INSERT OR REPLACE INTO groupDeviceIntegrityEntity
+VALUES ?;
+
+getAll:
+SELECT * FROM groupDeviceIntegrityEntity;
+
+getForGroup:
+SELECT * FROM groupDeviceIntegrityEntity
+WHERE groupDeviceIntegrityEntity.id = :groupId;
+
+deleteForGroup:
+DELETE FROM groupDeviceIntegrityEntity
+WHERE groupDeviceIntegrityEntity.id = ?;
+
+clearAll:
+DELETE FROM groupDeviceIntegrityEntity;

@@ -78,7 +78,7 @@ class MemberCryptoKeyRotation(
             return true
         } else {
             logg.tag("tag_crypto_key_group_member_rotation")
-                .w("not rotating member keys, create missing instead: ${remoteGroup.id}")
+                .w("not rotating member keys for group: ${remoteGroup.id}")
             return false
         }
     }
