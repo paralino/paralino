@@ -29,10 +29,10 @@ class GroupMapperCore constructor(
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
             groupOwnerId = model.ownerUserId,
-            keyVersion = model.keyVersion
+            keyVersion = model.groupKeyVersion
         )
         if(groupKey !is GroupMasterKey.Valid)
-            throw MissingGroupKeyException(model.id, model.keyVersion)
+            throw MissingGroupKeyException(model.id, model.groupKeyVersion)
 
         val groupData = when (model.data) {
             is CryptoResource.Ready -> {
@@ -47,7 +47,7 @@ class GroupMapperCore constructor(
         return GroupDocumentRaw(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             data = groupData,
             planType = model.planType.key
         )
@@ -58,11 +58,11 @@ class GroupMapperCore constructor(
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
             groupOwnerId = model.ownerUserId,
-            keyVersion = model.keyVersion
+            keyVersion = model.groupKeyVersion
         )
 
         if(groupKey !is GroupMasterKey.Valid)
-            logg.e(MissingGroupKeyException(model.id, model.keyVersion))
+            logg.e(MissingGroupKeyException(model.id, model.groupKeyVersion))
 
         val groupData = if (groupKey is GroupMasterKey.Valid) {
             try {
@@ -84,7 +84,7 @@ class GroupMapperCore constructor(
         return UserGroup(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             data = groupData,
             planType = PlanType.fromKey(model.planType) ?: PlanType.fallback,
             memberCount = memberCount,

@@ -16,7 +16,6 @@ data class MemberModel constructor(
     val groupId: String,
     val userId: String,
     val groupKeyVersion: Long,
-    val memberKeyVersion: Long,
     val verification: String,
     @Contextual
     val memberData: CryptoResource<MemberModelData>,

@@ -21,7 +21,7 @@ class GroupsMapperLocal(
         return GroupDocumentRaw(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             data = model.data_,
             planType = model.planType
         )
@@ -31,7 +31,7 @@ class GroupsMapperLocal(
         return GroupEntity(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             data_ = model.data,
             planType = model.planType
         )

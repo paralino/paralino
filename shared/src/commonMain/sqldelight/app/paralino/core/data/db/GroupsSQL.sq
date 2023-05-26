@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS groupEntity (
 `id` TEXT NOT NULL PRIMARY KEY ,
 `ownerUserId` TEXT NOT NULL,
-`keyVersion` INTEGER NOT NULL,
+`groupKeyVersion` INTEGER NOT NULL,
 `data` TEXT NOT NULL,
 `planType` TEXT NOT NULL
 );

@@ -73,6 +73,7 @@ data class UpdateGroupKeysPayload constructor(
     val integrity: String,
     val keyVersionsToKeep: List<Long>,
     val encryptedGroupKeys: List<GroupKeysPayload>,
+    val groupKeyVersion: Long,
     val groupData: String,
     val places: List<GroupPlaceDataUpdatePayload>
 )
@@ -86,7 +87,8 @@ data class GroupPlaceDataUpdatePayload(
 @Serializable
 data class GroupKeysPayload(
     val userId: String,
-    val encryptedGroupKey: String
+    val encryptedGroupKey: String,
+    val memberKeyVersion: Long
 )
 
 @Serializable

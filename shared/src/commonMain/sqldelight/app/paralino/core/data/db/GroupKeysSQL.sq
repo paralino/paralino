@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS groupKeysEntity (
 `id` TEXT NOT NULL PRIMARY KEY,
 `groupId` TEXT NOT NULL,
 `memberUserId` TEXT NOT NULL,
-`version` INTEGER NOT NULL,
+`groupKeyVersion` INTEGER NOT NULL,
+`memberKeyVersion` INTEGER NOT NULL,
 `encryptedGroupKey` TEXT NOT NULL
 );
 

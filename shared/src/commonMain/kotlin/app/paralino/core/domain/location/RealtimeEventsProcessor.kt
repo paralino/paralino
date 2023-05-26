@@ -90,7 +90,7 @@ class RealtimeEventsProcessor constructor(
                     memberUserId = member.ownerUserId
                 )
 
-                if (memberKey !is GroupMemberMainPublicKey.Valid || member.memberKeyVersion != memberKey.version) {
+                if (memberKey !is GroupMemberMainPublicKey.Valid) {
                     logg.tag("realtime_events")
                         .v("Refresh group - update member (${member.id}) event in group ${member.groupId}")
                     // this is either new member so we are missing keys, or keys are obsolete

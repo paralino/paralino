@@ -17,7 +17,7 @@ import kotlinx.serialization.Serializable
 data class UserGroup constructor(
     val id: String,
     val ownerUserId: String,
-    val keyVersion: Long,
+    val groupKeyVersion: Long,
     @Contextual
     val data: CryptoResource<UserGroupData>,
     val planType: PlanType,
@@ -54,7 +54,7 @@ data class UserGroupWithMembers constructor(
     val isGroupVerified get() = group.isVerified && memberByUserId(config.userId)!!.isVerified
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
-    val keyVersion: Long get() = group.keyVersion
+    val groupKeyVersion: Long get() = group.groupKeyVersion
     val data: CryptoResource<UserGroupData> get() = group.data
     val memberCount: Int get() = members.size
 

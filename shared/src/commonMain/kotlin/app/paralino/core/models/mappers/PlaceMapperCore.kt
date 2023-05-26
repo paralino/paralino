@@ -26,11 +26,11 @@ class PlaceMapperCore constructor(
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.groupId,
-            keyVersion = model.keyVersion
+            keyVersion = model.groupKeyVersion
         )
 
         if(groupKey !is GroupMasterKey.Valid)
-            throw MissingGroupKeyException(model.groupId, model.keyVersion)
+            throw MissingGroupKeyException(model.groupId, model.groupKeyVersion)
 
         val placeData = when (model.data) {
             is CryptoResource.Ready -> {
@@ -46,7 +46,7 @@ class PlaceMapperCore constructor(
             id = model.id,
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             private = model.private,
             data = placeData
         )
@@ -56,11 +56,11 @@ class PlaceMapperCore constructor(
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.groupId,
-            keyVersion = model.keyVersion
+            keyVersion = model.groupKeyVersion
         )
 
         if(groupKey !is GroupMasterKey.Valid)
-            logg.e(MissingGroupKeyException(model.id, model.keyVersion))
+            logg.e(MissingGroupKeyException(model.id, model.groupKeyVersion))
 
         val placeData = if (groupKey is GroupMasterKey.Valid) {
             try {
@@ -83,7 +83,7 @@ class PlaceMapperCore constructor(
             id = model.id,
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             private = model.private,
             data = placeData,
         )

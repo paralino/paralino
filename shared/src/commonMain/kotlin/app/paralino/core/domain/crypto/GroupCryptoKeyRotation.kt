@@ -153,8 +153,8 @@ class GroupCryptoKeyRotation constructor(
 
             val usedKeys = group.members.map { it.member.groupKeyVersion } +
                     group.members.flatMap { it.locations.map { it.groupKeyVersion } } +
-                    places.map { it.keyVersion } +
-                    group.keyVersion
+                    places.map { it.groupKeyVersion } +
+                    group.groupKeyVersion
 
             val keys = group.members.mapNotNull { groupMember ->
 
@@ -171,7 +171,8 @@ class GroupCryptoKeyRotation constructor(
                             myPrivateKey = myExchangeKeys.key.privateKey,
                             // encrypt with user public key
                             publicKey = memberPublicKey.key
-                        )
+                        ),
+                        memberKeyVersion = memberPublicKey.version
                     )
                 } else {
                     null
@@ -198,6 +199,7 @@ class GroupCryptoKeyRotation constructor(
                 integrity = groupIntegrity,
                 keyVersionsToKeep = usedKeys.distinct(),
                 encryptedGroupKeys = keys,
+                groupKeyVersion = cryptoKEKRepository.getLatestGroupKeyVersion(group.id) ?: 0,
                 groupData = groupData,
                 places = placesData
             )

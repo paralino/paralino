@@ -154,7 +154,7 @@ class CryptoKEKRepository(
     }
 
     suspend fun getLatestGroupKeyVersion(groupId: String): Long? {
-        return getGroupKeys().filter { it.groupId == groupId }.maxByOrNull { it.version }?.version
+        return getGroupKeys().filter { it.groupId == groupId }.maxByOrNull { it.groupKeyVersion }?.groupKeyVersion
     }
 
     suspend fun getGroupKey(groupId: String, keyVersion: Long?): GroupMasterKey {
@@ -173,10 +173,10 @@ class CryptoKEKRepository(
             .let { keys ->
                 val matchingKey = if (keyVersion != null)
                 // if key version is passed get matching key
-                    keys.firstOrNull { it.version == keyVersion }
+                    keys.firstOrNull { it.groupKeyVersion == keyVersion }
                 else
                 // otherwise get latest key
-                    keys.maxByOrNull { it.version }
+                    keys.maxByOrNull { it.groupKeyVersion }
 
 //                logg.tag("tag_crypto_key_group").d("group keys count: ${allGroupKeys.size} - ${keys.size} for group $groupId, with version ($keyVersion) match: ${matchingKey != null}")
 
@@ -190,31 +190,31 @@ class CryptoKEKRepository(
             is GroupMemberMainPublicKey.Valid -> { ownerPublicKey }
         }
 
-        val myPreKey = when(val myPreKey = getMyPreKeyForGroup(groupId, version = ownerPublicKey.version)) {
-            is UserGroupPersonalKeyPair.Error -> {
-                return GroupMasterKey.Error.InvalidPersonalKeyPair(myPreKey)
-            }
-            is UserGroupPersonalKeyPair.Valid -> { myPreKey.key }
-        }
-
         val groupKey = try {
             if(keyRaw != null) {
+                val myPreKey = when(val myPreKey = getMyPreKeyForGroup(groupId, version = keyRaw.memberKeyVersion)) {
+                    is UserGroupPersonalKeyPair.Error -> {
+                        return GroupMasterKey.Error.InvalidPersonalKeyPair(myPreKey)
+                    }
+                    is UserGroupPersonalKeyPair.Valid -> { myPreKey.key }
+                }
                 cryptoCore.decryptKeyWithKeyPair(
                     key = keyRaw.encryptedGroupKey,
                     myPrivateKey = myPreKey.privateKey,
                     publicKey = ownerPublicKey.key
-                ) to keyRaw.version
+                ) to keyRaw.groupKeyVersion
             } else {
                 // Try to find matching key
                 allGroupKeys
-                    .sortedByDescending { it.version }
+                    .sortedByDescending { it.groupKeyVersion }
                     .firstNotNullOfOrNull { key ->
                         try {
+                            val myPreKey = getMyPreKeyForGroup(groupId, version = key.memberKeyVersion).key
                             cryptoCore.decryptKeyWithKeyPair(
                                 key = key.encryptedGroupKey,
-                                myPrivateKey = myPreKey.privateKey,
+                                myPrivateKey = myPreKey!!.privateKey,
                                 publicKey = ownerPublicKey.key
-                            ) to key.version
+                            ) to key.groupKeyVersion
                         } catch (e: Exception) {
                             null
                         }
@@ -241,7 +241,7 @@ class CryptoKEKRepository(
                 publicKey = ownerPublicKey
             )
 
-            GroupMasterKey.Valid(groupKey, it.version)
+            GroupMasterKey.Valid(groupKey, it.groupKeyVersion)
         }
     }
 
@@ -319,7 +319,7 @@ class CryptoKEKRepository(
 //                logg.tag("tag_crypto_key_group_member_public").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
 //                keys
 //            }
-            .maxByOrNull { it.version ?: -1 }
+            .maxByOrNull { it.memberKeyVersion ?: -1 }
             ?: let {
                 logg.tag("tag_crypto_key_group_member_public").d("member public key not found for group $groupId & member $memberUserId, keys count: ${allMemberKeys.size}")
                 return GroupMemberMainPublicKey.Error.Missing
@@ -370,7 +370,7 @@ class CryptoKEKRepository(
             )?.let { key ->
                 // always return own public key from secure storage but ensure no one tampered with key from server
                 if(keyRaw.ownerUserId == currentUserId) {
-                    val myGroupKeyPair = when(val myPreKey = getMyPreKeyForGroup(keyRaw.groupId, keyRaw.version)) {
+                    val myGroupKeyPair = when(val myPreKey = getMyPreKeyForGroup(keyRaw.groupId, keyRaw.memberKeyVersion)) {
                         is UserGroupPersonalKeyPair.Error -> {
                             return GroupMemberMainPublicKey.Error.InvalidPersonalKeyPair(myPreKey)
                         }
@@ -391,7 +391,7 @@ class CryptoKEKRepository(
         return GroupMemberMainPublicKey.Valid(
             key = kxPublicKey,
             signedKey = keyRaw.signedMemberKxPublicKey,
-            version = keyRaw.version,
+            version = keyRaw.memberKeyVersion,
             membershipKey = membershipPublicKey,
             signedMemberShipKey = keyRaw.signedMembershipPublicKey,
             identityKey = identityKey

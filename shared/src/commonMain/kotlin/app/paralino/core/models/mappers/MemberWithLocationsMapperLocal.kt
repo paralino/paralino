@@ -31,7 +31,6 @@ class MemberWithLocationsMapperLocal(
             ownerUserId = model.userId,
             groupId = model.groupId,
             groupKeyVersion = model.groupKeyVersion,
-            memberKeyVersion = model.memberKeyVersion,
             data = model.data_,
             verification = model.verification,
             settingsRaw = safeLet(
@@ -88,7 +87,6 @@ class MemberWithLocationsMapperLocal(
             userId = model.ownerUserId,
             groupId = model.groupId,
             groupKeyVersion = model.groupKeyVersion,
-            memberKeyVersion = model.memberKeyVersion,
             verification = model.verification,
             settings_id = model.settingsRaw?.id,
             settings_groupId = model.settingsRaw?.groupId,
