@@ -49,12 +49,12 @@ class GroupRefreshUseCase constructor(
             }
     }
 
-    private suspend fun getRemoteGroupWithMembers(groupId: String): GroupWithMembersRaw {
+    private suspend fun getRemoteGroupWithMembers(groupId: String, retry: Int = 1): GroupWithMembersRaw {
         return try {
             triggerRemoteOnly {
                 remote.getGroupWithMembers(groupId)
                     .also { cryptoKEKRepo.refreshKeysForGroup(groupId) }
-                    .let { handleGroupKeysUpdate(it) }
+                    .let { handleGroupKeysUpdate(it, retry) }
             }
         } catch (e: Exception) {
             if (e.asRemoteException() is NotFoundException) {
@@ -64,16 +64,21 @@ class GroupRefreshUseCase constructor(
         }
     }
 
-    // TODO handle recursive callback to getRemoteGroupWithMembers
-    suspend fun handleGroupKeysUpdate(group: GroupWithMembersRaw): GroupWithMembersRaw {
-        logg.tag("tag_crypto_key_group").w("group and member keys updated")
+    suspend fun handleGroupKeysUpdate(group: GroupWithMembersRaw, retry: Int = 1): GroupWithMembersRaw {
+
+        if(retry > 2) {
+            logg.tag("tag_crypto_key_group").w("Too many retries ($retry) in group refresh / key rotation")
+            return group
+        }
+
+        logg.tag("tag_crypto_key_group").w("got new group from remote, handle key rotation | retry $retry")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
 
         if(!remoteGroup.isGroupVerified)
             locationSharingManager.stopSharing(remoteGroup.id)
 
         if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = false)) {
-            return getRemoteGroupWithMembers(remoteGroup.id)
+            return getRemoteGroupWithMembers(remoteGroup.id, retry + 1)
         } else {
             return group
         }
