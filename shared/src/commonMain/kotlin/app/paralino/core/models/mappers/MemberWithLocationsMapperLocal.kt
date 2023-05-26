@@ -54,6 +54,7 @@ class MemberWithLocationsMapperLocal(
             MemberLocationRaw(
                 id = location.id,
                 deviceId = location.deviceId,
+                groupKeyVersion = location.groupKeyVersion,
                 deviceData = location.deviceData,
                 locationData = location.locationData
             )
@@ -75,6 +76,7 @@ class MemberWithLocationsMapperLocal(
             memberId = member.id,
             userId = member.ownerUserId,
             deviceId = location.deviceId,
+            groupKeyVersion = location.groupKeyVersion,
             deviceData = location.deviceData,
             locationData = location.locationData
         )

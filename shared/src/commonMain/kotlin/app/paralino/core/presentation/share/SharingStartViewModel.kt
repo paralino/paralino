@@ -145,7 +145,7 @@ class SharingStartViewModel(
         coroutineScope.launch {
             _uiState.update { it.copy(loadingAction = true) }
 
-            if(_uiState.value.devicesCount >= _uiState.value.devicesLimit && !registerDevice.canRegister(groupId = group.id)) {
+            if(_uiState.value.devicesCount >= _uiState.value.devicesLimit && !registerDevice.isDeviceAlreadyRegistered(groupId = group.id)) {
                 coroutineScope.launch {
                     _eventChannel.send(SharingStartScreenEvent.DevicesLimitReached(_uiState.value.devicesLimit))
                 }

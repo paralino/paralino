@@ -38,6 +38,7 @@ class GroupCryptoKeyRotation constructor(
     private val userRepository: UserRepository,
     private val cryptoKEKRepository: CryptoKEKRepository,
     private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
+    private val deviceKeyRotation: MemberDeviceKeyRotation,
     private val validityVerification: GroupValidityVerification
 ): ILimitedExecution<String> {
 
@@ -50,7 +51,8 @@ class GroupCryptoKeyRotation constructor(
         return if(rotateGroupAndMemberKeysIfNeeded(remoteGroup, force)) {
            true
         } else {
-            memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false, refresh = false)
+            memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false)
+            deviceKeyRotation.rotateDeviceKeys(remoteGroup, force = false)
         }
     }
 
@@ -88,12 +90,11 @@ class GroupCryptoKeyRotation constructor(
         // this will rotate and refresh both group and member keys
         try {
             rotateGroupAndMemberKeys(remoteGroup)
+        } finally {
             stopProcessing(remoteGroup.id)
-            return true
-        } catch (e: Exception) {
-            stopProcessing(remoteGroup.id)
-            throw e
         }
+
+        return true
     }
 
     private suspend fun rotateGroupAndMemberKeys(
@@ -103,20 +104,19 @@ class GroupCryptoKeyRotation constructor(
         val places = placesRepo.getPlacesForGroupLocally(remoteGroup.id).first()
 
         // 1. rotate group key
-        rotateGroupKeys(
-            group = remoteGroup,
-            places = places,
-        )
-
+        rotateGroupKeys(group = remoteGroup, places = places,)
         // new group key is required first since we are re-encrypting user data with it
-        // 2. fetch new key(s) for that group
         cryptoKEKRepository.refreshGroupKeysForGroup(groupId = remoteGroup.id)
 
-        // 3. only rotate member keys
-        memberCryptoKeyRotation.rotateMemberKeys(remoteGroup = remoteGroup, force = true, refresh = false)
+        // 2. only rotate member keys
+        val didRotateMemberKeys = memberCryptoKeyRotation.rotateMemberKeys(remoteGroup = remoteGroup, force = true)
+        if(didRotateMemberKeys)
+            cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
 
-        // 4. refresh member keys
-        cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
+        // 3. rotate current device keys
+        val didRotate = deviceKeyRotation.rotateDeviceKeys(remoteGroup = remoteGroup, force = true)
+        if(didRotate)
+            cryptoKEKRepository.refreshDeviceKeysForGroup(groupId = remoteGroup.id)
     }
 
     private suspend fun rotateGroupKeys(
@@ -125,7 +125,7 @@ class GroupCryptoKeyRotation constructor(
     ) {
         blocking {
 
-            val myExchangeKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id)
+            val myExchangeKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
 
             if(myExchangeKeys !is UserGroupPersonalKeyPair.Valid)
                 throw MissingMemberKeyException(group.id, config.userId)
@@ -152,6 +152,7 @@ class GroupCryptoKeyRotation constructor(
             }
 
             val usedKeys = group.members.map { it.member.groupKeyVersion } +
+                    group.members.flatMap { it.locations.map { it.groupKeyVersion } } +
                     places.map { it.keyVersion } +
                     group.keyVersion
 
@@ -183,7 +184,7 @@ class GroupCryptoKeyRotation constructor(
                     hashProvider = cryptoCore.hashProvider,
                     memberVerifications = group.members.map { it.member.verification },
                     groupKey = newGroupKey,
-                    encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMemberPublicKeys(group.id)
+                    encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMembershipPublicKeys(group.id)
                 )
             ).let {
                 cryptoCore.encryptDataWithKey(

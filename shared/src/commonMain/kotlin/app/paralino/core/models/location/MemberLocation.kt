@@ -18,6 +18,7 @@ data class MemberLocation constructor(
     val memberId: String,
     val userId: String,
     val deviceId: String,
+    val groupKeyVersion: Long,
 
     @Contextual
     val deviceData: CryptoResource<MemberDeviceData>,

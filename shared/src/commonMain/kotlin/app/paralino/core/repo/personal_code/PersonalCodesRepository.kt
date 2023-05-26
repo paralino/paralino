@@ -124,6 +124,8 @@ class PersonalCodesRepository constructor(
 
     suspend fun tryToRestockPreKeys() {
         try {
+            // TODO try to restock when personal screen is opened
+            // and add longer cache period for regular check
             val code = local.getActivePersonalCodesOnce()?.code?.cleanCode() ?: return
             triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(

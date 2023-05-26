@@ -12,12 +12,11 @@ data class GenericFunctionPayload<T>(
 @Serializable
 data class CreateGroupPayload constructor(
     val encryptedGroupKey: String,
-    val encryptedSenderKey: String,
     val signedPublicKey: String,
     val ownerIdentityKey: String,
     val groupMemberIntegrity: String,
-    val keyId: String,
     val encryptedUserKeys: String,
+    val keyId: String,
     val memberVerification: String,
     val groupData: String,
     val memberData: String
@@ -37,9 +36,7 @@ data class CreateGroupMemberPayload constructor(
     val groupOwnerIntegrity: String,
     val memberVerification: String,
     val userToAddId: String,
-    val encryptedSenderKey: String,
     val groupKeys: List<GroupMemberGroupKeysData>,
-    val keysForNewUser: List<GroupMemberPublicKeyPayload>,
     val memberSignedPublicKey: String,
     val memberIdentityKey: String,
     val memberData: String
@@ -99,37 +96,47 @@ data class GroupMemberPublicKeyPayload(
     val ownerIdentityKey: String,
 )
 
-
 @Serializable
-data class UpdateGroupMemberKeysPayload(
+data class UpdateGroupMemberSenderKeysPayload(
     val groupId: String,
-    val deleteOldKeys: Boolean,
-    val encryptedSenderKeys: List<GroupMemberKeyPayload>,
-    val memberData: GroupMemberDataPayload?,
+    val locationData: MemberLocationDataPayload,
 )
 
 @Serializable
-data class GroupMemberKeyPayload constructor(
-    val userId: String,
-    val encryptedPublicKey: String?,
-    val encryptedSenderKey: String,
-    val keyVersion: Long? = null
+data class UpdateOwnMemberPublicKeyPayload(
+    val groupId: String,
+    val integrity: String,
+    val memberData: String,
+    val signedPublicKey: String,
+    val encryptedMemberPersonalKeys: String,
+    val groupKeyVersion: Long,
+    val memberKeyVersion: Long,
 )
 
 @Serializable
 data class GroupMemberDataPayload constructor(
     val memberData: String,
-    val integrity: String,
-    val locations: List<MemberLocationDataPayload>,
+    val signedPublicKey: String,
+    val encryptedMemberPersonalKeys: String,
     val groupKeyVersion: Long,
-    val memberKeyVersion: Long? = null,
+    val memberKeyVersion: Long,
 )
 
 @Serializable
 data class MemberLocationDataPayload constructor(
     val locationId: String,
+    val deviceId: String,
+    val groupKeyVersion: Long,
     val deviceData: String,
     val locationData: String,
+    val encryptedSenderKeys: List<GroupSenderKeyPayload>,
+)
+
+@Serializable
+data class GroupSenderKeyPayload constructor(
+    val userId: String,
+    val memberKeyVersion: Long,
+    val encryptedSenderKey: String,
 )
 
 @Serializable
@@ -209,6 +216,8 @@ data class LocationCreatePayload constructor(
     val groupId: String,
     val deviceId: String,
     val deviceData: String?,
+    val groupKeyVersion: Long,
+    val keys: List<GroupSenderKeyPayload>
 )
 
 @Serializable

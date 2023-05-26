@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS memberLocationEntity (
 `memberId` TEXT NOT NULL,
 `userId` TEXT NOT NULL,
 `deviceId` TEXT NOT NULL,
+`groupKeyVersion` INTEGER NOT NULL,
 `deviceData` TEXT,
 `locationData` TEXT
 );

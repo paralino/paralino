@@ -1,0 +1,29 @@
+CREATE TABLE IF NOT EXISTS groupDeviceKeysEntity (
+`id` TEXT NOT NULL PRIMARY KEY,
+`groupId` TEXT NOT NULL,
+`memberUserId` TEXT NOT NULL,
+`ownerUserId` TEXT NOT NULL,
+`locationId` TEXT NOT NULL,
+`memberKeyVersion` INTEGER NOT NULL,
+`encryptedSenderKey` TEXT NOT NULL,
+`keyIntegrity` TEXT
+);
+
+createKey:
+INSERT OR REPLACE INTO groupDeviceKeysEntity
+VALUES ?;
+
+getAll:
+SELECT * FROM groupDeviceKeysEntity;
+
+deleteForGroup:
+DELETE FROM groupDeviceKeysEntity
+WHERE groupDeviceKeysEntity.groupId = ?;
+
+deleteForMember:
+DELETE FROM groupDeviceKeysEntity
+WHERE groupId = :groupId
+AND (memberUserId = :userId OR ownerUserId = :userId);
+
+clearAll:
+DELETE FROM groupDeviceKeysEntity;

@@ -41,43 +41,58 @@ class MemberMapperCore constructor(
             groupKey = groupKey
         )
 
-        val memberKey = cryptoKEKRepo.getMemberKey(
-            groupId = model.member.groupId,
-            memberUserId = model.member.ownerUserId
-        )
-
         // data encrypted with user senderKey DEK
         val locations = model.locations.map { location ->
             val deviceData = if (groupKey is GroupMasterKey.Valid) {
                 if (location.deviceData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {
-                    try {
-                        cryptoCore.decryptDataWithKey(
-                            data = location.deviceData,
-                            key = groupKey.key
-                        ).let {
-                            BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
-                        }.let {
-                            if(verification == VerificationResult.VERIFIED) {
-                                CryptoResource.Ready(it)
-                            } else {
-                                CryptoResource.UnverifiedKeyOrData(it)
+                    val deviceGroupKey = if(location.groupKeyVersion == groupKey.version) {
+                        groupKey
+                    } else {
+                        cryptoKEKRepo.getGroupKey(
+                            groupId = model.member.groupId,
+                            groupOwnerId = groupOwnerId,
+                            keyVersion = location.groupKeyVersion
+                        )
+                    }
+
+                    if (deviceGroupKey is GroupMasterKey.Valid) {
+                        try {
+                            cryptoCore.decryptDataWithKey(
+                                data = location.deviceData,
+                                key = deviceGroupKey.key
+                            ).let {
+                                BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
+                            }.let {
+                                if(verification == VerificationResult.VERIFIED) {
+                                    CryptoResource.Ready(it)
+                                } else {
+                                    CryptoResource.UnverifiedKeyOrData(it)
+                                }
                             }
+                        } catch (e: Exception) {
+                            logg.tag("tag_crypto_key_group_member")
+                                .e(
+                                    "Error decrypting device data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
+                                            "Group key version: ${model.member.groupKeyVersion} - key version: ${groupKey.version}",
+                                    e
+                                )
+                            CryptoResource.WrongKeyOrData
                         }
-                    } catch (e: Exception) {
-                        logg.tag("tag_crypto_key_group_member")
-                            .e(
-                                "Error decrypting device data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
-                                        "Group key version: ${model.member.groupKeyVersion} - key version: ${groupKey.version}",
-                                e
-                            )
-                        CryptoResource.WrongKeyOrData
+                    } else {
+                        CryptoResource.MissingKey
                     }
                 }
             } else {
                 CryptoResource.MissingKey
             }
+
+            val memberKey = cryptoKEKRepo.getMemberSenderKey(
+                groupId = model.member.groupId,
+                memberUserId = model.member.ownerUserId,
+                locationId = location.id
+            )
 
             val locationData = if (memberKey is GroupMemberSenderKey.Valid) {
                 if (location.locationData.isNullOrBlank()) {
@@ -116,6 +131,7 @@ class MemberMapperCore constructor(
                 memberId = model.member.id,
                 userId = model.member.ownerUserId,
                 deviceId = location.deviceId,
+                groupKeyVersion = location.groupKeyVersion,
                 deviceData = deviceData,
                 locationData = locationData
             )

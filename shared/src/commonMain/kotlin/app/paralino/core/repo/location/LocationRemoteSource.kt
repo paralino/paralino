@@ -73,7 +73,11 @@ class LocationRemoteSource constructor(
 
             ids.forEach {
 
-                val memberKey = cryptoKEKRepo.getMemberKey(it.groupId, config.userId)
+                val memberKey = cryptoKEKRepo.getMemberSenderKey(
+                    groupId = it.groupId,
+                    memberUserId = config.userId,
+                    locationId = it.locationId
+                )
                 if(memberKey !is GroupMemberSenderKey.Valid)
                     throw MissingMemberKeyException(it.groupId, config.userId)
 

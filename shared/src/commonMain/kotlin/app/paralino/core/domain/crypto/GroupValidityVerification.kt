@@ -3,10 +3,12 @@ package app.paralino.core.domain.crypto
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
+import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -15,6 +17,7 @@ import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.provider.IConfig
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.decodeFromString
+import org.koin.core.component.getScopeId
 
 class GroupValidityVerification(
     private val cryptoKEKRepo: CryptoKEKRepository,
@@ -164,34 +167,91 @@ class GroupValidityVerification(
     }
 
     suspend fun checkIntegrityForGroupKey(group: UserGroupWithMembers): IntegrityResult {
-        return checkIntegrity(
-            groupId = group.group.id,
-            myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
-            memberVerifications = group.members.map { it.member.verification },
-            forGroup = true
-        )
-    }
-
-    suspend fun checkIntegrityForMemberKey(group: UserGroupWithMembers): IntegrityResult {
-        return checkIntegrity(
+        val integrity = getIntegrity(
             groupId = group.group.id,
             myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = false
         )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForGroup(integrity.second)) {
+            logg.tag("integrity_check_member").v("VALID for ${group.id}")
+            return IntegrityResult.VALID
+        } else {
+            logg.tag("integrity_check_member").v("VALID_EXPIRED for ${group.id}")
+            return IntegrityResult.VALID_EXPIRED
+        }
     }
 
-    private suspend fun checkIntegrity(
+    suspend fun checkIntegrityForMemberKey(group: UserGroupWithMembers): IntegrityResult {
+        val integrity = getIntegrity(
+            groupId = group.group.id,
+            myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
+            memberVerifications = group.members.map { it.member.verification },
+            forGroup = false
+        )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForMember(integrity.second)) {
+            logg.tag("integrity_check_group").v("VALID for ${group.id}")
+            return IntegrityResult.VALID
+        } else {
+            logg.tag("integrity_check_group").v("VALID_EXPIRED for ${group.id}")
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
+
+    suspend fun checkIntegrityForDeviceKey(group: UserGroupWithMembers): IntegrityResult {
+        val locationId = group.members.firstOrNull { it.member.userId == config.userId }?.locations?.firstOrNull {
+            it.deviceId == config.deviceId
+        }?.id ?: return IntegrityResult.CORRUPTED
+
+        val keyIntegrity = cryptoKEKRepo.getMemberSenderKey(
+            groupId = group.id,
+            memberUserId = config.userId,
+            locationId = locationId
+        )
+
+        when(keyIntegrity) {
+            GroupMemberSenderKey.Error.Invalid -> return IntegrityResult.CORRUPTED
+            is GroupMemberSenderKey.Error.InvalidOwnerPublicKey -> return IntegrityResult.CORRUPTED
+            is GroupMemberSenderKey.Error.InvalidPersonalKeyPair -> return IntegrityResult.CORRUPTED
+            GroupMemberSenderKey.Error.MissingKeys -> return IntegrityResult.VALID_EXPIRED
+            GroupMemberSenderKey.Error.MissingSenderKey -> return IntegrityResult.VALID_EXPIRED
+            is GroupMemberSenderKey.Valid -> {
+                if(keyIntegrity.integrity.isNullOrBlank())
+                    return IntegrityResult.VALID_EXPIRED
+            }
+        }
+
+        val integrity = getIntegrity(
+            groupId = group.group.id,
+            myIntegrity = keyIntegrity.integrity,
+            memberVerifications = group.members.map { it.member.verification },
+            forGroup = false
+        )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForDevice(integrity.second)) {
+            logg.tag("integrity_check_device").v("VALID for ${group.id}")
+            return IntegrityResult.VALID
+        } else {
+            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id}")
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
+
+    private suspend fun getIntegrity(
         groupId: String,
         myIntegrity: String?,
         memberVerifications: List<String>,
         forGroup: Boolean,
-    ): IntegrityResult {
-
+    ): Pair<GroupIntegrity, String>? {
         val tag = "integrity_check${if (forGroup) "_group" else "_member"}"
         if (myIntegrity.isNullOrBlank()) {
             logg.tag(tag).w("CORRUPTED for $groupId - Missing own integrity")
-            return IntegrityResult.CORRUPTED
+            return null
         }
 
         val remoteIntegrity: GroupIntegrity
@@ -203,7 +263,7 @@ class GroupValidityVerification(
                 ).let { BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it) }
             } catch (e: Exception) {
                 logg.tag(tag).w("CORRUPTED for $groupId - Error parsing: ${e.message}")
-                return IntegrityResult.CORRUPTED
+                return null
             }
 
             val groupKey = cryptoKEKRepo.getGroupKey(
@@ -215,15 +275,30 @@ class GroupValidityVerification(
                 hashProvider = cryptoCore.hashProvider,
                 memberVerifications = memberVerifications,
                 groupKey = groupKey.key,
-                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMemberPublicKeys(groupId)
+                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(groupId)
             )
         } catch (e: Exception) {
             logg.tag(tag).w("CORRUPTED for $groupId - Generic error: ${e.message}")
-            return IntegrityResult.CORRUPTED
+            return null
         }
 
-        val valid = if (forGroup) remoteIntegrity.isValidForGroup(realIntegritySignature)
-        else remoteIntegrity.isValidForMember(realIntegritySignature)
+        return remoteIntegrity to realIntegritySignature
+    }
+
+    private suspend fun checkIntegrity(
+        groupId: String,
+        myIntegrity: String?,
+        memberVerifications: List<String>,
+        forGroup: Boolean,
+    ): IntegrityResult {
+
+        val tag = "integrity_check${if (forGroup) "_group" else "_member"}"
+        val integrity = getIntegrity(groupId, myIntegrity, memberVerifications, forGroup)
+            ?: return IntegrityResult.CORRUPTED
+
+        val valid = if (forGroup) integrity.first.isValidForGroup(integrity.second)
+        else integrity.first.isValidForMember(integrity.second)
+
         if (valid) {
             logg.tag(tag).v("VALID for $groupId")
             return IntegrityResult.VALID
@@ -231,6 +306,7 @@ class GroupValidityVerification(
             logg.tag(tag).v("VALID_EXPIRED for $groupId")
             return IntegrityResult.VALID_EXPIRED
         }
+
     }
 }
 

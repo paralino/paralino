@@ -1,5 +1,7 @@
 package app.paralino.core.repo.location
 
+import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
@@ -19,7 +21,9 @@ class LocationRepository constructor(
     private val remote: LocationRemoteSource,
     private val placesRepo: PlacesRepository,
     private val memberIdUseCase: UserMemberIdUseCase,
-    private val registerDeviceForSharing: RegisterDeviceForSharingUseCase
+    private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
+    private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
+    private val deviceKeyRotation: MemberDeviceKeyRotation
 ) : BaseRepository() {
 
     suspend fun getMembersByUserId(userid: String): List<MemberModel> {
@@ -41,12 +45,22 @@ class LocationRepository constructor(
             val contracts = sharingManager.allValidContracts()
             val mapped = contracts.mapNotNull { contract ->
 
+                // skip location update if key rotation is in progress
+                if(memberCryptoKeyRotation.isProcessing(contract.groupId) || deviceKeyRotation.isProcessing(contract.groupId))
+                    return@mapNotNull null
+
                 var locationId =
                     memberIdUseCase.getCurrentLocationIdForGroup(groupId = contract.groupId)
 
                 if (locationId.isNullOrBlank()) {
                     logg.d("Location is null for ${contract.groupId}, try register new device")
-                    registerDeviceForSharing.registerDevice(groupId = contract.groupId)
+                    try {
+                        registerDeviceForSharing.registerDevice(groupId = contract.groupId)
+                    } catch (e: Exception) {
+                        // TODO notify user
+                        logg.w("Error registering device for group sharing", e)
+                        return@mapNotNull null
+                    }
                 }
 
                 locationId =

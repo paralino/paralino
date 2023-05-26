@@ -28,7 +28,11 @@ class AppWriteRemoteModule(
     internal val realtime: Realtime by lazy { Realtime(client) }
 
     private val client: Client by lazy {
-        Client(app, selfSigned = false)
+        Client(
+            context = app,
+            endPoint = backendConfig.endpoint,
+            selfSigned = false
+        )
             .setEndpoint(backendConfig.endpoint)
             .setProject(backendConfig.projectId)
             .run { RemoteClient.setup(this, backendConfig.debug) }

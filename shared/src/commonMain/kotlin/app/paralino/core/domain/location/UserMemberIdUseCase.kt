@@ -34,9 +34,9 @@ class UserMemberIdUseCase constructor(
     }
 
     suspend fun getCurrentLocationForGroup(groupId: String): MemberLocation? {
-        val locationsForGroup = getCurrentUserMemberWithLocationsForGroup(groupId)!!.locations
+        val locationsForGroup = getCurrentUserMemberWithLocationsForGroup(groupId)?.locations
 
-        val locationForDeviceId = locationsForGroup.firstOrNull {
+        val locationForDeviceId = locationsForGroup?.firstOrNull {
             it.deviceId == config.deviceId
         }
 

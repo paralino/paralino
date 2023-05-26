@@ -151,7 +151,7 @@ class LocationService : Service() {
                 // We can stop service since all sharing contracts are expired
                 stopAll()
             } catch (e: Exception) {
-                logg.w("Error saving saving location")
+                logg.w("Error saving saving location", e)
             }
         }
     }

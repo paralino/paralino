@@ -22,6 +22,7 @@ class AppDatabaseHelper(
     val groupQueries = database.groupsSQLQueries
     val groupKeysQueries = database.groupKeysSQLQueries
     val memberKeysQueries = database.groupMemberKeysSQLQueries
+    val groupDeviceKeysQueries = database.groupDeviceKeysSQLQueries
     val placesQueries = database.placesSQLQueries
     val placeSettingsQueries = database.placeSettingsSQLQueries
     val memberQueries = database.membersSQLQueries

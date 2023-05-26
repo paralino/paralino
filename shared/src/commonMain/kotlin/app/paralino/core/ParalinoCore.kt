@@ -10,6 +10,7 @@ import app.paralino.core.crypto.user.UserCryptoKeyLocalDataSource
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.group.GroupCreateUseCase
 import app.paralino.core.domain.group.GroupMemberAddUseCase
@@ -153,15 +154,16 @@ val coreModule = module {
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get()) }
-    factory { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    factory { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get()) }
 
-    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
+    single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -169,7 +171,7 @@ val coreModule = module {
     single { PersonalCodesRepository(get(), get(), get()) }
     single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get()) }
-    single { LocationRepository(get(), get(), get(), get(), get(), get()) }
+    single { LocationRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PlacesRepository(get(), get(), get(), get(), get()) }
     single { AppConfigRepository(get(), get(), get(), config) }
 

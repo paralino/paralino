@@ -1,11 +1,10 @@
 CREATE TABLE IF NOT EXISTS groupMembersKeysEntity (
 `id` TEXT NOT NULL PRIMARY KEY,
 `groupId` TEXT NOT NULL,
-`memberUserId` TEXT NOT NULL,
 `ownerUserId` TEXT NOT NULL,
-`version` INTEGER,
-`encryptedSenderKey` TEXT,
-`encryptedPublicKey` TEXT NOT NULL,
+`version` INTEGER NOT NULL,
+`signedMembershipPublicKey` TEXT NOT NULL,
+`signedMemberKxPublicKey` TEXT NOT NULL,
 `ownerIdentityKey` TEXT NOT NULL
 );
 
@@ -23,7 +22,7 @@ WHERE groupMembersKeysEntity.groupId = ?;
 deleteForMember:
 DELETE FROM groupMembersKeysEntity
 WHERE groupId = :groupId
-AND (memberUserId = :userId OR ownerUserId = :userId);
+AND ownerUserId = :userId;
 
 clearAll:
 DELETE FROM groupMembersKeysEntity;

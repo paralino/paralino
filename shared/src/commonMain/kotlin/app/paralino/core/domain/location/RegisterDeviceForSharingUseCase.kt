@@ -3,7 +3,10 @@ package app.paralino.core.domain.location
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.raw.LocationCreatePayload
@@ -14,6 +17,8 @@ import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
+import app.paralino.core.utils.exceptions.MissingMemberKeyException
+import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 
 class RegisterDeviceForSharingUseCase constructor(
@@ -23,10 +28,12 @@ class RegisterDeviceForSharingUseCase constructor(
     private val userMemberId: UserMemberIdUseCase,
     private val groupLocal: UserGroupLocalDataSource,
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val cryptoCore: CryptoCore
+    private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
+    private val cryptoCore: CryptoCore,
+    private val deviceKeyRotation: MemberDeviceKeyRotation
 ) : BaseRepository() {
 
-    suspend fun canRegister(groupId: String): Boolean {
+    suspend fun isDeviceAlreadyRegistered(groupId: String): Boolean {
         return userMemberId.hasCurrentLocationIdForGroup(groupId)
     }
 
@@ -35,10 +42,14 @@ class RegisterDeviceForSharingUseCase constructor(
     ) {
         triggerRemoteOnly {
 
-            if (userMemberId.hasCurrentLocationIdForGroup(groupId)) {
-                // current device is already registered
-                return@triggerRemoteOnly
-            }
+//            if (userMemberId.hasCurrentLocationIdForGroup(groupId)) {
+//                // current device is already registered
+//                return@triggerRemoteOnly
+//            }
+
+            // refresh all group data before sharing starts
+            groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
+            val group = groupLocal.getGroupWithMembers(groupId).first()
 
             val member = userMemberId.getCurrentUserMemberForGroup(groupId)
                 ?: throw IllegalStateException("Missing member for a group $groupId")
@@ -47,6 +58,9 @@ class RegisterDeviceForSharingUseCase constructor(
 
             if(groupKey !is GroupMasterKey.Valid)
                 throw MissingGroupKeyException(member.groupId, member.groupKeyVersion)
+
+            // always rotate keys for every sharing session
+            val keyData = deviceKeyRotation.getNewSenderKeys(group = group)
 
             val deviceData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
@@ -62,6 +76,8 @@ class RegisterDeviceForSharingUseCase constructor(
                 groupId = groupId,
                 deviceId = userMemberId.getCurrentDeviceId(),
                 deviceData = deviceData,
+                groupKeyVersion = groupKey.version,
+                keys = keyData.second
             )
 
             val data = functionsApi.runAndWait(
@@ -70,8 +86,7 @@ class RegisterDeviceForSharingUseCase constructor(
             )
 
             if (data.isSuccess) {
-                memberRemote.getMember(userMemberId.getCurrentUserMemberIdForGroup(groupId)!!)
-                    .also { groupLocal.updateOrCreateMember(it) }
+                groupPreRefreshUseCase.refreshGroupWithMembers(groupId, cacheTimeMillis = 0)
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(

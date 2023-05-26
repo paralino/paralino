@@ -1,21 +1,22 @@
 package app.paralino.android.remote
 
 import io.appwrite.Client
-import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 
 object RemoteClient {
     fun setup(client: Client, debug: Boolean): Client {
-        return client.setSelfSigned(false)
-    }
-
-    private fun okHttpClient(debug: Boolean): OkHttpClient {
         val interceptor = HttpLoggingInterceptor().apply {
             level = if (debug) HttpLoggingInterceptor.Level.BASIC
             else HttpLoggingInterceptor.Level.NONE
         }
-        return OkHttpClient.Builder()
+        client.http = client
+            .http
+            .newBuilder()
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(interceptor)
             .build()
+        return client
     }
 }

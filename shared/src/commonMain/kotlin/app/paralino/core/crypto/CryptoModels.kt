@@ -14,41 +14,50 @@ data class DerivedPasswords(
 )
 
 sealed class GroupMemberSenderKey {
-    sealed class Error: GroupMemberSenderKey() {
-        object MissingKeys: Error()
-        object MissingSenderKey: Error()
-        object Invalid: Error()
-        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error): Error()
-        data class InvalidOwnerPublicKey(val reason: GroupMemberMainPublicKey.Error): Error()
+    sealed class Error : GroupMemberSenderKey() {
+        object MissingKeys : Error()
+        object MissingSenderKey : Error()
+        object Invalid : Error()
+        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error) : Error()
+        data class InvalidOwnerPublicKey(val reason: GroupMemberMainPublicKey.Error) : Error()
     }
-    data class Valid(val key: String, val version: Long?): GroupMemberSenderKey()
+
+    data class Valid(
+        val key: String,
+        val version: Long?,
+        val integrity: String?
+    ) : GroupMemberSenderKey()
 }
 
 sealed class GroupMasterKey {
-    sealed class Error: GroupMasterKey() {
-        object Missing: Error()
-        object Invalid: Error()
-        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error): Error()
-        data class InvalidOwnerPublicKey(val reason: GroupMemberMainPublicKey.Error): Error()
+    sealed class Error : GroupMasterKey() {
+        object Missing : Error()
+        object Invalid : Error()
+        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error) : Error()
+        data class InvalidOwnerPublicKey(val reason: GroupMemberMainPublicKey.Error) : Error()
     }
-    data class Valid(val key: String, val version: Long): GroupMasterKey()
+
+    data class Valid(val key: String, val version: Long) : GroupMasterKey()
 }
 
 sealed class GroupMemberMainPublicKey {
     open val key: String? = null
 
-    sealed class Error: GroupMemberMainPublicKey() {
-        object WrongIdentity: Error()
-        object InvalidPublicKey: Error()
-        object UnverifiedPublicKey: Error()
-        object WrongPublicKey: Error()
-        object Missing: Error()
-        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error): Error()
+    sealed class Error : GroupMemberMainPublicKey() {
+        object WrongIdentity : Error()
+        object InvalidPublicKey : Error()
+        object UnverifiedPublicKey : Error()
+        object WrongPublicKey : Error()
+        object Missing : Error()
+        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error) : Error()
     }
 
     data class Valid(
         override val key: String,
         val signedKey: String,
+        val version: Long,
+        val membershipKey: String,
+        val signedMemberShipKey: String,
         val identityKey: GroupMemberIdentityKey.Valid
     ) : GroupMemberMainPublicKey()
 }
@@ -56,19 +65,24 @@ sealed class GroupMemberMainPublicKey {
 sealed class GroupMemberIdentityKey {
     open val key: String? = null
 
-    sealed class Error: GroupMemberIdentityKey() {
-        object Missing: Error()
-        object Invalid: Error()
+    sealed class Error : GroupMemberIdentityKey() {
+        object Missing : Error()
+        object Invalid : Error()
     }
-    data class Valid(override val key: String): GroupMemberIdentityKey()
+
+    data class Valid(override val key: String) : GroupMemberIdentityKey()
 }
 
 sealed class UserGroupPersonalKeyPair {
     open val key: SimpleKeyPairData? = null
 
-    sealed class Error: UserGroupPersonalKeyPair() {
-        object Missing: Error()
-        object Invalid: Error()
+    sealed class Error : UserGroupPersonalKeyPair() {
+        object Missing : Error()
+        object Invalid : Error()
     }
-    data class Valid(override val key: SimpleKeyPairData): UserGroupPersonalKeyPair()
+
+    data class Valid(
+        override val key: SimpleKeyPairData,
+        val version: Long
+    ) : UserGroupPersonalKeyPair()
 }

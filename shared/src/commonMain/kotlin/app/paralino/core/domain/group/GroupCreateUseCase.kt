@@ -110,16 +110,9 @@ class GroupCreateUseCase(
             val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
 
             val groupKey = cryptoCore.getNewSymmetricKey()
-            val memberSenderKey = cryptoCore.getNewSymmetricKey()
 
             val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                 data = groupKey,
-                myPrivateKey = exchangeKeyPair.privateKey,
-                publicKey = exchangeKeyPair.publicKey
-            )
-
-            val encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
-                data = memberSenderKey,
                 myPrivateKey = exchangeKeyPair.privateKey,
                 publicKey = exchangeKeyPair.publicKey
             )
@@ -162,7 +155,6 @@ class GroupCreateUseCase(
 
             val payload = CreateGroupPayload(
                 encryptedGroupKey = encryptedGroupKey,
-                encryptedSenderKey = encryptedSenderKey,
                 signedPublicKey = signedPublicKey,
                 ownerIdentityKey = myIdentityKeys.publicKey,
                 groupData = cryptoCore.encryptDataWithKey(
