@@ -125,9 +125,9 @@ class GroupCryptoKeyRotation constructor(
     ) {
         blocking {
 
-            val myExchangeKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
+            val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
 
-            if(myExchangeKeys !is UserGroupPersonalKeyPair.Valid)
+            if(myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
                 throw MissingMemberKeyException(group.id, config.userId)
 
             val newGroupKey = cryptoCore.getNewSymmetricKey()
@@ -168,7 +168,7 @@ class GroupCryptoKeyRotation constructor(
                         encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                             data = newGroupKey,
                             // sign with owner private key
-                            myPrivateKey = myExchangeKeys.key.privateKey,
+                            myPrivateKey = myMembershipKeys.key.privateKey,
                             // encrypt with user public key
                             publicKey = memberPublicKey.key
                         ),
@@ -199,7 +199,7 @@ class GroupCryptoKeyRotation constructor(
                 integrity = groupIntegrity,
                 keyVersionsToKeep = usedKeys.distinct(),
                 encryptedGroupKeys = keys,
-                groupKeyVersion = cryptoKEKRepository.getLatestGroupKeyVersion(group.id) ?: 0,
+                groupKeyVersion = usedKeys.max().plus(1),
                 groupData = groupData,
                 places = placesData
             )

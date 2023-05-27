@@ -102,9 +102,9 @@ class GroupMemberAddUseCase constructor(
         ) ?: throw CryptoException("Wrong member key signature")
 
         val myKey = userKeyRepo.latestKeyPair()
-        val myExchangeKeys = cryptoKEKRepo.getMyPreKeyForGroup(groupId, version = 0)
+        val myMembershipKeys = cryptoKEKRepo.getMyPreKeyForGroup(groupId, version = 0)
 
-        if(myExchangeKeys !is UserGroupPersonalKeyPair.Valid)
+        if(myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
             throw MissingMemberKeyException(groupId, config.userId)
 
         val allGroupKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
@@ -116,7 +116,7 @@ class GroupMemberAddUseCase constructor(
                     encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
                         data = key.key,
                         // sign with owner private exchange key
-                        myPrivateKey = myExchangeKeys.key.privateKey,
+                        myPrivateKey = myMembershipKeys.key.privateKey,
                         // encrypt with user public key
                         publicKey = memberPublicKey
                     )
