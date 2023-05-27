@@ -210,7 +210,7 @@ open class MapViewProviderState constructor(
                     // and it will jump without animation if zoom > maxZoom
                     setBounds(CameraBoundsOptions.Builder().maxZoom(15.0).build())
                     val camera = cameraForCoordinates(markers.map { it.point.point }).let {
-                        it.toBuilder().zoom(it.zoom?.times(0.9)).build()
+                        it.toBuilder().zoom(it.zoom?.times(0.7)).build()
                     }
                     cameraAnimationsPlugin {
                         flyTo(camera, MapAnimationOptions.mapAnimationOptions {
