@@ -231,11 +231,6 @@ fun SharingStartScreen(
                     modifier = Modifier,
                     style = ButtonStyle.BIG(iconSize = 24.dp),
                     state = AppButtonState.CONTENT,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (state.canShare)
-                            MaterialTheme.colors.primary
-                        else MaterialTheme.colors.secondary
-                    ),
                     icon = if (state.canShare) AppIcons.ShareLocation
                     else AppIcons.NotListedLocation,
                     onClick = { vm.startSharing() }
