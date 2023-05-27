@@ -37,12 +37,10 @@ data class GroupIntegrity(
         fun createSignature(
             hashProvider: ICryptoHashProvider,
             memberVerifications: List<String>,
-            groupKey: String,
             encryptedMemberPublicKeys: List<String>,
         ): String {
             val ids = buildList {
                 addAll(memberVerifications)
-                add(groupKey)
                 addAll(encryptedMemberPublicKeys)
             }
             val seed = ids.joinToString(separator = ",")

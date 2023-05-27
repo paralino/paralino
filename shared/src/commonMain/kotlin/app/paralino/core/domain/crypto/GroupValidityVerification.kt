@@ -3,12 +3,10 @@ package app.paralino.core.domain.crypto
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
-import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -17,7 +15,6 @@ import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.provider.IConfig
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.decodeFromString
-import org.koin.core.component.getScopeId
 
 class GroupValidityVerification(
     private val cryptoKEKRepo: CryptoKEKRepository,
@@ -37,13 +34,14 @@ class GroupValidityVerification(
     ): VerificationResult {
         try {
 
-            when(groupOwnerPublicKey) {
+            when (groupOwnerPublicKey) {
                 is GroupMemberMainPublicKey.Error.InvalidPersonalKeyPair -> {
-                    return when(groupOwnerPublicKey.reason) {
+                    return when (groupOwnerPublicKey.reason) {
                         UserGroupPersonalKeyPair.Error.Invalid -> VerificationResult.GROUP_OWNER_INVALID_PERSONAL_KEY
                         UserGroupPersonalKeyPair.Error.Missing -> VerificationResult.GROUP_OWNER_MISSING_PERSONAL_KEY
                     }
                 }
+
                 GroupMemberMainPublicKey.Error.InvalidPublicKey -> return VerificationResult.GROUP_OWNER_INVALID_PUBLIC_KEY
                 GroupMemberMainPublicKey.Error.Missing -> return VerificationResult.GROUP_OWNER_MISSING_PUBLIC_KEY
                 GroupMemberMainPublicKey.Error.UnverifiedPublicKey -> return VerificationResult.GROUP_OWNER_UNVERIFIED_PUBLIC_KEY
@@ -52,13 +50,14 @@ class GroupValidityVerification(
                 is GroupMemberMainPublicKey.Valid -> {}
             }
 
-            when(memberPublicKey) {
+            when (memberPublicKey) {
                 is GroupMemberMainPublicKey.Error.InvalidPersonalKeyPair -> {
-                    return when(memberPublicKey.reason) {
+                    return when (memberPublicKey.reason) {
                         UserGroupPersonalKeyPair.Error.Invalid -> VerificationResult.MEMBER_INVALID_PERSONAL_KEY
                         UserGroupPersonalKeyPair.Error.Missing -> VerificationResult.MEMBER_MISSING_PERSONAL_KEY
                     }
                 }
+
                 GroupMemberMainPublicKey.Error.InvalidPublicKey -> return VerificationResult.MEMBER_INVALID_PUBLIC_KEY
                 GroupMemberMainPublicKey.Error.Missing -> return VerificationResult.MEMBER_MISSING_PUBLIC_KEY
                 GroupMemberMainPublicKey.Error.UnverifiedPublicKey -> return VerificationResult.MEMBER_UNVERIFIED_PUBLIC_KEY
@@ -67,16 +66,17 @@ class GroupValidityVerification(
                 is GroupMemberMainPublicKey.Valid -> {}
             }
 
-            when(groupKey) {
+            when (groupKey) {
                 GroupMasterKey.Error.Invalid -> return VerificationResult.GROUP_KEY_INVALID
                 is GroupMasterKey.Error.InvalidOwnerPublicKey -> {
-                    return when(groupKey.reason) {
+                    return when (groupKey.reason) {
                         is GroupMemberMainPublicKey.Error.InvalidPersonalKeyPair -> {
-                            when(groupKey.reason.reason) {
+                            when (groupKey.reason.reason) {
                                 UserGroupPersonalKeyPair.Error.Invalid -> VerificationResult.GROUP_KEY_INVALID_PERSONAL_KEY
                                 UserGroupPersonalKeyPair.Error.Missing -> VerificationResult.GROUP_KEY_MISSING_PERSONAL_KEY
                             }
                         }
+
                         GroupMemberMainPublicKey.Error.InvalidPublicKey -> VerificationResult.GROUP_KEY_INVALID_PUBLIC_KEY
                         GroupMemberMainPublicKey.Error.Missing -> VerificationResult.GROUP_KEY_MISSING_PUBLIC_KEY
                         GroupMemberMainPublicKey.Error.UnverifiedPublicKey -> VerificationResult.GROUP_KEY_UNVERIFIED_PUBLIC_KEY
@@ -84,12 +84,14 @@ class GroupValidityVerification(
                         GroupMemberMainPublicKey.Error.WrongPublicKey -> VerificationResult.GROUP_KEY_WRONG_PUBLIC_KEY
                     }
                 }
+
                 is GroupMasterKey.Error.InvalidPersonalKeyPair -> {
-                    return when(groupKey.reason) {
+                    return when (groupKey.reason) {
                         UserGroupPersonalKeyPair.Error.Invalid -> VerificationResult.GROUP_KEY_INVALID_PERSONAL_KEY
                         UserGroupPersonalKeyPair.Error.Missing -> VerificationResult.GROUP_KEY_MISSING_PERSONAL_KEY
                     }
                 }
+
                 GroupMasterKey.Error.Missing -> return VerificationResult.GROUP_KEY_MISSING
                 is GroupMasterKey.Valid -> {}
             }
@@ -108,7 +110,7 @@ class GroupValidityVerification(
                 type = HashType.SHA256
             )
 
-            if(verification != hash)
+            if (verification != hash)
                 return VerificationResult.WRONG_OWNER_VERIFICATION
 
             if (memberUserId == config.userId) {
@@ -205,7 +207,7 @@ class GroupValidityVerification(
     suspend fun checkIntegrityForDeviceKey(group: UserGroupWithMembers): IntegrityResult {
 
         val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = group.id)
-        if(keyIntegrity.isNullOrBlank()) {
+        if (keyIntegrity.isNullOrBlank()) {
             logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id} (missing)")
             return IntegrityResult.VALID_EXPIRED
         }
@@ -251,16 +253,12 @@ class GroupValidityVerification(
                 return null
             }
 
-            val groupKey = cryptoKEKRepo.getGroupKey(
-                groupId = groupId,
-                keyVersion = null
-            ) as GroupMasterKey.Valid
-
             GroupIntegrity.createSignature(
                 hashProvider = cryptoCore.hashProvider,
                 memberVerifications = memberVerifications,
-                groupKey = groupKey.key,
-                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(groupId)
+                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
+                    groupId = groupId
+                )
             )
         } catch (e: Exception) {
             logg.tag(tag).w("CORRUPTED for $groupId - Generic error: ${e.message}")

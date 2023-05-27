@@ -143,7 +143,6 @@ class GroupCreateUseCase(
                 signature = GroupIntegrity.createSignature(
                     hashProvider = cryptoCore.hashProvider,
                     memberVerifications = listOf(memberVerification),
-                    groupKey = groupKey,
                     encryptedMemberPublicKeys = listOf(signedPublicKey)
                 )
             ).let {

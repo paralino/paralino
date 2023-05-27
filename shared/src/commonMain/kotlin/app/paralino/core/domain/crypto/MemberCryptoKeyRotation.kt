@@ -110,9 +110,8 @@ class MemberCryptoKeyRotation(
             signature = GroupIntegrity.createSignature(
                 hashProvider = cryptoCore.hashProvider,
                 memberVerifications = group.members.map { it.member.verification },
-                groupKey = groupKey.key,
                 encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMembershipPublicKeys(
-                    group.id
+                    groupId = group.id
                 )
             )
         ).let {

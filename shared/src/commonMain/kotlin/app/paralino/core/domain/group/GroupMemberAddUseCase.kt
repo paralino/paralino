@@ -46,7 +46,7 @@ class GroupMemberAddUseCase constructor(
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
-): BaseRepository(), ILimitedExecution<String> {
+) : BaseRepository(), ILimitedExecution<String> {
 
     override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
 
@@ -87,13 +87,13 @@ class GroupMemberAddUseCase constructor(
         codeData: UserPersonalCodeData
     ): GroupWithMembersRaw {
 
-        if(!group.isGroupVerified)
+        if (!group.isGroupVerified)
             throw IllegalStateException("Group is unverified")
 
         val groupId = group.id
         val groupKey = cryptoKEKRepo.getGroupKey(groupId, keyVersion = null)
 
-        if(groupKey !is GroupMasterKey.Valid)
+        if (groupKey !is GroupMasterKey.Valid)
             throw MissingGroupKeyException(groupId)
 
         val memberPublicKey = cryptoCore.verifySignature(
@@ -104,7 +104,7 @@ class GroupMemberAddUseCase constructor(
         val myKey = userKeyRepo.latestKeyPair()
         val myMembershipKeys = cryptoKEKRepo.getMyPreKeyForGroup(groupId, version = 0)
 
-        if(myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
+        if (myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
             throw MissingMemberKeyException(groupId, config.userId)
 
         val allGroupKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
@@ -146,8 +146,9 @@ class GroupMemberAddUseCase constructor(
             signature = GroupIntegrity.createSignature(
                 hashProvider = cryptoCore.hashProvider,
                 memberVerifications = group.members.map { it.member.verification } + memberVerification,
-                groupKey = groupKey.key,
-                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(groupId) + newUserOwnPublicKey.signedPublicKey
+                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
+                    groupId = groupId
+                ) + newUserOwnPublicKey.signedPublicKey
             )
         ).let {
             cryptoCore.encryptDataWithKey(
