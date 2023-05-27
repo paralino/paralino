@@ -56,7 +56,7 @@ class GroupActivityNotificationHandler(
                     if (groupName.isNullOrBlank() || memberName.isNullOrBlank()) {
                         context.getString(R.string.group_member_add_notification_default)
                     } else {
-                        context.getString(R.string.group_member_add_notification, memberName, group)
+                        context.getString(R.string.group_member_add_notification, memberName, groupName)
                     }
                 }
             } catch (e: Exception) {
