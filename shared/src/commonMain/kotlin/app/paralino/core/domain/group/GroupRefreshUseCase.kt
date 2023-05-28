@@ -28,7 +28,6 @@ class GroupRefreshUseCase constructor(
     private val groupMapperCore: GroupMapperCore,
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
     private val groupRemove: GroupRemoveUseCase,
-    private val locationSharingManager: LocationSharingManager
 ) : LimitedExecutionRepository() {
 
     fun getGroupWithMembers(id: String): Flow<UserGroupWithMembers> {
@@ -70,15 +69,17 @@ class GroupRefreshUseCase constructor(
             return group
         }
 
-        logg.tag("tag_crypto_key_group").w("got new group from remote, handle key rotation | retry $retry")
+        logg.tag("tag_crypto_key_group").w("got new group from remote, handle key rotation | retry #$retry")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
 
         if(!remoteGroup.isGroupVerified)
-            locationSharingManager.stopSharing(remoteGroup.id)
+            logg.tag("tag_crypto_key_group").e("Current member is unverified in group ${group.group.id}")
 
         if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = false)) {
+            logg.tag("tag_crypto_key_group").w("Key rotation finished, refresh group and keys")
             return getRemoteGroupWithMembers(remoteGroup.id, retry + 1)
         } else {
+            logg.tag("tag_crypto_key_group").w("No key rotation, use current group")
             return group
         }
     }

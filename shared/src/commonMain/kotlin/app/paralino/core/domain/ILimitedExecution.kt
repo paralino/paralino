@@ -16,7 +16,11 @@ import kotlin.time.toDuration
 
 open class LimitedExecutionRepository(
     private val execution: LimitedExecution = LimitedExecution()
-) : BaseRepository(), ILimitedExecution by execution
+) : BaseRepository(), ILimitedExecution by execution {
+    init {
+        execution.tag = this::class.simpleName
+    }
+}
 
 interface ILimitedExecution {
     fun isProcessing(key: String): Boolean
@@ -38,6 +42,7 @@ open class LimitedExecution : ILimitedExecution {
 
     private val executionState = MutableStateFlow<Map<String, LimitedExecutionState>>(mapOf())
     private val mutex = Mutex()
+    var tag: String? = this::class.simpleName
 
     override fun isProcessing(key: String): Boolean {
         val current = executionState.value.get(key) ?: return false
@@ -50,7 +55,7 @@ open class LimitedExecution : ILimitedExecution {
         delayedThresholdMillis: Long,
         timeoutMillis: Long
     ) {
-        logg.v("execution", "Start execution: ${this::class.simpleName} ($key)")
+        logg.v("execution", "Start execution: ${tag ?: this::class.simpleName} ($key)")
         mutex.withLock {
 
             if (isProcessing(key)) {
