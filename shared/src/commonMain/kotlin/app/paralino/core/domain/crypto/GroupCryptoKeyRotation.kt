@@ -47,8 +47,13 @@ class GroupCryptoKeyRotation constructor(
         return if (rotateGroupAndMemberKeysIfNeeded(remoteGroup, force)) {
             true
         } else {
-            memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false) ||
-                    deviceKeyRotation.rotateDeviceKeys(remoteGroup, force = false)
+            val didRotateMemberKey = memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false)
+            if(didRotateMemberKey)
+                cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
+
+            val didRotateDeviceKeys = deviceKeyRotation.rotateDeviceKeys(remoteGroup, force = false)
+
+            didRotateMemberKey || didRotateDeviceKeys
         }
     }
 
@@ -118,8 +123,8 @@ class GroupCryptoKeyRotation constructor(
             cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
 
         // 3. rotate current device keys
-        val didRotate = deviceKeyRotation.rotateDeviceKeys(remoteGroup = remoteGroup, force = true)
-        if (didRotate)
+        val didRotateDeviceKeys = deviceKeyRotation.rotateDeviceKeys(remoteGroup = remoteGroup, force = true)
+        if (didRotateDeviceKeys)
             cryptoKEKRepository.refreshDeviceKeysForGroup(groupId = remoteGroup.id)
     }
 
