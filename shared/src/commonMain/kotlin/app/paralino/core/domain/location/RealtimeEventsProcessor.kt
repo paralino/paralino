@@ -85,6 +85,12 @@ class RealtimeEventsProcessor constructor(
 
         try {
             if (member != null) {
+                if(groupPreRefreshUseCase.isProcessing(member.groupId)) {
+                    logg.tag("realtime_events")
+                        .v("Update in progress - Ignore member (${member.id}) update event in group ${member.groupId}")
+                    return
+                }
+
                 val memberKey = cryptoKEKRepo.getMemberPublicKey(
                     groupId = member.groupId,
                     memberUserId = member.ownerUserId
@@ -120,10 +126,15 @@ class RealtimeEventsProcessor constructor(
         }
 
         if (location != null) {
+            val groupId = response.payload["groupId"] as String
+            if (groupPreRefreshUseCase.isProcessing(groupId)) {
+                logg.tag("realtime_events").v("Update in progress - ignore location event in group $groupId")
+                return
+            }
             memberLocal.createOrUpdateMemberLocation(location)
         } else {
             val groupId = response.payload["groupId"] as String
-            logg.tag("realtime_events").v("Delete member event in group $groupId")
+            logg.tag("realtime_events").v("Delete location event in group $groupId")
             groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
         }
     }
