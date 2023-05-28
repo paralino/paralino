@@ -2,6 +2,7 @@ package app.paralino.core.domain.group
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.LimitedExecutionState
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.logg
@@ -28,9 +29,7 @@ class GroupRefreshUseCase constructor(
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
     private val groupRemove: GroupRemoveUseCase,
     private val locationSharingManager: LocationSharingManager
-) : BaseRepository(), ILimitedExecution<String> {
-
-    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
+) : LimitedExecutionRepository() {
 
     fun getGroupWithMembers(id: String): Flow<UserGroupWithMembers> {
         return mergeDataWithRemote(

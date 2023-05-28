@@ -1,20 +1,16 @@
 package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.domain.ILimitedExecution
-import app.paralino.core.domain.LimitedExecutionState
+import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.repo.base.AppConfigRepository
-import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
 
 class RefreshEverythingUseCase(
     private val placesRepo: PlacesRepository,
@@ -25,9 +21,8 @@ class RefreshEverythingUseCase(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupRefreshUseCase: GroupRefreshUseCase,
     private val configRepo: AppConfigRepository
-) : BaseRepository(), ILimitedExecution<String> {
+) : LimitedExecutionRepository() {
 
-    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
     private val executionKey = "full_refresh"
 
     fun isProcessing(): Boolean {
@@ -39,41 +34,39 @@ class RefreshEverythingUseCase(
         minimumDelayMillis: Long = 0
     ) {
 
-        if (isProcessing(executionKey)) {
+        try {
+            startProcessing(executionKey)
+        } catch (e: Exception) {
             logg.tag("full_refresh").v("Processing, can't refresh data")
             return
         }
 
-        setAsProcessing(executionKey)
-
         logg.tag("full_refresh").v("Try full refresh with delay $minimumDelayMillis")
         try {
-            getDataOnce(
-                local = flowOf(executionKey),
+            triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(
                     key = executionKey,
                     timeMillis = minimumDelayMillis
-                )
-            ) {
-                logg.tag("full_refresh").v("Start full refresh")
-                userRepository.refreshUserIfAvailable()
-                personalCodesRepo.refreshPersonalCodes()
-                userRepository.refreshBlocklist()
-                configRepo.refreshConfig()
-                scheduleRefreshAllGroupsWithPlaces(
-                    key = executionKey,
-                    time = if (forceGroupRefresh) 0 else 60_000
-                )
-                personalCodesRepo.tryToRestockPreKeys()
-            }
-                .catch { }
-                .collect()
+                ),
+                remote = {
+                    logg.tag("full_refresh").v("Start full refresh")
+                    userRepository.refreshUserIfAvailable()
+                    personalCodesRepo.refreshPersonalCodes()
+                    userRepository.refreshBlocklist()
+                    configRepo.refreshConfig()
+                    scheduleRefreshAllGroupsWithPlaces(
+                        key = executionKey,
+                        time = if (forceGroupRefresh) 0 else 60_000
+                    )
+                    personalCodesRepo.tryToRestockPreKeys()
+                }
+            )
         } catch (e: Exception) {
             logg.tag("full_refresh").e("Error with full refresh", e)
+        } finally {
+            logg.tag("full_refresh").v("Full refresh done")
+            stopProcessing(executionKey)
         }
-
-        logg.tag("full_refresh").v("Full refresh done")
-        stopProcessing(executionKey)
     }
 
     suspend fun scheduleRefreshAllGroupsWithPlaces(
@@ -82,24 +75,23 @@ class RefreshEverythingUseCase(
     ) {
         val refreshKey = "${executionKey}_${key}"
 
-        if (isProcessing(refreshKey)) {
+        try {
+            startProcessing(refreshKey)
+        } catch (e: Exception) {
             logg.tag("full_refresh").v("Processing, can't refresh data")
             return
         }
 
-        getDataOnce(
-            local = flowOf(refreshKey),
-            remotePreference = RemotePreference.CACHE(key = refreshKey, timeMillis = time)
-        ) {
-            setAsProcessing(refreshKey)
-            refreshAllGroupsWithPlaces().also {
-                stopProcessing(refreshKey)
-            }
+        try {
+            triggerRemoteMaybe(
+                remotePreference = RemotePreference.CACHE(key = refreshKey, timeMillis = time),
+                remote = { refreshAllGroupsWithPlaces() }
+            )
+        } catch (e: Exception) {
+            logg.tag("full_refresh").w("Error refreshing all groups - ${e.message}")
+        } finally {
+            stopProcessing(refreshKey)
         }
-            .catch {
-                stopProcessing(refreshKey)
-            }
-            .collect()
     }
 
     private suspend fun refreshAllGroupsWithPlaces() {

@@ -6,8 +6,7 @@ import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.domain.ILimitedExecution
-import app.paralino.core.domain.LimitedExecutionState
+import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.data
@@ -22,7 +21,6 @@ import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.encodeToString
 
 class MemberCryptoKeyRotation(
@@ -32,9 +30,7 @@ class MemberCryptoKeyRotation(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val cryptoKEKRepository: CryptoKEKRepository,
     private val validityVerification: GroupValidityVerification,
-) : ILimitedExecution<String> {
-
-    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
+) : LimitedExecution() {
 
     suspend fun rotateMemberKeys(
         remoteGroup: UserGroupWithMembers,
@@ -48,39 +44,44 @@ class MemberCryptoKeyRotation(
             return false
         }
 
+        try {
+            startProcessing(remoteGroup.id)
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group_member_rotation")
+                .v("Group ${remoteGroup.id} member key rotation already in progress")
+            return false
+        }
+
         val integrity = validityVerification.checkIntegrityForMemberKey(remoteGroup)
         logg.tag("tag_crypto_key_group_member_rotation")
             .v("Group ${remoteGroup.id} integrity: $integrity")
+
         if (integrity == IntegrityResult.CORRUPTED) {
             logg.tag("tag_crypto_key_group_member_rotation")
                 .w("Group ${remoteGroup.id} integrity corrupted, skipping key rotation")
+            stopProcessing(remoteGroup.id)
             return false
         }
 
-        if (force || integrity == IntegrityResult.VALID_EXPIRED) {
-            logg.tag("tag_crypto_key_group_member_rotation")
-                .w("group member key is deprecated - rotating: ${remoteGroup.id}")
+        val shouldRotate = force || integrity == IntegrityResult.VALID_EXPIRED
 
-            if (isProcessing(remoteGroup.id)) {
-                logg.tag("tag_crypto_key_group_member_rotation")
-                    .v("Group ${remoteGroup.id} member key rotation already in progress")
-                return false
-            }
-
-            setAsProcessing(remoteGroup.id)
-
-            try {
-                rotateMemberKeysForGroup(remoteGroup)
-            } finally {
-                stopProcessing(remoteGroup.id)
-            }
-
-            return true
-        } else {
+        if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_member_rotation")
                 .w("not rotating member keys for group: ${remoteGroup.id}")
+            stopProcessing(remoteGroup.id)
             return false
         }
+
+        logg.tag("tag_crypto_key_group_member_rotation")
+            .w("group member key is deprecated - rotating: ${remoteGroup.id}")
+
+        try {
+            rotateMemberKeysForGroup(remoteGroup)
+        } finally {
+            stopProcessing(remoteGroup.id)
+        }
+
+        return true
     }
 
     private suspend fun rotateMemberKeysForGroup(

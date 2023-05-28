@@ -7,9 +7,7 @@ import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.domain.ILimitedExecution
-import app.paralino.core.domain.LimitedExecutionState
-import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.CryptoResource
@@ -21,7 +19,6 @@ import app.paralino.core.models.raw.GenericFunctionPayload
 import app.paralino.core.models.raw.GroupSenderKeyPayload
 import app.paralino.core.models.raw.MemberLocationDataPayload
 import app.paralino.core.models.raw.UpdateGroupMemberSenderKeysPayload
-import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
@@ -30,7 +27,6 @@ import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.safeLet
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.encodeToString
 
 class MemberDeviceKeyRotation(
@@ -41,9 +37,7 @@ class MemberDeviceKeyRotation(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val cryptoKEKRepository: CryptoKEKRepository,
     private val validityVerification: GroupValidityVerification,
-) : ILimitedExecution<String> {
-
-    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
+) : LimitedExecution() {
 
     suspend fun rotateDeviceKeys(
         remoteGroup: UserGroupWithMembers,
@@ -57,9 +51,17 @@ class MemberDeviceKeyRotation(
             return false
         }
 
-        if(remoteGroup.currentDeviceLocation == null) {
+        if (remoteGroup.currentDeviceLocation == null) {
             logg.tag("tag_crypto_key_group_device_rotation")
                 .v("Current device doesn't have location in ${remoteGroup.id}, skip key rotation")
+            return false
+        }
+
+        try {
+            startProcessing(remoteGroup.id)
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_group_device_rotation")
+                .v("Group ${remoteGroup.id} device key rotation already in progress")
             return false
         }
 
@@ -74,6 +76,7 @@ class MemberDeviceKeyRotation(
         if (memberIntegrity == IntegrityResult.CORRUPTED || deviceIntegrity == IntegrityResult.CORRUPTED) {
             logg.tag("tag_crypto_key_group_device_rotation")
                 .w("Group ${remoteGroup.id} integrity corrupted, skipping key rotation")
+            stopProcessing(remoteGroup.id)
             return false
         }
 
@@ -84,30 +87,26 @@ class MemberDeviceKeyRotation(
                 .w("Group ${remoteGroup.id} has unverified members with user member key, force rotation")
         }
 
-        if (force || deviceIntegrity == IntegrityResult.VALID_EXPIRED || unverifiedMembersRotation) {
-            logg.tag("tag_crypto_key_group_device_rotation")
-                .w("member device key is deprecated - rotating: ${remoteGroup.id}")
+        val shouldRotate =
+            force || deviceIntegrity == IntegrityResult.VALID_EXPIRED || unverifiedMembersRotation
 
-            if (isProcessing(remoteGroup.id)) {
-                logg.tag("tag_crypto_key_group_device_rotation")
-                    .v("Group ${remoteGroup.id} device key rotation already in progress")
-                return false
-            }
-
-            setAsProcessing(remoteGroup.id)
-
-            try {
-                rotateDeviceKeysImpl(remoteGroup)
-            } finally {
-                stopProcessing(remoteGroup.id)
-            }
-
-            return true
-        } else {
+        if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_device_rotation")
                 .w("not rotating device keys for group ${remoteGroup.id}")
+            stopProcessing(remoteGroup.id)
             return false
         }
+
+        logg.tag("tag_crypto_key_group_device_rotation")
+            .w("member device key is deprecated - rotating: ${remoteGroup.id}")
+
+        try {
+            rotateDeviceKeysImpl(remoteGroup)
+        } finally {
+            stopProcessing(remoteGroup.id)
+        }
+
+        return true
     }
 
     private suspend fun rotateDeviceKeysImpl(

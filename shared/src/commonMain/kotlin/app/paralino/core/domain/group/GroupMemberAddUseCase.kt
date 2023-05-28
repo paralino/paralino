@@ -7,21 +7,17 @@ import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.domain.ILimitedExecution
-import app.paralino.core.domain.LimitedExecutionState
-import app.paralino.core.logg
+import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.CreateGroupMemberPayload
-import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupMemberGroupKeysData
 import app.paralino.core.models.raw.GroupMemberPublicKeyPayload
 import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
@@ -31,11 +27,7 @@ import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 
 class GroupMemberAddUseCase constructor(
@@ -46,39 +38,27 @@ class GroupMemberAddUseCase constructor(
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
-) : BaseRepository(), ILimitedExecution<String> {
+) : LimitedExecutionRepository() {
 
-    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
-
-    fun addMemberByAccessCode(groupId: String, code: UserPersonalCodeData): Flow<GroupDocumentRaw> {
-
-        if (isProcessing(groupId)) {
-            logg.tag("group_actions").v("Processing, can't add new member $groupId")
-            return flow { throw IllegalStateException("Group member creation already in progress") }
-        }
-
+    fun addMemberByAccessCode(
+        groupId: String,
+        code: UserPersonalCodeData
+    ): Flow<GroupWithMembersRaw> {
         return getDataOnce(
             remote = {
-                setAsProcessing(groupId)
                 val group = local.getGroupWithMembers(groupId).first()
                 addUserToGroup(
                     group,
                     code
                 ).also {
                     cryptoKEKRepo.refreshKeysForGroup(groupId)
-                }.also {
-                    stopProcessing(groupId)
                 }
             },
             localUpdate = {
                 local.updateOrCreateGroup(it)
             }
         )
-            .map { it.group }
-            .catch {
-                stopProcessing(groupId)
-                throw it
-            }
+            .startProcessing(groupId)
     }
 
 

@@ -4,8 +4,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.domain.ILimitedExecution
-import app.paralino.core.domain.LimitedExecutionState
+import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.base.ImageModel
@@ -17,7 +16,6 @@ import app.paralino.core.models.raw.CreateGroupPayload
 import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
@@ -27,12 +25,8 @@ import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.encodeToString
 
 class GroupCreateUseCase(
@@ -44,41 +38,28 @@ class GroupCreateUseCase(
     private val local: UserGroupLocalDataSource,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
-) : BaseRepository(), ILimitedExecution<String> {
+) : LimitedExecutionRepository() {
 
-    override val executionState = MutableStateFlow(listOf<LimitedExecutionState<String>>())
     private val groupKey = "group_create"
 
     fun createGroup(name: String, image: ImageModel): Flow<GroupWithMembersRaw> {
-
-        if (isProcessing(groupKey)) {
-            logg.tag("group_actions").v("Processing, can't create new group $groupKey")
-            return flow { throw IllegalStateException("Group creation already in progress") }
-        }
-
-        setAsProcessing(groupKey)
         return getDataOnce(
             remote = {
                 createGroupImpl(
                     name = name,
                     image = image
-                )
-                    .also { cryptoKEKRepo.refreshKeysForGroup(it.group.id) }
-                    .also { stopProcessing(groupKey) }
+                ).also { cryptoKEKRepo.refreshKeysForGroup(it.group.id) }
             },
             localUpdate = { local.updateOrCreateGroup(it) }
         )
-            .catch {
-                stopProcessing(groupKey)
-                throw it
-            }
+            .startProcessing(groupKey)
     }
 
     fun updateGroup(userGroup: UserGroup): Flow<Unit> {
 
         val groupId = userGroup.id
 
-        if(isProcessing(groupId)) {
+        if (isProcessing(groupId)) {
             logg.tag("group_actions").v("Processing, can't update group $groupId")
             return flow { throw IllegalStateException("Group update already in progress") }
         }
@@ -87,12 +68,7 @@ class GroupCreateUseCase(
             remote = { remote.updateGroup(userGroup) },
             localUpdate = { local.updateGroupOnly(it) }
         )
-            .onStart { setAsProcessing(groupId) }
-            .onEach { stopProcessing(groupId) }
-            .catch {
-                stopProcessing(groupId)
-                throw it
-            }
+            .startProcessing(groupId)
             .map { Unit }
     }
 
