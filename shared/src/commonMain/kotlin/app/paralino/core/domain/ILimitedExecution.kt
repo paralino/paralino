@@ -13,47 +13,42 @@ import kotlin.math.absoluteValue
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+open class LimitedExecution : ILimitedExecution {
+    override val executionState = MutableStateFlow<Map<String, LimitedExecutionState>>(mapOf())
+    override val mutex = Mutex()
+    override var tag: String? = this::class.simpleName
+}
 
-open class LimitedExecutionRepository(
-    private val execution: LimitedExecution = LimitedExecution()
-) : BaseRepository(), ILimitedExecution by execution {
-    init {
-        execution.tag = this::class.simpleName
-    }
+open class LimitedExecutionRepository() : BaseRepository(), ILimitedExecution {
+    override val executionState = MutableStateFlow<Map<String, LimitedExecutionState>>(mapOf())
+    override val mutex = Mutex()
+    override var tag: String? = this::class.simpleName
 }
 
 interface ILimitedExecution {
-    fun isProcessing(key: String): Boolean
-    suspend fun startProcessing(
-        key: String,
-        delayedThresholdMillis: Long = 0,
-        timeoutMillis: Long = 40_000
-    )
 
-    suspend fun stopProcessing(key: String)
-    fun <T> Flow<T>.startProcessing(key: String): Flow<T> {
-        return this
-            .onStart { this@ILimitedExecution.startProcessing(key) }
-            .onCompletion { if (it !is ExecutionInProgressException) stopProcessing(key) }
+    val executionState: MutableStateFlow<Map<String, LimitedExecutionState>>
+    val mutex: Mutex
+    var tag: String?
+
+    fun isProcessingAny(): Boolean {
+        val now = nowUTC().toEpochMilliseconds()
+        return executionState.value.any {
+            val duration = now - it.value.startTimeMillis
+            return duration < it.value.timeoutMillis
+        }
     }
-}
 
-open class LimitedExecution : ILimitedExecution {
-
-    private val executionState = MutableStateFlow<Map<String, LimitedExecutionState>>(mapOf())
-    private val mutex = Mutex()
-    var tag: String? = this::class.simpleName
-
-    override fun isProcessing(key: String): Boolean {
+    fun isProcessing(key: String): Boolean {
         val current = executionState.value.get(key) ?: return false
         val duration = nowUTC().toEpochMilliseconds() - current.startTimeMillis
         return duration < current.timeoutMillis
     }
 
-    override suspend fun startProcessing(
+    suspend fun startProcessing(
         key: String,
-        delayedThresholdMillis: Long,
-        timeoutMillis: Long
+        delayedThresholdMillis: Long = 0,
+        timeoutMillis: Long = 40_000
     ) {
         logg.v("execution", "Start execution: ${tag ?: this::class.simpleName} ($key)")
         mutex.withLock {
@@ -80,7 +75,7 @@ open class LimitedExecution : ILimitedExecution {
         }
     }
 
-    override suspend fun stopProcessing(key: String) {
+    suspend fun stopProcessing(key: String) {
         mutex.withLock {
             val currentState = executionState.value
             val current = currentState.get(key) ?: return
@@ -109,6 +104,12 @@ open class LimitedExecution : ILimitedExecution {
         }
     }
 
+
+    fun <T> Flow<T>.startProcessing(key: String): Flow<T> {
+        return this
+            .onStart { this@ILimitedExecution.startProcessing(key) }
+            .onCompletion { if (it !is ExecutionInProgressException) stopProcessing(key) }
+    }
 }
 
 data class LimitedExecutionState(
@@ -118,4 +119,4 @@ data class LimitedExecutionState(
     val startTimeMillis: Long = nowUTC().toEpochMilliseconds(),
 )
 
-class ExecutionInProgressException(message: String?): Exception(message)
+class ExecutionInProgressException(message: String?) : Exception(message)

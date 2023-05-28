@@ -108,6 +108,11 @@ class RealtimeEventsProcessor constructor(
                 }
             } else {
                 val groupId = response.payload["groupId"] as String
+                if(groupPreRefreshUseCase.isProcessing(groupId)) {
+                    logg.tag("realtime_events")
+                        .v("Update in progress - Ignore member delete event in group $groupId")
+                    return
+                }
                 logg.tag("realtime_events").v("Delete member event in group $groupId")
                 groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
             }
@@ -134,6 +139,10 @@ class RealtimeEventsProcessor constructor(
             memberLocal.createOrUpdateMemberLocation(location)
         } else {
             val groupId = response.payload["groupId"] as String
+            if (groupPreRefreshUseCase.isProcessing(groupId)) {
+                logg.tag("realtime_events").v("Update in progress - ignore location delete in group $groupId")
+                return
+            }
             logg.tag("realtime_events").v("Delete location event in group $groupId")
             groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
         }

@@ -21,7 +21,7 @@ class GroupPreRefreshUseCase constructor(
 
     override fun isProcessing(key: String): Boolean {
         val selfProcessing = super.isProcessing(key)
-        val fullProcessing = refreshEverything.isProcessing()
+        val fullProcessing = refreshEverything.isProcessingAny()
         val groupRemoveProcessing = groupRemove.isProcessing(key)
         val groupMemberRemoveProcessing = groupMemberRemove.isProcessing(key)
         val groupMemberAddProcessing = groupMemberAdd.isProcessing(key)
