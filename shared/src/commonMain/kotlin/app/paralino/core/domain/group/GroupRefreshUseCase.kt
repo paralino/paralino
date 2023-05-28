@@ -41,6 +41,7 @@ class GroupRefreshUseCase constructor(
     suspend fun refreshRemoteGroupWithMembersAndPlaces(groupId: String): GroupWithMembersRaw {
         return getRemoteGroupWithMembers(groupId)
             .also {
+                logg.tag("tag_crypto_key_group").w("Finished processing group and keys, save group ${it.group.id}")
                 local.updateOrCreateGroup(it)
             }.also {
                 placeRepo.refreshPlacesForGroup(groupId)
