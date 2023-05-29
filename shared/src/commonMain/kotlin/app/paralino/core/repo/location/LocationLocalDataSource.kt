@@ -2,6 +2,7 @@ package app.paralino.core.repo.location
 
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.logg
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.MemberDocumentRaw
@@ -31,10 +32,12 @@ class LocationLocalDataSource(
     }
 
     suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw) {
+        logg.v("Save new location (${data.id})")
         database.locationQueries.update(
             id = data.id,
             deviceId = data.deviceId,
             deviceData = data.deviceData,
+            groupKeyVersion = data.groupKeyVersion,
             locationData = data.locationData
         )
     }

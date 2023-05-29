@@ -22,6 +22,7 @@ update:
 UPDATE OR IGNORE memberLocationEntity
 SET deviceId = :deviceId,
  deviceData = :deviceData,
+ groupKeyVersion = :groupKeyVersion,
  locationData = :locationData
 WHERE id = :id;
 
