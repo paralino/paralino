@@ -38,6 +38,7 @@ class LocationLocalDataSource(
             deviceId = data.deviceId,
             deviceData = data.deviceData,
             groupKeyVersion = data.groupKeyVersion,
+            deviceKeyVersion = data.deviceKeyVersion,
             locationData = data.locationData
         )
     }

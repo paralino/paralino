@@ -124,7 +124,8 @@ class LocationRemoteSource constructor(
             data = mapOf(
                 "locationData" to locationData,
                 "deviceData" to deviceData,
-                "groupKeyVersion" to groupKey.version
+                "groupKeyVersion" to groupKey.version,
+                "deviceKeyVersion" to memberKey.deviceKeyVersion,
             )
         )
     }

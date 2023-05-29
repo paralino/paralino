@@ -64,6 +64,7 @@ class GroupKeysMapper {
             ownerUserId = model.ownerUserId,
             locationId = model.locationId,
             memberKeyVersion = model.memberKeyVersion,
+            deviceKeyVersion = model.deviceKeyVersion,
             encryptedSenderKey = model.encryptedSenderKey,
         )
     }
@@ -76,6 +77,7 @@ class GroupKeysMapper {
             ownerUserId = model.ownerUserId,
             locationId = model.locationId,
             memberKeyVersion = model.memberKeyVersion,
+            deviceKeyVersion = model.deviceKeyVersion,
             encryptedSenderKey = model.encryptedSenderKey,
         )
     }

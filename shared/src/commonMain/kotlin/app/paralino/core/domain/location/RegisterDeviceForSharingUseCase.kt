@@ -4,10 +4,12 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.raw.LocationCreatePayload
 import app.paralino.core.repo.api.IFunctionsApi
@@ -17,16 +19,17 @@ import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 
 class RegisterDeviceForSharingUseCase constructor(
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
-    private val memberRemote: LocationRemoteSource,
     private val userMemberId: UserMemberIdUseCase,
     private val groupLocal: UserGroupLocalDataSource,
     private val cryptoKEKRepo: CryptoKEKRepository,
+    private val userKeyRepo: CryptoUserKeyRepository,
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val cryptoCore: CryptoCore,
     private val deviceKeyRotation: MemberDeviceKeyRotation
@@ -86,7 +89,29 @@ class RegisterDeviceForSharingUseCase constructor(
             )
 
             if (data.isSuccess) {
-                logg.tag("sharing_start").d("Device registered, refresh group")
+                logg.tag("sharing_start").d("Device registered, save integrity")
+
+                val groupDeviceIntegrity = GroupIntegrity(
+                    timeUtc = nowUTC().toString(),
+                    signature = GroupIntegrity.createSignature(
+                        hashProvider = cryptoCore.hashProvider,
+                        memberVerifications = group.members.map { it.member.verification },
+                        encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
+                            groupId = group.id
+                        )
+                    )
+                ).let {
+                    cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.formatter.encodeToString(it),
+                        key = userKeyRepo.personalKey
+                    )
+                }
+                cryptoKEKRepo.updateIntegrity(
+                    groupId = group.id,
+                    integrity = groupDeviceIntegrity
+                )
+
+                logg.tag("sharing_start").d("Integrity updated, refresh group")
                 groupPreRefreshUseCase.refreshGroupWithMembers(groupId, cacheTimeMillis = 0)
                 logg.tag("sharing_start").d("Group refreshed")
             } else {

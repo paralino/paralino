@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS memberLocationEntity (
 `userId` TEXT NOT NULL,
 `deviceId` TEXT NOT NULL,
 `groupKeyVersion` INTEGER NOT NULL,
+`deviceKeyVersion` INTEGER NOT NULL,
 `deviceData` TEXT,
 `locationData` TEXT
 );
@@ -23,6 +24,7 @@ UPDATE OR IGNORE memberLocationEntity
 SET deviceId = :deviceId,
  deviceData = :deviceData,
  groupKeyVersion = :groupKeyVersion,
+ deviceKeyVersion = :deviceKeyVersion,
  locationData = :locationData
 WHERE id = :id;
 

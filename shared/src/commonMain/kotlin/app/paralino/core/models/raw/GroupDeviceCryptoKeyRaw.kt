@@ -12,6 +12,7 @@ data class GroupDeviceCryptoKeyRaw constructor(
     val ownerUserId: String,
     val locationId: String,
     val memberKeyVersion: Long,
+    val deviceKeyVersion: Long,
     val encryptedSenderKey: String,
 ) {
     companion object {
@@ -23,6 +24,7 @@ data class GroupDeviceCryptoKeyRaw constructor(
                 ownerUserId = map["ownerUserId"] as String,
                 locationId = map["locationId"] as String,
                 memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
+                deviceKeyVersion = (map["deviceKeyVersion"] as Number).toLong(),
                 encryptedSenderKey = map["encryptedSenderKey"] as String,
             )
         }

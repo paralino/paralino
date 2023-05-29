@@ -74,9 +74,9 @@ class MemberMapperCore constructor(
                         } catch (e: Exception) {
                             logg.tag("tag_crypto_key_group_member")
                                 .e(
-                                    "Error decrypting device data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
+                                    message = "Error decrypting device data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
                                             "location group key: ${location.groupKeyVersion} - main group key: ${groupKey.version} - used group key: ${deviceGroupKey.version}",
-                                    e
+                                    t = e
                                 )
                             CryptoResource.WrongKeyOrData
                         }
@@ -112,13 +112,18 @@ class MemberMapperCore constructor(
                             }
                         }
                     } catch (e: Exception) {
-                        logg.tag("tag_crypto_key_group_member")
-                            .e(
-                                message = "Error decrypting location data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
-                                        "Member key version: ${memberKey.version} - ${e::class}: ${e.message}",
-                                t = e
-                            )
-                        CryptoResource.WrongKeyOrData
+                        if(memberKey.deviceKeyVersion != location.deviceKeyVersion) {
+                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion})")
+                            CryptoResource.MissingKey
+                        } else {
+                            logg.tag("tag_crypto_key_group_member")
+                                .e(
+                                    message = "Error decrypting location data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
+                                            "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
+                                    t = e
+                                )
+                            CryptoResource.WrongKeyOrData
+                        }
                     }
                 }
             } else {

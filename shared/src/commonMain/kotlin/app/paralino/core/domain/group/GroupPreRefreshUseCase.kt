@@ -48,26 +48,28 @@ class GroupPreRefreshUseCase constructor(
         return processing
     }
 
-    suspend fun refreshGroupWithMembers(groupId: String, cacheTimeMillis: Long = 4_000) {
+    suspend fun refreshGroupWithMembers(groupId: String, cacheTimeMillis: Long = 4_000): Boolean {
 
         try {
             startProcessing(groupId)
         } catch (e: Exception) {
             logg.tag("group_actions").v("Processing, can't refresh group $groupId")
-            return
+            return false
         }
 
         logg.tag("group_actions").v("Not processing, can refresh group $groupId")
 
         val key = "group_refresh_$groupId"
         try {
-            triggerRemoteMaybe(
+            val result = triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(key = key, timeMillis = cacheTimeMillis),
                 remote = { groupRefresh.refreshRemoteGroupWithMembersAndPlaces(groupId) }
             )
+            return result != null
         } catch (e: Exception) {
             logg.tag("group_actions")
                 .w("Stop processing group refresh for group $groupId - ${e.message}")
+            return false
         } finally {
             stopProcessing(groupId)
         }

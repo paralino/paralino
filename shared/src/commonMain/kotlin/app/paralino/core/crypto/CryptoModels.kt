@@ -24,7 +24,8 @@ sealed class GroupMemberSenderKey {
 
     data class Valid(
         val key: String,
-        val version: Long?
+        val deviceKeyVersion: Long,
+        val memberKeyVersion: Long
     ) : GroupMemberSenderKey()
 }
 

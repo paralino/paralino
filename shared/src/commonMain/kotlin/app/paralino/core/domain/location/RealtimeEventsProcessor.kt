@@ -39,12 +39,15 @@ class RealtimeEventsProcessor constructor(
             response.channels.contains(locationFocusChannel) -> {
                 processLocationFocusChannelEvent(response)
             }
+
             response.channels.contains(placesChannel) -> {
                 processPlaceChannelEvent(response)
             }
+
             response.channels.contains(membersChannel) -> {
                 processMemberChannelEvent(response)
             }
+
             response.channels.contains(locationsChannel) -> {
                 processMemberLocationChannelEvent(response)
             }
@@ -85,7 +88,7 @@ class RealtimeEventsProcessor constructor(
 
         try {
             if (member != null) {
-                if(groupPreRefreshUseCase.isProcessing(member.groupId)) {
+                if (groupPreRefreshUseCase.isProcessing(member.groupId)) {
                     logg.tag("realtime_events")
                         .v("Update in progress - Ignore member (${member.id}) update event in group ${member.groupId}")
                     return
@@ -100,7 +103,10 @@ class RealtimeEventsProcessor constructor(
                     logg.tag("realtime_events")
                         .v("Refresh group - update member (${member.id}) event in group ${member.groupId}")
                     // this is either new member so we are missing keys, or keys are obsolete
-                    groupPreRefreshUseCase.refreshGroupWithMembers(member.groupId)
+                    groupPreRefreshUseCase.refreshGroupWithMembers(
+                        groupId = member.groupId,
+                        cacheTimeMillis = 10_000
+                    )
                 } else {
                     logg.tag("realtime_events")
                         .v("Update member (${member.id}) event in group ${member.groupId}")
@@ -108,7 +114,7 @@ class RealtimeEventsProcessor constructor(
                 }
             } else {
                 val groupId = response.payload["groupId"] as String
-                if(groupPreRefreshUseCase.isProcessing(groupId)) {
+                if (groupPreRefreshUseCase.isProcessing(groupId)) {
                     logg.tag("realtime_events")
                         .v("Update in progress - Ignore member delete event in group $groupId")
                     return
@@ -133,14 +139,35 @@ class RealtimeEventsProcessor constructor(
         if (location != null) {
             val groupId = response.payload["groupId"] as String
             if (groupPreRefreshUseCase.isProcessing(groupId)) {
-                logg.tag("realtime_events").v("Update in progress - ignore location event in group $groupId")
+                logg.tag("realtime_events")
+                    .v("Update in progress - ignore location event in group $groupId")
                 return
             }
-            memberLocal.createOrUpdateMemberLocation(location)
+
+            val hasDeviceKey =
+                cryptoKEKRepo.hasDeviceKeyByVersion(deviceKeyVersion = location.deviceKeyVersion)
+            val hasGroupKey =
+                cryptoKEKRepo.hasGroupKeyByVersion(groupKeyVersion = location.groupKeyVersion)
+
+            if (!hasDeviceKey || !hasGroupKey) {
+                logg.tag("realtime_events")
+                    .v("Location key version mismatch: groupKey ($hasGroupKey) - deviceKey ($hasDeviceKey)")
+                val result = groupPreRefreshUseCase.refreshGroupWithMembers(
+                    groupId = groupId,
+                    cacheTimeMillis = 15_000
+                )
+                if (!result) {
+                    memberLocal.createOrUpdateMemberLocation(location)
+                }
+            } else {
+                memberLocal.createOrUpdateMemberLocation(location)
+            }
+
         } else {
             val groupId = response.payload["groupId"] as String
             if (groupPreRefreshUseCase.isProcessing(groupId)) {
-                logg.tag("realtime_events").v("Update in progress - ignore location delete in group $groupId")
+                logg.tag("realtime_events")
+                    .v("Update in progress - ignore location delete in group $groupId")
                 return
             }
             logg.tag("realtime_events").v("Delete location event in group $groupId")

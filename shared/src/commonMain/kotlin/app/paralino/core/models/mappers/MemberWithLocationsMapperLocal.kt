@@ -54,6 +54,7 @@ class MemberWithLocationsMapperLocal(
                 id = location.id,
                 deviceId = location.deviceId,
                 groupKeyVersion = location.groupKeyVersion,
+                deviceKeyVersion = location.deviceKeyVersion,
                 deviceData = location.deviceData,
                 locationData = location.locationData
             )
@@ -76,6 +77,7 @@ class MemberWithLocationsMapperLocal(
             userId = member.ownerUserId,
             deviceId = location.deviceId,
             groupKeyVersion = location.groupKeyVersion,
+            deviceKeyVersion = location.deviceKeyVersion,
             deviceData = location.deviceData,
             locationData = location.locationData
         )
