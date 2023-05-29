@@ -3,10 +3,10 @@ package app.paralino.core.domain.location
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
-import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.raw.LocationCreatePayload
@@ -17,7 +17,6 @@ import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
-import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 
@@ -48,6 +47,7 @@ class RegisterDeviceForSharingUseCase constructor(
 //            }
 
             // refresh all group data before sharing starts
+            logg.tag("sharing_start").d("Start location register, refresh group data")
             groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
             val group = groupLocal.getGroupWithMembers(groupId).first()
 
@@ -56,7 +56,7 @@ class RegisterDeviceForSharingUseCase constructor(
 
             val groupKey = cryptoKEKRepo.getGroupKey(groupId, member.groupKeyVersion)
 
-            if(groupKey !is GroupMasterKey.Valid)
+            if (groupKey !is GroupMasterKey.Valid)
                 throw MissingGroupKeyException(member.groupId, member.groupKeyVersion)
 
             // always rotate keys for every sharing session
@@ -86,8 +86,11 @@ class RegisterDeviceForSharingUseCase constructor(
             )
 
             if (data.isSuccess) {
+                logg.tag("sharing_start").d("Device registered, refresh group")
                 groupPreRefreshUseCase.refreshGroupWithMembers(groupId, cacheTimeMillis = 0)
+                logg.tag("sharing_start").d("Group refreshed")
             } else {
+                logg.tag("sharing_start").w("Device not registered")
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
                     code = null,

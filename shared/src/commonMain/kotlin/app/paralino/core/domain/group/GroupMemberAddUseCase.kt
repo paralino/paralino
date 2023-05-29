@@ -160,6 +160,7 @@ class GroupMemberAddUseCase constructor(
             data = BaseRemoteModule.formatter.encodeToString(payload)
         )
 
+        // TODO update device keys - new user will not be able to see location updates
         if (data.isSuccess) {
             return remote.getGroupWithMembers(groupId)
         } else {

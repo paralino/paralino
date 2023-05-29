@@ -29,8 +29,12 @@ class GroupPreRefreshUseCase constructor(
         val memberCryptoKeyRotationProcessing = memberCryptoKeyRotation.isProcessing(key)
         val deviceKeyRotationProcessing = deviceKeyRotation.isProcessing(key)
 
+        val processing = selfProcessing || fullProcessing
+                || groupRemoveProcessing || groupMemberRemoveProcessing || groupMemberAddProcessing
+                || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing || deviceKeyRotationProcessing
+
         logg.tag("group_actions").v(
-            "Group pre-refresh processing:" +
+            "Group pre-refresh processing ($processing):" +
                     " self: $selfProcessing" +
                     " full: $fullProcessing" +
                     " groupRemove: $groupRemoveProcessing" +
@@ -41,9 +45,7 @@ class GroupPreRefreshUseCase constructor(
                     " deviceKeyRotation: $deviceKeyRotationProcessing"
         )
 
-        return selfProcessing || fullProcessing
-                || groupRemoveProcessing || groupMemberRemoveProcessing || groupMemberAddProcessing
-                || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing || deviceKeyRotationProcessing
+        return processing
     }
 
     suspend fun refreshGroupWithMembers(groupId: String, cacheTimeMillis: Long = 4_000) {

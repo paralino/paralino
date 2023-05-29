@@ -75,7 +75,7 @@ class MemberMapperCore constructor(
                             logg.tag("tag_crypto_key_group_member")
                                 .e(
                                     "Error decrypting device data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
-                                            "Group key version: ${location.groupKeyVersion} - key version: ${groupKey.version}",
+                                            "location group key: ${location.groupKeyVersion} - main group key: ${groupKey.version} - used group key: ${deviceGroupKey.version}",
                                     e
                                 )
                             CryptoResource.WrongKeyOrData
