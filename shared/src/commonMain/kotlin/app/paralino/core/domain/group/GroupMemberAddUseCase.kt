@@ -15,10 +15,8 @@ import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.CreateGroupMemberPayload
 import app.paralino.core.models.raw.GroupMemberGroupKeysData
 import app.paralino.core.models.raw.GroupMemberPublicKeyPayload
-import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
@@ -28,11 +26,12 @@ import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 
 class GroupMemberAddUseCase constructor(
     private val local: UserGroupLocalDataSource,
-    private val remote: GroupsRemoteSource,
+    private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
@@ -43,21 +42,21 @@ class GroupMemberAddUseCase constructor(
     fun addMemberByAccessCode(
         groupId: String,
         code: UserPersonalCodeData
-    ): Flow<GroupWithMembersRaw> {
+    ): Flow<Unit> {
         return getDataOnce(
             remote = {
                 val group = local.getGroupWithMembers(groupId).first()
                 addUserToGroup(
                     group,
                     code
-                ).also {
-                    cryptoKEKRepo.refreshKeysForGroup(groupId)
-                }
-            },
-            localUpdate = {
-                local.updateOrCreateGroup(it)
+                )
+                groupPreRefreshUseCase.refreshGroupWithMembers(
+                    groupId = groupId,
+                    cacheTimeMillis = 0
+                )
             }
         )
+            .map { Unit }
             .startProcessing(groupId)
     }
 
@@ -65,7 +64,7 @@ class GroupMemberAddUseCase constructor(
     private suspend fun addUserToGroup(
         group: UserGroupWithMembers,
         codeData: UserPersonalCodeData
-    ): GroupWithMembersRaw {
+    ) {
 
         if (!group.isGroupVerified)
             throw IllegalStateException("Group is unverified")
@@ -160,10 +159,7 @@ class GroupMemberAddUseCase constructor(
             data = BaseRemoteModule.formatter.encodeToString(payload)
         )
 
-        // TODO update device keys - new user will not be able to see location updates
-        if (data.isSuccess) {
-            return remote.getGroupWithMembers(groupId)
-        } else {
+        if (!data.isSuccess) {
             // TODO throw better exception
             throw BaseRemoteException.fromCode(
                 code = null,

@@ -50,7 +50,7 @@ interface ILimitedExecution {
         delayedThresholdMillis: Long = 0,
         timeoutMillis: Long = 40_000
     ) {
-        logg.v("execution", "Start execution: ${tag ?: this::class.simpleName} ($key)")
+        logg.v("execution", "Try to start execution: ${tag ?: this::class.simpleName} ($key)")
         mutex.withLock {
 
             if (isProcessing(key)) {
