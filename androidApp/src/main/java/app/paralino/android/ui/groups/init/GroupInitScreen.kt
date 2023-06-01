@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.*
 import app.paralino.android.ui.invite.manage.PersonalCodeItem
@@ -47,15 +48,22 @@ fun GroupInitScreen(
 
     val context = LocalContext.current
 
+    val notificationPermissionHandler = rememberNotificationsPermissionHandler(
+        appState = appState,
+        locationStatusProvider = vm.locationStatusProvider
+    )
+
     LaunchedEffect(key1 = context) {
         vm.events.collectLatest { event ->
             when (event) {
                 is GroupInitScreenEvent.Error -> {
                     appState.showSnackbar(event.error.errorString(context))
                 }
+
                 GroupInitScreenEvent.EmailVerificationSent -> {
                     appState.showSnackbar(context.getString(R.string.info_email_check_instructions))
                 }
+
                 null -> {
                     /* do nothing */
                 }
@@ -72,6 +80,7 @@ fun GroupInitScreen(
                 }
             }
         }
+
         else -> {}
     }
 
@@ -118,12 +127,22 @@ fun GroupInitScreen(
                     data = it
                 ) {
                     when (it) {
-                        is ConditionErrorType.EMAIL_VERIFICATION -> showDialog =
-                            MainAlertDialog.VerifyEmail(it.email)
-                        ConditionErrorType.NETWORK -> appState.showSnackbar(
-                            text = context.getString(R.string.error_no_connection_snackbar)
-                        )
-                        else -> { /* do nothing */
+                        is ConditionErrorType.EMAIL_VERIFICATION -> {
+                            showDialog = MainAlertDialog.VerifyEmail(it.email)
+                        }
+
+                        ConditionErrorType.NETWORK -> {
+                            appState.showSnackbar(
+                                text = context.getString(R.string.error_no_connection_snackbar)
+                            )
+                        }
+
+                        ConditionErrorType.PERMISSION_NOTIFICATIONS -> {
+                            notificationPermissionHandler.askNotificationPermission()
+                        }
+
+                        else -> {
+                            /* do nothing */
                         }
                     }
                 }

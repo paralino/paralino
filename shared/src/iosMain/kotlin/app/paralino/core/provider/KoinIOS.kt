@@ -85,7 +85,7 @@ object KoinIOS {
     
     private fun createViewModelModule(): Module {
         return module {
-            factory { GroupInitViewModel(get(), get(), get()) }
+            factory { GroupInitViewModel(get(), get(), get(), get()) }
             factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
             factory { SettingsViewModel(get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
@@ -104,7 +104,7 @@ object KoinIOS {
                     groupMemberAdd = get()
                 )
             }
-            factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get()) }
             factory { MainViewModel(get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }

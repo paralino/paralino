@@ -9,12 +9,14 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.ILocationStatusProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class GroupInitViewModel(
     private val connectionStatus: IConnectionStatusProvider,
+    val locationStatusProvider: ILocationStatusProvider,
     private val userRepo: UserRepository,
     private val personalCodesRepo: PersonalCodesRepository
 ) : CoreViewModel() {
@@ -29,12 +31,16 @@ class GroupInitViewModel(
         combine(
             userRepo.localUser,
             connectionStatus.status,
+            locationStatusProvider.status,
             personalCodesRepo.getAndRefreshMyPersonalCodes()
-        ) { user, network, codes ->
+        ) { user, network, locationStatus, codes ->
 
             val errors = buildList {
                 if (!network.isOnline)
                     add(ConditionErrorType.NETWORK)
+
+                if(!locationStatus.isNotificationPermissionAllowed)
+                    add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
 
                 user.data?.needsEmailVerification?.takeIf { it }?.let {
                     add(ConditionErrorType.EMAIL_VERIFICATION(user.data?.email ?: ""))
