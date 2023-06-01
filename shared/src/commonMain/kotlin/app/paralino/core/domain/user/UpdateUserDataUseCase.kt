@@ -122,19 +122,19 @@ class UpdateUserDataUseCase constructor(
             return
         }
 
-        // FIXME Same token is always sent to backend on every app start
-        val unsyncedToken = config.pushTokenUnsynced
-            .takeIf { it.isNotBlank() }
+        val newPushToken = config.pushTokenUnsynced
+            .takeIf { it.isNotBlank() && it != config.pushTokenSynced }
             ?: let {
+                config.pushTokenUnsynced = ""
                 logg.tag("push_notifications").v("No new push token to register")
                 return
             }
 
         logg.tag("push_notifications").v("Found unsynced push token, syncing...")
 
-        config.pushTokenUnsynced = unsyncedToken
-        userDevicesRemoteSource.updateDeviceData(unsyncedToken)
+        userDevicesRemoteSource.updateDeviceData(newPushToken)
         config.pushTokenUnsynced = ""
+        config.pushTokenSynced = newPushToken
 
         logg.tag("push_notifications").v("Push token registered")
     }

@@ -12,6 +12,7 @@ abstract class IConfig {
         const val keyEmailGuest = "prefs.profile.guest.email"
         const val keyPasswordGuest = "prefs.profile.guest.password"
         const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
+        const val keyPushTokenSynced = "prefs.device.pushToken.synced"
         const val keyDeviceName = "prefs.device.name"
         const val keyDeviceID = "prefs.device.ID"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
@@ -29,6 +30,7 @@ abstract class IConfig {
     abstract var temporaryBackupPassword: String
 
     abstract var pushTokenUnsynced: String
+    abstract var pushTokenSynced: String
 
     abstract var guestEmail: String
     abstract var guestPassword: String

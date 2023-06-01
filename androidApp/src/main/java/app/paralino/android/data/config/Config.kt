@@ -84,6 +84,12 @@ class Config(context: Context) : IConfig() {
             secureSharedData.edit { putString(keyPushTokenUnsynced, value) }
         }
 
+    override var pushTokenSynced: String
+        get() = secureSharedData.getString(keyPushTokenSynced, "") ?: ""
+        set(value) {
+            secureSharedData.edit { putString(keyPushTokenSynced, value) }
+        }
+
     override var selectedGroupId: String?
         get() = secureSharedData.getString(keySelectedGroupID, null)
         set(value) {
