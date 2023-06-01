@@ -122,6 +122,10 @@ class MemberCryptoKeyRotation(
             )
         }
 
+        val memberKeyVersionsToKeep = cryptoKEKRepository.getAllActiveMemberKeyVersions(group.id)
+
+        logg.tag("tag_crypto_key_group_member_rotation").v("Keep member keys: $memberKeyVersionsToKeep")
+
         val payloadData = UpdateOwnMemberPublicKeyPayload(
             groupId = group.id,
             integrity = groupIntegrity,
@@ -142,6 +146,7 @@ class MemberCryptoKeyRotation(
             ),
             memberKeyVersion = currentExchangeKeys.version.plus(1),
             groupKeyVersion = groupKey.version,
+            memberKeyVersionsToKeep = memberKeyVersionsToKeep
         )
 
         val payload = GenericFunctionPayload(

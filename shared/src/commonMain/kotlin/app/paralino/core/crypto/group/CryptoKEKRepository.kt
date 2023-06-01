@@ -426,7 +426,7 @@ class CryptoKEKRepository(
                         }
                     myGroupKeyPair.publicKey.takeIf { it == key }.also {
                         if (it == null) logg.tag("tag_crypto_key_group_member_public")
-                            .w("User ${keyRaw.ownerUserId} own public key does not match in group ${keyRaw.groupId}")
+                            .w("User ${keyRaw.ownerUserId} own membership key does not match in group ${keyRaw.groupId}")
                     } ?: return GroupMemberMainPublicKey.Error.WrongPublicKey
                 } else {
                     key
@@ -434,7 +434,7 @@ class CryptoKEKRepository(
             } ?: return GroupMemberMainPublicKey.Error.UnverifiedPublicKey
         } catch (e: Exception) {
             logg.tag("tag_crypto_key_group_member_public")
-                .w("Can not decrypt user ${keyRaw.ownerUserId} public key in group ${keyRaw.groupId}")
+                .w("Can not decrypt user ${keyRaw.ownerUserId} membership key in group ${keyRaw.groupId}")
             return GroupMemberMainPublicKey.Error.InvalidPublicKey
         }
 
@@ -455,7 +455,7 @@ class CryptoKEKRepository(
                     }
                     myGroupKeyPair.publicKey.takeIf { it == key }.also {
                         if (it == null) logg.tag("tag_crypto_key_group_member_public")
-                            .w("User ${keyRaw.ownerUserId} own public key does not match in group ${keyRaw.groupId}")
+                            .w("User ${keyRaw.ownerUserId} own public kx key does not match in group ${keyRaw.groupId}")
                     } ?: return GroupMemberMainPublicKey.Error.WrongPublicKey
                 } else {
                     key
@@ -463,14 +463,14 @@ class CryptoKEKRepository(
             } ?: return GroupMemberMainPublicKey.Error.UnverifiedPublicKey
         } catch (e: Exception) {
             logg.tag("tag_crypto_key_group_member_public")
-                .w("Can not decrypt user ${keyRaw.ownerUserId} public key in group ${keyRaw.groupId}")
+                .w("Can not decrypt user ${keyRaw.ownerUserId} public kx key in group ${keyRaw.groupId}")
             return GroupMemberMainPublicKey.Error.InvalidPublicKey
         }
 
         return GroupMemberMainPublicKey.Valid(
             key = kxPublicKey,
             signedKey = keyRaw.signedMemberKxPublicKey,
-            version = keyRaw.memberKeyVersion,
+            memberKeyVersion = keyRaw.memberKeyVersion,
             membershipKey = membershipPublicKey,
             signedMemberShipKey = keyRaw.signedMembershipPublicKey,
             identityKey = identityKey
@@ -547,6 +547,22 @@ class CryptoKEKRepository(
         }
 
         return UserGroupPersonalKeyPair.Valid(keyPair.first, keyPair.second)
+    }
+
+    suspend fun getAllActiveMemberKeyVersions(groupId: String): List<Long> {
+        val groupDeviceKeys = getGroupDeviceKeys().filter {
+            // group device keys created for me
+            it.groupId == groupId && it.memberUserId == userRepository.cachedUserId
+        }.map { it.memberKeyVersion }
+        val groupKeys = getGroupKeys().filter {
+            // group master keys created for me
+            it.groupId == groupId && it.memberUserId == userRepository.cachedUserId
+        }.map { it.memberKeyVersion }
+        val memberKeys = getMemberKeys().filter {
+            // member keys
+            it.groupId == groupId && it.ownerUserId == userRepository.cachedUserId
+        }.map { it.memberKeyVersion }
+        return (groupDeviceKeys + groupKeys + memberKeys).distinct()
     }
 
     suspend fun updateIntegrity(

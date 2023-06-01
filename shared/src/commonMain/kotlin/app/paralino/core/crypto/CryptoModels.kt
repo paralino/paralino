@@ -55,7 +55,7 @@ sealed class GroupMemberMainPublicKey {
     data class Valid(
         override val key: String,
         val signedKey: String,
-        val version: Long,
+        val memberKeyVersion: Long,
         val membershipKey: String,
         val signedMemberShipKey: String,
         val identityKey: GroupMemberIdentityKey.Valid

@@ -113,6 +113,7 @@ data class UpdateOwnMemberPublicKeyPayload(
     val encryptedMemberPersonalKeys: String,
     val groupKeyVersion: Long,
     val memberKeyVersion: Long,
+    val memberKeyVersionsToKeep: List<Long>
 )
 
 @Serializable

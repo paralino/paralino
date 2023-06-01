@@ -182,7 +182,7 @@ class GroupCryptoKeyRotation constructor(
                             // encrypt with user public key
                             publicKey = memberPublicKey.key
                         ),
-                        memberKeyVersion = memberPublicKey.version
+                        memberKeyVersion = memberPublicKey.memberKeyVersion
                     )
                 } else {
                     null
