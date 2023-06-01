@@ -9,22 +9,28 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GroupDetailViewModel(
     private val groupId: String,
-    private val placesRepo: PlacesRepository,
     private val userRepo: UserRepository,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
@@ -42,14 +48,13 @@ class GroupDetailViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        app.paralino.core.utils.extensions.combine(
+        combine(
             locationStatusProvider.status,
             connectionStatus.status,
             groupRefresh.getGroupWithMembers(groupId),
-            placesRepo.hasAnyPlace(),
             sharingManager.sharingContractForGroup(groupId),
             userRepo.getBlocklistLocally()
-        ) { locationStatus, network, group, hasPlaces, sharingStatus, blocklist ->
+        ) { locationStatus, network, group, sharingStatus, blocklist ->
             groupData.update { group }
             val members = group.members
                 .sortedBy { it.member.name }
@@ -112,7 +117,7 @@ class GroupDetailViewModel(
                     addAll(locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
                 }
 
-                if (hasPlaces && !locationStatus.isNotificationPermissionAllowed) {
+                if (!locationStatus.isNotificationPermissionAllowed) {
                     add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
                 }
             }
