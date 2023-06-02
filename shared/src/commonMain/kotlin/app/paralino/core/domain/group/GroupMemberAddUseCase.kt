@@ -31,7 +31,7 @@ import kotlinx.serialization.encodeToString
 
 class GroupMemberAddUseCase constructor(
     private val local: UserGroupLocalDataSource,
-    private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
+    private val groupRefreshUseCase: GroupRefreshUseCase,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
@@ -50,10 +50,7 @@ class GroupMemberAddUseCase constructor(
                     group,
                     code
                 )
-                groupPreRefreshUseCase.refreshGroupWithMembers(
-                    groupId = groupId,
-                    cacheTimeMillis = 0
-                )
+                groupRefreshUseCase.refreshRemoteGroupWithMembersAndPlaces(groupId)
             }
         )
             .map { Unit }
