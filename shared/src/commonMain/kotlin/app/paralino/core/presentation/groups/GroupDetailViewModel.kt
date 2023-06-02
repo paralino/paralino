@@ -79,35 +79,19 @@ class GroupDetailViewModel(
                             }
                         }
                     )
-                    if (member.locations.size <= 1) {
-                        GroupMemberItemStateWithOneLocation(
-                            memberState = memberState,
-                            location = member.locations.firstOrNull()?.let {
-                                GroupMemberItemLocationState(
-                                    memberLocation = it,
-                                    // don't show device name if there is only one location
-                                    name = it.name,
-                                    image = member.member.image,
-                                    canEdit = false,
-                                    currentDevice = it.deviceId == config.deviceId,
-                                    showSpeedAndElevation = false
-                                )
-                            }
-                        )
-                    } else {
-                        GroupMemberItemStateWithLocations(
-                            memberState = memberState,
-                            locations = member.locations.map {
-                                GroupMemberItemLocationState(
-                                    memberLocation = it,
-                                    image = member.member.image,
-                                    canEdit = canEdit,
-                                    currentDevice = it.deviceId == config.deviceId,
-                                    showSpeedAndElevation = false
-                                )
-                            }
-                        )
-                    }
+                    GroupMemberItemStateWithLocations(
+                        memberState = memberState,
+                        locations = member.locations.map {
+                            GroupMemberItemLocationState(
+                                memberLocation = it,
+                                image = member.member.image,
+                                canEdit = canEdit,
+                                currentDevice = it.deviceId == config.deviceId,
+                                showSpeedAndElevation = false
+                            )
+                        },
+                        allowShowingDevices = true
+                    )
                 }
 
             val errors = buildList {

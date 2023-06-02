@@ -40,14 +40,20 @@ data class GroupMemberItemStateWithOneLocation constructor(
     val location: GroupMemberItemLocationState?,
 ) : GroupMemberItemState {
     override val keyId: String
-        get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId) ?: memberState.memberId
+        get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
+            ?: memberState.memberId
     val status: GroupMemberStatus get() = location?.status ?: GroupMemberStatus.INACTIVE
 }
 
 data class GroupMemberItemStateWithLocations constructor(
     override val memberState: GroupMemberState,
     val locations: List<GroupMemberItemLocationState>,
+    val allowShowingDevices: Boolean,
 ) : GroupMemberItemState {
+    val singleLocation: GroupMemberItemLocationState? = locations.takeIf { it.size == 1 }?.first()
+    val statusTag: GroupMemberStatus
+        get() = locations.firstOrNull { it.status == GroupMemberStatus.ACTIVE }?.status
+            ?: GroupMemberStatus.INACTIVE
     override val keyId: String
         get() = memberState.memberId
 }

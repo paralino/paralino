@@ -5,7 +5,12 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -24,7 +29,13 @@ import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.fromUTCtoUserLastPing
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.groups.*
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.groups.GroupMemberState
+import app.paralino.core.presentation.groups.GroupMemberStatus
+import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.utils.Emojis
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
@@ -58,14 +69,20 @@ fun GroupMember(
     ) {
         when (state) {
             is GroupMemberItemStateWithOneLocation -> {
-                GroupMemberWithOneLocation(
-                    state = state,
+                GroupMemberWithLocations(
+                    state = GroupMemberItemStateWithLocations(
+                        memberState = state.memberState,
+                        locations = listOfNotNull(state.location),
+                        allowShowingDevices = false
+                    ),
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
                     onActionClick = onActionClick,
+                    onDeleteDeviceClick = onDeleteDeviceClick,
                     extraActions = extraActions
                 )
             }
+
             is GroupMemberItemStateWithLocations -> {
                 GroupMemberWithLocations(
                     state = state,
@@ -87,9 +104,11 @@ fun GroupMemberItemState.getLastPingText(): String? {
         is GroupMemberItemStateWithOneLocation -> {
             this.location
         }
+
         is GroupMemberItemStateWithLocations -> {
             this.locations.filter { it.lastPing != null }.minByOrNull { it.lastPing!! }
         }
+
         else -> null
     }
 
@@ -146,7 +165,15 @@ fun MemberPreview() {
                 GroupMember(
                     state = GroupMemberItemStateWithLocations(
                         memberState = dummyMemberState,
-                        locations = dummyLocations
+                        locations = dummyLocations,
+                        allowShowingDevices = true
+                    )
+                ) { }
+                GroupMember(
+                    state = GroupMemberItemStateWithLocations(
+                        memberState = dummyMemberState,
+                        locations = dummyLocations.take(1),
+                        allowShowingDevices = false
                     )
                 ) { }
             }

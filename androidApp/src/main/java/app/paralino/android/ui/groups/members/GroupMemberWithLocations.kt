@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,7 +14,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayoutScope
@@ -22,6 +30,7 @@ import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.groups.GroupStatusTag
 import app.paralino.android.ui.groups.GroupStatusTagType
+import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.formatting.DistanceFormatter
@@ -58,30 +67,57 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
             modifier = Modifier
                 .size(50.dp)
                 .border(
-                    if (state.memberState.isCurrentUser) 2.dp else 0.5.dp,
-                    if (state.memberState.isCurrentUser)
+                    width = if (state.memberState.isCurrentUser) 2.dp else 0.5.dp,
+                    color = if (state.memberState.isCurrentUser)
                         MaterialTheme.colors.primary
                     else
                         MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                    RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp)
                 )
         )
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.size(14.dp),
-                    imageVector = AppIcons.Devices,
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = "${state.locations.size}",
-                    style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.SemiBold)
-                )
+            if (state.singleLocation?.batterLevel != null && (!expanded || !state.allowShowingDevices)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 2.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(14.dp)
+                            .rotate(90f),
+                        imageVector = AppIcons.BatteryFull,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Text(
+                        text = "${state.singleLocation?.batterLevel}%",
+                        style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium)
+                    )
+                }
+            } else if (state.locations.size > 1) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 2.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.size(14.dp),
+                        imageVector = AppIcons.Devices,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Text(
+                        text = "${state.locations.size}",
+                        style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                }
+            } else if(state.allowShowingDevices && state.singleLocation?.batterLevel != null && expanded) {
+                Box(modifier = Modifier.fillMaxWidth().height(16.dp))
             }
         }
     }
@@ -97,21 +133,60 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
                     bottom = actions.top,
                     startMargin = 12.dp,
                     endMargin = 8.dp,
-                    bottomMargin = 14.dp,
+                    bottomMargin = 0.dp,
                     horizontalBias = 0f
                 )
                 width = Dimension.fillToConstraints
             },
         verticalArrangement = Arrangement.Center
     ) {
+        val iconId = "deviceIcon"
         Text(
-            text = state.memberState.name,
+            text = buildAnnotatedString {
+                this.append(state.memberState.name)
+                if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
+                    this.append(" • ")
+                    appendInlineContent(iconId, "[device]")
+                    this.withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            baselineShift = BaselineShift(0.1f),
+                            color = AppColors.accent
+                        )
+                    ) {
+                        this.append(state.singleLocation?.name ?: "")
+                    }
+                }
+            },
+            inlineContent = mapOf(
+                Pair(
+                    iconId,
+                    InlineTextContent(
+                        Placeholder(
+                            width = 14.sp,
+                            height = 16.sp,
+                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                        )
+                    ) {
+                        Icon(
+                            imageVector = AppIcons.PhoneAndroid,
+                            contentDescription = null,
+                            tint = AppColors.accent,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 1.dp, end = 1.dp)
+                        )
+                    }
+                )
+            ),
             style = MaterialTheme.typography.subtitle1,
             modifier = Modifier
         )
 
         val status = when {
             !state.memberState.isVerified -> GroupStatusTagType.UNVERIFIED
+            state.statusTag == GroupMemberStatus.INACTIVE -> GroupStatusTagType.INACTIVE
             else -> null
         }
         GroupStatusTag(status)
@@ -133,7 +208,47 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
                 )
             }
         }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (state.singleLocation?.speedMs != null) {
+                Icon(
+                    imageVector = AppIcons.Speed,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 2.dp)
+                        .size(18.dp)
+                )
+                Text(
+                    text = DistanceFormatter.getSpeedSmall(
+                        LocalContext.current,
+                        state.singleLocation?.speedMs!!
+                    ),
+                    style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+            }
+
+            if (state.singleLocation?.elevationMeters != null) {
+                Icon(
+                    imageVector = AppIcons.StackedLineChart,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 2.dp)
+                        .size(18.dp)
+                )
+                Text(
+                    text = DistanceFormatter.getDistanceSmall(
+                        LocalContext.current,
+                        state.singleLocation?.elevationMeters!!
+                    ),
+                    style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+            }
+        }
     }
+
+    val canExpand = state.memberState.actionItems.isNotEmpty() || extraActions != null || (state.locations.isNotEmpty() && state.allowShowingDevices)
 
     // expand icon
     Box(
@@ -143,7 +258,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
             top.linkTo(image.top)
         }
     ) {
-        if (state.memberState.actionItems.isNotEmpty() || extraActions != null || state.locations.isNotEmpty()) {
+        if (canExpand) {
             Icon(
                 imageVector = if (expanded) AppIcons.ExpandLess else AppIcons.ExpandMore,
                 contentDescription = null
@@ -168,17 +283,21 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
 
         AnimatedVisibility(visible = expanded) {
             Column {
-                state.locations.forEach {
-                    GroupMemberLocationChild(
-                        state = it,
-                        onClick = {
-                            // open device
-                        },
-                        onDelete = {
-                            // delete device
-                            onDeleteDeviceClick?.invoke(it)
+                state.locations.takeIf { state.allowShowingDevices }?.let {
+                    Column(modifier = Modifier.padding(top = 4.dp)) {
+                        it.forEach {
+                            GroupMemberLocationChild(
+                                state = it,
+                                onClick = {
+                                    // open device
+                                },
+                                onDelete = {
+                                    // delete device
+                                    onDeleteDeviceClick?.invoke(it)
+                                }
+                            )
                         }
-                    )
+                    }
                 }
 
                 if (state.memberState.actionItems.isNotEmpty() || extraActions != null) {
@@ -233,7 +352,7 @@ fun GroupMemberLocationChild(
             .background(MaterialTheme.colors.surface)
             .combinedClickable(
                 onClick = { onClick(state) },
-                onLongClick = { if(state.canEdit) onDelete(state) }
+                onLongClick = { if (state.canEdit) onDelete(state) }
             )
             .padding(horizontal = 6.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -286,7 +405,11 @@ fun GroupMemberLocationChild(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 8.dp, end = 4.dp, bottom = if(state.batterLevel != null) 12.dp else 0.dp),
+                .padding(
+                    start = 8.dp,
+                    end = 4.dp,
+                    bottom = if (state.batterLevel != null) 12.dp else 0.dp
+                ),
             verticalArrangement = Arrangement.Center
         ) {
             Text(
