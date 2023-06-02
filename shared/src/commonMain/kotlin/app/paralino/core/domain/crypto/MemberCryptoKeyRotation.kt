@@ -118,7 +118,7 @@ class MemberCryptoKeyRotation(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey
+                key = userKeyRepo.personalKey()
             )
         }
 
@@ -142,7 +142,7 @@ class MemberCryptoKeyRotation(
                     privateKey = newExchangeKeys.privateKey,
                     publicKey = newExchangeKeys.publicKey
                 ),
-                key = userKeyRepo.personalKey
+                key = userKeyRepo.personalKey()
             ),
             memberKeyVersion = currentExchangeKeys.version.plus(1),
             groupKeyVersion = groupKey.version,

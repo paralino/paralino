@@ -162,7 +162,7 @@ class MemberDeviceKeyRotation(
             ).let {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(it),
-                    key = userKeyRepo.personalKey
+                    key = userKeyRepo.personalKey()
                 )
             }
             cryptoKEKRepository.updateIntegrity(

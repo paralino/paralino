@@ -521,7 +521,7 @@ class CryptoKEKRepository(
             if (keyRaw != null) {
                 cryptoCore.decryptDataWithKey(
                     data = keyRaw.encryptedUserKeys,
-                    key = userKeyRepository.personalKey
+                    key = userKeyRepository.personalKey()
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<SimpleKeyPairData>(it)
                 } to keyRaw.version
@@ -532,7 +532,7 @@ class CryptoKEKRepository(
                         try {
                             cryptoCore.decryptDataWithKey(
                                 data = key.encryptedUserKeys,
-                                key = userKeyRepository.personalKey
+                                key = userKeyRepository.personalKey()
                             ).let {
                                 BaseRemoteModule.formatter.decodeFromString<SimpleKeyPairData>(it)
                             } to key.version

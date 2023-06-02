@@ -4,7 +4,8 @@ abstract class IConfig {
 
     companion object {
         const val keyToken = "prefs.profile.token"
-        const val keyUserKey = "prefs.user.cryptKey"
+        const val keyUserKey = "prefs.user.masterKey"
+        const val keySessionKey = "prefs.user.sessionKey"
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
         const val keyTempPassword = "prefs.user.temp_password"
@@ -19,7 +20,8 @@ abstract class IConfig {
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
     }
 
-    abstract var userKey: String
+    abstract var encryptedUserMasterKey: String
+    abstract var sessionMasterKey: String
 
     abstract var deviceId: String
     abstract var sessionId: String

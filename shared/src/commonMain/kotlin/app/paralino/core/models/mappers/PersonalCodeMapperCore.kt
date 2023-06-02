@@ -61,7 +61,7 @@ class PersonalCodeMapperCore(
 
         val code = cryptoCore.decryptDataWithKey(
             data = model.encryptedCode,
-            key = userKeyRepo.personalKey
+            key = userKeyRepo.personalKey()
         )
 
         val derivedCode = cryptoCore.derivePassword(code)

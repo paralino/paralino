@@ -59,7 +59,7 @@ class PersonalCodesRemoteSource constructor(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey,
+                key = userKeyRepo.personalKey(),
             )
         }
 
@@ -114,7 +114,7 @@ class PersonalCodesRemoteSource constructor(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey,
+                key = userKeyRepo.personalKey(),
             )
         }
 
@@ -129,7 +129,7 @@ class PersonalCodesRemoteSource constructor(
             ),
             encryptedCode = cryptoCore.encryptDataWithKey(
                 data = personalCode,
-                key = userKeyRepo.personalKey
+                key = userKeyRepo.personalKey()
             ),
             keys = keys
         )
@@ -180,7 +180,7 @@ class PersonalCodesRemoteSource constructor(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey,
+                key = userKeyRepo.personalKey(),
             )
         }
         val keys = createPreKeys(userId, personalCode, integrity)
@@ -245,7 +245,7 @@ class PersonalCodesRemoteSource constructor(
             PersonalCodePreKeyData(
                 encryptedUserKeys = cryptoCore.encryptModel(
                     data = userKeys,
-                    key = userKeyRepo.personalKey
+                    key = userKeyRepo.personalKey()
                 ),
                 encryptedCodeKeyData = cryptoCore.encryptDataWithSimplePassword(
                     data = BaseRemoteModule.formatter.encodeToString(codeKeyData),

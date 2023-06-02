@@ -4,6 +4,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.data.db.UserKeysEntity
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
+import app.paralino.core.models.user.SessionCryptoKeyData
 
 class UserKeyMapperCore constructor(
     private val cryptoCore: CryptoCore,
@@ -46,6 +47,22 @@ class UserKeyMapperCore constructor(
             encryptedPrivateKey = model.encryptedPrivateKey,
             encryptedPublicKey = model.encryptedPublicKey,
             ownerUserId = userId
+        )
+    }
+
+    suspend fun wrapMasterKey(userMasterKey: String): SessionCryptoKeyData {
+        val newSessionKey = cryptoCore.getNewSymmetricKey()
+        val encryptedKey = cryptoCore.encryptDataWithKey(
+            data = userMasterKey,
+            key = newSessionKey
+        )
+        return SessionCryptoKeyData(encryptedKey = encryptedKey, sessionKey = newSessionKey)
+    }
+
+    suspend fun unwrapMasterKey(sessionMasterKey: String, encryptedUserMasterKey: String): String {
+        return cryptoCore.decryptDataWithKey(
+            data = encryptedUserMasterKey,
+            key = sessionMasterKey
         )
     }
 

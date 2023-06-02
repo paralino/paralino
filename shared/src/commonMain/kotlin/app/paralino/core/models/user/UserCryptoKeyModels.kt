@@ -20,3 +20,8 @@ data class SymmetricCryptoKeyData constructor(
     val encryptedKey: String,
     val version: Long
 )
+
+data class SessionCryptoKeyData constructor(
+    val encryptedKey: String,
+    val sessionKey: String,
+)

@@ -1,6 +1,5 @@
 package app.paralino.core.crypto.user
 
-import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.base.BaseRepository
@@ -8,21 +7,15 @@ import app.paralino.core.utils.exceptions.MissingUserKeyException
 import kotlinx.coroutines.flow.Flow
 
 class CryptoUserKeyRepository(
-    private val cryptoCore: CryptoCore,
     private val local: UserCryptoKeyLocalDataSource,
     private val remote: CryptoUserKeysRemoteSource,
 ) : BaseRepository() {
 
-    val personalKey: String
-        get() {
-            return personalKeyOrNull ?: throw MissingUserKeyException(localCache = true)
-        }
-
-    val personalKeyOrNull: String?
-        get() {
-            return local.getCachedUserKey().takeIf { it.isNotBlank() }
-                ?.takeIf { it.isNotEmpty() }
-        }
+    suspend fun personalKey(): String {
+        return local.getCachedUserKey()
+            .takeIf { it.isNotBlank() }
+            ?: throw MissingUserKeyException(localCache = true)
+    }
 
     suspend fun latestKeyPair(): AsymmetricCryptoKeyData {
         return local.getKeyPair() ?: throw MissingUserKeyException(localCache = false)

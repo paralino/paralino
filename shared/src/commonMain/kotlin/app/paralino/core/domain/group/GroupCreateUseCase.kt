@@ -124,7 +124,7 @@ class GroupCreateUseCase(
             ).let {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(it),
-                    key = userKeyRepo.personalKey
+                    key = userKeyRepo.personalKey()
                 )
             }
 
@@ -143,7 +143,7 @@ class GroupCreateUseCase(
                 ),
                 encryptedUserKeys = cryptoCore.encryptModel(
                     data = userKeys,
-                    key = userKeyRepo.personalKey
+                    key = userKeyRepo.personalKey()
                 ),
                 memberVerification = memberVerification,
                 memberData = cryptoCore.encryptDataWithKey(

@@ -14,12 +14,21 @@ class UserCryptoKeyLocalDataSource constructor(
     private val database: AppDatabaseHelper
 ) {
 
-    fun getCachedUserKey(): String {
-        return appConfig.userKey
+    suspend fun getCachedUserKey(): String {
+        if(appConfig.sessionMasterKey.isBlank() || appConfig.encryptedUserMasterKey.isBlank())
+            return ""
+
+        return userKeyMapper.unwrapMasterKey(
+            sessionMasterKey = appConfig.sessionMasterKey,
+            encryptedUserMasterKey = appConfig.encryptedUserMasterKey
+        )
     }
 
     suspend fun saveKey(key: UserCryptoKeyRaw, decryptedMainKey: String) {
-        appConfig.userKey = decryptedMainKey
+        val keyData = userKeyMapper.wrapMasterKey(userMasterKey = decryptedMainKey)
+        appConfig.sessionMasterKey = keyData.sessionKey
+        appConfig.encryptedUserMasterKey = keyData.encryptedKey
+
         database.userKeysQueries.transaction {
             database.userKeysQueries.clearAll()
             database.userKeysQueries.createUserKey(
@@ -66,7 +75,8 @@ class UserCryptoKeyLocalDataSource constructor(
     }
 
     suspend fun clearAllKeys() {
-        appConfig.userKey = ""
+        appConfig.encryptedUserMasterKey = ""
+        appConfig.sessionMasterKey = ""
         database.userKeysQueries.transaction {
             database.userKeysQueries.clearAll()
         }

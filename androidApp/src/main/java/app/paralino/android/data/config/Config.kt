@@ -72,10 +72,16 @@ class Config(context: Context) : IConfig() {
             persistentSharedData.edit { putString(keyPasswordGuest, value) }
         }
 
-    override var userKey: String
+    override var encryptedUserMasterKey: String
         get() = secureSharedData.getString(keyUserKey, "") ?: ""
         set(value) {
             secureSharedData.edit(commit = true) { putString(keyUserKey, value) }
+        }
+
+    override var sessionMasterKey: String
+        get() = secureSharedData.getString(keySessionKey, "") ?: ""
+        set(value) {
+            secureSharedData.edit(commit = true) { putString(keySessionKey, value) }
         }
 
     override var pushTokenUnsynced: String
