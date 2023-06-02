@@ -30,14 +30,6 @@ class GroupRefreshUseCase constructor(
     private val groupRemove: GroupRemoveUseCase,
 ) : LimitedExecutionRepository() {
 
-    fun getGroupWithMembers(id: String): Flow<UserGroupWithMembers> {
-        return mergeDataWithRemote(
-            local = local.getGroupWithMembers(id),
-            remote = { refreshRemoteGroupWithMembersAndPlaces(id) },
-            localUpdate = { }
-        )
-    }
-
     suspend fun refreshRemoteGroupWithMembersAndPlaces(groupId: String): GroupWithMembersRaw {
         return getRemoteGroupWithMembers(groupId)
             .also {

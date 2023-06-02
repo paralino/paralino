@@ -6,7 +6,10 @@ import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.repo.base.RemotePreference
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import kotlinx.coroutines.flow.Flow
 
 class GroupPreRefreshUseCase constructor(
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
@@ -16,7 +19,8 @@ class GroupPreRefreshUseCase constructor(
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupMemberAdd: GroupMemberAddUseCase,
     private val groupRefresh: GroupRefreshUseCase,
-    private val refreshEverything: RefreshEverythingUseCase
+    private val refreshEverything: RefreshEverythingUseCase,
+    private val local: UserGroupLocalDataSource,
 ) : LimitedExecutionRepository() {
 
     override fun isProcessing(key: String): Boolean {
@@ -73,5 +77,14 @@ class GroupPreRefreshUseCase constructor(
         } finally {
             stopProcessing(groupId)
         }
+    }
+
+    fun getAndRefreshGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
+        return mergeDataWithRemote(
+            local = local.getGroupWithMembers(groupId = groupId),
+            remote = { refreshGroupWithMembers(groupId = groupId, cacheTimeMillis = 4000) },
+            localUpdate = { },
+            remotePreference = RemotePreference.CACHE(key = groupId, timeMillis = 4000)
+        )
     }
 }

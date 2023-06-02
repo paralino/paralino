@@ -163,7 +163,7 @@ val coreModule = module {
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }

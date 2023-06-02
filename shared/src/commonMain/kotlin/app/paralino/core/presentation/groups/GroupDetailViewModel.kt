@@ -2,7 +2,7 @@ package app.paralino.core.presentation.groups
 
 import app.paralino.core.config
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
-import app.paralino.core.domain.group.GroupRefreshUseCase
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
@@ -37,7 +37,7 @@ class GroupDetailViewModel(
     private val connectionStatus: IConnectionStatusProvider,
     private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
-    private val groupRefresh: GroupRefreshUseCase,
+    private val groupRefresh: GroupPreRefreshUseCase,
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
@@ -51,7 +51,7 @@ class GroupDetailViewModel(
         combine(
             locationStatusProvider.status,
             connectionStatus.status,
-            groupRefresh.getGroupWithMembers(groupId),
+            groupRefresh.getAndRefreshGroupWithMembers(groupId),
             sharingManager.sharingContractForGroup(groupId),
             userRepo.getBlocklistLocally()
         ) { locationStatus, network, group, sharingStatus, blocklist ->
