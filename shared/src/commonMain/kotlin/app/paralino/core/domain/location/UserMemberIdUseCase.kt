@@ -22,10 +22,6 @@ class UserMemberIdUseCase constructor(
         return deviceApiProvider.deviceType
     }
 
-    suspend fun getCurrentDeviceId(): String {
-        return config.deviceId
-    }
-
     suspend fun getCurrentSessionId(): String {
         return config.sessionId
     }

@@ -23,8 +23,8 @@ abstract class IDeviceApiProvider(
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
         }
 
-        if(config.deviceId.isBlank())
-            config.deviceId = randomUUID
+        if(config.deviceIdSeed.isBlank())
+            config.deviceIdSeed = randomUUID
 
         locationStatusProvider.refreshLocationStatus()
         connectionStatus = connectionStatusProvider

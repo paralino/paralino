@@ -18,10 +18,16 @@ class Config(context: Context) : IConfig() {
         EncryptedSharedPreferences(context, "shared_prefs_app", MasterKey(context))
     }
 
-    override var deviceId: String
-        get() = persistentSharedData.getString(keyDeviceID, "") ?: ""
+    override var deviceIdSeed: String
+        get() = persistentSharedData.getString(keyDeviceIDSeed, "") ?: ""
         set(value) {
-            persistentSharedData.edit { putString(keyDeviceID, value) }
+            persistentSharedData.edit { putString(keyDeviceIDSeed, value) }
+        }
+
+    override var deviceId: String
+        get() = secureSharedData.getString(keyDeviceID, "") ?: ""
+        set(value) {
+            secureSharedData.edit { putString(keyDeviceID, value) }
         }
 
     override var sessionId: String

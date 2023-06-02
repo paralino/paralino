@@ -15,6 +15,7 @@ abstract class IConfig {
         const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
         const val keyPushTokenSynced = "prefs.device.pushToken.synced"
         const val keyDeviceID = "prefs.device.ID"
+        const val keyDeviceIDSeed = "prefs.device.ID.seed"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
     }
@@ -22,6 +23,7 @@ abstract class IConfig {
     abstract var encryptedUserMasterKey: String
     abstract var sessionMasterKey: String
 
+    abstract var deviceIdSeed: String
     abstract var deviceId: String
     abstract var sessionId: String
     abstract var email: String
