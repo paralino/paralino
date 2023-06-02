@@ -233,7 +233,7 @@ fun GroupMemberLocationChild(
             .background(MaterialTheme.colors.surface)
             .combinedClickable(
                 onClick = { onClick(state) },
-                onLongClick = { onDelete(state) }
+                onLongClick = { if(state.canEdit) onDelete(state) }
             )
             .padding(horizontal = 6.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
