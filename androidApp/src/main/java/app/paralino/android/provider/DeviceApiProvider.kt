@@ -1,5 +1,6 @@
 package app.paralino.android.provider
 
+import android.os.Build
 import androidx.work.WorkManager
 import androidx.work.await
 import app.paralino.android.AppClass
@@ -33,6 +34,9 @@ class DeviceApiProvider constructor(
 
     override val appVersionCode: Long
         get() = BuildConfig.VERSION_CODE.toLong()
+
+    override val defaultDeviceName: String
+        get() = Build.MANUFACTURER
 
     override fun createSystemLogr(): SystemLogr {
         return if (appConfig.logToConsole) {

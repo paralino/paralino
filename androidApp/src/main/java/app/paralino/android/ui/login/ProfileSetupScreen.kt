@@ -77,7 +77,6 @@ fun ProfileSetupScreen(
                 }
             },
             onNameChange = { vm.onNameChange(it) },
-            onDeviceNameChange = { vm.onDeviceNameChange(it) },
             onCreateGroupClick = { vm.proceed() }
         )
     }

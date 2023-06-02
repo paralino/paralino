@@ -36,12 +36,6 @@ class Config(context: Context) : IConfig() {
             secureSharedData.edit { putString(keyEmail, value) }
         }
 
-    override var deviceName: String
-        get() = secureSharedData.getString(keyDeviceName, "") ?: ""
-        set(value) {
-            secureSharedData.edit { putString(keyDeviceName, value) }
-        }
-
     override var userId: String
         get() = secureSharedData.getString(keyUserId, "") ?: ""
         set(value) {

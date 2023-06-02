@@ -14,7 +14,6 @@ abstract class IConfig {
         const val keyPasswordGuest = "prefs.profile.guest.password"
         const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
         const val keyPushTokenSynced = "prefs.device.pushToken.synced"
-        const val keyDeviceName = "prefs.device.name"
         const val keyDeviceID = "prefs.device.ID"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
@@ -25,7 +24,6 @@ abstract class IConfig {
 
     abstract var deviceId: String
     abstract var sessionId: String
-    abstract var deviceName: String
     abstract var email: String
     abstract var userId: String
     abstract var emailConfirmed: Boolean

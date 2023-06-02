@@ -55,7 +55,7 @@ class LocationRepository constructor(
                 if (locationId.isNullOrBlank()) {
                     logg.d("Location is null for ${contract.groupId}, try register new device")
                     try {
-                        registerDeviceForSharing.registerDevice(groupId = contract.groupId)
+                        registerDeviceForSharing.registerDevice(groupId = contract.groupId, deviceName = null)
                     } catch (e: Exception) {
                         // TODO notify user
                         logg.w("Error registering device for group sharing", e)

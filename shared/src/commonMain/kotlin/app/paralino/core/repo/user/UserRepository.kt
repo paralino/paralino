@@ -103,7 +103,6 @@ class UserRepository constructor(
 
     private suspend fun updateSession(session: UserSession) {
         config.sessionId = session.id
-        config.deviceName = session.deviceName
     }
 
     fun updateUserEmail(newEmail: String, password: String): Flow<Unit> {

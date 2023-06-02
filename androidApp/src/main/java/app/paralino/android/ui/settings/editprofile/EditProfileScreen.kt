@@ -17,9 +17,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.settings.editprofile.EditProfileScreenEvent
-import app.paralino.core.presentation.settings.editprofile.EditProfileScreenState
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.*
@@ -28,6 +25,9 @@ import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.safeCast
+import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.settings.editprofile.EditProfileScreenEvent
+import app.paralino.core.presentation.settings.editprofile.EditProfileScreenState
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.flow.collectLatest
@@ -95,7 +95,6 @@ fun EditProfileScreen(
                 }
             },
             onNameChange = { vm.onNameChange(it) },
-            onDeviceNameChange = { vm.onDeviceNameChange(it) },
             onCreateGroupClick = { vm.proceed() }
         )
     }
@@ -107,7 +106,6 @@ fun EditProfileScreen(
     state: EditProfileScreenState,
     onImageClick: () -> Unit,
     onNameChange: (String) -> Unit,
-    onDeviceNameChange: (String) -> Unit,
     onCreateGroupClick: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -154,19 +152,6 @@ fun EditProfileScreen(
             capitalization = KeyboardCapitalization.Words,
             focusManager = focusManager,
             onInputChange = onNameChange
-        )
-
-        Spacer(modifier = Modifier.size(20.dp))
-
-        MainInputField(
-            text = state.deviceName,
-            hint = stringResource(id = R.string.groups_sharing_device_name_placeholder),
-            hasError = false,
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done,
-            capitalization = KeyboardCapitalization.Words,
-            focusManager = focusManager,
-            onInputChange = onDeviceNameChange
         )
 
         Spacer(modifier = Modifier.size(80.dp))

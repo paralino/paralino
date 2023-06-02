@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -16,8 +17,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.tracking.rememberLocationPermissionHandler
@@ -240,10 +245,17 @@ fun SharingStartScreen(
             }
         },
     ) {
+        val focusManager = LocalFocusManager.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
                 .animateContentSize()
                 .padding(
                     start = 20.dp,
@@ -316,6 +328,19 @@ fun SharingStartScreen(
                     Spacer(modifier = Modifier.size(20.dp))
                 }
             }
+
+            Spacer(modifier = Modifier.size(20.dp))
+
+            MainInputField(
+                text = state.deviceName,
+                hint = stringResource(id = R.string.groups_sharing_device_name_placeholder),
+                hasError = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done,
+                capitalization = KeyboardCapitalization.Words,
+                focusManager = focusManager,
+                onInputChange = { vm.onDeviceNameChange(it) }
+            )
 
             Row(
                 modifier = Modifier

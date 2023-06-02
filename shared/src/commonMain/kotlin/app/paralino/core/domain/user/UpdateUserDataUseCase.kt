@@ -4,10 +4,8 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.UpdateMemberData
 import app.paralino.core.models.raw.UpdateMemberFunctionPayload
@@ -36,26 +34,24 @@ class UpdateUserDataUseCase constructor(
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val personalCodes: PersonalCodesRepository,
-    private val userMemberIdUseCase: UserMemberIdUseCase
 ) : BaseRepository() {
 
-    fun updateUserData(data: UserMeData, deviceName: String): Flow<Unit> {
+    fun updateUserData(data: UserMeData): Flow<Unit> {
         return getDataOnce(
             remote = {
                 val newData = userRemoteSource.updateUserData(data)
-                updateMemberDataInGroups(data, deviceName)
+                updateMemberDataInGroups(data)
                 personalCodes.updateUserCode(data)
                 newData
             },
             localUpdate = {
-                config.deviceName = deviceName
                 userRepo.updateLocalUser(it)
             }
         )
             .map { Unit }
     }
 
-    private suspend fun updateMemberDataInGroups(data: UserMeData, deviceName: String) {
+    private suspend fun updateMemberDataInGroups(data: UserMeData) {
         val userMembers = locationRepo.getMembersByUserId(userRepo.cachedUserId)
 
         val nodes = userMembers.map { member ->
@@ -75,22 +71,10 @@ class UpdateUserDataUseCase constructor(
                 key = groupKey.key
             )
 
-            val deviceData = cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(
-                    MemberDeviceData(
-                        deviceName = deviceName,
-                        deviceType = userMemberIdUseCase.getCurrentDeviceType().key
-                    )
-                ),
-                key = groupKey.key
-            )
-
             UpdateMemberData(
                 memberId = member.id,
-                locationId = userMemberIdUseCase.getCurrentLocationIdForGroup(member.groupId) ?: "",
                 groupKeyVersion = member.groupKeyVersion,
                 memberData = memberData,
-                deviceData = deviceData
             )
         }
 

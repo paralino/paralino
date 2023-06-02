@@ -3,6 +3,7 @@ package app.paralino.core.repo.location
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.logg
+import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.MemberDocumentRaw
@@ -131,6 +132,22 @@ class LocationLocalDataSource(
 
     suspend fun getUserMemberId(groupId: String, userId: String): String? {
         return database.memberQueries.getUserMemberId(groupId = groupId, userId = userId).executeAsOneOrNull()
+    }
+
+    suspend fun getMemberModelsWithLocationForUser(userId: String): List<MemberModelWithLocations> {
+        val result = database.transactionWithResult {
+            val members = database.memberQueries.getAllMembersForUser(userId = userId).executeAsList()
+            val locations = database.locationQueries.getForUser(userId = userId).executeAsList()
+            members to locations
+        }
+
+        return result?.first?.map { member ->
+            val ownerId = getGroupOwnerId(groupId = member.groupId)!!
+            val memberLocations = result.second.filter {
+                it.memberId == member.id
+            }
+            mapper.local2Core(member, memberLocations, ownerId)
+        } ?: emptyList()
     }
 
     suspend fun clearMemberLocationData(locationId: String) {

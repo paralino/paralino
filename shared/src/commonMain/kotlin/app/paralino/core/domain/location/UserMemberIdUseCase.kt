@@ -2,6 +2,7 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.config
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
@@ -31,6 +32,15 @@ class UserMemberIdUseCase constructor(
 
     suspend fun getAllSessionCount(): Int {
         return userRepository.getAllSessionsFromRemote().size
+    }
+
+    suspend fun getDefaultDeviceName(groupId: String?): String {
+        return groupId?.let { getCurrentLocationForGroup(it)?.deviceData?.data?.deviceName }
+            ?: memberLocal.getMemberModelsWithLocationForUser(userRepository.cachedUserId)
+                .mapNotNull { it.currentDeviceLocation?.name }
+                .takeIf { it.size == 1 }
+                ?.first()
+            ?: deviceApiProvider.defaultDeviceName
     }
 
     suspend fun getCurrentLocationForGroup(groupId: String): MemberLocation? {

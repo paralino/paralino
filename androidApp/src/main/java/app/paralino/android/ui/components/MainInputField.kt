@@ -29,7 +29,9 @@ fun MainInputField(
     textStyle: TextStyle = LocalTextStyle.current,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Default,
-    capitalization: KeyboardCapitalization = KeyboardCapitalization.Sentences,
+    capitalization: KeyboardCapitalization = if (keyboardType == KeyboardType.Email)
+        KeyboardCapitalization.None
+    else KeyboardCapitalization.Sentences,
     onKeyboardAction: () -> Unit = {},
     onInputChange: (String) -> Unit,
 ) {

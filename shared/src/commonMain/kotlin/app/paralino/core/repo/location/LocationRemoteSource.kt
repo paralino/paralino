@@ -96,10 +96,6 @@ class LocationRemoteSource constructor(
         if (memberKey !is GroupMemberSenderKey.Valid)
             throw MissingMemberKeyException(data.groupId, config.userId)
 
-        val groupKey = cryptoKEKRepo.getGroupKey(data.groupId, data.member.groupKeyVersion)
-        if (groupKey !is GroupMasterKey.Valid)
-            throw MissingGroupKeyException(data.groupId)
-
         val locationData = data.data?.let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
@@ -107,24 +103,12 @@ class LocationRemoteSource constructor(
             )
         }
 
-        val deviceData = cryptoCore.encryptDataWithKey(
-            data = BaseRemoteModule.formatter.encodeToString(
-                MemberDeviceData(
-                    deviceName = config.deviceName,
-                    deviceType = userMemberIdUseCase.getCurrentDeviceType().key
-                )
-            ),
-            key = groupKey.key
-        )
-
         documentApi.updateDocument(
             databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
             docId = data.locationId,
             data = mapOf(
                 "locationData" to locationData,
-                "deviceData" to deviceData,
-                "groupKeyVersion" to groupKey.version,
                 "deviceKeyVersion" to memberKey.deviceKeyVersion,
             )
         )

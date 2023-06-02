@@ -1,6 +1,5 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
@@ -15,7 +14,6 @@ import app.paralino.core.models.raw.LocationCreatePayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
@@ -40,14 +38,10 @@ class RegisterDeviceForSharingUseCase constructor(
     }
 
     suspend fun registerDevice(
-        groupId: String
+        groupId: String,
+        deviceName: String?,
     ) {
         triggerRemoteOnly {
-
-//            if (userMemberId.hasCurrentLocationIdForGroup(groupId)) {
-//                // current device is already registered
-//                return@triggerRemoteOnly
-//            }
 
             // refresh all group data before sharing starts
             logg.tag("sharing_start").d("Start location register, refresh group data")
@@ -68,7 +62,7 @@ class RegisterDeviceForSharingUseCase constructor(
             val deviceData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberDeviceData(
-                        deviceName = config.deviceName,
+                        deviceName = deviceName ?: userMemberId.getDefaultDeviceName(groupId),
                         deviceType = userMemberId.getCurrentDeviceType().key
                     )
                 ),

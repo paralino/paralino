@@ -34,6 +34,7 @@ abstract class IDeviceApiProvider(
     abstract val randomUUID: String
     abstract val deviceType: DeviceType
     abstract val appVersionCode: Long
+    abstract val defaultDeviceName: String
     abstract fun createSystemLogr(): SystemLogr
     abstract fun createConfig(): IConfig
     abstract suspend fun logout()
