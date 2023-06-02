@@ -52,7 +52,7 @@ class GroupPreRefreshUseCase constructor(
         return processing
     }
 
-    suspend fun refreshGroupWithMembers(groupId: String, cacheTimeMillis: Long = 4_000): Boolean {
+    suspend fun refreshGroupWithMembers(groupId: String, cacheTimeMillis: Long = 6_000): Boolean {
 
         try {
             startProcessing(groupId)
@@ -63,10 +63,9 @@ class GroupPreRefreshUseCase constructor(
 
         logg.tag("group_actions").v("Not processing, can refresh group $groupId")
 
-        val key = "group_refresh_$groupId"
         try {
             val result = triggerRemoteMaybe(
-                remotePreference = RemotePreference.CACHE(key = key, timeMillis = cacheTimeMillis),
+                remotePreference = RemotePreference.CACHE(key = "group_refresh_$groupId", timeMillis = cacheTimeMillis),
                 remote = { groupRefresh.refreshRemoteGroupWithMembersAndPlaces(groupId) }
             )
             return result != null
@@ -82,9 +81,9 @@ class GroupPreRefreshUseCase constructor(
     fun getAndRefreshGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
         return mergeDataWithRemote(
             local = local.getGroupWithMembers(groupId = groupId),
-            remote = { refreshGroupWithMembers(groupId = groupId, cacheTimeMillis = 4000) },
+            remote = { refreshGroupWithMembers(groupId = groupId, cacheTimeMillis = 6000) },
             localUpdate = { },
-            remotePreference = RemotePreference.CACHE(key = groupId, timeMillis = 4000)
+            remotePreference = RemotePreference.CACHE(key = "group_refresh_$groupId", timeMillis = 4000)
         )
     }
 }
