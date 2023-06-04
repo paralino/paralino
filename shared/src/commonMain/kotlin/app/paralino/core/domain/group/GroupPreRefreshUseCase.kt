@@ -83,7 +83,7 @@ class GroupPreRefreshUseCase constructor(
             local = local.getGroupWithMembers(groupId = groupId),
             remote = { refreshGroupWithMembers(groupId = groupId, cacheTimeMillis = 6000) },
             localUpdate = { },
-            remotePreference = RemotePreference.CACHE(key = "group_refresh_$groupId", timeMillis = 4000)
+            remotePreference = RemotePreference.CACHE(key = "get_group_refresh_$groupId", timeMillis = 8000)
         )
     }
 }
