@@ -90,6 +90,7 @@ class RegisterDeviceForSharingUseCase constructor(
                     timeUtc = nowUTC().toString(),
                     signature = GroupIntegrity.createSignature(
                         hashProvider = cryptoCore.hashProvider,
+                        serverIntegrity = group.group.serverIntegrity,
                         memberVerifications = group.members.map { it.member.verification },
                         encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
                             groupId = group.id

@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS groupEntity (
 `ownerUserId` TEXT NOT NULL,
 `groupKeyVersion` INTEGER NOT NULL,
 `data` TEXT NOT NULL,
+`serverIntegrity` TEXT NOT NULL,
 `planType` TEXT NOT NULL
 );
 

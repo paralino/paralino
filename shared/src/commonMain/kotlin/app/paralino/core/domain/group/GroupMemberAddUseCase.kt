@@ -121,6 +121,10 @@ class GroupMemberAddUseCase constructor(
             timeUtc = nowUTC().toString(),
             signature = GroupIntegrity.createSignature(
                 hashProvider = cryptoCore.hashProvider,
+                serverIntegrity = cryptoCore.hashProvider.computeHash(
+                    data = group.group.serverIntegrity.plus(codeData.userData.ownerUserId),
+                    type = HashType.SHA256
+                ),
                 memberVerifications = group.members.map { it.member.verification } + memberVerification,
                 encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
                     groupId = groupId

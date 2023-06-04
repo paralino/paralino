@@ -20,6 +20,7 @@ data class UserGroup constructor(
     val groupKeyVersion: Long,
     @Contextual
     val data: CryptoResource<UserGroupData>,
+    val serverIntegrity: String,
     val planType: PlanType,
     val memberCount: Int,
     val verification: VerificationResult,

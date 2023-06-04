@@ -1,24 +1,16 @@
 package app.paralino.core.domain.group
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.domain.LimitedExecutionRepository
-import app.paralino.core.domain.LimitedExecutionState
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.logg
-import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.GroupWithMembersRaw
-import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 
 class GroupRefreshUseCase constructor(
     private val local: UserGroupLocalDataSource,
@@ -76,15 +68,4 @@ class GroupRefreshUseCase constructor(
             return group
         }
     }
-
-    suspend fun updateGroupAndMemberKeysAndRefresh(
-        remoteGroup: UserGroupWithMembers,
-    ): GroupWithMembersRaw? {
-        if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = true)) {
-            return refreshRemoteGroupWithMembersAndPlaces(remoteGroup.id)
-        } else {
-            return null
-        }
-    }
-
 }

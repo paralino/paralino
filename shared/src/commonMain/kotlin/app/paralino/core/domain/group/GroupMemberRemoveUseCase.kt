@@ -39,8 +39,7 @@ class GroupMemberRemoveUseCase(
             }
         )
             .onEach {
-                val group = local.getGroupWithMembers(groupId).first()
-                groupRefreshUseCase.updateGroupAndMemberKeysAndRefresh(group)
+                groupRefreshUseCase.refreshRemoteGroupWithMembersAndPlaces(groupId)
             }
             .startProcessing(groupId)
     }

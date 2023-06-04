@@ -10,6 +10,7 @@ data class GroupDocumentRaw constructor(
     val ownerUserId: String,
     val groupKeyVersion: Long,
     val data: String,
+    val serverIntegrity: String,
     val planType: String,
 ) {
 
@@ -20,6 +21,7 @@ data class GroupDocumentRaw constructor(
                 ownerUserId = map["ownerUserId"] as String,
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 data = map["data"] as String,
+                serverIntegrity = map["serverIntegrity"] as String,
                 planType = map["planType"] as String,
             )
         }

@@ -171,6 +171,7 @@ class GroupValidityVerification(
     suspend fun checkIntegrityForGroupKey(group: UserGroupWithMembers): IntegrityResult {
         val integrity = getIntegrity(
             groupId = group.group.id,
+            serverIntegrity = group.group.serverIntegrity,
             myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = false
@@ -189,6 +190,7 @@ class GroupValidityVerification(
     suspend fun checkIntegrityForMemberKey(group: UserGroupWithMembers): IntegrityResult {
         val integrity = getIntegrity(
             groupId = group.group.id,
+            serverIntegrity = group.group.serverIntegrity,
             myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = false
@@ -214,6 +216,7 @@ class GroupValidityVerification(
 
         val integrity = getIntegrity(
             groupId = group.group.id,
+            serverIntegrity = group.group.serverIntegrity,
             myIntegrity = keyIntegrity,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = false
@@ -231,6 +234,7 @@ class GroupValidityVerification(
 
     private suspend fun getIntegrity(
         groupId: String,
+        serverIntegrity: String,
         myIntegrity: String?,
         memberVerifications: List<String>,
         forGroup: Boolean,
@@ -255,6 +259,7 @@ class GroupValidityVerification(
 
             GroupIntegrity.createSignature(
                 hashProvider = cryptoCore.hashProvider,
+                serverIntegrity = serverIntegrity,
                 memberVerifications = memberVerifications,
                 encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
                     groupId = groupId
@@ -266,30 +271,6 @@ class GroupValidityVerification(
         }
 
         return remoteIntegrity to realIntegritySignature
-    }
-
-    private suspend fun checkIntegrity(
-        groupId: String,
-        myIntegrity: String?,
-        memberVerifications: List<String>,
-        forGroup: Boolean,
-    ): IntegrityResult {
-
-        val tag = "integrity_check${if (forGroup) "_group" else "_member"}"
-        val integrity = getIntegrity(groupId, myIntegrity, memberVerifications, forGroup)
-            ?: return IntegrityResult.CORRUPTED
-
-        val valid = if (forGroup) integrity.first.isValidForGroup(integrity.second)
-        else integrity.first.isValidForMember(integrity.second)
-
-        if (valid) {
-            logg.tag(tag).v("VALID for $groupId")
-            return IntegrityResult.VALID
-        } else {
-            logg.tag(tag).v("VALID_EXPIRED for $groupId")
-            return IntegrityResult.VALID_EXPIRED
-        }
-
     }
 }
 

@@ -49,6 +49,7 @@ class GroupMapperCore constructor(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,
+            serverIntegrity = model.serverIntegrity,
             planType = model.planType.key
         )
     }
@@ -86,6 +87,7 @@ class GroupMapperCore constructor(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,
+            serverIntegrity = model.serverIntegrity,
             planType = PlanType.fromKey(model.planType) ?: PlanType.fallback,
             memberCount = memberCount,
             verification = verification,

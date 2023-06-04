@@ -23,6 +23,7 @@ class GroupsMapperLocal(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             data = model.data_,
+            serverIntegrity = model.serverIntegrity,
             planType = model.planType
         )
     }
@@ -33,6 +34,7 @@ class GroupsMapperLocal(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             data_ = model.data,
+            serverIntegrity = model.serverIntegrity,
             planType = model.planType
         )
     }

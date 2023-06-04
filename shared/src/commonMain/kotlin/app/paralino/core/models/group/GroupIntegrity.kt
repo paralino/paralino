@@ -36,10 +36,12 @@ data class GroupIntegrity(
     companion object {
         fun createSignature(
             hashProvider: ICryptoHashProvider,
+            serverIntegrity: String,
             memberVerifications: List<String>,
             encryptedMemberPublicKeys: List<String>,
         ): String {
             val ids = buildList {
+                add(serverIntegrity)
                 addAll(memberVerifications)
                 addAll(encryptedMemberPublicKeys)
             }

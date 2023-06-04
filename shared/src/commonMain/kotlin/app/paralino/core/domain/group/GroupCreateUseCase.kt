@@ -118,6 +118,10 @@ class GroupCreateUseCase(
                 timeUtc = nowUTC().toString(),
                 signature = GroupIntegrity.createSignature(
                     hashProvider = cryptoCore.hashProvider,
+                    serverIntegrity = cryptoCore.hashProvider.computeHash(
+                        data = user.id,
+                        type = HashType.SHA256
+                    ),
                     memberVerifications = listOf(memberVerification),
                     encryptedMemberPublicKeys = listOf(signedPublicKey)
                 )
