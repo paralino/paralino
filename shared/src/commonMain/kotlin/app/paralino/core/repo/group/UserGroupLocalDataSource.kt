@@ -90,7 +90,7 @@ class UserGroupLocalDataSource constructor(
     fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
         return database.mapToOneOrNull { groupQueries.getGroup(groupId) }
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
-                if(group != null) {
+                if(group != null && members.isNotEmpty()) {
                     val verificationResult =
                         members.first { it.member.userId == config.userId }.member.verificationResult
                     UserGroupWithMembers(
