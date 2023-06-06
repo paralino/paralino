@@ -115,6 +115,6 @@ extension AppwriteModels.Account {
 
 extension AppwriteModels.Session {
     func parseSession() -> UserSession {
-        return UserSession(id: self.id, expire: self.expire, deviceName: "iPhone", deviceType: "ios")
+        return UserSession(id: self.id, expire: self.expire, deviceType: "ios")
     }
 }

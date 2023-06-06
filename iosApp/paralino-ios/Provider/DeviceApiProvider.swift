@@ -33,11 +33,20 @@ class DeviceApiProvider: IDeviceApiProvider {
         UUID().uuidString
     }
     
-    override func createConfig() -> IConfig {
-        Config()
+    override var defaultDeviceName: String {
+        "iPhone"
+    }
+    
+    override func createConfig() -> AppConfig {
+        AppConfig(provider: AppConfigProvider())
     }
     
     override func createSystemLogr() -> SystemLogr {
-        DebbugLogr()
+        // TODO log to sentry
+        if(backendConfig.logToConsole) {
+            return DebbugLogr()
+        } else {
+            return DebbugLogr()
+        }
     }
 }

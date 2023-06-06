@@ -30,7 +30,7 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
     let connectionStatusProvider = ConnectionStatusProvider(backendConfig: backendConfig)
     
     let coreIOSModules = KoinIOS.shared.createIOSKoinModules(
-        deviceProvider: DeviceApiProvider(appConfig: backendConfig, locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider),
+        deviceProvider: DeviceApiProvider(backendConfig: backendConfig, locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider),
         connectionStatusProvider: connectionStatusProvider,
         locationStatusProvider: locationStatusProvider,
         pushSetupProvider: PushSetupProvider(),

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */; };
 		252E361529CF60BA008FC635 /* Logr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361429CF60BA008FC635 /* Logr.swift */; };
-		252E361729CF63B6008FC635 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361629CF63B6008FC635 /* Config.swift */; };
 		252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */; };
 		252EA00729DD89C800338956 /* KoinSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00629DD89C800338956 /* KoinSetup.swift */; };
 		252EA00929DD8BE100338956 /* LocationStatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00829DD8BE100338956 /* LocationStatusProvider.swift */; };
@@ -45,7 +44,6 @@
 /* Begin PBXFileReference section */
 		252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceApiProvider.swift; sourceTree = "<group>"; };
 		252E361429CF60BA008FC635 /* Logr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logr.swift; sourceTree = "<group>"; };
-		252E361629CF63B6008FC635 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionStatusProvider.swift; sourceTree = "<group>"; };
 		252EA00629DD89C800338956 /* KoinSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinSetup.swift; sourceTree = "<group>"; };
 		252EA00829DD8BE100338956 /* LocationStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationStatusProvider.swift; sourceTree = "<group>"; };
@@ -95,7 +93,6 @@
 			children = (
 				252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */,
 				252E361429CF60BA008FC635 /* Logr.swift */,
-				252E361629CF63B6008FC635 /* Config.swift */,
 				252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */,
 				252EA00629DD89C800338956 /* KoinSetup.swift */,
 				252EA00829DD8BE100338956 /* LocationStatusProvider.swift */,
@@ -373,7 +370,6 @@
 				254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */,
 				252EA01729DDE5A800338956 /* DocumentsApi.swift in Sources */,
 				252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */,
-				252E361729CF63B6008FC635 /* Config.swift in Sources */,
 				252EA01929DDEFC400338956 /* FunctionsApi.swift in Sources */,
 				252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */,
 			);
