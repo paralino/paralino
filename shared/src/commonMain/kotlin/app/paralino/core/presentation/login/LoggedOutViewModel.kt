@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class LoggedOutViewModel(
-    private val appConfig: BackendConfig
+    private val backendConfig: BackendConfig
 ): CoreViewModel() {
 
-    private val _uiState = MutableStateFlow(LoggedOutScreenState(hasLogin = appConfig.canUseEmail))
+    private val _uiState = MutableStateFlow(LoggedOutScreenState(hasLogin = backendConfig.canUseEmail))
     val uiState: Flow<LoggedOutScreenState> = _uiState
 
 }

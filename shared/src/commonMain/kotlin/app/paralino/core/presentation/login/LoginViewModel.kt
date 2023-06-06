@@ -7,7 +7,6 @@ import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -20,13 +19,13 @@ class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase,
     private val createAccountUseCase: CreateAccountUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
-    private val appConfig: BackendConfig,
+    private val backendConfig: BackendConfig,
     startScreenUiType: LoginScreenUiType,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
         LoginScreenState(
-            canUseEmail = appConfig.canUseEmail,
+            canUseEmail = backendConfig.canUseEmail,
             uiType = startScreenUiType,
             hasGuestAccount = hasGuestAccount()
         )
@@ -39,7 +38,7 @@ class LoginViewModel constructor(
 
     fun proceed() {
 
-        if(_uiState.value.uiType != LoginScreenUiType.SIGNUP_GUEST && !appConfig.canUseEmail) {
+        if(_uiState.value.uiType != LoginScreenUiType.SIGNUP_GUEST && !backendConfig.canUseEmail) {
             _uiState.update { it.copy(uiType = LoginScreenUiType.SIGNUP_GUEST) }
             return
         }
@@ -298,7 +297,7 @@ class LoginViewModel constructor(
         if(type == _uiState.value.uiType)
             return
 
-        if(type != LoginScreenUiType.SIGNUP_GUEST && !appConfig.canUseEmail) {
+        if(type != LoginScreenUiType.SIGNUP_GUEST && !backendConfig.canUseEmail) {
             return
         }
 

@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository,
-    private val appConfig: BackendConfig,
+    private val backendConfig: BackendConfig,
 ) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(Payload.Loading)
@@ -43,7 +43,7 @@ class SettingsViewModel(
                                                 ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
                                             else null
                                         ),
-                                        canUseEmail = appConfig.canUseEmail,
+                                        canUseEmail = backendConfig.canUseEmail,
                                         logoutState = null,
                                         deleteAccountState = null
                                     )

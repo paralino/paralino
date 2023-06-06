@@ -2,12 +2,13 @@ package app.paralino.core.provider
 
 import app.paralino.core.config
 import app.paralino.core.connectionStatus
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.base.DeviceType
 
 abstract class IDeviceApiProvider(
-    protected val appConfig: BackendConfig,
+    protected val backendConfig: BackendConfig,
     protected val locationStatusProvider: ILocationStatusProvider,
     protected val connectionStatusProvider: IConnectionStatusProvider
 ) {
@@ -19,7 +20,7 @@ abstract class IDeviceApiProvider(
         logr.setLogr(createSystemLogr())
         logg = logr
 
-        if(appConfig.serverUrl.isBlank() || appConfig.projectId.isBlank()) {
+        if(backendConfig.serverUrl.isBlank() || backendConfig.projectId.isBlank()) {
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
         }
 
@@ -36,6 +37,6 @@ abstract class IDeviceApiProvider(
     abstract val appVersionCode: Long
     abstract val defaultDeviceName: String
     abstract fun createSystemLogr(): SystemLogr
-    abstract fun createConfig(): IConfig
+    abstract fun createConfig(): AppConfig
     abstract suspend fun logout()
 }

@@ -12,7 +12,7 @@ import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
-import app.paralino.core.provider.IConfig
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.decodeFromString
 
@@ -20,7 +20,7 @@ class GroupValidityVerification(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeyRepository,
-    private val config: IConfig
+    private val config: AppConfig
 ) {
 
     private suspend fun verifyUser(

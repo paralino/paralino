@@ -15,7 +15,7 @@ import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
-import app.paralino.core.provider.IConfig
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -27,7 +27,7 @@ class MapHomeViewModel constructor(
     private val placesRepo: PlacesRepository,
     private val locationRefreshUseCase: LocationRefreshUseCase,
     private val userRepository: UserRepository,
-    private val config: IConfig
+    private val config: AppConfig
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(MapHomeScreenState.Empty())

@@ -5,12 +5,12 @@ import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
-import app.paralino.core.provider.IConfig
+import app.paralino.core.data.db.AppConfig
 import kotlinx.coroutines.flow.*
 
 class UserCryptoKeyLocalDataSource constructor(
     private val userKeyMapper: UserKeyMapperCore,
-    private val appConfig: IConfig,
+    private val appConfig: AppConfig,
     private val database: AppDatabaseHelper
 ) {
 

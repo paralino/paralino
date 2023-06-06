@@ -4,12 +4,11 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.provider.IConfig
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +25,7 @@ class LogoutUseCase(
     private val codeRepo: PersonalCodesRepository,
     private val pushManager: IPushProviderManager,
     private val deviceStatus: IDeviceApiProvider,
-    private val config: IConfig
+    private val config: AppConfig
 ) {
 
     fun logout(): Flow<Unit> {

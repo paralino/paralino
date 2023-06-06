@@ -26,6 +26,8 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
                 api("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
                 api("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
+                implementation("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
+                implementation("com.russhwolf:multiplatform-settings:1.0.0")
                 api("io.insert-koin:koin-core:3.2.0")
             }
         }
@@ -38,6 +40,8 @@ kotlin {
             dependencies {
                 api("io.insert-koin:koin-android:3.2.0")
                 api("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+                implementation("androidx.preference:preference-ktx:1.2.0")
+                implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
                 implementation("app.cash.sqldelight:android-driver:2.0.0-alpha05")
             }
         }
