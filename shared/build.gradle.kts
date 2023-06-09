@@ -1,22 +1,32 @@
 plugins {
     kotlin("multiplatform")
+    kotlin("native.cocoapods")
     kotlin("plugin.serialization")
     id("com.android.library")
     id("app.cash.sqldelight")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("org.jetbrains.compose")
 }
 
 kotlin {
     android()
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    cocoapods {
+        version = "1.0.0"
+        summary = "Some description for the Shared Module"
+        homepage = "Link to the Shared Module homepage"
+        ios.deploymentTarget = "16.0"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
             baseName = "shared"
+            isStatic = true
+            linkerOpts.add("-lsqlite3")
         }
+        extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
     }
 
     sourceSets {
@@ -32,13 +42,14 @@ kotlin {
                 api("io.insert-koin:koin-core:3.2.0")
                 api("dev.icerock.moko:resources:0.23.0")
                 api("dev.icerock.moko:resources-compose:0.23.0")
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.components.resources)
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
+
         val androidMain by getting {
             dependencies {
                 api("io.insert-koin:koin-android:3.2.0")
@@ -46,6 +57,9 @@ kotlin {
                 implementation("androidx.preference:preference-ktx:1.2.0")
                 implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
                 implementation("app.cash.sqldelight:android-driver:2.0.0-alpha05")
+                api("androidx.activity:activity-compose:1.7.1")
+                api("androidx.appcompat:appcompat:1.6.1")
+                api("androidx.core:core-ktx:1.10.0")
             }
         }
 //        val androidTest by getting
@@ -60,15 +74,6 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
-        }
-        val iosX64Test by getting
-        val iosArm64Test by getting
-        val iosSimulatorArm64Test by getting
-        val iosTest by creating {
-            dependsOn(commonTest)
-            iosX64Test.dependsOn(this)
-            iosArm64Test.dependsOn(this)
-            iosSimulatorArm64Test.dependsOn(this)
         }
     }
 }

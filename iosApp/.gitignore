@@ -11,3 +11,7 @@ build/
 !default.perspectivev3
 
 xcuserdata/
+
+Podfile.lock
+Pods/*
+paralino-ios.xcworkspace/*
