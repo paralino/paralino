@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.presentation.groups.GroupItemState
 
 @OptIn(ExperimentalFoundationApi::class)

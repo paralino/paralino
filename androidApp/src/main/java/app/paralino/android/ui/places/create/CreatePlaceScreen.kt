@@ -22,7 +22,7 @@ import app.paralino.android.ui.components.*
 import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.models.Payload

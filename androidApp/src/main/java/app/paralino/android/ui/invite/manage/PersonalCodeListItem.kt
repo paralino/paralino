@@ -33,16 +33,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.TextViewCompat
 import app.paralino.android.R
 import app.paralino.android.ui.components.ConditionErrorItem
 import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.AppTheme
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.AppTheme
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.utils.Emojis
@@ -148,8 +148,7 @@ fun PersonalCodeItem(
                                     2,
                                     TypedValue.COMPLEX_UNIT_SP
                                 )
-                                this.typeface =
-                                    ResourcesCompat.getFont(it, R.font.font_montserrat_bold)
+                                this.typeface = MR.fonts.font_montserrat.bold.getTypeface(it)
                                 this.maxHeight = 140.dp.value.toInt()
                                 this.minHeight = 20.dp.value.toInt()
                                 this.gravity = Gravity.CENTER

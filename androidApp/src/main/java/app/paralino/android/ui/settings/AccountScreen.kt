@@ -28,7 +28,7 @@ import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.copy

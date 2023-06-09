@@ -10,7 +10,7 @@ import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.android.ui.components.nameRes
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.utils.extensions.attributedBold
 import app.paralino.core.utils.ConditionErrorType
 

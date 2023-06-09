@@ -24,7 +24,7 @@ import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.navigation.MainNavHost
 import app.paralino.android.ui.navigation.loggedOutGraph
 import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.AppTheme
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.openUri
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.models.Resource

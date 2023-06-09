@@ -11,7 +11,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.ButtonStyle
 import kotlinx.coroutines.delay
 
 @Composable

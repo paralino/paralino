@@ -8,7 +8,7 @@ import android.content.Context
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import app.paralino.android.R
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 
 object PushSyncNotificationHandler {
 

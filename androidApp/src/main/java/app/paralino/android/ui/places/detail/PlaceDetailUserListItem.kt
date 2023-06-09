@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.sp
 import app.paralino.android.ui.components.AppButtonState
 import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
-import app.paralino.android.ui.theme.AppTheme
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.AppTheme
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.utils.Emojis

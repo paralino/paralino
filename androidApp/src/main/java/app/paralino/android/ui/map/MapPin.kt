@@ -5,13 +5,11 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.compose.ui.graphics.toArgb
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import app.paralino.android.R
 import app.paralino.android.databinding.ElementMapPinBinding
 import app.paralino.android.databinding.ElementMapPinCenteredBinding
-import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.*
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.presentation.map.MapPinData

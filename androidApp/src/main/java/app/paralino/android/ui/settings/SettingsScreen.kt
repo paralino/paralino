@@ -29,14 +29,13 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.Visibility
-import androidx.core.net.toUri
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppIcons.asPainterResource
-import app.paralino.android.ui.theme.AppTheme
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.openUri
 import app.paralino.android.utils.extensions.share

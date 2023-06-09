@@ -23,7 +23,7 @@ import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data

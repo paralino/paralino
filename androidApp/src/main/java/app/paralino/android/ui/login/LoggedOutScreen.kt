@@ -27,9 +27,9 @@ import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.AppTheme
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.presentation.login.LoggedOutScreenState
 import app.paralino.core.presentation.login.LoggedOutViewModel

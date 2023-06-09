@@ -22,7 +22,7 @@ import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.groups.members.GroupMember
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.core.presentation.groups.GroupMemberItemState

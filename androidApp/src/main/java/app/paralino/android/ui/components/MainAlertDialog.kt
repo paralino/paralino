@@ -15,8 +15,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import app.paralino.android.R
-import app.paralino.android.ui.theme.AppColors
-import app.paralino.android.ui.theme.AppTheme
+import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.models.user.BlocklistType
 

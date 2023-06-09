@@ -25,7 +25,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.AppTheme
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.list.PlaceListItemData

@@ -1,4 +1,4 @@
-package app.paralino.android.ui.theme
+package app.paralino.core.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues

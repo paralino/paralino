@@ -39,7 +39,7 @@ import app.paralino.android.ui.components.PlanLimitCount
 import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.models.Payload

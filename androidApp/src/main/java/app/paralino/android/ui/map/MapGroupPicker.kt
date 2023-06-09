@@ -30,7 +30,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppIcons.asImageVector
-import app.paralino.android.ui.theme.AppTheme
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.core.models.base.ImageModel

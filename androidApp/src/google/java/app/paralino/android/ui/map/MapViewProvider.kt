@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType

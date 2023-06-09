@@ -12,7 +12,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.config
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageType

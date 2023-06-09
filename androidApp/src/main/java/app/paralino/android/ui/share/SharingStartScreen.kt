@@ -32,7 +32,7 @@ import app.paralino.android.ui.groups.GroupListItem
 import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.models.Payload

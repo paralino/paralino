@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 
 @Composable
 fun PlanLimitCount(

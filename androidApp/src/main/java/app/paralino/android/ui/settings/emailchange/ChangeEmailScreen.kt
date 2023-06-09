@@ -26,7 +26,7 @@ import app.paralino.android.ui.components.PasswordInputField
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel

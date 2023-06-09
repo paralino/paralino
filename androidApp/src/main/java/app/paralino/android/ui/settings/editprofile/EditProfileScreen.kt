@@ -23,7 +23,7 @@ import app.paralino.android.ui.components.*
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenEvent

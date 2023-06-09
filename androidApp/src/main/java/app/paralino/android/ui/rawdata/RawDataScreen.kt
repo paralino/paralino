@@ -21,7 +21,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.DefaultEmptyState
 import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.core.models.Payload

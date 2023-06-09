@@ -19,7 +19,7 @@ import app.paralino.core.models.base.ImageType
 import app.paralino.core.utils.Emojis
 import app.paralino.android.ui.shared.emoji.EmojiItem
 import app.paralino.android.ui.shared.emoji.EmojiItemData
-import app.paralino.android.ui.theme.AppTheme
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.bitmapFromBase64
 
 @Composable

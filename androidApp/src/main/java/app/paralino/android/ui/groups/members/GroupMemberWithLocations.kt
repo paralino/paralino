@@ -30,9 +30,9 @@ import app.paralino.android.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.groups.GroupStatusTag
 import app.paralino.android.ui.groups.GroupStatusTagType
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.android.utils.formatting.DistanceFormatter
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState

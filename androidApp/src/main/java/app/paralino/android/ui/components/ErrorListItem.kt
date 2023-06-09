@@ -29,7 +29,7 @@ import androidx.constraintlayout.compose.Dimension
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.android.R
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.AppTheme
+import app.paralino.core.ui.theme.AppTheme
 
 @Composable
 fun ConditionErrorItem(
