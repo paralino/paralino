@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBold
 
 @Composable
 fun DefaultEmptyState(

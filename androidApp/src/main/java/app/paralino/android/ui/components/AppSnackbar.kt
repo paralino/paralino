@@ -11,7 +11,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBold
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterialApi::class)

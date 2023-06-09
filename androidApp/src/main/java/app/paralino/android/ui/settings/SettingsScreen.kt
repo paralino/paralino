@@ -36,7 +36,7 @@ import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.ui.theme.AppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppTheme
-import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.openUri
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.models.Payload

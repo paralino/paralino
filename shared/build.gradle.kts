@@ -81,6 +81,10 @@ kotlin {
 android {
     namespace = "app.paralino"
     compileSdk = 33
+
+    sourceSets["main"].res.srcDirs("src/androidMain/res")
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+
     defaultConfig {
         minSdk = 29
     }

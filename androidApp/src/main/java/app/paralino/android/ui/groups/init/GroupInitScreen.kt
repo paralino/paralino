@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
@@ -23,7 +22,6 @@ import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.settings.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.presentation.groups.GroupInitScreenEvent

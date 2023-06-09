@@ -33,7 +33,7 @@ import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel

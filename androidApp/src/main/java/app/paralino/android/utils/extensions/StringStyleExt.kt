@@ -10,13 +10,9 @@ import android.text.style.ClickableSpan
 import android.text.style.TypefaceSpan
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontWeight
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.MR
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.splitRanges
 
 
@@ -97,15 +93,3 @@ fun linkSpan(context: Context, onClick: () -> Unit): ClickableSpan {
 }
 
 data class SpanContainer(val key: String, val span: Any)
-
-fun String.annotatedBold(fontWeight: FontWeight = FontWeight.Bold, textColor: Color = Color.Unspecified): AnnotatedString {
-    val ranges = this.splitRanges("**")
-    val cleanString = this.replace("**", "")
-    return AnnotatedString(cleanString, spanStyles = ranges.map {
-        AnnotatedString.Range(
-            item = SpanStyle(fontWeight = fontWeight, color = textColor),
-            start = it.second.first,
-            end = it.second.last
-        )
-    })
-}

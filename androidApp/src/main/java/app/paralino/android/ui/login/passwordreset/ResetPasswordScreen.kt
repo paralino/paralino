@@ -28,7 +28,7 @@ import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest

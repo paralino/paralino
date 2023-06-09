@@ -17,7 +17,7 @@ import androidx.compose.ui.window.DialogProperties
 import app.paralino.android.R
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.AppTheme
-import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.models.user.BlocklistType
 
 @Composable

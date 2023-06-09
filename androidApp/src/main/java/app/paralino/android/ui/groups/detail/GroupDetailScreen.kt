@@ -30,7 +30,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.shared.errorString
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.android.utils.extensions.toLocalDateTime
 import app.paralino.android.utils.formatting.DistanceFormatter
