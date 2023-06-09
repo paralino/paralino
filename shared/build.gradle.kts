@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.serialization")
     id("com.android.library")
     id("app.cash.sqldelight")
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 kotlin {
@@ -29,6 +30,8 @@ kotlin {
                 implementation("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
                 implementation("com.russhwolf:multiplatform-settings:1.0.0")
                 api("io.insert-koin:koin-core:3.2.0")
+                api("dev.icerock.moko:resources:0.23.0")
+                api("dev.icerock.moko:resources-compose:0.23.0")
             }
         }
         val commonTest by getting {
@@ -91,4 +94,12 @@ sqldelight {
             packageName.set("app.paralino.core.data.db")
         }
     }
+}
+
+multiplatformResources {
+    multiplatformResourcesPackage = "app.paralino.core"
+    multiplatformResourcesClassName = "MR"
+    multiplatformResourcesVisibility = dev.icerock.gradle.MRVisibility.Public
+    iosBaseLocalizationRegion = "en"
+    multiplatformResourcesSourceSet = "commonMain"
 }
