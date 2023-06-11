@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -43,6 +44,8 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.SettingsViewModel
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.utils.Emojis
 import org.koin.androidx.compose.getViewModel
 
@@ -217,7 +220,7 @@ fun SettingsSectionHeader(
 fun SettingsActionItem(
     modifier: Modifier = Modifier,
     name: String,
-    icon: ImageVector,
+    icon: Painter,
     iconTint: Color = MaterialTheme.colors.surface,
     showEndArrow: Boolean = true,
     onClick: () -> Unit
@@ -232,7 +235,7 @@ fun SettingsActionItem(
         val (iconMain, text, iconArrow) = createRefs()
 
         Icon(
-            imageVector = icon,
+            painter = icon,
             contentDescription = null,
             modifier = Modifier
                 .constrainAs(iconMain) {
@@ -272,7 +275,7 @@ fun SettingsActionItem(
                     visibility = if (showEndArrow) Visibility.Visible else Visibility.Gone
                 }
                 .width(20.dp),
-            painter = AppIcons.ChevronRight.asPainterResource(),
+            painter = CoreAppIcons.ChevronRight.asPainterResource(),
             tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
             contentDescription = null
         )

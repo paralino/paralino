@@ -1,4 +1,4 @@
-package app.paralino.android.ui.components
+package app.paralino.core.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ContentAlpha
@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -20,9 +21,9 @@ import app.paralino.core.utils.extensions.annotatedBold
 fun DefaultEmptyState(
     modifier: Modifier = Modifier,
     content: String,
-    icon: ImageVector? = null,
+    icon: Painter? = null,
     buttonText: String? = null,
-    buttonIcon: ImageVector? = null,
+    buttonIcon: Painter? = null,
     buttonStyle: ButtonStyle = ButtonStyle.BIG,
     buttonState: AppButtonState = AppButtonState.CONTENT,
     onClick: (() -> Unit)? = null,
@@ -50,7 +51,7 @@ fun DefaultEmptyState(
 fun DefaultEmptyState(
     modifier: Modifier = Modifier,
     content: String,
-    icon: ImageVector? = null,
+    icon: Painter? = null,
     buttons: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
@@ -63,7 +64,7 @@ fun DefaultEmptyState(
         if (icon != null) {
             Spacer(modifier = Modifier.size(20.dp))
             Icon(
-                imageVector = icon,
+                painter = icon,
                 contentDescription = null,
                 modifier = Modifier
                     .size(50.dp)

@@ -54,7 +54,7 @@ fun GroupStatusTag(
         ) {
             if (tagIcon != null) {
                 Icon(
-                    imageVector = tagIcon,
+                    painter = tagIcon,
                     modifier = Modifier.size(16.dp),
                     tint = tagColor,
                     contentDescription = null

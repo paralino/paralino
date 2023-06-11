@@ -28,9 +28,7 @@ import app.paralino.android.ui.components.*
 import app.paralino.android.ui.groups.members.GroupMember
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.shared.errorString
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.android.utils.extensions.toLocalDateTime
 import app.paralino.android.utils.formatting.DistanceFormatter
@@ -40,7 +38,15 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.presentation.groups.*
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.LargeSeekbarSwitch
+import app.paralino.core.ui.components.LargeSeekbarSwitchState
+import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.extensions.annotatedBold
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -320,7 +326,7 @@ fun GroupDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onScreenClose) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -332,7 +338,7 @@ fun GroupDetailScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = AppIcons.Security,
+                            painter = AppIcons.Security,
                             tint = AppColors.accent,
                             contentDescription = null
                         )
@@ -341,13 +347,13 @@ fun GroupDetailScreen(
                     if (state.canEdit) {
                         IconButton(onClick = onAddGroupMember) {
                             Icon(
-                                imageVector = AppIcons.PersonAdd,
+                                painter = AppIcons.PersonAdd,
                                 contentDescription = null
                             )
                         }
                         IconButton(onClick = onGroupEdit) {
                             Icon(
-                                imageVector = AppIcons.Edit,
+                                painter = AppIcons.Edit,
                                 contentDescription = null
                             )
                         }
@@ -355,7 +361,7 @@ fun GroupDetailScreen(
 
                     IconButton(onClick = { optionMenuExpanded = true }) {
                         Icon(
-                            imageVector = AppIcons.MoreVert,
+                            painter = AppIcons.MoreVert,
                             contentDescription = null
                         )
                     }
@@ -371,7 +377,7 @@ fun GroupDetailScreen(
                             }
                         ) {
                             Icon(
-                                imageVector = if (state.canEdit) AppIcons.Delete else AppIcons.Logout,
+                                painter = if (state.canEdit) AppIcons.Delete else AppIcons.Logout,
                                 tint = MaterialTheme.colors.onError,
                                 contentDescription = null
                             )
@@ -389,7 +395,7 @@ fun GroupDetailScreen(
                                 }
                             ) {
                                 Icon(
-                                    imageVector = AppIcons.Block,
+                                    painter = AppIcons.Block,
                                     tint = MaterialTheme.colors.onError,
                                     contentDescription = null
                                 )
@@ -414,9 +420,9 @@ fun GroupDetailScreen(
                 },
                 icon = {
                     if (state.sharingStatus != null) {
-                        Icon(imageVector = AppIcons.StopCircle, contentDescription = null)
+                        Icon(painter = AppIcons.StopCircle, contentDescription = null)
                     } else {
-                        Icon(imageVector = AppIcons.ShareLocation, contentDescription = null)
+                        Icon(painter = AppIcons.ShareLocation, contentDescription = null)
                     }
                 },
                 backgroundColor = MaterialTheme.colors.primary,
@@ -518,7 +524,7 @@ fun GroupDetailScreen(
                             }
                         ) {
                             Icon(
-                                imageVector = AppIcons.Security,
+                                painter = AppIcons.Security,
                                 tint = AppColors.accent,
                                 contentDescription = null
                             )
@@ -583,7 +589,7 @@ fun GroupDetailsHeader(
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
                         checkState = false,
-                        unCheckedIconRes = AppIcons.ChevronRight
+                        unCheckedIconRes = CoreAppIcons.ChevronRight
                     ),
                     seekbarState = null
                 ),
@@ -599,7 +605,7 @@ fun GroupDetailsHeader(
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
                         checkState = false,
-                        unCheckedIconRes = AppIcons.ChevronRight
+                        unCheckedIconRes = CoreAppIcons.ChevronRight
                     ),
                     seekbarState = null
                 ),
@@ -644,7 +650,7 @@ fun GroupDetailSharingStatusElement(
                 ?: stringResource(id = R.string.group_details_sharing_status_infinite)
 
             Icon(
-                imageVector = AppIcons.Timer,
+                painter = AppIcons.Timer,
                 contentDescription = null,
                 modifier = Modifier.size(14.dp),
                 tint = contentColor
@@ -659,7 +665,7 @@ fun GroupDetailSharingStatusElement(
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (contract.shareBattery) {
                 Icon(
-                    imageVector = AppIcons.BatteryChargingFull,
+                    painter = AppIcons.BatteryChargingFull,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(5.dp)
@@ -669,7 +675,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.shareSpeed) {
                 Icon(
-                    imageVector = AppIcons.Speed,
+                    painter = AppIcons.Speed,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(5.dp)
@@ -679,7 +685,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.shareElevation) {
                 Icon(
-                    imageVector = AppIcons.StackedLineChart,
+                    painter = AppIcons.StackedLineChart,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(5.dp)
@@ -689,7 +695,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.approximateLocationInMeters != null) {
                 Icon(
-                    imageVector = AppIcons.ShareLocation,
+                    painter = AppIcons.ShareLocation,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 5.dp, end = 2.dp)

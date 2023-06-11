@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
 import app.paralino.android.ui.navigation.AppScreen
@@ -89,7 +89,7 @@ fun PlaceDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -107,7 +107,7 @@ fun PlaceDetailScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = AppIcons.Security,
+                            painter = AppIcons.Security,
                             tint = AppColors.accent,
                             contentDescription = null
                         )
@@ -124,13 +124,13 @@ fun PlaceDetailScreen(
                             }
                         ) {
                             Icon(
-                                imageVector = AppIcons.Edit,
+                                painter = AppIcons.Edit,
                                 contentDescription = null
                             )
                         }
                         IconButton(onClick = { optionMenuExpanded = true }) {
                             Icon(
-                                imageVector = AppIcons.MoreVert,
+                                painter = AppIcons.MoreVert,
                                 contentDescription = null
                             )
                         }

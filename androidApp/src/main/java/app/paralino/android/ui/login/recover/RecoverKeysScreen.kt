@@ -27,7 +27,6 @@ import app.paralino.core.presentation.login.recover.RecoverKeysScreenEvent
 import app.paralino.core.presentation.login.recover.RecoverKeysScreenState
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.core.ui.theme.AppColors
@@ -35,6 +34,11 @@ import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.PasswordInputField
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 
@@ -125,7 +129,7 @@ fun RecoverKeysScreen(
                                 }
                             ) {
                                 Icon(
-                                    imageVector = AppIcons.Logout,
+                                    painter = AppIcons.Logout,
                                     contentDescription = null
                                 )
                             }

@@ -31,6 +31,10 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.CreateGroupScreenEvent
 import app.paralino.core.presentation.groups.CreateGroupState
 import app.paralino.core.presentation.groups.CreateGroupViewModel
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -81,7 +85,7 @@ fun GroupCreateScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }

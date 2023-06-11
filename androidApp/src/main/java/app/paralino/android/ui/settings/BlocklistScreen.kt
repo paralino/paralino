@@ -18,7 +18,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.shared.errorString
@@ -76,7 +76,7 @@ fun BlocklistScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -203,7 +203,7 @@ fun BlocklistListItem(
                 )
             } else {
                 Icon(
-                    imageVector = AppIcons.Delete,
+                    painter = AppIcons.Delete,
                     contentDescription = null
                 )
             }

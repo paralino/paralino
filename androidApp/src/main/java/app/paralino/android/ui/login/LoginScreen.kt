@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
 import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
@@ -40,12 +39,20 @@ import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.openUri
 import app.paralino.core.presentation.login.*
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.LargeSeekbarSwitch
+import app.paralino.core.ui.components.LargeSeekbarSwitchState
+import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.components.rememberSeekbarState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun LoginScreen(
     appState: MainAppState,
@@ -194,7 +201,7 @@ fun LoginScreen(
                     )
                     LargeSeekbarSwitch(
                         modifier = Modifier.fillMaxWidth(),
-                        icon = AppIcons.Incognito,
+                        icon = CoreAppIcons.Incognito,
                         title = stringResource(id = R.string.login_signup_account_type_guest),
                         description = stringResource(id = R.string.login_signup_account_type_guest_info),
                         focusDescription = false,

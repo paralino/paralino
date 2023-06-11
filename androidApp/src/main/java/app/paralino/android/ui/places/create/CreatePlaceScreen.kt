@@ -31,6 +31,14 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.LargeSeekbarSwitch
+import app.paralino.core.ui.components.LargeSeekbarSwitchState
+import app.paralino.core.ui.components.LargeSwitchDefaults
+import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -88,7 +96,7 @@ fun CreatePlaceScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }

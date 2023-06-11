@@ -18,9 +18,9 @@ import app.paralino.core.presentation.settings.passwordchange.ChangePasswordScre
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordScreenState
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.AppButtonState
-import app.paralino.android.ui.components.FilledButton
-import app.paralino.android.ui.components.PasswordInputField
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.shared.getFormValidationErrorText
 import app.paralino.android.ui.theme.AppIcons
@@ -78,7 +78,7 @@ fun ChangePasswordScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }

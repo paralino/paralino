@@ -34,6 +34,9 @@ import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.MainInputField
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -81,7 +84,7 @@ fun MemberInviteScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }

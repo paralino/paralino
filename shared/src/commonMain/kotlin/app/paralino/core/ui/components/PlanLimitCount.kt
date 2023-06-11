@@ -1,4 +1,4 @@
-package app.paralino.android.ui.components
+package app.paralino.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme

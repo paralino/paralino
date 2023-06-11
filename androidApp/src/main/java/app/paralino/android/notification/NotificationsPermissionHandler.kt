@@ -11,9 +11,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.AppSnackbarData
-import app.paralino.android.ui.components.SnackbarDuration
-import app.paralino.android.ui.components.onAction
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.ui.components.onAction
 import app.paralino.core.provider.ILocationStatusProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState

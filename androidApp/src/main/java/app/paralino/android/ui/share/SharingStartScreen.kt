@@ -41,6 +41,16 @@ import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.share.SharingStartScreenEvent
 import app.paralino.core.presentation.share.SharingStartScreenState
 import app.paralino.core.presentation.share.SharingStartViewModel
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.LargeSeekbarSwitch
+import app.paralino.core.ui.components.LargeSeekbarSwitchState
+import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.components.nameRes
+import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -131,7 +141,7 @@ fun SharingStartScreen(
                 }
                 SharingStartScreenEvent.LocationStatusInsufficient -> {
                     showDialog =
-                        MainAlertDialog.SharingErrors(state.errors.map { context.getString(it.nameRes) })
+                        MainAlertDialog.SharingErrors(state.errors.map { context.getString(it.nameRes.resourceId) })
                 }
                 SharingStartScreenEvent.MissingBackgroundPermission -> {
                     showDialog = MainAlertDialog.SharingBackgroundLocationMissing
@@ -216,7 +226,7 @@ fun SharingStartScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }

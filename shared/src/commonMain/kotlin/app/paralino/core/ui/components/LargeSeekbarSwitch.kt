@@ -1,4 +1,4 @@
-package app.paralino.android.ui.components
+package app.paralino.core.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -19,23 +19,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.AppIcons.asImageVector
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LargeSeekbarSwitch(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
+    icon: Painter,
     title: String,
     description: String? = null,
     titleStyle: TextStyle = MaterialTheme.typography.body2,
@@ -105,13 +104,13 @@ fun LargeSeekbarSwitch(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = AppIcons.ChevronLeft,
+                        painter = CoreAppIcons.ChevronLeft,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = AppColors.lightSurface
                     )
                     Image(
-                        imageVector = AppIcons.DragIndicator,
+                        painter = CoreAppIcons.DragIndicator,
                         contentDescription = null,
                         modifier = Modifier
                             .width(10.dp)
@@ -120,7 +119,7 @@ fun LargeSeekbarSwitch(
                         colorFilter = ColorFilter.tint(AppColors.lightSurface)
                     )
                     Icon(
-                        imageVector = AppIcons.ChevronRight.asImageVector(),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = AppColors.lightSurface
@@ -129,7 +128,7 @@ fun LargeSeekbarSwitch(
             }
         }
 
-        ConstraintLayout(
+        Column(
             modifier = Modifier
                 .defaultMinSize(
                     minHeight = LargeSwitchDefaults.minHeight,
@@ -138,36 +137,63 @@ fun LargeSeekbarSwitch(
                 .fillMaxSize()
                 .padding(top = 16.dp, bottom = 14.dp),
         ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = icon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .size(36.dp)
+                        .border(
+                            0.5.dp,
+                            MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                            RoundedCornerShape(8.dp)
+                        )
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(backgroundColor)
+                        .padding(8.dp),
+                    tint = contentColor
+                )
 
-            val (iconRef, textRef, indicatorRef) = createRefs()
+                Spacer(modifier = Modifier.weight(1f))
 
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .constrainAs(iconRef) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
+                Box(modifier = Modifier
+                    .padding(end = 16.dp)
+                    .size(24.dp)
+                ) {
+                    if (state.switchState != null) {
+                        if (state.switchState.checkState) {
+                            Icon(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colors.onPrimary, shape = CircleShape)
+                                    .padding(1.dp),
+                                painter = state.switchState.checkedIconRes.asPainterResource(),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary
+                            )
+                        } else {
+                            Icon(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(backgroundColor, shape = CircleShape)
+                                    .padding(2.dp),
+                                painter = state.switchState.unCheckedIconRes.asPainterResource(),
+                                contentDescription = null,
+                                tint = contentColor.copy(alpha = ContentAlpha.disabled)
+                            )
+                        }
                     }
-                    .padding(start = 16.dp)
-                    .size(36.dp)
-                    .border(
-                        0.5.dp,
-                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                        RoundedCornerShape(8.dp)
-                    )
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(backgroundColor)
-                    .padding(8.dp),
-                tint = contentColor
-            )
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
 
             Column(
                 modifier = Modifier
-                    .constrainAs(textRef) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    }
                     .padding(horizontal = 12.dp)
                     .clip(RoundedCornerShape(6.dp))
                     .background(backgroundColor.copy(alpha = 0.9f))
@@ -197,42 +223,7 @@ fun LargeSeekbarSwitch(
                     }
                 }
             }
-
-            Box(modifier = Modifier
-                .constrainAs(indicatorRef) {
-                    end.linkTo(parent.end, margin = 16.dp)
-                    top.linkTo(iconRef.top)
-                    bottom.linkTo(iconRef.bottom)
-                }
-                .size(24.dp)
-            ) {
-                if (state.switchState != null) {
-                    if (state.switchState.checkState) {
-                        Icon(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colors.onPrimary, shape = CircleShape)
-                                .padding(1.dp),
-                            imageVector = state.switchState.checkedIconRes.asImageVector(),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.primary
-                        )
-                    } else {
-                        Icon(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(backgroundColor, shape = CircleShape)
-                                .padding(2.dp),
-                            imageVector = state.switchState.unCheckedIconRes.asImageVector(),
-                            contentDescription = null,
-                            tint = contentColor.copy(alpha = ContentAlpha.disabled)
-                        )
-                    }
-                }
-            }
-
         }
-
     }
 }
 
@@ -259,8 +250,8 @@ fun rememberSeekbarState(
 object LargeSeekbarSwitchState {
     data class Switch(
         val checkState: Boolean,
-        val checkedIconRes: Int = AppIcons.CheckCircle,
-        val unCheckedIconRes: Int = AppIcons.RadioButtonUnchecked
+        val checkedIconRes: String = CoreAppIcons.CheckCircle,
+        val unCheckedIconRes: String = CoreAppIcons.RadioButtonUnchecked
     )
 
     data class Seekbar(

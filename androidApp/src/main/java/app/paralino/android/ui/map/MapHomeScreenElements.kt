@@ -148,7 +148,7 @@ fun MapHomeScreenElements(
                     Text(text = stringResource(id = R.string.groups_sharing_button_start))
                 },
                 icon = {
-                    Icon(imageVector = AppIcons.ShareLocation, contentDescription = null)
+                    Icon(painter = AppIcons.ShareLocation, contentDescription = null)
                 },
                 backgroundColor = MaterialTheme.colors.primary,
                 elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
@@ -180,7 +180,7 @@ fun MapHomeScreenElements(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = AppIcons.Timer,
+                    painter = AppIcons.Timer,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
@@ -214,7 +214,7 @@ fun MapHomeScreenElements(
                 backgroundColor = if (userListExpanded) AppColors.accent else MaterialTheme.colors.surface
             ) {
                 Icon(
-                    imageVector = AppIcons.Groups,
+                    painter = AppIcons.Groups,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                     tint = if (userListExpanded) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
@@ -240,7 +240,7 @@ fun MapHomeScreenElements(
                 backgroundColor = if (isTrackingGroup) AppColors.accent else MaterialTheme.colors.surface
             ) {
                 Icon(
-                    imageVector = AppIcons.CenterFocusStrong,
+                    painter = AppIcons.CenterFocusStrong,
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
                     tint = if (isTrackingGroup) AppColors.darkThemePrimary else MaterialTheme.colors.secondary

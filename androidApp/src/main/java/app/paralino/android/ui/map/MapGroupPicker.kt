@@ -4,17 +4,34 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.*
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
@@ -29,12 +46,13 @@ import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.AppIcons.asImageVector
-import app.paralino.core.ui.theme.AppTheme
-import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.annotatedBold
 
 @Composable
 fun MapGroupPicker(
@@ -124,7 +142,7 @@ fun MapGroupPicker(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = AppIcons.ExpandMore,
+                    painter = AppIcons.ExpandMore,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
@@ -166,7 +184,7 @@ fun MapGroupPicker(
             ) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                     Icon(
-                        imageVector = AppIcons.Group,
+                        painter = AppIcons.Group,
                         modifier = Modifier.size(14.dp),
                         contentDescription = null
                     )
@@ -212,13 +230,13 @@ fun MapGroupPicker(
         ) {
             if (verified) {
                 Icon(
-                    imageVector = AppIcons.ChevronRight.asImageVector(),
+                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
             } else {
                 Icon(
-                    imageVector = AppIcons.Warning,
+                    painter = AppIcons.Warning,
                     tint = MaterialTheme.colors.onError,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)

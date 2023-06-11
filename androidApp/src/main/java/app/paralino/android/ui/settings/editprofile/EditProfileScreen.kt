@@ -29,6 +29,9 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenEvent
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenState
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -76,7 +79,7 @@ fun EditProfileScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }

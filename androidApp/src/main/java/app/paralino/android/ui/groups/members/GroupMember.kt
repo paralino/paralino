@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
@@ -120,7 +121,7 @@ fun GroupMemberItemLocationState.getLastPingText(): String? {
     return lastPing?.toJavaLocalDateTime()?.fromUTCtoUserLastPing(LocalContext.current)
 }
 
-val MemberAction.actionIcon: ImageVector
+val MemberAction.actionIcon: Painter
     @Composable get() = when (this) {
         MemberAction.DELETE_MEMBER -> AppIcons.PersonRemove
         MemberAction.DELETE_LOCATION -> AppIcons.Delete

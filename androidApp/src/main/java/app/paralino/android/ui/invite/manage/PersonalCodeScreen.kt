@@ -31,11 +31,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.AppButtonState
-import app.paralino.android.ui.components.DefaultEmptyState
-import app.paralino.android.ui.components.FilledButton
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.android.ui.components.MainAlertDialog
-import app.paralino.android.ui.components.PlanLimitCount
+import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.android.ui.settings.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons

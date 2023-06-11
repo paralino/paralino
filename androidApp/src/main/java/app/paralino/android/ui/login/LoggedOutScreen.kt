@@ -5,8 +5,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
@@ -24,7 +22,6 @@ fun LoggedOutScreen(
     appState: MainAppState,
     vm: LoggedOutViewModel = getViewModel()
 ) {
-    val state by vm.uiState.collectAsState(LoggedOutScreenState())
 
     val systemUiController = rememberSystemUiController()
     val defaultColor = MaterialTheme.colors.background
@@ -44,7 +41,7 @@ fun LoggedOutScreen(
     }
 
     WelcomeScreen(
-        hasLogin = state.hasLogin,
+        vm = vm,
         onLoginClick = {
             appState.navController.navigate(AppScreen.LoggedOut.Login.routeSignature)
         },
@@ -62,7 +59,7 @@ fun LoggedOutScreen(
 fun LoggedOutScreenPreview() {
     AppTheme() {
         Surface {
-            WelcomeScreen(hasLogin = false, onLoginClick = {}, onStartClick = {})
+            WelcomeScreen(state = LoggedOutScreenState(hasLogin = false), onLoginClick = {}, onStartClick = {})
         }
     }
 }

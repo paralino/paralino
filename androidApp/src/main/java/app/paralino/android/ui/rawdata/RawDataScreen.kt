@@ -13,13 +13,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.shared.errorString
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
@@ -66,7 +67,7 @@ fun RawDataScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -154,7 +155,7 @@ fun RawDataScreen(
 @Composable
 private fun RawDataChip(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
+    icon: Painter,
     text: String
 ) {
     Row(
@@ -167,7 +168,7 @@ private fun RawDataChip(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = icon,
+            painter = icon,
             contentDescription = null,
             modifier = Modifier.size(14.dp),
         )

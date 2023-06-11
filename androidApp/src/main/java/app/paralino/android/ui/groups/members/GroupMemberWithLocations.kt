@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayoutScope
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
-import app.paralino.android.ui.components.FilledButton
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.groups.GroupStatusTag
 import app.paralino.android.ui.groups.GroupStatusTagType
@@ -88,7 +88,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
                         modifier = Modifier
                             .size(14.dp)
                             .rotate(90f),
-                        imageVector = AppIcons.BatteryFull,
+                        painter = AppIcons.BatteryFull,
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.size(4.dp))
@@ -107,7 +107,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
                 ) {
                     Icon(
                         modifier = Modifier.size(14.dp),
-                        imageVector = AppIcons.Devices,
+                        painter = AppIcons.Devices,
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.size(4.dp))
@@ -170,7 +170,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
                         )
                     ) {
                         Icon(
-                            imageVector = AppIcons.PhoneAndroid,
+                            painter = AppIcons.PhoneAndroid,
                             contentDescription = null,
                             tint = AppColors.accent,
                             modifier = Modifier
@@ -194,7 +194,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
         if (state.getLastPingText() != null) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = AppIcons.AccessTime,
+                    painter = AppIcons.AccessTime,
                     tint = MaterialTheme.colors.secondary,
                     contentDescription = null,
                     modifier = Modifier
@@ -212,7 +212,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (state.singleLocation?.speedMs != null) {
                 Icon(
-                    imageVector = AppIcons.Speed,
+                    painter = AppIcons.Speed,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(end = 2.dp)
@@ -230,7 +230,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
 
             if (state.singleLocation?.elevationMeters != null) {
                 Icon(
-                    imageVector = AppIcons.StackedLineChart,
+                    painter = AppIcons.StackedLineChart,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(end = 2.dp)
@@ -260,7 +260,7 @@ fun ConstraintLayoutScope.GroupMemberWithLocations(
     ) {
         if (canExpand) {
             Icon(
-                imageVector = if (expanded) AppIcons.ExpandLess else AppIcons.ExpandMore,
+                painter = if (expanded) AppIcons.ExpandLess else AppIcons.ExpandMore,
                 contentDescription = null
             )
         }
@@ -375,7 +375,7 @@ fun GroupMemberLocationChild(
                         RoundedCornerShape(10.dp)
                     )
                     .padding(8.dp),
-                imageVector = AppIcons.PhoneAndroid,
+                painter = AppIcons.PhoneAndroid,
                 contentDescription = null
             )
             if (state.batterLevel != null) {
@@ -389,7 +389,7 @@ fun GroupMemberLocationChild(
                             modifier = Modifier
                                 .size(12.dp)
                                 .rotate(90f),
-                            imageVector = AppIcons.BatteryFull,
+                            painter = AppIcons.BatteryFull,
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.size(2.dp))
@@ -437,7 +437,7 @@ fun GroupMemberLocationChild(
 
                 if (state.speedMs != null) {
                     Icon(
-                        imageVector = AppIcons.Speed,
+                        painter = AppIcons.Speed,
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 2.dp)
@@ -455,7 +455,7 @@ fun GroupMemberLocationChild(
 
                 if (state.elevationMeters != null) {
                     Icon(
-                        imageVector = AppIcons.StackedLineChart,
+                        painter = AppIcons.StackedLineChart,
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 2.dp)

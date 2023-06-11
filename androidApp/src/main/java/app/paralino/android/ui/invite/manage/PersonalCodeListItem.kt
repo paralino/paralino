@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.TextViewCompat
 import app.paralino.android.R
-import app.paralino.android.ui.components.ConditionErrorItem
-import app.paralino.android.ui.components.FilledButton
+import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.ui.theme.AppTheme
@@ -100,7 +100,7 @@ fun PersonalCodeItemInactive(
         modifier = modifier.padding(horizontal = 20.dp),
         backgroundColor = MaterialTheme.colors.surface,
         contentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-        iconVector = null,
+        icon = null,
         text = code,
         endAction = stringResource(id = R.string.invite_code_button_activate),
         onClick = {
@@ -192,7 +192,7 @@ fun PersonalCodeItem(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = AppIcons.AccessTime,
+                            painter = AppIcons.AccessTime,
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(horizontal = 14.dp)
@@ -239,7 +239,7 @@ fun PersonalCodeItem(
                                 )
                             } else {
                                 Icon(
-                                    imageVector = AppIcons.Delete,
+                                    painter = AppIcons.Delete,
                                     tint = MaterialTheme.colors.onError,
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp)

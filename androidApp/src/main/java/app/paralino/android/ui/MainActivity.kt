@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
 import app.paralino.android.R
-import app.paralino.android.ui.components.AppSnackbar
+import app.paralino.core.ui.components.AppSnackbar
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.components.SheetContent
 import app.paralino.android.ui.navigation.AppScreen

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import app.paralino.android.ui.groups.GroupPickerAction
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.GroupItemState
-import app.paralino.core.utils.Emojis
 import app.paralino.android.ui.groups.GroupPickerScreen
 import app.paralino.android.ui.shared.emoji.EmojiPickerScreen
 

@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
-import app.paralino.android.ui.components.FilledButton
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.presentation.groups.GroupItemState
@@ -39,7 +39,7 @@ fun GroupPickerScreen(
                 IconButton(onClick = onClose) {
                     Icon(
                         modifier = Modifier.size(20.dp),
-                        imageVector = AppIcons.Close,
+                        painter = AppIcons.Close,
                         contentDescription = null
                     )
                 }

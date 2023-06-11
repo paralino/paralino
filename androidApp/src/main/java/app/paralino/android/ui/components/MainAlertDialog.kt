@@ -5,20 +5,24 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import app.paralino.android.R
+import app.paralino.core.MR
+import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.annotatedBold
-import app.paralino.core.models.user.BlocklistType
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun MainAlertDialog(
@@ -28,7 +32,7 @@ fun MainAlertDialog(
     buttons: List<AlertDialogButtonData> = listOf(
         AlertDialogButtonData(
             "ok",
-            stringResource(id = R.string.button_ok)
+            stringResource(resource = MR.strings.button_ok)
         )
     ),
     onAction: (buttonId: String?) -> Unit,
@@ -101,22 +105,22 @@ sealed interface MainAlertDialog {
 
 
     object Logout : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.settings_account_logout_alert_title),
-                message = stringResource(id = R.string.settings_account_logout_alert_message),
+                title = stringResource(resource = MR.strings.settings_account_logout_alert_title),
+                message = stringResource(resource = MR.strings.settings_account_logout_alert_message),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok),
+                        stringResource(resource = MR.strings.button_ok),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -125,22 +129,22 @@ sealed interface MainAlertDialog {
     }
 
     object DeleteAccount : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.settings_account_delete_alert_title),
-                message = stringResource(id = R.string.settings_account_delete_alert_message),
+                title = stringResource(resource = MR.strings.settings_account_delete_alert_title),
+                message = stringResource(resource = MR.strings.settings_account_delete_alert_message),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok),
+                        stringResource(resource = MR.strings.button_ok),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -149,33 +153,33 @@ sealed interface MainAlertDialog {
     }
 
     object DeleteAccountConfirm : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.alert_title_confirm),
-                message = stringResource(id = R.string.settings_account_delete_alert_confirm_message),
+                title = stringResource(resource = MR.strings.alert_title_confirm),
+                message = stringResource(resource = MR.strings.settings_account_delete_alert_confirm_message),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.settings_account_delete_alert_cancel_button1)
+                        stringResource(resource = MR.strings.settings_account_delete_alert_cancel_button1)
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.settings_account_delete_alert_cancel_button2)
+                        stringResource(resource = MR.strings.settings_account_delete_alert_cancel_button2)
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.settings_account_delete_alert_confirm_button)
+                        stringResource(resource = MR.strings.settings_account_delete_alert_confirm_button)
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.settings_account_delete_alert_cancel_button3)
+                        stringResource(resource = MR.strings.settings_account_delete_alert_cancel_button3)
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.settings_account_delete_alert_cancel_button4)
+                        stringResource(resource = MR.strings.settings_account_delete_alert_cancel_button4)
                     ),
                 ).shuffled(),
                 onAction = onAction
@@ -184,22 +188,22 @@ sealed interface MainAlertDialog {
     }
 
     object LeaveGroup : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.group_details_menu_leave),
-                message = stringResource(id = R.string.group_details_leave_group_alert_title),
+                title = stringResource(resource = MR.strings.group_details_menu_leave),
+                message = stringResource(resource = MR.strings.group_details_leave_group_alert_title),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_leave_group_alert_button),
+                        stringResource(resource = MR.strings.group_details_leave_group_alert_button),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -208,22 +212,22 @@ sealed interface MainAlertDialog {
     }
 
     object DeleteGroup : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.group_details_menu_delete),
-                message = stringResource(id = R.string.group_details_delete_group_alert_title),
+                title = stringResource(resource = MR.strings.group_details_menu_delete),
+                message = stringResource(resource = MR.strings.group_details_delete_group_alert_title),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_delete_group_alert_button),
+                        stringResource(resource = MR.strings.group_details_delete_group_alert_button),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -232,22 +236,22 @@ sealed interface MainAlertDialog {
     }
 
     object BlockGroup : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.group_details_menu_block),
-                message = stringResource(id = R.string.group_details_block_group_alert_title),
+                title = stringResource(resource = MR.strings.group_details_menu_block),
+                message = stringResource(resource = MR.strings.group_details_block_group_alert_title),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_block_group_alert_button),
+                        stringResource(resource = MR.strings.group_details_block_group_alert_button),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -258,22 +262,22 @@ sealed interface MainAlertDialog {
     data class BlockUser(
         val userId: String
     ) : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.group_members_block_user),
-                message = stringResource(id = R.string.group_members_block_user_alert_message),
+                title = stringResource(resource = MR.strings.group_members_block_user),
+                message = stringResource(resource = MR.strings.group_members_block_user_alert_message),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_block_group_alert_button),
+                        stringResource(resource = MR.strings.group_details_block_group_alert_button),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -285,30 +289,30 @@ sealed interface MainAlertDialog {
         val id: String,
         val type: BlocklistType
     ) : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
                 title = when(type){
-                    BlocklistType.GROUP -> stringResource(id = R.string.blocklist_unblock_group_alert_title)
-                    BlocklistType.USER -> stringResource(id = R.string.blocklist_unblock_user_alert_title)
-                    BlocklistType.UNKNOWN -> stringResource(id = R.string.blocklist_unblock_alert_button)
+                    BlocklistType.GROUP -> stringResource(resource = MR.strings.blocklist_unblock_group_alert_title)
+                    BlocklistType.USER -> stringResource(resource = MR.strings.blocklist_unblock_user_alert_title)
+                    BlocklistType.UNKNOWN -> stringResource(resource = MR.strings.blocklist_unblock_alert_button)
                 },
                 message = when(type){
-                    BlocklistType.GROUP -> stringResource(id = R.string.blocklist_unblock_group_alert_message)
-                    BlocklistType.USER -> stringResource(id = R.string.blocklist_unblock_user_alert_message)
-                    BlocklistType.UNKNOWN -> stringResource(id = R.string.blocklist_unblock_alert_unknown)
+                    BlocklistType.GROUP -> stringResource(resource = MR.strings.blocklist_unblock_group_alert_message)
+                    BlocklistType.USER -> stringResource(resource = MR.strings.blocklist_unblock_user_alert_message)
+                    BlocklistType.UNKNOWN -> stringResource(resource = MR.strings.blocklist_unblock_alert_unknown)
                 },
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.blocklist_unblock_alert_button),
+                        stringResource(resource = MR.strings.blocklist_unblock_alert_button),
                         AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -320,25 +324,25 @@ sealed interface MainAlertDialog {
         val memberUserId: String,
         val memberName: String,
     ) : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.alert_title_confirm),
+                title = stringResource(resource = MR.strings.alert_title_confirm),
                 message = stringResource(
-                    id = R.string.group_members_remove_alert_title,
+                    resource = MR.strings.group_members_remove_alert_title,
                     memberName
                 ),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_remove_member_alert_button),
+                        stringResource(resource = MR.strings.group_details_remove_member_alert_button),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -352,32 +356,32 @@ sealed interface MainAlertDialog {
         val isUserOwnDevice: Boolean,
         val memberName: String,
     ) : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             val message = if(isUserOwnDevice) {
                 stringResource(
-                    id = R.string.group_members_device_own_remove_alert_title
+                    resource = MR.strings.group_members_device_own_remove_alert_title
                 )
             } else {
                 stringResource(
-                    id = R.string.group_members_device_other_remove_alert_title,
+                    resource = MR.strings.group_members_device_other_remove_alert_title,
                     memberName
                 )
             }
             MainAlertDialog(
-                title = stringResource(id = R.string.alert_title_confirm),
+                title = stringResource(resource = MR.strings.alert_title_confirm),
                 message = message,
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_remove_member_alert_button),
+                        stringResource(resource = MR.strings.group_details_remove_member_alert_button),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -386,22 +390,22 @@ sealed interface MainAlertDialog {
     }
 
     object SharingBackgroundLocationMissing : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.groups_sharing_potential_error_title),
-                message = stringResource(id = R.string.groups_sharing_potential_error_background_location_message),
+                title = stringResource(resource = MR.strings.groups_sharing_potential_error_title),
+                message = stringResource(resource = MR.strings.groups_sharing_potential_error_background_location_message),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok),
+                        stringResource(resource = MR.strings.button_ok),
                         AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_skip),
+                        stringResource(resource = MR.strings.button_skip),
                         AlertDialogButtonData.destructiveColor
                     ),
                 ),
@@ -411,22 +415,22 @@ sealed interface MainAlertDialog {
     }
 
     data class SharingErrors(val errorMessages: List<String>) : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             val errorContent =
                 errorMessages.joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
             MainAlertDialog(
-                title = stringResource(id = R.string.groups_sharing_potential_error_title),
+                title = stringResource(resource = MR.strings.groups_sharing_potential_error_title),
                 message = stringResource(
-                    id = R.string.groups_sharing_potential_error_message,
+                    resource = MR.strings.groups_sharing_potential_error_message,
                     errorContent
                 ),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok),
+                        stringResource(resource = MR.strings.button_ok),
                         AlertDialogButtonData.positiveColor
                     )
                 ),
@@ -438,22 +442,22 @@ sealed interface MainAlertDialog {
     data class PersonalCodeDelete(
         val codeId: String
     ) : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.alert_title_confirm),
-                message = stringResource(id = R.string.invite_delete_alert_title),
+                title = stringResource(resource = MR.strings.alert_title_confirm),
+                message = stringResource(resource = MR.strings.invite_delete_alert_title),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok),
+                        stringResource(resource = MR.strings.button_ok),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -462,17 +466,17 @@ sealed interface MainAlertDialog {
     }
 
     object SessionExpired : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.alert_sessionExpired_title),
-                message = stringResource(id = R.string.alert_sessionExpired_message),
+                title = stringResource(resource = MR.strings.alert_sessionExpired_title),
+                message = stringResource(resource = MR.strings.alert_sessionExpired_message),
                 buttons = listOf(
                     AlertDialogButtonData(
                         id = Buttons.buttonOk,
-                        text = stringResource(id = R.string.button_ok),
+                        text = stringResource(resource = MR.strings.button_ok),
                         AlertDialogButtonData.positiveColor
                     )
                 ),
@@ -482,22 +486,22 @@ sealed interface MainAlertDialog {
     }
 
     object RecoveryResetAccount : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.alert_title_confirm),
-                message = stringResource(id = R.string.recover_account_alert_message_reset),
+                title = stringResource(resource = MR.strings.alert_title_confirm),
+                message = stringResource(resource = MR.strings.recover_account_alert_message_reset),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_confirm),
+                        stringResource(resource = MR.strings.button_confirm),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -506,22 +510,22 @@ sealed interface MainAlertDialog {
     }
 
     object RecoveryRecoverAccount : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.alert_title_confirm),
-                message = stringResource(id = R.string.recover_account_alert_message_recover),
+                title = stringResource(resource = MR.strings.alert_title_confirm),
+                message = stringResource(resource = MR.strings.recover_account_alert_message_recover),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_confirm),
+                        stringResource(resource = MR.strings.button_confirm),
                         AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -530,22 +534,22 @@ sealed interface MainAlertDialog {
     }
 
     object GuestAccountCreating : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.login_signup_guest_alert_title),
-                message = stringResource(id = R.string.login_signup_guest_alert_message),
+                title = stringResource(resource = MR.strings.login_signup_guest_alert_title),
+                message = stringResource(resource = MR.strings.login_signup_guest_alert_message),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_confirm),
+                        stringResource(resource = MR.strings.button_confirm),
                         AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -554,22 +558,22 @@ sealed interface MainAlertDialog {
     }
 
     object GuestAccountRecover : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.login_signup_guest_recover_alert_title),
-                message = stringResource(id = R.string.login_signup_guest_recover_alert_message),
+                title = stringResource(resource = MR.strings.login_signup_guest_recover_alert_title),
+                message = stringResource(resource = MR.strings.login_signup_guest_recover_alert_message),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.login_signup_guest_recover_alert_confirm),
+                        stringResource(resource = MR.strings.login_signup_guest_recover_alert_confirm),
                         AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -580,22 +584,22 @@ sealed interface MainAlertDialog {
     data class VerifyEmail(
         val email: String
     ) : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.info_email_confirm_alert_title),
-                message = stringResource(id = R.string.info_email_confirm_alert_message, email),
+                title = stringResource(resource = MR.strings.info_email_confirm_alert_title),
+                message = stringResource(resource = MR.strings.info_email_confirm_alert_message, email),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.info_email_confirm_alert_button_resend),
+                        stringResource(resource = MR.strings.info_email_confirm_alert_button_resend),
                         AlertDialogButtonData.positiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -604,22 +608,22 @@ sealed interface MainAlertDialog {
     }
 
     object DeletePlace : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.place_list_menu_delete),
-                message = stringResource(id = R.string.place_list_delete_place_alert_title),
+                title = stringResource(resource = MR.strings.place_list_menu_delete),
+                message = stringResource(resource = MR.strings.place_list_delete_place_alert_title),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.group_details_delete_group_alert_button),
+                        stringResource(resource = MR.strings.group_details_delete_group_alert_button),
                         AlertDialogButtonData.destructiveColor
                     ),
                     AlertDialogButtonData(
                         Buttons.buttonCancel,
-                        stringResource(id = R.string.button_cancel)
+                        stringResource(resource = MR.strings.button_cancel)
                     ),
                 ),
                 onAction = onAction
@@ -631,17 +635,17 @@ sealed interface MainAlertDialog {
         val content: String,
         val limit: Int
     ) : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.plan_limit_alert_title),
-                message = stringResource(id = R.string.plan_limit_alert_message, content, limit),
+                title = stringResource(resource = MR.strings.plan_limit_alert_title),
+                message = stringResource(resource = MR.strings.plan_limit_alert_message, content, limit),
                 buttons = listOf(
                     AlertDialogButtonData(
                         Buttons.buttonOk,
-                        stringResource(id = R.string.button_ok),
+                        stringResource(resource = MR.strings.button_ok),
                         AlertDialogButtonData.positiveColor
                     ),
                 ),
@@ -653,18 +657,18 @@ sealed interface MainAlertDialog {
     data class AppVersionInfo(
         val forceUpdate: Boolean
     ) : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = if (forceUpdate) R.string.app_version_alert_title_mandatory else R.string.app_version_alert_title),
-                message = stringResource(id = if (forceUpdate) R.string.app_version_alert_message_mandatory else R.string.app_version_alert_message),
+                title = stringResource(resource = if (forceUpdate) MR.strings.app_version_alert_title_mandatory else MR.strings.app_version_alert_title),
+                message = stringResource(resource = if (forceUpdate) MR.strings.app_version_alert_message_mandatory else MR.strings.app_version_alert_message),
                 buttons = buildList {
                     add(
                         AlertDialogButtonData(
                             Buttons.buttonOk,
-                            stringResource(id = R.string.app_version_alert_button_update),
+                            stringResource(resource = MR.strings.app_version_alert_button_update),
                             AlertDialogButtonData.positiveColor
                         )
                     )
@@ -672,7 +676,7 @@ sealed interface MainAlertDialog {
                         add(
                             AlertDialogButtonData(
                                 Buttons.buttonCancel,
-                                stringResource(id = R.string.button_cancel),
+                                stringResource(resource = MR.strings.button_cancel),
                                 AlertDialogButtonData.destructiveColor
                             )
                         )
@@ -685,18 +689,18 @@ sealed interface MainAlertDialog {
     }
 
     object UnverifiedGroupInfo : MainAlertDialog {
-        override val key: String = this.javaClass.simpleName
+        override val key: String = this::class.simpleName ?: "dialog"
 
         @Composable
         fun Show(onAction: (buttonId: String?) -> Unit) {
             MainAlertDialog(
-                title = stringResource(id = R.string.groups_sharing_error_unverified_group_title),
-                message = stringResource(id = R.string.groups_sharing_error_unverified_group_message),
+                title = stringResource(resource = MR.strings.groups_sharing_error_unverified_group_title),
+                message = stringResource(resource = MR.strings.groups_sharing_error_unverified_group_message),
                 buttons = buildList {
                     add(
                         AlertDialogButtonData(
                             Buttons.buttonOk,
-                            stringResource(id = R.string.button_ok),
+                            stringResource(resource = MR.strings.button_ok),
                             AlertDialogButtonData.positiveColor
                         )
                     )

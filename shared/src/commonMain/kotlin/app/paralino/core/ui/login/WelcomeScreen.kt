@@ -22,6 +22,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,26 +32,39 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.presentation.login.LoggedOutScreenState
+import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.annotatedBold
-import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
+@Composable
+fun WelcomeScreen(
+    vm: LoggedOutViewModel,
+    onLoginClick: () -> Unit,
+    onStartClick: () -> Unit,
+) {
+    val state by vm.uiState.collectAsState(LoggedOutScreenState())
+    WelcomeScreen(
+        state = state,
+        onLoginClick = onLoginClick,
+        onStartClick = onStartClick
+    )
+}
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun WelcomeScreen(
-    hasLogin: Boolean,
+    state: LoggedOutScreenState,
     onLoginClick: () -> Unit,
     onStartClick: () -> Unit,
 ) {
-
     AppTheme(useDarkTheme = true) {
         Surface(color = MaterialTheme.colors.background) {
 
             Image(
-                painter = painterResource(MR.images.paralino_start_background),
+                painter = org.jetbrains.compose.resources.painterResource("drawable/paralino_start_background.jpg"),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier.fillMaxSize()
@@ -100,13 +115,16 @@ fun WelcomeScreen(
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
                     onClick = onLoginClick
                 ) {
-                    Icon(org.jetbrains.compose.resources.painterResource("drawable/ic_login.xml"), contentDescription = null)
+                    Icon(
+                        org.jetbrains.compose.resources.painterResource("drawable/ic_login.xml"),
+                        contentDescription = null
+                    )
                     Spacer(Modifier.size(8.dp))
                     Text(stringResource(MR.strings.welcome_screen_button_join))
                 }
                 Spacer(Modifier.size(10.dp))
 
-                if (hasLogin) {
+                if (state.hasLogin) {
                     Text(
                         text = stringResource(MR.strings.login_signup_switch_button_login).annotatedBold(),
                         style = MaterialTheme.typography.body2,

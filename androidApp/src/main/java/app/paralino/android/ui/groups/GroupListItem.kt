@@ -60,7 +60,7 @@ fun GroupListItem(
             ) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                     Icon(
-                        imageVector = AppIcons.Group,
+                        painter = AppIcons.Group,
                         modifier = Modifier.size(16.dp),
                         contentDescription = null
                     )

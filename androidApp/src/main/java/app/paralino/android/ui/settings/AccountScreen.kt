@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.navigation.AppScreen
@@ -38,6 +38,7 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.AccountScreenEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
+import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.flow.collectLatest
@@ -131,7 +132,7 @@ fun AccountScreen(
                 }
             ) {
                 Icon(
-                    imageVector = AppIcons.Security,
+                    painter = AppIcons.Security,
                     tint = AppColors.accent,
                     contentDescription = null
                 )
@@ -281,7 +282,7 @@ fun AccountInfoHeader(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_incognito),
+                    painter = CoreAppIcons.Incognito,
                     contentDescription = null,
                     modifier = Modifier.size(14.dp),
                     tint = contentColor

@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import app.paralino.android.ui.components.BottomSheetsScreen
-import app.paralino.android.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.AppSnackbarData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
@@ -53,8 +53,8 @@ class MainAppState(
             text = data.text,
             actionText = data.actionText,
             duration = when (data.duration) {
-                app.paralino.android.ui.components.SnackbarDuration.Long -> SnackbarDuration.Long
-                app.paralino.android.ui.components.SnackbarDuration.Forever -> SnackbarDuration.Indefinite
+                app.paralino.core.ui.components.SnackbarDuration.Long -> SnackbarDuration.Long
+                app.paralino.core.ui.components.SnackbarDuration.Forever -> SnackbarDuration.Indefinite
                 else -> SnackbarDuration.Short
             }
         )
