@@ -20,7 +20,6 @@ data class PersonalCodeScreenCodeData(
     val userName: String,
     val canDelete: Boolean,
     val isValid: Boolean,
-    val validityUTC: String?
 )
 
 sealed class PersonalCodeScreenEvent() {

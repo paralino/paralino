@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -104,13 +103,13 @@ fun LargeSeekbarSwitch(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = CoreAppIcons.ChevronLeft,
+                        painter = CoreAppIcons.ChevronLeft.asPainterResource(),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = AppColors.lightSurface
                     )
                     Image(
-                        painter = CoreAppIcons.DragIndicator,
+                        painter = CoreAppIcons.DragIndicator.asPainterResource(),
                         contentDescription = null,
                         modifier = Modifier
                             .width(10.dp)

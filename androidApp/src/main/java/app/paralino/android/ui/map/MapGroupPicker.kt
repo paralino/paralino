@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
-import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.core.models.base.ImageModel

@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.StringResource
@@ -131,7 +132,7 @@ val ConditionErrorType.icon: Painter
         ConditionErrorType.NETWORK -> CoreAppIcons.WifiOff
         is ConditionErrorType.EMAIL_VERIFICATION -> CoreAppIcons.Email
         ConditionErrorType.GUEST_ACCOUNT -> CoreAppIcons.Incognito
-    }
+    }.asPainterResource()
 
 val ConditionErrorType.nameRes: StringResource
     get() = when (this) {

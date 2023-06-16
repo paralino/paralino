@@ -1,4 +1,4 @@
-package app.paralino.android.ui.shared.emoji
+package app.paralino.core.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
-import app.paralino.android.ui.components.ImageModelImage
 
 @Composable
 fun EmojiPickerScreen(

@@ -1,4 +1,4 @@
-package app.paralino.android.ui.groups
+package app.paralino.core.ui.groups
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -11,12 +11,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import app.paralino.android.R
+import app.paralino.core.MR
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.android.ui.theme.AppIcons
+import dev.icerock.moko.resources.compose.stringResource
 
 
 enum class GroupStatusTagType {
@@ -36,14 +37,14 @@ fun GroupStatusTag(
     }
     val tagTextColor = MaterialTheme.colors.onPrimary
     val tagText = when(status) {
-        GroupStatusTagType.SHARING_ACTIVE -> stringResource(id = R.string.dashboard_groups_section_active)
-        GroupStatusTagType.UNVERIFIED -> stringResource(id = R.string.dashboard_groups_section_unverified)
-        GroupStatusTagType.INACTIVE -> stringResource(id = R.string.group_members_status_inactive)
+        GroupStatusTagType.SHARING_ACTIVE -> stringResource(resource = MR.strings.dashboard_groups_section_active)
+        GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
+        GroupStatusTagType.INACTIVE -> stringResource(resource = MR.strings.group_members_status_inactive)
         else -> ""
     }
     val tagIcon = when(status) {
-        GroupStatusTagType.SHARING_ACTIVE -> AppIcons.LocationOn
-        GroupStatusTagType.UNVERIFIED -> AppIcons.Warning
+        GroupStatusTagType.SHARING_ACTIVE -> CoreAppIcons.LocationOn.asPainterResource()
+        GroupStatusTagType.UNVERIFIED -> CoreAppIcons.Warning.asPainterResource()
         GroupStatusTagType.INACTIVE -> null
         else -> null
     }

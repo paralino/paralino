@@ -22,10 +22,9 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.*
 import app.paralino.android.ui.map.rememberMapViewPlacesOverviewState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.settings.SettingsBigHeader
+import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
@@ -34,8 +33,10 @@ import app.paralino.core.presentation.places.list.PlacesScreenEvent
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.DefaultEmptyState
-import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.delay

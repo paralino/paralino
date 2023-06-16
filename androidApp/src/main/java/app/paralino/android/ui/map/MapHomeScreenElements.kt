@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
-import app.paralino.android.ui.components.ImageModelImage
+import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.android.ui.groups.members.GroupMember
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons

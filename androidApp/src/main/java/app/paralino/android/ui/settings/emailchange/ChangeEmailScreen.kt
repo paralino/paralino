@@ -15,19 +15,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.core.presentation.settings.emailchange.ChangeEmailScreenEvent
-import app.paralino.core.presentation.settings.emailchange.ChangeEmailScreenState
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppIcons
+import app.paralino.core.presentation.settings.emailchange.ChangeEmailScreenEvent
+import app.paralino.core.presentation.settings.emailchange.ChangeEmailScreenState
+import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.PasswordInputField
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.shared.getFormValidationErrorText
-import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
+import app.paralino.core.utils.extensions.getFormValidationErrorText
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 
@@ -56,7 +56,6 @@ fun ChangeEmailScreen(
                 }
                 is ChangeEmailScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
-                        context = context,
                         validation = event.validationResult.type
                     )
                     appState.showSnackbar(errorText)

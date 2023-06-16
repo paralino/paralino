@@ -22,7 +22,7 @@ data class UserPersonalCode constructor(
 
     val formattedCode: String get() = when {
         code.length <= 5 -> code
-        else -> code.chunked(code.length / 2).joinToString(separator = "-")
+        else -> code.chunked(code.length / 2).joinToString(separator = "-").uppercase()
     }
 
 }
@@ -51,7 +51,7 @@ data class PersonalCodeKeyData constructor(
 ) {
     val formattedCode get() = when {
         code.length <= 5 -> code
-        else -> code.chunked(code.length / 2).joinToString(separator = "-")
+        else -> code.chunked(code.length / 2).joinToString(separator = "-").uppercase()
     }
 }
 

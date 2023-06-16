@@ -16,21 +16,22 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
 import app.paralino.android.R
-import app.paralino.core.ui.components.AppSnackbar
-import app.paralino.android.ui.components.MainAlertDialog
-import app.paralino.android.ui.components.SheetContent
+import app.paralino.android.ui.components.Show
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.navigation.MainNavHost
 import app.paralino.android.ui.navigation.loggedOutGraph
 import app.paralino.android.ui.shared.errorString
-import app.paralino.core.ui.theme.AppTheme
 import app.paralino.android.utils.extensions.openUri
 import app.paralino.core.domain.user.AppAccountState
+import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.Resource
 import app.paralino.core.presentation.MainScreenEvent
 import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.repo.base.AppUpdateType
+import app.paralino.core.ui.components.AppSnackbar
+import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.theme.AppTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -122,7 +123,7 @@ fun RootApp(
                             showAppUpdateDialog = null
                         } else if(it == MainAlertDialog.Buttons.buttonOk) {
                             // TODO update
-                            context.openUri(Deeplink.homeUrl.toUri())
+                            context.openUri(BackendResourceIDs.homeUrl.toUri())
                         }
                     }
                 }
@@ -230,8 +231,7 @@ fun RootAppScreen(
         sheetContent = {
             Spacer(modifier = Modifier.height(1.dp))
             appState.bottomSheetState.currentBottomSheet.value?.let {
-                SheetContent(
-                    screen = appState.bottomSheetState.currentBottomSheet.value,
+                it.SheetContent(
                     onClose = {
                         appState.uiScope.launch { appState.bottomSheetState.bottomSheetState.hide() }
                     },

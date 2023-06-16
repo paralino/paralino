@@ -56,7 +56,6 @@ class GroupInitViewModel(
                     userName = it.codeData.data?.ownerName ?: "---",
                     canDelete = false,
                     isValid = true,
-                    validityUTC = null
                 )
             }
 

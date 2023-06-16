@@ -1,6 +1,5 @@
-package app.paralino.android.ui.settings.editprofile
+package app.paralino.core.ui.settings.profile
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -10,58 +9,57 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.shared.getFormValidationErrorText
-import app.paralino.android.ui.theme.AppIcons
-import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.android.utils.extensions.safeCast
+import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenEvent
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenState
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
+import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.getFormValidationErrorText
+import app.paralino.core.utils.extensions.safeCast
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun EditProfileScreen(
-    appState: MainAppState,
-    vm: EditProfileViewModel = getViewModel(),
+    appState: CoreUiState,
+    vm: EditProfileViewModel,
+    onBottomSheetAction: suspend (BottomSheetsScreen) -> Any,
+    onExit: () -> Unit
 ) {
 
     val uiState by vm.uiState.collectAsState(initial = EditProfileScreenState())
 
-    val context = LocalContext.current
-    LaunchedEffect(key1 = context) {
+    LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is EditProfileScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString(context))
+                    appState.showSnackbar(event.error.errorString())
                 }
                 is EditProfileScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
-                        context = context,
                         validation = event.validationResult.type
                     )
                     appState.showSnackbar(errorText)
                 }
                 EditProfileScreenEvent.ProfileUpdated -> {
-                    appState.navController.popBackStack()
+                    onExit()
                 }
                 null -> {
                     /* do nothing */
@@ -75,11 +73,11 @@ fun EditProfileScreen(
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 1.dp,
-                title = { Text(text = stringResource(id = R.string.settings_account_edit_profile)) },
+                title = { Text(text = stringResource(MR.strings.settings_account_edit_profile)) },
                 navigationIcon = {
-                    IconButton(onClick = { appState.navController.popBackStack() }) {
+                    IconButton(onClick = { onExit }) {
                         Icon(
-                            painter = AppIcons.Close,
+                            painter = CoreAppIcons.Close.asPainterResource(),
                             contentDescription = null
                         )
                     }
@@ -91,17 +89,14 @@ fun EditProfileScreen(
             state = uiState,
             onImageClick = {
                 appState.uiScope.launch {
-                    appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker(Emojis.userEmojis))
-                        .safeCast<ImageModel>()?.let {
-                            vm.onImageChange(it)
-                        }
+                    onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.userEmojis))
+                        .safeCast<ImageModel>()?.let { vm.onImageChange(it) }
                 }
             },
             onNameChange = { vm.onNameChange(it) },
             onCreateGroupClick = { vm.proceed() }
         )
     }
-
 }
 
 @Composable
@@ -148,7 +143,7 @@ fun EditProfileScreen(
 
         MainInputField(
             text = state.name,
-            hint = stringResource(id = R.string.settings_profile_name_placeholder),
+            hint = stringResource(resource = MR.strings.settings_profile_name_placeholder),
             hasError = state.hasNameError,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done,
@@ -165,13 +160,13 @@ fun EditProfileScreen(
                 AppButtonState.CONTENT
             else
                 AppButtonState.loadingStateWithCheck(state.actionLoading!!),
-            icon = AppIcons.Save,
+            icon = CoreAppIcons.Save.asPainterResource(),
             onClick = {
                 focusManager.clearFocus()
                 onCreateGroupClick()
             }
         ) {
-            Text(text = stringResource(id = R.string.button_save))
+            Text(text = stringResource(resource = MR.strings.button_save))
         }
 
         Spacer(modifier = Modifier.fillMaxHeight(1f))

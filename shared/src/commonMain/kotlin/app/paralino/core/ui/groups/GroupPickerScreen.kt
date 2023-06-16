@@ -1,4 +1,4 @@
-package app.paralino.android.ui.groups
+package app.paralino.core.ui.groups
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -8,14 +8,15 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.paralino.android.R
+import app.paralino.core.MR
 import app.paralino.core.ui.components.FilledButton
-import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,15 +40,14 @@ fun GroupPickerScreen(
                 IconButton(onClick = onClose) {
                     Icon(
                         modifier = Modifier.size(20.dp),
-                        painter = AppIcons.Close,
+                        painter = CoreAppIcons.Close.asPainterResource(),
                         contentDescription = null
                     )
                 }
                 Text(
-                    text = stringResource(id = R.string.title_dashboard), modifier = Modifier
-                        .align(
-                            Alignment.Center
-                        )
+                    text = stringResource(MR.strings.title_dashboard),
+                    modifier = Modifier
+                        .align(Alignment.Center)
                         .fillMaxWidth(1f), textAlign = TextAlign.Center
                 )
             }
@@ -78,24 +78,24 @@ fun GroupPickerScreen(
                         .weight(1f)
                         .padding(end = 4.dp),
                     style = ButtonStyle.BIG,
-                    icon = AppIcons.Add,
+                    icon = CoreAppIcons.Add.asPainterResource(),
                     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
                     elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                     onClick = { onClick(GroupPickerAction.NewGroup) },
                 ) {
-                    Text(stringResource(R.string.group_picker_button_create))
+                    Text(stringResource(MR.strings.group_picker_button_create))
                 }
                 FilledButton(
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 4.dp),
                     style = ButtonStyle.BIG,
-                    icon = AppIcons.Key,
+                    icon = CoreAppIcons.Key.asPainterResource(),
                     elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
                     onClick = { onClick(GroupPickerAction.JoinGroup) }
                 ) {
-                    Text(stringResource(R.string.group_picker_button_join))
+                    Text(stringResource(MR.strings.group_picker_button_join))
                 }
             }
         }

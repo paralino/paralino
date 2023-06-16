@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.ButtonStyle
 import kotlinx.coroutines.delay
 
@@ -118,7 +119,7 @@ fun FilledButton(
 
                 if (newState == AppButtonState.CHECK_THEN_CONTENT || checkAlpha > 0f) {
                     Icon(
-                        painter = CoreAppIcons.Check,
+                        painter = CoreAppIcons.Check.asPainterResource(),
                         contentDescription = null,
                         tint = MaterialTheme.colors.onPrimary,
                         modifier = Modifier

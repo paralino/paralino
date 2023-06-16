@@ -1,7 +1,6 @@
 package app.paralino.android
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -19,7 +18,6 @@ import app.paralino.android.data.PreCheckControl
 import app.paralino.android.di.KoinSetup
 import app.paralino.android.tracking.LocationService
 import app.paralino.core.ParalinoCore
-import app.paralino.core.connectionStatus
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
@@ -37,14 +35,13 @@ import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import kotlin.coroutines.CoroutineContext
 
-class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserver {
+class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserver {
 
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var instance: AppClass
             private set
     }
-
 
     private val applicationJob = SupervisorJob()
 
@@ -68,12 +65,13 @@ class AppClass : Application(), ICoroutineScopeProvider, DefaultLifecycleObserve
     private var wasInBackground = false
 
     override fun onCreate() {
-        super<Application>.onCreate()
+        super<CoreAppClass>.onCreate()
         init()
     }
 
     private fun init() {
         instance = this
+        CoreAppClass.instance = this
 
         initCrashReporting()
         ParalinoCore.init(

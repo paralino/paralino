@@ -27,9 +27,9 @@ import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.SettingsScreen
 import app.paralino.android.ui.settings.convertaccount.ConvertAccountScreen
-import app.paralino.android.ui.settings.editprofile.EditProfileScreen
 import app.paralino.android.ui.settings.emailchange.ChangeEmailScreen
 import app.paralino.android.ui.settings.passwordchange.ChangePasswordScreen
+import app.paralino.android.ui.settings.profile.EditProfileScreen
 import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType

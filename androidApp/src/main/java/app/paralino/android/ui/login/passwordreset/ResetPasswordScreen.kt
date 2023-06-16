@@ -15,21 +15,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.navOptions
+import app.paralino.android.R
+import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenEvent
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenState
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
+import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.PasswordInputField
-import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.shared.getFormValidationErrorText
-import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
-import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
+import app.paralino.core.utils.extensions.getFormValidationErrorText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
@@ -60,7 +60,6 @@ fun ResetPasswordScreen(
                 }
                 is ResetPasswordScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
-                        context = context,
                         validation = event.validationResult.type
                     )
                     appState.showSnackbar(errorText)

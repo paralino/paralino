@@ -34,9 +34,9 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
-import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.android.ui.components.Show
 import app.paralino.core.ui.components.PlanLimitCount
-import app.paralino.android.ui.settings.SettingsBigHeader
+import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.ui.theme.ButtonStyle
@@ -45,6 +45,7 @@ import app.paralino.android.utils.extensions.share
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenEvent
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
+import app.paralino.core.ui.components.MainAlertDialog
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 

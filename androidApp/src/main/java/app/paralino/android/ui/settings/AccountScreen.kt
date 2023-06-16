@@ -5,32 +5,48 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.core.ui.components.ConditionErrorItem
-import app.paralino.android.ui.components.ImageModelImage
-import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.android.ui.components.Show
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.shared.errorString
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.copy
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
@@ -38,9 +54,16 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.AccountScreenEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
+import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.SettingsBigHeader
+import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.annotatedBold
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 
@@ -166,7 +189,7 @@ fun AccountScreen(
 
                 SettingsActionItem(
                     name = stringResource(id = R.string.settings_account_edit_profile),
-                    icon = AppIcons.Person
+                    icon = CoreAppIcons.Person.asPainterResource()
                 ) {
                     appState.navController.navigate(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature)
                 }
@@ -282,7 +305,7 @@ fun AccountInfoHeader(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    painter = CoreAppIcons.Incognito,
+                    painter = CoreAppIcons.Incognito.asPainterResource(),
                     contentDescription = null,
                     modifier = Modifier.size(14.dp),
                     tint = contentColor

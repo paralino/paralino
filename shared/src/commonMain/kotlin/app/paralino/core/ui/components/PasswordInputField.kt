@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 
 
 @Composable
@@ -73,7 +74,8 @@ fun PasswordInputField(
         trailingIcon = {
             IconButton(onClick = { passwordHidden.value = !passwordHidden.value }) {
                 Icon(
-                    painter = if (passwordHidden.value) CoreAppIcons.Visibility else CoreAppIcons.VisibilityOff,
+                    painter = if (passwordHidden.value) CoreAppIcons.Visibility.asPainterResource()
+                    else CoreAppIcons.VisibilityOff.asPainterResource(),
                     contentDescription = null
                 )
             }

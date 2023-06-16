@@ -1,5 +1,20 @@
 package app.paralino.core.utils.extensions
 
+import app.paralino.core.MR
+import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.provider.localizedString
+import app.paralino.core.utils.exceptions.BaseRemoteException
+import app.paralino.core.utils.exceptions.DecryptionException
+import app.paralino.core.utils.exceptions.EncryptionException
+import app.paralino.core.utils.exceptions.InternalConnectionException
+import app.paralino.core.utils.exceptions.MissingCryptoKeyException
+import app.paralino.core.utils.exceptions.MissingGroupKeyException
+import app.paralino.core.utils.exceptions.MissingMemberKeyException
+import app.paralino.core.utils.exceptions.MissingUserKeyException
+import app.paralino.core.utils.exceptions.RemoteConnectionException
+import app.paralino.core.utils.exceptions.UnverifiedUserException
+import dev.icerock.moko.resources.desc.desc
+
 fun randomString(length: Int = 32): String {
     val source = ('A'..'Z') + ('a'..'z') + ('0'..'9')
     return (1..length)
@@ -19,5 +34,39 @@ fun String.splitRanges(wrappedChars: String): List<Pair<String, IntRange>> {
     return ranges.filter { pair ->
         val it = pair.second
         it.first >= 0 && it.last <= this.length && it.first < it.last
+    }
+}
+
+fun Throwable?.errorString(): String {
+    val error = this
+    return when (error) {
+        is UnverifiedUserException -> MR.strings.info_email_confirm.localizedString()
+        is RemoteConnectionException -> MR.strings.error_server_unavailable.localizedString()
+        is InternalConnectionException -> MR.strings.error_no_connection_snackbar.localizedString()
+        is BaseRemoteException -> {
+            if (error.code != null)
+                MR.strings.error_something_wrong_http.localizedString(error.code)
+            else MR.strings.error_something_wrong.localizedString()
+        }
+        is MissingCryptoKeyException -> {
+            when (error) {
+                is MissingGroupKeyException -> MR.strings.error_crypto_key_missing.localizedString("group")
+                is MissingMemberKeyException -> MR.strings.error_crypto_key_missing.localizedString("member")
+                is MissingUserKeyException -> MR.strings.error_crypto_key_missing_user.localizedString()
+                else -> MR.strings.error_crypto_key_missing.localizedString("-")
+            }
+        }
+        is EncryptionException -> MR.strings.error_crypto_encryption_generic.localizedString()
+        is DecryptionException -> MR.strings.error_crypto_decryption_generic.localizedString()
+        else -> MR.strings.error_generic_snacbar.localizedString()
+    }
+}
+
+fun getFormValidationErrorText(validation: FormValidation): String {
+    return when (validation) {
+        FormValidation.Email -> MR.strings.form_invalid_email_description.localizedString()
+        FormValidation.Password -> MR.strings.form_invalid_password_length_description.localizedString()
+        FormValidation.PasswordConfirm -> MR.strings.form_invalid_password_match_description.localizedString()
+        FormValidation.TextNotEmpty -> MR.strings.form_invalid_name_description.localizedString()
     }
 }

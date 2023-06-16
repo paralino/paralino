@@ -36,13 +36,13 @@ class MapUserMarkerView : ConstraintLayout {
                 vb.tvGroupEmoji.isVisible = true
                 vb.tvGroupEmoji.text = data.image!!.getImageValue()
             }
-            ImageType.raw -> {
-                vb.ivPinImage.isVisible = true
-                vb.tvGroupEmoji.isVisible = false
-                val b = data.image!!.getImageValue()?.bitmapFromBase64()
-                if (b != null) vb.ivPinImage.setImageBitmap(b)
-                else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
-            }
+//            ImageType.raw -> {
+//                vb.ivPinImage.isVisible = true
+//                vb.tvGroupEmoji.isVisible = false
+//                val b = data.image!!.getImageValue()?.bitmapFromBase64()
+//                if (b != null) vb.ivPinImage.setImageBitmap(b)
+//                else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
+//            }
             else -> {
                 vb.ivPinImage.isVisible = false
                 vb.tvGroupEmoji.isVisible = true
@@ -69,13 +69,13 @@ class MapUserMarkerView : ConstraintLayout {
                 vb.tvGroupEmoji.isVisible = true
                 vb.tvGroupEmoji.text = data.image!!.getImageValue()
             }
-            ImageType.raw -> {
-                vb.ivPinImage.isVisible = true
-                vb.tvGroupEmoji.isVisible = false
-                val b = data.image!!.getImageValue()?.bitmapFromBase64()
-                if (b != null) vb.ivPinImage.setImageBitmap(b)
-                else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
-            }
+//            ImageType.raw -> {
+//                vb.ivPinImage.isVisible = true
+//                vb.tvGroupEmoji.isVisible = false
+//                val b = data.image!!.getImageValue()?.bitmapFromBase64()
+//                if (b != null) vb.ivPinImage.setImageBitmap(b)
+//                else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
+//            }
             else -> {
                 vb.ivPinImage.isVisible = false
                 vb.tvGroupEmoji.isVisible = true

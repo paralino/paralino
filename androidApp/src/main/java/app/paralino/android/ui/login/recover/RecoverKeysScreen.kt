@@ -5,12 +5,30 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,25 +38,26 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import app.paralino.android.R
+import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.components.Show
+import app.paralino.android.ui.shared.errorString
+import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.presentation.login.recover.RecoverKeysScreenEvent
 import app.paralino.core.presentation.login.recover.RecoverKeysScreenState
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.shared.getFormValidationErrorText
-import app.paralino.core.ui.theme.AppColors
-import app.paralino.android.ui.theme.AppIcons
-import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
-import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.getFormValidationErrorText
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 
@@ -63,8 +82,7 @@ fun RecoverKeysScreen(
                     appState.showSnackbar(context.getString(R.string.form_invalid_credentials_description))
                 }
                 is RecoverKeysScreenEvent.ValidationError -> {
-                    val errorText = getFormValidationErrorText(
-                        context = context,
+                    val errorText = getFormValidationErrorText (
                         validation = event.validationResult.type
                     )
                     appState.showSnackbar(errorText)

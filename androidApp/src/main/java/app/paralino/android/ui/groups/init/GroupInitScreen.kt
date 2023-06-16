@@ -31,12 +31,12 @@ import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.ImageModelImage
-import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.android.ui.components.Show
 import app.paralino.android.ui.invite.manage.PersonalCodeItem
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.settings.SettingsBigHeader
-import app.paralino.android.ui.settings.SettingsSectionHeader
+import app.paralino.core.ui.components.SettingsBigHeader
+import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.copy
@@ -49,6 +49,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
+import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel

@@ -13,18 +13,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -33,19 +29,19 @@ import androidx.constraintlayout.compose.Visibility
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.AppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppTheme
-import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.android.utils.extensions.openUri
 import app.paralino.android.utils.extensions.share
+import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.SettingsBigHeader
+import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.utils.Emojis
 import org.koin.androidx.compose.getViewModel
 
@@ -144,7 +140,7 @@ fun SettingSectionInfo(
             name = stringResource(id = R.string.setting_title_share),
             icon = AppIcons.Share
         ) {
-            context.share(Deeplink.homeUrl)
+            context.share(BackendResourceIDs.homeUrl)
         }
 //    SettingsActionItem(
 //        name = stringResource(id = R.string.setting_title_help),
@@ -154,13 +150,13 @@ fun SettingSectionInfo(
             name = stringResource(id = R.string.setting_title_sourceCode),
             icon = AppIcons.Code
         ) {
-            context.openUri(Deeplink.sourceCodeUrl)
+            context.openUri(BackendResourceIDs.sourceCodeUrl)
         }
         SettingsActionItem(
             name = stringResource(id = R.string.setting_title_privacy),
             icon = AppIcons.PrivacyTip
         ) {
-            context.openUri(Deeplink.privacyPolicyUrl)
+            context.openUri(BackendResourceIDs.privacyPolicyUrl)
         }
         SettingsActionItem(
             name = stringResource(id = R.string.setting_title_libraries),
@@ -180,40 +176,6 @@ fun SettingSectionInfo(
             )
         }
     }
-}
-
-@Composable
-fun SettingsBigHeader(
-    modifier: Modifier = Modifier,
-    bottomPadding: Dp = dimensionResource(id = R.dimen.activity_side_margin_medium_large),
-    name: String
-) {
-    Text(
-        text = name.annotatedBold(),
-        style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Bold),
-        modifier = modifier
-            .padding(
-                top = dimensionResource(id = R.dimen.activity_side_margin_medium_large),
-                bottom = bottomPadding
-            )
-    )
-}
-
-@Composable
-fun SettingsSectionHeader(
-    modifier: Modifier = Modifier,
-    name: String
-) {
-    Text(
-        text = name.annotatedBold(), //.uppercase(Locale.getDefault()),
-        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
-        modifier = modifier
-            .padding(
-                top = dimensionResource(id = R.dimen.activity_side_margin_medium_large),
-                bottom = dimensionResource(id = R.dimen.activity_side_margin_small)
-            )
-            .alpha(ContentAlpha.medium)
-    )
 }
 
 @Composable
