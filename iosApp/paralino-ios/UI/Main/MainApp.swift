@@ -18,9 +18,26 @@ struct MainApp: App {
             NavigationView {
                 switch appState.uiState {
                 case .notInitialized: ContentView(state: "not ready")
-                case .ready: WelcomeScreen()
+                case .ready(let data): AppReadyScreen(userState: data)
                 }
             }
+        }
+    }
+}
+
+struct AppReadyScreen: View {
+    let userState: AppAccountState
+    var body: some View {
+        if userState is AppAccountState.ACCOUNT_RESET {
+            WelcomeScreen()
+        } else if userState is AppAccountState.NO_PROFILE {
+            ProfileSetupScreen()
+        } else if userState is AppAccountState.NO_USER {
+            WelcomeScreen()
+        } else if userState is AppAccountState.NO_USER_DATA || userState is AppAccountState.DATA_REFRESH {
+            WelcomeScreen()
+        } else if userState is AppAccountState.USER_READY {
+            WelcomeScreen()
         }
     }
 }

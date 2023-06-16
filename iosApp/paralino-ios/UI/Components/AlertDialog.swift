@@ -7,13 +7,27 @@
 
 import Foundation
 import SwiftUI
-
+import shared
 
 struct AlertDialogData: Identifiable {
     var id: UUID = UUID()
     let title: String
     let message: String
     let buttons: [AlertDialogButton]
+    let coreDialog: MainAlertDialog
+    
+    init(coreData: shared.MainAlertDialog) {
+        title = coreData.dialogData.title
+        message = coreData.dialogData.message
+        buttons = coreData.dialogData.buttons.map { buttonData in
+            AlertDialogButton(
+                key: buttonData.id,
+                role: buttonData.id == MainAlertDialogButtons.shared.buttonOk ? nil : .cancel,
+                text: buttonData.text
+            )
+        }
+        coreDialog = coreData
+    }
 }
 
 struct AlertDialogButton: Identifiable {
@@ -34,20 +48,14 @@ struct AlertDialogButton: Identifiable {
         self.text = text
     }
     
-    static let keyPositive: String = "button.positive"
-    static let keyNegative: String = "button.negative"
-    static func buttonOK() -> AlertDialogButton { AlertDialogButton(key: keyPositive, text: "button_ok") }
-    static func buttonCancel() -> AlertDialogButton { AlertDialogButton(key: keyNegative, role: .cancel, text: "button_cancel") }
-    static func buttonsOKCancel() -> [AlertDialogButton] { [buttonOK(), buttonCancel()] }
-}
 
-extension AlertDialogData {
-    static func guestAccountWarning() -> AlertDialogData {
-        AlertDialogData(title: "guest_account_title", message: "guest_account_message", buttons: [AlertDialogButton.buttonOK(), AlertDialogButton.buttonCancel()])
+    static func buttonOK() -> AlertDialogButton {
+        AlertDialogButton(key: MainAlertDialogButtons.shared.buttonOk, text: "button_ok")
     }
-    static func genericError() -> AlertDialogData {
-        AlertDialogData(title: "alert_error_generic_title", message: "alert_error_generic_message", buttons: [AlertDialogButton.buttonOK()])
+    static func buttonCancel() -> AlertDialogButton {
+        AlertDialogButton(key: MainAlertDialogButtons.shared.buttonCancel, role: .cancel, text: "button_cancel")
     }
+    static func buttonsOKCancel() -> [AlertDialogButton] { [buttonOK(), buttonCancel()] }
 }
 
 struct AlertDialog: ViewModifier {

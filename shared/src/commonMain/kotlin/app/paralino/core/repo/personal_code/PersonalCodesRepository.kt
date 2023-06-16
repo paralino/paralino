@@ -29,8 +29,8 @@ class PersonalCodesRepository constructor(
     }
 
     private suspend fun createPersonalCode(userMeData: UserMeData? = null) {
-        val user = userRepo.cachedUser
-            ?: throw Throwable("User not valid")
+        val user = userRepo.cachedUser!!
+//            ?: throw Throwable("User not valid")
 
         return triggerRemoteOnly {
             try {

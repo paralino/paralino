@@ -123,6 +123,8 @@ object KoinIOS {
     object ViewModels: KoinComponent {
         val mainVM get() = get<MainViewModel>()
         fun loginVM(screenUiType: LoginScreenUiType) = get<LoginViewModel> { parametersOf(screenUiType) }
+        val welcomeVM = get<LoggedOutViewModel>()
+        val editProfileVM = get<EditProfileViewModel>()
     }
 
 }

@@ -7,49 +7,32 @@
 
 import Foundation
 import SwiftUI
+import shared
 
 
 struct WelcomeScreen: View {
-    
+    @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.welcomeVM)
+    @State private var openSignup = false
+    @State private var openLogin = false
     var body: some View {
         ZStack {
-            Image("paralino_start_background")
-                .centerCropped()
-                .edgesIgnoringSafeArea(.all)
+            NavigationLink(
+                destination: LoginScreen(loginType: LoginScreenUiType.signup),
+                isActive: $openSignup
+            ) { EmptyView() }
+            NavigationLink(
+                destination: LoginScreen(loginType: LoginScreenUiType.login),
+                isActive: $openLogin
+            ) { EmptyView() }
             
-            VStack(spacing: 10) {
-                Text("Paralino")
-                    .font(.largeTitle)
-                    .foregroundColor(.lightBackground)
-                
-                Text("SECURE - PRIVATE - ENCRYPTED")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding(.top, 10)
-                Spacer()
-                ZStack {
-                    Circle()
-                        .fill(Color.themePrimary)
-                        .frame(width: 120, height: 120)
-                        .overlay(Circle().stroke(Color.darkBackground, lineWidth: 8))
-                    Image("paralino_logo")
-                        .resizable()
-                        .scaledToFit()
-                        .colorMultiply(.white)
-                        .frame(width: 80, height: 80)
-                }
-                Spacer()
-                NavigationLink(destination: LoginScreen()) {
-                    Label("Join", systemImage: "ipad.and.arrow.forward")
-                        .font(.subheadline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 64)
-                        .background(Color.themePrimary)
-                        .cornerRadius(15)
-                }
+            ComposeRepresentable {
+                ScreensIOS.shared.login.WelcomeScreenVC(
+                    vm: appState.vm,
+                    onLoginClick: { openLogin = true },
+                    onStartClick: { openSignup = true }
+                )
             }
-            .padding()
+            .ignoresSafeArea(.all, edges: .vertical) // Compose has own keyboard handler
         }
     }
 }
