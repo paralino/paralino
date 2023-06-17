@@ -14,6 +14,7 @@ import app.paralino.android.provider.LocationStatusProvider
 import app.paralino.android.remote.appwrite.*
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
+import app.paralino.core.CoreAppManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
@@ -89,7 +90,8 @@ object KoinSetup {
     }
 
     private val appSpecificModule = module {
-        single { PreCheckControl(get()) }
+        single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        single { PreCheckControl() }
         single { LocationInitHandler(androidContext(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
 

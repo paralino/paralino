@@ -1,5 +1,6 @@
 package app.paralino.core.provider
 
+import app.paralino.core.CoreAppManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
@@ -120,14 +121,18 @@ object KoinIOS {
         }
     }
 
+    object Instances: KoinComponent {
+        val coreAppManager: CoreAppManager get() = get()
+    }
+
     object ViewModels: KoinComponent {
         val mainVM get() = get<MainViewModel>()
         fun loginVM(screenUiType: LoginScreenUiType) = get<LoginViewModel> { parametersOf(screenUiType) }
-        val welcomeVM = get<LoggedOutViewModel>()
-        val editProfileVM = get<EditProfileViewModel>()
-        val groupInitVM = get<GroupInitViewModel>()
-        val recoverKeysVM = get<RecoverKeysViewModel>()
-        val resetPasswordVM = get<ResetPasswordViewModel>()
+        val welcomeVM get() = get<LoggedOutViewModel>()
+        val editProfileVM get() = get<EditProfileViewModel>()
+        val groupInitVM get() = get<GroupInitViewModel>()
+        val recoverKeysVM get() = get<RecoverKeysViewModel>()
+        val resetPasswordVM get() = get<ResetPasswordViewModel>()
     }
 
 }

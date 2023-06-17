@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
-import app.paralino.android.AppClass
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -71,7 +70,7 @@ class LocationService : Service() {
     private fun initTracking() {
         logg.v(this.hashCode().toString(), "Subscribe to location and sharing status")
 
-        (application as AppClass).locationStatus.status
+        locationStatus.status
             .onEach {
                 if (it.isOK()) {
                     locationInitHandler.startLocationUpdates()
@@ -104,7 +103,7 @@ class LocationService : Service() {
     }
 
     private fun updateNotification() {
-        val errors = (application as AppClass).locationStatus.currentStatus.getPossibleErrors(
+        val errors = locationStatus.currentStatus.getPossibleErrors(
             forBackground = !launchedInForeground
         )
         val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0

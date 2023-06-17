@@ -13,9 +13,11 @@ import UserNotifications
 class AppDelegate: NSObject, UIApplicationDelegate {
     
     let locationStatusProvider = LocationStatusProvider()
+    lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         initKoin(locationStatusProvider: locationStatusProvider)
+        coreAppManager.onAppStart()
         Logr.i(tag:"delegate", message: "App start")
         return true
     }
@@ -30,8 +32,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             default:
                 self?.locationStatusProvider.hasNotificationPermission = false
             }
-            self?.locationStatusProvider.refreshLocationStatus()
         }
+        coreAppManager.onAppActive()
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        coreAppManager.onAppInactive()
     }
 
 }
