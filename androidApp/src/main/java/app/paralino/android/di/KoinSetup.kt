@@ -111,7 +111,7 @@ object KoinSetup {
             )
         }
 
-        viewModel { GroupInitViewModel(get(), get(), get(), get()) }
+        viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
         viewModel { SettingsViewModel(get(), get(), get()) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }

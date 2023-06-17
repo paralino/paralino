@@ -46,6 +46,8 @@ import app.paralino.core.models.Payload
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenEvent
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.invite.manage.PersonalCodeItem
+import app.paralino.core.ui.invite.manage.PersonalCodeItemInactive
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 

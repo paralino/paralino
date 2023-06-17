@@ -1,4 +1,4 @@
-package app.paralino.android.ui.login.recover
+package app.paralino.core.ui.login
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -26,97 +26,72 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.Show
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.AppIcons
+import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.presentation.login.recover.RecoverKeysScreenEvent
 import app.paralino.core.presentation.login.recover.RecoverKeysScreenState
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
+import app.paralino.core.provider.localizedString
+import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.rememberCoreUiState
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.androidx.compose.getViewModel
 
 
 @Composable
-fun RecoverKeysScreen(
-    appState: MainAppState,
-    vm: RecoverKeysViewModel = getViewModel(),
+fun RecoverKeysScreenCore(
+    appState: CoreUiState = rememberCoreUiState(),
+    vm: RecoverKeysViewModel,
+    onShowDialog: (MainAlertDialog) -> Unit,
 ) {
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
-    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
-    val context = LocalContext.current
-    LaunchedEffect(key1 = context) {
+    LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is RecoverKeysScreenEvent.Error -> {
-                    appState.showSnackbar(event.exception.errorString(context))
+                    appState.showSnackbar(event.exception.errorString())
                 }
+
                 is RecoverKeysScreenEvent.CredentialsError -> {
-                    appState.showSnackbar(context.getString(R.string.form_invalid_credentials_description))
+                    appState.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                 }
+
                 is RecoverKeysScreenEvent.ValidationError -> {
-                    val errorText = getFormValidationErrorText (
+                    val errorText = getFormValidationErrorText(
                         validation = event.validationResult.type
                     )
                     appState.showSnackbar(errorText)
                 }
+
                 null -> {
                     /* do nothing */
                 }
             }
         }
-    }
-
-    when (val dialog = showDialog) {
-        is MainAlertDialog.RecoveryResetAccount -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
-                    vm.resetAccount()
-            }
-        }
-        is MainAlertDialog.RecoveryRecoverAccount -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
-                    vm.recoverAccount()
-            }
-        }
-        is MainAlertDialog.Logout -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
-                    vm.logout()
-            }
-        }
-        else -> {}
     }
 
     when (val state = uiState) {
@@ -129,9 +104,11 @@ fun RecoverKeysScreen(
                 CircularProgressIndicator()
             }
         }
+
         is Payload.Error -> {
-            DefaultEmptyState(content = stringResource(id = R.string.recover_account_screen_error))
+            DefaultEmptyState(content = stringResource(MR.strings.recover_account_screen_error))
         }
+
         is Payload.Success -> {
 
             Scaffold(
@@ -139,15 +116,15 @@ fun RecoverKeysScreen(
                     TopAppBar(
                         backgroundColor = MaterialTheme.colors.background,
                         elevation = 1.dp,
-                        title = { Text(text = stringResource(id = R.string.recover_account_screen_title)) },
+                        title = { Text(text = stringResource(MR.strings.recover_account_screen_title)) },
                         actions = {
                             IconButton(
                                 onClick = {
-                                    showDialog = MainAlertDialog.Logout
+                                    onShowDialog(MainAlertDialog.Logout)
                                 }
                             ) {
                                 Icon(
-                                    painter = AppIcons.Logout,
+                                    painter = CoreAppIcons.Logout.asPainterResource(),
                                     contentDescription = null
                                 )
                             }
@@ -155,7 +132,6 @@ fun RecoverKeysScreen(
                     )
                 },
             ) {
-
                 RecoverKeysScreen(
                     modifier = Modifier.padding(it),
                     state = state.data,
@@ -163,11 +139,11 @@ fun RecoverKeysScreen(
                         vm.onOldPasswordChange(it)
                     },
                     onReset = {
-                        showDialog = MainAlertDialog.RecoveryResetAccount
+                        onShowDialog(MainAlertDialog.RecoveryResetAccount)
                     },
                     onRecover = {
                         if (state.data.recoverState.data != null) {
-                            showDialog = MainAlertDialog.RecoveryRecoverAccount
+                            onShowDialog(MainAlertDialog.RecoveryRecoverAccount)
                         } else {
                             vm.checkForKey()
                         }
@@ -176,7 +152,6 @@ fun RecoverKeysScreen(
             }
         }
     }
-
 }
 
 @Composable
@@ -203,22 +178,26 @@ fun RecoverKeysScreen(
     ) {
 
         if (state.canRecoverOldKey) {
-            Text(text = stringResource(id = R.string.recover_account_header_recover_possible),
-                style = MaterialTheme.typography.h5)
+            Text(
+                text = stringResource(MR.strings.recover_account_header_recover_possible),
+                style = MaterialTheme.typography.h5
+            )
             Spacer(modifier = Modifier.size(30.dp))
-            Text(text = stringResource(id = R.string.recover_account_caption_recover_possible))
+            Text(text = stringResource(MR.strings.recover_account_caption_recover_possible))
             Spacer(modifier = Modifier.size(10.dp))
             PasswordInputField(
                 password = state.oldPassword,
-                hint = stringResource(id = R.string.login_placeholder_password_old),
+                hint = stringResource(MR.strings.login_placeholder_password_old),
                 hasError = state.hasOldPasswordError,
                 imeAction = ImeAction.Next,
                 focusManager = focusManager,
                 onInputChange = { onPasswordChange(it) }
             )
         } else {
-            Text(text = stringResource(id = R.string.recover_account_header_recover_not_possible),
-                style = MaterialTheme.typography.h5)
+            Text(
+                text = stringResource(MR.strings.recover_account_header_recover_not_possible),
+                style = MaterialTheme.typography.h5
+            )
         }
 
         AnimatedVisibility(
@@ -228,8 +207,8 @@ fun RecoverKeysScreen(
             val content = when (state.recoverState) {
                 Resource.NotInitialized -> ""
                 is Resource.Ready -> when (state.recoverState.data) {
-                    null -> stringResource(id = R.string.recover_account_step_password_wrong)
-                    else -> stringResource(id = R.string.recover_account_step_password_correct)
+                    null -> stringResource(MR.strings.recover_account_step_password_wrong)
+                    else -> stringResource(MR.strings.recover_account_step_password_correct)
                 }
             }
 
@@ -261,17 +240,17 @@ fun RecoverKeysScreen(
                 state = if (state.checkLoading == null)
                     AppButtonState.CONTENT
                 else
-                    AppButtonState.loadingStateWithCheck(state.checkLoading!!),
-                icon = if (state.recoverState.data != null) AppIcons.AutoFixHigh else null,
+                    AppButtonState.loadingStateWithCheck(state.checkLoading),
+                icon = if (state.recoverState.data != null) CoreAppIcons.AutoFixHigh.asPainterResource() else null,
                 onClick = {
                     focusManager.clearFocus()
                     onRecover()
                 }
             ) {
                 if (state.recoverState.data != null)
-                    Text(text = stringResource(id = R.string.recover_account_button_recover))
+                    Text(text = stringResource(MR.strings.recover_account_button_recover))
                 else
-                    Text(text = stringResource(id = R.string.recover_account_button_check))
+                    Text(text = stringResource(MR.strings.recover_account_button_check))
             }
         }
 
@@ -285,14 +264,16 @@ fun RecoverKeysScreen(
                 Spacer(modifier = Modifier.size(20.dp))
 
                 if (state.canRecoverOldKey)
-                    Text(text = stringResource(id = R.string.recover_account_caption_recover_not_possible).annotatedBold())
+                    Text(text = stringResource(MR.strings.recover_account_caption_recover_not_possible).annotatedBold())
                 else
-                    Text(text = stringResource(id = R.string.recover_account_caption_reset).annotatedBold())
+                    Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBold())
 
                 Spacer(modifier = Modifier.size(10.dp))
                 FilledButton(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.onError,
-                        contentColor = Color.White),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.onError,
+                        contentColor = Color.White
+                    ),
                     style = ButtonStyle.BIG,
                     state = if (state.resetLoading == null)
                         AppButtonState.CONTENT
@@ -303,11 +284,9 @@ fun RecoverKeysScreen(
                         onReset()
                     }
                 ) {
-                    Text(text = stringResource(id = R.string.recover_account_button_reset))
+                    Text(text = stringResource(MR.strings.recover_account_button_reset))
                 }
             }
         }
-
     }
-
 }

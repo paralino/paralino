@@ -30,6 +30,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             default:
                 self?.locationStatusProvider.hasNotificationPermission = false
             }
+            self?.locationStatusProvider.refreshLocationStatus()
         }
     }
 

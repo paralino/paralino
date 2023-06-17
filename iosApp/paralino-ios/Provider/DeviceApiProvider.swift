@@ -49,4 +49,8 @@ class DeviceApiProvider: IDeviceApiProvider {
             return DebbugLogr()
         }
     }
+    
+    override func doCopyToClipboard(data: String) {
+        UIPasteboard.general.string = data
+    }
 }

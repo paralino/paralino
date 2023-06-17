@@ -85,7 +85,7 @@ object KoinIOS {
     
     private fun createViewModelModule(): Module {
         return module {
-            factory { GroupInitViewModel(get(), get(), get(), get()) }
+            factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
             factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
             factory { SettingsViewModel(get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
@@ -125,6 +125,9 @@ object KoinIOS {
         fun loginVM(screenUiType: LoginScreenUiType) = get<LoginViewModel> { parametersOf(screenUiType) }
         val welcomeVM = get<LoggedOutViewModel>()
         val editProfileVM = get<EditProfileViewModel>()
+        val groupInitVM = get<GroupInitViewModel>()
+        val recoverKeysVM = get<RecoverKeysViewModel>()
+        val resetPasswordVM = get<ResetPasswordViewModel>()
     }
 
 }

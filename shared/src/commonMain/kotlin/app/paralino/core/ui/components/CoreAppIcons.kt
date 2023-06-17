@@ -30,6 +30,11 @@ object CoreAppIcons {
     val Add get() = "drawable/ic_add.xml"
     val Key get() = "drawable/ic_key.xml"
     val Save get() = "drawable/ic_save.xml"
+    val ContentCopy get() = "drawable/ic_content_copy.xml"
+    val Delete get() = "drawable/ic_delete.xml"
+    val Share get() = "drawable/ic_share.xml"
+    val AutoFixHigh get() = "drawable/ic_auto_fix_high.xml"
+    val Logout get() = "drawable/ic_logout.xml"
 
     @Composable
     fun String.asPainterResource(): Painter {

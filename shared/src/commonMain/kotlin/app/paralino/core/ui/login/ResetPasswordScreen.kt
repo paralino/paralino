@@ -1,84 +1,91 @@
-package app.paralino.android.ui.login.passwordreset
+package app.paralino.core.ui.login
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.navigation.navOptions
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.AppIcons
-import app.paralino.core.presentation.login.LoginScreenUiType
+import app.paralino.core.MR
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenEvent
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenState
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
+import app.paralino.core.provider.localizedString
+import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.rememberCoreUiState
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.androidx.compose.getViewModel
-import org.koin.core.parameter.parametersOf
 
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun ResetPasswordScreen(
-    appState: MainAppState,
-    userId: String,
-    secret: String,
-    vm: ResetPasswordViewModel = getViewModel { parametersOf(userId, secret) },
+fun ResetPasswordScreenCore(
+    appState: CoreUiState = rememberCoreUiState(),
+    vm: ResetPasswordViewModel,
+    openLoginScreen: () -> Unit,
+    onClose: () -> Unit
 ) {
 
     val uiState by vm.uiState.collectAsState(initial = ResetPasswordScreenState())
     val focusManager = LocalFocusManager.current
 
-    val context = LocalContext.current
-    LaunchedEffect(key1 = context) {
+    LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is ResetPasswordScreenEvent.Error -> {
-                    appState.showSnackbar(event.exception.errorString(context))
+                    appState.showSnackbar(event.exception.errorString())
                 }
+
                 is ResetPasswordScreenEvent.CredentialsError -> {
-                    appState.showSnackbar(context.getString(R.string.form_invalid_credentials_description))
+                    appState.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                 }
+
                 is ResetPasswordScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
                         validation = event.validationResult.type
                     )
                     appState.showSnackbar(errorText)
                 }
+
                 ResetPasswordScreenEvent.PasswordChanged -> {
-                    appState.showSnackbar(context.getString(R.string.reset_password_success_message))
+                    appState.showSnackbar(MR.strings.reset_password_success_message.localizedString())
                     delay(500)
-                    appState.navController.navigate(
-                        AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN),
-                        navOptions {
-                            popUpTo(AppScreen.LoggedOut.PasswordReset.routeSignature) {
-                                inclusive = true
-                            }
-                        }
-                    )
+                    openLoginScreen()
                 }
+
                 ResetPasswordScreenEvent.InvalidToken -> {
-                    appState.showSnackbar(context.getString(R.string.reset_password_error_token_message))
+                    appState.showSnackbar(MR.strings.reset_password_error_token_message.localizedString())
                 }
+
                 null -> {
                     /* do nothing */
                 }
@@ -91,11 +98,11 @@ fun ResetPasswordScreen(
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 1.dp,
-                title = { Text(text = stringResource(id = R.string.reset_password_screen_title)) },
+                title = { Text(text = stringResource(MR.strings.reset_password_screen_title)) },
                 navigationIcon = {
-                    IconButton(onClick = { appState.navController.popBackStack() }) {
+                    IconButton(onClick = { onClose() }) {
                         Icon(
-                            painter = AppIcons.Close,
+                            painter = CoreAppIcons.Close.asPainterResource(),
                             contentDescription = null
                         )
                     }
@@ -127,7 +134,7 @@ fun ResetPasswordScreen(
 
                 PasswordInputField(
                     password = uiState.newPassword,
-                    hint = stringResource(id = R.string.settings_account_edit_password_placeholder_password_new),
+                    hint = stringResource(MR.strings.settings_account_edit_password_placeholder_password_new),
                     hasError = uiState.hasNewPasswordError,
                     imeAction = ImeAction.Next,
                     focusManager = focusManager,
@@ -138,7 +145,7 @@ fun ResetPasswordScreen(
 
                 PasswordInputField(
                     password = uiState.confirmPassword,
-                    hint = stringResource(id = R.string.settings_account_edit_password_placeholder_password_confirm),
+                    hint = stringResource(MR.strings.settings_account_edit_password_placeholder_password_confirm),
                     hasError = uiState.hasConfirmPasswordError,
                     focusManager = focusManager,
                     onInputChange = { vm.onConfirmPasswordChange(it) }
@@ -146,7 +153,7 @@ fun ResetPasswordScreen(
 
                 Spacer(modifier = Modifier.size(80.dp))
 
-                Text(text = stringResource(id = R.string.recover_account_caption_reset).annotatedBold())
+                Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBold())
                 Spacer(modifier = Modifier.size(10.dp))
                 FilledButton(
                     style = ButtonStyle.BIG,
@@ -159,7 +166,7 @@ fun ResetPasswordScreen(
                         vm.proceed()
                     }
                 ) {
-                    Text(text = stringResource(id = R.string.settings_account_edit_password_button))
+                    Text(text = stringResource(MR.strings.settings_account_edit_password_button))
                 }
 
             }

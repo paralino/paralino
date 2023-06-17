@@ -36,6 +36,11 @@
 		258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258E9BF629EBDEBF006BD46C /* AlertDialog.swift */; };
 		259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */; };
 		259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF982A3C68580083FF4B /* ComposeRepresentable.swift */; };
+		259AEF9C2A3DB1C70083FF4B /* MapHomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF9B2A3DB1C70083FF4B /* MapHomeScreen.swift */; };
+		259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF9D2A3DB1E40083FF4B /* GroupInitScreen.swift */; };
+		259AEFA02A3E0D0A0083FF4B /* RecoverKeysScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF9F2A3E0D0A0083FF4B /* RecoverKeysScreen.swift */; };
+		259AEFA22A3E0F860083FF4B /* ResetPasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA12A3E0F860083FF4B /* ResetPasswordScreen.swift */; };
+		259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA32A3E19740083FF4B /* Sharing.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
 		25C03A6A29CCE77100646364 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6929CCE77100646364 /* ContentView.swift */; };
 		25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6B29CCE77200646364 /* Assets.xcassets */; };
@@ -72,6 +77,11 @@
 		258E9BF629EBDEBF006BD46C /* AlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetupScreen.swift; sourceTree = "<group>"; };
 		259AEF982A3C68580083FF4B /* ComposeRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRepresentable.swift; sourceTree = "<group>"; };
+		259AEF9B2A3DB1C70083FF4B /* MapHomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeScreen.swift; sourceTree = "<group>"; };
+		259AEF9D2A3DB1E40083FF4B /* GroupInitScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupInitScreen.swift; sourceTree = "<group>"; };
+		259AEF9F2A3E0D0A0083FF4B /* RecoverKeysScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverKeysScreen.swift; sourceTree = "<group>"; };
+		259AEFA12A3E0F860083FF4B /* ResetPasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordScreen.swift; sourceTree = "<group>"; };
+		259AEFA32A3E19740083FF4B /* Sharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sharing.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C03A6729CCE77100646364 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
 		25C03A6929CCE77100646364 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -121,6 +131,8 @@
 				254B6F2929EC7F6A008B1458 /* LoginScreenObject.swift */,
 				254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */,
 				259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */,
+				259AEF9F2A3E0D0A0083FF4B /* RecoverKeysScreen.swift */,
+				259AEFA12A3E0F860083FF4B /* ResetPasswordScreen.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -189,6 +201,7 @@
 		256C5A5829E8934E00FCF0B7 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				259AEF9A2A3DB1AB0083FF4B /* Map */,
 				25C03A6929CCE77100646364 /* ContentView.swift */,
 				254B6F2629EC7C50008B1458 /* Utils */,
 				252EA00329DC333500338956 /* Login */,
@@ -213,8 +226,18 @@
 			isa = PBXGroup;
 			children = (
 				258E9BF629EBDEBF006BD46C /* AlertDialog.swift */,
+				259AEFA32A3E19740083FF4B /* Sharing.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		259AEF9A2A3DB1AB0083FF4B /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				259AEF9B2A3DB1C70083FF4B /* MapHomeScreen.swift */,
+				259AEF9D2A3DB1E40083FF4B /* GroupInitScreen.swift */,
+			);
+			path = Map;
 			sourceTree = "<group>";
 		};
 		25C03A5B29CCE77100646364 = {
@@ -430,6 +453,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
+				259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */,
+				259AEFA02A3E0D0A0083FF4B /* RecoverKeysScreen.swift in Sources */,
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
 				252EA01B29DDF1B500338956 /* UserApi.swift in Sources */,
@@ -438,13 +463,16 @@
 				25C03A6A29CCE77100646364 /* ContentView.swift in Sources */,
 				25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */,
 				25C03A6829CCE77100646364 /* MainApp.swift in Sources */,
+				259AEF9C2A3DB1C70083FF4B /* MapHomeScreen.swift in Sources */,
 				252EA00B29DD99F900338956 /* PushSetupProvider.swift in Sources */,
 				254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */,
+				259AEFA22A3E0F860083FF4B /* ResetPasswordScreen.swift in Sources */,
 				254B6F2C29EC7F6A008B1458 /* LoginScreen.swift in Sources */,
 				252EA00729DD89C800338956 /* KoinSetup.swift in Sources */,
 				252EA01D29DDF93B00338956 /* RealtimeApi.swift in Sources */,
 				252EA00929DD8BE100338956 /* LocationStatusProvider.swift in Sources */,
 				25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */,
+				259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */,
 				252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */,
 				252EA01229DDA67700338956 /* AppwriteRemoteModule.swift in Sources */,
 				254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */,

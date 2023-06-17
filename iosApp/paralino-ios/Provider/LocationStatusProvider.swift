@@ -11,6 +11,7 @@ import CoreLocation
 import UIKit
 
 class LocationStatusProvider: ILocationStatusProvider {
+    // this is set in app delegate
     var hasNotificationPermission: Bool = false
     
     override init() {

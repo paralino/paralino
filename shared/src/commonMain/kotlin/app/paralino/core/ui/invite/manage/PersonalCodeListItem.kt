@@ -1,7 +1,5 @@
-package app.paralino.android.ui.invite.manage
+package app.paralino.core.ui.invite.manage
 
-import android.content.res.Configuration
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,23 +21,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.android.R
-import app.paralino.android.ui.theme.AppIcons
+import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun PersonalCodeItem(
@@ -84,7 +80,7 @@ fun PersonalCodeItemInactive(
         contentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
         icon = null,
         text = code,
-        endAction = stringResource(id = R.string.invite_code_button_activate),
+        endAction = stringResource(resource = MR.strings.invite_code_button_activate),
         onClick = {
             onActivate(code)
         }
@@ -155,21 +151,21 @@ fun PersonalCodeItem(
                 ) {
                     FilledButton(
                         style = ButtonStyle.SMALL,
-                        icon = AppIcons.ContentCopy,
+                        icon = CoreAppIcons.ContentCopy.asPainterResource(),
                         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
                         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                         onClick = onCopy
                     ) {
-                        Text(text = stringResource(id = R.string.invite_code_button_copy))
+                        Text(text = stringResource(MR.strings.invite_code_button_copy))
                     }
                     FilledButton(
                         style = ButtonStyle.SMALL,
-                        icon = AppIcons.Share,
+                        icon = CoreAppIcons.Share.asPainterResource(),
                         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
                         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                         onClick = onShare
                     ) {
-                        Text(text = stringResource(id = R.string.invite_code_button_share))
+                        Text(text = stringResource(MR.strings.invite_code_button_share))
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     if (hasDelete) {
@@ -184,7 +180,7 @@ fun PersonalCodeItem(
                                 )
                             } else {
                                 Icon(
-                                    painter = AppIcons.Delete,
+                                    painter = CoreAppIcons.Delete.asPainterResource(),
                                     tint = MaterialTheme.colors.onError,
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp)
@@ -199,32 +195,10 @@ fun PersonalCodeItem(
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 modifier = Modifier.padding(horizontal = 40.dp),
-                text = stringResource(id = R.string.invite_manage_description).annotatedBold(),
+                text = stringResource(MR.strings.invite_manage_description).annotatedBold(),
                 textAlign = TextAlign.Center
             )
         }
         Spacer(modifier = Modifier.size(50.dp))
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun PersonalCodePreview() {
-    AppTheme {
-        Surface(color = MaterialTheme.colors.background) {
-            Box(modifier = Modifier.padding(10.dp)) {
-                PersonalCodeItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    code = "XXXX-XXXX",
-                    userImage = ImageModel.emoji(Emojis.robot),
-                    userName = "User",
-                    deleteLoading = false,
-                    hasDelete = true,
-                    onCopy = { },
-                    onShare = { },
-                    onDelete = { }
-                )
-            }
-        }
     }
 }
