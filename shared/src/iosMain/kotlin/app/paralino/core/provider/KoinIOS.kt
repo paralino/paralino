@@ -133,6 +133,7 @@ object KoinIOS {
         val groupInitVM get() = get<GroupInitViewModel>()
         val recoverKeysVM get() = get<RecoverKeysViewModel>()
         val resetPasswordVM get() = get<ResetPasswordViewModel>()
+        val mapHomeVM get() = get<MapHomeViewModel>()
     }
 
 }

@@ -90,7 +90,6 @@ object KoinSetup {
     }
 
     private val appSpecificModule = module {
-        single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         single { PreCheckControl() }
         single { LocationInitHandler(androidContext(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }

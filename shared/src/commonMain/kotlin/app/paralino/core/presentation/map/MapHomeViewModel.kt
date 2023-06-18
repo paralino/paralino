@@ -57,6 +57,13 @@ class MapHomeViewModel constructor(
             initialValue = Resource.NotInitialized
         )
 
+    val allGroupsState = allGroups.map {
+        when(it) {
+            Resource.NotInitialized -> null
+            is Resource.Ready -> it.data.isNotEmpty()
+        }
+    }
+
     init {
 
         allGroups.onEach { groupsData ->
