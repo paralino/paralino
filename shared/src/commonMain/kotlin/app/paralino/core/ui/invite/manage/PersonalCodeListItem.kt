@@ -121,9 +121,10 @@ fun PersonalCodeItem(
                         .align(Alignment.CenterHorizontally),
                     text = code,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 40.sp,
-                    letterSpacing = 0.1.sp,
+                    fontSize = 46.sp,
+                    letterSpacing = 3.sp,
                     maxLines = 1,
+                    textAlign = TextAlign.Center
                 )
 
                 Spacer(modifier = Modifier.size(10.dp))
