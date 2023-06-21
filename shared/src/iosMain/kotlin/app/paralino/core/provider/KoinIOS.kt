@@ -56,7 +56,7 @@ object KoinIOS {
         backendConfig: BackendConfig,
         remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
         documentsApi: (IRemoteModule, BackendConfig) -> IDocumentsApi,
-        userApi: (IRemoteModule, BackendConfig) -> IUserApi,
+        userApi: (IRemoteModule, BackendConfig) -> IUserApiIOS,
         functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApi,
         realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
         cryptoServiceProvider: ICryptoServiceProvider
@@ -73,9 +73,9 @@ object KoinIOS {
                 single { remoteModule(get()) }
                 single { backendConfig }
                 single { documentsApi(get(), get()) }
-                single { userApi(get(), get()) }
+                single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
                 single { functionsApi(get(), get()) }
-                single { RealtimeApiWrapperIOS(realtimeApi(get(), get())) }
+                single { RealtimeApiWrapperIOS(realtimeApi(get(), get())) } bind IRealtimeApi::class
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
                 single { cryptoServiceProvider }

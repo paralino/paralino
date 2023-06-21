@@ -21,6 +21,11 @@ val <T> Payload<T>.data: T?
 val Payload<*>.exception: Throwable?
     get() = (this as? Payload.Error)?.exception
 
+fun <T> Payload<T>.getOrThrow(): T = when(this) {
+    is Payload.Error -> throw this.exception
+    Payload.Loading -> throw IllegalStateException("Data still loading")
+    is Payload.Success -> this.data
+}
 
 inline fun <reified T, R> Payload<T>.mapSuccess(action: (T) -> R): Payload<R> {
     return when(this){

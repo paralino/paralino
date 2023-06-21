@@ -9,7 +9,7 @@ import Foundation
 import shared
 import Appwrite
 
-class UserApi: IUserApi {
+class UserApi: IUserApiIOS {
     
     let remoteModule: AppwriteRemoteModule
     
@@ -18,88 +18,93 @@ class UserApi: IUserApi {
     }
     
     
-    func changePassword(newPassword: String, oldPassword: String?) async throws -> UserMeRaw {
-        return await remoteModule.execute { module in
+    func changePassword(newPassword: String, oldPassword: String?) async throws -> Payload<UserMeRaw> {
+        return await remoteModule.executeUserApi { module in
             try! await module.account.updatePassword(password: newPassword, oldPassword: oldPassword).parseUser()
         }
     }
     
-    func confirmEmail(userId: String, secret: String) async throws {
-        await remoteModule.execute { module in
-            try! await module.account.updateVerification(userId: userId, secret: secret)
+    func confirmEmail(userId: String, secret: String) async throws -> Payload<KotlinUnit> {
+        await remoteModule.executeUserApi { module in
+            let result = try! await module.account.updateVerification(userId: userId, secret: secret)
+            return KotlinUnit()
         }
     }
     
     
-    func deleteAccount() async throws {
-        await remoteModule.execute { module in
-            try! await module.account.updateStatus()
+    func deleteAccount() async throws -> Payload<KotlinUnit> {
+        await remoteModule.executeUserApi { module in
+            let result = try! await module.account.updateStatus()
+            return KotlinUnit()
         }
     }
     
-    
-    func getAllSessions() async throws -> [UserSession] {
-        return await remoteModule.execute { module in
-            try! await module.account.listSessions().sessions.map { $0.parseSession() }
+    func getAllSessions() async throws -> Payload<NSArray> {
+        return await remoteModule.executeUserApi { module in
+            try! await NSArray(array: module.account.listSessions().sessions.map { $0.parseSession() })
         }
     }
     
-    func getCurrentSession() async throws -> UserSession {
-        return await remoteModule.execute { module in
+    func getCurrentSession() async throws -> Payload<UserSession> {
+        return await remoteModule.executeUserApi { module in
             try! await module.account.getSession(sessionId: "current").parseSession()
         }
     }
     
-    func getMe() async throws -> UserMeRaw {
-        return await remoteModule.execute { module in
-            try! await module.account.get().parseUser()
+    func getMe() async throws -> Payload<UserMeRaw> {
+        return await remoteModule.executeUserApi { module in
+            try await module.account.get().parseUser()
         }
     }
     
-    func doInitEmailVerification() async throws {
-        return await remoteModule.execute { module in
-            try! await module.account.createVerification(url: module.backendConfig.resourceIds.emailConfirmationUrl)
+    func doInitEmailVerification() async throws -> Payload<KotlinUnit> {
+        return await remoteModule.executeUserApi { module in
+            let result = try! await module.account.createVerification(url: module.backendConfig.resourceIds.emailConfirmationUrl)
+            return KotlinUnit()
         }
     }
     
-    func doInitResetPassword(email: String) async throws {
-        return await remoteModule.execute { module in
-            try! await module.account.createRecovery(email: email, url: module.backendConfig.resourceIds.passwordResetUrl)
+    func doInitResetPassword(email: String) async throws -> Payload<KotlinUnit> {
+        return await remoteModule.executeUserApi { module in
+            let result = try! await module.account.createRecovery(email: email, url: module.backendConfig.resourceIds.passwordResetUrl)
+            return KotlinUnit()
         }
     }
     
-    func login(email: String, password: String) async throws -> UserSession {
-        return await remoteModule.execute { module in
+    func login(email: String, password: String) async throws -> Payload<UserSession> {
+        return await remoteModule.executeUserApi { module in
             try! await module.account.createEmailSession(email: email, password: password).parseSession()
         }
     }
     
-    func logout() async throws {
-        await remoteModule.execute { module in
-            try! await module.account.deleteSession(sessionId: "current")
+    func logout() async throws -> Payload<KotlinUnit> {
+        await remoteModule.executeUserApi { module in
+            let result = try! await module.account.deleteSession(sessionId: "current")
+            return KotlinUnit()
         }
     }
     
-    func resetPassword(userId: String, secret: String, password: String) async throws {
-        await remoteModule.execute { module in
-            try! await module.account.updateRecovery(userId: userId, secret: secret, password: password, passwordAgain: password)
+    func resetPassword(userId: String, secret: String, password: String) async throws -> Payload<KotlinUnit> {
+        await remoteModule.executeUserApi { module in
+            let result = try! await module.account.updateRecovery(userId: userId, secret: secret, password: password, passwordAgain: password)
+            return KotlinUnit()
         }
     }
     
-    func signUp(userName: String?, email: String, password: String) async throws -> UserMeRaw {
-        return await remoteModule.execute { module in
+    func signUp(userName: String?, email: String, password: String) async throws -> Payload<UserMeRaw> {
+        return await remoteModule.executeUserApi { module in
             try! await module.account.create(userId: module.backendConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName).parseUser()
         }
     }
     
-    func updateEmail(email: String, password: String) async throws -> UserMeRaw {
-        return await remoteModule.execute { module in
+    func updateEmail(email: String, password: String) async throws -> Payload<UserMeRaw> {
+        return await remoteModule.executeUserApi { module in
             try! await module.account.updateEmail(email: email, password: password).parseUser()
         }
     }
     
-    func updateUserData(data: [String : Any]) async throws -> UserMeRaw {
-        return await remoteModule.execute { module in
+    func updateUserData(data: [String : Any]) async throws -> Payload<UserMeRaw> {
+        return await remoteModule.executeUserApi { module in
             try! await module.account.updatePrefs(prefs: data).parseUser()
         }
     }
