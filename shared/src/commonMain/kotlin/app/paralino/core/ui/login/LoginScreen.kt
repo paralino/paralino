@@ -350,6 +350,7 @@ fun LoginScreenCore(
                     }
                     .padding(horizontal = 12.dp, vertical = 8.dp),
             )
+            Spacer(modifier = Modifier.size(20.dp))
         }
     }
 }

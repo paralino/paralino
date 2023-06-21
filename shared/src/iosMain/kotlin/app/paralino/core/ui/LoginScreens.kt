@@ -1,7 +1,5 @@
 package app.paralino.core.ui
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
@@ -16,7 +14,6 @@ import app.paralino.core.ui.login.ProfileSetupScreenCore
 import app.paralino.core.ui.login.RecoverKeysScreenCore
 import app.paralino.core.ui.login.ResetPasswordScreenCore
 import app.paralino.core.ui.login.WelcomeScreen
-import app.paralino.core.ui.theme.AppTheme
 
 object LoginScreens {
     fun WelcomeScreenVC(
@@ -37,15 +34,14 @@ object LoginScreens {
         onShowDialog: (MainAlertDialog?) -> Unit,
         onExit: () -> Unit
     ) = ComposeUIViewController {
-        AppTheme {
-            Surface(color = MaterialTheme.colors.background) {
-                LoginScreenCore(
-                    startScreenUiType = startScreenUiType,
-                    vm = vm,
-                    onShowDialog = onShowDialog,
-                    onExit = onExit
-                )
-            }
+        RootScreenIOS {
+            LoginScreenCore(
+                coreUiState = it,
+                startScreenUiType = startScreenUiType,
+                vm = vm,
+                onShowDialog = onShowDialog,
+                onExit = onExit
+            )
         }
     }
 
@@ -53,13 +49,12 @@ object LoginScreens {
         vm: EditProfileViewModel,
         onBottomSheetAction: (BottomSheetsScreen) -> Unit,
     ) = ComposeUIViewController {
-        AppTheme {
-            Surface(color = MaterialTheme.colors.background) {
-                ProfileSetupScreenCore(
-                    vm = vm,
-                    onBottomSheetAction = onBottomSheetAction,
-                )
-            }
+        RootScreenIOS {
+            ProfileSetupScreenCore(
+                appState = it,
+                vm = vm,
+                onBottomSheetAction = onBottomSheetAction,
+            )
         }
     }
 
@@ -67,13 +62,12 @@ object LoginScreens {
         vm: RecoverKeysViewModel,
         onShowDialog: (MainAlertDialog?) -> Unit,
     ) = ComposeUIViewController {
-        AppTheme {
-            Surface(color = MaterialTheme.colors.background) {
-                RecoverKeysScreenCore(
-                    vm = vm,
-                    onShowDialog = onShowDialog,
-                )
-            }
+        RootScreenIOS {
+            RecoverKeysScreenCore(
+                appState = it,
+                vm = vm,
+                onShowDialog = onShowDialog,
+            )
         }
     }
 
@@ -82,14 +76,13 @@ object LoginScreens {
         openLoginScreen: () -> Unit,
         onClose: () -> Unit
     ) = ComposeUIViewController {
-        AppTheme {
-            Surface(color = MaterialTheme.colors.background) {
-                ResetPasswordScreenCore(
-                    vm = vm,
-                    openLoginScreen = openLoginScreen,
-                    onClose = onClose
-                )
-            }
+        RootScreenIOS {
+            ResetPasswordScreenCore(
+                appState = it,
+                vm = vm,
+                openLoginScreen = openLoginScreen,
+                onClose = onClose
+            )
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.utils.extensions.annotatedBold
 import kotlin.math.absoluteValue
@@ -40,6 +41,7 @@ fun AppSnackbar(
                     SwipeDirection.Left -> {
                         snackbarHostState.currentSnackbarData?.dismiss()
                     }
+
                     else -> {
                         return@onDispose
                     }
@@ -71,6 +73,7 @@ fun AppSnackbar(
             val actionComposable: (@Composable () -> Unit)? = if (actionLabel != null) {
                 @Composable {
                     TextButton(
+                        modifier = Modifier.padding(end = 4.dp),
                         colors = ButtonDefaults.textButtonColors(
                             backgroundColor = MaterialTheme.colors.primary,
                             contentColor = MaterialTheme.colors.onPrimary
@@ -89,10 +92,22 @@ fun AppSnackbar(
 
             Snackbar(
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(20.dp)
+                    .padding(bottom = 20.dp)
                     .alpha(((width - offset.value).absoluteValue / width))
                     .offset(x = offset),
-                content = { Text(snackbarData.message.annotatedBold()) },
+                content = {
+                    Text(
+                        modifier = Modifier
+                            .padding(bottom = if (actionLabel != null) 8.dp else 0.dp)
+                            .padding(
+                                horizontal = 4.dp,
+                                vertical = if (actionLabel != null) 0.dp else 16.dp
+                            ),
+                        text = snackbarData.message.annotatedBold(),
+                        textAlign = TextAlign.Start,
+                    )
+                },
                 action = actionComposable,
                 actionOnNewLine = false,
                 shape = MaterialTheme.shapes.medium,
