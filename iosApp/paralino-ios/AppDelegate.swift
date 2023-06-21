@@ -10,11 +10,11 @@ import UIKit
 import shared
 import UserNotifications
 
-class AppDelegate: NSObject, UIApplicationDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     
     let locationStatusProvider = LocationStatusProvider()
     lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         initKoin(locationStatusProvider: locationStatusProvider)
         coreAppManager.onAppStart()
@@ -22,12 +22,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
     
-    func applicationDidBecomeActive(_ application: UIApplication) {
+    func appInForeground() {
+        Logr.i(tag:"delegate", message: "App in foreground")
         UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+            Logr.i(tag:"delegate", message: "Notification status: \(settings.authorizationStatus)")
             switch settings.authorizationStatus {
             case .denied:
                 self?.locationStatusProvider.hasNotificationPermission = false
-            case .authorized:
+            case .authorized, .provisional:
                 self?.locationStatusProvider.hasNotificationPermission = true
             default:
                 self?.locationStatusProvider.hasNotificationPermission = false
@@ -36,8 +38,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         coreAppManager.onAppActive()
     }
     
-    func applicationDidEnterBackground(_ application: UIApplication) {
+    func appInBackground() {
+        Logr.i(tag:"delegate", message: "App in background")
         coreAppManager.onAppInactive()
     }
-
 }

@@ -10,7 +10,7 @@ import shared
 
 struct GroupInitScreen: View {
     
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @EnvironmentObject var appDelegate: AppDelegate
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.groupInitVM)
     @State var alertDialog: AlertDialogData? = nil
     @State var shareText: ShareText?
@@ -30,9 +30,9 @@ struct GroupInitScreen: View {
                 },
                 askNotificationPermission: {
                     let center = UNUserNotificationCenter.current()
-                    center.requestAuthorization(options: [.alert, .sound, .badge, .provisional]) { granted, error in
+                    center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
                         appDelegate.locationStatusProvider.hasNotificationPermission = granted
-                        appState.vm.locationStatusProvider.refreshLocationStatus()
+                        appDelegate.locationStatusProvider.refreshLocationStatus()
                     }
                 },
                 onClose: {}
@@ -49,6 +49,7 @@ struct GroupInitScreen: View {
         .sheet(item: $shareText) { shareText in
             ActivityView(text: shareText.text)
         }
+        .ignoresSafeArea(.all, edges: .bottom)
     }
 }
 

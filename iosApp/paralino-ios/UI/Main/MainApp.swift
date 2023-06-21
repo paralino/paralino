@@ -12,6 +12,8 @@ import shared
 struct MainApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var appState = MainAppObject()
+    @Environment(\.scenePhase) var scenePhase
+    
     
     var body: some Scene {
         WindowGroup {
@@ -24,6 +26,17 @@ struct MainApp: App {
                 case .ready(let data): AppReadyScreen(userState: data)
                 }
             }
+            .onChange(of: scenePhase) { newScenePhase in
+                switch newScenePhase {
+                case .active:
+                    appDelegate.appInForeground()
+                case .inactive: break
+                case .background:
+                    appDelegate.appInBackground()
+                @unknown default:
+                    Logr.i(tag:"delegate", message: "App scene unknown")
+                }
+            }.environmentObject(appDelegate)
         }
     }
 }

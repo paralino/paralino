@@ -66,7 +66,7 @@ class UserCryptoKeyLocalDataSource constructor(
                     logg.v("User keys can be parsed and decrypted")
                     true
                 } catch (e: Exception) {
-                    logg.v("User keys can not be parsed or decrypted", e)
+                    logg.v("User keys can not be parsed or decrypted - ${e::class.simpleName}: ${e.message}")
                     false
                 }
             }
