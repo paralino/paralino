@@ -105,7 +105,7 @@ class UserApi: IUserApi {
     }
 }
 
-extension AppwriteModels.Account {
+extension AppwriteModels.User {
     func parseUser() -> UserMeRaw {
         let prefsData = try? self.prefs.data.toJson()
         let prefs = prefsData != nil ? UserMeDataRaw.companion.parseData(prefs: SerializationExtKt.fromJsonObjectToMapOfPrimitives(prefsData!)) : nil

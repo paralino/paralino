@@ -745,8 +745,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/appwrite/sdk-for-apple.git";
 			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 1.2.0;
+				kind = exactVersion;
+				version = 2.0.0;
 			};
 		};
 		252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */ = {
