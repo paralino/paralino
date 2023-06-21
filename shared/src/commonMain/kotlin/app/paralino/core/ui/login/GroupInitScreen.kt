@@ -152,34 +152,7 @@ fun GroupInitScreenCore(
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            LargeSeekbarSwitch(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .height(LargeSwitchDefaults.minHeight)
-                    .fillMaxWidth(1f),
-                icon = CoreAppIcons.Add.asPainterResource(),
-                title = stringResource(MR.strings.dashboard_groups_add_button),
-                titleStyle = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
-                description = null,
-                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                    switchState = LargeSeekbarSwitchState.Switch(
-                        checkState = false,
-                        unCheckedIconRes = CoreAppIcons.ChevronRight
-                    ),
-                    seekbarState = null
-                ),
-                onStateChange = {
-                    onCreateGroup()
-                }
-            )
-
-            Spacer(modifier = Modifier.size(20.dp))
-
             if (state.personalCode != null) {
-                SettingsSectionHeader(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    name = stringResource(MR.strings.dashboard_groups_join_info)
-                )
                 PersonalCodeItem(
                     state = state.personalCode,
                     deleteLoading = false,
@@ -216,6 +189,36 @@ fun GroupInitScreenCore(
             }
 
             Spacer(modifier = Modifier.size(20.dp))
+
+            if (state.personalCode != null) {
+                SettingsSectionHeader(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    name = stringResource(MR.strings.dashboard_groups_create_info)
+                )
+            }
+
+            LargeSeekbarSwitch(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .height(LargeSwitchDefaults.minHeight)
+                    .fillMaxWidth(1f),
+                icon = CoreAppIcons.Add.asPainterResource(),
+                title = stringResource(MR.strings.dashboard_groups_add_button),
+                titleStyle = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
+                description = null,
+                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                    switchState = LargeSeekbarSwitchState.Switch(
+                        checkState = false,
+                        unCheckedIconRes = CoreAppIcons.ChevronRight
+                    ),
+                    seekbarState = null
+                ),
+                onStateChange = {
+                    onCreateGroup()
+                }
+            )
+
+            Spacer(modifier = Modifier.size(40.dp))
         }
     }
 }
