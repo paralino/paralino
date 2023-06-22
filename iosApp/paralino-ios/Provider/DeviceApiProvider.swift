@@ -17,7 +17,11 @@ class DeviceApiProvider: IDeviceApiProvider {
     }
     
     override var appVersionCode: Int64 {
-        Bundle.main.infoDictionary?["CFBundleVersion"] as? Int64 ?? 0
+        Int64(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "") ?? 0
+    }
+    
+    override var appVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
     
     override var batteryLevel: Int32 {

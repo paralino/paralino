@@ -134,6 +134,13 @@ object KoinIOS {
         val recoverKeysVM get() = get<RecoverKeysViewModel>()
         val resetPasswordVM get() = get<ResetPasswordViewModel>()
         val mapHomeVM get() = get<MapHomeViewModel>()
+        val settingsVM get() = get<SettingsViewModel>()
+        val changeEmailVM get() = get<ChangeEmailViewModel>()
+        val changePasswordVM get() = get<ChangePasswordViewModel>()
+        val convertAccountVM get() = get<ConvertAccountViewModel>()
+        val personalCodeVM get() = get<PersonalCodeViewModel>()
+        val blocklistVM get() = get<BlocklistVideModel>()
+        fun rawDataVM(type: RawPresentationDataType) = get<BlocklistVideModel> { parametersOf(type) }
     }
 
 }

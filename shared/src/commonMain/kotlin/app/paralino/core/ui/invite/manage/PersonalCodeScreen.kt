@@ -47,7 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun PersonalCodeScreenCore(
     appState: CoreUiState,
     vm: PersonalCodeViewModel,
-    onShowDialog: (MainAlertDialog) -> Unit,
+    onShowDialog: (MainAlertDialog?) -> Unit,
     onShare: (String) -> Unit,
     onNavigateBack: () -> Unit,
 ) {

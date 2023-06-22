@@ -58,7 +58,9 @@ struct AppReadyScreen: View {
                     .progressViewStyle(CircularProgressViewStyle())
             }
         } else if userState is AppAccountState.USER_READY {
-            MapRootScreen()
+            NavigationView {
+                MapRootScreen()
+            }
         }
     }
 }

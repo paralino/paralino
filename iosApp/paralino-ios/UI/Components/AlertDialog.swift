@@ -22,7 +22,7 @@ struct AlertDialogData: Identifiable {
         buttons = coreData.dialogData.buttons.map { buttonData in
             AlertDialogButton(
                 key: buttonData.id,
-                role: buttonData.id == MainAlertDialogButtons.shared.buttonOk ? nil : .cancel,
+                role: buttonData.id == MainAlertDialogButtons.shared.buttonOk ? nil : .none,
                 text: buttonData.text
             )
         }

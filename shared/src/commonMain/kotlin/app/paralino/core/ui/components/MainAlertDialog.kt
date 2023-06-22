@@ -105,11 +105,11 @@ sealed interface MainAlertDialog {
             message = stringResource(resource = MR.strings.settings_account_delete_alert_confirm_message),
             buttons = listOf(
                 AlertDialogButtonData(
-                    Buttons.buttonCancel,
+                    Buttons.buttonCancel.plus("1"),
                     stringResource(resource = MR.strings.settings_account_delete_alert_cancel_button1)
                 ),
                 AlertDialogButtonData(
-                    Buttons.buttonCancel,
+                    Buttons.buttonCancel.plus("2"),
                     stringResource(resource = MR.strings.settings_account_delete_alert_cancel_button2)
                 ),
                 AlertDialogButtonData(
@@ -117,11 +117,11 @@ sealed interface MainAlertDialog {
                     stringResource(resource = MR.strings.settings_account_delete_alert_confirm_button)
                 ),
                 AlertDialogButtonData(
-                    Buttons.buttonCancel,
+                    Buttons.buttonCancel.plus("3"),
                     stringResource(resource = MR.strings.settings_account_delete_alert_cancel_button3)
                 ),
                 AlertDialogButtonData(
-                    Buttons.buttonCancel,
+                    Buttons.buttonCancel.plus("4"),
                     stringResource(resource = MR.strings.settings_account_delete_alert_cancel_button4)
                 ),
             ).shuffled(),

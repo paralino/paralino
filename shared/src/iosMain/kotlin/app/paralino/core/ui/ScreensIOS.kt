@@ -10,6 +10,7 @@ import app.paralino.core.ui.theme.AppTheme
 object ScreensIOS {
     val login = LoginScreens
     val home = HomeScreens
+    val settings = SettingsScreens
 }
 
 @Composable

@@ -186,9 +186,8 @@ fun GroupInitScreenCore(
                         openPersonalCodes()
                     }
                 )
+                Spacer(modifier = Modifier.size(20.dp))
             }
-
-            Spacer(modifier = Modifier.size(20.dp))
 
             if (state.personalCode != null) {
                 SettingsSectionHeader(
@@ -218,7 +217,7 @@ fun GroupInitScreenCore(
                 }
             )
 
-            Spacer(modifier = Modifier.size(40.dp))
+            Spacer(modifier = Modifier.size(80.dp))
         }
     }
 }

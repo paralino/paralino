@@ -15,29 +15,43 @@ struct GroupInitScreen: View {
     @State var alertDialog: AlertDialogData? = nil
     @State var shareText: ShareText?
     
+    @State private var openSettings = false
+    @State private var openPersonalCodes = false
+    
     var body: some View {
-        ComposeRepresentable {
-            ScreensIOS.shared.home.GroupInitScreenVC(
-                vm: appState.vm,
-                onShowDialog: { dialog in
-                    alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
-                },
-                openSettings: {},
-                onCreateGroup: {},
-                openPersonalCodes: {},
-                onSharePersonalCode: { data in
-                    shareText = ShareText(text: data)
-                },
-                askNotificationPermission: {
-                    let center = UNUserNotificationCenter.current()
-                    center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-                        appDelegate.locationStatusProvider.hasNotificationPermission = granted
-                        appDelegate.locationStatusProvider.refreshLocationStatus()
-                    }
-                },
-                onClose: {}
-            )
-        }.mainAlert($alertDialog) { key in
+        ZStack {
+            NavigationLink(
+                destination: SettingsScreen(),
+                isActive: $openSettings
+            ) { EmptyView() }
+            NavigationLink(
+                destination: PersonalCodeScreen(),
+                isActive: $openPersonalCodes
+            ) { EmptyView() }
+            ComposeRepresentable {
+                ScreensIOS.shared.home.GroupInitScreenVC(
+                    vm: appState.vm,
+                    onShowDialog: { dialog in
+                        alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
+                    },
+                    openSettings: { openSettings = true },
+                    onCreateGroup: {},
+                    openPersonalCodes: { openPersonalCodes = true },
+                    onSharePersonalCode: { data in
+                        shareText = ShareText(text: data)
+                    },
+                    askNotificationPermission: {
+                        let center = UNUserNotificationCenter.current()
+                        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                            appDelegate.locationStatusProvider.hasNotificationPermission = granted
+                            appDelegate.locationStatusProvider.refreshLocationStatus()
+                        }
+                    },
+                    onClose: {}
+                )
+            }
+        }
+        .mainAlert($alertDialog) { key in
             if let dialogData = alertDialog?.coreDialog {
                 if dialogData is MainAlertDialogVerifyEmail {
                     if key == MainAlertDialogButtons.shared.buttonOk {
