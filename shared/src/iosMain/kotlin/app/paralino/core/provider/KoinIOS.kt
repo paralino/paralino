@@ -88,14 +88,14 @@ object KoinIOS {
         return module {
             factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
             factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
-            factory { SettingsViewModel(get(), get(), get()) }
+            factory { SettingsViewModel(get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
                 SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get()) }
-            factory { PersonalCodeViewModel(get()) }
+            factory { PersonalCodeViewModel(get(), get()) }
             factory { (groupId: String?, code: String?) ->
                 MemberInviteViewModel(
                     groupId = groupId,

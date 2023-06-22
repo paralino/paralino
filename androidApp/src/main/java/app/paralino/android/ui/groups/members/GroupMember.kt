@@ -37,6 +37,8 @@ import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberState
 import app.paralino.core.presentation.groups.GroupMemberStatus
 import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.utils.Emojis
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
@@ -126,7 +128,7 @@ val MemberAction.actionIcon: Painter
         MemberAction.DELETE_MEMBER -> AppIcons.PersonRemove
         MemberAction.DELETE_LOCATION -> AppIcons.Delete
         MemberAction.BLOCK_USER -> AppIcons.Block
-        MemberAction.UNBLOCK_USER -> AppIcons.LockOpen
+        MemberAction.UNBLOCK_USER -> CoreAppIcons.LockOpen.asPainterResource()
     }
 
 val MemberAction.actionText: Int

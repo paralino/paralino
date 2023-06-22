@@ -1,4 +1,4 @@
-package app.paralino.android.ui.rawdata
+package app.paralino.core.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,43 +14,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
-import app.paralino.core.ui.components.DefaultEmptyState
-import app.paralino.android.ui.shared.errorString
-import app.paralino.core.ui.theme.AppColors
-import app.paralino.android.ui.theme.AppIcons
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawDataScreenEvent
 import app.paralino.core.presentation.rawdata.RawDataScreenState
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.errorString
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.androidx.compose.getViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
-fun RawDataScreen(
-    appState: MainAppState,
-    type: RawPresentationDataType,
-    vm: RawDataPresentationViewModel = getViewModel { parametersOf(type) }
+fun RawDataScreenCore(
+    appState: CoreUiState,
+    vm: RawDataPresentationViewModel,
+    onNavigateBack: () -> Unit
 ) {
 
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
 
-    val context = LocalContext.current
-    LaunchedEffect(key1 = context) {
+    LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is RawDataScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString(context))
+                    appState.showSnackbar(event.error.errorString())
                 }
+
                 null -> {
                     /* do nothing */
                 }
@@ -65,9 +61,9 @@ fun RawDataScreen(
                 elevation = 1.dp,
                 title = { Text(text = state.data?.title ?: "---") },
                 navigationIcon = {
-                    IconButton(onClick = { appState.navController.popBackStack() }) {
+                    IconButton(onClick = { onNavigateBack() }) {
                         Icon(
-                            painter = AppIcons.Close,
+                            painter = CoreAppIcons.Close.asPainterResource(),
                             contentDescription = null
                         )
                     }
@@ -87,9 +83,11 @@ fun RawDataScreen(
                     CircularProgressIndicator()
                 }
             }
+
             is Payload.Error -> {
-                DefaultEmptyState(content = "", icon = AppIcons.Warning)
+                DefaultEmptyState(content = "", icon = CoreAppIcons.Warning.asPainterResource())
             }
+
             is Payload.Success -> {
                 RawDataScreen(
                     state = finalState.data
@@ -112,7 +110,7 @@ fun RawDataScreen(
     ) {
 
         Text(
-            text = stringResource(id = R.string.raw_data_screen_info),
+            text = stringResource(MR.strings.raw_data_screen_info),
             style = MaterialTheme.typography.caption,
             modifier = Modifier
                 .fillMaxWidth()
@@ -121,8 +119,8 @@ fun RawDataScreen(
 
         RawDataChip(
             modifier = Modifier.padding(bottom = 8.dp),
-            icon = AppIcons.Lock,
-            text = stringResource(R.string.raw_data_section_encrypted)
+            icon = CoreAppIcons.Lock.asPainterResource(),
+            text = stringResource(MR.strings.raw_data_section_encrypted)
         )
         Text(
             text = state.rawContent,
@@ -137,8 +135,8 @@ fun RawDataScreen(
 
         RawDataChip(
             modifier = Modifier.padding(bottom = 8.dp),
-            icon = AppIcons.LockOpen,
-            text = stringResource(R.string.raw_data_section_decrypted)
+            icon = CoreAppIcons.LockOpen.asPainterResource(),
+            text = stringResource(MR.strings.raw_data_section_decrypted)
         )
         Text(
             text = state.decryptedContent,

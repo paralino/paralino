@@ -1,68 +1,86 @@
-package app.paralino.android.ui.settings.emailchange
+package app.paralino.core.ui.settings.profile
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.AppIcons
-import app.paralino.core.presentation.settings.emailchange.ChangeEmailScreenEvent
-import app.paralino.core.presentation.settings.emailchange.ChangeEmailScreenState
-import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
+import app.paralino.core.MR
+import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenEvent
+import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenState
+import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
+import app.paralino.core.provider.localizedString
+import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.androidx.compose.getViewModel
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun ChangeEmailScreen(
-    appState: MainAppState,
-    vm: ChangeEmailViewModel = getViewModel(),
+fun ConvertAccountScreenCore(
+    appState: CoreUiState,
+    vm: ConvertAccountViewModel,
+    onNavigateBack: () -> Unit
 ) {
 
-    val uiState by vm.uiState.collectAsState(initial = ChangeEmailScreenState(currentEmail = ""))
+    val uiState by vm.uiState.collectAsState(initial = ConvertAccountScreenState())
     val focusManager = LocalFocusManager.current
 
-    val context = LocalContext.current
-    LaunchedEffect(key1 = context) {
+    LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is ChangeEmailScreenEvent.Error -> {
-                    appState.showSnackbar(event.exception.errorString(context))
+                is ConvertAccountScreenEvent.Error -> {
+                    appState.showSnackbar(event.exception.errorString())
                 }
-                is ChangeEmailScreenEvent.EmailError -> {
-                    appState.showSnackbar(context.getString(R.string.form_invalid_email_conflict_description))
+
+                is ConvertAccountScreenEvent.EmailError -> {
+                    appState.showSnackbar(MR.strings.form_invalid_email_conflict_description.localizedString())
                 }
-                is ChangeEmailScreenEvent.CredentialsError -> {
-                    appState.showSnackbar(context.getString(R.string.form_invalid_credentials_description))
+
+                is ConvertAccountScreenEvent.CredentialsError -> {
+                    appState.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                 }
-                is ChangeEmailScreenEvent.ValidationError -> {
+
+                is ConvertAccountScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
                         validation = event.validationResult.type
                     )
                     appState.showSnackbar(errorText)
                 }
-                ChangeEmailScreenEvent.EmailChanged -> {
-                    appState.navController.popBackStack()
+
+                ConvertAccountScreenEvent.AccountUpdated -> {
+                    onNavigateBack()
                 }
+
                 null -> {
                     /* do nothing */
                 }
@@ -75,11 +93,11 @@ fun ChangeEmailScreen(
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 1.dp,
-                title = { Text(text = stringResource(id = R.string.settings_account_edit_email)) },
+                title = { Text(text = stringResource(MR.strings.settings_account_guest_convert)) },
                 navigationIcon = {
-                    IconButton(onClick = { appState.navController.popBackStack() }) {
+                    IconButton(onClick = { onNavigateBack() }) {
                         Icon(
-                            painter = AppIcons.Close,
+                            painter = CoreAppIcons.Close.asPainterResource(),
                             contentDescription = null
                         )
                     }
@@ -96,10 +114,18 @@ fun ChangeEmailScreen(
                 ) {
                     focusManager.clearFocus()
                 }
+                .padding(it)
                 .padding(20.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center
         ) {
+
+            Spacer(modifier = Modifier.size(30.dp))
+
+            Text(
+                text = stringResource(MR.strings.settings_account_edit_guest_account_info),
+                style = MaterialTheme.typography.h6
+            )
 
             Spacer(modifier = Modifier.size(30.dp))
 
@@ -111,7 +137,7 @@ fun ChangeEmailScreen(
 
                 MainInputField(
                     text = uiState.email,
-                    hint = stringResource(id = R.string.settings_account_edit_email_placeholder_email),
+                    hint = stringResource(MR.strings.login_placeholder_email),
                     hasError = uiState.hasEmailError,
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next,
@@ -122,10 +148,21 @@ fun ChangeEmailScreen(
 
                 PasswordInputField(
                     password = uiState.password,
-                    hint = stringResource(id = R.string.settings_account_edit_email_placeholder_password),
+                    hint = stringResource(MR.strings.login_placeholder_password),
                     hasError = uiState.hasPasswordError,
+                    imeAction = ImeAction.Next,
                     focusManager = focusManager,
                     onInputChange = { vm.onPasswordChange(it) }
+                )
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                PasswordInputField(
+                    password = uiState.passwordConfirm,
+                    hint = stringResource(MR.strings.login_placeholder_password_confirm),
+                    hasError = uiState.hasPasswordConfirmError,
+                    focusManager = focusManager,
+                    onInputChange = { vm.onConfirmPasswordChange(it) }
                 )
 
                 Spacer(modifier = Modifier.size(80.dp))
@@ -141,16 +178,12 @@ fun ChangeEmailScreen(
                         vm.proceed()
                     }
                 ) {
-                    Text(text = stringResource(id = R.string.settings_account_edit_email_button))
+                    Text(text = stringResource(MR.strings.settings_account_edit_guest_account_button))
                 }
 
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
         }
     }
-
-
 }
-

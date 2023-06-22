@@ -1,8 +1,7 @@
 package app.paralino.android.ui.theme
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.FormatListBulleted
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -14,22 +13,12 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 
 object AppIcons {
     val NotListedLocation @Composable get() = R.drawable.ic_not_listed_location.asPainterResource()
-    val LibraryBooks @Composable get() = R.drawable.ic_library_books.asPainterResource()
-    val PrivacyTip @Composable get() = R.drawable.ic_privacy_tip.asPainterResource()
-    val Code @Composable get() = R.drawable.ic_code.asPainterResource()
-    val AccountCircle @Composable get() = R.drawable.ic_account_circle.asPainterResource()
-    val DeleteForever @Composable get() = R.drawable.ic_delete_forever.asPainterResource()
-    val Password @Composable get() = R.drawable.ic_password.asPainterResource()
-    val HowToReg @Composable get() = R.drawable.ic_how_to_reg.asPainterResource()
-    val Lock @Composable get() = R.drawable.ic_lock.asPainterResource()
-    val LockOpen @Composable get() = R.drawable.ic_lock_open.asPainterResource()
     val NotificationsOff @Composable get() = R.drawable.ic_notifications_off.asPainterResource()
     val Home @Composable get() = R.drawable.ic_home.asPainterResource()
     val Adjust @Composable get() = R.drawable.ic_adjust.asPainterResource()
     val CenterFocusStrong @Composable get() = R.drawable.ic_center_focus_strong.asPainterResource()
     val Groups @Composable get() = R.drawable.ic_groups.asPainterResource()
     val Logout @Composable get() = CoreAppIcons.Logout.asPainterResource()
-    val Share @Composable get() = CoreAppIcons.Share.asPainterResource()
     val Warning @Composable get() = CoreAppIcons.Warning.asPainterResource()
     val Group @Composable get() = CoreAppIcons.Group.asPainterResource()
     val BatteryFull @Composable get() = R.drawable.ic_battery_full.asPainterResource()
@@ -49,18 +38,14 @@ object AppIcons {
     val ShareLocation @Composable get() = R.drawable.ic_share_location.asPainterResource()
     val StopCircle @Composable get() = R.drawable.ic_stop_circle.asPainterResource()
     val MoreVert @Composable get() = R.drawable.ic_more_vert.asPainterResource()
-    val Edit @Composable get() = R.drawable.ic_edit.asPainterResource()
+    val Edit @Composable get() = CoreAppIcons.Edit.asPainterResource()
     val PersonAdd @Composable get() = R.drawable.ic_person_add.asPainterResource()
-    val Security @Composable get() = R.drawable.ic_security.asPainterResource()
+    val Security @Composable get() = CoreAppIcons.Security.asPainterResource()
     val Save @Composable get() = CoreAppIcons.Save.asPainterResource()
     val Close @Composable get() = CoreAppIcons.Close.asPainterResource()
 
-    val Email @Composable get() = CoreAppIcons.Email.asPainterResource()
-    val NotificationsActive @Composable get() = CoreAppIcons.NotificationsActive.asPainterResource()
     val Add @Composable get() = CoreAppIcons.Add.asPainterResource()
-    val AddLink @Composable get() = R.drawable.ic_add_link.asPainterResource()
-    val Key @Composable get() = CoreAppIcons.Key.asPainterResource()
-    val Block @Composable get() = R.drawable.ic_block.asPainterResource()
+    val Block @Composable get() = CoreAppIcons.Block.asPainterResource()
     val List @Composable get() = Icons.Rounded.FormatListBulleted
 
     @Composable

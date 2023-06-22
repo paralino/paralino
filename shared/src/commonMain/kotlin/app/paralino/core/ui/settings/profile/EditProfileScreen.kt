@@ -75,7 +75,7 @@ fun EditProfileScreen(
                 elevation = 1.dp,
                 title = { Text(text = stringResource(MR.strings.settings_account_edit_profile)) },
                 navigationIcon = {
-                    IconButton(onClick = { onExit }) {
+                    IconButton(onClick = onExit) {
                         Icon(
                             painter = CoreAppIcons.Close.asPainterResource(),
                             contentDescription = null

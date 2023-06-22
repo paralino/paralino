@@ -1,20 +1,31 @@
 package app.paralino.core.presentation.settings
 
 import app.paralino.core.domain.user.LogoutUseCase
-import app.paralino.core.models.*
+import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.Payload
+import app.paralino.core.models.Resource
+import app.paralino.core.models.exception
+import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository,
     private val backendConfig: BackendConfig,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(Payload.Loading)
@@ -45,7 +56,8 @@ class SettingsViewModel(
                                         ),
                                         canUseEmail = backendConfig.canUseEmail,
                                         logoutState = null,
-                                        deleteAccountState = null
+                                        deleteAccountState = null,
+                                        versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})"
                                     )
                                 )
                             } else {
@@ -97,5 +109,8 @@ class SettingsViewModel(
             .launchIn(coroutineScope)
     }
 
+    fun copyToClipboard(data: String) {
+        deviceApiProvider.copyToClipboard(data)
+    }
 
 }

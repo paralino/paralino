@@ -114,14 +114,14 @@ object KoinSetup {
 
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
-        viewModel { SettingsViewModel(get(), get(), get()) }
+        viewModel { SettingsViewModel(get(), get(), get(), get()) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
         viewModel { (args: String?) ->
             SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get()) }
-        viewModel { PersonalCodeViewModel(get()) }
+        viewModel { PersonalCodeViewModel(get(), get()) }
         viewModel { (groupId: String?, code: String?) ->
             MemberInviteViewModel(
                 groupId = groupId,

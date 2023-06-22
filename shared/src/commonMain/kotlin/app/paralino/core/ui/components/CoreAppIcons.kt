@@ -35,6 +35,19 @@ object CoreAppIcons {
     val Share get() = "drawable/ic_share.xml"
     val AutoFixHigh get() = "drawable/ic_auto_fix_high.xml"
     val Logout get() = "drawable/ic_logout.xml"
+    val PrivacyTip get() = "drawable/ic_privacy_tip.xml"
+    val Code get() = "drawable/ic_code.xml"
+    val AccountCircle get() = "drawable/ic_account_circle.xml"
+    val DeleteForever get() = "drawable/ic_delete_forever.xml"
+    val Password get() = "drawable/ic_password.xml"
+    val LibraryBooks = "drawable/ic_library_books.xml"
+    val HowToReg get() = "drawable/ic_how_to_reg.xml"
+    val Edit get() = "drawable/ic_edit.xml"
+    val Security get() = "drawable/ic_security.xml"
+    val AddLink get() = "drawable/ic_add_link.xml"
+    val Block get() = "drawable/ic_block.xml"
+    val Lock get() = "drawable/ic_lock.xml"
+    val LockOpen get() = "drawable/ic_lock_open.xml"
 
     @Composable
     fun String.asPainterResource(): Painter {

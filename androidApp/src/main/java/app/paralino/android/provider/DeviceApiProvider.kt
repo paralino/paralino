@@ -41,6 +41,9 @@ class DeviceApiProvider constructor(
     override val appVersionCode: Long
         get() = BuildConfig.VERSION_CODE.toLong()
 
+    override val appVersion: String
+        get() = BuildConfig.VERSION_NAME
+
     override val defaultDeviceName: String
         get() = Build.MANUFACTURER
 

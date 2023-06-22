@@ -5,6 +5,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.mapToPayload
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.*
 
 class PersonalCodeViewModel(
     private val repo: PersonalCodesRepository,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PersonalCodeScreenState>>(Payload.Loading)
@@ -119,6 +121,10 @@ class PersonalCodeViewModel(
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    fun copyToClipboard(data: String) {
+        deviceApiProvider.copyToClipboard(data)
     }
 
 }
