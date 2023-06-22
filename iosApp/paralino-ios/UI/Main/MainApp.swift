@@ -17,7 +17,7 @@ struct MainApp: App {
     
     var body: some Scene {
         WindowGroup {
-            NavigationView {
+            ZStack {
                 switch appState.uiState {
                 case .notInitialized: VStack {
                     ProgressView()
@@ -49,7 +49,9 @@ struct AppReadyScreen: View {
         } else if userState is AppAccountState.NO_PROFILE {
             ProfileSetupScreen()
         } else if userState is AppAccountState.NO_USER {
-            WelcomeScreen()
+            NavigationView {
+                WelcomeScreen()
+            }
         } else if userState is AppAccountState.NO_USER_DATA || userState is AppAccountState.DATA_REFRESH {
             VStack {
                 ProgressView()
