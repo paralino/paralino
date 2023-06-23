@@ -59,7 +59,7 @@ object KoinIOS {
         userApi: (IRemoteModule, BackendConfig) -> IUserApiIOS,
         functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApi,
         realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
-        cryptoServiceProvider: ICryptoServiceProvider
+        cryptoServiceProvider: ICryptoServiceProviderIOS
     ): List<Module> {
         return listOf(
             module {
@@ -78,7 +78,7 @@ object KoinIOS {
                 single { RealtimeApiWrapperIOS(realtimeApi(get(), get())) } bind IRealtimeApi::class
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
-                single { cryptoServiceProvider }
+                single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
             },
             createViewModelModule()
         )

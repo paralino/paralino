@@ -52,9 +52,20 @@ class UserMapperCore(
     suspend fun remote2Core(model: UserMeDataRaw): UserMeData {
         val userKey = userKeyRepo.personalKey()
         return UserMeData(
-            userImage = model.userImage?.let { cryptoCore.decryptDataWithKey(it, userKey) }
-                ?.asImageModel(),
-            userName = model.userName?.let { cryptoCore.decryptDataWithKey(it, userKey) } ?: "",
+            userImage = model.userImage?.let {
+                try {
+                    cryptoCore.decryptDataWithKey(it, userKey)
+                } catch (e: Exception) {
+                    null
+                }
+            }?.asImageModel(),
+            userName = model.userName?.let {
+                try {
+                    cryptoCore.decryptDataWithKey(it, userKey)
+                } catch (e: Exception) {
+                    ""
+                }
+            } ?: "",
         )
     }
 

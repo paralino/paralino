@@ -6,10 +6,10 @@ interface ICryptoServiceProvider: ICryptoHashProvider {
     fun createNewSignatureKeyPair(): KeyPair
 
     fun encryptDataWithSymmetricKey(data: String, key: String): String
-    fun decryptDataWithSymmetricKey(data: String, key: String): String
+    suspend fun decryptDataWithSymmetricKey(data: String, key: String): String
 
     fun encryptDataWithPassword(data: String, password: String, context: String): String
-    fun decryptDataWithPassword(data: String, password: String, context: String): String
+    suspend fun decryptDataWithPassword(data: String, password: String, context: String): String
 
     fun encryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String
     fun decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String
