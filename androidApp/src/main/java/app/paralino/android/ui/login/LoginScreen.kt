@@ -24,7 +24,6 @@ fun LoginScreen(
 
     LoginScreenCore(
         coreUiState = appState,
-        startScreenUiType = startScreenUiType,
         vm = vm,
         onShowDialog = {
             showDialog = it

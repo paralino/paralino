@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 fun EditProfileScreen(
     appState: CoreUiState,
     vm: EditProfileViewModel,
-    onBottomSheetAction: suspend (BottomSheetsScreen) -> Any,
+    onBottomSheetAction: (BottomSheetsScreen) -> Unit,
     onExit: () -> Unit
 ) {
 
@@ -88,10 +88,7 @@ fun EditProfileScreen(
         EditProfileScreen(
             state = uiState,
             onImageClick = {
-                appState.uiScope.launch {
-                    onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.userEmojis))
-                        .safeCast<ImageModel>()?.let { vm.onImageChange(it) }
-                }
+                onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.userEmojis))
             },
             onNameChange = { vm.onNameChange(it) },
             onCreateGroupClick = { vm.proceed() }

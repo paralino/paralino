@@ -10,18 +10,14 @@ import shared
 
 struct LoginScreen: View {
     
-    let loginType: LoginScreenUiType
-    
     @State var alertDialog: AlertDialogData? = nil
-    @StateObject var appState = ViewModelFactoryIOS(
-        vm: KoinIOS.ViewModels.shared.loginVM(screenUiType: LoginScreenUiType.signup)
-    )
+    @StateObject var appState: ViewModelFactoryIOS<LoginViewModel>
     
     var body: some View {
-            VStack {
+            ZStack {
+                Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
                 ComposeRepresentable {
                     ScreensIOS.shared.login.LoginScreenVC(
-                        startScreenUiType: loginType,
                         vm: appState.vm,
                         onShowDialog: { dialog in
                             alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
@@ -29,8 +25,8 @@ struct LoginScreen: View {
                         onExit: { }
                     )
                 }
-                .ignoresSafeArea(.all, edges: .vertical)
-                .navigationBarBackButtonHidden(true)
+                .ignoresSafeArea(.all, edges: .bottom)
+//                .navigationBarBackButtonHidden(true)
             }
             .mainAlert($alertDialog) { key in
                 if let dialogData = alertDialog?.coreDialog {
@@ -54,7 +50,10 @@ struct LoginScreen: View {
 }
 
 struct LoginScreen_Previews: PreviewProvider {
+    @StateObject static var loginAppState = ViewModelFactoryIOS(
+        vm: KoinIOS.ViewModels.shared.loginVM(screenUiType: LoginScreenUiType.signup)
+    )
     static var previews: some View {
-        LoginScreen(loginType: LoginScreenUiType.signup)
+        LoginScreen(appState: loginAppState)
     }
 }

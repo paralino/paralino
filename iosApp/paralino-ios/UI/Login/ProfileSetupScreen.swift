@@ -20,14 +20,17 @@ struct ProfileSetupScreen: View {
     @State private var selectedIconIndex: Int?
     
     var body: some View {
-        ComposeRepresentable {
-            ScreensIOS.shared.login.CompleteProfileVC(
-                vm: appState.vm
-            ) { screen in
-                bottomSheet = screen
+        ZStack {
+            Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
+            ComposeRepresentable {
+                ScreensIOS.shared.login.CompleteProfileVC(
+                    vm: appState.vm
+                ) { screen in
+                    bottomSheet = screen
+                }
             }
         }
-        .ignoresSafeArea(.all, edges: .vertical)
+        .ignoresSafeArea(.all, edges: .bottom)
         .sheet(isPresented: isShowingSheet) {
             VStack {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8, alignment: .center), count: 6), spacing: 8) {

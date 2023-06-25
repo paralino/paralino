@@ -20,7 +20,7 @@ class LoginViewModel constructor(
     private val createAccountUseCase: CreateAccountUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val backendConfig: BackendConfig,
-    startScreenUiType: LoginScreenUiType,
+    val startScreenUiType: LoginScreenUiType,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(

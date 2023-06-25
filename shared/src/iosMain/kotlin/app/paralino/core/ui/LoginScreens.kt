@@ -29,7 +29,6 @@ object LoginScreens {
     }
 
     fun LoginScreenVC(
-        startScreenUiType: LoginScreenUiType,
         vm: LoginViewModel,
         onShowDialog: (MainAlertDialog?) -> Unit,
         onExit: () -> Unit
@@ -37,7 +36,6 @@ object LoginScreens {
         RootScreenIOS {
             LoginScreenCore(
                 coreUiState = it,
-                startScreenUiType = startScreenUiType,
                 vm = vm,
                 onShowDialog = onShowDialog,
                 onExit = onExit

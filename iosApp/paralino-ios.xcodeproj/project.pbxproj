@@ -50,6 +50,13 @@
 		25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6B29CCE77200646364 /* Assets.xcassets */; };
 		25C03A6F29CCE77200646364 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6E29CCE77200646364 /* Preview Assets.xcassets */; };
 		25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D8A43429CE24A00023A0E5 /* AppDelegate.swift */; };
+		25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */; };
+		25FC5CA82A45811C0006E796 /* ChangeEmailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA72A45811C0006E796 /* ChangeEmailScreen.swift */; };
+		25FC5CAA2A458D970006E796 /* NavigationGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA92A458D970006E796 /* NavigationGraph.swift */; };
+		25FC5CAC2A45F8CC0006E796 /* ConvertAccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CAB2A45F8CC0006E796 /* ConvertAccountScreen.swift */; };
+		25FC5CAE2A45FB320006E796 /* BlockListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CAD2A45FB320006E796 /* BlockListScreen.swift */; };
+		25FC5CB02A460A510006E796 /* RawDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CAF2A460A510006E796 /* RawDataScreen.swift */; };
+		25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */; };
 		EF215CBE51401502319554BE /* Pods_paralino_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3F5FE574DDD4D5753A70313 /* Pods_paralino_ios.framework */; };
 /* End PBXBuildFile section */
 
@@ -97,6 +104,13 @@
 		25C03A6E29CCE77200646364 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		25D8A43429CE24A00023A0E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		25E044592A33590B001E1B05 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordScreen.swift; sourceTree = "<group>"; };
+		25FC5CA72A45811C0006E796 /* ChangeEmailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmailScreen.swift; sourceTree = "<group>"; };
+		25FC5CA92A458D970006E796 /* NavigationGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGraph.swift; sourceTree = "<group>"; };
+		25FC5CAB2A45F8CC0006E796 /* ConvertAccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertAccountScreen.swift; sourceTree = "<group>"; };
+		25FC5CAD2A45FB320006E796 /* BlockListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListScreen.swift; sourceTree = "<group>"; };
+		25FC5CAF2A460A510006E796 /* RawDataScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataScreen.swift; sourceTree = "<group>"; };
+		25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileScreen.swift; sourceTree = "<group>"; };
 		37605D00BE01FCF253A6EEF8 /* Pods-paralino-ios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-paralino-ios.debug.xcconfig"; path = "Target Support Files/Pods-paralino-ios/Pods-paralino-ios.debug.xcconfig"; sourceTree = "<group>"; };
 		B3F5FE574DDD4D5753A70313 /* Pods_paralino_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_paralino_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -226,6 +240,7 @@
 				25C03A6729CCE77100646364 /* MainApp.swift */,
 				256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */,
 				259AEF982A3C68580083FF4B /* ComposeRepresentable.swift */,
+				25FC5CA92A458D970006E796 /* NavigationGraph.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -256,6 +271,12 @@
 				25B2DB422A44D7F60007E89D /* SettingsScreen.swift */,
 				25B2DB442A44D89B0007E89D /* AccountScreen.swift */,
 				25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */,
+				25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */,
+				25FC5CA72A45811C0006E796 /* ChangeEmailScreen.swift */,
+				25FC5CAB2A45F8CC0006E796 /* ConvertAccountScreen.swift */,
+				25FC5CAD2A45FB320006E796 /* BlockListScreen.swift */,
+				25FC5CAF2A460A510006E796 /* RawDataScreen.swift */,
+				25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -474,6 +495,7 @@
 			files = (
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
 				259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */,
+				25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */,
 				259AEFA02A3E0D0A0083FF4B /* RecoverKeysScreen.swift in Sources */,
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
@@ -482,11 +504,16 @@
 				259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */,
 				252E361529CF60BA008FC635 /* Logr.swift in Sources */,
 				25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */,
+				25FC5CAE2A45FB320006E796 /* BlockListScreen.swift in Sources */,
+				25FC5CAC2A45F8CC0006E796 /* ConvertAccountScreen.swift in Sources */,
 				25C03A6829CCE77100646364 /* MainApp.swift in Sources */,
 				259AEF9C2A3DB1C70083FF4B /* MapRootScreen.swift in Sources */,
 				259AEFA62A3E2EF30083FF4B /* MapHomeScreen.swift in Sources */,
 				252EA00B29DD99F900338956 /* PushSetupProvider.swift in Sources */,
 				254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */,
+				25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */,
+				25FC5CA82A45811C0006E796 /* ChangeEmailScreen.swift in Sources */,
+				25FC5CAA2A458D970006E796 /* NavigationGraph.swift in Sources */,
 				259AEFA22A3E0F860083FF4B /* ResetPasswordScreen.swift in Sources */,
 				254B6F2C29EC7F6A008B1458 /* LoginScreen.swift in Sources */,
 				252EA00729DD89C800338956 /* KoinSetup.swift in Sources */,
@@ -507,6 +534,7 @@
 				252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */,
 				259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */,
 				252EA01929DDEFC400338956 /* FunctionsApi.swift in Sources */,
+				25FC5CB02A460A510006E796 /* RawDataScreen.swift in Sources */,
 				252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

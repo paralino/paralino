@@ -80,12 +80,11 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun LoginScreenCore(
     coreUiState: CoreUiState = rememberCoreUiState(),
-    startScreenUiType: LoginScreenUiType,
     vm: LoginViewModel,
     onShowDialog: (MainAlertDialog?) -> Unit,
     onExit: () -> Unit
 ) {
-    val uiState by vm.uiState.collectAsState(initial = LoginScreenState(uiType = startScreenUiType))
+    val uiState by vm.uiState.collectAsState(initial = LoginScreenState(uiType = vm.startScreenUiType))
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = Unit) {
@@ -148,12 +147,13 @@ fun LoginScreenCore(
             ) {
                 focusManager.clearFocus()
             }
-            .padding(20.dp)
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 20.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center
     ) {
 
-        Spacer(modifier = Modifier.size(10.dp))
+        Spacer(modifier = Modifier.weight(0.2f))
 
         Image(
             painter = painterResource(res = "drawable/ic_launcher_foreground.xml"),

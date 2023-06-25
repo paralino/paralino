@@ -9,32 +9,38 @@ import SwiftUI
 import shared
 
 struct AccountScreen: View {
+    
+    @Binding var path: [NavigationGraph]
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.settingsVM)
     @State var alertDialog: AlertDialogData? = nil
     
     var body: some View {
-        ComposeRepresentable {
-            ScreensIOS.shared.settings.AccountScreenVC(
-                vm: appState.vm,
-                onShowDialog: { dialog in
-                    alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
-                },
-                openProfileRawScreen: {
-                    
-                },
-                openConvertAccount: {
-                    
-                },
-                openEditProfile: {
-                    
-                },
-                openChangeEmail: {
-                    
-                },
-                openChangePassword: {
-                    
-                }
-            )
+        ZStack {
+            Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
+            ComposeRepresentable {
+                ScreensIOS.shared.settings.AccountScreenVC(
+                    vm: appState.vm,
+                    onShowDialog: { dialog in
+                        alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
+                    },
+                    openProfileRawScreen: {
+                        path.append(.settings(.rawData(type: .UserPresentation())))
+                    },
+                    openConvertAccount: {
+                        path.append(.settings(.convertAccount))
+                    },
+                    openEditProfile: {
+                        path.append(.settings(.editProfile))
+                    },
+                    openChangeEmail: {
+                        path.append(.settings(.changeEmail))
+                    },
+                    openChangePassword: {
+                        path.append(.settings(.changePassword))
+                    }
+                )
+            }
+            .ignoresSafeArea(.all, edges: .bottom)
         }
         .mainAlert($alertDialog) { key in
             if let dialogData = alertDialog?.coreDialog {
@@ -59,12 +65,12 @@ struct AccountScreen: View {
                 }
             }
         }
-        .ignoresSafeArea(.all, edges: .bottom)
     }
 }
 
 struct AccountScreen_Previews: PreviewProvider {
+    @State static var path: [NavigationGraph] = [.settings(.account)]
     static var previews: some View {
-        AccountScreen()
+        AccountScreen(path: $path)
     }
 }

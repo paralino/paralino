@@ -87,7 +87,7 @@ object SettingsScreens {
 
     fun EditProfileScreenVC(
         vm: EditProfileViewModel,
-        onBottomSheetAction: suspend (BottomSheetsScreen) -> Any,
+        onBottomSheetAction: (BottomSheetsScreen) -> Unit,
         onExit: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -102,7 +102,7 @@ object SettingsScreens {
 
     fun BlocklistScreenVC(
         vm: BlocklistVideModel,
-        onShowDialog: (MainAlertDialog) -> Unit,
+        onShowDialog: (MainAlertDialog?) -> Unit,
         onNavigateBack: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {

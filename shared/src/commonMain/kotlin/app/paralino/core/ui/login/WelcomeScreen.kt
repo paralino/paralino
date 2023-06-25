@@ -113,7 +113,7 @@ fun WelcomeScreen(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-                    onClick = onLoginClick
+                    onClick = onStartClick
                 ) {
                     Icon(
                         org.jetbrains.compose.resources.painterResource("drawable/ic_login.xml"),
@@ -132,7 +132,7 @@ fun WelcomeScreen(
                             .align(Alignment.CenterHorizontally)
                             .clip(RoundedCornerShape(8.dp))
                             .clickable {
-                                onStartClick()
+                                onLoginClick()
                             }
                             .padding(horizontal = 12.dp, vertical = 8.dp),
                     )

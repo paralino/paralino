@@ -9,21 +9,15 @@ import SwiftUI
 import shared
 
 struct SettingsScreen: View {
+    
+    @Binding var path: [NavigationGraph]
+    
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.settingsVM)
     @State var shareText: ShareText?
-    @State private var openAccount = false
-    @State private var openPersonalCodes = false
     
     var body: some View {
         ZStack {
-            NavigationLink(
-                destination: AccountScreen(),
-                isActive: $openAccount
-            ) { EmptyView() }
-            NavigationLink(
-                destination: PersonalCodeScreen(),
-                isActive: $openPersonalCodes
-            ) { EmptyView() }
+            Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
                 ScreensIOS.shared.settings.SettingsScreenVC(
                     vm: appState.vm,
@@ -31,32 +25,33 @@ struct SettingsScreen: View {
                         shareText = ShareText(text: data)
                     },
                     openConvertAccount: {
-                        
+                        path.append(.settings(.convertAccount))
                     },
                     openProfileDetails: {
-                        openAccount = true
+                        path.append(.settings(.account))
                     },
                     openPersonalCodes: {
-                        openPersonalCodes = true
+                        path.append(.settings(.personalCodes))
                     },
                     openBlockList: {
-                        
+                        path.append(.settings(.blocklist))
                     },
                     openLicences: {
                         
                     }
                 )
             }
+            .ignoresSafeArea(.all, edges: .bottom)
         }
         .sheet(item: $shareText) { shareText in
             ActivityView(text: shareText.text)
         }
-        .ignoresSafeArea(.all, edges: .bottom)
     }
 }
 
 struct SettingsScreen_Previews: PreviewProvider {
+    @State static var path: [NavigationGraph] = [.settings(.settings)]
     static var previews: some View {
-        SettingsScreen()
+        SettingsScreen(path: $path)
     }
 }

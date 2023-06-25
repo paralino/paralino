@@ -140,7 +140,7 @@ object KoinIOS {
         val convertAccountVM get() = get<ConvertAccountViewModel>()
         val personalCodeVM get() = get<PersonalCodeViewModel>()
         val blocklistVM get() = get<BlocklistVideModel>()
-        fun rawDataVM(type: RawPresentationDataType) = get<BlocklistVideModel> { parametersOf(type) }
+        fun rawDataVM(type: RawPresentationDataType) = get<RawDataPresentationViewModel> { parametersOf(type) }
     }
 
 }

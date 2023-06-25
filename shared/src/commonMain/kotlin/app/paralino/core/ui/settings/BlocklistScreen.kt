@@ -49,7 +49,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun BlocklistScreenCore(
     appState: CoreUiState,
     vm: BlocklistVideModel,
-    onShowDialog: (MainAlertDialog) -> Unit,
+    onShowDialog: (MainAlertDialog?) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
 

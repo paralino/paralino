@@ -16,6 +16,7 @@ struct PersonalCodeScreen: View {
     
     var body: some View {
         ZStack {
+            Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
                 ScreensIOS.shared.settings.PersonalCodeScreenVC(
                     vm: appState.vm,
@@ -28,6 +29,7 @@ struct PersonalCodeScreen: View {
                     onNavigateBack: {}
                 )
             }
+            .ignoresSafeArea(.all, edges: .bottom)
         }
         .mainAlert($alertDialog) { key in
             if let dialogData = alertDialog?.coreDialog {
@@ -41,7 +43,6 @@ struct PersonalCodeScreen: View {
         .sheet(item: $shareText) { shareText in
             ActivityView(text: shareText.text)
         }
-        .ignoresSafeArea(.all, edges: .bottom)
     }
 }
 

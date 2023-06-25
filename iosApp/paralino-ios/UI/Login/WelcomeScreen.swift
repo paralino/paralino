@@ -11,28 +11,35 @@ import shared
 
 
 struct WelcomeScreen: View {
+    
+    @State private var path: [WelcomeGraph] = []
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.welcomeVM)
-    @State private var openSignup = false
-    @State private var openLogin = false
+    
     var body: some View {
-        ZStack {
-            NavigationLink(
-                destination: LoginScreen(loginType: LoginScreenUiType.signup),
-                isActive: $openSignup
-            ) { EmptyView() }
-            NavigationLink(
-                destination: LoginScreen(loginType: LoginScreenUiType.login),
-                isActive: $openLogin
-            ) { EmptyView() }
-            
+        NavigationStack(path: $path) {
             ComposeRepresentable {
                 ScreensIOS.shared.login.WelcomeScreenVC(
                     vm: appState.vm,
-                    onLoginClick: { openLogin = true },
-                    onStartClick: { openSignup = true }
+                    onLoginClick: { path.append(.login) },
+                    onStartClick: { path.append(.signup) }
                 )
             }
-            .ignoresSafeArea(.all, edges: .vertical) // Compose has own keyboard handler
+            .ignoresSafeArea(.all, edges: .vertical)
+            .navigationDestination(for: WelcomeGraph.self) { route in
+                switch route {
+                case .welcome: WelcomeScreen()
+                case .login:
+                    let loginAppState = ViewModelFactoryIOS(
+                        vm: KoinIOS.ViewModels.shared.loginVM(screenUiType: LoginScreenUiType.login)
+                    )
+                    LoginScreen(appState: loginAppState)
+                case .signup:
+                    let loginAppState = ViewModelFactoryIOS(
+                        vm: KoinIOS.ViewModels.shared.loginVM(screenUiType: LoginScreenUiType.signup)
+                    )
+                    LoginScreen(appState: loginAppState)
+                }
+            }
         }
     }
 }
