@@ -48,6 +48,16 @@ object CoreAppIcons {
     val Block get() = "drawable/ic_block.xml"
     val Lock get() = "drawable/ic_lock.xml"
     val LockOpen get() = "drawable/ic_lock_open.xml"
+    val BatteryFull get() = "drawable/ic_battery_full.xml"
+    val PhoneAndroid get() = "drawable/ic_phone_android.xml"
+    val ExpandMore get() = "drawable/ic_expand_more.xml"
+    val ExpandLess get() = "drawable/ic_expand_less.xml"
+    val Devices get() = "drawable/ic_devices.xml"
+    val PersonRemove get() = "drawable/ic_person_remove.xml"
+    val StackedLineChart get() = "drawable/ic_stacked_line_chart.xml"
+    val Timer get() = "drawable/ic_timer.xml"
+    val Speed get() = "drawable/ic_speed.xml"
+    val AccessTime get() = "drawable/ic_schedule.xml"
 
     @Composable
     fun String.asPainterResource(): Painter {

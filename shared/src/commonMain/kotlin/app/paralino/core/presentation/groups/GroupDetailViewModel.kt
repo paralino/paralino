@@ -11,6 +11,7 @@ import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
@@ -38,6 +39,7 @@ class GroupDetailViewModel(
     private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupPreRefreshUseCase,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
@@ -87,10 +89,12 @@ class GroupDetailViewModel(
                                 image = member.member.image,
                                 canEdit = canEdit,
                                 currentDevice = it.deviceId == config.deviceId,
-                                showSpeedAndElevation = false
+                                showSpeedAndElevation = false,
+                                formatter = valueFormatter
                             )
                         },
-                        allowShowingDevices = true
+                        allowShowingDevices = true,
+                        lastPing = valueFormatter.getLastPing(member)
                     )
                 }
 

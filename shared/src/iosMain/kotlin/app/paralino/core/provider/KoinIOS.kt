@@ -59,7 +59,8 @@ object KoinIOS {
         userApi: (IRemoteModule, BackendConfig) -> IUserApiIOS,
         functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApi,
         realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
-        cryptoServiceProvider: ICryptoServiceProviderIOS
+        cryptoServiceProvider: ICryptoServiceProviderIOS,
+        valueFormatter: IValueFormatter
     ): List<Module> {
         return listOf(
             module {
@@ -79,6 +80,7 @@ object KoinIOS {
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
                 single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
+                single { valueFormatter } bind IValueFormatter::class
             },
             createViewModelModule()
         )
@@ -87,7 +89,7 @@ object KoinIOS {
     private fun createViewModelModule(): Module {
         return module {
             factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
-            factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
+            factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config, get()) }
             factory { SettingsViewModel(get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
@@ -105,7 +107,7 @@ object KoinIOS {
                     groupMemberAdd = get()
                 )
             }
-            factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get()) }
+            factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { MainViewModel(get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }

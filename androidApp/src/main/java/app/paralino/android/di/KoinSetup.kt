@@ -11,10 +11,14 @@ import app.paralino.android.notification.PlaceNotificationHandler
 import app.paralino.android.provider.ConnectionStatusProvider
 import app.paralino.android.provider.DeviceApiProvider
 import app.paralino.android.provider.LocationStatusProvider
-import app.paralino.android.remote.appwrite.*
+import app.paralino.android.provider.ValueFormatter
+import app.paralino.android.remote.appwrite.AppWriteRemoteModule
+import app.paralino.android.remote.appwrite.DocumentsApi
+import app.paralino.android.remote.appwrite.FunctionsApi
+import app.paralino.android.remote.appwrite.RealtimeApi
+import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
-import app.paralino.core.CoreAppManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
@@ -50,6 +54,7 @@ import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IRealtimeApi
@@ -78,6 +83,7 @@ object KoinSetup {
         single<ILocationStatusProvider>(createdAtStart = true) { LocationStatusProvider(androidContext()) }
         single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get()) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
+        single<IValueFormatter> { ValueFormatter() }
 
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
         factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) } bind IPlaceNotificationsHandler::class
@@ -113,7 +119,7 @@ object KoinSetup {
         }
 
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
-        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config) }
+        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config, get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get()) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
@@ -131,7 +137,7 @@ object KoinSetup {
                 groupMemberAdd = get()
             )
         }
-        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }

@@ -25,7 +25,6 @@ import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.*
-import app.paralino.android.ui.groups.members.GroupMember
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
@@ -46,6 +45,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
@@ -706,7 +706,6 @@ fun GroupDetailSharingStatusElement(
                 )
                 Text(
                     text = DistanceFormatter.getDistanceSmall(
-                        LocalContext.current,
                         contract.approximateLocationInMeters!!.toFloat()
                     ).let { "($it)" },
                     style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)

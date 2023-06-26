@@ -16,6 +16,7 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.data.db.AppConfig
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -27,7 +28,8 @@ class MapHomeViewModel constructor(
     private val placesRepo: PlacesRepository,
     private val locationRefreshUseCase: LocationRefreshUseCase,
     private val userRepository: UserRepository,
-    private val config: AppConfig
+    private val config: AppConfig,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(MapHomeScreenState.Empty())
@@ -101,7 +103,8 @@ class MapHomeViewModel constructor(
                                             member = member.member,
                                             isCurrentUser = member.member.userId == config.userId
                                         ),
-                                        location = null
+                                        location = null,
+                                        lastPing = null
                                     )
                                 )
                             } else {
@@ -125,8 +128,10 @@ class MapHomeViewModel constructor(
                                             image = member.member.image,
                                             canEdit = false,
                                             currentDevice = location.deviceId == config.deviceId,
-                                            showSpeedAndElevation = true
-                                        )
+                                            showSpeedAndElevation = true,
+                                            formatter = valueFormatter
+                                        ),
+                                        lastPing = valueFormatter.getLastPing(location)
                                     )
                                 }
                             }
