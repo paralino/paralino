@@ -1,7 +1,6 @@
 package app.paralino.core.presentation.groups
 
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.utils.ConditionErrorType
 
 data class GroupDetailScreenState(
@@ -10,12 +9,19 @@ data class GroupDetailScreenState(
     val loadingAction: Boolean,
     val name: String,
     val image: ImageModel,
-    val sharingStatus: LocationSharingContract?,
+    val sharingStatus: LocationSharingState?,
     val members: List<GroupMemberItemState>,
     val memberLimit: Int,
     val errors: List<ConditionErrorType>
-) {
-}
+)
+
+data class LocationSharingState(
+    val endTime: String?,
+    val shareBattery: Boolean,
+    val shareSpeed: Boolean,
+    val shareElevation: Boolean,
+    val approximateLocation: String?
+)
 
 sealed class GroupDetailScreenEvent() {
     data class Error(val error: Throwable) : GroupDetailScreenEvent()

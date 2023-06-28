@@ -10,7 +10,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.android.ui.MainAppState
 import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.groups.GroupPickerAction
-import app.paralino.android.ui.groups.init.GroupInitScreen
+import app.paralino.android.ui.groups.GroupInitScreen
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.utils.extensions.safeCast
 import app.paralino.core.logg

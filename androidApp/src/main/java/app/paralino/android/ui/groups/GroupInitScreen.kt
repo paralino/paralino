@@ -1,4 +1,4 @@
-package app.paralino.android.ui.groups.init
+package app.paralino.android.ui.groups
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

@@ -110,13 +110,30 @@ class GroupDetailViewModel(
                 }
             }
 
+            val sharingState = sharingStatus?.let {
+                LocationSharingState(
+                    endTime = it.endTimeUTC?.let {
+                        valueFormatter.fromUTCtoMapSharingTime(
+                            timeUTC = it,
+                            splitTimeToOneLine = false
+                        )
+                    },
+                    shareBattery = it.shareBattery,
+                    shareSpeed = it.shareSpeed,
+                    shareElevation = it.shareElevation,
+                    approximateLocation = it.approximateLocationInMeters?.let {
+                        valueFormatter.getDistanceSmall(it.toFloat())
+                    }
+                )
+            }
+
             GroupDetailScreenState(
                 id = groupId,
                 canEdit = group.isCurrentUserOwner,
                 loadingAction = false,
                 name = group.name,
                 image = group.image,
-                sharingStatus = sharingStatus,
+                sharingStatus = sharingState,
                 members = members,
                 memberLimit = group.group.planType.membersLimit,
                 errors = errors
@@ -161,6 +178,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.UserBlockActionCompleted)
                     }
@@ -182,6 +200,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.UserBlockActionCompleted)
                     }
@@ -210,6 +229,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.GroupDeleted)
                     }
@@ -228,6 +248,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.GroupMemberDeleted)
                     }
@@ -246,6 +267,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.MemberLocationDeleted)
                     }

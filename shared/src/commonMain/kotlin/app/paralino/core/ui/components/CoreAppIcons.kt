@@ -58,6 +58,13 @@ object CoreAppIcons {
     val Timer get() = "drawable/ic_timer.xml"
     val Speed get() = "drawable/ic_speed.xml"
     val AccessTime get() = "drawable/ic_schedule.xml"
+    val BatteryChargingFull get() = "drawable/ic_battery_charging_full.xml"
+    val MapsHomeWork get() = "drawable/ic_home_work.xml"
+    val Map get() = "drawable/ic_map.xml"
+    val ShareLocation get() = "drawable/ic_share_location.xml"
+    val StopCircle get() = "drawable/ic_stop_circle.xml"
+    val MoreVert get() = "drawable/ic_more_vert.xml"
+    val PersonAdd get() = "drawable/ic_person_add.xml"
 
     @Composable
     fun String.asPainterResource(): Painter {

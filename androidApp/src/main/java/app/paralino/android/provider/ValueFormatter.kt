@@ -11,6 +11,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toJavaLocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
@@ -66,4 +67,8 @@ class ValueFormatter(): IValueFormatter() {
         else local.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
     }
 
+    override fun formatBestPattern(epochSeconds: Long, pattern: String): String {
+        val dateTime = java.time.LocalDateTime.ofEpochSecond(epochSeconds, 0, ZoneOffset.UTC)
+        return dateTime.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), pattern)))
+    }
 }

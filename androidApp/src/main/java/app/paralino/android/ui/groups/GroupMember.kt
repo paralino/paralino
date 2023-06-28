@@ -1,4 +1,4 @@
-package app.paralino.android.ui.groups.members
+package app.paralino.android.ui.groups
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,8 +21,6 @@ import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
-import kotlinx.datetime.toKotlinLocalDateTime
-import java.time.LocalDateTime
 
 
 @Preview(device = Devices.PIXEL_3A)
