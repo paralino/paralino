@@ -143,6 +143,8 @@ object KoinIOS {
         val personalCodeVM get() = get<PersonalCodeViewModel>()
         val blocklistVM get() = get<BlocklistVideModel>()
         fun rawDataVM(type: RawPresentationDataType) = get<RawDataPresentationViewModel> { parametersOf(type) }
+        fun groupCreateVM(groupId: String?) = get<CreateGroupViewModel> { parametersOf(groupId) }
+        fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
     }
 
 }

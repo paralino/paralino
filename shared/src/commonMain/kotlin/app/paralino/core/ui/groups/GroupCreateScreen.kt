@@ -1,75 +1,86 @@
-package app.paralino.android.ui.groups.create
+package app.paralino.core.ui.groups
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
-import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.AppIcons
-import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.utils.extensions.safeCast
+import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.CreateGroupScreenEvent
 import app.paralino.core.presentation.groups.CreateGroupState
 import app.paralino.core.presentation.groups.CreateGroupViewModel
+import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.errorString
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
-import org.koin.core.parameter.parametersOf
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun GroupCreateScreen(
-    appState: MainAppState,
-    groupId: String?,
-    vm: CreateGroupViewModel = getViewModel { parametersOf(groupId) },
+fun GroupCreateScreenCore(
+    appState: CoreUiState,
+    vm: CreateGroupViewModel,
+    onBottomSheetAction: (BottomSheetsScreen) -> Unit,
+    groupUpdated: (String) -> Unit,
+    onExit: () -> Unit,
 ) {
 
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
 
-    val context = LocalContext.current
-    LaunchedEffect(key1 = context) {
+    LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is CreateGroupScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString(context))
+                    appState.showSnackbar(event.error.errorString())
                 }
                 is CreateGroupScreenEvent.GroupUpdated -> {
                     delay(400)
-                    if (groupId.isNullOrBlank())
-                        appState.navController.navigate(AppScreen.MainHome.GroupDetails.route(event.groupId)) {
-                            this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                                this.inclusive = false
-                            }
-                        }
-                    else appState.navController.popBackStack()
+                    groupUpdated(event.groupId)
                 }
                 null -> {
                     /* do nothing */
@@ -85,9 +96,9 @@ fun GroupCreateScreen(
                 elevation = 1.dp,
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = { appState.navController.popBackStack() }) {
+                    IconButton(onClick = { onExit() }) {
                         Icon(
-                            painter = AppIcons.Close,
+                            painter = CoreAppIcons.Close.asPainterResource(),
                             contentDescription = null
                         )
                     }
@@ -106,19 +117,14 @@ fun GroupCreateScreen(
                 }
             }
             is Payload.Error -> {
-                DefaultEmptyState(content = stringResource(id = R.string.group_load_error))
+                DefaultEmptyState(content = stringResource(MR.strings.group_load_error))
             }
             is Payload.Success -> {
                 GroupCreateScreen(
                     state = finalState.data,
                     nameLengthLimit = vm.groupNameLengthLimit,
                     onImageClick = {
-                        appState.uiScope.launch {
-                            appState.showBottomSheetForResult(BottomSheetsScreen.EmojiPicker(Emojis.groupEmojis))
-                                .safeCast<ImageModel>()?.let {
-                                    vm.updateImage(it)
-                                }
-                        }
+                        onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.groupEmojis))
                     },
                     onCreateGroupClick = { image, name ->
                         vm.createGroup(image, name)
@@ -184,7 +190,7 @@ fun GroupCreateScreen(
 
         MainInputField(
             text = groupName,
-            hint = stringResource(id = R.string.group_create_name_placeholder),
+            hint = stringResource(MR.strings.group_create_name_placeholder),
             hasError = state.hasError,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done,
@@ -197,16 +203,16 @@ fun GroupCreateScreen(
         FilledButton(
             style = ButtonStyle.BIG,
             state = AppButtonState.loadingStateWithCheck(state.isLoading),
-            icon = if (state.isNewGroup) null else AppIcons.Save,
+            icon = if (state.isNewGroup) null else CoreAppIcons.Save.asPainterResource(),
             onClick = {
                 focusManager.clearFocus()
                 onCreateGroupClick(state.image, groupName)
             }
         ) {
             if (state.isNewGroup) {
-                Text(text = stringResource(id = R.string.group_create_button_text))
+                Text(text = stringResource(MR.strings.group_create_button_text))
             } else {
-                Text(text = stringResource(id = R.string.button_save))
+                Text(text = stringResource(MR.strings.button_save))
             }
         }
 

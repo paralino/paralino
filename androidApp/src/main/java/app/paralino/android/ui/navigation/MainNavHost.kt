@@ -8,8 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.groups.create.GroupCreateScreen
-import app.paralino.android.ui.groups.detail.GroupDetailScreen
+import app.paralino.android.ui.groups.GroupCreateScreen
+import app.paralino.android.ui.groups.GroupDetailScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen
 import app.paralino.android.ui.invite.manage.PersonalCodeScreen
 import app.paralino.android.ui.login.LoggedOutScreen
