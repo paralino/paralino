@@ -52,7 +52,7 @@ fun GroupListItem(
                     MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                     RoundedCornerShape(12.dp)
                 ),
-            cornerSize = 12.dp
+            clipShape = RoundedCornerShape(12.dp)
         )
 
         Spacer(modifier = Modifier.size(16.dp))

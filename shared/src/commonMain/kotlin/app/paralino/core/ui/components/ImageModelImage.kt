@@ -2,35 +2,36 @@ package app.paralino.core.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.utils.Emojis
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
+import dev.icerock.moko.resources.compose.painterResource
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ImageModelImage(
     imageModel: ImageModel,
     modifier: Modifier = Modifier,
-    cornerSize: Dp = 8.dp,
+    clipShape: Shape = RoundedCornerShape(8.dp),
     useBackgroundForEmoji: Boolean = true
 ) {
     when (imageModel.getImageType()) {
         ImageType.emoji -> {
             val emoji = imageModel.getImageValue()!!
-            Box(
+            BoxWithConstraints(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(cornerSize))
+                    .clip(clipShape)
                     .background(MaterialTheme.colors.surface)
                     .run {
                         if (useBackgroundForEmoji)
@@ -40,9 +41,9 @@ fun ImageModelImage(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource("drawable/${Emojis.getResourceFromIcon(emoji)}"),
+                    painter = painterResource(Emojis.getResourceFromIcon(emoji)),
                     contentDescription = null,
-                    modifier = modifier.clip(RoundedCornerShape(cornerSize)).fillMaxSize(0.6f)
+                    modifier = modifier.padding(min(minHeight, minWidth).times(0.15f))
                 )
             }
         }

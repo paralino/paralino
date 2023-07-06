@@ -82,6 +82,7 @@ fun MapHomeScreenElements(
             ImageModelImage(
                 imageModel = state.currentUserImage,
                 useBackgroundForEmoji = false,
+                clipShape = CircleShape,
                 modifier = Modifier
                     .size(42.dp)
                     .background(

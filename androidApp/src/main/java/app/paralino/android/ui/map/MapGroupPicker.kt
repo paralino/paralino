@@ -130,7 +130,7 @@ fun MapGroupPicker(
             ImageModelImage(
                 imageModel = groupImage,
                 useBackgroundForEmoji = false,
-                cornerSize = height,
+                clipShape = CircleShape,
                 modifier = Modifier
                     .size(height)
             )
