@@ -108,7 +108,6 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
             )?.utf8String
             
             if let result = result {
-                Logr.i(message: "Result valid - \(result)")
                 return NSString(string: result)
             } else {
                 Logr.i(message: "Result not valid \(result ?? "---")")
