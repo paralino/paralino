@@ -33,7 +33,7 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             SettingsScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 viewModel = vm,
                 onShareApp = onShareApp,
                 openConvertAccount = openConvertAccount,
@@ -56,7 +56,7 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             AccountScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 viewModel = vm,
                 openConvertAccount = openConvertAccount,
                 onShowDialog = onShowDialog,
@@ -76,7 +76,7 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             PersonalCodeScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 vm = vm,
                 onShowDialog = onShowDialog,
                 onShare = onShare,
@@ -92,7 +92,7 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             EditProfileScreen(
-                appState = rememberCoreUiState(),
+                appState = it,
                 vm = vm,
                 onBottomSheetAction = onBottomSheetAction,
                 onExit = onExit,
@@ -107,7 +107,7 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             BlocklistScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 vm = vm,
                 onShowDialog = onShowDialog,
                 onNavigateBack = onNavigateBack,
@@ -121,7 +121,7 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             ConvertAccountScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 vm = vm,
                 onNavigateBack = onNavigateBack,
             )
@@ -134,7 +134,7 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             ChangeEmailScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 vm = vm,
                 onNavigateBack = onNavigateBack,
             )
@@ -147,7 +147,7 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             ChangePasswordScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 vm = vm,
                 onNavigateBack = onNavigateBack,
             )
@@ -160,7 +160,7 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             RawDataScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 vm = vm,
                 onNavigateBack = onNavigateBack,
             )

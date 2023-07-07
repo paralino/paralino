@@ -46,7 +46,7 @@ object HomeScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             GroupCreateScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 vm = vm,
                 groupUpdated = groupUpdated,
                 onBottomSheetAction = onBottomSheetAction,
@@ -74,7 +74,7 @@ object HomeScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             GroupDetailScreenCore(
-                appState = rememberCoreUiState(),
+                appState = it,
                 vm = vm,
                 groupId = groupId,
                 onShowDialog = onShowDialog,
