@@ -27,7 +27,7 @@ struct GroupInitScreen: View {
                         alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
                     },
                     openSettings: { path.append(.settings(.settings)) },
-                    onCreateGroup: {},
+                    onCreateGroup: { path.append(.home(.groupCreate(groupId: nil))) },
                     openPersonalCodes: { path.append(.settings(.personalCodes)) },
                     onSharePersonalCode: { data in
                         shareText = ShareText(text: data)
@@ -56,6 +56,7 @@ struct GroupInitScreen: View {
         .sheet(item: $shareText) { shareText in
             ActivityView(text: shareText.text)
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 

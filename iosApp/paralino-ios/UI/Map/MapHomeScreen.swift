@@ -8,13 +8,20 @@
 import SwiftUI
 
 struct MapHomeScreen: View {
+    
+    @Binding var path: [NavigationGraph]
+    
     var body: some View {
-        Text("Here goes map")
+        Button("Open Profile") {
+            path.append(.settings(.settings))
+        }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
 struct MapHomeScreen_Previews: PreviewProvider {
+    @State static var path: [NavigationGraph] = [.home(.map)]
     static var previews: some View {
-        MapHomeScreen()
+        MapHomeScreen(path: $path)
     }
 }

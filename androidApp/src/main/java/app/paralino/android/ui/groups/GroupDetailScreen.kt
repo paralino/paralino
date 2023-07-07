@@ -55,59 +55,66 @@ fun GroupDetailScreen(
         is MainAlertDialog.DeleteGroup -> {
             dialog.Show {
                 showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
                     vm.leaveOrDeleteGroup()
+                }
             }
         }
 
         is MainAlertDialog.LeaveGroup -> {
             dialog.Show {
                 showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
                     vm.leaveOrDeleteGroup()
+                }
             }
         }
 
         is MainAlertDialog.BlockGroup -> {
             dialog.Show {
                 showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
                     vm.blockGroup()
+                }
             }
         }
 
         is MainAlertDialog.BlockUser -> {
             dialog.Show {
                 showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
                     vm.blockUser(userId = dialog.userId)
+                }
             }
         }
 
         is MainAlertDialog.UnblockGroupOrUser -> {
             dialog.Show {
                 showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
                     vm.unblockUser(userId = dialog.id)
+                }
             }
         }
 
         is MainAlertDialog.DeleteGroupMember -> {
             dialog.Show {
                 showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
                     vm.removeMember(dialog.memberUserId)
+                }
             }
         }
 
         is MainAlertDialog.DeleteMemberLocation -> {
             dialog.Show {
                 showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
                     vm.removeMemberLocation(
                         memberId = dialog.memberId,
                         locationId = dialog.locationId
                     )
+                }
             }
         }
 

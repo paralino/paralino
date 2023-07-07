@@ -39,7 +39,7 @@ object HomeScreens {
     fun GroupCreateScreenVC(
         vm: CreateGroupViewModel,
         onBottomSheetAction: (BottomSheetsScreen) -> Unit,
-        groupUpdated: (String?) -> Unit,
+        groupUpdated: (String) -> Unit,
         onExit: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -57,13 +57,13 @@ object HomeScreens {
         vm: GroupDetailViewModel,
         groupId: String?,
         onShowDialog: (MainAlertDialog?) -> Unit,
-        openMemberAdd: (String) -> Unit,
-        openGroupEdit: (String) -> Unit,
-        openMap: (String) -> Unit,
-        openPlaces: (String) -> Unit,
-        openGroupRawData: (String) -> Unit,
+        openMemberAdd: () -> Unit,
+        openGroupEdit: () -> Unit,
+        openMap: () -> Unit,
+        openPlaces: () -> Unit,
+        openGroupRawData: () -> Unit,
         openMemberRawData: (String) -> Unit,
-        openSharing: (String) -> Unit,
+        openSharing: () -> Unit,
         onNavigateBack: () -> Unit,
         askNotificationPermission: () -> Unit,
         askLocationService: () -> Unit,

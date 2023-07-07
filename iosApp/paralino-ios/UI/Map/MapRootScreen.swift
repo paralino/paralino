@@ -9,45 +9,40 @@ import SwiftUI
 import shared
 
 struct MapRootScreen: View {
+    
     @StateObject var mapState = MapHomeState()
-    @State private var path: [NavigationGraph] = []
     
     var body: some View {
-        switch mapState.groupState {
-        case nil: ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
-        case true: NavigationStack(path: $path) {
-            MapHomeScreen()
-        }
-        case false: NavigationStack(path: $path) {
-            GroupInitScreen(path: $path)
+        NavigationStack(path: $mapState.path) {
+            Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
                 .navigationDestination(for: NavigationGraph.self) { route in
                     ZStack {
                         switch route {
                         case let .settings(settingsGraph):
                             switch settingsGraph {
-                            case .account: AccountScreen(path: $path)
+                            case .account: AccountScreen(path: $mapState.path)
                             case .personalCodes: PersonalCodeScreen()
-                            case .settings: SettingsScreen(path: $path)
+                            case .settings: SettingsScreen(path: $mapState.path)
                             case .changeEmail: ChangeEmailScreen()
                             case .changePassword: ChangePasswordScreen()
-                            case .convertAccount: ConvertAccountScreen(path: $path)
-                            case .blocklist: BlockListScreen(path: $path)
+                            case .convertAccount: ConvertAccountScreen(path: $mapState.path)
+                            case .blocklist: BlockListScreen(path: $mapState.path)
                             case .rawData(let type):
                                 RawDataScreen(appState: RawDataScreen.createState(type: type))
                             case .editProfile: EditProfileScreen()
                             }
-                        default:
-                            GroupInitScreen(path: $path)
+                        case let .home(homeGraph):
+                            switch homeGraph {
+                            case .groupCreate(let groupId): GroupCreateScreen(path: $mapState.path, appState: GroupCreateScreen.createState(groupId: groupId))
+                            case .groupDetail(let groupId): GroupDetailScreen(path: $mapState.path, appState: GroupDetailScreen.createState(groupId: groupId))
+                            case .map: MapHomeScreen(path: $mapState.path)
+                            case .groupInit: GroupInitScreen(path: $mapState.path)
+                            }
                         }
                     }.onAppear {
                         Logr.i(message: "Route: \(route)")
                     }
                 }
-        }
-        case .some(_):
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
         }
     }
 }

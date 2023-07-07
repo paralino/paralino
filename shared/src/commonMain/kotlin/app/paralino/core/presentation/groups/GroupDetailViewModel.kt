@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GroupDetailViewModel(
-    private val groupId: String,
+    val groupId: String,
     private val userRepo: UserRepository,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,

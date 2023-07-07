@@ -10,13 +10,20 @@ import shared
 
 enum NavigationGraph: Hashable {
     case settings(SettingsGraph)
-    case mapRoot
+    case home(HomeGraph)
 }
 
 enum WelcomeGraph: Hashable {
     case welcome
     case login
     case signup
+}
+
+enum HomeGraph: Hashable {
+    case map
+    case groupInit
+    case groupCreate(groupId: String?)
+    case groupDetail(groupId: String)
 }
 
 enum SettingsGraph: Hashable {

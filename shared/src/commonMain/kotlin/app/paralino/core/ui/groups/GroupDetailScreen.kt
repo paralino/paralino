@@ -49,13 +49,13 @@ fun GroupDetailScreenCore(
     vm: GroupDetailViewModel,
     groupId: String?,
     onShowDialog: (MainAlertDialog?) -> Unit,
-    openMemberAdd: (String) -> Unit,
-    openGroupEdit: (String) -> Unit,
-    openMap: (String) -> Unit,
-    openPlaces: (String) -> Unit,
-    openGroupRawData: (String) -> Unit,
+    openMemberAdd: () -> Unit,
+    openGroupEdit: () -> Unit,
+    openMap: () -> Unit,
+    openPlaces: () -> Unit,
+    openGroupRawData: () -> Unit,
     openMemberRawData: (String) -> Unit,
-    openSharing: (String) -> Unit,
+    openSharing: () -> Unit,
     onNavigateBack: () -> Unit,
     askNotificationPermission: () -> Unit,
     askLocationService: () -> Unit,
@@ -82,7 +82,7 @@ fun GroupDetailScreenCore(
                     onNavigateBack()
                 }
                 GroupDetailScreenEvent.GroupMemberAdd -> {
-                    openMemberAdd(groupId)
+                    openMemberAdd()
                 }
                 is GroupDetailScreenEvent.GroupMembersLimitReached -> {
                     onShowDialog(
@@ -133,7 +133,7 @@ fun GroupDetailScreenCore(
                         },
                         actions = {
                             IconButton(
-                                onClick = { openGroupRawData(groupId) }
+                                onClick = { openGroupRawData() }
                             ) {
                                 Icon(
                                     painter = CoreAppIcons.Security.asPainterResource(),
@@ -149,7 +149,7 @@ fun GroupDetailScreenCore(
                                         contentDescription = null
                                     )
                                 }
-                                IconButton(onClick = { openGroupEdit(groupId) }) {
+                                IconButton(onClick = { openGroupEdit() }) {
                                     Icon(
                                         painter = CoreAppIcons.Edit.asPainterResource(),
                                         contentDescription = null
@@ -197,7 +197,7 @@ fun GroupDetailScreenCore(
                             if (state.data.sharingStatus != null) {
                                 vm.stopSharing()
                             } else {
-                                openSharing(groupId)
+                                openSharing()
                             }
                         }
                     )
@@ -250,8 +250,8 @@ fun GroupDetailScreenCore(
                         GroupDetailsHeader(
                             groupName = state.data.name,
                             groupImage = state.data.image,
-                            onMapClick = { openMap(groupId) },
-                            onPlacesClick = { openPlaces(groupId) }
+                            onMapClick = { openMap() },
+                            onPlacesClick = { openPlaces() }
                         )
                     }
 

@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class CreateGroupViewModel(
-    private val groupId: String?,
+    val groupId: String?,
     private val groupRepo: GroupRepository,
     private val createGroup: GroupCreateUseCase
 ) : CoreViewModel() {
@@ -35,8 +35,8 @@ class CreateGroupViewModel(
     init {
         coroutineScope.launch {
             val value = when {
-                groupId.isNullOrBlank() -> null
-                else -> groupRepo.getGroupWithoutMembersLocally(groupId)
+                isGroupCreate() -> null
+                else -> groupRepo.getGroupWithoutMembersLocally(groupId!!)
                     .map { Payload.Success(it) }
                     .firstOrNull()
             } ?: Payload.Error(NullPointerException("No such group"))
@@ -44,7 +44,7 @@ class CreateGroupViewModel(
             groupFlow.value = value
             _uiState.update {
                 when {
-                    groupId.isNullOrBlank() -> Payload.Success(CreateGroupState.empty())
+                    isGroupCreate() -> Payload.Success(CreateGroupState.empty())
                     else -> value.mapSuccess { group ->
                         CreateGroupState(
                             isNewGroup = false,
@@ -111,4 +111,7 @@ class CreateGroupViewModel(
         }
     }
 
+    fun isGroupCreate(): Boolean {
+        return groupId.isNullOrBlank()
+    }
 }
