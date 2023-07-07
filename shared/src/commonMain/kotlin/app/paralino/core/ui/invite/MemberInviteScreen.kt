@@ -226,9 +226,13 @@ private fun MemberInviteScreen(
                 } else if (state.group != null) {
                     Spacer(modifier = Modifier.size(20.dp))
                     SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_group))
-                    GroupListItem(data = state.group!!) {
-                        if (state.canChangeGroup) onPickGroup()
-                    }
+                    GroupListItem(
+                        data = state.group!!,
+                        onEdit = {},
+                        onClick = {
+                            if (state.canChangeGroup) onPickGroup()
+                        }
+                    )
                 }
 
                 Spacer(modifier = Modifier.size(20.dp))

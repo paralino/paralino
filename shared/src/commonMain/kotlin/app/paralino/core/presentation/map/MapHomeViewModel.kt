@@ -216,7 +216,8 @@ class MapHomeViewModel constructor(
                 sharingManager.isSharingActiveForGroup(group.id) -> GroupItemState.GroupUiType.ACTIVE
                 else -> GroupItemState.GroupUiType.INACTIVE
             }
-            GroupItemState(group, uiType)
+            val isSelected = group.id == groupIdData.value
+            GroupItemState(group, uiType, canEdit = true, isSelected = isSelected, isLarge = isSelected)
         } ?: emptyList()
     }
 

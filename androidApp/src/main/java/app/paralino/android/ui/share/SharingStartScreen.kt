@@ -329,17 +329,19 @@ fun SharingStartScreen(
                     SettingsSectionHeader(name = stringResource(id = R.string.groups_sharing_section_title_group))
                     GroupListItem(
                         modifier = Modifier.fillMaxWidth(),
-                        data = state.groupState.data!!
-                    ) {
-                        if (groupId.isNullOrBlank()) {
-                            appState.uiScope.launch {
-                                appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroupItems()))
-                                    .safeCast<GroupItemState>()?.let {
-                                        vm.setSelectedGroup(it.id)
-                                    }
+                        data = state.groupState.data!!,
+                        onEdit = {},
+                        onClick = {
+                            if (groupId.isNullOrBlank()) {
+                                appState.uiScope.launch {
+                                    appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroupItems()))
+                                        .safeCast<GroupItemState>()?.let {
+                                            vm.setSelectedGroup(it.id)
+                                        }
+                                }
                             }
                         }
-                    }
+                    )
                 }
             }
 

@@ -50,7 +50,7 @@ fun rememberAppState(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun rememberBottomSheet(
-    bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
+    bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true),
     currentBottomSheet: MutableState<BottomSheetsScreen?> = remember {
         mutableStateOf(null)
     },

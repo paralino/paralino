@@ -23,7 +23,7 @@ import dev.icerock.moko.resources.compose.stringResource
 fun GroupPickerScreen(
     groups: List<GroupItemState>,
     onClose: () -> Unit,
-    onClick: (GroupPickerAction) -> Unit,
+    onClick: (GroupPickerAction) -> Unit
 ) {
     LazyColumn(
         contentPadding = PaddingValues(bottom = 30.dp),
@@ -57,7 +57,9 @@ fun GroupPickerScreen(
             GroupListItem(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 data = group,
-                onClick = { onClick(GroupPickerAction.GroupPicked(group)) })
+                onClick = { onClick(GroupPickerAction.GroupPicked(group)) },
+                onEdit = { onClick(GroupPickerAction.GroupEditPicked(group)) }
+            )
         }
         item(key = "new_group") {
             Spacer(
@@ -106,4 +108,5 @@ sealed interface GroupPickerAction {
     object NewGroup : GroupPickerAction
     object JoinGroup : GroupPickerAction
     data class GroupPicked(val group: GroupItemState) : GroupPickerAction
+    data class GroupEditPicked(val group: GroupItemState) : GroupPickerAction
 }

@@ -154,6 +154,9 @@ fun MapHomeContent(
                             is GroupPickerAction.GroupPicked -> {
                                 vm.switchGroup(it.group.id)
                             }
+                            is GroupPickerAction.GroupEditPicked -> {
+                                appState.navController.navigate(AppScreen.MainHome.GroupDetails.route(it.group.id))
+                            }
                             GroupPickerAction.NewGroup -> {
                                 appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
                             }
