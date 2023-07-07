@@ -4,10 +4,12 @@ import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
+import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
+import app.paralino.core.ui.invite.MemberInviteScreenCore
 import app.paralino.core.ui.login.GroupInitScreenCore
 
 object HomeScreens {
@@ -88,6 +90,22 @@ object HomeScreens {
                 askLocationService = askLocationService,
                 askLocationPermission = askLocationPermission,
                 askBackgroundLocationPermission = askBackgroundLocationPermission
+            )
+        }
+    }
+
+
+    fun MemberInviteScreenVC(
+        vm: MemberInviteViewModel,
+        onPickGroup: (BottomSheetsScreen.GroupPicker) -> Unit,
+        onExit: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            MemberInviteScreenCore(
+                appState = it,
+                vm = vm,
+                onPickGroup = onPickGroup,
+                onNavigateBack = onExit
             )
         }
     }

@@ -53,6 +53,7 @@
 		25C91A2F2A57EFC600A49F06 /* PhotoPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A2E2A57EFC600A49F06 /* PhotoPickerSheet.swift */; };
 		25C91A322A57F38A00A49F06 /* GroupCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */; };
 		25C91A342A580CBA00A49F06 /* GroupDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */; };
+		25C91A362A5890B400A49F06 /* MemberInviteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */; };
 		25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D8A43429CE24A00023A0E5 /* AppDelegate.swift */; };
 		25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */; };
 		25FC5CA82A45811C0006E796 /* ChangeEmailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA72A45811C0006E796 /* ChangeEmailScreen.swift */; };
@@ -110,6 +111,7 @@
 		25C91A2E2A57EFC600A49F06 /* PhotoPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerSheet.swift; sourceTree = "<group>"; };
 		25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCreateScreen.swift; sourceTree = "<group>"; };
 		25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailScreen.swift; sourceTree = "<group>"; };
+		25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberInviteScreen.swift; sourceTree = "<group>"; };
 		25D8A43429CE24A00023A0E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		25E044592A33590B001E1B05 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordScreen.swift; sourceTree = "<group>"; };
@@ -339,6 +341,7 @@
 			children = (
 				25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */,
 				25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */,
+				25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */,
 			);
 			path = Groups;
 			sourceTree = "<group>";
@@ -539,6 +542,7 @@
 				25FC5CAA2A458D970006E796 /* NavigationGraph.swift in Sources */,
 				25C91A342A580CBA00A49F06 /* GroupDetailScreen.swift in Sources */,
 				259AEFA22A3E0F860083FF4B /* ResetPasswordScreen.swift in Sources */,
+				25C91A362A5890B400A49F06 /* MemberInviteScreen.swift in Sources */,
 				254B6F2C29EC7F6A008B1458 /* LoginScreen.swift in Sources */,
 				252EA00729DD89C800338956 /* KoinSetup.swift in Sources */,
 				25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */,

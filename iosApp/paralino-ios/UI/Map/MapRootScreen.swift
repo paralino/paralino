@@ -37,6 +37,7 @@ struct MapRootScreen: View {
                             case .groupDetail(let groupId): GroupDetailScreen(path: $mapState.path, appState: GroupDetailScreen.createState(groupId: groupId))
                             case .map: MapHomeScreen(path: $mapState.path)
                             case .groupInit: GroupInitScreen(path: $mapState.path)
+                            case .memberInvite(let groupId, let code): MemberInviteScreen(path: $mapState.path, appState: MemberInviteScreen.createState(groupId: groupId, code: code))
                             }
                         }
                     }.onAppear {

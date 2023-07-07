@@ -145,6 +145,7 @@ object KoinIOS {
         fun rawDataVM(type: RawPresentationDataType) = get<RawDataPresentationViewModel> { parametersOf(type) }
         fun groupCreateVM(groupId: String?) = get<CreateGroupViewModel> { parametersOf(groupId) }
         fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
+        fun memberInviteVM(groupId: String?, code: String?) = get<MemberInviteViewModel> { parametersOf(groupId, code) }
     }
 
 }

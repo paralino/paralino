@@ -25,7 +25,7 @@ struct GroupDetailScreen: View {
                         alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
                     },
                     openMemberAdd: {
-                        
+                        path.append(.home(.memberInvite(groupId: appState.vm.groupId, code: nil)))
                     },
                     openGroupEdit: {
                         path.append(.home(.groupCreate(groupId: appState.vm.groupId)))

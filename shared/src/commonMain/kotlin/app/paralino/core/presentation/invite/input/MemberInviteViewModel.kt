@@ -54,6 +54,9 @@ class MemberInviteViewModel(
                             actionLoading = false
                         )
                     }
+                    coroutineScope.launch {
+                        _eventChannel.send(MemberInviteScreenEvent.ErrorWrongCode)
+                    }
                 } else {
                     loadMemberData(currentState.code)
                 }
