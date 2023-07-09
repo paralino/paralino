@@ -31,6 +31,10 @@ data class ImageModel(val image: String = "") {
         fun emoji(emoji: String): ImageModel {
             return ImageModel(ImageType.emoji.createModel(emoji))
         }
+
+        fun placeholder(): ImageModel {
+            return ImageModel(ImageType.placeholder.createModel("value"))
+        }
     }
 }
 
@@ -39,7 +43,7 @@ fun String.asImageModel(): ImageModel? {
 }
 
 enum class ImageType {
-    emoji;
+    emoji, placeholder;
 
     fun createModel(value: String): String {
         return "$name:$value"

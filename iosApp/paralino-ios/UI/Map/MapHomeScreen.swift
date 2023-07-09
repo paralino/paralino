@@ -6,16 +6,23 @@
 //
 
 import SwiftUI
+import shared
 
 struct MapHomeScreen: View {
     
     @Binding var path: [NavigationGraph]
     
     var body: some View {
-        Button("Open Profile") {
-            path.append(.settings(.settings))
+        VStack {
+            Button("Open Profile") {
+                path.append(.settings(.settings))
+            }
+            .navigationBarBackButtonHidden(true)
+            ImageModelImage(imageModel: ImageModel.companion.emoji(emoji: Emojis.shared.robot), useBackgroundForEmoji: true)
+                .frame(width: 150, height: 150)
+                
+                .clipShape(RoundedRectangle(cornerRadius: 10))
         }
-        .navigationBarBackButtonHidden(true)
     }
 }
 

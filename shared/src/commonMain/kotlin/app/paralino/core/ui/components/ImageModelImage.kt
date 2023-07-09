@@ -18,7 +18,9 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.painterResource
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ImageModelImage(
     imageModel: ImageModel,
@@ -42,6 +44,25 @@ fun ImageModelImage(
             ) {
                 Image(
                     painter = painterResource(Emojis.getResourceFromIcon(emoji)),
+                    contentDescription = null,
+                    modifier = modifier.padding(min(minHeight, minWidth).times(0.15f))
+                )
+            }
+        }
+        ImageType.placeholder -> {
+            BoxWithConstraints(
+                modifier = Modifier
+                    .clip(clipShape)
+                    .background(MaterialTheme.colors.surface)
+                    .run {
+                        if (useBackgroundForEmoji)
+                            this.background(MaterialTheme.colors.surface)
+                        else this
+                    }.then(modifier),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = org.jetbrains.compose.resources.painterResource("drawable/ic_person.xml"),
                     contentDescription = null,
                     modifier = modifier.padding(min(minHeight, minWidth).times(0.15f))
                 )
