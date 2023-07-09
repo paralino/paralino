@@ -10,7 +10,7 @@ import shared
 
 struct ImageModelImage: View {
     let imageModel: ImageModel
-    let useBackgroundForEmoji: Bool
+    var useBackgroundForEmoji: Bool = true
     
     var body: some View {
         if let imageType = imageModel.getImageType() {
