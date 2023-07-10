@@ -20,8 +20,7 @@ struct MainApp: App {
             ZStack {
                 switch appState.uiState {
                 case .notInitialized: VStack {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
+                    ProgressView().progressViewStyle(CircularProgressViewStyle())
                 }
                 case .ready(let data): AppReadyScreen(userState: data)
                 }

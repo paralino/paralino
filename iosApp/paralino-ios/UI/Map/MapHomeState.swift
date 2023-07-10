@@ -8,6 +8,7 @@
 import Foundation
 import shared
 import SwiftUI
+import CoreLocation
 
 class MapHomeState : ObservableObject {
     
@@ -16,6 +17,7 @@ class MapHomeState : ObservableObject {
     @Published var groupState: Bool? = nil
     @Published var path: [NavigationGraph] = []
     @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(currentUserImage: ImageModel.companion.placeholder())
+    @Published var markers: [MapAnnotatedItem] = []
     
     init() {
         vm = KoinIOS.ViewModels.shared.mapHomeVM
@@ -38,7 +40,20 @@ class MapHomeState : ObservableObject {
         
         vm.observe(flow: vm.uiState) { [weak self] state in
             if let state = state as? MapHomeScreenState {
+                let oldState = self?.uiState as? MapHomeScreenState.Ready
                 self?.uiState = state
+                if let readyState = state as? MapHomeScreenState.Ready {
+                    self?.markers = readyState.markers.map { marker in
+                        MapAnnotatedItem(
+                            id: marker.markerId,
+                            name: marker.markerId,
+                            coordinate: CLLocationCoordinate2D(
+                                latitude: marker.lat,
+                                longitude: marker.lng
+                            )
+                        )
+                    }
+                }
             }
         }
     }

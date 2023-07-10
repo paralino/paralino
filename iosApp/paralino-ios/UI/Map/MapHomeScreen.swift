@@ -7,28 +7,74 @@
 
 import SwiftUI
 import shared
+import MapKit
 
 struct MapHomeScreen: View {
     
     @Binding var path: [NavigationGraph]
+    @StateObject var mapState: MapHomeState
+    @State var groupPicker: BottomSheetsScreen.GroupPicker? = nil
+    @State private var region: MKCoordinateRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(
+            latitude: 0,
+            longitude: 0
+        ),
+        span: MKCoordinateSpan(latitudeDelta: 60, longitudeDelta: 60)
+    )
     
     var body: some View {
-        VStack {
-            Button("Open Profile") {
-                path.append(.settings(.settings))
+        ZStack {
+            if mapState.uiState is MapHomeScreenState.Ready {
+                Map(coordinateRegion: $region, annotationItems: mapState.markers) { marker in
+                    MapMarker(coordinate: marker.coordinate)
+                }
+                    .ignoresSafeArea(.all, edges: .vertical)
+            } else if mapState.uiState is MapHomeScreenState.Empty {
+                EmptyView()
+            } else {
+                ProgressView().progressViewStyle(CircularProgressViewStyle())
             }
-            .navigationBarBackButtonHidden(true)
-            ImageModelImage(imageModel: ImageModel.companion.emoji(emoji: Emojis.shared.robot), useBackgroundForEmoji: true)
-                .frame(width: 150, height: 150)
-                
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+            
+            MapHomeScreenElements(
+                state: mapState.uiState,
+                pickGroup: {
+                    groupPicker = BottomSheetsScreen.GroupPicker(groups: mapState.vm.getAllGroups())
+                },
+                openProfile: {
+                    path.append(.settings(.settings))
+                },
+                focusOnGroup: {
+                    mapState.vm.trackMarker(marker: nil)
+                }
+            )
         }
+        .groupPickerSheet(
+            $groupPicker,
+            onSelectGroup: { state in
+                groupPicker = nil
+                mapState.vm.switchGroup(groupId: state.id)
+            },
+            onEditGroup: { state in
+                groupPicker = nil
+                path.append(.home(.groupDetail(groupId: state.id)))
+            },
+            onCreateGroup: {
+                groupPicker = nil
+                path.append(.home(.groupCreate(groupId: nil)))
+            },
+            onJoinGroup: {
+                groupPicker = nil
+                path.append(.settings(.personalCodes))
+            }
+        )
+        .navigationBarBackButtonHidden(true)
     }
 }
 
-struct MapHomeScreen_Previews: PreviewProvider {
-    @State static var path: [NavigationGraph] = [.home(.map)]
-    static var previews: some View {
-        MapHomeScreen(path: $path)
-    }
-}
+//struct MapHomeScreen_Previews: PreviewProvider {
+//    @State static var path: [NavigationGraph] = [.home(.map)]
+//    @StateObject var mapState = MapHomeState()
+//    static var previews: some View {
+//        MapHomeScreen(path: $path, mapState: mapState)
+//    }
+//}

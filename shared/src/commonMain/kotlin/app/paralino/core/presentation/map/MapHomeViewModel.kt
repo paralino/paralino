@@ -16,10 +16,15 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.data.db.AppConfig
+import app.paralino.core.logg
+import app.paralino.core.models.Payload
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class MapHomeViewModel constructor(
     private val locationRepo: LocationRepository,
@@ -41,7 +46,9 @@ class MapHomeViewModel constructor(
     private val groupIdData = MutableStateFlow("")
     private val focusedMarker = MutableStateFlow<FocusedMarkerData?>(null)
 
-    val locationRefreshSubscription = uiState.map { (it as? MapHomeScreenState.Ready)?.groupId }
+    private var locationSubscriptionJob: Job? = null
+
+    val locationRefreshSubscription: Flow<Payload<Unit>> = uiState.map { (it as? MapHomeScreenState.Ready)?.groupId }
         .filterNotNull()
         .distinctUntilChanged()
         .flatMapLatest { locationRefreshUseCase.locationRefresh(it).mapToPayload { Unit } }
@@ -59,15 +66,14 @@ class MapHomeViewModel constructor(
             initialValue = Resource.NotInitialized
         )
 
-    val allGroupsState = allGroups.map {
-        when(it) {
+    val allGroupsState: Flow<Boolean?> = allGroups.map {
+        when (it) {
             Resource.NotInitialized -> null
             is Resource.Ready -> it.data.isNotEmpty()
         }
     }
 
     init {
-
         allGroups.onEach { groupsData ->
             if (groupsData is Resource.Ready) {
                 val selectedGroup = groupIdData.value
@@ -119,7 +125,7 @@ class MapHomeViewModel constructor(
                                     GroupMemberItemStateWithOneLocation(
                                         memberState = memberState.copy(
                                             actionItems = buildList {
-                                                if(canDelete) add(MemberAction.DELETE_LOCATION)
+                                                if (canDelete) add(MemberAction.DELETE_LOCATION)
                                             }
                                         ),
                                         location = GroupMemberItemLocationState(
@@ -183,6 +189,20 @@ class MapHomeViewModel constructor(
             }
             .onEach { _uiState.value = it }
             .launchIn(coroutineScope)
+
+        groupIdData
+            .onEach { delay(3000) }
+            .conflate()
+            .onEach { groupId ->
+                if (groupId.isNullOrBlank()) {
+                    logg.tag("location_performance").v("Map not active")
+                    locationSubscriptionJob?.cancel()
+                } else {
+                    logg.tag("location_performance").v("Map active for $groupId")
+                    keepLocationSubscriptionOn()
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
     fun switchGroup(groupId: String) {
@@ -209,16 +229,29 @@ class MapHomeViewModel constructor(
         }
     }
 
-    suspend fun getAllGroups(): List<GroupItemState> {
-        return groupRepo.getAllGroupsLocally().firstOrNull()?.map { group ->
+    fun getAllGroups(): List<GroupItemState> {
+        return allGroups.value.data?.map { group ->
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
                 sharingManager.isSharingActiveForGroup(group.id) -> GroupItemState.GroupUiType.ACTIVE
                 else -> GroupItemState.GroupUiType.INACTIVE
             }
             val isSelected = group.id == groupIdData.value
-            GroupItemState(group, uiType, canEdit = true, isSelected = isSelected, isLarge = isSelected)
+            GroupItemState(
+                group,
+                uiType,
+                canEdit = true,
+                isSelected = isSelected,
+                isLarge = isSelected
+            )
         } ?: emptyList()
+    }
+
+    private fun keepLocationSubscriptionOn() {
+        locationSubscriptionJob?.cancel()
+        locationSubscriptionJob = coroutineScope.launch {
+            locationRefreshSubscription.collect()
+        }
     }
 
     fun clearMyLocation(locationId: String) {

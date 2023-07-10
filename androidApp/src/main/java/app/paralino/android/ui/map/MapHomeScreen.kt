@@ -3,16 +3,19 @@ package app.paralino.android.ui.map
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.android.ui.MainAppState
-import app.paralino.core.ui.components.BottomSheetsScreen
-import app.paralino.core.ui.groups.GroupPickerAction
 import app.paralino.android.ui.groups.GroupInitScreen
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.utils.extensions.safeCast
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
@@ -21,7 +24,9 @@ import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.map.asFocusedMarker
-import kotlinx.coroutines.flow.collect
+import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.groups.GroupPickerAction
+import app.paralino.core.utils.extensions.safeCast
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -67,16 +72,6 @@ fun MapHomeContent(
     }
 
     var trackGroup by rememberSaveable(isSystemInDarkTheme()) { mutableStateOf(true) }
-
-    when (val finalState = uiState) {
-        is MapHomeScreenState.Ready -> {
-            LaunchedEffect(finalState.groupId) {
-                logg.tag("location_performance").v("Map active for ${finalState.groupId}")
-                vm.locationRefreshSubscription.collect()
-            }
-        }
-        is MapHomeScreenState.Empty -> {}
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
