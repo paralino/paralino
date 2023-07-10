@@ -28,6 +28,7 @@ struct GroupListItem: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(data.name)
                     .font(.headline)
+                    .lineLimit(3)
                 
                 HStack(alignment: .center) {
                     Image(systemName: "person.2.fill")

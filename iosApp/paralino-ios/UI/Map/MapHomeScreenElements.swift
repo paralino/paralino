@@ -19,16 +19,12 @@ struct MapHomeScreenElements: View {
         if let readyState = state as? MapHomeScreenState.Ready {
             VStack {
                 HStack {
-                    ImageModelImage(imageModel: readyState.groupImage, useBackgroundForEmoji: true)
-                        .frame(width: 60, height: 60)
-                        .clipShape(Circle())
-                        .onTapGesture { pickGroup() }
-                    
-                    Button(readyState.groupName, action: { pickGroup() })
+                    MapGroupPicker(data: readyState, onClick: pickGroup)
                     Spacer()
                     ImageModelImage(imageModel: readyState.currentUserImage, useBackgroundForEmoji: true)
-                        .frame(width: 60, height: 60)
+                        .frame(width: 52, height: 52)
                         .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.themeSecondary, lineWidth: 2))
                         .onTapGesture { openProfile() }
                 }
                 
@@ -41,7 +37,8 @@ struct MapHomeScreenElements: View {
                     }
                 }.padding(.bottom)
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.bottom)
         } else if let emptyState = state as? MapHomeScreenState.Empty {
             ImageModelImage(imageModel: emptyState.currentUserImage, useBackgroundForEmoji: true)
                 .frame(width: 60, height: 60)

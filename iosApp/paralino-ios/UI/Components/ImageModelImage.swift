@@ -11,6 +11,7 @@ import shared
 struct ImageModelImage: View {
     let imageModel: ImageModel
     var useBackgroundForEmoji: Bool = true
+    var imageScale: CGFloat = 0.8
     
     var body: some View {
         if let imageType = imageModel.getImageType() {
@@ -18,13 +19,13 @@ struct ImageModelImage: View {
             case .emoji:
                 if let emoji = imageModel.getImageValue() {
                     GeometryReader { geometry in
-                        let imageSize = min(geometry.size.height, geometry.size.width) * 0.8
+                        let imageSize = min(geometry.size.height, geometry.size.width) * imageScale
                         ZStack(alignment: .center) {
                             Image(uiImage: Emojis.shared.getResourceFromIcon(icon: emoji).toUIImage()!)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: imageSize, height: imageSize, alignment: .center)
-                                .padding(8)
+                                
                         }
                         .aspectRatio(1.0, contentMode: .fill)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
