@@ -25,6 +25,7 @@ struct MapHomeScreenElements: View {
                         .frame(width: 52, height: 52)
                         .clipShape(Circle())
                         .overlay(Circle().stroke(Color.themeSecondary, lineWidth: 2))
+                        .shadow(radius: 8)
                         .onTapGesture { openProfile() }
                 }
                 
