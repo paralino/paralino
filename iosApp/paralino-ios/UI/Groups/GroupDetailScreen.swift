@@ -31,6 +31,7 @@ struct GroupDetailScreen: View {
                         path.append(.home(.groupCreate(groupId: appState.vm.groupId)))
                     },
                     openMap: {
+                        path.removeAll()
                         path.append(.home(.map))
                     },
                     openPlaces: {
