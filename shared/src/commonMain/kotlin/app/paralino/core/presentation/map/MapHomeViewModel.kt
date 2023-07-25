@@ -48,11 +48,6 @@ class MapHomeViewModel constructor(
 
     private var locationSubscriptionJob: Job? = null
 
-    val locationRefreshSubscription: Flow<Payload<Unit>> = uiState.map { (it as? MapHomeScreenState.Ready)?.groupId }
-        .filterNotNull()
-        .distinctUntilChanged()
-        .flatMapLatest { locationRefreshUseCase.locationRefresh(it).mapToPayload { Unit } }
-
     val allGroups: StateFlow<Resource<List<UserGroup>>> = groupRepo.getAllGroupsLocally()
         .map { Resource.Ready(it) }
         .conflate()
@@ -84,6 +79,9 @@ class MapHomeViewModel constructor(
         }.launchIn(coroutineScope)
 
         groupIdData
+            .onEach { groupId ->
+                keepLocationSubscriptionOn(groupId)
+            }
             .flatMapLatest {
                 if (it.isBlank()) {
                     userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
@@ -189,20 +187,6 @@ class MapHomeViewModel constructor(
             }
             .onEach { _uiState.value = it }
             .launchIn(coroutineScope)
-
-        groupIdData
-            .onEach { delay(3000) }
-            .conflate()
-            .onEach { groupId ->
-                if (groupId.isNullOrBlank()) {
-                    logg.tag("location_performance").v("Map not active")
-                    locationSubscriptionJob?.cancel()
-                } else {
-                    logg.tag("location_performance").v("Map active for $groupId")
-                    keepLocationSubscriptionOn()
-                }
-            }
-            .launchIn(coroutineScope)
     }
 
     fun switchGroup(groupId: String) {
@@ -247,10 +231,18 @@ class MapHomeViewModel constructor(
         } ?: emptyList()
     }
 
-    private fun keepLocationSubscriptionOn() {
+    private fun keepLocationSubscriptionOn(groupId: String?) {
         locationSubscriptionJob?.cancel()
+
+        if(groupId.isNullOrBlank()) {
+            logg.v("realtime", "Group id not valid, ignore realtime map subscription")
+            return
+        }
+
+        logg.tag("location_performance").v("Map active for $groupId")
         locationSubscriptionJob = coroutineScope.launch {
-            locationRefreshSubscription.collect()
+            logg.v("realtime", "Group ready ($groupId), activate realtime subscription")
+            locationRefreshUseCase.locationRefresh(groupId).mapToPayload { Unit }.collect()
         }
     }
 
