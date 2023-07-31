@@ -61,33 +61,23 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5"
             tools:src="@drawable/ic_user_placeholder_round"
-            tools:visibility="gone" />
+             />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvGroupEmoji"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivPinIcon"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/shape_main_rounded_full"
-            android:backgroundTint="@color/light_theme_light"
-            android:gravity="center"
-            android:maxLines="1"
-            android:paddingBottom="6dp"
-            android:textColor="@color/black"
-            android:textSize="28sp"
-            android:visibility="gone"
-            app:autoSizeMaxTextSize="86sp"
-            app:autoSizeMinTextSize="8sp"
-            app:autoSizeTextType="uniform"
+            app:backgroundColor="@color/transparent"
             app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toBottomOf="@id/guideline"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.75"
+            app:layout_constraintHeight_percent="0.6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5"
-            tools:text="🏀"
-            tools:visibility="visible" />
+            tools:src="@drawable/emoji_u1f3aa"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
