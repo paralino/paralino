@@ -183,7 +183,7 @@ fun GroupMemberWithLocations(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = CoreAppIcons.AccessTime.asPainterResource(),
-                            tint = MaterialTheme.colors.secondary,
+                            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(end = 2.dp)
@@ -192,7 +192,7 @@ fun GroupMemberWithLocations(
                         Text(
                             text = state.lastPing,
                             style = MaterialTheme.typography.caption,
-                            color = MaterialTheme.colors.secondary,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                         )
                     }
                 }
@@ -398,11 +398,21 @@ fun GroupMemberLocationChild(
             GroupStatusTag(status)
 
             if (state.lastPing != null) {
-                Text(
-                    text = state.lastPing,
-                    style = MaterialTheme.typography.overline,
-                    color = MaterialTheme.colors.secondary,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = CoreAppIcons.AccessTime.asPainterResource(),
+                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 2.dp)
+                            .size(14.dp)
+                    )
+                    Text(
+                        text = state.lastPing,
+                        style = MaterialTheme.typography.caption,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                    )
+                }
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
