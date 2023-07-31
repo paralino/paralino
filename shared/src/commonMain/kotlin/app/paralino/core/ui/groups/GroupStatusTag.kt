@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
@@ -21,7 +22,19 @@ import dev.icerock.moko.resources.compose.stringResource
 
 
 enum class GroupStatusTagType {
-    SHARING_ACTIVE, UNVERIFIED, INACTIVE
+    SHARING_ACTIVE, UNVERIFIED, INACTIVE, NOT_SHARING, OFFLINE, GPS_OFF, BATTERY_SAVING, MISSING_PERMISSION;
+}
+
+fun MemberDeviceStatusType.toStatusTagType(): GroupStatusTagType {
+    return when (this) {
+        MemberDeviceStatusType.GPS_OFF -> GroupStatusTagType.GPS_OFF
+        MemberDeviceStatusType.MISSING_PERMISSIONS -> GroupStatusTagType.MISSING_PERMISSION
+        MemberDeviceStatusType.NOT_SHARING -> GroupStatusTagType.NOT_SHARING
+        MemberDeviceStatusType.BATTERY_SAVER_ON -> GroupStatusTagType.BATTERY_SAVING
+        MemberDeviceStatusType.TOO_MANY_REQUESTS -> GroupStatusTagType.BATTERY_SAVING
+        MemberDeviceStatusType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
+        MemberDeviceStatusType.INACTIVE -> GroupStatusTagType.INACTIVE
+    }
 }
 
 @Composable
@@ -29,24 +42,36 @@ fun GroupStatusTag(
     status: GroupStatusTagType?
 ) {
 
-    val tagColor = when(status) {
+    val tagColor = when (status) {
         GroupStatusTagType.SHARING_ACTIVE -> AppColors.accent
-        GroupStatusTagType.UNVERIFIED -> MaterialTheme.colors.onError
+        GroupStatusTagType.UNVERIFIED,
+        GroupStatusTagType.GPS_OFF,
+        GroupStatusTagType.MISSING_PERMISSION -> MaterialTheme.colors.onError
+
+        GroupStatusTagType.BATTERY_SAVING -> AppColors.highlightGold
         GroupStatusTagType.INACTIVE -> MaterialTheme.colors.secondary
         else -> MaterialTheme.colors.secondary
     }
     val tagTextColor = MaterialTheme.colors.onPrimary
-    val tagText = when(status) {
+    val tagText = when (status) {
         GroupStatusTagType.SHARING_ACTIVE -> stringResource(resource = MR.strings.dashboard_groups_section_active)
         GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
-        GroupStatusTagType.INACTIVE -> stringResource(resource = MR.strings.group_members_status_inactive)
-        else -> ""
+        GroupStatusTagType.INACTIVE,
+        GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_inactive)
+        GroupStatusTagType.GPS_OFF -> stringResource(resource = MR.strings.group_members_status_gps_off)
+        GroupStatusTagType.MISSING_PERMISSION -> stringResource(resource = MR.strings.group_members_status_missing_permissions)
+        GroupStatusTagType.BATTERY_SAVING -> stringResource(resource = MR.strings.group_members_status_battery_saver)
+        GroupStatusTagType.OFFLINE -> stringResource(resource = MR.strings.group_members_status_offline)
+        null -> ""
     }
-    val tagIcon = when(status) {
-        GroupStatusTagType.SHARING_ACTIVE -> CoreAppIcons.LocationOn.asPainterResource()
+    val tagIcon = when (status) {
+        GroupStatusTagType.SHARING_ACTIVE,
+        GroupStatusTagType.GPS_OFF,
+        GroupStatusTagType.MISSING_PERMISSION -> CoreAppIcons.LocationOn.asPainterResource()
         GroupStatusTagType.UNVERIFIED -> CoreAppIcons.Warning.asPainterResource()
-        GroupStatusTagType.INACTIVE -> null
-        else -> null
+        GroupStatusTagType.BATTERY_SAVING -> CoreAppIcons.BatteryChargingFull.asPainterResource()
+        GroupStatusTagType.INACTIVE, GroupStatusTagType.OFFLINE, GroupStatusTagType.NOT_SHARING -> null
+        null -> null
     }
 
     if (status != null) {

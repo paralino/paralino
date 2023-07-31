@@ -2,23 +2,24 @@ package app.paralino.core.repo.location
 
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
-import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.models.raw.*
+import app.paralino.core.models.raw.GroupSettingsRaw
+import app.paralino.core.models.raw.LocationDeletePayload
+import app.paralino.core.models.raw.MemberDocumentRaw
+import app.paralino.core.models.raw.MemberLocationRaw
+import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
-import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.serialization.encodeToString
@@ -30,7 +31,7 @@ class LocationRemoteSource constructor(
     private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val userMemberIdUseCase: UserMemberIdUseCase
+    private val userMemberIdUseCase: UserMemberIdUseCase,
 ) {
 
     suspend fun deleteLocation(memberId: String, locationId: String) {
@@ -96,12 +97,17 @@ class LocationRemoteSource constructor(
         if (memberKey !is GroupMemberSenderKey.Valid)
             throw MissingMemberKeyException(data.groupId, config.userId)
 
-        val locationData = data.data?.let {
+        val locationData = data.locationData?.let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
                 key = memberKey.key
             )
         }
+
+        val status = cryptoCore.encryptDataWithKey(
+            data = BaseRemoteModule.formatter.encodeToString(data.deviceStatus),
+            key = memberKey.key
+        )
 
         documentApi.updateDocument(
             databaseType = BackendDatabaseType.DATA,
@@ -109,6 +115,7 @@ class LocationRemoteSource constructor(
             docId = data.locationId,
             data = mapOf(
                 "locationData" to locationData,
+                "status" to status,
                 "deviceKeyVersion" to memberKey.deviceKeyVersion,
             )
         )

@@ -1,9 +1,7 @@
 package app.paralino.core.models.location
 
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
-import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Contextual
@@ -22,8 +20,12 @@ data class MemberLocation constructor(
 
     @Contextual
     val deviceData: CryptoResource<MemberDeviceData>,
+
     @Contextual
-    val locationData: CryptoResource<LocationDataModel>
+    val locationData: CryptoResource<LocationDataModel>,
+
+    @Contextual
+    val status: CryptoResource<MemberDeviceStatus>
 ) {
     val name: String? get() = deviceData.data?.deviceName ?: "---"
 
@@ -31,13 +33,14 @@ data class MemberLocation constructor(
         get() {
             val now = nowUTC()
             val pinTime = locationData.data?.timeUTC?.fromUTCtoInstant() ?: return false
-            val activeThreshold = 30.toDuration(DurationUnit.MINUTES)
+            val activeThreshold = 5.toDuration(DurationUnit.MINUTES)
             return pinTime.plus(activeThreshold) > now
         }
-}
 
-@Serializable
-data class MemberDeviceData constructor(
-    val deviceName: String,
-    val deviceType: String
-)
+    val isEnded: Boolean
+        get() {
+            val now = nowUTC()
+            val endTime = locationData.data?.endTimeUTC?.fromUTCtoInstant() ?: return false
+            return endTime > now && isActive
+        }
+}

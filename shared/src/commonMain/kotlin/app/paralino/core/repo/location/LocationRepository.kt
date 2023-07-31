@@ -2,10 +2,12 @@ package app.paralino.core.repo.location
 
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
+import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.MemberDeviceStatus
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
@@ -21,6 +23,7 @@ class LocationRepository constructor(
     private val remote: LocationRemoteSource,
     private val placesRepo: PlacesRepository,
     private val memberIdUseCase: UserMemberIdUseCase,
+    private val memberDeviceStatusProvider: MemberDeviceStatusProvider,
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
     private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
     private val deviceKeyRotation: MemberDeviceKeyRotation
@@ -38,7 +41,7 @@ class LocationRepository constructor(
         return local.getLocationCountForMember(memberId)
     }
 
-    suspend fun pushLocation(data: LocationDataModel) {
+    suspend fun pushLocation(data: LocationDataModel?) {
         triggerRemoteOnly {
             if (!sharingManager.isSharingActive()) throw NoValidContractsException()
 
@@ -46,8 +49,12 @@ class LocationRepository constructor(
             val mapped = contracts.mapNotNull { contract ->
 
                 // skip location update if key rotation is in progress
-                if(memberCryptoKeyRotation.isProcessing(contract.groupId) || deviceKeyRotation.isProcessing(contract.groupId))
+                if (
+                    memberCryptoKeyRotation.isProcessing(contract.groupId) ||
+                    deviceKeyRotation.isProcessing(contract.groupId)
+                ) {
                     return@mapNotNull null
+                }
 
                 var locationId =
                     memberIdUseCase.getCurrentLocationIdForGroup(groupId = contract.groupId)
@@ -55,7 +62,10 @@ class LocationRepository constructor(
                 if (locationId.isNullOrBlank()) {
                     logg.d("Location is null for ${contract.groupId}, try register new device")
                     try {
-                        registerDeviceForSharing.registerDevice(groupId = contract.groupId, deviceName = null)
+                        registerDeviceForSharing.registerDevice(
+                            groupId = contract.groupId,
+                            deviceName = null
+                        )
                     } catch (e: Exception) {
                         // TODO notify user
                         logg.w("Error registering device for group sharing", e)
@@ -66,13 +76,14 @@ class LocationRepository constructor(
                 locationId =
                     memberIdUseCase.getCurrentLocationIdForGroup(groupId = contract.groupId)
 
-                val member = memberIdUseCase.getCurrentUserMemberForGroup(groupId = contract.groupId)
+                val member =
+                    memberIdUseCase.getCurrentUserMemberForGroup(groupId = contract.groupId)
 
                 if (locationId.isNullOrBlank() || member == null) {
                     logg.d("Location device can not be established for current device, abort sharing")
                     sharingManager.stopSharing(contract.groupId)
                     null
-                } else if(!member.isVerified) {
+                } else if (!member.isVerified) {
                     // TODO Notify user and keep sharing contract active for cases where data is not synced yet
                     // that way sharing could continue after refresh if member becomes verified
                     logg.e("Current member is unverified in group ${contract.groupId}, ignore location update")
@@ -83,33 +94,32 @@ class LocationRepository constructor(
                         groupId = contract.groupId,
                         member = member,
                         // TODO share approximate location if selected
-                        data = LocationDataModel(
-                            timeUTC = data.timeUTC,
-                            lat = data.lat,
-                            lng = data.lng,
-                            accuracy = data.accuracy,
-                            batteryLevel = data.batteryLevel?.takeIf { contract.shareBattery },
-                            speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
-                            altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f }
-                        )
+                        locationData = data?.let { data ->
+                            LocationDataModel(
+                                timeUTC = data.timeUTC,
+                                endTimeUTC = contract.endTimeUTC,
+                                lat = data.lat,
+                                lng = data.lng,
+                                accuracy = data.accuracy,
+                                batteryLevel = data.batteryLevel?.takeIf { contract.shareBattery },
+                                speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
+                                altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f }
+                            )
+                        },
+                        deviceStatus = memberDeviceStatusProvider.getStatus(groupId = contract.groupId)
                     )
                 }
             }
 
-            placesRepo.processLocation(data)
+            data?.let { placesRepo.processLocation(it) }
             remote.saveCurrentLocation(mapped)
         }
     }
 
     fun clearLocation(locationId: String): Flow<Unit> {
         return getDataOnce(
-            localUpdate = {
-                local.clearMemberLocationData(locationId = locationId)
-            }
-        ) {
-            remote.clearLocation(locationId)
-        }
+            remote = { remote.clearLocation(locationId) },
+            localUpdate = { local.clearMemberLocationData(locationId = locationId) }
+        )
     }
-
 }
-

@@ -6,12 +6,21 @@ import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.utils.extensions.combine
+import kotlinx.coroutines.flow.combine
 
 abstract class IDeviceApiProvider(
     protected val backendConfig: BackendConfig,
-    protected val locationStatusProvider: ILocationStatusProvider,
-    protected val connectionStatusProvider: IConnectionStatusProvider
+    val locationStatusProvider: ILocationStatusProvider,
+    val connectionStatusProvider: IConnectionStatusProvider
 ) {
+
+    val deviceStatus = combine(
+        locationStatusProvider.status,
+        connectionStatusProvider.status
+    ) { locationStatus, connectionStatus ->
+        DeviceStatusData(locationStatus, connectionStatus)
+    }
 
     fun initialize() {
         config = createConfig()
@@ -42,3 +51,8 @@ abstract class IDeviceApiProvider(
     abstract fun copyToClipboard(data: String)
     abstract suspend fun logout()
 }
+
+data class DeviceStatusData(
+    val locationStatus: LocationConditionStatus,
+    val networkStatus: ConnectionStatus
+)

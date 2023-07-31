@@ -132,6 +132,7 @@ data class MemberLocationDataPayload constructor(
     val groupKeyVersion: Long,
     val deviceData: String,
     val locationData: String,
+    val status: String,
     val encryptedSenderKeys: List<GroupSenderKeyPayload>,
 )
 
@@ -217,6 +218,7 @@ data class LocationCreatePayload constructor(
     val groupId: String,
     val deviceId: String,
     val deviceData: String?,
+    val status: String,
     val groupKeyVersion: Long,
     val keys: List<GroupSenderKeyPayload>
 )

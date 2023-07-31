@@ -8,9 +8,45 @@ data class LocationDataModel constructor(
     val lng: Double,
     val accuracy: Float = 0f,
     val timeUTC: String? = null,
+    val endTimeUTC: String? = null,
     val batteryLevel: Int? = null,
     val speed: Float? = null,
     val altitude: Float? = null
 ) {
     val shouldShowApproximateCircle get() = accuracy > 10f
+}
+
+@Serializable
+data class MemberDeviceData constructor(
+    val deviceName: String,
+    val deviceType: String
+)
+
+@Serializable
+data class MemberDeviceStatus constructor(
+    val timeUTC: String? = null,
+    val batteryLevel: Int? = null,
+    val status: String? = null,
+) {
+    val statusType: MemberDeviceStatusType?
+        get() = MemberDeviceStatusType.fromKey(status)
+}
+
+enum class MemberDeviceStatusType {
+    INACTIVE,
+    NOT_SHARING,
+    ACTIVE,
+    GPS_OFF,
+    MISSING_PERMISSIONS,
+    BATTERY_SAVER_ON,
+    TOO_MANY_REQUESTS,
+    ;
+
+    val key: String = name
+
+    companion object {
+        fun fromKey(key: String?): MemberDeviceStatusType? {
+            return values().firstOrNull { it.key == key }
+        }
+    }
 }

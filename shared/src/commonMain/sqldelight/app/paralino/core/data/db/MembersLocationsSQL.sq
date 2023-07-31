@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS memberLocationEntity (
 `groupKeyVersion` INTEGER NOT NULL,
 `deviceKeyVersion` INTEGER NOT NULL,
 `deviceData` TEXT,
-`locationData` TEXT
+`locationData` TEXT,
+`status` TEXT
 );
 
 create:
@@ -25,7 +26,8 @@ SET deviceId = :deviceId,
  deviceData = :deviceData,
  groupKeyVersion = :groupKeyVersion,
  deviceKeyVersion = :deviceKeyVersion,
- locationData = :locationData
+ locationData = :locationData,
+ status = :status
 WHERE id = :id;
 
 getForMember:

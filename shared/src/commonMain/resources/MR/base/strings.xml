@@ -168,7 +168,7 @@
     <string name="groups_sharing_setting_elevation_share">Elevation</string>
     <string name="groups_sharing_button_start">Start sharing</string>
     <string name="groups_sharing_title">Share location</string>
-    <string name="groups_sharing_device_name_placeholder">Device name</string>
+    <string name="groups_sharing_device_name_placeholder">Device name (optional)</string>
     <string name="groups_sharing_devices">Devices</string>
     <string name="groups_sharing_potential_error_title">Warning</string>
     <string name="groups_sharing_potential_error_message">To share your location please resolve all the errors: \n\n%s\n</string>
@@ -219,6 +219,8 @@
     <string name="group_details_add_member_button">Add new member</string>
     <string name="group_details_sharing_status_time">Sharing until: **%s**</string>
     <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
+    <string name="group_details_sharing_action">Location sharing</string>
+    <string name="group_details_security_action">Security</string>
 
     <string name="group_create_start_title">Connect with your family</string>
     <string name="group_load_error">Unable to load your group</string>
@@ -229,6 +231,10 @@
 
     <string name="group_members_last_active_status_now">Just now</string>
     <string name="group_members_status_inactive">INACTIVE</string>
+    <string name="group_members_status_offline">Device is offline</string>
+    <string name="group_members_status_gps_off">GPS is off</string>
+    <string name="group_members_status_battery_saver">Battery saving is on</string>
+    <string name="group_members_status_missing_permissions">Missing permissions</string>
 
     <string name="places_list_add_button">New place</string>
     <string name="places_list_screen_title">Places</string>

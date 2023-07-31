@@ -6,11 +6,13 @@ import app.paralino.android.utils.extensions.fromUTCtoLocal
 import app.paralino.core.MR
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
+import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.format.DistanceUnitType
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -70,5 +72,9 @@ class ValueFormatter(): IValueFormatter() {
     override fun formatBestPattern(epochSeconds: Long, pattern: String): String {
         val dateTime = java.time.LocalDateTime.ofEpochSecond(epochSeconds, 0, ZoneOffset.UTC)
         return dateTime.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), pattern)))
+    }
+
+    override fun currentTimeForApi(): String {
+        return nowUTC().toLocalDateTime(TimeZone.UTC).toJavaLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     }
 }

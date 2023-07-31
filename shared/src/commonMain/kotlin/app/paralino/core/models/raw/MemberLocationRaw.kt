@@ -13,6 +13,7 @@ data class MemberLocationRaw constructor(
     val deviceKeyVersion: Long,
     val deviceData: String? = null,
     val locationData: String? = null,
+    val status: String? = null
 ) {
 
     companion object {
@@ -24,6 +25,7 @@ data class MemberLocationRaw constructor(
                 deviceKeyVersion = (map["deviceKeyVersion"] as Number).toLong(),
                 deviceData = map["deviceData"] as? String?,
                 locationData = map["locationData"] as? String?,
+                status = map["status"] as? String?,
             )
         }
     }

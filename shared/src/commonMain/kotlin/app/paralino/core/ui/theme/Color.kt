@@ -15,6 +15,7 @@ object AppColors {
 
     val errorBackground = Color(0x33F44336)
     val redMain = Color(0xFFB3261E)
+    val highlightGold = Color(0xFFFFC107)
 
     val darkBackground = Color(0xFF080011)
     val darkSurface = Color(0xFF1D1129)

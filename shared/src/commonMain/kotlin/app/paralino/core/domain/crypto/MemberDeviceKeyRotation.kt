@@ -8,6 +8,7 @@ import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecution
+import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.CryptoResource
@@ -37,6 +38,7 @@ class MemberDeviceKeyRotation(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val cryptoKEKRepository: CryptoKEKRepository,
     private val validityVerification: GroupValidityVerification,
+    private val deviceStatusProvider: MemberDeviceStatusProvider
 ) : LimitedExecution() {
 
     suspend fun rotateDeviceKeys(
@@ -211,6 +213,15 @@ class MemberDeviceKeyRotation(
             }
         )?.invoke()
 
+        val status = senderKeys.first?.let {
+            cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(
+                    deviceStatusProvider.getPreSharingStatus(group.id)
+                ),
+                key = it
+            )
+        }
+
         return MemberLocationDataPayload(
             locationId = currentDeviceLocation.id,
             deviceId = config.deviceId,
@@ -222,6 +233,7 @@ class MemberDeviceKeyRotation(
                 )
             } ?: "",
             locationData = newLocationData ?: "",
+            status = status ?: "",
             encryptedSenderKeys = senderKeys.second
         )
     }

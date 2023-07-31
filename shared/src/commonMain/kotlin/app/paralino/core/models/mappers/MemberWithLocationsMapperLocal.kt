@@ -56,7 +56,8 @@ class MemberWithLocationsMapperLocal(
                 groupKeyVersion = location.groupKeyVersion,
                 deviceKeyVersion = location.deviceKeyVersion,
                 deviceData = location.deviceData,
-                locationData = location.locationData
+                locationData = location.locationData,
+                status = location.status
             )
         }
 
@@ -79,7 +80,8 @@ class MemberWithLocationsMapperLocal(
             groupKeyVersion = location.groupKeyVersion,
             deviceKeyVersion = location.deviceKeyVersion,
             deviceData = location.deviceData,
-            locationData = location.locationData
+            locationData = location.locationData,
+            status = location.status
         )
     }
 

@@ -12,11 +12,11 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberState
-import app.paralino.core.presentation.groups.GroupMemberStatus
 import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.AppTheme
@@ -86,7 +86,7 @@ val dummyLocations = listOf(
         speed = "35 km/h",
         elevation = "250m",
         lastPing = "16:30",
-        status = GroupMemberStatus.ACTIVE,
+        status = MemberDeviceStatusType.ACTIVE,
         canEdit = true,
         currentDevice = true
     ),
@@ -98,7 +98,7 @@ val dummyLocations = listOf(
         speed = "35 km/h",
         elevation = "250m",
         lastPing = null,
-        status = GroupMemberStatus.INACTIVE,
+        status = MemberDeviceStatusType.GPS_OFF,
         canEdit = true,
         currentDevice = true
     ),
@@ -110,7 +110,7 @@ val dummyLocations = listOf(
         speed = "35 km/h",
         elevation = "250m",
         lastPing = "16:30",
-        status = GroupMemberStatus.ACTIVE,
+        status = MemberDeviceStatusType.NOT_SHARING,
         canEdit = false,
         currentDevice = false
     )

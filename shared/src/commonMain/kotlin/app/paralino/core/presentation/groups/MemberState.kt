@@ -2,6 +2,7 @@ package app.paralino.core.presentation.groups
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.provider.IValueFormatter
@@ -45,7 +46,6 @@ data class GroupMemberItemStateWithOneLocation constructor(
     override val keyId: String
         get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
             ?: memberState.memberId
-    val statusTag: GroupMemberStatus get() = location?.status ?: GroupMemberStatus.INACTIVE
 }
 
 data class GroupMemberItemStateWithLocations constructor(
@@ -58,9 +58,10 @@ data class GroupMemberItemStateWithLocations constructor(
         get() = memberState.memberId
 
     val singleLocation: GroupMemberItemLocationState? = locations.takeIf { it.size == 1 }?.first()
-    val statusTag: GroupMemberStatus
-        get() = locations.firstOrNull { it.status == GroupMemberStatus.ACTIVE }?.status
-            ?: GroupMemberStatus.INACTIVE
+    val statusTag: MemberDeviceStatusType
+        get() = singleLocation?.status
+            ?: locations.firstOrNull { it.status == MemberDeviceStatusType.ACTIVE }?.status
+            ?: MemberDeviceStatusType.INACTIVE
 }
 
 data class GroupMemberItemLocationState constructor(
@@ -71,7 +72,7 @@ data class GroupMemberItemLocationState constructor(
     val speed: String?,
     val elevation: String?,
     val lastPing: String?,
-    val status: GroupMemberStatus,
+    val status: MemberDeviceStatusType,
     val canEdit: Boolean,
     val currentDevice: Boolean
 ) {
@@ -87,18 +88,15 @@ data class GroupMemberItemLocationState constructor(
         locationId = memberLocation.id,
         name = name,
         image = image ?: ImageModel.emoji(Emojis.lock),
-        batterLevel = memberLocation.locationData.data?.batteryLevel,
+        batterLevel = memberLocation.status.data?.batteryLevel ?: memberLocation.locationData.data?.batteryLevel,
         speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
         elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it) },
         lastPing = formatter.getLastPing(memberLocation),
-        status = if (memberLocation.isActive) GroupMemberStatus.ACTIVE else GroupMemberStatus.INACTIVE,
+        status = if(memberLocation.isEnded) MemberDeviceStatusType.NOT_SHARING
+        else memberLocation.status.data?.statusType ?: MemberDeviceStatusType.INACTIVE,
         canEdit = canEdit,
         currentDevice = currentDevice
     )
-}
-
-enum class GroupMemberStatus {
-    ACTIVE, INACTIVE
 }
 
 enum class MemberAction {

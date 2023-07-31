@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
-import app.paralino.core.presentation.groups.GroupMemberStatus
 import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -34,6 +34,7 @@ import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.GroupStatusTag
 import app.paralino.core.ui.groups.GroupStatusTagType
+import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
@@ -116,12 +117,6 @@ fun GroupMemberWithLocations(
                                 style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.SemiBold)
                             )
                         }
-                    } else if (state.allowShowingDevices && state.singleLocation?.batterLevel != null && expanded) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(16.dp)
-                        )
                     }
                 }
             }
@@ -130,7 +125,7 @@ fun GroupMemberWithLocations(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 12.dp, end = 8.dp, bottom = 0.dp),
+                    .padding(start = 12.dp, end = 8.dp, bottom = 4.dp),
                 verticalArrangement = Arrangement.Center
             ) {
                 val iconId = "deviceIcon"
@@ -179,12 +174,12 @@ fun GroupMemberWithLocations(
 
                 val status = when {
                     !state.memberState.isVerified -> GroupStatusTagType.UNVERIFIED
-                    state.statusTag == GroupMemberStatus.INACTIVE -> GroupStatusTagType.INACTIVE
+                    !expanded || state.locations.isEmpty() || !state.allowShowingDevices -> state.statusTag.toStatusTagType()
                     else -> null
                 }
                 GroupStatusTag(status)
 
-                if (state.lastPing != null) {
+                if (state.lastPing != null && (!expanded || !state.allowShowingDevices)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = CoreAppIcons.AccessTime.asPainterResource(),
@@ -385,7 +380,7 @@ fun GroupMemberLocationChild(
                 .padding(
                     start = 8.dp,
                     end = 4.dp,
-                    bottom = if (state.batterLevel != null) 12.dp else 0.dp
+                    bottom = if (state.batterLevel != null && state.lastPing == null) 12.dp else 0.dp
                 ),
             verticalArrangement = Arrangement.Center
         ) {
@@ -397,8 +392,8 @@ fun GroupMemberLocationChild(
             )
 
             val status = when (state.status) {
-                GroupMemberStatus.INACTIVE -> GroupStatusTagType.INACTIVE
-                else -> null
+                MemberDeviceStatusType.NOT_SHARING -> GroupStatusTagType.INACTIVE
+                else -> state.status.toStatusTagType()
             }
             GroupStatusTag(status)
 
@@ -442,7 +437,6 @@ fun GroupMemberLocationChild(
                     Spacer(modifier = Modifier.size(8.dp))
                 }
             }
-
         }
     }
 }

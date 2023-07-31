@@ -14,6 +14,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.places.GroupPlaceGeofenceData
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
@@ -37,7 +38,7 @@ class LocationService : Service() {
     private val locationSharingManager: LocationSharingManager by inject()
     private val locationRepository: LocationRepository by inject()
     private val sharingRealtimeEvents: RealtimeEventsWhileSharingUseCase by inject()
-    private val locationStatus: ILocationStatusProvider by inject()
+    private val deviceApiProvider: IDeviceApiProvider by inject()
     private val placesRepository: PlacesRepository by inject()
     private val geofenceManager: IGeofenceManager by inject()
     private val fullRefresh: RefreshEverythingUseCase by inject()
@@ -70,7 +71,7 @@ class LocationService : Service() {
     private fun initTracking() {
         logg.v(this.hashCode().toString(), "Subscribe to location and sharing status")
 
-        locationStatus.status
+        deviceApiProvider.locationStatusProvider.status
             .onEach {
                 if (it.isOK()) {
                     locationInitHandler.startLocationUpdates()
@@ -103,7 +104,7 @@ class LocationService : Service() {
     }
 
     private fun updateNotification() {
-        val errors = locationStatus.currentStatus.getPossibleErrors(
+        val errors = deviceApiProvider.locationStatusProvider.currentStatus.getPossibleErrors(
             forBackground = !launchedInForeground
         )
         val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0
@@ -135,13 +136,20 @@ class LocationService : Service() {
                 it.data?.let {
                     launchedInForeground = true
                     updateNotification()
-                    saveLocation(it)
+//                    saveLocation(it)
                 }
+            }
+            .launchIn(serviceDefaultScope)
+
+        deviceApiProvider.deviceStatus
+            .onEach {
+                logg.v("device_status", "Status changed: $it")
+                saveLocation(null)
             }
             .launchIn(serviceDefaultScope)
     }
 
-    private fun saveLocation(data: LocationDataModel) {
+    private fun saveLocation(data: LocationDataModel?) {
         serviceDefaultScope.launch {
             try {
                 locationRepository.pushLocation(data)
@@ -186,7 +194,7 @@ class LocationService : Service() {
             }
             .distinctFlowOfList()
 
-        combine(places, locationStatus.status, timer) { geofences, locationStatus, _ ->
+        combine(places, deviceApiProvider.locationStatusProvider.status, timer) { geofences, locationStatus, _ ->
             if (locationStatus.isOK(forAlwaysOnAccess = true)) {
                 geofenceManager.registerGeofences(geofences)
             } else {

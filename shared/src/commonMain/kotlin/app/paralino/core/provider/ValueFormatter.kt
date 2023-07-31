@@ -5,6 +5,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.format.DistanceUnitType
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -21,6 +22,7 @@ abstract class IValueFormatter {
     abstract fun getDistanceSmall(meters: Float, unitType: DistanceUnitType? = null): String
     abstract fun getLastPing(time: LocalDateTime?): String?
     abstract fun formatBestPattern(epochSeconds: Long, pattern: String): String
+    abstract fun currentTimeForApi(): String
 
     fun getLastPing(member: MemberModelWithLocations): String? {
         return getLastPing(

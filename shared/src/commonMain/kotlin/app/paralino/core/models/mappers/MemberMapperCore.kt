@@ -130,6 +130,42 @@ class MemberMapperCore constructor(
                 CryptoResource.MissingKey
             }
 
+            val status = if (memberKey is GroupMemberSenderKey.Valid) {
+                if (location.status.isNullOrBlank()) {
+                    CryptoResource.NotInitialized
+                } else {
+                    try {
+                        cryptoCore.decryptDataWithKey(
+                            data = location.status,
+                            key = memberKey.key
+                        ).let {
+                            BaseRemoteModule.formatter.decodeFromString<MemberDeviceStatus>(it)
+                        }.let {
+                            if(verification == VerificationResult.VERIFIED) {
+                                CryptoResource.Ready(it)
+                            } else {
+                                CryptoResource.UnverifiedKeyOrData(it)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        if(memberKey.deviceKeyVersion != location.deviceKeyVersion) {
+                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion})")
+                            CryptoResource.MissingKey
+                        } else {
+                            logg.tag("tag_crypto_key_group_member")
+                                .e(
+                                    message = "Error decrypting device status data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
+                                            "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
+                                    t = e
+                                )
+                            CryptoResource.WrongKeyOrData
+                        }
+                    }
+                }
+            } else {
+                CryptoResource.MissingKey
+            }
+
             MemberLocation(
                 id = location.id,
                 groupId = model.member.groupId,
@@ -138,7 +174,8 @@ class MemberMapperCore constructor(
                 deviceId = location.deviceId,
                 groupKeyVersion = location.groupKeyVersion,
                 deviceData = deviceData,
-                locationData = locationData
+                locationData = locationData,
+                status = status
             )
         }
 

@@ -19,6 +19,7 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.LocationRefreshUseCase
+import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.domain.location.RealtimeEventsProcessor
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
@@ -155,12 +156,12 @@ val coreModule = module {
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get()) }
-    factory { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get()) }
 
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
-    single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
+    single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -172,7 +173,7 @@ val coreModule = module {
     single { PersonalCodesRepository(get(), get(), get()) }
     single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PlacesRepository(get(), get(), get(), get(), get()) }
     single { AppConfigRepository(get(), get(), get(), config) }
 
@@ -180,6 +181,7 @@ val coreModule = module {
     single { LocationSharingManager(get(), get()) }
     single { UserSessionMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get()) }
+    single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
 
     single { CryptoCore(get()) }
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }

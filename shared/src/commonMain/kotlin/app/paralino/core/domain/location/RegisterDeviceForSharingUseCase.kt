@@ -31,7 +31,8 @@ class RegisterDeviceForSharingUseCase constructor(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val cryptoCore: CryptoCore,
-    private val deviceKeyRotation: MemberDeviceKeyRotation
+    private val deviceKeyRotation: MemberDeviceKeyRotation,
+    private val deviceStatusProvider: MemberDeviceStatusProvider
 ) : BaseRepository() {
 
     suspend fun isDeviceAlreadyRegistered(groupId: String): Boolean {
@@ -70,10 +71,18 @@ class RegisterDeviceForSharingUseCase constructor(
                 key = groupKey.key
             )
 
+            val status = cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(
+                    deviceStatusProvider.getPreSharingStatus(groupId)
+                ),
+                key = keyData.first
+            )
+
             val payload = LocationCreatePayload(
                 groupId = groupId,
                 deviceId = config.deviceId,
                 deviceData = deviceData,
+                status = status,
                 groupKeyVersion = groupKey.version,
                 keys = keyData.second
             )
