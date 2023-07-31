@@ -11,7 +11,7 @@ object LocationPerformanceRequests {
             LocationPerformanceType.HIGH -> locationRequestHigh
             LocationPerformanceType.MEDIUM_HIGH -> locationRequestMediumHigh
             LocationPerformanceType.BALANCED -> locationRequestBalanced
-            LocationPerformanceType.DEFAULT -> locationRequestLow
+            LocationPerformanceType.BATTERY_SAVER -> locationRequestLow
         }
     }
 

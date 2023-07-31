@@ -12,18 +12,36 @@ import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.IGeofenceManager
+import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.distinctFlowOfList
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import kotlin.time.Duration.Companion.hours
 
@@ -36,6 +54,7 @@ class LocationService : Service() {
     private val notificationHandler: LocationNotificationHandler by inject()
     private val locationInitHandler: LocationInitHandler by inject()
     private val locationSharingManager: LocationSharingManager by inject()
+    private val locationPerformanceManager: LocationPerformanceManager by inject()
     private val locationRepository: LocationRepository by inject()
     private val sharingRealtimeEvents: RealtimeEventsWhileSharingUseCase by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
@@ -136,7 +155,7 @@ class LocationService : Service() {
                 it.data?.let {
                     launchedInForeground = true
                     updateNotification()
-//                    saveLocation(it)
+                    saveLocation(it)
                 }
             }
             .launchIn(serviceDefaultScope)
@@ -144,6 +163,14 @@ class LocationService : Service() {
         deviceApiProvider.deviceStatus
             .onEach {
                 logg.v("device_status", "Status changed: $it")
+                saveLocation(null)
+            }
+            .launchIn(serviceDefaultScope)
+
+        locationPerformanceManager.locationPerformanceType
+            .filter { it.current <= LocationPerformanceType.BALANCED }
+            .onEach {
+                logg.v("device_status", "Location performance changed: $it")
                 saveLocation(null)
             }
             .launchIn(serviceDefaultScope)

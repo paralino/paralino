@@ -42,14 +42,14 @@ class LocationInitHandler constructor(
             locationTrackingFlag,
             locationPerformanceManager.locationPerformanceType
         ) { tracking, performanceType ->
-            logg.tag("location_request").v("location request: ${performanceType.name}")
+            logg.tag("location_request").v("location request: ${performanceType.current}")
             if (tracking) {
-                logg.tag("location_request").v("location request OK: ${performanceType.name}")
+                logg.tag("location_request").v("location request OK: ${performanceType.current.name}")
                 val status = LocationConditionStatus.getLocationStatus(context)
                 if (status.isOK()) {
 
                     logg.tag("location_request").v("new request: $performanceType")
-                    val locationRequest = LocationPerformanceRequests.getRequest(performanceType)
+                    val locationRequest = LocationPerformanceRequests.getRequest(performanceType.current)
                     fusedLocationClient.requestLocationUpdates(
                         locationRequest,
                         locationCallback,

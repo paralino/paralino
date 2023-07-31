@@ -1,19 +1,27 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.location.LocationPerformanceType
+import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 import kotlin.time.Duration
@@ -26,8 +34,8 @@ class LocationPerformanceManager constructor(
     val deviceStatus: IDeviceApiProvider,
 ) : BaseRepository() {
 
-    private val _locationPerformanceType = MutableStateFlow(LocationPerformanceType.BALANCED)
-    val locationPerformanceType: StateFlow<LocationPerformanceType> = _locationPerformanceType
+    private val _locationPerformanceType = MutableStateFlow(LocationPerformanceModel())
+    val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
     private var performanceUpdateJob: Job? = null
     private var locationBoostTracker = mutableMapOf<Long, LocationPerformanceType>()
 
@@ -132,7 +140,7 @@ class LocationPerformanceManager constructor(
         val newType = when (type) {
             LocationPerformanceType.HIGH -> {
                 if (batteryLow) {
-                    LocationPerformanceType.DEFAULT
+                    LocationPerformanceType.BATTERY_SAVER
                 } else if (batteryMedium) {
                     if (timeCriteriaLow || timeCriteriaHigh) {
                         // when battery is less than 20% and we spent all medium and high allowance
@@ -151,15 +159,15 @@ class LocationPerformanceManager constructor(
                 } else type
             }
             LocationPerformanceType.MEDIUM_HIGH -> {
-                if (batteryLow) LocationPerformanceType.DEFAULT
+                if (batteryLow) LocationPerformanceType.BATTERY_SAVER
                 else if (timeCriteriaLow) LocationPerformanceType.BALANCED
                 else type
             }
             LocationPerformanceType.BALANCED -> {
-                if (batteryLow) LocationPerformanceType.DEFAULT
+                if (batteryLow) LocationPerformanceType.BATTERY_SAVER
                 else type
             }
-            LocationPerformanceType.DEFAULT -> {
+            LocationPerformanceType.BATTERY_SAVER -> {
                 // accept
                 type
             }
@@ -174,7 +182,18 @@ class LocationPerformanceManager constructor(
             )
 
         locationBoostTracker.put(now, newType)
-        _locationPerformanceType.value = newType
+        _locationPerformanceType.value = LocationPerformanceModel(
+            old = _locationPerformanceType.value.current,
+            requested = type,
+            current = newType
+        )
     }
 
+    data class LocationPerformanceModel(
+        val old: LocationPerformanceType = LocationPerformanceType.BALANCED,
+        val requested: LocationPerformanceType = LocationPerformanceType.BALANCED,
+        val current: LocationPerformanceType = LocationPerformanceType.BALANCED,
+    ) {
+        val isThrottling get() = requested > current
+    }
 }
