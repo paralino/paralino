@@ -393,7 +393,7 @@ fun GroupMemberLocationChild(
 
             val status = when (state.status) {
                 MemberDeviceStatusType.NOT_SHARING -> GroupStatusTagType.INACTIVE
-                else -> state.status.toStatusTagType()
+                else -> state.status?.toStatusTagType()
             }
             GroupStatusTag(status)
 

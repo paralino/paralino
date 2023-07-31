@@ -91,8 +91,8 @@ class MapUserMarkerView : ConstraintLayout {
         return when (data.pinType) {
             MapPinType.MEMBER -> {
                 when {
-                    data.focused -> 100.dp2px
-                    data.active -> 70.dp2px
+                    data.focused && data.active -> 110.dp2px
+                    data.active -> 80.dp2px
                     else -> 40.dp2px
                 }
             }

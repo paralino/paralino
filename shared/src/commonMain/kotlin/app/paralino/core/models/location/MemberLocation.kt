@@ -37,6 +37,14 @@ data class MemberLocation constructor(
             return pinTime.plus(activeThreshold) > now
         }
 
+    val isExpired: Boolean
+        get() {
+            val now = nowUTC()
+            val pinTime = locationData.data?.timeUTC?.fromUTCtoInstant() ?: return false
+            val activeThreshold = 1.toDuration(DurationUnit.HOURS)
+            return pinTime.plus(activeThreshold) < now
+        }
+
     val isEnded: Boolean
         get() {
             val now = nowUTC()

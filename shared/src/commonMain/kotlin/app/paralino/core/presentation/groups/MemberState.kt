@@ -72,7 +72,7 @@ data class GroupMemberItemLocationState constructor(
     val speed: String?,
     val elevation: String?,
     val lastPing: String?,
-    val status: MemberDeviceStatusType,
+    val status: MemberDeviceStatusType?,
     val canEdit: Boolean,
     val currentDevice: Boolean
 ) {
@@ -93,6 +93,7 @@ data class GroupMemberItemLocationState constructor(
         elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it) },
         lastPing = formatter.getLastPing(memberLocation),
         status = if(memberLocation.isEnded) MemberDeviceStatusType.NOT_SHARING
+        else if (memberLocation.isExpired) MemberDeviceStatusType.INACTIVE
         else memberLocation.status.data?.statusType ?: MemberDeviceStatusType.INACTIVE,
         canEdit = canEdit,
         currentDevice = currentDevice
