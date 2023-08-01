@@ -109,18 +109,19 @@ class LocationRemoteSource constructor(
             key = memberKey.key
         )
 
+        val payload = mapOf(
+            "locationData" to locationData,
+            "status" to status,
+            "deviceKeyVersion" to memberKey.deviceKeyVersion,
+        ).filter { it.value != null }
+
         documentApi.updateDocument(
             databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
             docId = data.locationId,
-            data = mapOf(
-                "locationData" to locationData,
-                "status" to status,
-                "deviceKeyVersion" to memberKey.deviceKeyVersion,
-            )
+            data = payload
         )
     }
-
 
     suspend fun getMember(memberId: String): MemberWithLocationsRaw {
         return blocking {
