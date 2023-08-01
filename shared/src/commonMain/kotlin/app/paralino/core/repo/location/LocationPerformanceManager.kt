@@ -195,5 +195,6 @@ class LocationPerformanceManager constructor(
         val current: LocationPerformanceType = LocationPerformanceType.BALANCED,
     ) {
         val isThrottling get() = requested > current
+        val isSlow get() = isThrottling || current <= LocationPerformanceType.BALANCED
     }
 }

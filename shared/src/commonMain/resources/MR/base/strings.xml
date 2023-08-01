@@ -235,6 +235,7 @@
     <string name="group_members_status_gps_off">GPS is off</string>
     <string name="group_members_status_battery_saver">Battery saving is on</string>
     <string name="group_members_status_active">Active</string>
+    <string name="group_members_status_throttle">Idle</string>
     <string name="group_members_status_missing_permissions">Missing permissions</string>
 
     <string name="places_list_add_button">New place</string>

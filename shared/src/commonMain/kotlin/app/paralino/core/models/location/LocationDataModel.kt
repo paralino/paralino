@@ -40,6 +40,7 @@ enum class MemberDeviceStatusType {
     MISSING_PERMISSIONS,
     BATTERY_SAVER_ON,
     TOO_MANY_REQUESTS,
+    IDLE,
     ;
 
     val key: String = name

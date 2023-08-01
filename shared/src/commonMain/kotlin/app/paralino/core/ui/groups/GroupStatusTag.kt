@@ -29,6 +29,7 @@ enum class GroupStatusTagType {
     OFFLINE,
     GPS_OFF,
     BATTERY_SAVING,
+    IDLE,
     TOO_MANY_REQUESTS,
     MISSING_PERMISSION;
 }
@@ -40,6 +41,7 @@ fun MemberDeviceStatusType.toStatusTagType(): GroupStatusTagType {
         MemberDeviceStatusType.NOT_SHARING -> GroupStatusTagType.NOT_SHARING
         MemberDeviceStatusType.BATTERY_SAVER_ON -> GroupStatusTagType.BATTERY_SAVING
         MemberDeviceStatusType.TOO_MANY_REQUESTS -> GroupStatusTagType.TOO_MANY_REQUESTS
+        MemberDeviceStatusType.IDLE -> GroupStatusTagType.IDLE
         MemberDeviceStatusType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
         MemberDeviceStatusType.INACTIVE -> GroupStatusTagType.INACTIVE
     }
@@ -49,7 +51,7 @@ fun MemberDeviceStatusType.toStatusTagType(): GroupStatusTagType {
 fun GroupStatusTag(
     status: GroupStatusTagType?
 ) {
-    if (status != null && status != GroupStatusTagType.TOO_MANY_REQUESTS) {
+    if (status != null) {
 
         val tagColor = when (status) {
             GroupStatusTagType.SHARING_ACTIVE -> AppColors.accent
@@ -57,10 +59,11 @@ fun GroupStatusTag(
             GroupStatusTagType.GPS_OFF,
             GroupStatusTagType.MISSING_PERMISSION -> MaterialTheme.colors.onError
 
-            GroupStatusTagType.TOO_MANY_REQUESTS -> AppColors.highlightGold
+            GroupStatusTagType.TOO_MANY_REQUESTS,
+            GroupStatusTagType.IDLE,
             GroupStatusTagType.BATTERY_SAVING -> AppColors.highlightGold
-            GroupStatusTagType.INACTIVE -> MaterialTheme.colors.secondary
 
+            GroupStatusTagType.INACTIVE,
             GroupStatusTagType.NOT_SHARING,
             GroupStatusTagType.OFFLINE,
             null -> MaterialTheme.colors.secondary
@@ -76,17 +79,19 @@ fun GroupStatusTag(
             GroupStatusTagType.MISSING_PERMISSION -> stringResource(resource = MR.strings.group_members_status_missing_permissions)
             GroupStatusTagType.BATTERY_SAVING -> stringResource(resource = MR.strings.group_members_status_battery_saver)
             GroupStatusTagType.OFFLINE -> stringResource(resource = MR.strings.group_members_status_offline)
-            GroupStatusTagType.TOO_MANY_REQUESTS -> ""
+            GroupStatusTagType.TOO_MANY_REQUESTS -> stringResource(resource = MR.strings.group_members_status_throttle)
+            GroupStatusTagType.IDLE -> stringResource(resource = MR.strings.group_members_status_throttle)
             null -> ""
         }
         val tagIcon = when (status) {
             GroupStatusTagType.SHARING_ACTIVE,
             GroupStatusTagType.GPS_OFF,
-            GroupStatusTagType.MISSING_PERMISSION -> CoreAppIcons.LocationOn.asPainterResource()
+            GroupStatusTagType.MISSING_PERMISSION,
+            GroupStatusTagType.TOO_MANY_REQUESTS,
+            GroupStatusTagType.IDLE -> CoreAppIcons.LocationOn.asPainterResource()
 
             GroupStatusTagType.UNVERIFIED -> CoreAppIcons.Warning.asPainterResource()
             GroupStatusTagType.BATTERY_SAVING -> CoreAppIcons.BatteryChargingFull.asPainterResource()
-            GroupStatusTagType.TOO_MANY_REQUESTS -> CoreAppIcons.LocationOn.asPainterResource()
             GroupStatusTagType.INACTIVE, GroupStatusTagType.OFFLINE, GroupStatusTagType.NOT_SHARING -> null
             null -> null
         }
