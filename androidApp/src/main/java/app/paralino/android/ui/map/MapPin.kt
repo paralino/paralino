@@ -36,13 +36,6 @@ class MapUserMarkerView : ConstraintLayout {
                 vb.ivPinIcon.isVisible = true
                 vb.ivPinIcon.setImageResource(Emojis.getResourceFromIcon(data.image!!.getImageValue()!!).drawableResId)
             }
-//            ImageType.raw -> {
-//                vb.ivPinImage.isVisible = true
-//                vb.tvGroupEmoji.isVisible = false
-//                val b = data.image!!.getImageValue()?.bitmapFromBase64()
-//                if (b != null) vb.ivPinImage.setImageBitmap(b)
-//                else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
-//            }
 
             ImageType.placeholder, null -> {
                 vb.ivPinImage.isVisible = false
@@ -67,20 +60,14 @@ class MapUserMarkerView : ConstraintLayout {
         when (data.image?.getImageType()) {
             ImageType.emoji -> {
                 vb.ivPinImage.isVisible = false
-                vb.tvGroupEmoji.isVisible = true
-                vb.tvGroupEmoji.text = data.image!!.getImageValue()
+                vb.ivPinIcon.isVisible = true
+                vb.ivPinIcon.setImageResource(Emojis.getResourceFromIcon(data.image!!.getImageValue()!!).drawableResId)
             }
-//            ImageType.raw -> {
-//                vb.ivPinImage.isVisible = true
-//                vb.tvGroupEmoji.isVisible = false
-//                val b = data.image!!.getImageValue()?.bitmapFromBase64()
-//                if (b != null) vb.ivPinImage.setImageBitmap(b)
-//                else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
-//            }
-            else -> {
+
+            ImageType.placeholder, null -> {
                 vb.ivPinImage.isVisible = false
-                vb.tvGroupEmoji.isVisible = true
-                vb.tvGroupEmoji.text = Emojis.robot
+                vb.ivPinIcon.isVisible = true
+                vb.ivPinIcon.setImageResource(Emojis.getResourceFromIcon(Emojis.lightBulb).drawableResId)
             }
         }
 
@@ -96,6 +83,7 @@ class MapUserMarkerView : ConstraintLayout {
                     else -> 40.dp2px
                 }
             }
+
             MapPinType.PLACE -> {
                 30.dp2px
             }
