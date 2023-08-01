@@ -56,10 +56,9 @@ data class GroupMemberItemStateWithLocations constructor(
         get() = memberState.memberId
 
     val singleLocation: GroupMemberItemLocationState? = locations.takeIf { it.size == 1 }?.first()
-    val statusTag: MemberDeviceStatusType
+    val statusTag: MemberDeviceStatusType?
         get() = singleLocation?.status
             ?: locations.firstOrNull { it.status == MemberDeviceStatusType.ACTIVE }?.status
-            ?: MemberDeviceStatusType.INACTIVE
 }
 
 data class GroupMemberItemLocationState constructor(
@@ -90,9 +89,7 @@ data class GroupMemberItemLocationState constructor(
         speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
         elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it) },
         lastPing = formatter.getLastPing(memberLocation),
-        status = if(memberLocation.isEnded) MemberDeviceStatusType.NOT_SHARING
-        else if (memberLocation.isExpired) MemberDeviceStatusType.INACTIVE
-        else memberLocation.status.data?.statusType ?: MemberDeviceStatusType.INACTIVE,
+        status = memberLocation.locationAwareStatusType,
         canEdit = canEdit,
         currentDevice = currentDevice
     )

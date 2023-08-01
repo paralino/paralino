@@ -58,17 +58,32 @@ class ValueFormatter(): IValueFormatter() {
         val isYesterday = sameYear && local.dayOfYear == now.minusDays(1).dayOfYear
         val time = local.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
 
-        return if (local.isAfter(java.time.LocalDateTime.now().minusMinutes(1)))
-            MR.strings.group_members_last_active_status_now.localizedString()
-        else if (local.isAfter(java.time.LocalDateTime.now().minusMinutes(2)))
-            MR.strings.group_members_last_active_status_recently.localizedString()
-        else if(sameDay) time
-        else if(isYesterday) "${MR.strings.date_name_yesterday.localizedString()}, $time"
-        else if(sameYear) local.format(
-            DateTimeFormatter.ofPattern(
-                DateFormat.getBestDateTimePattern(
-                    Locale.getDefault(), "MMMd"))) + ", $time"
-        else local.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
+        return when {
+            local.isAfter(now.minusSeconds(20)) -> {
+                MR.strings.group_members_last_active_status_now.localizedString()
+            }
+            local.isAfter(now.minusMinutes(1)) -> {
+                MR.strings.group_members_last_active_status_recently_1.localizedString()
+            }
+            local.isAfter(now.minusMinutes(2)) -> {
+                MR.strings.group_members_last_active_status_recently_2.localizedString()
+            }
+            sameDay -> {
+                time
+            }
+            isYesterday -> {
+                "${MR.strings.date_name_yesterday.localizedString()}, $time"
+            }
+            sameYear -> {
+                local.format(
+                    DateTimeFormatter.ofPattern(
+                        DateFormat.getBestDateTimePattern(
+                            Locale.getDefault(), "MMMd"))) + ", $time"
+            }
+            else -> {
+                local.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
+            }
+        }
     }
 
     override fun formatBestPattern(epochSeconds: Long, pattern: String): String {

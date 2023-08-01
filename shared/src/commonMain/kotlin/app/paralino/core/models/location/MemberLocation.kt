@@ -6,6 +6,7 @@ import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -29,26 +30,45 @@ data class MemberLocation constructor(
 ) {
     val name: String? get() = deviceData.data?.deviceName ?: "---"
 
-    val isActive: Boolean
+    val locationAwareStatusType: MemberDeviceStatusType?
         get() {
-            val now = nowUTC()
-            val pinTime = locationData.data?.timeUTC?.fromUTCtoInstant() ?: return false
-            val activeThreshold = 5.toDuration(DurationUnit.MINUTES)
-            return pinTime.plus(activeThreshold) > now
+            return when {
+                isEnded -> MemberDeviceStatusType.NOT_SHARING
+                isExpired -> MemberDeviceStatusType.INACTIVE
+                isIdleButStillActive -> MemberDeviceStatusType.ACTIVE
+                isActiveButNotFresh -> null
+                else -> status.data?.statusType ?: MemberDeviceStatusType.INACTIVE
+            }
         }
 
+    val isPinActive: Boolean
+        get() = !isOlderThan(5.toDuration(DurationUnit.MINUTES))
+
     val isExpired: Boolean
+        get() = isOlderThan(1.toDuration(DurationUnit.HOURS))
+
+    val isActiveButNotFresh: Boolean
         get() {
-            val now = nowUTC()
-            val pinTime = locationData.data?.timeUTC?.fromUTCtoInstant() ?: return false
-            val activeThreshold = 1.toDuration(DurationUnit.HOURS)
-            return pinTime.plus(activeThreshold) < now
+            val activeStatus = status.data?.statusType == MemberDeviceStatusType.ACTIVE
+                    && isOlderThan(2.toDuration(DurationUnit.MINUTES))
+            val idleStatus = status.data?.statusType?.isIdling == true
+                    && isOlderThan(10.toDuration(DurationUnit.MINUTES))
+            return activeStatus || idleStatus
         }
 
     val isEnded: Boolean
         get() {
-            val now = nowUTC()
             val endTime = locationData.data?.endTimeUTC?.fromUTCtoInstant() ?: return false
-            return endTime > now && isActive
+            return endTime < nowUTC() && !isPinActive
         }
+
+    // even if device status is not active (battery saving is on)
+    // consider status as active if location is fairly fresh
+    val isIdleButStillActive: Boolean
+        get() = status.data?.statusType?.isIdling == true && !isOlderThan(1.toDuration(DurationUnit.MINUTES))
+
+    fun isOlderThan(duration: Duration): Boolean {
+        val pinTime = locationData.data?.timeUTC?.fromUTCtoInstant() ?: return false
+        return pinTime.plus(duration) < nowUTC()
+    }
 }

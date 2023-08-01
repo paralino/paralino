@@ -45,6 +45,11 @@ enum class MemberDeviceStatusType {
 
     val key: String = name
 
+    val isIdling: Boolean get() = when(this) {
+        INACTIVE, BATTERY_SAVER_ON, TOO_MANY_REQUESTS, IDLE -> true
+        else -> false
+    }
+
     companion object {
         fun fromKey(key: String?): MemberDeviceStatusType? {
             return values().firstOrNull { it.key == key }

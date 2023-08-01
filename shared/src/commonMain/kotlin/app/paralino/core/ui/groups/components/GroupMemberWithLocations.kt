@@ -174,7 +174,7 @@ fun GroupMemberWithLocations(
 
                 val status = when {
                     !state.memberState.isVerified -> GroupStatusTagType.UNVERIFIED
-                    !expanded || state.locations.isEmpty() || !state.allowShowingDevices -> state.statusTag.toStatusTagType()
+                    !expanded || state.locations.isEmpty() || !state.allowShowingDevices -> state.statusTag?.toStatusTagType()
                     else -> null
                 }
                 GroupStatusTag(status)

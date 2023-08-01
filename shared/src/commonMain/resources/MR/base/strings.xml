@@ -229,7 +229,8 @@
     <string name="group_picker_button_join">Join</string>
 
     <string name="group_members_last_active_status_now">Just now</string>
-    <string name="group_members_last_active_status_recently">2 minutes ago</string>
+    <string name="group_members_last_active_status_recently_1">1 minute ago</string>
+    <string name="group_members_last_active_status_recently_2">2 minutes ago</string>
     <string name="group_members_status_inactive">INACTIVE</string>
     <string name="group_members_status_offline">Device is offline</string>
     <string name="group_members_status_gps_off">GPS is off</string>

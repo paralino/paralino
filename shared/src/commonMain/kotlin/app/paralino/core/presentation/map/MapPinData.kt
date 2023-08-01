@@ -65,7 +65,7 @@ data class MapPinData constructor(
         markerId = location.id,
         pinType = MapPinType.MEMBER,
         focused = false,
-        active = location.isActive,
+        active = location.isPinActive,
         image = image,
         lat = location.locationData.data!!.lat,
         lng = location.locationData.data!!.lng,
