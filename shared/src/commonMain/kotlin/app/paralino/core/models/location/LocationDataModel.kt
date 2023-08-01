@@ -13,7 +13,7 @@ data class LocationDataModel constructor(
     val speed: Float? = null,
     val altitude: Float? = null
 ) {
-    val shouldShowApproximateCircle get() = accuracy > 10f
+    val shouldShowApproximateCircle get() = accuracy > 2f
 }
 
 @Serializable

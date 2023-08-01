@@ -190,7 +190,7 @@ open class MapViewProviderState constructor(
                         val camera = mapView.getMapboxMap().cameraForGeometry(it.geometry)
                         val show = abs((camera.zoom ?: 0.0) - (currentCamera.zoom ?: 0.0))
                         // change polygon opacity based on size on screen
-                        it.fillOpacity = if (show > 4) 0.0 else 0.2
+                        it.fillOpacity = if (show > 6) 0.0 else 0.2
                         polygonAnnotationsManager?.update(it)
                     }
                 }
@@ -358,10 +358,17 @@ open class MapViewProviderState constructor(
             MapPinType.MEMBER -> 15.0
             MapPinType.PLACE -> 12.0
         }
-        val cameraPosition = CameraOptions.Builder()
+
+        val cameraPosition = data.polygon?.let {
+            val camera = mapView.getMapboxMap().cameraForGeometry(it.geometry)
+            camera.toBuilder()
+                .zoom(camera.zoom?.times(0.98f))
+                .build()
+        } ?: CameraOptions.Builder()
             .zoom(zoom)
             .center(data.point.point)
             .build()
+
         // set camera position
         mapView.getMapboxMap().cameraAnimationsPlugin { this.flyTo(cameraPosition) }
     }

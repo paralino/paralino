@@ -7,8 +7,6 @@ import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.isoToLocalDateTime
-import kotlinx.datetime.LocalDateTime
 
 sealed interface GroupMemberItemState {
     val memberState: GroupMemberState
