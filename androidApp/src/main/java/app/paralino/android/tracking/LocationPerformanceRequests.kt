@@ -8,7 +8,8 @@ object LocationPerformanceRequests {
 
     fun getRequest(type: LocationPerformanceType): LocationRequest {
         return when (type) {
-            LocationPerformanceType.HIGH -> locationRequestHigh
+            LocationPerformanceType.HIGH,
+            LocationPerformanceType.VERY_HIGH -> locationRequestHigh
             LocationPerformanceType.MEDIUM_HIGH -> locationRequestMediumHigh
             LocationPerformanceType.BALANCED -> locationRequestBalanced
             LocationPerformanceType.BATTERY_SAVER -> locationRequestLow

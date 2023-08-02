@@ -187,6 +187,6 @@ val coreModule = module {
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get()) }
 
-    factory { PushNotificationHandler(get(), get(), get(), get()) }
+    factory { PushNotificationHandler(get(), get(), get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), get()) }
 }

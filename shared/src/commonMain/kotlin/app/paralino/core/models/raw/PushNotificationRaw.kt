@@ -24,6 +24,7 @@ data class PushNotificationRaw constructor(
 
         const val pushTypePlaceAlert: String = "place_activity"
         const val pushTypeGroupMemberAdd = "group_member_added"
+        const val pushTypeLocationRequest = "location_request"
 
         @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): PushNotificationRaw {

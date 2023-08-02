@@ -14,6 +14,7 @@ import kotlinx.serialization.decodeFromString
 class PushNotificationHandler constructor(
     private val placePush: IPlaceNotificationsHandler,
     private val groupMemberAddPush: IGroupMemberAddedNotificationsHandler,
+    private val locationRequestPush: ILocationRequestNotificationsHandler,
     private val docApi: IDocumentsApi,
     private val refreshEverything: RefreshEverythingUseCase
 ) {
@@ -86,6 +87,14 @@ class PushNotificationHandler constructor(
                 }
                 if (payload != null) {
                     groupMemberAddPush.process(payload)
+                }
+            }
+            PushNotificationRaw.pushTypeLocationRequest -> {
+                val payload = push.content?.let {
+                    BaseRemoteModule.formatter.decodeFromString<LocationRequestNotificationPayload>(it)
+                }
+                if (payload != null) {
+                    locationRequestPush.process(payload)
                 }
             }
         }

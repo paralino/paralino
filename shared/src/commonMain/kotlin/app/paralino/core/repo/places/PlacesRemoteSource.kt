@@ -12,6 +12,7 @@ import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceSettings
 import app.paralino.core.models.raw.CreatePlacePayload
+import app.paralino.core.models.raw.GenericFunctionPayload
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlaceSettingRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
@@ -253,8 +254,13 @@ class PlacesRemoteSource(
         )
     }
 
-    private suspend fun notifyPlaceEvent(payload: PlaceEventPayload) {
+    private suspend fun notifyPlaceEvent(placePayload: PlaceEventPayload) {
         blocking {
+
+            val payload = GenericFunctionPayload(
+                route = "place-notify",
+                payload = placePayload
+            )
 
             val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionPlaceNotify,

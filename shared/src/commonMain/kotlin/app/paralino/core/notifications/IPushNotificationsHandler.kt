@@ -8,6 +8,7 @@ interface IPushNotificationsHandler<T: NotificationPayload> {
 
 interface IPlaceNotificationsHandler: IPushNotificationsHandler<PlaceActivityNotificationPayload>
 interface IGroupMemberAddedNotificationsHandler: IPushNotificationsHandler<GroupMemberAddedNotificationPayload>
+interface ILocationRequestNotificationsHandler: IPushNotificationsHandler<LocationRequestNotificationPayload>
 
 
 sealed interface NotificationPayload
@@ -25,4 +26,10 @@ data class GroupMemberAddedNotificationPayload constructor(
     val groupId: String,
     val memberUserId: String,
     val ownerUserId: String,
+): NotificationPayload
+
+@Serializable
+data class LocationRequestNotificationPayload constructor(
+    val groupId: String,
+    val userId: String
 ): NotificationPayload
