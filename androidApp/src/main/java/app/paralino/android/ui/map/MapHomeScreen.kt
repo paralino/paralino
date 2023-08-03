@@ -185,8 +185,8 @@ fun MapHomeContent(
             onSettingsClick = {
                 appState.navController.navigate(AppScreen.Settings.routeSignature)
             },
-            onClearMyLocationClick = {
-                vm.clearMyLocation(it)
+            onMemberActionClick = { action, state ->
+                vm.memberAction(action, state)
             },
             onMemberClick = {
                 trackGroup = false

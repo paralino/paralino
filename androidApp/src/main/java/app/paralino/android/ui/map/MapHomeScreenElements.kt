@@ -27,6 +27,7 @@ import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapPinType
@@ -50,7 +51,7 @@ fun MapHomeScreenElements(
     onTrackGroupClick: () -> Unit,
     onSharingStartClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    onClearMyLocationClick: (String) -> Unit,
+    onMemberActionClick: (MemberAction, GroupMemberItemState) -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
 ) {
     ConstraintLayout(
@@ -283,9 +284,7 @@ fun MapHomeScreenElements(
                             collapseOnActionClick = true,
                             forceExpandAction = expanded,
                             onActionClick = {
-                                if (memberState is GroupMemberItemStateWithOneLocation && memberState.location != null) {
-                                    onClearMyLocationClick(memberState.location!!.locationId)
-                                }
+                                onMemberActionClick(it, memberState)
                             },
                             onClick = {
                                 expanded = !expanded

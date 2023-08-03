@@ -232,6 +232,7 @@ data class LocationDeletePayload constructor(
 @Serializable
 data class UpdateUserDeviceFunctionData constructor(
     val sessionId: String,
+    val deviceId: String,
     val pushToken: String,
     val deviceType: String
 )
@@ -270,4 +271,12 @@ data class PersonalCodeResponse constructor(
     val userId: String,
     val encryptedCodeUserData: String,
     val encryptedCodeKeyData: String
+)
+
+@Serializable
+data class LocationRequestPayload constructor(
+    val groupId: String,
+    val userId: String,
+    val locationId: String,
+    val force: Boolean
 )

@@ -457,6 +457,7 @@ val MemberAction.actionIcon: Painter
         MemberAction.DELETE_LOCATION -> CoreAppIcons.Delete.asPainterResource()
         MemberAction.BLOCK_USER -> CoreAppIcons.Block.asPainterResource()
         MemberAction.UNBLOCK_USER -> CoreAppIcons.LockOpen.asPainterResource()
+        MemberAction.REQUEST_LOCATION -> CoreAppIcons.ShareLocation.asPainterResource()
     }
 
 val MemberAction.actionText: StringResource
@@ -465,4 +466,5 @@ val MemberAction.actionText: StringResource
         MemberAction.DELETE_LOCATION -> MR.strings.group_members_item_clear_location_button
         MemberAction.BLOCK_USER -> MR.strings.group_details_block_group_alert_button
         MemberAction.UNBLOCK_USER -> MR.strings.blocklist_unblock_alert_button
+        MemberAction.REQUEST_LOCATION -> MR.strings.group_members_item_request_location_button
     }

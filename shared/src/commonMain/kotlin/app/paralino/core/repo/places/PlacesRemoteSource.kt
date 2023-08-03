@@ -263,7 +263,7 @@ class PlacesRemoteSource(
             )
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionPlaceNotify,
+                functionId = remoteConfig.resourceIds.functionUserEvent,
                 data = BaseRemoteModule.formatter.encodeToString(payload)
             )
 

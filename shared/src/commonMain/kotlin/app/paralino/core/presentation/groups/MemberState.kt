@@ -96,5 +96,5 @@ data class GroupMemberItemLocationState constructor(
 }
 
 enum class MemberAction {
-    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER;
+    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER, REQUEST_LOCATION;
 }

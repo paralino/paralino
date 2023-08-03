@@ -1,15 +1,14 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.config
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.provider.IDeviceApiProvider
 
 class UserMemberIdUseCase constructor(
     private val userRepository: UserRepository,
@@ -20,10 +19,6 @@ class UserMemberIdUseCase constructor(
 
     suspend fun getCurrentDeviceType(): DeviceType {
         return deviceApiProvider.deviceType
-    }
-
-    suspend fun getCurrentSessionId(): String {
-        return config.sessionId
     }
 
     suspend fun getAllSessionCount(): Int {

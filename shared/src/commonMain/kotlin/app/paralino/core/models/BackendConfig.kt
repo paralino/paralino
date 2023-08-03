@@ -72,7 +72,7 @@ object BackendResourceIDs {
     const val functionPlaceCreate: String = "place_create"
     const val functionPlaceDelete: String = "place_delete"
     const val functionPlaceUpdate: String = "place_update"
-    const val functionPlaceNotify: String = "place_notify"
+    const val functionUserEvent: String = "place_notify"
     const val functionLocationCreate: String = "location_create"
     const val functionLocationDelete: String = "location_delete"
 }

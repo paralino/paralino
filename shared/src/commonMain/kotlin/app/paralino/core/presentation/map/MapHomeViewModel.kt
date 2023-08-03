@@ -124,6 +124,9 @@ class MapHomeViewModel constructor(
                                         memberState = memberState.copy(
                                             actionItems = buildList {
                                                 if (canDelete) add(MemberAction.DELETE_LOCATION)
+                                                // TODO add correct conditions
+//                                                if (location.deviceId != config.deviceId)
+                                                    add(MemberAction.REQUEST_LOCATION)
                                             }
                                         ),
                                         location = GroupMemberItemLocationState(
@@ -246,8 +249,43 @@ class MapHomeViewModel constructor(
         }
     }
 
-    fun clearMyLocation(locationId: String) {
+    fun memberAction(action: MemberAction, state: GroupMemberItemState) {
+        when(action) {
+            MemberAction.DELETE_MEMBER,
+            MemberAction.BLOCK_USER,
+            MemberAction.UNBLOCK_USER -> {}
+            MemberAction.DELETE_LOCATION -> {
+                if (state is GroupMemberItemStateWithOneLocation && state.location != null) {
+                    clearMyLocation(state.location!!.locationId)
+                }
+            }
+            MemberAction.REQUEST_LOCATION -> {
+                if (state is GroupMemberItemStateWithOneLocation) {
+                    requestLocationUpdate(state)
+                }
+            }
+        }
+    }
+
+    private fun clearMyLocation(locationId: String) {
         locationRepo.clearLocation(locationId)
+            .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
+            .launchIn(coroutineScope)
+    }
+
+    private fun requestLocationUpdate(state: GroupMemberItemStateWithOneLocation) {
+
+        if(state.location == null) {
+            coroutineScope.launch {
+                _eventChannel.send(MapHomeScreenEvent.Error(Throwable("Active device not found")))
+            }
+            return
+        }
+
+        locationRefreshUseCase.refreshMemberDeviceLocation(
+            groupId = state.memberState.groupId,
+            locationId = state.location.locationId
+        )
             .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
             .launchIn(coroutineScope)
     }
