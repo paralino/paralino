@@ -39,6 +39,7 @@ enum class MemberDeviceStatusType {
     GPS_OFF,
     MISSING_PERMISSIONS,
     BATTERY_SAVER_ON,
+    // TODO add to many requests for ver_high location request
     TOO_MANY_REQUESTS,
     IDLE,
     ;

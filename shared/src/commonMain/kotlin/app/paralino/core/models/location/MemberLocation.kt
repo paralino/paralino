@@ -65,7 +65,7 @@ data class MemberLocation constructor(
     // even if device status is not active (battery saving is on)
     // consider status as active if location is fairly fresh
     val isIdleButStillActive: Boolean
-        get() = status.data?.statusType?.isIdling == true && !isOlderThan(1.toDuration(DurationUnit.MINUTES))
+        get() = status.data?.statusType?.isIdling == true && !isOlderThan(20.toDuration(DurationUnit.SECONDS))
 
     fun isOlderThan(duration: Duration): Boolean {
         val pinTime = locationData.data?.timeUTC?.fromUTCtoInstant() ?: return false

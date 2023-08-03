@@ -151,7 +151,7 @@ val coreModule = module {
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
-    factory { LocationRefreshUseCase(get(), get(), get(), get()) }
+    factory { LocationRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsWhileSharingUseCase(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }

@@ -31,5 +31,5 @@ data class GroupMemberAddedNotificationPayload constructor(
 @Serializable
 data class LocationRequestNotificationPayload constructor(
     val groupId: String,
-    val userId: String
+    val memberUserId: String
 ): NotificationPayload

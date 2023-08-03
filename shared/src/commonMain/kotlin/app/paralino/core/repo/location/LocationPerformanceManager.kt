@@ -45,7 +45,7 @@ class LocationPerformanceManager constructor(
                 logg.tag("location_performance").v("User is looking at map")
                 emit("User is looking at map")
                 boostOnMap(groupId)
-                delay(10_000)
+                delay(20_000)
             } while (currentCoroutineContext().isActive)
         }.catch { emit("Error while boosting location") }
     }
@@ -82,20 +82,36 @@ class LocationPerformanceManager constructor(
         groupId: String,
         performanceType: LocationPerformanceType = LocationPerformanceType.HIGH
     ) {
-        logg.tag("location_performance").v("Location boost requested for $groupId")
+        logg.tag("location_performance").v("Location boost ($performanceType) requested for $groupId")
         setPerformance(performanceType, allowDowngrade = false)
+
         // TODO check if someone is requesting location multiple times and don't reset performance in that case
         // if locations is not yet resolved and someone requests location multiple times, cancel or increase reset
         // that way device will get more time to fetch high quality location
-        schedulePerformanceReset()
+
+        if (performanceType == LocationPerformanceType.VERY_HIGH) {
+            schedulePerformanceReset(LocationPerformanceType.HIGH, 60_000)
+        } else if (_locationPerformanceType.value.current < LocationPerformanceType.VERY_HIGH) {
+            if (performanceType < _locationPerformanceType.value.current) {
+                schedulePerformanceReset(LocationPerformanceType.BALANCED, 30_000)
+            } else {
+                schedulePerformanceReset(LocationPerformanceType.BALANCED, 15_000)
+            }
+        } else {
+            logg.tag("location_performance").v("Skip location performance reset ($performanceType)")
+        }
     }
 
-    private fun schedulePerformanceReset(resetDelay: Long = 12_000) {
+    private fun schedulePerformanceReset(
+        type: LocationPerformanceType,
+        resetDelayMillis: Long
+    ) {
         performanceUpdateJob?.cancel()
         performanceUpdateJob = scope.userSessionIOScope.launch {
-            delay(resetDelay)
-            logg.tag("location_performance").v("Reset location performance")
-            setPerformance(LocationPerformanceType.BALANCED, allowDowngrade = true)
+            logg.tag("location_performance").v("Schedule location performance reset from ${_locationPerformanceType.value.current} in $resetDelayMillis")
+            delay(resetDelayMillis)
+            logg.tag("location_performance").v("Reset location performance to $type")
+            setPerformance(type = type, allowDowngrade = true)
         }
     }
 
@@ -105,8 +121,12 @@ class LocationPerformanceManager constructor(
      */
     private fun setPerformance(type: LocationPerformanceType, allowDowngrade: Boolean = true) {
 
-        if (!allowDowngrade && type < _locationPerformanceType.value.current)
+        if (!allowDowngrade && type < _locationPerformanceType.value.current) {
+            logg.tag("location_performance").v("Skip performance update to $type, allowDowngrade ($allowDowngrade)")
             return
+        }
+
+        logg.tag("location_performance").v("Adjust performance update ${_locationPerformanceType.value.current} -> $type")
 
         val now = nowUTC().epochSeconds
         val lastHour = nowUTC().minus(1, DateTimeUnit.HOUR).epochSeconds
@@ -128,6 +148,8 @@ class LocationPerformanceManager constructor(
         iterator.forEachIndexed { index, pair ->
             val next = iterator.getOrNull(index + 1)
             val durationInSec = ((next?.first ?: now) - pair.first).seconds
+
+            // consider very_high performance in the last 20 min, not hour
             if (pair.second >= LocationPerformanceType.VERY_HIGH) {
                 lastVeryHighBoostDiff += durationInSec
             }
