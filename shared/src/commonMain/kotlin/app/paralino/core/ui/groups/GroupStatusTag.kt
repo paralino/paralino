@@ -41,6 +41,7 @@ fun MemberDeviceStatusType.toStatusTagType(): GroupStatusTagType {
         MemberDeviceStatusType.NOT_SHARING -> GroupStatusTagType.NOT_SHARING
         MemberDeviceStatusType.BATTERY_SAVER_ON -> GroupStatusTagType.BATTERY_SAVING
         MemberDeviceStatusType.TOO_MANY_REQUESTS -> GroupStatusTagType.TOO_MANY_REQUESTS
+        MemberDeviceStatusType.THROTTLING -> GroupStatusTagType.IDLE
         MemberDeviceStatusType.IDLE -> GroupStatusTagType.IDLE
         MemberDeviceStatusType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
         MemberDeviceStatusType.INACTIVE -> GroupStatusTagType.INACTIVE
@@ -79,16 +80,17 @@ fun GroupStatusTag(
             GroupStatusTagType.MISSING_PERMISSION -> stringResource(resource = MR.strings.group_members_status_missing_permissions)
             GroupStatusTagType.BATTERY_SAVING -> stringResource(resource = MR.strings.group_members_status_battery_saver)
             GroupStatusTagType.OFFLINE -> stringResource(resource = MR.strings.group_members_status_offline)
-            GroupStatusTagType.TOO_MANY_REQUESTS -> stringResource(resource = MR.strings.group_members_status_throttle)
+            GroupStatusTagType.TOO_MANY_REQUESTS -> stringResource(resource = MR.strings.group_members_status_too_many_requests)
             GroupStatusTagType.IDLE -> stringResource(resource = MR.strings.group_members_status_throttle)
             null -> ""
         }
         val tagIcon = when (status) {
             GroupStatusTagType.SHARING_ACTIVE,
+            GroupStatusTagType.IDLE -> CoreAppIcons.LocationOn.asPainterResource()
+
             GroupStatusTagType.GPS_OFF,
             GroupStatusTagType.MISSING_PERMISSION,
-            GroupStatusTagType.TOO_MANY_REQUESTS,
-            GroupStatusTagType.IDLE -> CoreAppIcons.LocationOn.asPainterResource()
+            GroupStatusTagType.TOO_MANY_REQUESTS,-> CoreAppIcons.LocationOff.asPainterResource()
 
             GroupStatusTagType.UNVERIFIED -> CoreAppIcons.Warning.asPainterResource()
             GroupStatusTagType.BATTERY_SAVING -> CoreAppIcons.BatteryChargingFull.asPainterResource()

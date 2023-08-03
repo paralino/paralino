@@ -24,7 +24,8 @@ class MemberDeviceStatusProvider(
             !locationSharingManager.isSharingActiveForGroup(groupId) -> MemberDeviceStatusType.NOT_SHARING
             // TODO add too many requests status
             locationPerformanceManager.locationPerformanceType.value.current == LocationPerformanceType.BATTERY_SAVER -> MemberDeviceStatusType.BATTERY_SAVER_ON
-            locationPerformanceManager.locationPerformanceType.value.isThrottling -> MemberDeviceStatusType.TOO_MANY_REQUESTS
+            locationPerformanceManager.locationPerformanceType.value.isThrottlingLocationRequest -> MemberDeviceStatusType.TOO_MANY_REQUESTS
+            locationPerformanceManager.locationPerformanceType.value.isThrottling -> MemberDeviceStatusType.THROTTLING
             locationPerformanceManager.locationPerformanceType.value.isSlow -> MemberDeviceStatusType.IDLE
             else -> MemberDeviceStatusType.ACTIVE
         }

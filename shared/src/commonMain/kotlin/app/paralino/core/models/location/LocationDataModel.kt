@@ -39,15 +39,15 @@ enum class MemberDeviceStatusType {
     GPS_OFF,
     MISSING_PERMISSIONS,
     BATTERY_SAVER_ON,
-    // TODO add to many requests for ver_high location request
     TOO_MANY_REQUESTS,
+    THROTTLING,
     IDLE,
     ;
 
     val key: String = name
 
     val isIdling: Boolean get() = when(this) {
-        INACTIVE, BATTERY_SAVER_ON, TOO_MANY_REQUESTS, IDLE -> true
+        INACTIVE, BATTERY_SAVER_ON, THROTTLING, IDLE -> true
         else -> false
     }
 
