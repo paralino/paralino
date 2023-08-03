@@ -6,10 +6,8 @@ import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.repo.api.IDocumentsApi
-import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.delay
-import kotlinx.serialization.decodeFromString
 
 class PushNotificationHandler constructor(
     private val placePush: IPlaceNotificationsHandler,
@@ -70,34 +68,18 @@ class PushNotificationHandler constructor(
 
         when (push.type) {
             PushNotificationRaw.pushTypePlaceAlert -> {
-                val payload = push.content?.let {
-                    BaseRemoteModule.formatter.decodeFromString<PlaceActivityNotificationPayload>(it)
-                }
-                if (payload != null) {
-                    placePush.process(payload)
-                }
+                placePush.process(push)
             }
             PushNotificationRaw.pushTypeGroupMemberAdd -> {
                 refreshEverything.scheduleRefreshAllGroupsWithPlaces(
                     key = "group_activity",
                     time = 0
                 )
-                val payload = push.content?.let {
-                    BaseRemoteModule.formatter.decodeFromString<GroupMemberAddedNotificationPayload>(it)
-                }
-                if (payload != null) {
-                    groupMemberAddPush.process(payload)
-                }
+                groupMemberAddPush.process(push)
             }
             PushNotificationRaw.pushTypeLocationRequest -> {
-                val payload = push.content?.let {
-                    BaseRemoteModule.formatter.decodeFromString<LocationRequestNotificationPayload>(it)
-                }
-                if (payload != null) {
-                    locationRequestPush.process(payload)
-                }
+                locationRequestPush.process(push)
             }
         }
     }
-
 }

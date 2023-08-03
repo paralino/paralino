@@ -1,7 +1,11 @@
 package app.paralino.android.notification
 
 import android.Manifest
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,17 +16,20 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.config
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.models.data
+import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.notifications.GroupMemberAddedNotificationPayload
 import app.paralino.core.notifications.IGroupMemberAddedNotificationsHandler
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
 
 class GroupActivityNotificationHandler(
     private val context: Context,
@@ -35,7 +42,12 @@ class GroupActivityNotificationHandler(
         AppColors.lightThemePrimary.toArgb()
     }
 
-    override fun process(payload: GroupMemberAddedNotificationPayload) {
+    override fun process(push: PushNotificationRaw) {
+
+        val payload = push.content?.let {
+            BaseRemoteModule.formatter.decodeFromString<GroupMemberAddedNotificationPayload>(it)
+        } ?: return
+
         scopeProvider.userSessionIOScope.launch {
 
             val title = try {

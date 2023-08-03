@@ -1,9 +1,10 @@
 package app.paralino.core.notifications
 
+import app.paralino.core.models.raw.PushNotificationRaw
 import kotlinx.serialization.Serializable
 
 interface IPushNotificationsHandler<T: NotificationPayload> {
-    fun process(payload: T)
+    fun process(push: PushNotificationRaw)
 }
 
 interface IPlaceNotificationsHandler: IPushNotificationsHandler<PlaceActivityNotificationPayload>
