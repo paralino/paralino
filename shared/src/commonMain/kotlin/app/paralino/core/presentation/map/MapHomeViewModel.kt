@@ -18,6 +18,7 @@ import app.paralino.core.utils.Emojis
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Job
@@ -123,9 +124,10 @@ class MapHomeViewModel constructor(
                                     GroupMemberItemStateWithOneLocation(
                                         memberState = memberState.copy(
                                             actionItems = buildList {
-                                                if (canDelete) add(MemberAction.DELETE_LOCATION)
-                                                // TODO add correct conditions
-//                                                if (location.deviceId != config.deviceId)
+                                                if (canDelete)
+                                                    add(MemberAction.DELETE_LOCATION)
+
+                                                if (location.locationAwareStatusType != MemberDeviceStatusType.TOO_MANY_REQUESTS)
                                                     add(MemberAction.REQUEST_LOCATION)
                                             }
                                         ),
