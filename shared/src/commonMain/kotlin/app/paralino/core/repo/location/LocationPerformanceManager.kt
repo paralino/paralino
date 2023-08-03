@@ -129,6 +129,7 @@ class LocationPerformanceManager constructor(
         logg.tag("location_performance").v("Adjust performance update ${_locationPerformanceType.value.current} -> $type")
 
         val now = nowUTC().epochSeconds
+        val last20min = nowUTC().minus(20, DateTimeUnit.MINUTE).epochSeconds
         val lastHour = nowUTC().minus(1, DateTimeUnit.HOUR).epochSeconds
         val last4Hours = nowUTC().minus(4, DateTimeUnit.HOUR).epochSeconds
 
@@ -136,23 +137,29 @@ class LocationPerformanceManager constructor(
         locationBoostTracker = locationBoostTracker.filter { it.key > last4Hours }.toMutableMap()
 
         // take only last hour for optimization
-        val iterator = locationBoostTracker
-            .filter { it.key > lastHour }
-            .toList()
+        val hourIterator = locationBoostTracker.filter { it.key > lastHour }.toList()
+        val minuteIterator = locationBoostTracker.filter { it.key > last20min }.toList()
 
         var lastVeryHighBoostDiff = Duration.ZERO
         var lastHighBoostDiff = Duration.ZERO
         var lastMediumBoostDiff = Duration.ZERO
 
-        // sum duration of HIGH and MEDIUM_HIGH requests in last hour
-        iterator.forEachIndexed { index, pair ->
-            val next = iterator.getOrNull(index + 1)
+        // sum duration of VERY_HIGH requests in 20 minutes
+        minuteIterator.forEachIndexed { index, pair ->
+            val next = minuteIterator.getOrNull(index + 1)
             val durationInSec = ((next?.first ?: now) - pair.first).seconds
 
-            // consider very_high performance in the last 20 min, not hour
+            // consider very_high performance in the last 20 min
             if (pair.second >= LocationPerformanceType.VERY_HIGH) {
                 lastVeryHighBoostDiff += durationInSec
             }
+        }
+
+        // sum duration of HIGH and MEDIUM_HIGH requests in last hour
+        hourIterator.forEachIndexed { index, pair ->
+            val next = hourIterator.getOrNull(index + 1)
+            val durationInSec = ((next?.first ?: now) - pair.first).seconds
+
             if (pair.second >= LocationPerformanceType.HIGH) {
                 lastHighBoostDiff += durationInSec
             }
