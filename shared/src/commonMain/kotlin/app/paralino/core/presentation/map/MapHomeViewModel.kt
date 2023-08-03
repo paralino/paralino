@@ -127,8 +127,9 @@ class MapHomeViewModel constructor(
                                                 if (canDelete)
                                                     add(MemberAction.DELETE_LOCATION)
 
-                                                if (location.locationAwareStatusType != MemberDeviceStatusType.TOO_MANY_REQUESTS)
+                                                if (location.canRequestLocation) {
                                                     add(MemberAction.REQUEST_LOCATION)
+                                                }
                                             }
                                         ),
                                         location = GroupMemberItemLocationState(

@@ -85,7 +85,7 @@ data class GroupMemberItemLocationState constructor(
         locationId = memberLocation.id,
         name = name,
         image = image ?: ImageModel.emoji(Emojis.lock),
-        batterLevel = memberLocation.status.data?.batteryLevel ?: memberLocation.locationData.data?.batteryLevel,
+        batterLevel = memberLocation.status.data?.validBatteryLevel ?: memberLocation.locationData.data?.batteryLevel,
         speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
         elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it) },
         lastPing = formatter.getLastPing(memberLocation),

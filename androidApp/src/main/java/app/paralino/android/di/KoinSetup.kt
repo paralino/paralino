@@ -90,7 +90,7 @@ object KoinSetup {
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
         factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) } bind IPlaceNotificationsHandler::class
         factory { GroupActivityNotificationHandler(androidContext(), get(), get()) } bind IGroupMemberAddedNotificationsHandler::class
-        factory { LocationRequestNotificationHandler(get()) } bind ILocationRequestNotificationsHandler::class
+        factory { LocationRequestNotificationHandler(get(), get(), get(), get()) } bind ILocationRequestNotificationsHandler::class
 
         single<IUserApi> { UserApi(get()) }
         single<IDocumentsApi> { DocumentsApi(get()) }

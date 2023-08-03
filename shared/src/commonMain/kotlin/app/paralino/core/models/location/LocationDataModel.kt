@@ -1,6 +1,9 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.utils.extensions.fromUTCtoInstant
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.minutes
 
 @Serializable
 data class LocationDataModel constructor(
@@ -30,6 +33,16 @@ data class MemberDeviceStatus constructor(
 ) {
     val statusType: MemberDeviceStatusType?
         get() = MemberDeviceStatusType.fromKey(status)
+
+    val validBatteryLevel: Int?
+        get() {
+            batteryLevel ?: return null
+            if(statusType == MemberDeviceStatusType.NOT_SHARING) return null
+            if(statusType == MemberDeviceStatusType.NOT_SHARING) return null
+            if(timeUTC == null) return null
+            if(timeUTC.fromUTCtoInstant()?.plus(2.minutes)?.let { it > nowUTC() } != true) return null
+            return batteryLevel
+        }
 }
 
 enum class MemberDeviceStatusType {
