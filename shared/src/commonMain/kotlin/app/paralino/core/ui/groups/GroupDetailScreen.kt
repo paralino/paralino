@@ -310,7 +310,7 @@ fun GroupDetailScreenCore(
                                             )
                                         )
                                     }
-                                    MemberAction.DELETE_LOCATION -> {}
+                                    MemberAction.DELETE_LOCATION, MemberAction.REQUEST_LOCATION -> {}
                                 }
                             },
                             onDeleteDeviceClick = {
