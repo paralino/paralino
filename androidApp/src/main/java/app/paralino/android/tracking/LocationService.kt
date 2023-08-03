@@ -169,7 +169,6 @@ class LocationService : Service() {
 
         locationPerformanceManager.locationPerformanceType
             .filter { it.current <= LocationPerformanceType.BALANCED }
-            .map { it.current }
             .distinctUntilChanged()
             .onEach {
                 logg.v("device_status", "Location performance changed: $it")
