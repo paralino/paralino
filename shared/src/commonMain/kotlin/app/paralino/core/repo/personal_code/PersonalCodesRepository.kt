@@ -12,6 +12,7 @@ import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Duration.Companion.seconds
 
 class PersonalCodesRepository constructor(
     private val remote: PersonalCodesRemoteSource,
@@ -62,7 +63,7 @@ class PersonalCodesRepository constructor(
                 remote.getMyPersonalCodes().also {
                     local.replacePersonalCodes(it)
                 }
-                tryToRestockPreKeys()
+                tryToRestockPreKeys(20.seconds.inWholeMilliseconds)
             },
             localUpdate = { }
         )
@@ -122,15 +123,13 @@ class PersonalCodesRepository constructor(
         }
     }
 
-    suspend fun tryToRestockPreKeys() {
+    suspend fun tryToRestockPreKeys(cacheDelayMillis: Long) {
         try {
-            // TODO try to restock when personal screen is opened
-            // and add longer cache period for regular check
             val code = local.getActivePersonalCodesOnce()?.code?.cleanCode() ?: return
             triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(
                     key = "pre_keys_restock",
-                    timeMillis = 20_000,
+                    timeMillis = cacheDelayMillis,
                     failOnError = false
                 )
             ) {

@@ -199,7 +199,6 @@ fun SharingStartScreen(
             dialog.Show {
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk) {
-                    // TODO ask for background location permission
                     permissionHandler.askBackgroundLocationPermission()
                 } else {
                     vm.proceedWithSharing()

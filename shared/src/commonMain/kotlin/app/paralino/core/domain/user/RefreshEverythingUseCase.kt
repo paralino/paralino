@@ -11,6 +11,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
+import kotlin.time.Duration.Companion.minutes
 
 class RefreshEverythingUseCase(
     private val placesRepo: PlacesRepository,
@@ -58,7 +59,7 @@ class RefreshEverythingUseCase(
                         key = executionKey,
                         time = if (forceGroupRefresh) 0 else 60_000
                     )
-                    personalCodesRepo.tryToRestockPreKeys()
+                    personalCodesRepo.tryToRestockPreKeys(5.minutes.inWholeMilliseconds)
                 }
             )
         } catch (e: Exception) {
