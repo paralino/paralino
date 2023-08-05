@@ -1,8 +1,10 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.models.data
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 @Serializable
@@ -17,6 +19,11 @@ data class LocationDataModel constructor(
     val altitude: Float? = null
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
+
+    fun isOlderThan(duration: Duration): Boolean {
+        val pinTime = timeUTC?.fromUTCtoInstant() ?: return false
+        return pinTime.plus(duration) < nowUTC()
+    }
 }
 
 @Serializable

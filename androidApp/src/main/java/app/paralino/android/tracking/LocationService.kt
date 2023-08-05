@@ -44,6 +44,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 
 class LocationService : Service() {
@@ -136,16 +137,30 @@ class LocationService : Service() {
         logg.v(this.hashCode().toString(), "Subscribing to location updates")
 
         serviceDefaultScope.launch {
-            while(isActive) {
+            while (isActive) {
                 // try refreshing everything every 4 hours
                 // if refresh already occurred in last 20 hours it will be skipped
                 fullRefresh.refreshEverything(
                     forceGroupRefresh = false,
                     minimumDelayMillis = 20.hours.inWholeMilliseconds
                 )
-                delay(2_000)
-                reInitRealtime()
                 delay(4.hours.inWholeMilliseconds)
+            }
+        }
+
+        serviceDefaultScope.launch {
+            while (isActive) {
+                reInitRealtime()
+                delay(1.hours.inWholeMilliseconds)
+            }
+        }
+
+        serviceDefaultScope.launch {
+            while (isActive) {
+                if (locationInitHandler.currentLocation.value.data?.isOlderThan(5.minutes) != false) {
+                    saveLocation(null)
+                }
+                delay(5.minutes.inWholeMilliseconds)
             }
         }
 
@@ -222,7 +237,11 @@ class LocationService : Service() {
             }
             .distinctFlowOfList()
 
-        combine(places, deviceApiProvider.locationStatusProvider.status, timer) { geofences, locationStatus, _ ->
+        combine(
+            places,
+            deviceApiProvider.locationStatusProvider.status,
+            timer
+        ) { geofences, locationStatus, _ ->
             if (locationStatus.isOK(forAlwaysOnAccess = true)) {
                 geofenceManager.registerGeofences(geofences)
             } else {
@@ -231,7 +250,7 @@ class LocationService : Service() {
         }
             .catch {
                 // delete all geofences when coroutine is canceled
-                if(it is CancellationException)
+                if (it is CancellationException)
                     geofenceManager.deleteAllGeofences()
             }
             .launchIn(serviceDefaultScope)

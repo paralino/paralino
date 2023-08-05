@@ -75,7 +75,6 @@ data class MemberLocation constructor(
         }
 
     private fun isOlderThan(duration: Duration): Boolean {
-        val pinTime = locationData.data?.timeUTC?.fromUTCtoInstant() ?: return false
-        return pinTime.plus(duration) < nowUTC()
+        return locationData.data?.isOlderThan(duration) ?: return false
     }
 }
