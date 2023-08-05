@@ -35,6 +35,7 @@ data class MemberModelWithLocations(
     val locations: List<MemberLocation>
 ) {
     val hasLocation: Boolean get() = locations.firstNotNullOfOrNull { it.locationData.data } != null
+    val isActive: Boolean get() = locations.firstOrNull { it.locationAwareStatusType == MemberDeviceStatusType.ACTIVE } != null
     val currentDeviceLocation: MemberLocation? get() {
         return locations.firstOrNull { it.deviceId == config.deviceId && it.userId == config.userId }
     }

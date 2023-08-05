@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -43,16 +44,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import app.paralino.android.R
-import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.annotatedBold
 
 @Composable
 fun MapGroupPicker(
@@ -60,6 +59,8 @@ fun MapGroupPicker(
     groupName: String,
     groupImage: ImageModel,
     userCount: Int,
+    activeUserCount: Int,
+    idleUserCount: Int,
     inactiveUserCount: Int,
     verified: Boolean,
     onGroupClick: () -> Unit,
@@ -69,7 +70,7 @@ fun MapGroupPicker(
     ConstraintLayout(
         modifier = modifier
             .height(height)
-
+            .fillMaxWidth()
     ) {
 
         val (image, center, expand, background) = createRefs()
@@ -149,7 +150,6 @@ fun MapGroupPicker(
             }
         }
 
-
         // center content
         Column(
             modifier = Modifier
@@ -188,23 +188,81 @@ fun MapGroupPicker(
                         modifier = Modifier.size(14.dp),
                         contentDescription = null
                     )
-                    Spacer(Modifier.size(4.dp))
-
-                    val text = if (inactiveUserCount == 0) "**$userCount**"
-                    else {
-                        quantityStringResource(
-                            id = R.plurals.group_sharing_member_active_info,
-                            quantity = inactiveUserCount, userCount, inactiveUserCount
-                        )
-                    }
+                    Spacer(Modifier.size(2.dp))
                     Text(
-                        text = text.annotatedBold(),
+                        text = "$userCount",
                         style = MaterialTheme.typography.caption.copy(
                             fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Bold
                         ),
                         modifier = Modifier
                     )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .background(
+                            color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .padding(start = 4.dp, end = 6.dp)
+                        .padding(vertical = 1.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
+                        modifier = Modifier.size(14.dp),
+                        tint = AppColors.accent,
+                        contentDescription = null
+                    )
+                    Spacer(Modifier.size(2.dp))
+                    Text(
+                        text = "$activeUserCount",
+                        style = MaterialTheme.typography.caption.copy(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier
+                    )
+
+                    if (idleUserCount > 0) {
+                        Spacer(Modifier.size(8.dp))
+                        Icon(
+                            painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
+                            modifier = Modifier.size(14.dp),
+                            tint = AppColors.highlightGold,
+                            contentDescription = null
+                        )
+                        Spacer(Modifier.size(2.dp))
+                        Text(
+                            text = "$idleUserCount",
+                            style = MaterialTheme.typography.caption.copy(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
+                        )
+                    }
+
+                    if (inactiveUserCount > 0) {
+                        Spacer(Modifier.size(8.dp))
+                        Icon(
+                            painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
+                            modifier = Modifier.size(14.dp),
+                            tint = AppColors.redMain,
+                            contentDescription = null
+                        )
+                        Spacer(Modifier.size(2.dp))
+                        Text(
+                            text = "$inactiveUserCount",
+                            style = MaterialTheme.typography.caption.copy(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
+                        )
+                    }
                 }
             }
         }
@@ -257,7 +315,9 @@ fun MemberPreview() {
                     groupImage = ImageModel.emoji(Emojis.robot),
                     verified = false,
                     userCount = 5,
-                    inactiveUserCount = 2,
+                    activeUserCount = 3,
+                    idleUserCount = 1,
+                    inactiveUserCount = 1,
                     onExpandClick = {},
                     onGroupClick = {}
                 )

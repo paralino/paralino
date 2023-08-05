@@ -2,6 +2,8 @@ package app.paralino.core.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
+import app.paralino.core.MR
+import dev.icerock.moko.resources.ImageResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -66,8 +68,16 @@ object CoreAppIcons {
     val MoreVert get() = "drawable/ic_more_vert.xml"
     val PersonAdd get() = "drawable/ic_person_add.xml"
 
+    val CircleFull get() = MR.images.ic_circle_full
+    val CircleWithOutline get() = MR.images.ic_circle_with_outline
+
     @Composable
     fun String.asPainterResource(): Painter {
         return painterResource(res = this)
+    }
+
+    @Composable
+    fun ImageResource.asPainterResource(): Painter {
+        return dev.icerock.moko.resources.compose.painterResource(this)
     }
 }

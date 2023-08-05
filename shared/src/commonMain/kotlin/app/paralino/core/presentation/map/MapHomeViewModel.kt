@@ -180,7 +180,8 @@ class MapHomeViewModel constructor(
                             groupName = group.name,
                             groupImage = group.image,
                             userCount = group.memberCount,
-                            inactiveUserCount = group.memberCount - group.members.filter { it.hasLocation }.size,
+                            activeUserCount = group.members.filter { it.isActive }.size,
+                            idleUserCount = group.members.filter { it.hasLocation && !it.isActive }.size,
                             currentUserImage = userData?.userImage
                                 ?: ImageModel.emoji(Emojis.robot),
                             members = membersData,

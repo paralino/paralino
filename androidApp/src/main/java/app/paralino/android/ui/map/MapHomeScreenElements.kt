@@ -120,12 +120,14 @@ fun MapHomeScreenElements(
                                 end = parent.end,
                                 horizontalBias = 0f
                             )
-                            width = Dimension.preferredWrapContent
+                            width = Dimension.fillToConstraints
                         },
                         groupName = readyState.groupName,
                         groupImage = readyState.groupImage,
                         userCount = readyState.userCount,
                         inactiveUserCount = readyState.inactiveUserCount,
+                        activeUserCount = readyState.activeUserCount,
+                        idleUserCount = readyState.idleUserCount,
                         verified = readyState.allMembersVerified,
                         onGroupClick = onGroupDetailsClick,
                         onExpandClick = onGroupPickerClick
