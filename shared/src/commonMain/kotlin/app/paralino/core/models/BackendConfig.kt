@@ -69,10 +69,10 @@ object BackendResourceIDs {
     const val functionResetAccount: String = "user_account_reset"
     const val functionUserKeysUpdate: String = "user_keys_update"
     const val functionUserDeviceUpdate: String = "user_device_update"
+    const val functionUserEvent: String = "user_event"
     const val functionPlaceCreate: String = "place_create"
     const val functionPlaceDelete: String = "place_delete"
     const val functionPlaceUpdate: String = "place_update"
-    const val functionUserEvent: String = "place_notify"
     const val functionLocationCreate: String = "location_create"
     const val functionLocationDelete: String = "location_delete"
 }
