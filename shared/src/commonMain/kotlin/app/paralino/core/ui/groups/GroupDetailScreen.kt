@@ -132,15 +132,6 @@ fun GroupDetailScreenCore(
                             }
                         },
                         actions = {
-                            IconButton(
-                                onClick = { openGroupRawData() }
-                            ) {
-                                Icon(
-                                    painter = CoreAppIcons.Security.asPainterResource(),
-                                    tint = AppColors.accent,
-                                    contentDescription = null
-                                )
-                            }
 
                             if (state.data.canEdit) {
                                 IconButton(onClick = { vm.tryAddMember() }) {
@@ -251,7 +242,9 @@ fun GroupDetailScreenCore(
                             groupName = state.data.name,
                             groupImage = state.data.image,
                             onMapClick = { openMap() },
-                            onPlacesClick = { openPlaces() }
+                            onPlacesClick = { openPlaces() },
+                            onSecurityClick = { openGroupRawData() },
+                            onSharingClick = { openSharing() }
                         )
                     }
 
@@ -363,6 +356,8 @@ fun GroupDetailsHeader(
     groupImage: ImageModel,
     onMapClick: () -> Unit,
     onPlacesClick: () -> Unit,
+    onSecurityClick: () -> Unit,
+    onSharingClick: () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
@@ -418,6 +413,48 @@ fun GroupDetailsHeader(
                 ),
                 onStateChange = {
                     onPlacesClick()
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.size(10.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            LargeSeekbarSwitch(
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .fillMaxWidth(0.5f),
+                icon = CoreAppIcons.Security.asPainterResource(),
+                title = stringResource(MR.strings.group_details_security_action),
+                description = null,
+                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                    switchState = LargeSeekbarSwitchState.Switch(
+                        checkState = false,
+                        unCheckedIconRes = CoreAppIcons.ChevronRight
+                    ),
+                    seekbarState = null
+                ),
+                onStateChange = {
+                    onSecurityClick()
+                }
+            )
+            LargeSeekbarSwitch(
+                modifier = Modifier.fillMaxWidth(),
+                icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                title = stringResource(MR.strings.group_details_sharing_action),
+                description = null,
+                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                    switchState = LargeSeekbarSwitchState.Switch(
+                        checkState = false,
+                        unCheckedIconRes = CoreAppIcons.ChevronRight
+                    ),
+                    seekbarState = null
+                ),
+                onStateChange = {
+                    onSharingClick()
                 }
             )
         }
