@@ -199,69 +199,71 @@ fun MapGroupPicker(
                     )
                 }
 
-                Row(
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .background(
-                            color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .padding(start = 4.dp, end = 6.dp)
-                        .padding(vertical = 1.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
-                        modifier = Modifier.size(14.dp),
-                        tint = AppColors.accent,
-                        contentDescription = null
-                    )
-                    Spacer(Modifier.size(2.dp))
-                    Text(
-                        text = "$activeUserCount",
-                        style = MaterialTheme.typography.caption.copy(
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
+                if (idleUserCount > 0 || inactiveUserCount > 0) {
+                    Row(
                         modifier = Modifier
-                    )
-
-                    if (idleUserCount > 0) {
-                        Spacer(Modifier.size(8.dp))
+                            .padding(start = 4.dp)
+                            .background(
+                                color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .padding(start = 4.dp, end = 6.dp)
+                            .padding(vertical = 1.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
                             modifier = Modifier.size(14.dp),
-                            tint = AppColors.highlightGold,
+                            tint = AppColors.accent,
                             contentDescription = null
                         )
                         Spacer(Modifier.size(2.dp))
                         Text(
-                            text = "$idleUserCount",
+                            text = "$activeUserCount",
                             style = MaterialTheme.typography.caption.copy(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
                             ),
                             modifier = Modifier
                         )
-                    }
 
-                    if (inactiveUserCount > 0) {
-                        Spacer(Modifier.size(8.dp))
-                        Icon(
-                            painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
-                            modifier = Modifier.size(14.dp),
-                            tint = AppColors.redMain,
-                            contentDescription = null
-                        )
-                        Spacer(Modifier.size(2.dp))
-                        Text(
-                            text = "$inactiveUserCount",
-                            style = MaterialTheme.typography.caption.copy(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier
-                        )
+                        if (idleUserCount > 0) {
+                            Spacer(Modifier.size(8.dp))
+                            Icon(
+                                painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
+                                modifier = Modifier.size(14.dp),
+                                tint = AppColors.highlightGold,
+                                contentDescription = null
+                            )
+                            Spacer(Modifier.size(2.dp))
+                            Text(
+                                text = "$idleUserCount",
+                                style = MaterialTheme.typography.caption.copy(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier
+                            )
+                        }
+
+                        if (inactiveUserCount > 0) {
+                            Spacer(Modifier.size(8.dp))
+                            Icon(
+                                painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
+                                modifier = Modifier.size(14.dp),
+                                tint = AppColors.redMain,
+                                contentDescription = null
+                            )
+                            Spacer(Modifier.size(2.dp))
+                            Text(
+                                text = "$inactiveUserCount",
+                                style = MaterialTheme.typography.caption.copy(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier
+                            )
+                        }
                     }
                 }
             }
