@@ -3,6 +3,6 @@
     <dimen name="activity_side_margin_small">8dp</dimen>
     <dimen name="activity_side_margin_medium_large">20dp</dimen>
 
-    <dimen name="map_north_margin">60dp</dimen>
+    <dimen name="map_north_margin">130dp</dimen>
 
 </resources>

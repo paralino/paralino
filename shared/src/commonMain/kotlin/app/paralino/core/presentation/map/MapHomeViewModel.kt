@@ -187,7 +187,8 @@ class MapHomeViewModel constructor(
                             members = membersData,
                             markers = memberMarkers + placeMarkers,
                             focusedMarker = focusedMarker,
-                            sharingStatus = sharingStatus
+                            sharingStatus = sharingStatus,
+                            isSatelliteMode = _uiState.value.isSatelliteMode
                         )
                     }
                 }
@@ -212,6 +213,15 @@ class MapHomeViewModel constructor(
 
     fun trackMarker(marker: FocusedMarkerData?) {
         focusedMarker.update { marker }
+    }
+
+    fun switchMapMode() {
+        _uiState.update {
+            when (it) {
+                is MapHomeScreenState.Empty -> it.copy(isSatelliteMode = !it.isSatelliteMode)
+                is MapHomeScreenState.Ready -> it.copy(isSatelliteMode = !it.isSatelliteMode)
+            }
+        }
     }
 
     private fun getSharingContract(): Flow<LocationSharingContract?> {

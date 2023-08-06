@@ -16,7 +16,8 @@ import com.mapbox.maps.plugin.annotation.generated.createPolygonAnnotationManage
 @Composable
 fun rememberMapViewHomeState(
     darkMode: Boolean,
-    mapView: MapView = rememberMapViewWithLifecycle(darkMode = darkMode),
+    satellite: Boolean,
+    mapView: MapView = rememberMapViewWithLifecycle(darkMode = darkMode, satellite = satellite),
 ): MapViewHomeProviderState {
     val markerCache: LruCache<String, MarkerCacheData> = remember { lruCache(100) }
     return remember {

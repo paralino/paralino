@@ -27,6 +27,7 @@ import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.groups.GroupPickerAction
 import app.paralino.core.utils.extensions.safeCast
+import com.mapbox.maps.Style
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -63,11 +64,24 @@ fun MapHomeContent(
     groupId: String?,
     vm: MapHomeViewModel,
 ) {
-    val mapViewState = rememberMapViewHomeState(darkMode = isSystemInDarkTheme())
 
     val uiState by vm.uiState.collectAsState(MapHomeScreenState.Empty())
-    rememberSaveable(groupId, isSystemInDarkTheme()) {
+    val isDarkMode = isSystemInDarkTheme()
+    val mapViewState = rememberMapViewHomeState(
+        darkMode = isDarkMode,
+        satellite = uiState.isSatelliteMode
+    )
+    rememberSaveable(groupId, isDarkMode, uiState.isSatelliteMode) {
         vm.switchGroup(groupId = groupId ?: "")
+        mapViewState.mapAndroidView.getMapboxMap().loadStyleUri(
+            if (uiState.isSatelliteMode) {
+                Style.SATELLITE_STREETS
+            } else if (isDarkMode) {
+                Style.DARK
+            } else {
+                Style.MAPBOX_STREETS
+            }
+        )
         ""
     }
 
@@ -91,6 +105,7 @@ fun MapHomeContent(
                             logg.tag("marker_click").v("Member marker clicked")
                             vm.trackMarker(it.asFocusedMarker())
                         }
+
                         MapPinType.PLACE -> {
                             when (val state = uiState) {
                                 is MapHomeScreenState.Ready -> {
@@ -105,6 +120,7 @@ fun MapHomeContent(
                                         )
                                     )
                                 }
+
                                 is MapHomeScreenState.Empty -> {}
                             }
                         }
@@ -131,6 +147,7 @@ fun MapHomeContent(
                     mapViewState.reDrawMarkers(state.focusedMarker, trackGroup)
                 }
             }
+
             is MapHomeScreenState.Empty -> {}
         }
 
@@ -149,12 +166,17 @@ fun MapHomeContent(
                             is GroupPickerAction.GroupPicked -> {
                                 vm.switchGroup(it.group.id)
                             }
+
                             is GroupPickerAction.GroupEditPicked -> {
-                                appState.navController.navigate(AppScreen.MainHome.GroupDetails.route(it.group.id))
+                                appState.navController.navigate(
+                                    AppScreen.MainHome.GroupDetails.route(it.group.id)
+                                )
                             }
+
                             GroupPickerAction.NewGroup -> {
                                 appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
                             }
+
                             GroupPickerAction.JoinGroup -> {
                                 appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
                             }
@@ -167,6 +189,7 @@ fun MapHomeContent(
                     is MapHomeScreenState.Ready -> {
                         appState.navController.navigate(AppScreen.MainHome.GroupDetails.route(state.groupId))
                     }
+
                     is MapHomeScreenState.Empty -> {}
                 }
             },
@@ -175,6 +198,7 @@ fun MapHomeContent(
                     is MapHomeScreenState.Ready -> {
                         appState.navController.navigate(AppScreen.MainHome.SharingStart.route(state.groupId))
                     }
+
                     is MapHomeScreenState.Empty -> {}
                 }
             },
@@ -197,6 +221,9 @@ fun MapHomeContent(
                         mapViewState.focusToMarker(it.keyId)
                     }
                 }
+            },
+            onMapModeSwitch = {
+                vm.switchMapMode()
             }
         )
     }

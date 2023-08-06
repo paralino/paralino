@@ -8,7 +8,9 @@ import android.view.Gravity
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -38,9 +40,12 @@ import kotlin.math.abs
 
 
 @Composable
-internal fun rememberMapViewWithLifecycle(darkMode: Boolean): MapView {
+internal fun rememberMapViewWithLifecycle(
+    darkMode: Boolean,
+    satellite: Boolean = false
+): MapView {
     val context = LocalContext.current
-    val mapView = remember(context, darkMode) {
+    val mapView = remember(context, darkMode, satellite) {
         val option = ResourceOptionsManager.getDefault(
             context,
             app.paralino.android.BuildConfig.mapboxAccessToken
@@ -50,13 +55,19 @@ internal fun rememberMapViewWithLifecycle(darkMode: Boolean): MapView {
             MapInitOptions(
                 context,
                 resourceOptions = option,
-                styleUri = if (darkMode) Style.DARK else Style.MAPBOX_STREETS
+                styleUri = if (satellite) {
+                    Style.SATELLITE_STREETS
+                } else if (darkMode) {
+                    Style.DARK
+                } else {
+                    Style.MAPBOX_STREETS
+                }
             )
         )
     }
 
     // Makes MapView follow the lifecycle of this composable
-    val lifecycleObserver = remember(mapView) {
+    val lifecycleObserver = remember(mapView, satellite) {
         LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_START -> mapView.onStart()
@@ -90,7 +101,7 @@ open class MapViewProviderState constructor(
     protected val polygonAnnotationsManager: PolygonAnnotationManager?,
 ) : IMapViewProviderState {
 
-    override val mapAndroidView: View
+    override val mapAndroidView: MapView
         get() = mapView
 
     override var onMapTouch: (() -> Boolean)? = null
@@ -355,7 +366,7 @@ open class MapViewProviderState constructor(
     protected open fun focusToMarker(data: MarkerCacheData) {
 
         val zoom = when(data.data.pinType) {
-            MapPinType.MEMBER -> 15.0
+            MapPinType.MEMBER -> 16.0
             MapPinType.PLACE -> 12.0
         }
 

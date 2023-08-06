@@ -70,6 +70,9 @@ object CoreAppIcons {
 
     val CircleFull get() = MR.images.ic_circle_full
     val CircleWithOutline get() = MR.images.ic_circle_with_outline
+    val MapModeSatellite get() = "drawable-nodpi/image_map_type_satellite.jpg"
+    val MapModeDefaultLight get() = "drawable-nodpi/image_map_type_default_light.png"
+    val MapModeDefaultDark get() = "drawable-nodpi/image_map_type_default_dark.png"
 
     @Composable
     fun String.asPainterResource(): Painter {

@@ -1,18 +1,48 @@
 package app.paralino.android.ui.map
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.ExtendedFloatingActionButton
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.FloatingActionButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -20,8 +50,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
-import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.core.presentation.groups.GroupMemberItemState
@@ -31,7 +59,11 @@ import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapPinType
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -53,6 +85,7 @@ fun MapHomeScreenElements(
     onSettingsClick: () -> Unit,
     onMemberActionClick: (MemberAction, GroupMemberItemState) -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
+    onMapModeSwitch: () -> Unit,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -66,7 +99,7 @@ fun MapHomeScreenElements(
     ) {
 
         val readyState = state as? MapHomeScreenState.Ready
-        val (groupSelect, groupTrack, userListButton, userList, shareTime, settings) = createRefs()
+        val (groupSelect, groupTrack, userListButton, userList, shareTime, settings, mapMode) = createRefs()
         var userListExpanded by remember(focusedMarker) { mutableStateOf(focusedMarker?.type == MapPinType.MEMBER) }
 
         FloatingActionButton(
@@ -135,6 +168,32 @@ fun MapHomeScreenElements(
                 }
             }
         }
+
+        // map mode
+        Image(
+            painter = if (!state.isSatelliteMode) {
+                CoreAppIcons.MapModeSatellite.asPainterResource()
+            } else if (isSystemInDarkTheme()) {
+                CoreAppIcons.MapModeDefaultDark.asPainterResource()
+            } else {
+                CoreAppIcons.MapModeDefaultLight.asPainterResource()
+            },
+            contentDescription = null,
+            modifier = Modifier
+                .constrainAs(mapMode) {
+                    end.linkTo(parent.end, margin = 12.dp)
+                    top.linkTo(settings.bottom, margin = 20.dp)
+                }
+                .size(40.dp)
+                .background(
+                    color = AppColors.accentDark,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(4.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onMapModeSwitch() },
+            contentScale = ContentScale.Crop
+        )
 
         // sharing start
         AnimatedVisibility(
