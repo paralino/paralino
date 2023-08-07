@@ -20,7 +20,7 @@ enum class PlanType(
     ),
     FAMILY(
         key = "family",
-        placesLimit = 10,
+        placesLimit = 50,
         membersLimit = 20,
         devicesLimit = 3
     ),
