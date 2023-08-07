@@ -53,10 +53,10 @@ class GroupActivityNotificationHandler(
             val title = try {
                 val group = groupRepo.getGroupWithMembersLocally(payload.groupId).firstOrNull()
                 val member = group?.memberByUserId(payload.memberUserId)
-                val groupEmoji = group?.data?.data?.image?.getImageValue(ImageType.emoji)?.let { "$it " } ?: ""
-                val memberEmoji = member?.image?.getImageValue(ImageType.emoji)?.let { "$it " } ?: ""
-                val groupName = group?.data?.data?.name?.let { "$groupEmoji$it" }
-                val memberName = member?.name?.let { "$memberEmoji$it" }
+//                val groupEmoji = group?.data?.data?.image?.getImageValue(ImageType.emoji)?.let { "$it " } ?: ""
+//                val memberEmoji = member?.image?.getImageValue(ImageType.emoji)?.let { "$it " } ?: ""
+                val groupName = group?.data?.data?.name //?.let { "$groupEmoji$it" }
+                val memberName = member?.name //?.let { "$memberEmoji$it" }
 
                 if(payload.memberUserId == config.userId) {
                     if (groupName.isNullOrBlank()) {
