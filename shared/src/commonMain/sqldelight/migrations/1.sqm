@@ -1,1 +1,0 @@
-CREATE TABLE IF NOT EXISTS blocklistEntity(`id` TEXT NOT NULL PRIMARY KEY, `ownerUserId` TEXT NOT NULL, `resourceType` TEXT NOT NULL, `resourceId` TEXT NOT NULL,`data` TEXT);
