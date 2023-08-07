@@ -47,10 +47,10 @@ class CoreAppManager(
         logg.tag("app_state").v("App is in foreground")
         updateLocationStatus()
         updateConnectionStatus()
+        updateConfig()
 
         if (wasInBackground) {
             wasInBackground = false
-            updateConfig()
             updateGroups()
         }
     }

@@ -84,7 +84,7 @@ fun LoginScreenCore(
     onShowDialog: (MainAlertDialog?) -> Unit,
     onExit: () -> Unit
 ) {
-    val uiState by vm.uiState.collectAsState(initial = LoginScreenState(uiType = vm.startScreenUiType))
+    val uiState by vm.uiState.collectAsState(initial = LoginScreenState(uiType = vm.initialUiType))
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = Unit) {

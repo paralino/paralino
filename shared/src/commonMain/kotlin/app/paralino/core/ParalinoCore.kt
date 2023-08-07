@@ -175,7 +175,7 @@ val coreModule = module {
     single { UserRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { LocationRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PlacesRepository(get(), get(), get(), get(), get()) }
-    single { AppConfigRepository(get(), get(), get(), config) }
+    single { AppConfigRepository(get(), get(), get(), get(), config) }
 
     single { GroupValidityVerification(get(), get(), get(), config) }
     single { LocationSharingManager(get(), get()) }

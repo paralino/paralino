@@ -4,7 +4,6 @@ data class BackendConfig constructor(
     val serverUrl: String,
     val projectId: String,
     val debug: Boolean,
-    val canUseEmail: Boolean,
     val logToConsole: Boolean,
     val logErrorsToRemote: Boolean,
 ) {

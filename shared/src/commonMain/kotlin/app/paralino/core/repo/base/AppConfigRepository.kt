@@ -9,19 +9,30 @@ import app.paralino.core.models.base.ConfigNode
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.data.db.AppConfig
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class AppConfigRepository(
     private val database: AppDatabaseHelper,
     private val api: IDocumentsApi,
     private val deviceApiProvider: IDeviceApiProvider,
-    private val config: AppConfig
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val config: AppConfig,
 ) : BaseRepository() {
 
+    val configState: StateFlow<ConfigData?> = getConfig()
+        .stateIn(
+            scope = scopeProvider.defaultIOScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
 
     fun getUpdateType(): Flow<AppUpdateType> {
         return getConfig()
@@ -57,14 +68,14 @@ class AppConfigRepository(
         }
     }
 
-    private fun getConfig(): Flow<ConfigData> {
+    fun getConfig(): Flow<ConfigData> {
         return database.mapToList { configQueries.getAll() }
             .map { it.map { ConfigNode(id = it.id, value = it.value_ ?: "") } }
             .map { ConfigData.init(it) }
             .distinctUntilChanged()
     }
 
-    private suspend fun getConfigOnce(): ConfigData? {
+    suspend fun getConfigOnce(): ConfigData? {
         return database.configQueries
             .getAll()
             .executeAsList()

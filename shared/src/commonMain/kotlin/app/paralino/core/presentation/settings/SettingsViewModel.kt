@@ -1,13 +1,13 @@
 package app.paralino.core.presentation.settings
 
 import app.paralino.core.domain.user.LogoutUseCase
-import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.exception
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -15,6 +15,7 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository,
-    private val backendConfig: BackendConfig,
+    private val appConfigRepository: AppConfigRepository,
     private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
@@ -35,38 +36,40 @@ class SettingsViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        userRepo.getAndRefreshUser()
-            .onEach { userState ->
-                _accountState.update {
-                    when (userState) {
-                        Resource.NotInitialized -> it
-                        is Resource.Ready -> {
-                            if (userState.data != null) {
-                                Payload.Success(
-                                    AccountScreenState(
-                                        userState = UserState(
-                                            name = userState.data.name,
-                                            userId = userState.data.id,
-                                            email = userState.data.email,
-                                            image = userState.data.data?.userImage,
-                                            isGuestUser = userState.data.isGuestUser,
-                                            errorItem = if(userState.data.needsEmailVerification)
-                                                ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
-                                            else null
-                                        ),
-                                        canUseEmail = backendConfig.canUseEmail,
-                                        logoutState = null,
-                                        deleteAccountState = null,
-                                        versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})"
-                                    )
+        combine(
+            userRepo.getAndRefreshUser(),
+            appConfigRepository.getConfig()
+        ) { userState, config ->
+            _accountState.update {
+                when (userState) {
+                    Resource.NotInitialized -> it
+                    is Resource.Ready -> {
+                        if (userState.data != null) {
+                            Payload.Success(
+                                AccountScreenState(
+                                    userState = UserState(
+                                        name = userState.data.name,
+                                        userId = userState.data.id,
+                                        email = userState.data.email,
+                                        image = userState.data.data?.userImage,
+                                        isGuestUser = userState.data.isGuestUser,
+                                        errorItem = if (userState.data.needsEmailVerification)
+                                            ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
+                                        else null
+                                    ),
+                                    canUseEmail = config.emailEnabled,
+                                    logoutState = null,
+                                    deleteAccountState = null,
+                                    versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})"
                                 )
-                            } else {
-                                Payload.Error(UnauthorizedException(type = null, "User is not ready"))
-                            }
+                            )
+                        } else {
+                            Payload.Error(UnauthorizedException(type = null, "User is not ready"))
                         }
                     }
                 }
             }
+        }
             .launchIn(coroutineScope)
     }
 

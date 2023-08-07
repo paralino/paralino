@@ -10,7 +10,7 @@ data class LoginScreenState constructor(
     val hasPasswordError: Boolean = false,
     val hasPasswordConfirmError: Boolean = false,
     val canUseEmail: Boolean = false,
-    val uiType: LoginScreenUiType = if(canUseEmail) LoginScreenUiType.SIGNUP else LoginScreenUiType.SIGNUP_GUEST,
+    val uiType: LoginScreenUiType,
     val actionLoading: Boolean = false,
     val hasGuestAccount: Boolean = false,
     val stepInfo: SignUpStepInfo? = null,
