@@ -114,8 +114,8 @@ android {
         }
         dev {
             dimension "version"
-            versionCode 6
-            versionName "0.1.1"
+            versionCode 7
+            versionName "0.2.0"
             versionNameSuffix "-dev"
             applicationIdSuffix ".dev"
 
