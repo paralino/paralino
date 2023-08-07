@@ -26,8 +26,14 @@
 
 -keep class com.sun.jna.* { *; }
 -keepclassmembers class * extends com.sun.jna.* { public *; }
+-keep class java.awt.* { *; }
+-keepclassmembers class * extends java.awt.* { public *; }
 
 -dontwarn org.jetbrains.annotations.**
+-dontwarn java.awt.Component
+-dontwarn java.awt.GraphicsEnvironment
+-dontwarn java.awt.HeadlessException
+-dontwarn java.awt.Window
 
 #retaning R.java resources names
 -keepclassmembers class **.R$* {
@@ -44,7 +50,9 @@
 -keep class app.paralino.android.remote.** { *; }
 -keep class app.paralino.core.models.** { *; }
 -keep class app.paralino.core.data.** { *; }
--keep class io.appwrite.models.** { *; }
+-keep class io.appwrite.** { *; }
+
+-keep class app.paralino.core.MR$images { *; }
 
 # keep parcelables
 -keepclassmembers class * implements android.os.Parcelable {
