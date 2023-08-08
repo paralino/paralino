@@ -93,9 +93,9 @@ class LocationPerformanceManager constructor(
             schedulePerformanceReset(LocationPerformanceType.HIGH, 60_000)
         } else if (_locationPerformanceType.value.current < LocationPerformanceType.VERY_HIGH) {
             if (performanceType < _locationPerformanceType.value.current) {
-                schedulePerformanceReset(LocationPerformanceType.BALANCED, 30_000)
+                schedulePerformanceReset(LocationPerformanceType.BALANCED, 45_000)
             } else {
-                schedulePerformanceReset(LocationPerformanceType.BALANCED, 15_000)
+                schedulePerformanceReset(LocationPerformanceType.BALANCED, 30_000)
             }
         } else {
             logg.tag("location_performance").v("Skip location performance reset ($performanceType)")
