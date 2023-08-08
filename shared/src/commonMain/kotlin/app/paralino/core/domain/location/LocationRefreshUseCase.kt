@@ -59,12 +59,16 @@ class LocationRefreshUseCase constructor(
         }
     }
 
-    fun refreshMemberDeviceLocation(groupId: String, locationId: String): Flow<Unit> {
+    fun refreshMemberDeviceLocation(
+        groupId: String,
+        memberUserId: String,
+        locationId: String
+    ): Flow<Unit> {
         return flow {
 
             val requestPayload = LocationRequestPayload(
                 groupId = groupId,
-                userId = config.userId,
+                userId = memberUserId,
                 locationId = locationId,
                 force = false
             )

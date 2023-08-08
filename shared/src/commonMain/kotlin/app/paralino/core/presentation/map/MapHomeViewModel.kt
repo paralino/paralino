@@ -298,6 +298,7 @@ class MapHomeViewModel constructor(
 
         locationRefreshUseCase.refreshMemberDeviceLocation(
             groupId = state.memberState.groupId,
+            memberUserId = state.memberState.userId,
             locationId = state.location.locationId
         )
             .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
