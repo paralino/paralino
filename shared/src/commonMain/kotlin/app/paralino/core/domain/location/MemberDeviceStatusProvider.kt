@@ -19,11 +19,11 @@ class MemberDeviceStatusProvider(
         val locationStatus = deviceStatus.locationStatusProvider.currentStatus
 
         return when {
+            !locationSharingManager.isSharingActiveForGroup(groupId) -> MemberDeviceStatusType.NOT_SHARING
             !locationStatus.isPermissionAllowed -> MemberDeviceStatusType.MISSING_PERMISSIONS
             !locationStatus.isGpsOn -> MemberDeviceStatusType.GPS_OFF
-            !locationSharingManager.isSharingActiveForGroup(groupId) -> MemberDeviceStatusType.NOT_SHARING
-            locationPerformanceManager.locationPerformanceType.value.current == LocationPerformanceType.BATTERY_SAVER -> MemberDeviceStatusType.BATTERY_SAVER_ON
             locationPerformanceManager.locationPerformanceType.value.isThrottlingLocationRequest -> MemberDeviceStatusType.TOO_MANY_REQUESTS
+            locationPerformanceManager.locationPerformanceType.value.current == LocationPerformanceType.BATTERY_SAVER -> MemberDeviceStatusType.BATTERY_SAVER_ON
             locationPerformanceManager.locationPerformanceType.value.isThrottling -> MemberDeviceStatusType.THROTTLING
             locationPerformanceManager.locationPerformanceType.value.isSlow -> MemberDeviceStatusType.IDLE
             else -> MemberDeviceStatusType.ACTIVE
