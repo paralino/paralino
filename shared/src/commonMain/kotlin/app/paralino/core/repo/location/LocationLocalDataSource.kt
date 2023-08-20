@@ -2,6 +2,8 @@ package app.paralino.core.repo.location
 
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.logg
+import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.MemberDocumentRaw
@@ -23,7 +25,6 @@ class LocationLocalDataSource(
                     settings_id = currentMember?.settings_id,
                     settings_groupId = currentMember?.settings_groupId,
                     settings_ownerUserId = currentMember?.settings_ownerUserId,
-                    settings_secretKey = currentMember?.settings_secretKey,
                     settings_integrity = currentMember?.settings_integrity,
                 )
                 database.memberQueries.create(newMember)
@@ -32,11 +33,15 @@ class LocationLocalDataSource(
     }
 
     suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw) {
+        logg.v("Save new location (${data.id})")
         database.locationQueries.update(
             id = data.id,
             deviceId = data.deviceId,
             deviceData = data.deviceData,
-            locationData = data.locationData
+            groupKeyVersion = data.groupKeyVersion,
+            deviceKeyVersion = data.deviceKeyVersion,
+            locationData = data.locationData,
+            status = data.status
         )
     }
 
@@ -130,6 +135,22 @@ class LocationLocalDataSource(
         return database.memberQueries.getUserMemberId(groupId = groupId, userId = userId).executeAsOneOrNull()
     }
 
+    suspend fun getMemberModelsWithLocationForUser(userId: String): List<MemberModelWithLocations> {
+        val result = database.transactionWithResult {
+            val members = database.memberQueries.getAllMembersForUser(userId = userId).executeAsList()
+            val locations = database.locationQueries.getForUser(userId = userId).executeAsList()
+            members to locations
+        }
+
+        return result?.first?.map { member ->
+            val ownerId = getGroupOwnerId(groupId = member.groupId)!!
+            val memberLocations = result.second.filter {
+                it.memberId == member.id
+            }
+            mapper.local2Core(member, memberLocations, ownerId)
+        } ?: emptyList()
+    }
+
     suspend fun clearMemberLocationData(locationId: String) {
         database.locationQueries.updateLocationData(locationData = null, id = locationId)
     }
@@ -145,13 +166,6 @@ class LocationLocalDataSource(
         database.transaction {
             memberQueries.deleteMember(groupId = groupId, userId = userId)
             locationQueries.clearForUserInGroup(groupId = groupId, userId = userId)
-        }
-    }
-
-    suspend fun clearAll() {
-        database.transaction {
-            memberQueries.clearAll()
-            locationQueries.clearAll()
         }
     }
 

@@ -2,21 +2,28 @@ package app.paralino.core.repo.location
 
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
-import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.models.raw.*
+import app.paralino.core.models.raw.GroupSettingsRaw
+import app.paralino.core.models.raw.LocationDeletePayload
+import app.paralino.core.models.raw.MemberDocumentRaw
+import app.paralino.core.models.raw.MemberLocationRaw
+import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
-import app.paralino.core.utils.exceptions.MissingGroupKeyException
+import app.paralino.core.utils.exceptions.CryptoException
+import app.paralino.core.utils.exceptions.MissingCryptoKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.serialization.encodeToString
+import kotlin.coroutines.cancellation.CancellationException
 
 class LocationRemoteSource constructor(
     private val documentApi: IDocumentsApi,
@@ -24,7 +31,7 @@ class LocationRemoteSource constructor(
     private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository,
-    private val userMemberIdUseCase: UserMemberIdUseCase
+    private val userMemberIdUseCase: UserMemberIdUseCase,
 ) {
 
     suspend fun deleteLocation(memberId: String, locationId: String) {
@@ -68,45 +75,53 @@ class LocationRemoteSource constructor(
         ids: List<MemberGroupId>,
     ) {
         blocking {
-
             ids.forEach {
-
-                val memberKey = cryptoKEKRepo.getMemberKey(it.groupId, config.userId)
-                    ?: throw MissingMemberKeyException(it.groupId, config.userId)
-
-                val groupKey = cryptoKEKRepo.getGroupKey(it.groupId, it.member.groupKeyVersion)
-                    ?: throw MissingGroupKeyException(it.groupId)
-
-                val locationData = it.data?.let {
-                    cryptoCore.encryptDataWithKey(
-                        data = BaseRemoteModule.formatter.encodeToString(it),
-                        key = memberKey.data.content
-                    )
+                try {
+                    saveCurrentLocation(it)
+                } catch (e: Exception) {
+                    logg.e("Error saving location for group ${it.groupId}", e)
                 }
-
-                val deviceData = cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(
-                        MemberDeviceData(
-                            deviceName = config.deviceName,
-                            deviceType = userMemberIdUseCase.getCurrentDeviceType().key
-                        )
-                    ),
-                    key = groupKey.data.content
-                )
-
-                documentApi.updateDocument(
-                    databaseType = BackendDatabaseType.DATA,
-                    collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
-                    docId = it.locationId,
-                    data = mapOf(
-                        "locationData" to locationData,
-                        "deviceData" to deviceData
-                    )
-                )
             }
         }
     }
 
+    @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
+    suspend fun saveCurrentLocation(
+        data: MemberGroupId,
+    ) {
+        val memberKey = cryptoKEKRepo.getMemberSenderKey(
+            groupId = data.groupId,
+            memberUserId = config.userId,
+            locationId = data.locationId
+        )
+        if (memberKey !is GroupMemberSenderKey.Valid)
+            throw MissingMemberKeyException(data.groupId, config.userId)
+
+        val locationData = data.locationData?.let {
+            cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(it),
+                key = memberKey.key
+            )
+        }
+
+        val status = cryptoCore.encryptDataWithKey(
+            data = BaseRemoteModule.formatter.encodeToString(data.deviceStatus),
+            key = memberKey.key
+        )
+
+        val payload = mapOf(
+            "locationData" to locationData,
+            "status" to status,
+            "deviceKeyVersion" to memberKey.deviceKeyVersion,
+        ).filter { it.value != null }
+
+        documentApi.updateDocument(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+            docId = data.locationId,
+            data = payload
+        )
+    }
 
     suspend fun getMember(memberId: String): MemberWithLocationsRaw {
         return blocking {
@@ -117,7 +132,7 @@ class LocationRemoteSource constructor(
                 documentId = memberId
             ).let { MemberDocumentRaw.from(it) }
 
-            val settings = if(member.ownerUserId == config.userId) {
+            val settings = if (member.ownerUserId == config.userId) {
                 documentApi.getDocument(
                     databaseType = BackendDatabaseType.DATA,
                     collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,

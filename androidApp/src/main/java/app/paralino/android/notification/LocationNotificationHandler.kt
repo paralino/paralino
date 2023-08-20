@@ -1,17 +1,24 @@
 package app.paralino.android.notification
 
-import android.app.*
+import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
-import app.paralino.android.ui.components.nameRes
-import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.attributedBold
+import app.paralino.core.ui.components.nameRes
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 
 class LocationNotificationHandler(
@@ -49,7 +56,7 @@ class LocationNotificationHandler(
             )
         } else {
             val errorContent = errors.map {
-                context.getString(it.nameRes)
+                context.getString(it.nameRes.resourceId)
             }.joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
                 .attributedBold(context)
 
@@ -80,7 +87,13 @@ class LocationNotificationHandler(
         registerNotificationChannel(context)
 
         val notification = notificationBuilder.build()
-        notificationManager.notify(notificationId, notification)
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationManager.notify(notificationId, notification)
+        }
         return notification
     }
 

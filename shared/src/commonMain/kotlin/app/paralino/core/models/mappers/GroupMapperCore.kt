@@ -2,6 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
@@ -28,14 +29,16 @@ class GroupMapperCore constructor(
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
             groupOwnerId = model.ownerUserId,
-            keyVersion = model.keyVersion
-        ) ?: throw MissingGroupKeyException(model.id, model.keyVersion)
+            keyVersion = model.groupKeyVersion
+        )
+        if(groupKey !is GroupMasterKey.Valid)
+            throw MissingGroupKeyException(model.id, model.groupKeyVersion)
 
         val groupData = when (model.data) {
             is CryptoResource.Ready -> {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(model.data.data),
-                    key = groupKey.data.content
+                    key = groupKey.key
                 )
             }
             else -> throw CryptoException("Group data is missing: ${model.id}")
@@ -44,8 +47,9 @@ class GroupMapperCore constructor(
         return GroupDocumentRaw(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             data = groupData,
+            serverIntegrity = model.serverIntegrity,
             planType = model.planType.key
         )
     }
@@ -55,17 +59,17 @@ class GroupMapperCore constructor(
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
             groupOwnerId = model.ownerUserId,
-            keyVersion = model.keyVersion
+            keyVersion = model.groupKeyVersion
         )
 
-        if(groupKey == null)
-            logg.e(MissingGroupKeyException(model.id, model.keyVersion))
+        if(groupKey !is GroupMasterKey.Valid)
+            logg.e(MissingGroupKeyException(model.id, model.groupKeyVersion))
 
-        val groupData = if (groupKey != null) {
+        val groupData = if (groupKey is GroupMasterKey.Valid) {
             try {
                 cryptoCore.decryptDataWithKey(
                     data = model.data,
-                    key = groupKey.data.content
+                    key = groupKey.key
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<UserGroupData>(it)
                 }.let {
@@ -81,8 +85,9 @@ class GroupMapperCore constructor(
         return UserGroup(
             id = model.id,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             data = groupData,
+            serverIntegrity = model.serverIntegrity,
             planType = PlanType.fromKey(model.planType) ?: PlanType.fallback,
             memberCount = memberCount,
             verification = verification,

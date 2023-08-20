@@ -17,13 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.components.MainAlertDialog
+import app.paralino.android.ui.components.Show
 import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.shared.errorString
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
@@ -32,6 +33,7 @@ import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.ui.components.MainAlertDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
@@ -89,7 +91,7 @@ fun PlaceDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -107,7 +109,7 @@ fun PlaceDetailScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = AppIcons.Security,
+                            painter = AppIcons.Security,
                             tint = AppColors.accent,
                             contentDescription = null
                         )
@@ -124,13 +126,13 @@ fun PlaceDetailScreen(
                             }
                         ) {
                             Icon(
-                                imageVector = AppIcons.Edit,
+                                painter = AppIcons.Edit,
                                 contentDescription = null
                             )
                         }
                         IconButton(onClick = { optionMenuExpanded = true }) {
                             Icon(
-                                imageVector = AppIcons.MoreVert,
+                                painter = AppIcons.MoreVert,
                                 contentDescription = null
                             )
                         }

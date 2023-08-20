@@ -1,19 +1,18 @@
 package app.paralino.android.tracking
 
-import Logger
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
 import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.android.utils.extensions.millisToDateTimeUTC
 import app.paralino.android.utils.extensions.toLocalString
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.utils.LocationConditionStatus
-import app.paralino.core.utils.LocationStatusException
+import app.paralino.core.provider.LocationConditionStatus
+import app.paralino.core.provider.LocationStatusException
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
@@ -43,14 +42,14 @@ class LocationInitHandler constructor(
             locationTrackingFlag,
             locationPerformanceManager.locationPerformanceType
         ) { tracking, performanceType ->
-            logg.tag("location_request").v("location request: ${performanceType.name}")
+            logg.tag("location_request").v("location request: ${performanceType.current}")
             if (tracking) {
-                logg.tag("location_request").v("location request OK: ${performanceType.name}")
+                logg.tag("location_request").v("location request OK: ${performanceType.current.name}")
                 val status = LocationConditionStatus.getLocationStatus(context)
                 if (status.isOK()) {
 
                     logg.tag("location_request").v("new request: $performanceType")
-                    val locationRequest = LocationPerformanceRequests.getRequest(performanceType)
+                    val locationRequest = LocationPerformanceRequests.getRequest(performanceType.current)
                     fusedLocationClient.requestLocationUpdates(
                         locationRequest,
                         locationCallback,
@@ -110,12 +109,12 @@ class LocationInitHandler constructor(
 //    }
 
     fun startLocationUpdates() {
-        Logger.tag("location_request").v("start location updates")
+        logg.tag("location_request").v("start location updates")
         locationTrackingFlag.value = true
     }
 
     fun stopLocationUpdates() {
-        Logger.tag("location_request").v("stopping all location updates")
+        logg.tag("location_request").v("stopping all location updates")
         locationTrackingFlag.value = false
         currentLocation.value = Payload.Error(LocationStoppedException())
         fusedLocationClient.removeLocationUpdates(locationCallback)

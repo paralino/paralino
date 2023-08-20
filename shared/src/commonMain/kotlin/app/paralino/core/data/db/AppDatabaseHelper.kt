@@ -4,7 +4,7 @@ import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
@@ -22,12 +22,16 @@ class AppDatabaseHelper(
     val groupQueries = database.groupsSQLQueries
     val groupKeysQueries = database.groupKeysSQLQueries
     val memberKeysQueries = database.groupMemberKeysSQLQueries
+    val groupDeviceKeysQueries = database.groupDeviceKeysSQLQueries
+    val groupDeviceIntegrityQueries = database.groupDeviceIntegritySQLQueries
     val placesQueries = database.placesSQLQueries
     val placeSettingsQueries = database.placeSettingsSQLQueries
     val memberQueries = database.membersSQLQueries
     val locationQueries = database.membersLocationsSQLQueries
     val configQueries = database.configDataSQLQueries
     val blocklistQueries = database.blocklistSQLQueries
+    val userKeysQueries = database.userKeysSQLQueries
+    val personalGroupKeysQueries = database.personalGroupKeySQLQueries
 
 
     internal fun clearDatabase() {

@@ -15,10 +15,17 @@ import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.IConfig
+import app.paralino.core.data.db.AppConfig
+import app.paralino.core.logg
+import app.paralino.core.models.Payload
+import app.paralino.core.models.location.MemberDeviceStatusType
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class MapHomeViewModel constructor(
     private val locationRepo: LocationRepository,
@@ -27,7 +34,8 @@ class MapHomeViewModel constructor(
     private val placesRepo: PlacesRepository,
     private val locationRefreshUseCase: LocationRefreshUseCase,
     private val userRepository: UserRepository,
-    private val config: IConfig
+    private val config: AppConfig,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(MapHomeScreenState.Empty())
@@ -39,10 +47,7 @@ class MapHomeViewModel constructor(
     private val groupIdData = MutableStateFlow("")
     private val focusedMarker = MutableStateFlow<FocusedMarkerData?>(null)
 
-    val locationRefreshSubscription = uiState.map { (it as? MapHomeScreenState.Ready)?.groupId }
-        .filterNotNull()
-        .distinctUntilChanged()
-        .flatMapLatest { locationRefreshUseCase.locationRefresh(it).mapToPayload { Unit } }
+    private var locationSubscriptionJob: Job? = null
 
     val allGroups: StateFlow<Resource<List<UserGroup>>> = groupRepo.getAllGroupsLocally()
         .map { Resource.Ready(it) }
@@ -57,8 +62,14 @@ class MapHomeViewModel constructor(
             initialValue = Resource.NotInitialized
         )
 
-    init {
+    val allGroupsState: Flow<Boolean?> = allGroups.map {
+        when (it) {
+            Resource.NotInitialized -> null
+            is Resource.Ready -> it.data.isNotEmpty()
+        }
+    }
 
+    init {
         allGroups.onEach { groupsData ->
             if (groupsData is Resource.Ready) {
                 val selectedGroup = groupIdData.value
@@ -69,6 +80,9 @@ class MapHomeViewModel constructor(
         }.launchIn(coroutineScope)
 
         groupIdData
+            .onEach { groupId ->
+                keepLocationSubscriptionOn(groupId)
+            }
             .flatMapLatest {
                 if (it.isBlank()) {
                     userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
@@ -94,7 +108,8 @@ class MapHomeViewModel constructor(
                                             member = member.member,
                                             isCurrentUser = member.member.userId == config.userId
                                         ),
-                                        location = null
+                                        location = null,
+                                        lastPing = null
                                     )
                                 )
                             } else {
@@ -109,7 +124,12 @@ class MapHomeViewModel constructor(
                                     GroupMemberItemStateWithOneLocation(
                                         memberState = memberState.copy(
                                             actionItems = buildList {
-                                                if(canDelete) add(MemberAction.DELETE_LOCATION)
+                                                if (canDelete)
+                                                    add(MemberAction.DELETE_LOCATION)
+
+                                                if (location.canRequestLocation) {
+                                                    add(MemberAction.REQUEST_LOCATION)
+                                                }
                                             }
                                         ),
                                         location = GroupMemberItemLocationState(
@@ -118,8 +138,10 @@ class MapHomeViewModel constructor(
                                             image = member.member.image,
                                             canEdit = false,
                                             currentDevice = location.deviceId == config.deviceId,
-                                            showSpeedAndElevation = true
-                                        )
+                                            showSpeedAndElevation = true,
+                                            formatter = valueFormatter
+                                        ),
+                                        lastPing = valueFormatter.getLastPing(location)
                                     )
                                 }
                             }
@@ -158,13 +180,15 @@ class MapHomeViewModel constructor(
                             groupName = group.name,
                             groupImage = group.image,
                             userCount = group.memberCount,
-                            inactiveUserCount = group.memberCount - group.members.filter { it.hasLocation }.size,
+                            activeUserCount = group.members.filter { it.isActive }.size,
+                            idleUserCount = group.members.filter { it.hasLocation && !it.isActive }.size,
                             currentUserImage = userData?.userImage
                                 ?: ImageModel.emoji(Emojis.robot),
                             members = membersData,
                             markers = memberMarkers + placeMarkers,
                             focusedMarker = focusedMarker,
-                            sharingStatus = sharingStatus
+                            sharingStatus = sharingStatus,
+                            isSatelliteMode = _uiState.value.isSatelliteMode
                         )
                     }
                 }
@@ -191,25 +215,92 @@ class MapHomeViewModel constructor(
         focusedMarker.update { marker }
     }
 
+    fun switchMapMode() {
+        _uiState.update {
+            when (it) {
+                is MapHomeScreenState.Empty -> it.copy(isSatelliteMode = !it.isSatelliteMode)
+                is MapHomeScreenState.Ready -> it.copy(isSatelliteMode = !it.isSatelliteMode)
+            }
+        }
+    }
+
     private fun getSharingContract(): Flow<LocationSharingContract?> {
         return sharingManager.allContractsFlow.combine(groupIdData) { contracts, group ->
             contracts.data?.firstOrNull { it.groupId == group }?.asValidContract()
         }
     }
 
-    suspend fun getAllGroups(): List<GroupItemState> {
-        return groupRepo.getAllGroupsLocally().firstOrNull()?.map { group ->
+    fun getAllGroups(): List<GroupItemState> {
+        return allGroups.value.data?.map { group ->
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
                 sharingManager.isSharingActiveForGroup(group.id) -> GroupItemState.GroupUiType.ACTIVE
                 else -> GroupItemState.GroupUiType.INACTIVE
             }
-            GroupItemState(group, uiType)
+            val isSelected = group.id == groupIdData.value
+            GroupItemState(
+                group,
+                uiType,
+                canEdit = true,
+                isSelected = isSelected,
+                isLarge = isSelected
+            )
         } ?: emptyList()
     }
 
-    fun clearMyLocation(locationId: String) {
+    private fun keepLocationSubscriptionOn(groupId: String?) {
+        locationSubscriptionJob?.cancel()
+
+        if(groupId.isNullOrBlank()) {
+            logg.v("realtime", "Group id not valid, ignore realtime map subscription")
+            return
+        }
+
+        logg.tag("location_performance").v("Map active for $groupId")
+        locationSubscriptionJob = coroutineScope.launch {
+            logg.v("realtime", "Group ready ($groupId), activate realtime subscription")
+            locationRefreshUseCase.locationRefresh(groupId).mapToPayload { Unit }.collect()
+        }
+    }
+
+    fun memberAction(action: MemberAction, state: GroupMemberItemState) {
+        when(action) {
+            MemberAction.DELETE_MEMBER,
+            MemberAction.BLOCK_USER,
+            MemberAction.UNBLOCK_USER -> {}
+            MemberAction.DELETE_LOCATION -> {
+                if (state is GroupMemberItemStateWithOneLocation && state.location != null) {
+                    clearMyLocation(state.location!!.locationId)
+                }
+            }
+            MemberAction.REQUEST_LOCATION -> {
+                if (state is GroupMemberItemStateWithOneLocation) {
+                    requestLocationUpdate(state)
+                }
+            }
+        }
+    }
+
+    private fun clearMyLocation(locationId: String) {
         locationRepo.clearLocation(locationId)
+            .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
+            .launchIn(coroutineScope)
+    }
+
+    private fun requestLocationUpdate(state: GroupMemberItemStateWithOneLocation) {
+
+        if(state.location == null) {
+            coroutineScope.launch {
+                _eventChannel.send(MapHomeScreenEvent.Error(Throwable("Active device not found")))
+            }
+            return
+        }
+
+        locationRefreshUseCase.refreshMemberDeviceLocation(
+            groupId = state.memberState.groupId,
+            memberUserId = state.memberState.userId,
+            locationId = state.location.locationId
+        )
             .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
             .launchIn(coroutineScope)
     }

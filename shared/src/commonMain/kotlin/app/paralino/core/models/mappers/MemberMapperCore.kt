@@ -1,6 +1,8 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.VerificationResult
@@ -30,61 +32,76 @@ class MemberMapperCore constructor(
             keyVersion = model.member.groupKeyVersion
         )
 
-        if (groupKey == null)
+        if (groupKey !is GroupMasterKey.Valid)
             logg.e(MissingGroupKeyException(model.member.groupId, model.member.groupKeyVersion))
 
         val verification = groupVerification.verifyGroupMember(
             member = model.member,
             groupOwnerId = groupOwnerId,
-            groupKey = groupKey?.data
-        )
-
-        val memberKey = cryptoKEKRepo.getMemberKey(
-            groupId = model.member.groupId,
-            memberUserId = model.member.ownerUserId
+            groupKey = groupKey
         )
 
         // data encrypted with user senderKey DEK
         val locations = model.locations.map { location ->
-            val deviceData = if (groupKey != null) {
+            val deviceData = if (groupKey is GroupMasterKey.Valid) {
                 if (location.deviceData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {
-                    try {
-                        cryptoCore.decryptDataWithKey(
-                            data = location.deviceData,
-                            key = groupKey.data.content
-                        ).let {
-                            BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
-                        }.let {
-                            if(verification == VerificationResult.VERIFIED) {
-                                CryptoResource.Ready(it)
-                            } else {
-                                CryptoResource.UnverifiedKeyOrData(it)
+                    val deviceGroupKey = if(location.groupKeyVersion == groupKey.version) {
+                        groupKey
+                    } else {
+                        cryptoKEKRepo.getGroupKey(
+                            groupId = model.member.groupId,
+                            groupOwnerId = groupOwnerId,
+                            keyVersion = location.groupKeyVersion
+                        )
+                    }
+
+                    if (deviceGroupKey is GroupMasterKey.Valid) {
+                        try {
+                            cryptoCore.decryptDataWithKey(
+                                data = location.deviceData,
+                                key = deviceGroupKey.key
+                            ).let {
+                                BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
+                            }.let {
+                                if(verification == VerificationResult.VERIFIED) {
+                                    CryptoResource.Ready(it)
+                                } else {
+                                    CryptoResource.UnverifiedKeyOrData(it)
+                                }
                             }
+                        } catch (e: Exception) {
+                            logg.tag("tag_crypto_key_group_member")
+                                .e(
+                                    message = "Error decrypting device data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
+                                            "location group key: ${location.groupKeyVersion} - main group key: ${groupKey.version} - used group key: ${deviceGroupKey.version}",
+                                    t = e
+                                )
+                            CryptoResource.WrongKeyOrData
                         }
-                    } catch (e: Exception) {
-                        logg.tag("tag_crypto_key_group_member")
-                            .e(
-                                "Error decrypting device data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
-                                        "Group key version: ${model.member.groupKeyVersion} - key version: ${groupKey.version}",
-                                e
-                            )
-                        CryptoResource.WrongKeyOrData
+                    } else {
+                        CryptoResource.MissingKey
                     }
                 }
             } else {
                 CryptoResource.MissingKey
             }
 
-            val locationData = if (memberKey != null) {
+            val memberKey = cryptoKEKRepo.getMemberSenderKey(
+                groupId = model.member.groupId,
+                memberUserId = model.member.ownerUserId,
+                locationId = location.id
+            )
+
+            val locationData = if (memberKey is GroupMemberSenderKey.Valid) {
                 if (location.locationData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {
                     try {
                         cryptoCore.decryptDataWithKey(
                             data = location.locationData,
-                            key = memberKey.data.content
+                            key = memberKey.key
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
                         }.let {
@@ -95,13 +112,54 @@ class MemberMapperCore constructor(
                             }
                         }
                     } catch (e: Exception) {
-                        logg.tag("tag_crypto_key_group_member")
-                            .e(
-                                message = "Error decrypting location data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
-                                        "Model key version: ${model.member.memberKeyVersion} - key version: ${memberKey.version}",
-                                t = e
-                            )
-                        CryptoResource.WrongKeyOrData
+                        if(memberKey.deviceKeyVersion != location.deviceKeyVersion) {
+                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion})")
+                            CryptoResource.MissingKey
+                        } else {
+                            logg.tag("tag_crypto_key_group_member")
+                                .e(
+                                    message = "Error decrypting location data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
+                                            "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
+                                    t = e
+                                )
+                            CryptoResource.WrongKeyOrData
+                        }
+                    }
+                }
+            } else {
+                CryptoResource.MissingKey
+            }
+
+            val status = if (memberKey is GroupMemberSenderKey.Valid) {
+                if (location.status.isNullOrBlank()) {
+                    CryptoResource.NotInitialized
+                } else {
+                    try {
+                        cryptoCore.decryptDataWithKey(
+                            data = location.status,
+                            key = memberKey.key
+                        ).let {
+                            BaseRemoteModule.formatter.decodeFromString<MemberDeviceStatus>(it)
+                        }.let {
+                            if(verification == VerificationResult.VERIFIED) {
+                                CryptoResource.Ready(it)
+                            } else {
+                                CryptoResource.UnverifiedKeyOrData(it)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        if(memberKey.deviceKeyVersion != location.deviceKeyVersion) {
+                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion})")
+                            CryptoResource.MissingKey
+                        } else {
+                            logg.tag("tag_crypto_key_group_member")
+                                .e(
+                                    message = "Error decrypting device status data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
+                                            "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
+                                    t = e
+                                )
+                            CryptoResource.WrongKeyOrData
+                        }
                     }
                 }
             } else {
@@ -114,17 +172,19 @@ class MemberMapperCore constructor(
                 memberId = model.member.id,
                 userId = model.member.ownerUserId,
                 deviceId = location.deviceId,
+                groupKeyVersion = location.groupKeyVersion,
                 deviceData = deviceData,
-                locationData = locationData
+                locationData = locationData,
+                status = status
             )
         }
 
         // data encrypted with group DEK
-        val memberData = if (groupKey != null) {
+        val memberData = if (groupKey is GroupMasterKey.Valid) {
             try {
                 cryptoCore.decryptDataWithKey(
                     data = model.member.data,
-                    key = groupKey.data.content
+                    key = groupKey.key
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
                 }.let {
@@ -146,14 +206,12 @@ class MemberMapperCore constructor(
             groupId = model.member.groupId,
             userId = model.member.ownerUserId,
             groupKeyVersion = model.member.groupKeyVersion,
-            memberKeyVersion = model.member.memberKeyVersion,
             verification = model.member.verification,
             settings = model.member.settingsRaw?.let {
                 GroupSettings(
                     id = it.id,
                     groupId = it.groupId,
                     ownerUserId = it.ownerUserId,
-                    secretKey = it.secretKey,
                     integrity = it.integrity
                 )
             },

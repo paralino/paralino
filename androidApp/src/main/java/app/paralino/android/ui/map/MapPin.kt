@@ -5,13 +5,11 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.compose.ui.graphics.toArgb
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import app.paralino.android.R
 import app.paralino.android.databinding.ElementMapPinBinding
 import app.paralino.android.databinding.ElementMapPinCenteredBinding
-import app.paralino.android.ui.theme.AppColors
 import app.paralino.android.utils.extensions.*
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.presentation.map.MapPinData
@@ -35,20 +33,14 @@ class MapUserMarkerView : ConstraintLayout {
         when (data.image?.getImageType()) {
             ImageType.emoji -> {
                 vb.ivPinImage.isVisible = false
-                vb.tvGroupEmoji.isVisible = true
-                vb.tvGroupEmoji.text = data.image!!.getImageValue()
+                vb.ivPinIcon.isVisible = true
+                vb.ivPinIcon.setImageResource(Emojis.getResourceFromIcon(data.image!!.getImageValue()!!).drawableResId)
             }
-            ImageType.raw -> {
-                vb.ivPinImage.isVisible = true
-                vb.tvGroupEmoji.isVisible = false
-                val b = data.image!!.getImageValue()?.bitmapFromBase64()
-                if (b != null) vb.ivPinImage.setImageBitmap(b)
-                else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
-            }
-            else -> {
+
+            ImageType.placeholder, null -> {
                 vb.ivPinImage.isVisible = false
-                vb.tvGroupEmoji.isVisible = true
-                vb.tvGroupEmoji.text = Emojis.robot
+                vb.ivPinIcon.isVisible = true
+                vb.ivPinIcon.setImageResource(Emojis.getResourceFromIcon(Emojis.robot).drawableResId)
             }
         }
 
@@ -68,20 +60,14 @@ class MapUserMarkerView : ConstraintLayout {
         when (data.image?.getImageType()) {
             ImageType.emoji -> {
                 vb.ivPinImage.isVisible = false
-                vb.tvGroupEmoji.isVisible = true
-                vb.tvGroupEmoji.text = data.image!!.getImageValue()
+                vb.ivPinIcon.isVisible = true
+                vb.ivPinIcon.setImageResource(Emojis.getResourceFromIcon(data.image!!.getImageValue()!!).drawableResId)
             }
-            ImageType.raw -> {
-                vb.ivPinImage.isVisible = true
-                vb.tvGroupEmoji.isVisible = false
-                val b = data.image!!.getImageValue()?.bitmapFromBase64()
-                if (b != null) vb.ivPinImage.setImageBitmap(b)
-                else vb.ivPinImage.setImageResource(R.drawable.ic_user_placeholder_round)
-            }
-            else -> {
+
+            ImageType.placeholder, null -> {
                 vb.ivPinImage.isVisible = false
-                vb.tvGroupEmoji.isVisible = true
-                vb.tvGroupEmoji.text = Emojis.robot
+                vb.ivPinIcon.isVisible = true
+                vb.ivPinIcon.setImageResource(Emojis.getResourceFromIcon(Emojis.lightBulb).drawableResId)
             }
         }
 
@@ -92,11 +78,12 @@ class MapUserMarkerView : ConstraintLayout {
         return when (data.pinType) {
             MapPinType.MEMBER -> {
                 when {
-                    data.focused -> 100.dp2px
-                    data.active -> 70.dp2px
+                    data.focused && data.active -> 110.dp2px
+                    data.active -> 80.dp2px
                     else -> 40.dp2px
                 }
             }
+
             MapPinType.PLACE -> {
                 30.dp2px
             }

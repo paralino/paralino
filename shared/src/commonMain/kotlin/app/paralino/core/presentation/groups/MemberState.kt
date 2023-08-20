@@ -2,15 +2,16 @@ package app.paralino.core.presentation.groups
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.isoToLocalDateTime
-import kotlinx.datetime.LocalDateTime
 
 sealed interface GroupMemberItemState {
     val memberState: GroupMemberState
     val keyId: String
+    val lastPing: String?
 }
 
 data class GroupMemberState constructor(
@@ -38,18 +39,26 @@ data class GroupMemberState constructor(
 data class GroupMemberItemStateWithOneLocation constructor(
     override val memberState: GroupMemberState,
     val location: GroupMemberItemLocationState?,
+    override val lastPing: String?
 ) : GroupMemberItemState {
     override val keyId: String
-        get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId) ?: memberState.memberId
-    val status: GroupMemberStatus get() = location?.status ?: GroupMemberStatus.INACTIVE
+        get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
+            ?: memberState.memberId
 }
 
 data class GroupMemberItemStateWithLocations constructor(
     override val memberState: GroupMemberState,
     val locations: List<GroupMemberItemLocationState>,
+    val allowShowingDevices: Boolean,
+    override val lastPing: String?
 ) : GroupMemberItemState {
     override val keyId: String
         get() = memberState.memberId
+
+    val singleLocation: GroupMemberItemLocationState? = locations.takeIf { it.size == 1 }?.first()
+    val statusTag: MemberDeviceStatusType?
+        get() = singleLocation?.status
+            ?: locations.firstOrNull { it.status == MemberDeviceStatusType.ACTIVE }?.status
 }
 
 data class GroupMemberItemLocationState constructor(
@@ -57,10 +66,10 @@ data class GroupMemberItemLocationState constructor(
     val name: String?,
     val image: ImageModel,
     val batterLevel: Int?,
-    val speedMs: Float?,
-    val elevationMeters: Float?,
-    val lastPing: LocalDateTime?,
-    val status: GroupMemberStatus,
+    val speed: String?,
+    val elevation: String?,
+    val lastPing: String?,
+    val status: MemberDeviceStatusType?,
     val canEdit: Boolean,
     val currentDevice: Boolean
 ) {
@@ -70,25 +79,22 @@ data class GroupMemberItemLocationState constructor(
         image: ImageModel?,
         canEdit: Boolean,
         currentDevice: Boolean,
-        showSpeedAndElevation: Boolean
+        showSpeedAndElevation: Boolean,
+        formatter: IValueFormatter
     ) : this(
         locationId = memberLocation.id,
         name = name,
         image = image ?: ImageModel.emoji(Emojis.lock),
-        batterLevel = memberLocation.locationData.data?.batteryLevel,
-        speedMs = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation },
-        elevationMeters = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation },
-        lastPing = memberLocation.locationData.data?.timeUTC?.isoToLocalDateTime(),
-        status = if (memberLocation.isActive) GroupMemberStatus.ACTIVE else GroupMemberStatus.INACTIVE,
+        batterLevel = memberLocation.status.data?.validBatteryLevel ?: memberLocation.locationData.data?.batteryLevel,
+        speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
+        elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it) },
+        lastPing = formatter.getLastPing(memberLocation),
+        status = memberLocation.locationAwareStatusType,
         canEdit = canEdit,
         currentDevice = currentDevice
     )
 }
 
-enum class GroupMemberStatus {
-    ACTIVE, INACTIVE
-}
-
 enum class MemberAction {
-    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER;
+    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER, REQUEST_LOCATION;
 }

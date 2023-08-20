@@ -175,7 +175,7 @@ class PlacesRepository constructor(
                 // user exited place if user's accuracy circle is not overlapping place circle
                 // this is used to help filter location jumping when user stays in one closed place (like house)
                 // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
-                val isExit = distance > placeData.radiusMeters + data.accuracy.coerceAtMost(30f)
+                val isExit = distance > placeData.radiusMeters + data.accuracy
                 val previousState = placeActivity.value.get(place.id)
 
                 logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")

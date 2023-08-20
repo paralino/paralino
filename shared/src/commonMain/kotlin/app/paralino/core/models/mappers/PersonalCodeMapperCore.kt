@@ -1,11 +1,12 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.HashType
-import app.paralino.core.crypto.base64ToData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.raw.PersonalCodeRaw
+import app.paralino.core.models.user.PersonalCodeKeyData
+import app.paralino.core.models.user.PersonalCodeUserData
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.utils.BaseRemoteModule
@@ -17,69 +18,79 @@ class PersonalCodeMapperCore(
     private val userKeyRepo: CryptoUserKeyRepository,
 ) {
 
-    suspend fun remote2CoreRead(code: String, encryptedCodeData: String): UserPersonalCodeData {
+    suspend fun remote2CoreRead(
+        code: String,
+        encryptedUserData: String,
+        encryptedKeyData: String,
+        userId: String
+    ): UserPersonalCodeData {
 
         val derivedCode = cryptoCore.derivePassword(code)
 
-        val codeData = cryptoCore.decryptDataWithSimplePassword(
-            data = encryptedCodeData,
-            password = derivedCode.backupPassword
+        val userData = cryptoCore.decryptDataWithSimplePassword(
+            data = encryptedUserData,
+            password = derivedCode.backupPassword,
+            userId = userId
         ).let {
-            BaseRemoteModule.formatter.decodeFromString<UserPersonalCodeData>(it)
+            BaseRemoteModule.formatter.decodeFromString<PersonalCodeUserData>(it)
         }
 
+        val keyData = cryptoCore.decryptDataWithSimplePassword(
+            data = encryptedKeyData,
+            password = derivedCode.backupPassword,
+            userId = userId
+        ).let {
+            BaseRemoteModule.formatter.decodeFromString<PersonalCodeKeyData>(it)
+        }
+
+        if (userId != userData.ownerUserId) throw DecryptionException("User personal code can not be verified")
+        if (code != keyData.code) throw DecryptionException("User personal code can not be verified")
+
         cryptoCore.verifySignature(
-            data = codeData.secretKey,
-            publicKey = codeData.ownerPublicKey
+            data = keyData.signedOwnerKxPublicKey,
+            publicKey = userData.ownerIdentityKey
         ) ?: throw DecryptionException("User personal code can not be verified")
 
-        return codeData
+        return UserPersonalCodeData(
+            userData = userData,
+            keyData = keyData
+        )
     }
 
     suspend fun mapMyCode(model: PersonalCodeRaw): UserPersonalCode {
 
         val code = cryptoCore.decryptDataWithKey(
             data = model.encryptedCode,
-            key = userKeyRepo.personalKey.content
+            key = userKeyRepo.personalKey()
         )
 
-        var codeData = try {
-            CryptoResource.Ready(remote2CoreRead(code, model.encryptedCodeData))
-        } catch (e: Exception) {
-            CryptoResource.WrongKeyOrData
-        }
+        val derivedCode = cryptoCore.derivePassword(code)
 
-        codeData = when(codeData) {
-            is CryptoResource.Ready -> {
-                val userOwnSecret = cryptoCore.decryptDataWithKey(
-                    data = model.verification,
-                    key = userKeyRepo.personalKey.content
+        val userData = if (!model.encryptedCodeUserData.isNullOrBlank()) {
+            try {
+                CryptoResource.Ready(
+                    cryptoCore.decryptDataWithSimplePassword(
+                        data = model.encryptedCodeUserData,
+                        password = derivedCode.backupPassword,
+                        userId = model.ownerUserId
+                    ).let {
+                        BaseRemoteModule.formatter.decodeFromString<PersonalCodeUserData>(it)
+                    }.takeIf {
+                        it.ownerIdentityKey == userKeyRepo.latestKeyPair().publicKey
+                    }!!
                 )
-
-                val hash = cryptoCore.hashProvider.computeHash(
-                    data = userOwnSecret.base64ToData(cryptoCore.hashProvider).content,
-                    type = HashType.SHA256
-                ).asBase64String(cryptoCore.hashProvider)
-
-                val hashFromCodeData = cryptoCore.verifySignature(
-                    data = codeData.data.secretKey,
-                    publicKey = userKeyRepo.latestKeyPair().publicKey
-                )
-
-                if(hash != hashFromCodeData)
-                    CryptoResource.WrongKeyOrData
-                else
-                    codeData
+            } catch (e: Exception) {
+                logg.w("personal_code", "Error verifying personal code", e)
+                CryptoResource.WrongKeyOrData
             }
-            else -> codeData
+        } else {
+            CryptoResource.NotInitialized
         }
 
         return UserPersonalCode(
             id = model.id,
-            validityUTC = model.validityUTC,
-            verification = model.verification,
-            data = codeData
+            code = code,
+            codeData = userData,
         )
     }
-
 }

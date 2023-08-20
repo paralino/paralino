@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS placeEntity (
 `id` TEXT NOT NULL PRIMARY KEY,
 `groupId` TEXT NOT NULL,
 `ownerUserId` TEXT NOT NULL,
-`keyVersion` INTEGER NOT NULL,
+`groupKeyVersion` INTEGER NOT NULL,
 `privatePlace` INTEGER AS kotlin.Boolean NOT NULL,
 `data` TEXT NOT NULL
 );

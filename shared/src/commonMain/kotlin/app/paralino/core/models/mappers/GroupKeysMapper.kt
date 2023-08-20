@@ -1,9 +1,13 @@
 package app.paralino.core.models.mappers
 
+import app.paralino.core.data.db.GroupDeviceKeysEntity
 import app.paralino.core.data.db.GroupKeysEntity
 import app.paralino.core.data.db.GroupMembersKeysEntity
+import app.paralino.core.data.db.PersonalGroupKeyEntity
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
+import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
+import app.paralino.core.models.raw.PersonalGroupKeyRaw
 
 class GroupKeysMapper {
     fun local2Remote(model: GroupKeysEntity): GroupCryptoKeyDataRaw {
@@ -11,7 +15,8 @@ class GroupKeysMapper {
             id = model.id,
             groupId = model.groupId,
             memberUserId = model.memberUserId,
-            version = model.version,
+            groupKeyVersion = model.groupKeyVersion,
+            memberKeyVersion = model.memberKeyVersion,
             encryptedGroupKey = model.encryptedGroupKey
         )
     }
@@ -21,7 +26,8 @@ class GroupKeysMapper {
             id = model.id,
             groupId = model.groupId,
             memberUserId = model.memberUserId,
-            version = model.version,
+            groupKeyVersion = model.groupKeyVersion,
+            memberKeyVersion = model.memberKeyVersion,
             encryptedGroupKey = model.encryptedGroupKey
         )
     }
@@ -30,11 +36,11 @@ class GroupKeysMapper {
         return GroupMemberCryptoKeyDataRaw(
             id = model.id,
             groupId = model.groupId,
-            memberUserId = model.memberUserId,
             ownerUserId = model.ownerUserId,
-            version = model.version,
-            encryptedSenderKey = model.encryptedSenderKey,
-            encryptedPublicKey = model.encryptedPublicKey
+            memberKeyVersion = model.memberKeyVersion,
+            signedMemberKxPublicKey = model.signedMemberKxPublicKey,
+            signedMembershipPublicKey = model.signedMembershipPublicKey,
+            ownerIdentityKey = model.ownerIdentityKey
         )
     }
 
@@ -42,11 +48,57 @@ class GroupKeysMapper {
         return GroupMembersKeysEntity(
             id = model.id,
             groupId = model.groupId,
+            ownerUserId = model.ownerUserId,
+            memberKeyVersion = model.memberKeyVersion,
+            signedMemberKxPublicKey = model.signedMemberKxPublicKey,
+            signedMembershipPublicKey = model.signedMembershipPublicKey,
+            ownerIdentityKey = model.ownerIdentityKey
+        )
+    }
+
+    fun local2Remote(model: GroupDeviceKeysEntity): GroupDeviceCryptoKeyRaw {
+        return GroupDeviceCryptoKeyRaw(
+            id = model.id,
+            groupId = model.groupId,
             memberUserId = model.memberUserId,
             ownerUserId = model.ownerUserId,
-            version = model.version,
+            locationId = model.locationId,
+            memberKeyVersion = model.memberKeyVersion,
+            deviceKeyVersion = model.deviceKeyVersion,
             encryptedSenderKey = model.encryptedSenderKey,
-            encryptedPublicKey = model.encryptedPublicKey
+        )
+    }
+
+    fun remote2Local(model: GroupDeviceCryptoKeyRaw): GroupDeviceKeysEntity {
+        return GroupDeviceKeysEntity(
+            id = model.id,
+            groupId = model.groupId,
+            memberUserId = model.memberUserId,
+            ownerUserId = model.ownerUserId,
+            locationId = model.locationId,
+            memberKeyVersion = model.memberKeyVersion,
+            deviceKeyVersion = model.deviceKeyVersion,
+            encryptedSenderKey = model.encryptedSenderKey,
+        )
+    }
+
+    fun local2Remote(model: PersonalGroupKeyEntity): PersonalGroupKeyRaw {
+        return PersonalGroupKeyRaw(
+            id = model.id,
+            ownerUserId = model.ownerUserId,
+            encryptedUserKeys = model.encryptedUserKeys,
+            groupId = model.groupId,
+            version = model.version
+        )
+    }
+
+    fun remote2Local(model: PersonalGroupKeyRaw): PersonalGroupKeyEntity {
+        return PersonalGroupKeyEntity(
+            id = model.id,
+            ownerUserId = model.ownerUserId,
+            encryptedUserKeys = model.encryptedUserKeys,
+            groupId = model.groupId,
+            version = model.version
         )
     }
 

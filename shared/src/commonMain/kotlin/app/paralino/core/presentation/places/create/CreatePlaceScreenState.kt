@@ -17,12 +17,15 @@ data class CreatePlaceScreenState constructor(
     val fullLoading: Boolean
 ) {
 
-    val currentStep: Int get() = (radiusMeters / minRadiusMeters) - 1
+    val currentStep: Int get() = steps.indexOfFirst{ radiusMeters <= it }.minus(1).takeIf { it >= 0 } ?: 0
     companion object {
-
-        const val minRadiusMeters = 50
+        
         const val defaultRadiusMeters = 200
-        const val steps = 60
+        val steps = arrayOf(50, 80, 100, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 1800, 2000, 2200, 2500, 2800, 3000)
+
+        fun radiusForIndex(index: Int): Int {
+            return steps.getOrNull(index-1) ?: defaultRadiusMeters
+        }
 
         fun empty(groupId: String): CreatePlaceScreenState {
             return CreatePlaceScreenState(

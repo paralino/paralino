@@ -10,14 +10,10 @@ import android.text.style.ClickableSpan
 import android.text.style.TypefaceSpan
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
+import androidx.compose.ui.graphics.toArgb
+import app.paralino.core.MR
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.splitRanges
-import app.paralino.android.R
 
 
 class CustomTypefaceSpan(family: String, private val newType: Typeface) : TypefaceSpan(family) {
@@ -59,7 +55,7 @@ fun Context.attributedBold(@StringRes res: Int, extraSpans: List<SpanContainer> 
 fun String.attributedBold(context: Context, extraSpans: List<SpanContainer> = listOf()): SpannableString {
     val ranges = this.splitRanges("**")
     val cleanString = this.replace("**", "")
-    val typeface = ResourcesCompat.getFont(context, R.font.font_montserrat_semibold) ?: return SpannableString("")
+    val typeface = MR.fonts.font_montserrat.semibold.getTypeface(context) ?: return SpannableString("")
     val spannableString = SpannableString(cleanString)
     ranges.forEach { range ->
         spannableString.setSpan(
@@ -89,7 +85,7 @@ fun linkSpan(context: Context, onClick: () -> Unit): ClickableSpan {
 
         override fun updateDrawState(ds: TextPaint) {
             super.updateDrawState(ds)
-            ds.color = ContextCompat.getColor(context, R.color.accentDark)
+            ds.color = AppColors.accentDark.toArgb()
             ds.isUnderlineText = true
             ds.bgColor = android.graphics.Color.TRANSPARENT
         }
@@ -97,15 +93,3 @@ fun linkSpan(context: Context, onClick: () -> Unit): ClickableSpan {
 }
 
 data class SpanContainer(val key: String, val span: Any)
-
-fun String.annotatedBold(fontWeight: FontWeight = FontWeight.Bold, textColor: Color = Color.Unspecified): AnnotatedString {
-    val ranges = this.splitRanges("**")
-    val cleanString = this.replace("**", "")
-    return AnnotatedString(cleanString, spanStyles = ranges.map {
-        AnnotatedString.Range(
-            item = SpanStyle(fontWeight = fontWeight, color = textColor),
-            start = it.second.first,
-            end = it.second.last
-        )
-    })
-}

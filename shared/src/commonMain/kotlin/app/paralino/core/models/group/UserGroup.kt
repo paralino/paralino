@@ -6,6 +6,7 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
+import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.utils.Emojis
@@ -16,9 +17,10 @@ import kotlinx.serialization.Serializable
 data class UserGroup constructor(
     val id: String,
     val ownerUserId: String,
-    val keyVersion: Long,
+    val groupKeyVersion: Long,
     @Contextual
     val data: CryptoResource<UserGroupData>,
+    val serverIntegrity: String,
     val planType: PlanType,
     val memberCount: Int,
     val verification: VerificationResult,
@@ -53,7 +55,7 @@ data class UserGroupWithMembers constructor(
     val isGroupVerified get() = group.isVerified && memberByUserId(config.userId)!!.isVerified
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
-    val keyVersion: Long get() = group.keyVersion
+    val groupKeyVersion: Long get() = group.groupKeyVersion
     val data: CryptoResource<UserGroupData> get() = group.data
     val memberCount: Int get() = members.size
 
@@ -64,6 +66,10 @@ data class UserGroupWithMembers constructor(
 
     fun memberByUserId(userId: String): MemberModel? {
         return members.firstOrNull { it.member.userId == userId }?.member
+    }
+
+    val currentDeviceLocation: MemberLocation? get() {
+        return members.firstOrNull { it.member.userId == config.userId }?.currentDeviceLocation
     }
 
 }

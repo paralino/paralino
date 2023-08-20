@@ -2,36 +2,44 @@ package app.paralino.core.presentation.groups
 
 import app.paralino.core.config
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
-import app.paralino.core.domain.group.GroupRefreshUseCase
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.IConnectionStatusProvider
-import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GroupDetailViewModel(
-    private val groupId: String,
-    private val placesRepo: PlacesRepository,
+    val groupId: String,
     private val userRepo: UserRepository,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
     private val connectionStatus: IConnectionStatusProvider,
     private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
-    private val groupRefresh: GroupRefreshUseCase,
+    private val groupRefresh: GroupPreRefreshUseCase,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
@@ -42,14 +50,13 @@ class GroupDetailViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        app.paralino.core.utils.extensions.combine(
+        combine(
             locationStatusProvider.status,
             connectionStatus.status,
-            groupRefresh.getGroupWithMembers(groupId),
-            placesRepo.hasAnyPlace(),
+            groupRefresh.getAndRefreshGroupWithMembers(groupId),
             sharingManager.sharingContractForGroup(groupId),
             userRepo.getBlocklistLocally()
-        ) { locationStatus, network, group, hasPlaces, sharingStatus, blocklist ->
+        ) { locationStatus, network, group, sharingStatus, blocklist ->
             groupData.update { group }
             val members = group.members
                 .sortedBy { it.member.name }
@@ -74,35 +81,21 @@ class GroupDetailViewModel(
                             }
                         }
                     )
-                    if (member.locations.size <= 1) {
-                        GroupMemberItemStateWithOneLocation(
-                            memberState = memberState,
-                            location = member.locations.firstOrNull()?.let {
-                                GroupMemberItemLocationState(
-                                    memberLocation = it,
-                                    // don't show device name if there is only one location
-                                    name = it.name,
-                                    image = member.member.image,
-                                    canEdit = false,
-                                    currentDevice = it.deviceId == config.deviceId,
-                                    showSpeedAndElevation = false
-                                )
-                            }
-                        )
-                    } else {
-                        GroupMemberItemStateWithLocations(
-                            memberState = memberState,
-                            locations = member.locations.map {
-                                GroupMemberItemLocationState(
-                                    memberLocation = it,
-                                    image = member.member.image,
-                                    canEdit = canEdit,
-                                    currentDevice = it.deviceId == config.deviceId,
-                                    showSpeedAndElevation = false
-                                )
-                            }
-                        )
-                    }
+                    GroupMemberItemStateWithLocations(
+                        memberState = memberState,
+                        locations = member.locations.map {
+                            GroupMemberItemLocationState(
+                                memberLocation = it,
+                                image = member.member.image,
+                                canEdit = canEdit,
+                                currentDevice = it.deviceId == config.deviceId,
+                                showSpeedAndElevation = false,
+                                formatter = valueFormatter
+                            )
+                        },
+                        allowShowingDevices = true,
+                        lastPing = valueFormatter.getLastPing(member)
+                    )
                 }
 
             val errors = buildList {
@@ -112,9 +105,26 @@ class GroupDetailViewModel(
                     addAll(locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
                 }
 
-                if (hasPlaces && !locationStatus.isNotificationPermissionAllowed) {
+                if (!locationStatus.isNotificationPermissionAllowed) {
                     add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
                 }
+            }
+
+            val sharingState = sharingStatus?.let {
+                LocationSharingState(
+                    endTime = it.endTimeUTC?.let {
+                        valueFormatter.fromUTCtoMapSharingTime(
+                            timeUTC = it,
+                            splitTimeToOneLine = false
+                        )
+                    },
+                    shareBattery = it.shareBattery,
+                    shareSpeed = it.shareSpeed,
+                    shareElevation = it.shareElevation,
+                    approximateLocation = it.approximateLocationInMeters?.let {
+                        valueFormatter.getDistanceSmall(it.toFloat())
+                    }
+                )
             }
 
             GroupDetailScreenState(
@@ -123,7 +133,7 @@ class GroupDetailViewModel(
                 loadingAction = false,
                 name = group.name,
                 image = group.image,
-                sharingStatus = sharingStatus,
+                sharingStatus = sharingState,
                 members = members,
                 memberLimit = group.group.planType.membersLimit,
                 errors = errors
@@ -168,6 +178,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.UserBlockActionCompleted)
                     }
@@ -189,6 +200,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.UserBlockActionCompleted)
                     }
@@ -217,6 +229,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.GroupDeleted)
                     }
@@ -235,6 +248,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.GroupMemberDeleted)
                     }
@@ -253,6 +267,7 @@ class GroupDetailViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                     }
+
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.MemberLocationDeleted)
                     }

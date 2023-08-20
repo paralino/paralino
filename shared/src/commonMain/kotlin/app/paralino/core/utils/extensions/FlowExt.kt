@@ -11,7 +11,7 @@ fun <T> MutableStateFlow<T>.replace(action: T.() -> T) {
 }
 
 suspend inline fun <T> blocking(noinline action: suspend CoroutineScope.() -> T): T {
-    return withContext(Dispatchers.IO, action)
+    return withContext(Dispatchers.Default, action)
 }
 
 inline fun <reified T, R> Flow<T>.mapToPayload(

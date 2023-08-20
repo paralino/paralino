@@ -7,24 +7,30 @@ import app.paralino.core.utils.Emojis
 
 sealed class MapHomeScreenState {
     abstract val currentUserImage: ImageModel
+    abstract val isSatelliteMode: Boolean
 
     data class Ready constructor(
         val groupId: String,
         val groupName: String,
         val groupImage: ImageModel,
         val userCount: Int,
-        val inactiveUserCount: Int,
+        val activeUserCount: Int,
+        val idleUserCount: Int,
         override val currentUserImage: ImageModel,
         val members: List<GroupMemberItemState>,
         val markers: List<MapPinData>,
         val focusedMarker: FocusedMarkerData?,
-        val sharingStatus: LocationSharingContract?
-    ): MapHomeScreenState() {
+        val sharingStatus: LocationSharingContract?,
+        override val isSatelliteMode: Boolean = true
+    ) : MapHomeScreenState() {
         val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
+        val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
     }
+
     data class Empty(
         override val currentUserImage: ImageModel = ImageModel.emoji(Emojis.robot),
-    ): MapHomeScreenState()
+        override val isSatelliteMode: Boolean = true
+    ) : MapHomeScreenState()
 }
 
 sealed class MapHomeScreenEvent {

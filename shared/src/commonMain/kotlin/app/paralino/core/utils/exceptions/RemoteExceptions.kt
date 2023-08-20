@@ -1,7 +1,7 @@
 package app.paralino.core.utils.exceptions
 
 import app.paralino.core.config
-import app.paralino.core.utils.ConnectionStatus
+import app.paralino.core.provider.ConnectionStatus
 
 open class BaseRemoteException constructor(
     message: String?,

@@ -8,7 +8,8 @@ data class ConfigData(
     val minVersionAndroid: Long,
     val newVersionAndroid: Long,
     val minVersionIOS: Long,
-    val newVersionIOS: Long
+    val newVersionIOS: Long,
+    val emailEnabled: Boolean
 ) {
     companion object {
         fun init(nodes: List<ConfigNode>): ConfigData {
@@ -17,6 +18,7 @@ data class ConfigData(
                 newVersionAndroid = nodes.firstOrNull { it.id == "new_version_android" }?.value?.toLongOrNull() ?: 0,
                 minVersionIOS = nodes.firstOrNull { it.id == "min_version_ios" }?.value?.toLongOrNull() ?: 0,
                 newVersionIOS = nodes.firstOrNull { it.id == "new_version_ios" }?.value?.toLongOrNull() ?: 0,
+                emailEnabled = nodes.firstOrNull { it.id == "email_enabled" }?.value?.toBoolean() ?: false,
             )
         }
     }
@@ -26,14 +28,14 @@ data class ConfigData(
 data class ConfigNode(
     @SerialName("\$id")
     val id: String,
-    val value: String
+    val value: String?
 ) {
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): ConfigNode {
             return ConfigNode(
                 id = map["\$id"] as String,
-                value = map["value"] as String,
+                value = map["value"] as? String?,
             )
         }
     }

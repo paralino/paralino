@@ -31,21 +31,18 @@ class MemberWithLocationsMapperLocal(
             ownerUserId = model.userId,
             groupId = model.groupId,
             groupKeyVersion = model.groupKeyVersion,
-            memberKeyVersion = model.memberKeyVersion,
             data = model.data_,
             verification = model.verification,
             settingsRaw = safeLet(
                 model.settings_id,
                 model.settings_groupId,
                 model.settings_ownerUserId,
-                model.settings_secretKey,
                 model.settings_integrity
-            ) { id, groupId, userId, secretKey, integrity ->
+            ) { id, groupId, userId, integrity ->
                 GroupSettingsRaw(
                     id = id,
                     groupId = groupId,
                     ownerUserId = userId,
-                    secretKey = secretKey,
                     integrity = integrity
                 )
             },
@@ -56,8 +53,11 @@ class MemberWithLocationsMapperLocal(
             MemberLocationRaw(
                 id = location.id,
                 deviceId = location.deviceId,
+                groupKeyVersion = location.groupKeyVersion,
+                deviceKeyVersion = location.deviceKeyVersion,
                 deviceData = location.deviceData,
-                locationData = location.locationData
+                locationData = location.locationData,
+                status = location.status
             )
         }
 
@@ -77,8 +77,11 @@ class MemberWithLocationsMapperLocal(
             memberId = member.id,
             userId = member.ownerUserId,
             deviceId = location.deviceId,
+            groupKeyVersion = location.groupKeyVersion,
+            deviceKeyVersion = location.deviceKeyVersion,
             deviceData = location.deviceData,
-            locationData = location.locationData
+            locationData = location.locationData,
+            status = location.status
         )
     }
 
@@ -88,12 +91,10 @@ class MemberWithLocationsMapperLocal(
             userId = model.ownerUserId,
             groupId = model.groupId,
             groupKeyVersion = model.groupKeyVersion,
-            memberKeyVersion = model.memberKeyVersion,
             verification = model.verification,
             settings_id = model.settingsRaw?.id,
             settings_groupId = model.settingsRaw?.groupId,
             settings_ownerUserId = model.settingsRaw?.ownerUserId,
-            settings_secretKey = model.settingsRaw?.secretKey,
             settings_integrity = model.settingsRaw?.integrity,
             data_ = model.data
         )

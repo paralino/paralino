@@ -10,7 +10,7 @@ data class GroupPlace constructor(
     val id: String,
     val groupId: String,
     val ownerUserId: String,
-    val keyVersion: Long,
+    val groupKeyVersion: Long,
     val private: Boolean,
     @Contextual
     val data: CryptoResource<GroupPlaceData>

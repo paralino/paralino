@@ -8,10 +8,11 @@ object LocationPerformanceRequests {
 
     fun getRequest(type: LocationPerformanceType): LocationRequest {
         return when (type) {
-            LocationPerformanceType.HIGH -> locationRequestHigh
+            LocationPerformanceType.HIGH,
+            LocationPerformanceType.VERY_HIGH -> locationRequestHigh
             LocationPerformanceType.MEDIUM_HIGH -> locationRequestMediumHigh
             LocationPerformanceType.BALANCED -> locationRequestBalanced
-            LocationPerformanceType.DEFAULT -> locationRequestLow
+            LocationPerformanceType.BATTERY_SAVER -> locationRequestLow
         }
     }
 
@@ -21,7 +22,7 @@ object LocationPerformanceRequests {
             .build()
 
     private val locationRequestBalanced: LocationRequest
-        get() = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 15 * 60 * 1000L)
+        get() = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 15 * 60 * 1000L)
             .setMinUpdateIntervalMillis(2 * 60 * 1000L)
             .build()
 

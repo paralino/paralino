@@ -1,5 +1,6 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.config
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
@@ -15,7 +16,6 @@ data class MemberModel constructor(
     val groupId: String,
     val userId: String,
     val groupKeyVersion: Long,
-    val memberKeyVersion: Long,
     val verification: String,
     @Contextual
     val memberData: CryptoResource<MemberModelData>,
@@ -34,9 +34,11 @@ data class MemberModelWithLocations(
     val member: MemberModel,
     val locations: List<MemberLocation>
 ) {
-    val isActive: Boolean get() = locations.any { it.isActive }
-
     val hasLocation: Boolean get() = locations.firstNotNullOfOrNull { it.locationData.data } != null
+    val isActive: Boolean get() = locations.firstOrNull { it.locationAwareStatusType == MemberDeviceStatusType.ACTIVE } != null
+    val currentDeviceLocation: MemberLocation? get() {
+        return locations.firstOrNull { it.deviceId == config.deviceId && it.userId == config.userId }
+    }
 }
 
 @Serializable

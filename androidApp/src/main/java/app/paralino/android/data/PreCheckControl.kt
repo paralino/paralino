@@ -1,12 +1,9 @@
 package app.paralino.android.data
 
 import android.os.StrictMode
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.BaseRepository
 
-class PreCheckControl(
-    private val configRepository: AppConfigRepository
-) : BaseRepository() {
+class PreCheckControl() : BaseRepository() {
 
     fun start() {
         if (app.paralino.android.BuildConfig.internalTesting) {
@@ -17,9 +14,4 @@ class PreCheckControl(
                 .build()
         }
     }
-
-    suspend fun refreshConfig() {
-        configRepository.refreshConfig()
-    }
-
 }

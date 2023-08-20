@@ -1,15 +1,14 @@
 package app.paralino.core.domain.group
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.domain.ILimitedExecution
-import app.paralino.core.logg
+import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 class GroupRemoveUseCase(
     private val local: UserGroupLocalDataSource,
@@ -18,17 +17,9 @@ class GroupRemoveUseCase(
     private val userRepository: UserRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val locationSharingManager: LocationSharingManager,
-): BaseRepository(), ILimitedExecution<String> {
-
-    override val executionState = MutableStateFlow(listOf<String>())
+) : LimitedExecutionRepository() {
 
     fun deleteGroup(groupId: String): Flow<Unit> {
-
-        if(isProcessing(groupId)) {
-            logg.tag("group_actions").v("Processing, can't delete group $groupId")
-            return flow { throw IllegalStateException("Group action already in progress") }
-        }
-
         return getDataOnce(
             remote = {
                 remote.deleteGroup(groupId)
@@ -37,21 +28,10 @@ class GroupRemoveUseCase(
                 clearGroupLocally(groupId)
             }
         )
-            .onStart { setAsProcessing(groupId) }
-            .onEach { stopProcessing(groupId) }
-            .catch {
-                stopProcessing(groupId)
-                throw it
-            }
+            .startProcessing(groupId)
     }
 
     fun leaveGroup(groupId: String): Flow<Unit> {
-
-        if(isProcessing(groupId)) {
-            logg.tag("group_actions").v("Processing, can't leave group $groupId")
-            return flow { throw IllegalStateException("Group action already in progress") }
-        }
-
         return getDataOnce(
             remote = {
                 val groupOwnerId = local.getGroupOwnerId(groupId)
@@ -61,21 +41,10 @@ class GroupRemoveUseCase(
                 clearGroupLocally(groupId)
             }
         )
-            .onStart { setAsProcessing(groupId) }
-            .onEach { stopProcessing(groupId) }
-            .catch {
-                stopProcessing(groupId)
-                throw it
-            }
+            .startProcessing(groupId)
     }
 
     fun blockGroup(groupId: String): Flow<Unit> {
-
-        if(isProcessing(groupId)) {
-            logg.tag("group_actions").v("Processing, can't block group $groupId")
-            return flow { throw IllegalStateException("Group action already in progress") }
-        }
-
         return getDataOnce(
             remote = {
                 val group = local.getGroupWithoutMembers(groupId).first()
@@ -85,12 +54,7 @@ class GroupRemoveUseCase(
                 clearGroupLocally(groupId)
             }
         )
-            .onStart { setAsProcessing(groupId) }
-            .onEach { stopProcessing(groupId) }
-            .catch {
-                stopProcessing(groupId)
-                throw it
-            }
+            .startProcessing(groupId)
     }
 
     suspend fun clearGroupLocally(groupId: String) {

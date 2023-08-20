@@ -5,29 +5,46 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
-import app.paralino.android.AppClass
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
+import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.places.GroupPlaceGeofenceData
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.IGeofenceManager
+import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.utils.ILocationStatusProvider
 import app.paralino.core.utils.extensions.distinctFlowOfList
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import loge
-import logv
-import logw
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 
 class LocationService : Service() {
@@ -38,9 +55,10 @@ class LocationService : Service() {
     private val notificationHandler: LocationNotificationHandler by inject()
     private val locationInitHandler: LocationInitHandler by inject()
     private val locationSharingManager: LocationSharingManager by inject()
+    private val locationPerformanceManager: LocationPerformanceManager by inject()
     private val locationRepository: LocationRepository by inject()
     private val sharingRealtimeEvents: RealtimeEventsWhileSharingUseCase by inject()
-    private val locationStatus: ILocationStatusProvider by inject()
+    private val deviceApiProvider: IDeviceApiProvider by inject()
     private val placesRepository: PlacesRepository by inject()
     private val geofenceManager: IGeofenceManager by inject()
     private val fullRefresh: RefreshEverythingUseCase by inject()
@@ -53,7 +71,7 @@ class LocationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        logv(this.hashCode().toString(), "Location service created")
+        logg.v(this.hashCode().toString(), "Location service created")
         startForeground(
             notificationHandler.notificationId,
             notificationHandler.notify(this, groupCount = 0, emptyList())
@@ -62,7 +80,7 @@ class LocationService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        logv(this.hashCode().toString(), "Location service started - action: ${intent.action}")
+        logg.v(this.hashCode().toString(), "Location service started - action: ${intent.action}")
         launchedInForeground = intent.getBooleanExtra(startedInForeground, false)
         isServiceActive = true
         serviceDefaultScope.coroutineContext.cancelChildren()
@@ -71,9 +89,9 @@ class LocationService : Service() {
     }
 
     private fun initTracking() {
-        logv(this.hashCode().toString(), "Subscribe to location and sharing status")
+        logg.v(this.hashCode().toString(), "Subscribe to location and sharing status")
 
-        (application as AppClass).locationStatus.status
+        deviceApiProvider.locationStatusProvider.status
             .onEach {
                 if (it.isOK()) {
                     locationInitHandler.startLocationUpdates()
@@ -89,7 +107,7 @@ class LocationService : Service() {
             .map { it.data.isNotEmpty() }
             .distinctUntilChanged()
             .onEach {
-                logv(this.hashCode().toString(), "Location sharing status: $it")
+                logg.v(this.hashCode().toString(), "Location sharing status: $it")
                 if (it) {
                     startTracking()
                 } else {
@@ -97,7 +115,7 @@ class LocationService : Service() {
                 }
             }
             .catch {
-                loge(it)
+                logg.e(it)
                 stopAll()
             }
             .launchIn(serviceDefaultScope)
@@ -106,7 +124,7 @@ class LocationService : Service() {
     }
 
     private fun updateNotification() {
-        val errors = (application as AppClass).locationStatus.status.value.getPossibleErrors(
+        val errors = deviceApiProvider.locationStatusProvider.currentStatus.getPossibleErrors(
             forBackground = !launchedInForeground
         )
         val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0
@@ -116,25 +134,39 @@ class LocationService : Service() {
     private fun startTracking() {
         updateNotification()
 
-        logv(this.hashCode().toString(), "Subscribing to location updates")
+        logg.v(this.hashCode().toString(), "Subscribing to location updates")
 
         serviceDefaultScope.launch {
-            while(isActive) {
+            while (isActive) {
                 // try refreshing everything every 4 hours
                 // if refresh already occurred in last 20 hours it will be skipped
                 fullRefresh.refreshEverything(
                     forceGroupRefresh = false,
                     minimumDelayMillis = 20.hours.inWholeMilliseconds
                 )
-                delay(2_000)
-                reInitRealtime()
                 delay(4.hours.inWholeMilliseconds)
+            }
+        }
+
+        serviceDefaultScope.launch {
+            while (isActive) {
+                reInitRealtime()
+                delay(1.hours.inWholeMilliseconds)
+            }
+        }
+
+        serviceDefaultScope.launch {
+            while (isActive) {
+                if (locationInitHandler.currentLocation.value.data?.isOlderThan(5.minutes) != false) {
+                    saveLocation(null)
+                }
+                delay(5.minutes.inWholeMilliseconds)
             }
         }
 
         locationInitHandler.currentLocation
             .onEach {
-                logv(this.hashCode().toString(), "Got location: $it")
+                logg.v(this.hashCode().toString(), "Got location: $it")
                 it.data?.let {
                     launchedInForeground = true
                     updateNotification()
@@ -142,18 +174,34 @@ class LocationService : Service() {
                 }
             }
             .launchIn(serviceDefaultScope)
+
+        deviceApiProvider.deviceStatus
+            .onEach {
+                logg.v("device_status", "Status changed: $it")
+                saveLocation(null)
+            }
+            .launchIn(serviceDefaultScope)
+
+        locationPerformanceManager.locationPerformanceType
+            .filter { it.current <= LocationPerformanceType.BALANCED }
+            .distinctUntilChanged()
+            .onEach {
+                logg.v("device_status", "Location performance changed: $it")
+                saveLocation(null)
+            }
+            .launchIn(serviceDefaultScope)
     }
 
-    private fun saveLocation(data: LocationDataModel) {
+    private fun saveLocation(data: LocationDataModel?) {
         serviceDefaultScope.launch {
             try {
                 locationRepository.pushLocation(data)
             } catch (e: NoValidContractsException) {
-                logw("Error saving saving location - sharing expired")
+                logg.w("Error saving saving location - sharing expired")
                 // We can stop service since all sharing contracts are expired
                 stopAll()
             } catch (e: Exception) {
-                logw("Error saving saving location")
+                logg.w("Error saving saving location", e)
             }
         }
     }
@@ -189,7 +237,11 @@ class LocationService : Service() {
             }
             .distinctFlowOfList()
 
-        combine(places, locationStatus.status, timer) { geofences, locationStatus, _ ->
+        combine(
+            places,
+            deviceApiProvider.locationStatusProvider.status,
+            timer
+        ) { geofences, locationStatus, _ ->
             if (locationStatus.isOK(forAlwaysOnAccess = true)) {
                 geofenceManager.registerGeofences(geofences)
             } else {
@@ -198,20 +250,20 @@ class LocationService : Service() {
         }
             .catch {
                 // delete all geofences when coroutine is canceled
-                if(it is CancellationException)
+                if (it is CancellationException)
                     geofenceManager.deleteAllGeofences()
             }
             .launchIn(serviceDefaultScope)
     }
 
     private fun stopAll() {
-        logv(this.hashCode().toString(), "Stop all - location service")
+        logg.v(this.hashCode().toString(), "Stop all - location service")
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
     override fun onDestroy() {
-        logv(this.hashCode().toString(), "onDestroy - Killing location service")
+        logg.v(this.hashCode().toString(), "onDestroy - Killing location service")
         isServiceActive = false
         serviceDefaultScope.cancel()
         locationInitHandler.stopLocationUpdates()

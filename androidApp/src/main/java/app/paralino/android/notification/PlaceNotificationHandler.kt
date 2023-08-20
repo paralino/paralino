@@ -1,23 +1,34 @@
 package app.paralino.android.notification
 
-import android.app.*
+import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
-import app.paralino.android.ui.theme.AppColors
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.logg
 import app.paralino.core.models.data
+import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.notifications.IPlaceNotificationsHandler
 import app.paralino.core.notifications.PlaceActivityNotificationPayload
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
 
 class PlaceNotificationHandler(
     private val context: Context,
@@ -31,7 +42,12 @@ class PlaceNotificationHandler(
         AppColors.lightThemePrimary.toArgb()
     }
 
-    override fun process(payload: PlaceActivityNotificationPayload) {
+    override fun process(push: PushNotificationRaw) {
+
+        val payload = push.content?.let {
+            BaseRemoteModule.formatter.decodeFromString<PlaceActivityNotificationPayload>(it)
+        } ?: return
+
         scopeProvider.userSessionIOScope.launch {
 
             var placeName: String? = null
@@ -57,7 +73,16 @@ class PlaceNotificationHandler(
         }
     }
 
-    private fun notify(notificationId: Int, title: String): Notification {
+    private fun notify(notificationId: Int, title: String): Notification? {
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            logg.w("push_notifications", "Missing push notification permission!")
+            return null
+        }
 
         val notificationManager = NotificationManagerCompat.from(context)
 
@@ -106,7 +131,7 @@ class PlaceNotificationHandler(
         val channel = NotificationChannel(
             channelId,
             context.getString(R.string.notifications_channel_place_alert),
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_HIGH
         )
 
         channel.setShowBadge(true)

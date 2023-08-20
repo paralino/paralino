@@ -3,11 +3,10 @@ package app.paralino.core.presentation.places.list
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.ILocationStatusProvider
+import app.paralino.core.provider.ILocationStatusProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

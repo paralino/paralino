@@ -1,5 +1,6 @@
 package app.paralino.core.repo.user
 
+import app.paralino.core.config
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
@@ -30,14 +31,15 @@ class UserDevicesRemoteSource constructor(
         return documentApi.getDocument(
             databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionUserDevicesID,
-            documentId = userMemberIdUseCase.getCurrentSessionId()
+            documentId = config.sessionId
         ).let { UserDeviceRaw.from(it) }
     }
 
     suspend fun updateDeviceData(pushToken: String) {
         blocking {
             val payload = UpdateUserDeviceFunctionData(
-                sessionId = userMemberIdUseCase.getCurrentSessionId(),
+                sessionId = config.sessionId,
+                deviceId = config.deviceId,
                 pushToken = pushToken,
                 deviceType = userMemberIdUseCase.getCurrentDeviceType().key
             )

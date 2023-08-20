@@ -8,7 +8,6 @@ import app.paralino.core.utils.Emojis
 data class EditProfileScreenState constructor(
     val image: ImageModel = ImageModel.emoji(Emojis.robot),
     val name: String = "",
-    val deviceName: String = "",
     val hasNameError: Boolean = false,
     val actionLoading: Boolean? = false,
 ) {

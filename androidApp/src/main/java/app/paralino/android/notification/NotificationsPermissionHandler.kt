@@ -10,17 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.R
-import app.paralino.android.tracking.getLocationStatus
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.AppSnackbarData
-import app.paralino.android.ui.components.SnackbarDuration
-import app.paralino.android.ui.components.onAction
-import app.paralino.core.utils.ILocationStatusProvider
-import app.paralino.core.utils.LocationConditionStatus
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.ui.components.onAction
+import app.paralino.core.provider.ILocationStatusProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -90,7 +87,7 @@ class NotificationsPermissionHandlerState constructor(
     }
 
     private fun updateStatus() {
-        locationStatusProvider.status.update { LocationConditionStatus.getLocationStatus(context) }
+        locationStatusProvider.refreshLocationStatus()
     }
 
     private fun showPermissionDeniedInfo() {

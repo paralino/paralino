@@ -19,6 +19,10 @@ data class ImageModel(val image: String = "") {
         return getImageType()?.let { image.replaceFirst("${it.name}:", "") }
     }
 
+    fun getImageValue(type: ImageType): String? {
+        return getImageType()?.takeIf { it == type }?.let { image.replaceFirst("${it.name}:", "") }
+    }
+
     fun takeIfValid(): ImageModel? {
         return this.takeIf { it.getImageType() != null }
     }
@@ -28,8 +32,8 @@ data class ImageModel(val image: String = "") {
             return ImageModel(ImageType.emoji.createModel(emoji))
         }
 
-        fun raw(raw: String): ImageModel {
-            return ImageModel(ImageType.raw.createModel(raw))
+        fun placeholder(): ImageModel {
+            return ImageModel(ImageType.placeholder.createModel("value"))
         }
     }
 }
@@ -39,7 +43,7 @@ fun String.asImageModel(): ImageModel? {
 }
 
 enum class ImageType {
-    emoji, raw;
+    emoji, placeholder;
 
     fun createModel(value: String): String {
         return "$name:$value"

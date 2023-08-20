@@ -4,10 +4,24 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -17,6 +31,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
@@ -28,13 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import app.paralino.android.R
-import app.paralino.android.ui.components.ImageModelImage
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.AppTheme
-import app.paralino.android.utils.extensions.annotatedBold
-import app.paralino.android.utils.extensions.quantityStringResource
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
 
 @Composable
@@ -43,6 +59,8 @@ fun MapGroupPicker(
     groupName: String,
     groupImage: ImageModel,
     userCount: Int,
+    activeUserCount: Int,
+    idleUserCount: Int,
     inactiveUserCount: Int,
     verified: Boolean,
     onGroupClick: () -> Unit,
@@ -51,9 +69,8 @@ fun MapGroupPicker(
     val height: Dp = remember { 56.dp }
     ConstraintLayout(
         modifier = modifier
-            .padding(horizontal = 8.dp)
             .height(height)
-
+            .fillMaxWidth()
     ) {
 
         val (image, center, expand, background) = createRefs()
@@ -72,12 +89,21 @@ fun MapGroupPicker(
                     this.height = Dimension.fillToConstraints
                 }
                 .clip(RoundedCornerShape(height))
-                .clickable { onExpandClick() },
+                .clickable { onGroupClick() },
             onDraw = {
-                val pos = this.size.minDimension.div(2)
-                val diff = height.plus(12.dp).div(height)
+                val pos = this.size.minDimension
+                val factor = 1.1f
+                val offset = (pos * factor - pos) / 2
                 val circlePath = Path().apply {
-                    addOval(Rect(Offset(pos, pos), pos * diff))
+                    addRoundRect(
+                        RoundRect(
+                            rect = Rect(
+                                Offset(x = 0f - offset, y = 0f - offset),
+                                Size(width = pos * 2 * factor, height = pos * factor)
+                            ),
+                            cornerRadius = CornerRadius(pos * factor, pos * factor)
+                        )
+                    )
                 }
                 clipPath(circlePath, clipOp = ClipOp.Difference) {
                     drawRoundRect(backgroundColor, cornerRadius = CornerRadius(pos, pos))
@@ -86,12 +112,9 @@ fun MapGroupPicker(
         )
 
         // image
-        ImageModelImage(
-            imageModel = groupImage,
-            useBackgroundForEmoji = false,
-            cornerSize = height,
+        Row(
             modifier = Modifier
-                .size(height)
+                .height(height)
                 .constrainAs(image) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
@@ -101,8 +124,31 @@ fun MapGroupPicker(
                     color = MaterialTheme.colors.surface,
                     shape = CircleShape
                 )
-                .clickable { onGroupClick() }
-        )
+                .clip(RoundedCornerShape(height))
+                .clickable { onExpandClick() }
+                .padding(horizontal = 8.dp)
+        ) {
+            ImageModelImage(
+                imageModel = groupImage,
+                useBackgroundForEmoji = false,
+                clipShape = CircleShape,
+                modifier = Modifier
+                    .size(height)
+            )
+            Box(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxHeight()
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = AppIcons.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
 
         // center content
         Column(
@@ -138,27 +184,87 @@ fun MapGroupPicker(
             ) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                     Icon(
-                        imageVector = AppIcons.Group,
+                        painter = AppIcons.Group,
                         modifier = Modifier.size(14.dp),
                         contentDescription = null
                     )
-                    Spacer(Modifier.size(4.dp))
-
-                    val text = if (inactiveUserCount == 0) "**$userCount**"
-                    else {
-                        quantityStringResource(
-                            id = R.plurals.group_sharing_member_active_info,
-                            quantity = inactiveUserCount, userCount, inactiveUserCount
-                        )
-                    }
+                    Spacer(Modifier.size(2.dp))
                     Text(
-                        text = text.annotatedBold(),
+                        text = "$userCount",
                         style = MaterialTheme.typography.caption.copy(
                             fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Bold
                         ),
                         modifier = Modifier
                     )
+                }
+
+                if (idleUserCount > 0 || inactiveUserCount > 0) {
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .background(
+                                color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .padding(start = 4.dp, end = 6.dp)
+                            .padding(vertical = 1.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
+                            modifier = Modifier.size(14.dp),
+                            tint = AppColors.accent,
+                            contentDescription = null
+                        )
+                        Spacer(Modifier.size(2.dp))
+                        Text(
+                            text = "$activeUserCount",
+                            style = MaterialTheme.typography.caption.copy(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
+                        )
+
+                        if (idleUserCount > 0) {
+                            Spacer(Modifier.size(8.dp))
+                            Icon(
+                                painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
+                                modifier = Modifier.size(14.dp),
+                                tint = AppColors.highlightGold,
+                                contentDescription = null
+                            )
+                            Spacer(Modifier.size(2.dp))
+                            Text(
+                                text = "$idleUserCount",
+                                style = MaterialTheme.typography.caption.copy(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier
+                            )
+                        }
+
+                        if (inactiveUserCount > 0) {
+                            Spacer(Modifier.size(8.dp))
+                            Icon(
+                                painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
+                                modifier = Modifier.size(14.dp),
+                                tint = AppColors.redMain,
+                                contentDescription = null
+                            )
+                            Spacer(Modifier.size(2.dp))
+                            Text(
+                                text = "$inactiveUserCount",
+                                style = MaterialTheme.typography.caption.copy(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -182,15 +288,15 @@ fun MapGroupPicker(
                 .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {
-            if(verified) {
+            if (verified) {
                 Icon(
-                    imageVector = AppIcons.ExpandMore,
+                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             } else {
                 Icon(
-                    imageVector = AppIcons.Warning,
+                    painter = AppIcons.Warning,
                     tint = MaterialTheme.colors.onError,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
@@ -211,7 +317,9 @@ fun MemberPreview() {
                     groupImage = ImageModel.emoji(Emojis.robot),
                     verified = false,
                     userCount = 5,
-                    inactiveUserCount = 2,
+                    activeUserCount = 3,
+                    idleUserCount = 1,
+                    inactiveUserCount = 1,
                     onExpandClick = {},
                     onGroupClick = {}
                 )

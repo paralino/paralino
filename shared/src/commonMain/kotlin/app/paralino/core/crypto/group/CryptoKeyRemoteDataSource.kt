@@ -3,7 +3,9 @@ package app.paralino.core.crypto.group
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
+import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
+import app.paralino.core.models.raw.PersonalGroupKeyRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.utils.extensions.blocking
 
@@ -50,12 +52,58 @@ class CryptoKeyRemoteDataSource constructor(
         }
     }
 
+    suspend fun getAllGroupDeviceKeys(): List<GroupDeviceCryptoKeyRaw> {
+        return blocking {
+            api.listAllDocuments(
+                databaseType = BackendDatabaseType.KEYS,
+                collectionId = remoteConfig.resourceIds.collectionGroupDeviceKeysID
+            ).map { it.parseGroupDeviceKey() }
+        }
+    }
+
+    suspend fun getAllGroupDeviceKeysForGroup(groupId: String): List<GroupDeviceCryptoKeyRaw> {
+        return blocking {
+            api.listAllDocuments(
+                databaseType = BackendDatabaseType.KEYS,
+                collectionId = remoteConfig.resourceIds.collectionGroupDeviceKeysID,
+                keyValues = listOf("groupId" to groupId)
+            ).map { it.parseGroupDeviceKey() }
+        }
+    }
+
+    suspend fun getAllPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
+        return blocking {
+            api.listAllDocuments(
+                databaseType = BackendDatabaseType.KEYS,
+                collectionId = remoteConfig.resourceIds.collectionPersonalGroupKeysID
+            ).map { it.parseGPersonalGroupKey() }
+        }
+    }
+
+    suspend fun getAllPersonalGroupKeysForGroup(groupId: String): List<PersonalGroupKeyRaw> {
+        return blocking {
+            api.listAllDocuments(
+                databaseType = BackendDatabaseType.KEYS,
+                collectionId = remoteConfig.resourceIds.collectionPersonalGroupKeysID,
+                keyValues = listOf("groupId" to groupId)
+            ).map { it.parseGPersonalGroupKey() }
+        }
+    }
+
     private fun Map<String, Any>.parseGroupKey(): GroupCryptoKeyDataRaw {
         return GroupCryptoKeyDataRaw.from(this)
     }
 
     private fun Map<String, Any>.parseGroupMemberKey(): GroupMemberCryptoKeyDataRaw {
         return GroupMemberCryptoKeyDataRaw.from(this)
+    }
+
+    private fun Map<String, Any>.parseGroupDeviceKey(): GroupDeviceCryptoKeyRaw {
+        return GroupDeviceCryptoKeyRaw.from(this)
+    }
+
+    private fun Map<String, Any>.parseGPersonalGroupKey(): PersonalGroupKeyRaw {
+        return PersonalGroupKeyRaw.from(this)
     }
 
 }

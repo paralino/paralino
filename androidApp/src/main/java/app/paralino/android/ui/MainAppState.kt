@@ -4,19 +4,19 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import app.paralino.android.ui.components.BottomSheetsScreen
-import app.paralino.android.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.CoreUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 class MainAppState(
-    val scaffoldState: ScaffoldState,
+    scaffoldState: ScaffoldState,
     val bottomSheetState: BottomSheetState,
     val navController: NavHostController,
-    val uiScope: CoroutineScope
-) {
+    uiScope: CoroutineScope
+): CoreUiState(scaffoldState, uiScope) {
 
     fun showBottomSheet(bottomSheetsScreen: BottomSheetsScreen) {
         bottomSheetState.currentBottomSheet.value = bottomSheetsScreen
@@ -28,36 +28,6 @@ class MainAppState(
     suspend fun showBottomSheetForResult(bottomSheetsScreen: BottomSheetsScreen): Any {
         showBottomSheet(bottomSheetsScreen)
         return bottomSheetState.sheetResultChannel.receive()
-    }
-
-    fun showSnackbar(text: String, duration: SnackbarDuration = SnackbarDuration.Short) {
-        uiScope.launch {
-            showSnackbar(text = text, actionText = null, duration = duration)
-        }
-    }
-
-    suspend fun showSnackbar(
-        text: String,
-        actionText: String? = null,
-        duration: SnackbarDuration = SnackbarDuration.Short
-    ): SnackbarResult {
-        return scaffoldState.snackbarHostState.showSnackbar(
-            message = text,
-            actionLabel = actionText,
-            duration = duration
-        )
-    }
-
-    suspend fun showSnackbar(data: AppSnackbarData): SnackbarResult {
-        return showSnackbar(
-            text = data.text,
-            actionText = data.actionText,
-            duration = when (data.duration) {
-                app.paralino.android.ui.components.SnackbarDuration.Long -> SnackbarDuration.Long
-                app.paralino.android.ui.components.SnackbarDuration.Forever -> SnackbarDuration.Indefinite
-                else -> SnackbarDuration.Short
-            }
-        )
     }
 }
 
@@ -80,7 +50,7 @@ fun rememberAppState(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun rememberBottomSheet(
-    bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
+    bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true),
     currentBottomSheet: MutableState<BottomSheetsScreen?> = remember {
         mutableStateOf(null)
     },

@@ -3,16 +3,19 @@ package app.paralino.android.ui.map
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.BottomSheetsScreen
-import app.paralino.android.ui.groups.GroupPickerAction
-import app.paralino.android.ui.groups.init.GroupInitScreen
+import app.paralino.android.ui.groups.GroupInitScreen
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.utils.extensions.safeCast
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
@@ -21,7 +24,10 @@ import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.map.asFocusedMarker
-import kotlinx.coroutines.flow.collect
+import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.groups.GroupPickerAction
+import app.paralino.core.utils.extensions.safeCast
+import com.mapbox.maps.Style
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -58,25 +64,28 @@ fun MapHomeContent(
     groupId: String?,
     vm: MapHomeViewModel,
 ) {
-    val mapViewState = rememberMapViewHomeState(darkMode = isSystemInDarkTheme())
 
     val uiState by vm.uiState.collectAsState(MapHomeScreenState.Empty())
-    rememberSaveable(groupId, isSystemInDarkTheme()) {
+    val isDarkMode = isSystemInDarkTheme()
+    val mapViewState = rememberMapViewHomeState(
+        darkMode = isDarkMode,
+        satellite = uiState.isSatelliteMode
+    )
+    rememberSaveable(groupId, isDarkMode, uiState.isSatelliteMode) {
         vm.switchGroup(groupId = groupId ?: "")
+        mapViewState.mapAndroidView.getMapboxMap().loadStyleUri(
+            if (uiState.isSatelliteMode) {
+                Style.SATELLITE_STREETS
+            } else if (isDarkMode) {
+                Style.DARK
+            } else {
+                Style.MAPBOX_STREETS
+            }
+        )
         ""
     }
 
     var trackGroup by rememberSaveable(isSystemInDarkTheme()) { mutableStateOf(true) }
-
-    when (val finalState = uiState) {
-        is MapHomeScreenState.Ready -> {
-            LaunchedEffect(finalState.groupId) {
-                logg.tag("location_performance").v("Map active for ${finalState.groupId}")
-                vm.locationRefreshSubscription.collect()
-            }
-        }
-        is MapHomeScreenState.Empty -> {}
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -96,6 +105,7 @@ fun MapHomeContent(
                             logg.tag("marker_click").v("Member marker clicked")
                             vm.trackMarker(it.asFocusedMarker())
                         }
+
                         MapPinType.PLACE -> {
                             when (val state = uiState) {
                                 is MapHomeScreenState.Ready -> {
@@ -110,6 +120,7 @@ fun MapHomeContent(
                                         )
                                     )
                                 }
+
                                 is MapHomeScreenState.Empty -> {}
                             }
                         }
@@ -136,6 +147,7 @@ fun MapHomeContent(
                     mapViewState.reDrawMarkers(state.focusedMarker, trackGroup)
                 }
             }
+
             is MapHomeScreenState.Empty -> {}
         }
 
@@ -154,9 +166,17 @@ fun MapHomeContent(
                             is GroupPickerAction.GroupPicked -> {
                                 vm.switchGroup(it.group.id)
                             }
+
+                            is GroupPickerAction.GroupEditPicked -> {
+                                appState.navController.navigate(
+                                    AppScreen.MainHome.GroupDetails.route(it.group.id)
+                                )
+                            }
+
                             GroupPickerAction.NewGroup -> {
                                 appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
                             }
+
                             GroupPickerAction.JoinGroup -> {
                                 appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
                             }
@@ -169,6 +189,7 @@ fun MapHomeContent(
                     is MapHomeScreenState.Ready -> {
                         appState.navController.navigate(AppScreen.MainHome.GroupDetails.route(state.groupId))
                     }
+
                     is MapHomeScreenState.Empty -> {}
                 }
             },
@@ -177,6 +198,7 @@ fun MapHomeContent(
                     is MapHomeScreenState.Ready -> {
                         appState.navController.navigate(AppScreen.MainHome.SharingStart.route(state.groupId))
                     }
+
                     is MapHomeScreenState.Empty -> {}
                 }
             },
@@ -187,8 +209,8 @@ fun MapHomeContent(
             onSettingsClick = {
                 appState.navController.navigate(AppScreen.Settings.routeSignature)
             },
-            onClearMyLocationClick = {
-                vm.clearMyLocation(it)
+            onMemberActionClick = { action, state ->
+                vm.memberAction(action, state)
             },
             onMemberClick = {
                 trackGroup = false
@@ -199,6 +221,9 @@ fun MapHomeContent(
                         mapViewState.focusToMarker(it.keyId)
                     }
                 }
+            },
+            onMapModeSwitch = {
+                vm.switchMapMode()
             }
         )
     }

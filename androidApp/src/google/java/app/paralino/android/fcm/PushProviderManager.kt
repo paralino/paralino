@@ -1,11 +1,13 @@
 package app.paralino.android.fcm
 
 import app.paralino.android.AppClass
+import app.paralino.core.logg
 import app.paralino.core.repo.user.IPushProviderManager
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
-import loge
+import kotlinx.coroutines.withContext
 
 
 class PushProviderManager(
@@ -22,10 +24,12 @@ class PushProviderManager(
 
     override suspend fun logout() {
         try {
-            FirebaseMessaging.getInstance().deleteToken().await()
-            FirebaseInstallations.getInstance().delete().await()
+            withContext(Dispatchers.IO) {
+                FirebaseMessaging.getInstance().deleteToken().await()
+                FirebaseInstallations.getInstance().delete().await()
+            }
         } catch (e: Exception) {
-            loge("push_notifications", "Error clearing FCM push token", e)
+            logg.e("push_notifications", "Error clearing FCM push token", e)
         }
     }
 }

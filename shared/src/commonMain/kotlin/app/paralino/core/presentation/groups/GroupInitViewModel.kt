@@ -4,19 +4,30 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
+import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.IConnectionStatusProvider
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GroupInitViewModel(
     private val connectionStatus: IConnectionStatusProvider,
+    val locationStatusProvider: ILocationStatusProvider,
     private val userRepo: UserRepository,
-    private val personalCodesRepo: PersonalCodesRepository
+    private val personalCodesRepo: PersonalCodesRepository,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(GroupInitScreenState())
@@ -29,25 +40,31 @@ class GroupInitViewModel(
         combine(
             userRepo.localUser,
             connectionStatus.status,
+            locationStatusProvider.status,
             personalCodesRepo.getAndRefreshMyPersonalCodes()
-        ) { user, network, codes ->
+        ) { user, network, locationStatus, codes ->
 
             val errors = buildList {
                 if (!network.isOnline)
                     add(ConditionErrorType.NETWORK)
+
+                if(!locationStatus.isNotificationPermissionAllowed)
+                    add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
 
                 user.data?.needsEmailVerification?.takeIf { it }?.let {
                     add(ConditionErrorType.EMAIL_VERIFICATION(user.data?.email ?: ""))
                 }
             }
 
-            val code = codes.firstOrNull()
-            val personalCode = code?.data?.data?.let {
+            val code = codes.firstOrNull { it.isStillValid() }
+            val personalCode = code?.let {
                 PersonalCodeScreenCodeData(
                     id = code.id,
                     code = it.formattedCode,
+                    userImage = it.codeData.data?.ownerImage ?: ImageModel.emoji(Emojis.robot),
+                    userName = it.codeData.data?.ownerName ?: "---",
                     canDelete = false,
-                    validityUTC = code.validityUTC
+                    isValid = true,
                 )
             }
 
@@ -75,6 +92,10 @@ class GroupInitViewModel(
                 _eventChannel.send(GroupInitScreenEvent.Error(e))
             }
         }
+    }
+
+    fun copyToClipboard() {
+        deviceApiProvider.copyToClipboard(_uiState.value.personalCode?.code ?: "")
     }
 
 }

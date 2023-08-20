@@ -18,19 +18,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
 import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
-import app.paralino.android.utils.extensions.annotatedBold
-import app.paralino.android.utils.extensions.safeCast
+import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.safeCast
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.components.LargeSeekbarSwitch
+import app.paralino.core.ui.components.LargeSeekbarSwitchState
+import app.paralino.core.ui.components.LargeSwitchDefaults
+import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -88,7 +97,7 @@ fun CreatePlaceScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -198,7 +207,7 @@ fun CreatePlaceScreen(
         LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = LargeSeekbarSwitchState.Seekbar(
                 seekbarProgress = state.currentStep + 1,
-                seekbarRange = IntRange(1, CreatePlaceScreenState.steps)
+                seekbarRange = IntRange(1, CreatePlaceScreenState.steps.size)
             ),
             switchState = null
         )
@@ -318,7 +327,7 @@ fun CreatePlaceScreen(
             focusDescription = true,
             state = seekbarState,
             onProgressChange = {
-                onRadiusChanged(it * CreatePlaceScreenState.minRadiusMeters)
+                onRadiusChanged(CreatePlaceScreenState.radiusForIndex(it))
             }
         )
 

@@ -62,7 +62,7 @@ class ChangePasswordUseCase(
 
             // at this point both login password and encryption key are updated safely
             // we can save the key locally
-            userKeyRepository.saveUserKeyLocally(newRemoteKey, userKeyRepository.personalKey)
+            userKeyRepository.saveUserKeyLocally(newRemoteKey, userKeyRepository.personalKey())
 
             emit(Unit)
         }

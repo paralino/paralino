@@ -29,16 +29,21 @@ class LoginUseCase constructor(
     fun login(email: String, password: String): Flow<SignUpStep> {
         return flow {
 
+            logg.d("login", "Start login - derive password")
             emit(SignUpStep.STARTING)
             val derivedPasswords = cryptoCore.derivePassword(password)
             val session: UserSession
             val user: UserMeRaw
 
             try {
+                logg.d("login", "Start login to remote")
                 delay(500)
                 session = userRepo.login(email, derivedPasswords.loginPassword)
+                logg.d("login", "Session created")
                 user = userRepo.getUserFromRemote()
+                logg.d("login", "User fetched")
             } catch (e: Exception) {
+                logg.w("login", "Could not login", e)
                 throw SignUpStepException(SignUpStep.STARTING, e)
             }
 
@@ -48,8 +53,11 @@ class LoginUseCase constructor(
             emit(SignUpStep.GENERATING_KEYS)
             val keyData: GeneratedUserKeys
             try {
+                logg.d("login", "Fetch keys from remote")
                 delay(500)
                 val keys = userKeyRepository.getRemoteKeys()
+
+                logg.d("login", "Found ${keys.size} key(s) on remote")
 
                 val correctPersonalKey = keys.reversed().firstNotNullOfOrNull {
                     try {
@@ -63,7 +71,7 @@ class LoginUseCase constructor(
                         // check if keypair is valid by decrypting
                         keyMapper.mapKeyPair(
                             model = it,
-                            userKey = personalKeyData.asBase64String(cryptoCore.hashProvider)
+                            userKey = personalKeyData
                         )
 
                         // key is valid
@@ -72,10 +80,12 @@ class LoginUseCase constructor(
                             encryptedKeyData = it
                         )
                     } catch (e: Exception) {
+                        logg.w("login", "Error parsing key from remote", e)
                         null
                     }
                 }
 
+                logg.d("login", "Found correct personal key: ${correctPersonalKey != null}")
                 if (correctPersonalKey == null) {
                     // data is corrupted, current user password does not match user key
                     // this will trigger account recovery
@@ -86,6 +96,7 @@ class LoginUseCase constructor(
                     keys.filter { it.id != correctPersonalKey.encryptedKeyData.id }
                         .takeIf { it.isNotEmpty() }
                         ?.let {
+                            logg.d("login", "Delete (${it.size}) unused user keys")
                             // we have valid key and old unused keys are on server
                             // here we notify server to keep currently valid key
                             try {
@@ -102,6 +113,7 @@ class LoginUseCase constructor(
 
             } catch (e: Exception) {
                 // this will trigger account recovery
+                logg.w("login", "Error initializing user keys", e)
                 config.temporaryBackupPassword = derivedPasswords.backupPassword
                 userRepo.initLocallyAfterSignUp(user, session)
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
@@ -109,22 +121,27 @@ class LoginUseCase constructor(
 
             // at this point we have both user and user key
 
+            logg.d("login", "Start initializing user locally")
             emit(SignUpStep.INIT_USER_DATA)
             try {
                 delay(500)
+                logg.d("login", "Save user keys locally")
                 userKeyRepository.saveUserKeyLocally(
                     keyData.encryptedKeyData,
                     keyData.userPersonalKey
                 )
+                logg.d("login", "Save user object locally")
                 userRepo.initLocallyAfterSignUp(user, session)
             } catch (e: Exception) {
+                logg.w("login", "Error initializing local user", e)
                 logoutUseCase.logoutLocally()
                 throw SignUpStepException(SignUpStep.INIT_USER_DATA, e)
             }
 
+            logg.d("login", "Login success")
             emit(SignUpStep.ALL_DONE)
         }.catch {
-            logg.e(it)
+            logg.e("login", "Login not successful", it)
             throw it
         }
     }

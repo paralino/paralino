@@ -1,5 +1,7 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.crypto.GroupMemberMainPublicKey
+import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
@@ -37,12 +39,15 @@ class RealtimeEventsProcessor constructor(
             response.channels.contains(locationFocusChannel) -> {
                 processLocationFocusChannelEvent(response)
             }
+
             response.channels.contains(placesChannel) -> {
                 processPlaceChannelEvent(response)
             }
+
             response.channels.contains(membersChannel) -> {
                 processMemberChannelEvent(response)
             }
+
             response.channels.contains(locationsChannel) -> {
                 processMemberLocationChannelEvent(response)
             }
@@ -83,20 +88,25 @@ class RealtimeEventsProcessor constructor(
 
         try {
             if (member != null) {
-                val memberKey = try {
-                    cryptoKEKRepo.getMemberKey(
-                        groupId = member.groupId,
-                        memberUserId = member.ownerUserId
-                    )
-                } catch (e: Exception) {
-                    null
+                if (groupPreRefreshUseCase.isProcessing(member.groupId)) {
+                    logg.tag("realtime_events")
+                        .v("Update in progress - Ignore member (${member.id}) update event in group ${member.groupId}")
+                    return
                 }
 
-                if (memberKey == null || member.memberKeyVersion != memberKey.version) {
+                val memberKey = cryptoKEKRepo.getMemberPublicKey(
+                    groupId = member.groupId,
+                    memberUserId = member.ownerUserId
+                )
+
+                if (memberKey !is GroupMemberMainPublicKey.Valid) {
                     logg.tag("realtime_events")
                         .v("Refresh group - update member (${member.id}) event in group ${member.groupId}")
                     // this is either new member so we are missing keys, or keys are obsolete
-                    groupPreRefreshUseCase.refreshGroupWithMembers(member.groupId)
+                    groupPreRefreshUseCase.refreshGroupWithMembers(
+                        groupId = member.groupId,
+                        cacheTimeMillis = 10_000
+                    )
                 } else {
                     logg.tag("realtime_events")
                         .v("Update member (${member.id}) event in group ${member.groupId}")
@@ -104,6 +114,11 @@ class RealtimeEventsProcessor constructor(
                 }
             } else {
                 val groupId = response.payload["groupId"] as String
+                if (groupPreRefreshUseCase.isProcessing(groupId)) {
+                    logg.tag("realtime_events")
+                        .v("Update in progress - Ignore member delete event in group $groupId")
+                    return
+                }
                 logg.tag("realtime_events").v("Delete member event in group $groupId")
                 groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
             }
@@ -122,10 +137,40 @@ class RealtimeEventsProcessor constructor(
         }
 
         if (location != null) {
-            memberLocal.createOrUpdateMemberLocation(location)
+            val groupId = response.payload["groupId"] as String
+            if (groupPreRefreshUseCase.isProcessing(groupId)) {
+                logg.tag("realtime_events")
+                    .v("Update in progress - ignore location event in group $groupId")
+                return
+            }
+
+            val hasDeviceKey =
+                cryptoKEKRepo.hasDeviceKeyByVersion(deviceKeyVersion = location.deviceKeyVersion)
+            val hasGroupKey =
+                cryptoKEKRepo.hasGroupKeyByVersion(groupKeyVersion = location.groupKeyVersion)
+
+            if (!hasDeviceKey || !hasGroupKey) {
+                logg.tag("realtime_events")
+                    .v("Location key version mismatch: groupKey ($hasGroupKey) - deviceKey ($hasDeviceKey)")
+                val result = groupPreRefreshUseCase.refreshGroupWithMembers(
+                    groupId = groupId,
+                    cacheTimeMillis = 15_000
+                )
+                if (!result) {
+                    memberLocal.createOrUpdateMemberLocation(location)
+                }
+            } else {
+                memberLocal.createOrUpdateMemberLocation(location)
+            }
+
         } else {
             val groupId = response.payload["groupId"] as String
-            logg.tag("realtime_events").v("Delete member event in group $groupId")
+            if (groupPreRefreshUseCase.isProcessing(groupId)) {
+                logg.tag("realtime_events")
+                    .v("Update in progress - ignore location delete in group $groupId")
+                return
+            }
+            logg.tag("realtime_events").v("Delete location event in group $groupId")
             groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
         }
     }

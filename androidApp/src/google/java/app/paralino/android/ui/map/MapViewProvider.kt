@@ -8,7 +8,9 @@ import android.view.Gravity
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -16,7 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
-import app.paralino.android.ui.theme.AppColors
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
@@ -38,9 +40,12 @@ import kotlin.math.abs
 
 
 @Composable
-internal fun rememberMapViewWithLifecycle(darkMode: Boolean): MapView {
+internal fun rememberMapViewWithLifecycle(
+    darkMode: Boolean,
+    satellite: Boolean = false
+): MapView {
     val context = LocalContext.current
-    val mapView = remember(context, darkMode) {
+    val mapView = remember(context, darkMode, satellite) {
         val option = ResourceOptionsManager.getDefault(
             context,
             app.paralino.android.BuildConfig.mapboxAccessToken
@@ -50,13 +55,19 @@ internal fun rememberMapViewWithLifecycle(darkMode: Boolean): MapView {
             MapInitOptions(
                 context,
                 resourceOptions = option,
-                styleUri = if (darkMode) Style.DARK else Style.MAPBOX_STREETS
+                styleUri = if (satellite) {
+                    Style.SATELLITE_STREETS
+                } else if (darkMode) {
+                    Style.DARK
+                } else {
+                    Style.MAPBOX_STREETS
+                }
             )
         )
     }
 
     // Makes MapView follow the lifecycle of this composable
-    val lifecycleObserver = remember(mapView) {
+    val lifecycleObserver = remember(mapView, satellite) {
         LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_START -> mapView.onStart()
@@ -90,7 +101,7 @@ open class MapViewProviderState constructor(
     protected val polygonAnnotationsManager: PolygonAnnotationManager?,
 ) : IMapViewProviderState {
 
-    override val mapAndroidView: View
+    override val mapAndroidView: MapView
         get() = mapView
 
     override var onMapTouch: (() -> Boolean)? = null
@@ -190,7 +201,7 @@ open class MapViewProviderState constructor(
                         val camera = mapView.getMapboxMap().cameraForGeometry(it.geometry)
                         val show = abs((camera.zoom ?: 0.0) - (currentCamera.zoom ?: 0.0))
                         // change polygon opacity based on size on screen
-                        it.fillOpacity = if (show > 4) 0.0 else 0.2
+                        it.fillOpacity = if (show > 6) 0.0 else 0.2
                         polygonAnnotationsManager?.update(it)
                     }
                 }
@@ -210,7 +221,7 @@ open class MapViewProviderState constructor(
                     // and it will jump without animation if zoom > maxZoom
                     setBounds(CameraBoundsOptions.Builder().maxZoom(15.0).build())
                     val camera = cameraForCoordinates(markers.map { it.point.point }).let {
-                        it.toBuilder().zoom(it.zoom?.times(0.9)).build()
+                        it.toBuilder().zoom(it.zoom?.times(0.7)).build()
                     }
                     cameraAnimationsPlugin {
                         flyTo(camera, MapAnimationOptions.mapAnimationOptions {
@@ -355,13 +366,20 @@ open class MapViewProviderState constructor(
     protected open fun focusToMarker(data: MarkerCacheData) {
 
         val zoom = when(data.data.pinType) {
-            MapPinType.MEMBER -> 15.0
+            MapPinType.MEMBER -> 16.0
             MapPinType.PLACE -> 12.0
         }
-        val cameraPosition = CameraOptions.Builder()
+
+        val cameraPosition = data.polygon?.let {
+            val camera = mapView.getMapboxMap().cameraForGeometry(it.geometry)
+            camera.toBuilder()
+                .zoom(camera.zoom?.coerceAtMost(zoom)?.times(0.98f))
+                .build()
+        } ?: CameraOptions.Builder()
             .zoom(zoom)
             .center(data.point.point)
             .build()
+
         // set camera position
         mapView.getMapboxMap().cameraAnimationsPlugin { this.flyTo(cameraPosition) }
     }

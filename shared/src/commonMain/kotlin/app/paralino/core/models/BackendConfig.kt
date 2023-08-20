@@ -3,7 +3,9 @@ package app.paralino.core.models
 data class BackendConfig constructor(
     val serverUrl: String,
     val projectId: String,
-    val debug: Boolean
+    val debug: Boolean,
+    val logToConsole: Boolean,
+    val logErrorsToRemote: Boolean,
 ) {
     val endpoint = "$serverUrl/v1"
     val resourceIds = BackendResourceIDs
@@ -20,7 +22,13 @@ object BackendResourceIDs {
     const val passwordResetUrl = "https://paralino.app/recover"
     const val emailConfirmationUrl = "https://paralino.app/verify"
 
+    const val homeUrl = "https://paralino.app"
+    const val sourceCodeUrl = "https://github.com/paralino"
+    const val privacyPolicyUrl = "https://paralino.app/privacy"
+    const val termsOfUseUrl = "https://paralino.app/terms"
+
     const val databaseIdMaxLength = 36
+    const val uniqueIdPlaceholder = "unique()"
 
     const val databaseKeysID = "data_keys"
     const val databaseDataID = "data_main"
@@ -37,6 +45,9 @@ object BackendResourceIDs {
 
     const val collectionGroupKeysID: String = "group_keys"
     const val collectionGroupMembersKeysID: String = "group_member_keys"
+    const val collectionGroupDeviceKeysID: String = "group_device_keys"
+    const val collectionPersonalIdKeysID: String = "personal_id_keys"
+    const val collectionPersonalGroupKeysID: String = "personal_group_keys"
     const val collectionUserKeysID: String = "user_keys"
     const val collectionUserDevicesID: String = "devices"
     const val collectionPushNotificationID: String = "push_notifications"
@@ -57,10 +68,10 @@ object BackendResourceIDs {
     const val functionResetAccount: String = "user_account_reset"
     const val functionUserKeysUpdate: String = "user_keys_update"
     const val functionUserDeviceUpdate: String = "user_device_update"
+    const val functionUserEvent: String = "user_event"
     const val functionPlaceCreate: String = "place_create"
     const val functionPlaceDelete: String = "place_delete"
     const val functionPlaceUpdate: String = "place_update"
-    const val functionPlaceNotify: String = "place_notify"
     const val functionLocationCreate: String = "location_create"
     const val functionLocationDelete: String = "location_delete"
 }

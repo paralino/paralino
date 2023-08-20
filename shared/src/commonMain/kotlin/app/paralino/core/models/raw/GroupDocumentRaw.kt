@@ -8,19 +8,20 @@ data class GroupDocumentRaw constructor(
     @SerialName("\$id")
     val id: String,
     val ownerUserId: String,
-    val keyVersion: Long,
+    val groupKeyVersion: Long,
     val data: String,
+    val serverIntegrity: String,
     val planType: String,
 ) {
 
     companion object {
-        @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): GroupDocumentRaw {
             return GroupDocumentRaw(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
-                keyVersion = (map["keyVersion"] as Number).toLong(),
+                groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 data = map["data"] as String,
+                serverIntegrity = map["serverIntegrity"] as String,
                 planType = map["planType"] as String,
             )
         }

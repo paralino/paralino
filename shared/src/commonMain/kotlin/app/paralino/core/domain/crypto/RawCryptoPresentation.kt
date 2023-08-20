@@ -52,7 +52,7 @@ class RawCryptoPresentation constructor(
         return memberLocal.getMemberRawPresentation(memberId)
             .map {
 
-                val rawLocationData = it.first.locations.map { mapOf("deviceData" to it.deviceData, "locationData" to it.locationData) }.let {
+                val rawLocationData = it.first.locations.map { mapOf("deviceData" to it.deviceData, "locationData" to it.locationData, "status" to it.status) }.let {
                     BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
                 }
 
@@ -83,6 +83,15 @@ class RawCryptoPresentation constructor(
                             }
                         },
                         "locationData" to it.locationData.let {
+                            when (it) {
+                                is CryptoResource.Ready -> {
+                                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
+                                }
+                                CryptoResource.NotInitialized -> "N/A"
+                                else -> it.toString()
+                            }
+                        },
+                        "status" to it.status.let {
                             when (it) {
                                 is CryptoResource.Ready -> {
                                     BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)

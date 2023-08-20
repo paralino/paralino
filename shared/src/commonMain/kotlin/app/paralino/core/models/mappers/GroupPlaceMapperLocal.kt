@@ -23,7 +23,7 @@ class GroupPlaceMapperLocal(
             id = model.id,
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             private = model.privatePlace,
             data = model.data_
         )
@@ -34,7 +34,7 @@ class GroupPlaceMapperLocal(
             id = model.id,
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             privatePlace = model.private,
             data_ = model.data
         )

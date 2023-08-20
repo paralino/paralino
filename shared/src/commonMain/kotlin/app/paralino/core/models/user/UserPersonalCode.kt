@@ -2,8 +2,6 @@ package app.paralino.core.models.user
 
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.utils.extensions.isoWithOffsetToInstant
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -12,34 +10,48 @@ import kotlinx.serialization.Serializable
 data class UserPersonalCode constructor(
     @SerialName("\$id")
     val id: String = "",
-    val validityUTC: String?,
-    val verification: String,
+    val code: String,
+
     @Contextual
-    val data: CryptoResource<UserPersonalCodeData>
+    val codeData: CryptoResource<PersonalCodeUserData>,
 ) {
 
     fun isStillValid(): Boolean {
-        if(validityUTC.isNullOrBlank()) return true
-        val now = nowUTC()
-        val time = validityUTC.isoWithOffsetToInstant() ?: return false
-        return time >= now
+        return codeData is CryptoResource.Ready
+    }
+
+    val formattedCode: String get() = when {
+        code.length <= 5 -> code
+        else -> code.chunked(code.length / 2).joinToString(separator = "-").uppercase()
     }
 
 }
 
 @Serializable
 data class UserPersonalCodeData constructor(
-    val ownerId: String,
+    val userData: PersonalCodeUserData,
+    val keyData: PersonalCodeKeyData
+) {
+}
+
+@Serializable
+data class PersonalCodeUserData constructor(
+    val ownerUserId: String,
     val ownerName: String,
     val ownerImage: ImageModel?,
-    val ownerPublicKey: String,
-    val code: String,
-    val integrity: String,
-    val secretKey: String
+    val ownerIdentityKey: String,
+) {
+}
+
+@Serializable
+data class PersonalCodeKeyData constructor(
+    val signedOwnerKxPublicKey: String,
+    val keyId: String,
+    val code: String
 ) {
     val formattedCode get() = when {
         code.length <= 5 -> code
-        else -> code.chunked(code.length / 2).joinToString(separator = "-")
+        else -> code.chunked(code.length / 2).joinToString(separator = "-").uppercase()
     }
 }
 

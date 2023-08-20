@@ -18,9 +18,7 @@ class PersonalCodeMapperLocal(
             keyId = model.keyId,
             ownerUserId = model.ownerUserId,
             encryptedCode = model.encryptedCode,
-            encryptedCodeData = model.encryptedCodeData,
-            validityUTC = model.validityUTC,
-            verification = model.verification
+            encryptedCodeUserData = model.encryptedCodeUserData,
         )
     }
 
@@ -30,9 +28,7 @@ class PersonalCodeMapperLocal(
             keyId = model.keyId,
             ownerUserId = model.ownerUserId,
             encryptedCode = model.encryptedCode,
-            encryptedCodeData = model.encryptedCodeData,
-            validityUTC = model.validityUTC,
-            verification = model.verification
+            encryptedCodeUserData = model.encryptedCodeUserData,
         )
     }
 

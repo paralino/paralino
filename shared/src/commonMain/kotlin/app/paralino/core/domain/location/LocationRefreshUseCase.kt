@@ -1,16 +1,31 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.config
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.raw.GenericFunctionPayload
+import app.paralino.core.models.raw.LocationRequestPayload
+import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.location.LocationPerformanceManager
-import kotlinx.coroutines.flow.*
+import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.BaseRemoteException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.serialization.encodeToString
 
 class LocationRefreshUseCase constructor(
     private val realtimeApi: IRealtimeApi,
     private val realtimeEventsProcessor: RealtimeEventsProcessor,
     private val groupPreRefresh: GroupPreRefreshUseCase,
     private val locationPerformanceManager: LocationPerformanceManager,
+    private val functionsApi: IFunctionsApi,
+    private val remoteConfig: BackendConfig
 ) {
 
     fun locationRefresh(groupId: String): Flow<Unit> {
@@ -41,6 +56,40 @@ class LocationRefreshUseCase constructor(
             userMapFocusFlow
         ) { _, _ ->
             Unit
+        }
+    }
+
+    fun refreshMemberDeviceLocation(
+        groupId: String,
+        memberUserId: String,
+        locationId: String
+    ): Flow<Unit> {
+        return flow {
+
+            val requestPayload = LocationRequestPayload(
+                groupId = groupId,
+                userId = memberUserId,
+                locationId = locationId,
+                force = false
+            )
+            val payload = GenericFunctionPayload(
+                route = "location-request",
+                payload = requestPayload
+            )
+
+            val response = functionsApi.runAndWait(
+                functionId = remoteConfig.resourceIds.functionUserEvent,
+                data = BaseRemoteModule.formatter.encodeToString(payload)
+            )
+
+            if (!response.isSuccess) {
+                // TODO throw better exception
+                throw BaseRemoteException.fromCode(
+                    code = null,
+                    message = "Unable to request location update",
+                    cause = Exception(response.stderr)
+                )
+            }
         }
     }
 

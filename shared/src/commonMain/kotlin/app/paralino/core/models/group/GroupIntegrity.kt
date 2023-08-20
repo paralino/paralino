@@ -2,10 +2,10 @@ package app.paralino.core.models.group
 
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoHashProvider
-import app.paralino.core.crypto.toData
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -15,30 +15,38 @@ data class GroupIntegrity(
     val signature: String
 ) {
 
+    private fun isTimeValid(duration: Duration): Boolean {
+        return timeUtc.isoWithOffsetToInstant()?.plus(duration)?.let { it > nowUTC() } ?: false
+    }
+
     fun isValidForGroup(signature: String): Boolean {
         return this.signature == signature
     }
 
     fun isValidForMember(signature: String): Boolean {
-        val threshold = 30.toDuration(DurationUnit.DAYS)
-        val timeValidity = timeUtc.isoWithOffsetToInstant()?.plus(threshold)?.let { it > nowUTC() } ?: false
+        val timeValidity = isTimeValid(30.toDuration(DurationUnit.DAYS))
+        return this.signature == signature && timeValidity
+    }
+
+    fun isValidForDevice(signature: String): Boolean {
+        val timeValidity = isTimeValid(7.toDuration(DurationUnit.DAYS))
         return this.signature == signature && timeValidity
     }
 
     companion object {
         fun createSignature(
             hashProvider: ICryptoHashProvider,
+            serverIntegrity: String,
             memberVerifications: List<String>,
-            groupKey: String,
             encryptedMemberPublicKeys: List<String>,
         ): String {
             val ids = buildList {
+                add(serverIntegrity)
                 addAll(memberVerifications)
-                add(groupKey)
                 addAll(encryptedMemberPublicKeys)
             }
             val seed = ids.joinToString(separator = ",")
-            return hashProvider.computeHash(seed.toData(hashProvider).content, HashType.SHA256).asBase64String(hashProvider)
+            return hashProvider.computeHash(seed, HashType.SHA256)
         }
     }
 }

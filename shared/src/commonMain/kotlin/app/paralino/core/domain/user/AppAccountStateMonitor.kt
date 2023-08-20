@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
@@ -28,11 +28,7 @@ class AppAccountStateMonitor constructor(
     private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
 
     val userState: Flow<Resource<AppAccountState>> =
-        combine(
-            userRepo.localUserRaw,
-            userKeyRepo.userKeyState()
-        ) { userState, isKeyValid ->
-
+        userRepo.localUserRaw.map { userState ->
             when (userState) {
                 Resource.NotInitialized -> Resource.NotInitialized
                 is Resource.Ready -> {
@@ -49,7 +45,7 @@ class AppAccountStateMonitor constructor(
                                 Resource.Ready(data = AppAccountState.NO_USER)
                             }
                         }
-                        !isKeyValid -> {
+                        userKeyRepo.userKeyState().firstOrNull() != true -> {
                             if (config.temporaryBackupPassword.isNotBlank()) {
                                 logg.tag("account_state")
                                     .v("Key is not valid but backup password is active")
@@ -73,12 +69,13 @@ class AppAccountStateMonitor constructor(
                                     Resource.Ready(data = AppAccountState.NO_PROFILE(decryptedUser))
                                 }
                             } catch (e: Exception) {
+                                logg.w("Error decrypting user", e)
                                 if (config.temporaryBackupPassword.isNotBlank()) {
                                     logg.tag("account_state").v("User needs to reset account")
                                     Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                                 } else {
                                     logg.tag("account_state")
-                                        .v("User can not be initialized, reset (${e.message}")
+                                        .v("User can not be initialized, reset (${e.message})")
                                     logoutUseCase.logoutLocally()
                                     Resource.Ready(data = AppAccountState.NO_USER)
                                 }

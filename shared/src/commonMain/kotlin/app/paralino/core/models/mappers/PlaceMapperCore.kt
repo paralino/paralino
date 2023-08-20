@@ -1,10 +1,10 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceWithSettings
@@ -26,14 +26,17 @@ class PlaceMapperCore constructor(
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.groupId,
-            keyVersion = model.keyVersion
-        ) ?: throw MissingGroupKeyException(model.groupId, model.keyVersion)
+            keyVersion = model.groupKeyVersion
+        )
+
+        if(groupKey !is GroupMasterKey.Valid)
+            throw MissingGroupKeyException(model.groupId, model.groupKeyVersion)
 
         val placeData = when (model.data) {
             is CryptoResource.Ready -> {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(model.data.data),
-                    key = groupKey.data.content
+                    key = groupKey.key
                 )
             }
             else -> throw CryptoException("Place data is missing: ${model.id}")
@@ -43,7 +46,7 @@ class PlaceMapperCore constructor(
             id = model.id,
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             private = model.private,
             data = placeData
         )
@@ -53,17 +56,17 @@ class PlaceMapperCore constructor(
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.groupId,
-            keyVersion = model.keyVersion
+            keyVersion = model.groupKeyVersion
         )
 
-        if(groupKey == null)
-            logg.e(MissingGroupKeyException(model.id, model.keyVersion))
+        if(groupKey !is GroupMasterKey.Valid)
+            logg.e(MissingGroupKeyException(model.id, model.groupKeyVersion))
 
-        val placeData = if (groupKey != null) {
+        val placeData = if (groupKey is GroupMasterKey.Valid) {
             try {
                 cryptoCore.decryptDataWithKey(
                     data = model.data,
-                    key = groupKey.data.content
+                    key = groupKey.key
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<GroupPlaceData>(it)
                 }.let {
@@ -80,7 +83,7 @@ class PlaceMapperCore constructor(
             id = model.id,
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
-            keyVersion = model.keyVersion,
+            groupKeyVersion = model.groupKeyVersion,
             private = model.private,
             data = placeData,
         )

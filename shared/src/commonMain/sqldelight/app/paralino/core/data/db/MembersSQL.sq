@@ -3,14 +3,12 @@ CREATE TABLE IF NOT EXISTS memberEntity (
 `userId` TEXT NOT NULL,
 `groupId` TEXT NOT NULL,
 `groupKeyVersion` INTEGER NOT NULL,
-`memberKeyVersion` INTEGER NOT NULL,
 `verification` TEXT NOT NULL,
 `data` TEXT NOT NULL,
 `settings_id` TEXT,
 `settings_ownerUserId` TEXT,
 `settings_groupId` TEXT,
-`settings_integrity` TEXT,
-`settings_secretKey` TEXT
+`settings_integrity` TEXT
 );
 
 

@@ -9,10 +9,11 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.*
 import app.paralino.core.utils.exceptions.TimeoutException
 import kotlinx.coroutines.channels.Channel
@@ -61,6 +62,7 @@ class SharingStartViewModel(
         ) { location, connection, locationCount ->
             _uiState.update {
                 it.copy(
+                    deviceName = userMemberIdUseCase.getDefaultDeviceName(groupId),
                     devicesCount = locationCount,
                     errors = buildList {
                         addAll(location.getPossibleErrors(it.isLongTerm))
@@ -144,7 +146,7 @@ class SharingStartViewModel(
         coroutineScope.launch {
             _uiState.update { it.copy(loadingAction = true) }
 
-            if(_uiState.value.devicesCount >= _uiState.value.devicesLimit && !registerDevice.canRegister(groupId = group.id)) {
+            if(_uiState.value.devicesCount >= _uiState.value.devicesLimit && _uiState.value.devicesLimit > 1 && !registerDevice.isDeviceAlreadyRegistered(groupId = group.id)) {
                 coroutineScope.launch {
                     _eventChannel.send(SharingStartScreenEvent.DevicesLimitReached(_uiState.value.devicesLimit))
                 }
@@ -153,7 +155,7 @@ class SharingStartViewModel(
             }
 
             try {
-                registerDevice.registerDevice(group.id)
+                registerDevice.registerDevice(groupId = group.id, deviceName = _uiState.value.deviceName)
             } catch (e: Exception) {
                 logg.e("Unable to register device", e)
                 _uiState.update { it.copy(loadingAction = false) }
@@ -239,10 +241,15 @@ class SharingStartViewModel(
         }
     }
 
+    fun onDeviceNameChange(name: String) {
+        if (_uiState.value.loadingAction) return
+        _uiState.update { it.copy(deviceName = name) }
+    }
+
     private fun getErrors(forLongTerm: Boolean): List<ConditionErrorType> {
         return buildList {
             addAll(
-                locationStatusProvider.status.value.getPossibleErrors(forLongTerm)
+                locationStatusProvider.currentStatus.getPossibleErrors(forLongTerm)
             )
             if(!connectionStatus.status.value.isOnline) {
                 add(ConditionErrorType.NETWORK)

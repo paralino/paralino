@@ -1,16 +1,14 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.config
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.IDeviceApiProvider
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 
 class UserMemberIdUseCase constructor(
     private val userRepository: UserRepository,
@@ -23,30 +21,29 @@ class UserMemberIdUseCase constructor(
         return deviceApiProvider.deviceType
     }
 
-    suspend fun getCurrentDeviceId(): String {
-        return config.deviceId
-    }
-
-    suspend fun getCurrentSessionId(): String {
-        return config.sessionId
-    }
-
     suspend fun getAllSessionCount(): Int {
         return userRepository.getAllSessionsFromRemote().size
     }
 
+    suspend fun getDefaultDeviceName(groupId: String?): String {
+        return groupId?.let { getCurrentLocationForGroup(it)?.deviceData?.data?.deviceName }
+            ?: memberLocal.getMemberModelsWithLocationForUser(userRepository.cachedUserId)
+                .mapNotNull { it.currentDeviceLocation?.name }
+                .takeIf { it.size == 1 }
+                ?.first()
+            ?: deviceApiProvider.defaultDeviceName
+    }
+
     suspend fun getCurrentLocationForGroup(groupId: String): MemberLocation? {
-        val locationsForGroup = getCurrentUserMemberWithLocationsForGroup(groupId)!!.locations
-
-        val locationForDeviceId = locationsForGroup.firstOrNull {
-            it.deviceId == config.deviceId
-        }
-
-        return locationForDeviceId
+        return getCurrentUserMemberWithLocationsForGroup(groupId)?.currentDeviceLocation
     }
 
     suspend fun getCurrentLocationIdForGroup(groupId: String): String? {
         return getCurrentLocationForGroup(groupId)?.id
+    }
+
+    suspend fun hasCurrentLocationIdForGroup(groupId: String): Boolean {
+        return !getCurrentLocationForGroup(groupId)?.id.isNullOrBlank()
     }
 
     suspend fun getCurrentUserMemberIdForGroup(groupId: String): String? {

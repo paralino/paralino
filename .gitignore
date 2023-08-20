@@ -17,4 +17,6 @@ androidApp/src/playStore/res/values/fcm_config.xml
 
 androidApp/proguard-merged-config.txt
 
+shared/shared.podspec
+
 paralinoTestKey

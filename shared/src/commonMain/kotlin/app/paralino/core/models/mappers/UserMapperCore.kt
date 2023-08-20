@@ -26,7 +26,7 @@ class UserMapperCore(
                 try {
                     cryptoCore.decryptDataWithKey(
                         data = it,
-                        key = userKeyRepo.personalKey.content
+                        key = userKeyRepo.personalKey()
                     ).let {
                         BaseRemoteModule.formatter.decodeFromString<BlockListModelData>(it)
                     }.let {
@@ -50,16 +50,27 @@ class UserMapperCore(
     }
 
     suspend fun remote2Core(model: UserMeDataRaw): UserMeData {
-        val userKey = userKeyRepo.personalKey.content
+        val userKey = userKeyRepo.personalKey()
         return UserMeData(
-            userImage = model.userImage?.let { cryptoCore.decryptDataWithKey(it, userKey) }
-                ?.asImageModel(),
-            userName = model.userName?.let { cryptoCore.decryptDataWithKey(it, userKey) } ?: "",
+            userImage = model.userImage?.let {
+                try {
+                    cryptoCore.decryptDataWithKey(it, userKey)
+                } catch (e: Exception) {
+                    null
+                }
+            }?.asImageModel(),
+            userName = model.userName?.let {
+                try {
+                    cryptoCore.decryptDataWithKey(it, userKey)
+                } catch (e: Exception) {
+                    ""
+                }
+            } ?: "",
         )
     }
 
     suspend fun core2Remote(model: UserMeData): UserMeDataRaw {
-        val userKey = userKeyRepo.personalKey.content
+        val userKey = userKeyRepo.personalKey()
         return UserMeDataRaw(
             userImage = model.userImage?.image?.let { cryptoCore.encryptDataWithKey(it, userKey) },
             userName = model.userName.takeIf { it.isNotBlank() }

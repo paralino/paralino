@@ -1,6 +1,5 @@
 package app.paralino.android.remote.appwrite
 
-import android.os.Build
 import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserSession
@@ -14,7 +13,7 @@ class UserApi constructor(
 
     override suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
         return remoteModule.execute {
-            account.create(uniqueIdPlaceholder, email, password, userName).parseUser()
+            account.create(this.backendConfig.resourceIds.uniqueIdPlaceholder, email, password, userName).parseUser()
         }
     }
 
@@ -34,10 +33,6 @@ class UserApi constructor(
 
     override suspend fun getMe(): UserMeRaw {
         return remoteModule.execute { account.get().parseUser() }
-    }
-
-    override suspend fun updateName(name: String): UserMeRaw {
-        return remoteModule.execute { account.updateName(name).parseUser() }
     }
 
     override suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {
@@ -105,7 +100,6 @@ class UserApi constructor(
         return UserSession(
             id = this.id,
             expire = this.expire,
-            deviceName = Build.MANUFACTURER,
             deviceType = "android"
         )
     }

@@ -9,7 +9,7 @@ data class GroupPlaceRaw constructor(
     val id: String,
     val groupId: String,
     val ownerUserId: String,
-    val keyVersion: Long,
+    val groupKeyVersion: Long,
     val private: Boolean,
     val data: String = ""
 ) {
@@ -21,7 +21,7 @@ data class GroupPlaceRaw constructor(
                 id = map["\$id"] as String,
                 groupId = map["groupId"] as String,
                 ownerUserId = map["ownerUserId"] as String,
-                keyVersion = (map["keyVersion"] as Number).toLong(),
+                groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 private = map["private"] as Boolean,
                 data = map["data"] as String,
             )

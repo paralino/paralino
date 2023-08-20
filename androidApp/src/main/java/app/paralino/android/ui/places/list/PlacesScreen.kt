@@ -22,16 +22,21 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.components.*
 import app.paralino.android.ui.map.rememberMapViewPlacesOverviewState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.settings.SettingsBigHeader
+import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.AppTheme
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesScreenEvent
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.delay
@@ -155,7 +160,7 @@ fun PlacesScreen(
                 navigationIcon = {
                     IconButton(onClick = onScreenClose) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -169,7 +174,7 @@ fun PlacesScreen(
                         Text(stringResource(id = R.string.places_list_add_button))
                     },
                     icon = {
-                        Icon(imageVector = AppIcons.Add, contentDescription = null)
+                        Icon(painter = AppIcons.Add, contentDescription = null)
                     },
                     backgroundColor = MaterialTheme.colors.primary,
                     elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),

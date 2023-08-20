@@ -1,32 +1,21 @@
 package app.paralino.core.crypto.user
 
-import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.Data
-import app.paralino.core.crypto.base64ToData
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.repo.user.CryptoUserKeysRemoteSource
 import app.paralino.core.utils.exceptions.MissingUserKeyException
 import kotlinx.coroutines.flow.Flow
 
 class CryptoUserKeyRepository(
-    private val cryptoCore: CryptoCore,
-    private val local: ICryptoUserKeyLocalDataSource,
+    private val local: UserCryptoKeyLocalDataSource,
     private val remote: CryptoUserKeysRemoteSource,
 ) : BaseRepository() {
 
-    val personalKey: Data
-        get() {
-            return personalKeyOrNull ?: throw MissingUserKeyException(localCache = true)
-        }
-
-    val personalKeyOrNull: Data?
-        get() {
-            return local.getCachedUserKey().takeIf { it.isNotBlank() }
-                ?.base64ToData(cryptoCore.hashProvider)
-                ?.takeIf { it.content.isNotEmpty() }
-        }
+    suspend fun personalKey(): String {
+        return local.getCachedUserKey()
+            .takeIf { it.isNotBlank() }
+            ?: throw MissingUserKeyException(localCache = true)
+    }
 
     suspend fun latestKeyPair(): AsymmetricCryptoKeyData {
         return local.getKeyPair() ?: throw MissingUserKeyException(localCache = false)
@@ -44,8 +33,8 @@ class CryptoUserKeyRepository(
         return local.getMyKey()
     }
 
-    suspend fun saveUserKeyLocally(keyRaw: UserCryptoKeyRaw, decryptedKey: Data) {
-        local.saveKey(keyRaw, decryptedKey.asBase64String(cryptoCore.hashProvider))
+    suspend fun saveUserKeyLocally(keyRaw: UserCryptoKeyRaw, decryptedKey: String) {
+        local.saveKey(keyRaw, decryptedKey)
     }
 
     suspend fun uploadNewUserKey(keyRaw: UserCryptoKeyRaw, removeOldKeys: Boolean = true): UserCryptoKeyRaw {

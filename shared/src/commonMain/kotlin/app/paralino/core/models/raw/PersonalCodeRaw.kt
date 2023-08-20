@@ -1,7 +1,5 @@
 package app.paralino.core.models.raw
 
-import app.paralino.core.utils.extensions.isoWithOffsetToInstant
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -12,29 +10,21 @@ data class PersonalCodeRaw constructor(
     val keyId: String,
     val ownerUserId: String,
     val encryptedCode: String,
-    val encryptedCodeData: String,
-    val verification: String,
-    val validityUTC: String?
+    val encryptedCodeUserData: String?,
 ) {
 
     fun isStillValid(): Boolean {
-        if(validityUTC.isNullOrBlank()) return true
-        val now = nowUTC()
-        val time = validityUTC.isoWithOffsetToInstant() ?: return false
-        return time >= now
+        return !encryptedCodeUserData.isNullOrBlank()
     }
 
     companion object {
-        @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): PersonalCodeRaw {
             return PersonalCodeRaw(
                 id = map["\$id"] as String,
                 keyId = map["keyId"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 encryptedCode = map["encryptedCode"] as String,
-                encryptedCodeData = map["encryptedCodeData"] as String,
-                verification = map["verification"] as String,
-                validityUTC = map["validityUTC"] as? String?
+                encryptedCodeUserData = map["encryptedCodeUserData"] as? String?,
             )
         }
     }

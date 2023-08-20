@@ -5,37 +5,78 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
-import app.paralino.android.ui.groups.GroupListItem
-import app.paralino.android.ui.settings.SettingsSectionHeader
+import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.android.ui.components.Show
+import app.paralino.core.ui.groups.GroupListItem
+import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.ui.theme.ButtonStyle
 import app.paralino.android.utils.extensions.quantityStringResource
-import app.paralino.android.utils.extensions.safeCast
+import app.paralino.core.utils.extensions.safeCast
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.share.SharingStartScreenEvent
 import app.paralino.core.presentation.share.SharingStartScreenState
 import app.paralino.core.presentation.share.SharingStartViewModel
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.LargeSeekbarSwitch
+import app.paralino.core.ui.components.LargeSeekbarSwitchState
+import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.components.nameRes
+import app.paralino.core.ui.components.rememberSeekbarState
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -126,7 +167,7 @@ fun SharingStartScreen(
                 }
                 SharingStartScreenEvent.LocationStatusInsufficient -> {
                     showDialog =
-                        MainAlertDialog.SharingErrors(state.errors.map { context.getString(it.nameRes) })
+                        MainAlertDialog.SharingErrors(state.errors.map { context.getString(it.nameRes.resourceId) })
                 }
                 SharingStartScreenEvent.MissingBackgroundPermission -> {
                     showDialog = MainAlertDialog.SharingBackgroundLocationMissing
@@ -158,7 +199,6 @@ fun SharingStartScreen(
             dialog.Show {
                 showDialog = null
                 if (it == MainAlertDialog.Buttons.buttonOk) {
-                    // TODO ask for background location permission
                     permissionHandler.askBackgroundLocationPermission()
                 } else {
                     vm.proceedWithSharing()
@@ -211,7 +251,7 @@ fun SharingStartScreen(
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
-                            imageVector = AppIcons.Close,
+                            painter = AppIcons.Close,
                             contentDescription = null
                         )
                     }
@@ -231,11 +271,6 @@ fun SharingStartScreen(
                     modifier = Modifier,
                     style = ButtonStyle.BIG(iconSize = 24.dp),
                     state = AppButtonState.CONTENT,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (state.canShare)
-                            MaterialTheme.colors.primary
-                        else MaterialTheme.colors.secondary
-                    ),
                     icon = if (state.canShare) AppIcons.ShareLocation
                     else AppIcons.NotListedLocation,
                     onClick = { vm.startSharing() }
@@ -245,10 +280,17 @@ fun SharingStartScreen(
             }
         },
     ) {
+        val focusManager = LocalFocusManager.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
                 .animateContentSize()
                 .padding(
                     start = 20.dp,
@@ -286,17 +328,19 @@ fun SharingStartScreen(
                     SettingsSectionHeader(name = stringResource(id = R.string.groups_sharing_section_title_group))
                     GroupListItem(
                         modifier = Modifier.fillMaxWidth(),
-                        data = state.groupState.data!!
-                    ) {
-                        if (groupId.isNullOrBlank()) {
-                            appState.uiScope.launch {
-                                appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroupItems()))
-                                    .safeCast<GroupItemState>()?.let {
-                                        vm.setSelectedGroup(it.id)
-                                    }
+                        data = state.groupState.data!!,
+                        onEdit = {},
+                        onClick = {
+                            if (groupId.isNullOrBlank()) {
+                                appState.uiScope.launch {
+                                    appState.showBottomSheetForResult(BottomSheetsScreen.GroupPicker(vm.getAllGroupItems()))
+                                        .safeCast<GroupItemState>()?.let {
+                                            vm.setSelectedGroup(it.id)
+                                        }
+                                }
                             }
                         }
-                    }
+                    )
                 }
             }
 
@@ -321,6 +365,19 @@ fun SharingStartScreen(
                     Spacer(modifier = Modifier.size(20.dp))
                 }
             }
+
+            Spacer(modifier = Modifier.size(20.dp))
+
+            MainInputField(
+                text = state.deviceName,
+                hint = stringResource(id = R.string.groups_sharing_device_name_placeholder),
+                hasError = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done,
+                capitalization = KeyboardCapitalization.Words,
+                focusManager = focusManager,
+                onInputChange = { vm.onDeviceNameChange(it) }
+            )
 
             Row(
                 modifier = Modifier

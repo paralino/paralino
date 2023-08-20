@@ -8,5 +8,4 @@ data class GroupSettings(
     val ownerUserId: String,
     val groupId: String,
     val integrity: String,
-    val secretKey: String,
 )

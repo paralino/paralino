@@ -9,7 +9,8 @@ data class GroupCryptoKeyDataRaw constructor(
     val id: String,
     val groupId: String,
     val memberUserId: String,
-    val version: Long,
+    val groupKeyVersion: Long,
+    val memberKeyVersion: Long,
 
     /**
      * group key encrypted with member public key, signed with owner private key
@@ -22,8 +23,9 @@ data class GroupCryptoKeyDataRaw constructor(
                 id = map["\$id"] as String,
                 groupId = map["groupId"] as String,
                 memberUserId = map["memberUserId"] as String,
-                version = (map["version"] as Number).toLong(),
-                encryptedGroupKey = map["encryptedGroupKey"] as String
+                groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
+                memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
+                encryptedGroupKey = map["encryptedGroupKey"] as String,
             )
         }
     }

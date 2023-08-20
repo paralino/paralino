@@ -1,7 +1,9 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.ICoroutineScopeProvider
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.config
+import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
@@ -29,6 +31,7 @@ class UserRepository constructor(
     private val sessionMonitor: UserSessionMonitor,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val userMapper: UserMapperCore,
+    private val cryptoCore: CryptoCore,
 ) : BaseRepository() {
 
     val cachedUserId: String get() = config.userId
@@ -54,8 +57,14 @@ class UserRepository constructor(
         )
 
     val localUserRaw: StateFlow<Resource<UserMeRaw?>> = local.getMeRaw()
-        .map<UserMeRaw?, Resource<UserMeRaw?>> { Resource.Ready(it) }
-        .catch { emit(Resource.NotInitialized) }
+        .map<UserMeRaw?, Resource<UserMeRaw?>> {
+            logg.v("Local raw user changed, valid (${it != null})")
+            Resource.Ready(it)
+        }
+        .catch {
+            logg.w("Local raw user error: ${it.message}")
+            emit(Resource.NotInitialized)
+        }
         .stateIn(
             scope = scopeProvider.defaultScope,
             started = SharingStarted.WhileSubscribed(),
@@ -90,14 +99,10 @@ class UserRepository constructor(
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
         updateLocalUser(userMeRaw)
-        updateSession(userSession)
+        config.deviceId = cryptoCore.hashProvider.computeHash("${userMeRaw.id}${config.deviceIdSeed}", HashType.SHA256)
+        config.sessionId = userSession.id
         config.emailConfirmed = true
         sessionMonitor.updateSessionState(sessionValid = true)
-    }
-
-    private suspend fun updateSession(session: UserSession) {
-        config.sessionId = session.id
-        config.deviceName = session.deviceName
     }
 
     fun updateUserEmail(newEmail: String, password: String): Flow<Unit> {

@@ -18,32 +18,17 @@
 
 
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
 
     <color name="highlightRed">#F44336</color>
-    <color name="highlightGreen">@color/accent</color>
-    <color name="lightRedError">#33F44336</color>
     <color name="highlightGold">#FFC107</color>
     <color name="accent">#26A69A</color>
     <color name="accentLight">#80CBC4</color>
-    <color name="accentAlpha20">#3326A69A</color>
-    <color name="accentAlpha50">#B326A69A</color>
-    <color name="accentVeryLight">#E0F2F1</color>
     <color name="accentDark">#00796B</color>
 
-    <color name="alpha_grey_strong">#80000000</color>
-    <color name="alpha_grey_mask">#55737373</color>
     <color name="alpha_grey_highlight">#20737373</color>
-    <color name="alpha_grey_highlight2">#10737373</color>
-
-    <color name="secondaryColor">#f0f4c3</color>
-    <color name="secondaryLightColor">#fffff6</color>
-    <color name="secondaryDarkColor">#bdc192</color>
 
     <color name="backgroundMain">@color/theme_lightest</color>
     <color name="transparent">@android:color/transparent</color>
-
-    <color name="errorBannerBackground">#33FF0000</color>
 
 
 </resources>

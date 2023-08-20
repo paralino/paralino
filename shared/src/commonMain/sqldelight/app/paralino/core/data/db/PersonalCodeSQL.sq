@@ -3,9 +3,7 @@ CREATE TABLE IF NOT EXISTS personalCodeEntity (
 `keyId` TEXT NOT NULL,
 `ownerUserId` TEXT NOT NULL,
 `encryptedCode` TEXT NOT NULL,
-`encryptedCodeData` TEXT NOT NULL,
-`validityUTC` TEXT,
-`verification` TEXT NOT NULL
+`encryptedCodeUserData` TEXT
 );
 
 createCode:
