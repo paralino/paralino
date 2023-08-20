@@ -1,7 +1,6 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.crypto.GroupMemberMainPublicKey
-import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
@@ -15,6 +14,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.IPushProviderManager
 
 class RealtimeEventsProcessor constructor(
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
@@ -22,7 +22,8 @@ class RealtimeEventsProcessor constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val memberLocal: LocationLocalDataSource,
     private val locationSharingManager: LocationSharingManager,
-    private val locationPerformanceManager: LocationPerformanceManager
+    private val locationPerformanceManager: LocationPerformanceManager,
+    private val pushProvider: IPushProviderManager
 ) {
 
     val locationFocusChannel =
@@ -33,6 +34,8 @@ class RealtimeEventsProcessor constructor(
         "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents"
     val locationsChannel =
         "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionMemberLocationsID}.documents"
+    val pushNotificationsChannel =
+        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionPushNotificationID}.documents"
 
     suspend fun processEvent(response: RealtimeResponse<Map<String, Any>>) {
         when {
@@ -50,6 +53,10 @@ class RealtimeEventsProcessor constructor(
 
             response.channels.contains(locationsChannel) -> {
                 processMemberLocationChannelEvent(response)
+            }
+
+            response.channels.contains(pushNotificationsChannel) -> {
+                processPushNotificationEvent(response)
             }
         }
     }
@@ -175,4 +182,7 @@ class RealtimeEventsProcessor constructor(
         }
     }
 
+    private fun processPushNotificationEvent(response: RealtimeResponse<Map<String, Any>>) {
+        pushProvider.syncPushNotifications()
+    }
 }
