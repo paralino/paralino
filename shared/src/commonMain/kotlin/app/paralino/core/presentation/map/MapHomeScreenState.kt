@@ -21,7 +21,7 @@ sealed class MapHomeScreenState {
         val markers: List<MapPinData>,
         val focusedMarker: FocusedMarkerData?,
         val sharingStatus: LocationSharingContract?,
-        override val isSatelliteMode: Boolean = true
+        override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
         val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
@@ -29,7 +29,7 @@ sealed class MapHomeScreenState {
 
     data class Empty(
         override val currentUserImage: ImageModel = ImageModel.emoji(Emojis.robot),
-        override val isSatelliteMode: Boolean = true
+        override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState()
 }
 
