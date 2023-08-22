@@ -126,13 +126,16 @@ fun MapHomeContent(
                                     val focusedMarker = state.focusedMarker
                                     logg.tag("marker_click")
                                         .v("Place marker clicked: $focusedMarker")
-                                    vm.trackMarker(it.asFocusedMarker())
-                                    appState.navController.navigate(
-                                        AppScreen.MainHome.PlaceDetail.route(
-                                            state.groupId,
-                                            it.markerId
+                                    if (focusedMarker?.markerId == it.markerId) {
+                                        appState.navController.navigate(
+                                            AppScreen.MainHome.PlaceDetail.route(
+                                                state.groupId,
+                                                it.markerId
+                                            )
                                         )
-                                    )
+                                    } else {
+                                        vm.trackMarker(it.asFocusedMarker())
+                                    }
                                 }
 
                                 is MapHomeScreenState.Empty -> {}
