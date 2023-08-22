@@ -45,8 +45,6 @@ class MapViewPlacesOverviewProviderState constructor(
     polygonAnnotationsManager: PolygonAnnotationManager?,
 ) : MapViewProviderState(mapView, markerCache, annotationsManager, polygonAnnotationsManager) {
 
-    var onMapLongPress: ((Double, Double) -> Boolean)? = null
-
     override fun initMap() {
         mapView.apply {
             // disable telemetry by default
@@ -63,12 +61,6 @@ class MapViewPlacesOverviewProviderState constructor(
             }
 
             scalebar.updateSettings { this.enabled = false }
-
-            getMapboxMap().apply {
-                addOnMapLongClickListener {
-                    onMapLongPress?.invoke(it.latitude(), it.longitude()) ?: false
-                }
-            }
         }
         initListeners()
     }

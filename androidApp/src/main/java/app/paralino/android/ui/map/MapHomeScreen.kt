@@ -45,7 +45,7 @@ fun MapHomeScreen(
             if (state.data.isNotEmpty()) {
                 MapHomeContent(
                     appState = appState,
-                    groupId = groupId,
+                    startGroupId = groupId,
                     vm = vm
                 )
             } else {
@@ -61,7 +61,7 @@ fun MapHomeScreen(
 @Composable
 fun MapHomeContent(
     appState: MainAppState,
-    groupId: String?,
+    startGroupId: String?,
     vm: MapHomeViewModel,
 ) {
 
@@ -71,8 +71,8 @@ fun MapHomeContent(
         darkMode = isDarkMode,
         satellite = uiState.isSatelliteMode
     )
-    rememberSaveable(groupId, isDarkMode, uiState.isSatelliteMode) {
-        vm.switchGroup(groupId = groupId ?: "")
+    rememberSaveable(startGroupId, isDarkMode, uiState.isSatelliteMode) {
+        vm.switchGroup(groupId = startGroupId ?: "")
         mapViewState.mapAndroidView.getMapboxMap().loadStyleUri(
             if (uiState.isSatelliteMode) {
                 Style.SATELLITE_STREETS
@@ -94,6 +94,20 @@ fun MapHomeContent(
             modifier = Modifier.fillMaxSize(),
             factory = {
                 mapViewState.initMap()
+                mapViewState.onMapLongPress = { lat, lng ->
+                    val groupId = (uiState as? MapHomeScreenState.Ready)?.groupId
+                    if(groupId != null) {
+                        appState.navController.navigate(
+                            AppScreen.MainHome.PlaceCreate.route(
+                                groupId = groupId,
+                                placeId = null,
+                                lat = lat,
+                                lng = lng
+                            )
+                        )
+                    }
+                    true
+                }
                 mapViewState.onMapTouch = {
                     trackGroup = false
                     vm.trackMarker(null)

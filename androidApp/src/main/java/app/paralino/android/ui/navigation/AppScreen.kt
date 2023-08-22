@@ -121,11 +121,20 @@ sealed class AppScreen {
 
         object PlaceCreate : AppScreen() {
             val argumentPlaceId: String = "placeId"
-            override val routeSignature: String = "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}"
-            fun route(groupId: String, placeId: String?): String {
+            val argumentLat: String = "lat"
+            val argumentLng: String = "lng"
+            override val routeSignature: String = "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
+            fun route(
+                groupId: String,
+                placeId: String?,
+                lat: Double? = null,
+                lng: Double? = null
+            ): String {
                 val args = arrayOf(
                     "$argumentGroupId=$groupId",
-                    placeId?.let { "$argumentPlaceId=$placeId" }
+                    placeId?.let { "$argumentPlaceId=$placeId" },
+                    lat?.let { "$argumentLat=$lat" },
+                    lng?.let { "$argumentLng=$lng" }
                 )
                     .filterNotNull()
                     .joinToString(separator = "&")

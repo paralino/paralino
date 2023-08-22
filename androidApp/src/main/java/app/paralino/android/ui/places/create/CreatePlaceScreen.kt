@@ -52,7 +52,9 @@ fun CreatePlaceScreen(
     appState: MainAppState,
     groupId: String,
     placeId: String?,
-    vm: CreatePlaceViewModel = getViewModel { parametersOf(groupId, placeId) },
+    lat: Double? = null,
+    lng: Double? = null,
+    vm: CreatePlaceViewModel = getViewModel { parametersOf(groupId, placeId, lat, lng) },
 ) {
 
     val state by vm.uiState.collectAsState(initial = Payload.Loading)

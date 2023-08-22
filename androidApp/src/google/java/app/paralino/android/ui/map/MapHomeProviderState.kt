@@ -12,6 +12,7 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPolygonAnnotationManager
+import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 
 @Composable
 fun rememberMapViewHomeState(
@@ -40,6 +41,17 @@ class MapViewHomeProviderState constructor(
     annotationsManager: PointAnnotationManager?,
     polygonAnnotationsManager: PolygonAnnotationManager?,
 ) : MapViewProviderState(mapView, markerCache, annotationsManager, polygonAnnotationsManager) {
+
+    var onMapLongPress: ((Double, Double) -> Boolean)? = null
+
+    override fun initMap() {
+        super.initMap()
+        mapView.getMapboxMap().apply {
+            addOnMapLongClickListener {
+                onMapLongPress?.invoke(it.latitude(), it.longitude()) ?: false
+            }
+        }
+    }
 
     fun updateMarkers(list: List<MapPinData>) {
         setAndUpdateMarkers(list)
