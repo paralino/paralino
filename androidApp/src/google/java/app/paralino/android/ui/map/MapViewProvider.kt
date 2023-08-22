@@ -5,12 +5,9 @@ import android.animation.AnimatorListenerAdapter
 import android.graphics.Color
 import android.util.LruCache
 import android.view.Gravity
-import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -18,25 +15,43 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
+import app.paralino.core.ui.theme.AppColors
 import com.google.gson.JsonPrimitive
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.StandardScaleGestureDetector
 import com.mapbox.geojson.Point
-import com.mapbox.maps.*
+import com.mapbox.maps.CameraBoundsOptions
+import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.MapInitOptions
+import com.mapbox.maps.MapView
+import com.mapbox.maps.ResourceOptionsManager
+import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
-import com.mapbox.maps.plugin.annotation.generated.*
+import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
+import com.mapbox.maps.plugin.annotation.generated.OnPolygonAnnotationClickListener
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotation
+import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotationOptions
 import com.mapbox.maps.plugin.attribution.attribution
 import com.mapbox.maps.plugin.compass.compass
-import com.mapbox.maps.plugin.gestures.*
+import com.mapbox.maps.plugin.gestures.OnMoveListener
+import com.mapbox.maps.plugin.gestures.OnScaleListener
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.gestures.addOnMoveListener
+import com.mapbox.maps.plugin.gestures.addOnScaleListener
 import com.mapbox.maps.plugin.scalebar.scalebar
+import com.mapbox.maps.toCameraOptions
 import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfTransformation
-import kotlin.math.abs
+import kotlin.math.absoluteValue
+import kotlin.math.pow
 
 
 @Composable
@@ -103,6 +118,9 @@ open class MapViewProviderState constructor(
 
     override val mapAndroidView: MapView
         get() = mapView
+
+    val isSatellite: Boolean
+        get() = mapView.getMapboxMap().getStyle()?.styleURI == Style.SATELLITE_STREETS
 
     override var onMapTouch: (() -> Boolean)? = null
     override var onMapTouchEnd: (() -> Unit)? = null
@@ -196,12 +214,26 @@ open class MapViewProviderState constructor(
         val currentCamera = mapView.getMapboxMap().cameraState.toCameraOptions()
         synchronized(markerCache) {
             markerCache.snapshot().forEach {
-                it.value?.let {
-                    it.polygon?.let {
+                it.value?.let { markerData ->
+                    markerData.polygon?.let {
                         val camera = mapView.getMapboxMap().cameraForGeometry(it.geometry)
-                        val show = abs((camera.zoom ?: 0.0) - (currentCamera.zoom ?: 0.0))
+                        val diff = (currentCamera.zoom ?: 0.0) - (camera.zoom ?: 0.0)
                         // change polygon opacity based on size on screen
-                        it.fillOpacity = if (show > 6) 0.0 else 0.2
+                        val diffFactor = when (markerData.data.pinType) {
+                            MapPinType.MEMBER -> if (isSatellite) 0.3 else 0.2
+                            MapPinType.PLACE -> if (isSatellite) 0.4 else 0.2
+                        }
+                        val staticFactor = when (markerData.data.pinType) {
+                            MapPinType.MEMBER -> if (isSatellite) 0.15 else 0.2
+                            MapPinType.PLACE -> if (isSatellite) 0.2 else 0.1
+                        }
+                        val isZoomedOut = diff < 0
+                        val factor = if (isZoomedOut) {
+                            0.0
+                        } else {
+                            diff.pow(2).coerceAtMost(6.0).div(6)
+                        }
+                        it.fillOpacity = (1 - factor) * diffFactor + staticFactor
                         polygonAnnotationsManager?.update(it)
                     }
                 }
@@ -211,16 +243,17 @@ open class MapViewProviderState constructor(
 
     override fun reDrawMarkers(focusedMarkerData: FocusedMarkerData?, trackPositions: Boolean) {
         val markers = markerCache.snapshot().values
+        val memberMarkers = markers.filter { it.data.pinType == MapPinType.MEMBER }
         val markerToTrack = markers.firstOrNull { it.data.markerId == focusedMarkerData?.markerId }
 
-        if (markers.isNotEmpty()) {
+        if (memberMarkers.isNotEmpty()) {
             if (trackPositions) {
                 mapView.getMapboxMap().apply {
                     // TODO review if fixed: https://github.com/mapbox/mapbox-maps-android/issues/611
                     // Currently we do this workaround to focus on bounds (bounding box in osmdroid)
                     // and it will jump without animation if zoom > maxZoom
                     setBounds(CameraBoundsOptions.Builder().maxZoom(15.0).build())
-                    val camera = cameraForCoordinates(markers.map { it.point.point }).let {
+                    val camera = cameraForCoordinates(memberMarkers.map { it.point.point }).let {
                         it.toBuilder().zoom(it.zoom?.times(0.7)).build()
                     }
                     cameraAnimationsPlugin {
@@ -279,7 +312,7 @@ open class MapViewProviderState constructor(
             )
             .withIconImage(pin.second.bitmap)
             .withIconAnchor(
-                when(model.pinType) {
+                when (model.pinType) {
                     MapPinType.MEMBER -> IconAnchor.BOTTOM
                     MapPinType.PLACE -> IconAnchor.CENTER
                 }
@@ -302,14 +335,15 @@ open class MapViewProviderState constructor(
                     )
                 )
                 .let {
-                    when(model.pinType) {
+                    when (model.pinType) {
                         MapPinType.MEMBER -> {
                             it.withFillColor(Color.BLUE)
-                                .withFillOpacity(0.2)
+                                .withFillOpacity(if (isSatellite) 0.3 else 0.2)
                         }
+
                         MapPinType.PLACE -> {
                             it.withFillColor(AppColors.accent.toArgb())
-                                .withFillOpacity(0.3)
+                                .withFillOpacity(if (isSatellite) 0.45 else 0.3)
                         }
                     }
                 }
@@ -365,18 +399,18 @@ open class MapViewProviderState constructor(
 
     protected open fun focusToMarker(data: MarkerCacheData) {
 
-        val zoom = when(data.data.pinType) {
+        val maxZoom = when (data.data.pinType) {
             MapPinType.MEMBER -> 16.0
-            MapPinType.PLACE -> 12.0
+            MapPinType.PLACE -> 16.0
         }
 
         val cameraPosition = data.polygon?.let {
             val camera = mapView.getMapboxMap().cameraForGeometry(it.geometry)
             camera.toBuilder()
-                .zoom(camera.zoom?.coerceAtMost(zoom)?.times(0.98f))
+                .zoom(camera.zoom?.coerceAtMost(maxZoom)?.times(0.98f))
                 .build()
         } ?: CameraOptions.Builder()
-            .zoom(zoom)
+            .zoom(maxZoom)
             .center(data.point.point)
             .build()
 
