@@ -85,7 +85,10 @@ class MapUserMarkerView : ConstraintLayout {
             }
 
             MapPinType.PLACE -> {
-                30.dp2px
+                when {
+                    data.focused  -> 50.dp2px
+                    else -> 30.dp2px
+                }
             }
         }
     }

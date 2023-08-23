@@ -404,13 +404,23 @@ open class MapViewProviderState constructor(
             MapPinType.PLACE -> 16.0
         }
 
+        val currentZoom = mapView.getMapboxMap().cameraState.toCameraOptions().zoom ?: maxZoom
+
         val cameraPosition = data.polygon?.let {
             val camera = mapView.getMapboxMap().cameraForGeometry(it.geometry)
+            val targetZoom = camera.zoom?.coerceAtMost(maxZoom)?.times(0.98f)
+            val zoom = if (currentZoom < (targetZoom ?: 0.0)) {
+                targetZoom
+            } else if(currentZoom > (camera.zoom ?: 0.0)) {
+                camera.zoom?.times(0.98f)
+            } else {
+                currentZoom
+            }
             camera.toBuilder()
-                .zoom(camera.zoom?.coerceAtMost(maxZoom)?.times(0.98f))
+                .zoom(zoom)
                 .build()
         } ?: CameraOptions.Builder()
-            .zoom(maxZoom)
+            .zoom(if (currentZoom < maxZoom) maxZoom else currentZoom)
             .center(data.point.point)
             .build()
 
