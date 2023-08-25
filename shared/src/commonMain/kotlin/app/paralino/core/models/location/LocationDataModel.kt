@@ -1,6 +1,5 @@
 package app.paralino.core.models.location
 
-import app.paralino.core.models.data
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
@@ -51,6 +50,11 @@ data class MemberDeviceStatus constructor(
             if(timeUTC.fromUTCtoInstant()?.plus(2.minutes)?.let { it > nowUTC() } != true) return null
             return batteryLevel
         }
+
+    fun isOlderThan(duration: Duration): Boolean {
+        val pinTime = timeUTC?.fromUTCtoInstant() ?: return false
+        return pinTime.plus(duration) < nowUTC()
+    }
 }
 
 enum class MemberDeviceStatusType {
@@ -67,6 +71,10 @@ enum class MemberDeviceStatusType {
 
     val key: String = name
 
+    val isDeviceSetupWrong: Boolean get() = when(this) {
+        GPS_OFF, MISSING_PERMISSIONS, BATTERY_SAVER_ON -> true
+        else -> false
+    }
     val isIdling: Boolean get() = when(this) {
         INACTIVE, BATTERY_SAVER_ON, THROTTLING, IDLE -> true
         else -> false

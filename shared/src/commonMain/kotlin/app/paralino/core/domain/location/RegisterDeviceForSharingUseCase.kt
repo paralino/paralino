@@ -47,7 +47,8 @@ class RegisterDeviceForSharingUseCase constructor(
 
             // refresh all group data before sharing starts
             logg.tag("sharing_start").d("Start location register, refresh group data")
-            groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
+            val result1 = groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
+            logg.tag("sharing_start").d("Group refreshed ($result1), fetch group")
             val group = groupLocal.getGroupWithMembers(groupId).first()
 
             val member = userMemberId.getCurrentUserMemberForGroup(groupId)
@@ -87,6 +88,7 @@ class RegisterDeviceForSharingUseCase constructor(
                 keys = keyData.second
             )
 
+            logg.tag("sharing_start").d("Send register device request")
             val data = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionLocationCreate,
                 data = BaseRemoteModule.formatter.encodeToString(payload)
@@ -117,8 +119,8 @@ class RegisterDeviceForSharingUseCase constructor(
                 )
 
                 logg.tag("sharing_start").d("Integrity updated, refresh group")
-                groupPreRefreshUseCase.refreshGroupWithMembers(groupId, cacheTimeMillis = 0)
-                logg.tag("sharing_start").d("Group refreshed")
+                val result2 = groupPreRefreshUseCase.refreshGroupWithMembers(groupId, cacheTimeMillis = 0)
+                logg.tag("sharing_start").d("Group refreshed ($result2)")
             } else {
                 logg.tag("sharing_start").w("Device not registered")
                 // TODO throw better exception
