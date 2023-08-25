@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,6 +24,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 enum class GroupStatusTagType {
     SHARING_ACTIVE,
+    SHARING_ACTIVE_NO_LOCATION,
     UNVERIFIED,
     INACTIVE,
     NOT_SHARING,
@@ -30,6 +32,7 @@ enum class GroupStatusTagType {
     GPS_OFF,
     BATTERY_SAVING,
     IDLE,
+    IDLE_NO_LOCATION,
     TOO_MANY_REQUESTS,
     MISSING_PERMISSION;
 }
@@ -43,7 +46,9 @@ fun MemberDeviceStatusType.toStatusTagType(): GroupStatusTagType {
         MemberDeviceStatusType.TOO_MANY_REQUESTS -> GroupStatusTagType.TOO_MANY_REQUESTS
         MemberDeviceStatusType.THROTTLING -> GroupStatusTagType.IDLE
         MemberDeviceStatusType.IDLE -> GroupStatusTagType.IDLE
+        MemberDeviceStatusType.IDLE_NO_LOCATION -> GroupStatusTagType.IDLE_NO_LOCATION
         MemberDeviceStatusType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
+        MemberDeviceStatusType.ACTIVE_NO_LOCATION -> GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION
         MemberDeviceStatusType.INACTIVE -> GroupStatusTagType.INACTIVE
     }
 }
@@ -55,13 +60,16 @@ fun GroupStatusTag(
     if (status != null) {
 
         val tagColor = when (status) {
-            GroupStatusTagType.SHARING_ACTIVE -> AppColors.accent
+            GroupStatusTagType.SHARING_ACTIVE,
+            GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> AppColors.accent
+
             GroupStatusTagType.UNVERIFIED,
             GroupStatusTagType.GPS_OFF,
             GroupStatusTagType.MISSING_PERMISSION -> MaterialTheme.colors.onError
 
             GroupStatusTagType.TOO_MANY_REQUESTS,
             GroupStatusTagType.IDLE,
+            GroupStatusTagType.IDLE_NO_LOCATION,
             GroupStatusTagType.BATTERY_SAVING -> AppColors.highlightGold
 
             GroupStatusTagType.INACTIVE,
@@ -71,7 +79,9 @@ fun GroupStatusTag(
         }
         val tagTextColor = MaterialTheme.colors.onPrimary
         val tagText = when (status) {
-            GroupStatusTagType.SHARING_ACTIVE -> stringResource(resource = MR.strings.group_members_status_active)
+            GroupStatusTagType.SHARING_ACTIVE,
+            GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> stringResource(resource = MR.strings.group_members_status_active)
+
             GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
             GroupStatusTagType.INACTIVE,
             GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_inactive)
@@ -81,20 +91,27 @@ fun GroupStatusTag(
             GroupStatusTagType.BATTERY_SAVING -> stringResource(resource = MR.strings.group_members_status_battery_saver)
             GroupStatusTagType.OFFLINE -> stringResource(resource = MR.strings.group_members_status_offline)
             GroupStatusTagType.TOO_MANY_REQUESTS -> stringResource(resource = MR.strings.group_members_status_too_many_requests)
-            GroupStatusTagType.IDLE -> stringResource(resource = MR.strings.group_members_status_throttle)
+            GroupStatusTagType.IDLE,
+            GroupStatusTagType.IDLE_NO_LOCATION -> stringResource(resource = MR.strings.group_members_status_throttle)
             null -> ""
         }
         val tagIcon = when (status) {
             GroupStatusTagType.SHARING_ACTIVE,
+            GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
             GroupStatusTagType.IDLE -> CoreAppIcons.LocationOn.asPainterResource()
 
             GroupStatusTagType.GPS_OFF,
             GroupStatusTagType.MISSING_PERMISSION,
-            GroupStatusTagType.TOO_MANY_REQUESTS,-> CoreAppIcons.LocationOff.asPainterResource()
+            GroupStatusTagType.TOO_MANY_REQUESTS,
+            -> CoreAppIcons.LocationOff.asPainterResource()
 
             GroupStatusTagType.UNVERIFIED -> CoreAppIcons.Warning.asPainterResource()
             GroupStatusTagType.BATTERY_SAVING -> CoreAppIcons.BatteryChargingFull.asPainterResource()
-            GroupStatusTagType.INACTIVE, GroupStatusTagType.OFFLINE, GroupStatusTagType.NOT_SHARING -> null
+
+            GroupStatusTagType.INACTIVE,
+            GroupStatusTagType.IDLE_NO_LOCATION,
+            GroupStatusTagType.OFFLINE,
+            GroupStatusTagType.NOT_SHARING -> null
             null -> null
         }
 
@@ -110,17 +127,30 @@ fun GroupStatusTag(
                 )
                 Spacer(Modifier.size(4.dp))
             }
-            Text(
-                text = tagText,
-                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
-                color = tagTextColor.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .background(
-                        tagColor,
-                        MaterialTheme.shapes.medium
+
+            when (status) {
+                GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp,
+                        color = tagColor
                     )
-                    .padding(horizontal = 6.dp, vertical = 1.dp)
-            )
+                }
+
+                else -> {
+                    Text(
+                        text = tagText,
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
+                        color = tagTextColor.copy(alpha = 0.8f),
+                        modifier = Modifier
+                            .background(
+                                tagColor,
+                                MaterialTheme.shapes.medium
+                            )
+                            .padding(horizontal = 6.dp, vertical = 1.dp)
+                    )
+                }
+            }
         }
     }
 }

@@ -59,6 +59,9 @@ data class MemberDeviceStatus constructor(
 
 enum class MemberDeviceStatusType {
     INACTIVE,
+    ACTIVE_NO_LOCATION,
+    IDLE_NO_LOCATION,
+
     NOT_SHARING,
     ACTIVE,
     GPS_OFF,
@@ -75,6 +78,7 @@ enum class MemberDeviceStatusType {
         GPS_OFF, MISSING_PERMISSIONS, BATTERY_SAVER_ON -> true
         else -> false
     }
+    val isIdlingOrActive: Boolean get() = isIdling || this == ACTIVE
     val isIdling: Boolean get() = when(this) {
         INACTIVE, BATTERY_SAVER_ON, THROTTLING, IDLE -> true
         else -> false

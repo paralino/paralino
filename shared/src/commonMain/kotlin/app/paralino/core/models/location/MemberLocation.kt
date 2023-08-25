@@ -10,8 +10,6 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 @Serializable
 data class MemberLocation constructor(
@@ -48,9 +46,11 @@ data class MemberLocation constructor(
                         MemberDeviceStatusType.INACTIVE
                     }
                 }
-                isIdleButStillActive -> MemberDeviceStatusType.ACTIVE
+                isActiveEvenIfIdle -> MemberDeviceStatusType.ACTIVE
                 isActiveButNotFresh -> null
-                !hasLocation -> null
+                (!hasLocation || isOlderThan(2.minutes)) && !isStatusOlderThan(20.seconds) && status.data?.statusType == MemberDeviceStatusType.ACTIVE -> MemberDeviceStatusType.ACTIVE_NO_LOCATION
+                !hasLocation && isStatusOlderThan(20.seconds) && status.data?.statusType?.isIdlingOrActive == true -> MemberDeviceStatusType.IDLE_NO_LOCATION
+                !hasLocation && status.data?.statusType == MemberDeviceStatusType.IDLE -> MemberDeviceStatusType.IDLE_NO_LOCATION
                 else -> status.data?.statusType ?: MemberDeviceStatusType.INACTIVE
             }
         }
@@ -62,7 +62,7 @@ data class MemberLocation constructor(
         get() = !isOlderThan(5.minutes)
 
     val isExpired: Boolean
-        get() = isOlderThan(1.hours)
+        get() = isOlderThan(1.hours) || (!hasLocation && isStatusOlderThan(2.hours))
 
     val isActiveButNotFresh: Boolean
         get() {
@@ -81,9 +81,9 @@ data class MemberLocation constructor(
 
     // even if device status is not active (battery saving is on)
     // consider status as active if location is fairly fresh
-    val isIdleButStillActive: Boolean
+    val isActiveEvenIfIdle: Boolean
         get() {
-            locationData.data ?: return false
+            if (!hasLocation) return false
             return status.data?.statusType?.isIdling == true && !isOlderThan(20.seconds)
         }
 
