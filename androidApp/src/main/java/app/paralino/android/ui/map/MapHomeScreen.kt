@@ -85,8 +85,6 @@ fun MapHomeContent(
         ""
     }
 
-    var trackGroup by rememberSaveable(isSystemInDarkTheme()) { mutableStateOf(true) }
-
     Box(modifier = Modifier.fillMaxSize()) {
 
         // map
@@ -109,8 +107,7 @@ fun MapHomeContent(
                     true
                 }
                 mapViewState.onMapTouch = {
-                    trackGroup = false
-                    vm.trackMarker(null)
+                    vm.hideFocusedItems()
                     false
                 }
                 mapViewState.onMarkerClick = {
@@ -142,7 +139,6 @@ fun MapHomeContent(
                             }
                         }
                     }
-                    trackGroup = false
                     true
                 }
 
@@ -160,8 +156,8 @@ fun MapHomeContent(
                     mapViewState.updateMarkers(list = markers)
                 }
 
-                LaunchedEffect(data, trackGroup) {
-                    mapViewState.reDrawMarkers(state.focusedMarker, trackGroup)
+                LaunchedEffect(data, state.mapHomeScreenFocusType) {
+                    mapViewState.reDrawMarkers(state.focusedMarker, state.mapHomeScreenFocusType)
                 }
             }
 
@@ -171,8 +167,6 @@ fun MapHomeContent(
         MapHomeScreenElements(
             modifier = Modifier.fillMaxSize(),
             state = data,
-            isTrackingGroup = trackGroup,
-            focusedMarker = (data as? MapHomeScreenState.Ready)?.focusedMarker,
             onGroupPickerClick = {
                 appState.uiScope.launch {
                     val groups = vm.getAllGroups()
@@ -219,10 +213,6 @@ fun MapHomeContent(
                     is MapHomeScreenState.Empty -> {}
                 }
             },
-            onTrackGroupClick = {
-                trackGroup = !trackGroup
-                vm.trackMarker(null)
-            },
             onSettingsClick = {
                 appState.navController.navigate(AppScreen.Settings.routeSignature)
             },
@@ -230,7 +220,6 @@ fun MapHomeContent(
                 vm.memberAction(action, state)
             },
             onMemberClick = {
-                trackGroup = false
                 when (it) {
                     is GroupMemberItemStateWithLocations -> {}
                     is GroupMemberItemStateWithOneLocation -> {
@@ -239,8 +228,22 @@ fun MapHomeContent(
                     }
                 }
             },
+            onPlaceClick = { state ->
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceDetail.route(
+                        groupId = state.groupId,
+                        placeId = state.id
+                    )
+                )
+            },
             onMapModeSwitch = {
                 vm.switchMapMode()
+            },
+            onFocusOnPlacesClick = {
+                vm.toggleFocusOnPlaces()
+            },
+            onFocusOnMembersClick = {
+                vm.toggleFocusOnMembers()
             }
         )
     }

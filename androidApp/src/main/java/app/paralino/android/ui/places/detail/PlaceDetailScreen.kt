@@ -241,6 +241,7 @@ fun PlaceDetailScreen(
                     modifier = Modifier.padding(top = 26.dp),
                     state = PlaceListItemData(
                         id = state.placeId,
+                        groupId = state.groupId,
                         name = state.name,
                         image = state.image,
                         private = state.private,

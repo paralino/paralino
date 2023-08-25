@@ -340,6 +340,7 @@ fun PlaceListItemPreview() {
         PlaceListItem(
             state = PlaceListItemData(
                 id = "",
+                groupId = "",
                 name = "Home",
                 image = ImageModel.emoji(Emojis.lightBulb),
                 private = false,
@@ -359,6 +360,7 @@ fun PlacesScreenPreview() {
         val items = (1..5).map {
             PlaceListItemData(
                 id = "$it",
+                groupId = "",
                 name = "Place $it",
                 image = ImageModel.emoji(Emojis.lightBulb),
                 private = false,

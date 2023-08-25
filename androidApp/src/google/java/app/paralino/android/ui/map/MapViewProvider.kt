@@ -16,6 +16,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
 import app.paralino.core.presentation.map.FocusedMarkerData
+import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.ui.theme.AppColors
@@ -50,7 +51,6 @@ import com.mapbox.maps.plugin.scalebar.scalebar
 import com.mapbox.maps.toCameraOptions
 import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfTransformation
-import kotlin.math.absoluteValue
 import kotlin.math.pow
 
 
@@ -241,20 +241,33 @@ open class MapViewProviderState constructor(
         }
     }
 
-    override fun reDrawMarkers(focusedMarkerData: FocusedMarkerData?, trackPositions: Boolean) {
+    override fun reDrawMarkers(focusedMarkerData: FocusedMarkerData?, focusType: MapHomeScreenFocusType) {
         val markers = markerCache.snapshot().values
-        val memberMarkers = markers.filter { it.data.pinType == MapPinType.MEMBER }
+
         val markerToTrack = markers.firstOrNull { it.data.markerId == focusedMarkerData?.markerId }
 
-        if (memberMarkers.isNotEmpty()) {
-            if (trackPositions) {
+        if (markerToTrack != null) {
+            focusToMarker(markerToTrack)
+        } else if (focusType == MapHomeScreenFocusType.ALL_PLACES || focusType == MapHomeScreenFocusType.ALL_MEMBERS) {
+
+            val markersToTrack = when (focusType) {
+                MapHomeScreenFocusType.ALL_PLACES -> {
+                    markers.filter { it.data.pinType == MapPinType.PLACE }
+                }
+                MapHomeScreenFocusType.ALL_MEMBERS -> {
+                    markers.filter { it.data.pinType == MapPinType.MEMBER }
+                }
+                else -> emptyList()
+            }
+
+            if(markersToTrack.isNotEmpty()) {
                 mapView.getMapboxMap().apply {
                     // TODO review if fixed: https://github.com/mapbox/mapbox-maps-android/issues/611
                     // Currently we do this workaround to focus on bounds (bounding box in osmdroid)
                     // and it will jump without animation if zoom > maxZoom
                     setBounds(CameraBoundsOptions.Builder().maxZoom(15.0).build())
-                    val camera = cameraForCoordinates(memberMarkers.map { it.point.point }).let {
-                        it.toBuilder().zoom(it.zoom?.times(0.7)).build()
+                    val camera = cameraForCoordinates(markersToTrack.map { it.point.point }).let {
+                        it.toBuilder().zoom(it.zoom?.times(0.9)).build()
                     }
                     cameraAnimationsPlugin {
                         flyTo(camera, MapAnimationOptions.mapAnimationOptions {
@@ -270,8 +283,6 @@ open class MapViewProviderState constructor(
                         })
                     }
                 }
-            } else if (markerToTrack != null) {
-                focusToMarker(markerToTrack)
             }
         }
     }
