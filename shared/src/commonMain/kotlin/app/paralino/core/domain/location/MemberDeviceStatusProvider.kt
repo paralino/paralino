@@ -46,7 +46,7 @@ class MemberDeviceStatusProvider(
     fun getStatus(groupId: String): MemberDeviceStatus {
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
-            batteryLevel = deviceStatus.batteryLevel,
+            batteryLevel = deviceStatus.batteryLevel.takeIf { locationSharingManager.isSharingActiveForGroup(groupId) },
             status = getStatusType(groupId).key
         )
     }
