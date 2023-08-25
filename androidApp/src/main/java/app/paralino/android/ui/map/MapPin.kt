@@ -12,6 +12,7 @@ import app.paralino.android.databinding.ElementMapPinBinding
 import app.paralino.android.databinding.ElementMapPinCenteredBinding
 import app.paralino.android.utils.extensions.*
 import app.paralino.core.models.base.ImageType
+import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.utils.Emojis
@@ -71,7 +72,11 @@ class MapUserMarkerView : ConstraintLayout {
             }
         }
 
-        vb.pinBackground.setBackgroundColorRes(R.color.accentDark)
+        if (data.active) {
+            vb.pinBackground.setBackgroundColorRes(R.color.accentDark)
+        } else {
+            vb.pinBackground.setBackgroundColorRes(R.color.highlightGold)
+        }
     }
 
     private fun getPinSize(data: MapPinData): Int {
@@ -96,7 +101,12 @@ class MapUserMarkerView : ConstraintLayout {
     fun getPinForData(data: MapPinData): Bitmap? {
 
         when (data.pinType) {
-            MapPinType.MEMBER -> inflateMemberPin(data)
+            MapPinType.MEMBER -> {
+                when (data.markerStyle) {
+                    MapMarkerStyle.CIRCLE -> inflatePlacePin(data)
+                    else -> inflateMemberPin(data)
+                }
+            }
             MapPinType.PLACE -> inflatePlacePin(data)
         }
 

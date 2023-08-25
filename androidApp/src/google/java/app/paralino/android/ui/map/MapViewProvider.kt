@@ -17,6 +17,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
+import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.ui.theme.AppColors
@@ -323,9 +324,9 @@ open class MapViewProviderState constructor(
             )
             .withIconImage(pin.second.bitmap)
             .withIconAnchor(
-                when (model.pinType) {
-                    MapPinType.MEMBER -> IconAnchor.BOTTOM
-                    MapPinType.PLACE -> IconAnchor.CENTER
+                when (model.markerStyle) {
+                    MapMarkerStyle.PIN -> IconAnchor.BOTTOM
+                    MapMarkerStyle.CIRCLE -> IconAnchor.CENTER
                 }
             )
             .let {
