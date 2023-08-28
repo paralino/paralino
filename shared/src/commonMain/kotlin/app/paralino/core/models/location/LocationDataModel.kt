@@ -1,5 +1,6 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
@@ -36,10 +37,15 @@ data class MemberDeviceData constructor(
 data class MemberDeviceStatus constructor(
     val timeUTC: String? = null,
     val batteryLevel: Int? = null,
+    val network: String? = null,
+    val signalStrength: Int? = null,
     val status: String? = null,
 ) {
     val statusType: MemberDeviceStatusType?
         get() = MemberDeviceStatusType.fromKey(status)
+
+    val networkType: NetworkType?
+        get() = NetworkType.fromKey(network)
 
     val validBatteryLevel: Int?
         get() {

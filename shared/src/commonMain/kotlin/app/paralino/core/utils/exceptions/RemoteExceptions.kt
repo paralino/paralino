@@ -1,7 +1,7 @@
 package app.paralino.core.utils.exceptions
 
 import app.paralino.core.config
-import app.paralino.core.provider.ConnectionStatus
+import app.paralino.core.provider.NetworkConnectionInfo
 
 open class BaseRemoteException constructor(
     message: String?,
@@ -35,7 +35,7 @@ open class BaseRemoteException constructor(
     }
 }
 
-class InternalConnectionException(val status: ConnectionStatus, message: String? = null): BaseRemoteException(message, null, null)
+class InternalConnectionException(val status: NetworkConnectionInfo, message: String? = null): BaseRemoteException(message, null, null)
 class RemoteConnectionException(message: String?, code: Int?, cause: Throwable? = null): BaseRemoteException(message, cause, code)
 class UnverifiedUserException(message: String?, cause: Throwable? = null): UnauthorizedException(null, message, cause)
 class PermissionDeniedException(message: String?, cause: Throwable? = null): UnauthorizedException(null, message, cause)

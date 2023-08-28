@@ -30,7 +30,7 @@ class MemberDeviceStatusProvider(
         }
     }
 
-    fun getPreSharingStatus(groupId: String): MemberDeviceStatus {
+    suspend fun getPreSharingStatus(groupId: String): MemberDeviceStatus {
         val status = getStatusType(groupId).let {
             if(it == MemberDeviceStatusType.NOT_SHARING)
                 MemberDeviceStatusType.ACTIVE
@@ -39,14 +39,18 @@ class MemberDeviceStatusProvider(
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
             batteryLevel = deviceStatus.batteryLevel,
+            network = deviceStatus.connectionStatusProvider.initAndGetStatus().networkType?.key,
+            signalStrength = deviceStatus.connectionStatusProvider.getSignalStrength(),
             status = status.key
         )
     }
 
-    fun getStatus(groupId: String): MemberDeviceStatus {
+    suspend fun getStatus(groupId: String): MemberDeviceStatus {
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
             batteryLevel = deviceStatus.batteryLevel.takeIf { locationSharingManager.isSharingActiveForGroup(groupId) },
+            network = deviceStatus.connectionStatusProvider.initAndGetStatus().networkType?.key,
+            signalStrength = deviceStatus.connectionStatusProvider.getSignalStrength(),
             status = getStatusType(groupId).key
         )
     }
