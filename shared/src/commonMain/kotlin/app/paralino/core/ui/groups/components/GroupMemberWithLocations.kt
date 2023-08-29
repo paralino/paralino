@@ -92,7 +92,11 @@ fun GroupMemberWithLocations(
                                 modifier = Modifier
                                     .size(14.dp)
                                     .rotate(90f),
-                                painter = CoreAppIcons.BatteryFull.asPainterResource(),
+                                painter = if(state.singleLocation.isBatteryCharging) {
+                                    CoreAppIcons.BatteryChargingFull.asPainterResource()
+                                } else {
+                                    CoreAppIcons.BatteryFull.asPainterResource()
+                                },
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.size(4.dp))
@@ -372,7 +376,11 @@ fun GroupMemberLocationChild(
                             modifier = Modifier
                                 .size(12.dp)
                                 .rotate(90f),
-                            painter = CoreAppIcons.BatteryFull.asPainterResource(),
+                            painter = if(state.isBatteryCharging) {
+                                CoreAppIcons.BatteryChargingFull.asPainterResource()
+                            } else {
+                                CoreAppIcons.BatteryFull.asPainterResource()
+                            },
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.size(2.dp))

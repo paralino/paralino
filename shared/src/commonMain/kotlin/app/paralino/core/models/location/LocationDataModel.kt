@@ -38,6 +38,7 @@ data class MemberDeviceData constructor(
 data class MemberDeviceStatus constructor(
     val timeUTC: String? = null,
     val batteryLevel: Int? = null,
+    val isCharging: Boolean? = null,
     val network: String? = null,
     val signal: Int? = null,
     val status: String? = null,

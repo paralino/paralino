@@ -39,6 +39,7 @@ class MemberDeviceStatusProvider(
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
             batteryLevel = deviceStatus.batteryLevel,
+            isCharging = deviceStatus.isCharging,
             network = deviceStatus.connectionStatusProvider.initAndGetStatus().networkType?.key,
             signal = deviceStatus.connectionStatusProvider.getSignalStrength(),
             status = status.key
@@ -49,6 +50,7 @@ class MemberDeviceStatusProvider(
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
             batteryLevel = deviceStatus.batteryLevel.takeIf { locationSharingManager.isSharingActiveForGroup(groupId) },
+            isCharging = deviceStatus.isCharging.takeIf { locationSharingManager.isSharingActiveForGroup(groupId) },
             network = deviceStatus.connectionStatusProvider.initAndGetStatus().networkType?.key,
             signal = deviceStatus.connectionStatusProvider.getSignalStrength(),
             status = getStatusType(groupId).key

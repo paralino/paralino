@@ -40,6 +40,7 @@ abstract class IDeviceApiProvider(
     }
 
     abstract val batteryLevel: Int
+    abstract val isCharging: Boolean
     abstract val randomUUID: String
     abstract val deviceType: DeviceType
     abstract val appVersionCode: Long
