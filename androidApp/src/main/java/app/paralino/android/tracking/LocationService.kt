@@ -151,7 +151,7 @@ class LocationService : Service() {
         serviceDefaultScope.launch {
             while (isActive) {
                 reInitRealtime()
-                delay(1.hours.inWholeMilliseconds)
+                delay(10.minutes.inWholeMilliseconds)
             }
         }
 
@@ -207,6 +207,7 @@ class LocationService : Service() {
     }
 
     private fun reInitRealtime() {
+        logg.v(this.hashCode().toString(), "Restarting realtime in location service")
         realtimeJob?.cancel()
         realtimeJob = sharingRealtimeEvents.listenForEventsWhileSharing()
             .launchIn(serviceDefaultScope)
