@@ -1,5 +1,6 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -38,14 +39,12 @@ data class MemberDeviceStatus constructor(
     val timeUTC: String? = null,
     val batteryLevel: Int? = null,
     val network: String? = null,
-    val signalStrength: Int? = null,
+    val signal: Int? = null,
     val status: String? = null,
 ) {
-    val statusType: MemberDeviceStatusType?
-        get() = MemberDeviceStatusType.fromKey(status)
-
-    val networkType: NetworkType?
-        get() = NetworkType.fromKey(network)
+    val statusType: MemberDeviceStatusType? get() = MemberDeviceStatusType.fromKey(status)
+    val networkType: NetworkType? get() = NetworkType.fromKey(network)
+    val signalStrength: NetworkSignalStrength? get() = NetworkSignalStrength.fromLevel(signal)
 
     val validBatteryLevel: Int?
         get() {

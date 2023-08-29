@@ -67,9 +67,34 @@ enum class ConnectionStatus {
 enum class NetworkType {
     WIFI, G2, G3, G4, G5;
     val key: String = name
+    val networkName: String get() = when (this){
+        WIFI -> "WiFi"
+        G2 -> "2G"
+        G3 -> "3G"
+        G4 -> "4G"
+        G5 -> "5G"
+    }
     companion object {
         fun fromKey(key: String?): NetworkType? {
             return NetworkType.values().firstOrNull { it.key == key }
+        }
+    }
+}
+
+enum class NetworkSignalStrength {
+    POOR, GOOD, GREAT;
+    val key: String = name
+    companion object {
+        fun fromKey(key: String?): NetworkSignalStrength? {
+            return NetworkSignalStrength.values().firstOrNull { it.key == key }
+        }
+        fun fromLevel(level: Int?) : NetworkSignalStrength? {
+            return when {
+                level == null -> null
+                level <= 1 -> POOR
+                level >= 4 -> GREAT
+                else -> GOOD
+            }
         }
     }
 }

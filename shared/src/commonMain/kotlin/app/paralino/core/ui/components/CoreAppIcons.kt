@@ -68,6 +68,13 @@ object CoreAppIcons {
     val MoreVert get() = "drawable/ic_more_vert.xml"
     val PersonAdd get() = "drawable/ic_person_add.xml"
 
+    val SignalWifi3 get() = "drawable/ic_wifi_3.xml"
+    val SignalWifi2 get() = "drawable/ic_wifi_2.xml"
+    val SignalWifi1 get() = "drawable/ic_wifi_1.xml"
+    val SignalCell3 get() = "drawable/ic_signal_cell_3.xml"
+    val SignalCell2 get() = "drawable/ic_signal_cell_2.xml"
+    val SignalCell1 get() = "drawable/ic_signal_cell_1.xml"
+
     val CircleFull get() = MR.images.ic_circle_full
     val CircleWithOutline get() = MR.images.ic_circle_with_outline
     val MapModeSatellite get() = "drawable-nodpi/image_map_type_satellite.jpg"
