@@ -47,6 +47,8 @@ data class MemberLocation constructor(
                     }
                 }
                 isActiveEvenIfIdle -> MemberDeviceStatusType.ACTIVE
+                isActiveButNotFresh && !isStatusOlderThan(20.seconds) && status.data?.statusType == MemberDeviceStatusType.ACTIVE -> MemberDeviceStatusType.ACTIVE_NO_LOCATION
+                isActiveButNotFresh && !isStatusOlderThan(10.minutes) && status.data?.statusType?.isIdlingOrActive == true -> MemberDeviceStatusType.IDLE
                 isActiveButNotFresh -> null
                 (!hasLocation || isOlderThan(2.minutes)) && !isStatusOlderThan(20.seconds) && status.data?.statusType == MemberDeviceStatusType.ACTIVE -> MemberDeviceStatusType.ACTIVE_NO_LOCATION
                 !hasLocation && isStatusOlderThan(20.seconds) && status.data?.statusType?.isIdlingOrActive == true -> MemberDeviceStatusType.IDLE_NO_LOCATION
