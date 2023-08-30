@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
+import app.paralino.core.MR
 import app.paralino.core.config
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageType
@@ -60,19 +61,19 @@ class GroupActivityNotificationHandler(
 
                 if(payload.memberUserId == config.userId) {
                     if (groupName.isNullOrBlank()) {
-                        context.getString(R.string.group_member_current_add_notification_default)
+                        context.getString(MR.strings.group_member_current_add_notification_default.resourceId)
                     } else {
-                        context.getString(R.string.group_member_current_add_notification, groupName)
+                        context.getString(MR.strings.group_member_current_add_notification.resourceId, groupName)
                     }
                 } else {
                     if (groupName.isNullOrBlank() || memberName.isNullOrBlank()) {
-                        context.getString(R.string.group_member_add_notification_default)
+                        context.getString(MR.strings.group_member_add_notification_default.resourceId)
                     } else {
-                        context.getString(R.string.group_member_add_notification, memberName, groupName)
+                        context.getString(MR.strings.group_member_add_notification.resourceId, memberName, groupName)
                     }
                 }
             } catch (e: Exception) {
-                context.getString(R.string.group_member_add_notification_default)
+                context.getString(MR.strings.group_member_add_notification_default.resourceId)
             }
 
             val notificationId = payload.hashCode()
@@ -137,7 +138,7 @@ class GroupActivityNotificationHandler(
 
         val channel = NotificationChannel(
             channelId,
-            context.getString(R.string.notifications_channel_group_activity),
+            context.getString(MR.strings.notifications_channel_group_activity.resourceId),
             NotificationManager.IMPORTANCE_HIGH
         )
 

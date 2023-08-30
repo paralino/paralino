@@ -8,6 +8,7 @@ import android.content.Context
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import app.paralino.android.R
+import app.paralino.core.MR
 import app.paralino.core.ui.theme.AppColors
 
 object PushSyncNotificationHandler {
@@ -21,7 +22,7 @@ object PushSyncNotificationHandler {
     fun create(context: Context): Notification {
 
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
-            .setContentTitle(context.getString(R.string.notifications_channel_push_sync))
+            .setContentTitle(context.getString(MR.strings.notifications_channel_push_sync.resourceId))
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setSmallIcon(R.drawable.ic_notification_icon)
             .setOngoing(true)
@@ -46,7 +47,7 @@ object PushSyncNotificationHandler {
 
         val channel = NotificationChannel(
             channelId,
-            context.getString(R.string.notifications_channel_push_sync),
+            context.getString(MR.strings.notifications_channel_push_sync.resourceId),
             NotificationManager.IMPORTANCE_MIN
         )
 

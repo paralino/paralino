@@ -26,6 +26,7 @@ import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.shared.errorString
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
+import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenEvent
@@ -147,7 +148,7 @@ fun PlaceDetailScreen(
                                     showDialog = MainAlertDialog.DeletePlace
                                 }
                             ) {
-                                Text(text = stringResource(id = R.string.place_list_menu_delete))
+                                Text(text = stringResource(id = MR.strings.place_list_menu_delete.resourceId))
                             }
                         }
                     }
@@ -169,7 +170,7 @@ fun PlaceDetailScreen(
                 }
             }
             is Payload.Error -> {
-                DefaultEmptyState(content = stringResource(id = R.string.error_load_data_generic))
+                DefaultEmptyState(content = stringResource(id = MR.strings.error_load_data_generic.resourceId))
             }
             is Payload.Success -> {
                 PlaceDetailScreen(
@@ -310,7 +311,7 @@ fun PlaceDetailScreen(
         if (state.settings.isEmpty()) {
             this.item {
                 DefaultEmptyState(
-                    content = stringResource(id = R.string.places_list_screen_empty_info),
+                    content = stringResource(id = MR.strings.places_list_screen_empty_info.resourceId),
                     icon = AppIcons.Home,
                     buttonText = null
                 ) { }

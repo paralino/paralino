@@ -17,6 +17,7 @@ import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.android.utils.extensions.attributedBold
+import app.paralino.core.MR
 import app.paralino.core.ui.components.nameRes
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
@@ -45,9 +46,9 @@ class LocationNotificationHandler(
             )
 
         val summary = if (errors.isEmpty()) {
-            context.getString(R.string.notifications_sharing_active_title)
+            context.getString(MR.strings.notifications_sharing_active_title.resourceId)
         } else {
-            context.getString(R.string.notifications_sharing_error_title)
+            context.getString(MR.strings.notifications_sharing_error_title.resourceId)
         }
 
         val content = if (errors.isEmpty()) {
@@ -60,7 +61,7 @@ class LocationNotificationHandler(
             }.joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
                 .attributedBold(context)
 
-            context.getString(R.string.notifications_sharing_error_message, errorContent)
+            context.getString(MR.strings.notifications_sharing_error_message.resourceId, errorContent)
         }
 
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
@@ -117,7 +118,7 @@ class LocationNotificationHandler(
 
         val channel = NotificationChannel(
             channelId,
-            context.getString(R.string.notifications_channel_active_location),
+            context.getString(MR.strings.notifications_channel_active_location.resourceId),
             NotificationManager.IMPORTANCE_MIN
         )
 

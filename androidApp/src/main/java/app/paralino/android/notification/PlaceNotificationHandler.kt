@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
+import app.paralino.core.MR
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
@@ -60,12 +61,12 @@ class PlaceNotificationHandler(
             } catch (e: Exception) { }
 
             val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
-                context.getString(R.string.place_notification_default)
+                context.getString(MR.strings.place_notification_default.resourceId)
             } else {
                 if (payload.enter)
-                    context.getString(R.string.place_notification_enter, userName, placeName)
+                    context.getString(MR.strings.place_notification_enter.resourceId, userName, placeName)
                 else
-                    context.getString(R.string.place_notification_exit, userName, placeName)
+                    context.getString(MR.strings.place_notification_exit.resourceId, userName, placeName)
             }
 
             val notificationId = payload.hashCode()
@@ -130,7 +131,7 @@ class PlaceNotificationHandler(
 
         val channel = NotificationChannel(
             channelId,
-            context.getString(R.string.notifications_channel_place_alert),
+            context.getString(MR.strings.notifications_channel_place_alert.resourceId),
             NotificationManager.IMPORTANCE_HIGH
         )
 

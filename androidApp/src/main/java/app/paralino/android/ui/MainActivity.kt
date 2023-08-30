@@ -23,6 +23,7 @@ import app.paralino.android.ui.navigation.MainNavHost
 import app.paralino.android.ui.navigation.loggedOutGraph
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.utils.extensions.openUri
+import app.paralino.core.MR
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.Resource
@@ -88,7 +89,7 @@ fun RootApp(
             vm.events.collectLatest { event ->
                 when (event) {
                     MainScreenEvent.EmailVerified -> {
-                        appState.showSnackbar(context.getString(R.string.info_email_verified))
+                        appState.showSnackbar(context.getString(MR.strings.info_email_verified.resourceId))
                     }
                     is MainScreenEvent.Error -> {
                         appState.showSnackbar(event.error.errorString(context))

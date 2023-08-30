@@ -59,6 +59,7 @@ import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.quantityStringResource
+import app.paralino.core.MR
 import app.paralino.core.utils.extensions.safeCast
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
@@ -183,10 +184,10 @@ fun SharingStartScreen(
                     showDialog = MainAlertDialog.SharingBackgroundLocationMissing
                 }
                 SharingStartScreenEvent.SelectGroupInfo -> {
-                    appState.showSnackbar(context.getString(R.string.invite_connect_alert_pickGroup))
+                    appState.showSnackbar(context.getString(MR.strings.invite_connect_alert_pickGroup.resourceId))
                 }
                 SharingStartScreenEvent.CanNotRegisterDevice -> {
-                    appState.showSnackbar(context.getString(R.string.error_generic_snacbar))
+                    appState.showSnackbar(context.getString(MR.strings.error_generic_snacbar.resourceId))
                 }
                 null -> {
                     /* do nothing */
@@ -196,7 +197,7 @@ fun SharingStartScreen(
                 }
                 is SharingStartScreenEvent.DevicesLimitReached -> {
                     showDialog = MainAlertDialog.PlanLimit(
-                        context.getString(R.string.plan_limit_devices_alert_info),
+                        context.getString(MR.strings.plan_limit_devices_alert_info.resourceId),
                         limit = event.limit
                     )
                 }
@@ -236,7 +237,7 @@ fun SharingStartScreen(
                         ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
                         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
                         ConditionErrorType.NETWORK -> appState.showSnackbar(
-                            text = context.getString(R.string.error_no_connection_snackbar)
+                            text = context.getString(MR.strings.error_no_connection_snackbar.resourceId)
                         )
                         else -> {}
                     }
@@ -257,7 +258,7 @@ fun SharingStartScreen(
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 1.dp,
-                title = { Text(text = stringResource(id = R.string.groups_sharing_title)) },
+                title = { Text(text = stringResource(id = MR.strings.groups_sharing_title.resourceId)) },
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(
@@ -285,7 +286,7 @@ fun SharingStartScreen(
                     else AppIcons.NotListedLocation,
                     onClick = { vm.startSharing() }
                 ) {
-                    Text(text = stringResource(id = R.string.groups_sharing_button_start))
+                    Text(text = stringResource(id = MR.strings.groups_sharing_button_start.resourceId))
                 }
             }
         },
@@ -322,7 +323,7 @@ fun SharingStartScreen(
                                 ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
                                 ConditionErrorType.NETWORK -> appState.showSnackbar(
                                     text = context.getString(
-                                        R.string.error_no_connection_snackbar
+                                        MR.strings.error_no_connection_snackbar.resourceId
                                     )
                                 )
                                 else -> { /* TODO review or do nothing */
@@ -335,7 +336,7 @@ fun SharingStartScreen(
 
             AnimatedVisibility(visible = state.groupState.data != null) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    SettingsSectionHeader(name = stringResource(id = R.string.groups_sharing_section_title_group))
+                    SettingsSectionHeader(name = stringResource(id = MR.strings.groups_sharing_section_title_group.resourceId))
                     GroupListItem(
                         modifier = Modifier.fillMaxWidth(),
                         data = state.groupState.data!!,
@@ -370,7 +371,7 @@ fun SharingStartScreen(
                             }
                         }
                     ) {
-                        Text(text = stringResource(id = R.string.invite_connect_button_pickGroup))
+                        Text(text = stringResource(id = MR.strings.invite_connect_button_pickGroup.resourceId))
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                 }
@@ -380,7 +381,7 @@ fun SharingStartScreen(
 
             MainInputField(
                 text = state.deviceName,
-                hint = stringResource(id = R.string.groups_sharing_device_name_placeholder),
+                hint = stringResource(id = MR.strings.groups_sharing_device_name_placeholder.resourceId),
                 hasError = false,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Done,
@@ -401,7 +402,7 @@ fun SharingStartScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(id = R.string.groups_sharing_devices),
+                    text = stringResource(id = MR.strings.groups_sharing_devices.resourceId),
                     style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.alpha(ContentAlpha.medium)
                 )
@@ -409,12 +410,12 @@ fun SharingStartScreen(
                 PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
             }
 
-            SettingsSectionHeader(name = stringResource(id = R.string.title_settings))
+            SettingsSectionHeader(name = stringResource(id = MR.strings.title_settings.resourceId))
 
             LargeSeekbarSwitch(
                 modifier = Modifier.fillMaxWidth(),
                 icon = AppIcons.AccessTime,
-                title = stringResource(id = R.string.groups_sharing_section_title_duration),
+                title = stringResource(id = MR.strings.groups_sharing_section_title_duration.resourceId),
                 description = getTime(state.sharingTimeMillis),
                 focusDescription = true,
                 state = seekbarState,
@@ -434,7 +435,7 @@ fun SharingStartScreen(
                         .padding(end = 10.dp)
                         .fillMaxWidth(0.5f),
                     icon = AppIcons.Speed,
-                    title = stringResource(id = R.string.groups_sharing_setting_speed_share),
+                    title = stringResource(id = MR.strings.groups_sharing_setting_speed_share.resourceId),
                     description = null,
                     state = shareSpeedState,
                     onStateChange = {
@@ -444,7 +445,7 @@ fun SharingStartScreen(
                 LargeSeekbarSwitch(
                     modifier = Modifier.fillMaxWidth(),
                     icon = AppIcons.StackedLineChart,
-                    title = stringResource(id = R.string.groups_sharing_setting_elevation_share),
+                    title = stringResource(id = MR.strings.groups_sharing_setting_elevation_share.resourceId),
                     description = null,
                     state = shareElevationState,
                     onStateChange = {
@@ -464,7 +465,7 @@ fun SharingStartScreen(
                         .padding(end = 10.dp)
                         .fillMaxWidth(0.5f),
                     icon = AppIcons.BatteryChargingFull,
-                    title = stringResource(id = R.string.groups_sharing_setting_battery_share),
+                    title = stringResource(id = MR.strings.groups_sharing_setting_battery_share.resourceId),
                     description = null,
                     state = shareBatteryState,
                     onStateChange = {
@@ -474,7 +475,7 @@ fun SharingStartScreen(
                 LargeSeekbarSwitch(
                     modifier = Modifier.fillMaxWidth(),
                     icon = CoreAppIcons.SignalCell3.asPainterResource(),
-                    title = stringResource(id = R.string.groups_sharing_setting_network_share),
+                    title = stringResource(id = MR.strings.groups_sharing_setting_network_share.resourceId),
                     description = null,
                     state = shareNetworkState,
                     onStateChange = {
@@ -484,7 +485,7 @@ fun SharingStartScreen(
 //                LargeSeekbarSwitch(
 //                    modifier = Modifier.fillMaxWidth(),
 //                    icon = AppIcons.ShareLocation,
-//                    title = stringResource(id = R.string.groups_sharing_setting_approximate_location),
+//                    title = stringResource(id = MR.strings.groups_sharing_setting_approximate_location),
 //                    description = if (state.shareApproximateLocation)
 //                        DistanceFormatter.getDistanceSmall(
 //                            LocalContext.current,
@@ -537,6 +538,6 @@ fun getTime(milis: Long): String {
     } else if (duration.toMinutes() > 1) {
         getPluralTime(R.plurals.groups_sharing_duration_type_minutes, duration.toMinutes())
     } else {
-        stringResource(R.string.groups_sharing_duration_type_infinite)
+        stringResource(MR.strings.groups_sharing_duration_type_infinite.resourceId)
     }
 }

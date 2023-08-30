@@ -25,6 +25,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
+import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
@@ -76,7 +77,7 @@ fun PlacesScreen(
                 }
                 is PlacesScreenEvent.GroupPlacesLimitReached -> {
                     showDialog = MainAlertDialog.PlanLimit(
-                        context.getString(R.string.plan_limit_places_alert_info),
+                        context.getString(MR.strings.plan_limit_places_alert_info.resourceId),
                         limit = event.limit
                     )
                 }
@@ -106,7 +107,7 @@ fun PlacesScreen(
             }
         }
         is Payload.Error -> {
-            DefaultEmptyState(content = stringResource(id = R.string.error_load_data_generic))
+            DefaultEmptyState(content = stringResource(id = MR.strings.error_load_data_generic.resourceId))
         }
         is Payload.Success -> {
             PlacesScreen(
@@ -171,7 +172,7 @@ fun PlacesScreen(
             if (state.places.isNotEmpty()) {
                 ExtendedFloatingActionButton(
                     text = {
-                        Text(stringResource(id = R.string.places_list_add_button))
+                        Text(stringResource(id = MR.strings.places_list_add_button.resourceId))
                     },
                     icon = {
                         Icon(painter = AppIcons.Add, contentDescription = null)
@@ -205,7 +206,7 @@ fun PlacesScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         SettingsBigHeader(
-                            name = stringResource(id = R.string.places_list_screen_title)
+                            name = stringResource(id = MR.strings.places_list_screen_title.resourceId)
                         )
                         Spacer(modifier = Modifier.size(8.dp))
                         PlanLimitCount(
@@ -279,9 +280,9 @@ fun PlacesScreen(
             if (state.places.isEmpty()) {
                 this.item {
                     DefaultEmptyState(
-                        content = stringResource(id = R.string.places_list_screen_empty_info),
+                        content = stringResource(id = MR.strings.places_list_screen_empty_info.resourceId),
                         icon = AppIcons.MapsHomeWork,
-                        buttonText = stringResource(id = R.string.places_create_button_create),
+                        buttonText = stringResource(id = MR.strings.places_create_button_create.resourceId),
                         buttonIcon = AppIcons.Add
                     ) {
                         onCreatePlace()

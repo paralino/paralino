@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.theme.AppIcons
+import app.paralino.core.MR
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 
 @Composable
@@ -19,7 +20,7 @@ fun LicencesScreen(appState: MainAppState) {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 1.dp,
-                title = { Text(text = stringResource(id = R.string.setting_title_libraries)) },
+                title = { Text(text = stringResource(id = MR.strings.setting_title_libraries.resourceId)) },
                 navigationIcon = {
                     IconButton(onClick = { appState.navController.popBackStack() }) {
                         Icon(

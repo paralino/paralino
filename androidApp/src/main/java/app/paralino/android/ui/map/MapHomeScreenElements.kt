@@ -53,6 +53,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
+import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
@@ -217,7 +218,7 @@ fun MapHomeScreenElements(
         ) {
             ExtendedFloatingActionButton(
                 text = {
-                    Text(text = stringResource(id = R.string.groups_sharing_button_start))
+                    Text(text = stringResource(id = MR.strings.groups_sharing_button_start.resourceId))
                 },
                 icon = {
                     Icon(painter = AppIcons.ShareLocation, contentDescription = null)
@@ -262,7 +263,7 @@ fun MapHomeScreenElements(
                         ?.isoToLocalDateTime()
                         ?.toJavaLocalDateTime()
                         ?.fromUTCtoMapSharingTime(LocalContext.current)
-                        ?: stringResource(id = R.string.groups_sharing_duration_type_infinite),
+                        ?: stringResource(id = MR.strings.groups_sharing_duration_type_infinite.resourceId),
                     style = MaterialTheme.typography.caption.copy(fontSize = 10.sp)
                 )
             }
