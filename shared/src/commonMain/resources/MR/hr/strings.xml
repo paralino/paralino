@@ -43,7 +43,7 @@
 
     <string name="notifications_sharing_active_title">Dijeljenje aktivno</string>
     <string name="notifications_sharing_error_title">Dijeljenje na čekanju!</string>
-    <string name="notifications_sharing_error_message">Dijeljenje je na čekanju zbog sljedećih pogrešaka:\n%s</string>
+    <string name="notifications_sharing_error_message">Dijeljenje je na čekanju zbog sljedećih grešaka:\n%s</string>
     <string name="notifications_channel_active_location">Aktivno dijeljenje lokacije</string>
     <string name="notifications_channel_place_alert">Obavijesti o mjestima</string>
     <string name="notifications_channel_group_activity">Aktivnosti grupe</string>
@@ -220,7 +220,7 @@
     <string name="group_details_block_group_alert_button">Blokiraj</string>
     <string name="group_details_add_member_button">Dodaj novog člana</string>
     <string name="group_details_sharing_status_time">Dijeljenje do: **%s**</string>
-    <string name="group_details_sharing_status_infinite">Aktivno je dijeljenje **uvijek uključeno**</string>
+    <string name="group_details_sharing_status_infinite">Aktivno dijeljenje **uvijek uključeno**</string>
     <string name="group_details_sharing_action">Dijeljenje lokacije</string>
     <string name="group_details_security_action">Sigurnost</string>
 
@@ -257,12 +257,12 @@
     <string name="place_detail_setting_button_notify_enter">Dolazak</string>
     <string name="place_detail_setting_button_notify_exit">Odlazak</string>
 
-    <string name="place_notification_enter">%s stigao/la je na %s</string>
-    <string name="place_notification_exit">%s je/la napustio/la %s</string>
+    <string name="place_notification_enter">%s je stigao/la u %s</string>
+    <string name="place_notification_exit">%s je napustio/la %s</string>
     <string name="place_notification_default">Vaše mjesto ima aktivnost</string>
-    <string name="group_member_current_add_notification">🙌 Upravo ste se pridružili %s</string>
+    <string name="group_member_current_add_notification">🙌 Upravo ste se pridružili grupi %s</string>
     <string name="group_member_current_add_notification_default">🙌 Upravo ste se pridružili novoj grupi</string>
-    <string name="group_member_add_notification">%1$s se upravo pridružio/la %2$s</string>
+    <string name="group_member_add_notification">%1$s se upravo pridružio/la grupi %2$s</string>
     <string name="group_member_add_notification_default">🙌 Novi član se upravo pridružio vašoj grupi</string>
 
     <string name="unit_meter">m</string>
