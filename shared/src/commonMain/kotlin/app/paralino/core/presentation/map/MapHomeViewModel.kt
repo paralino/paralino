@@ -215,6 +215,7 @@ class MapHomeViewModel constructor(
         updateReadyState {
             it.copy(
                 focusedMarker = marker,
+                markers = it.markers.map { it.copy(focused = it.markerId == marker.markerId) },
                 mapHomeScreenFocusType = when(marker.type) {
                     MapPinType.MEMBER -> MapHomeScreenFocusType.MEMBER
                     MapPinType.PLACE -> MapHomeScreenFocusType.PLACE
@@ -223,9 +224,9 @@ class MapHomeViewModel constructor(
         }
     }
 
-    fun hideFocusedItems() = updateReadyState { it.copy(focusedMarker = null, mapHomeScreenFocusType = MapHomeScreenFocusType.NONE) }
-    fun toggleFocusOnMembers() = updateReadyState { it.copy(focusedMarker = null, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_MEMBERS)) }
-    fun toggleFocusOnPlaces() = updateReadyState { it.copy(focusedMarker = null, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_PLACES)) }
+    fun hideFocusedItems() = updateReadyState { it.copy(focusedMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = MapHomeScreenFocusType.NONE) }
+    fun toggleFocusOnMembers() = updateReadyState { it.copy(focusedMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_MEMBERS)) }
+    fun toggleFocusOnPlaces() = updateReadyState { it.copy(focusedMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_PLACES)) }
 
     fun switchMapMode() {
         _uiState.update {

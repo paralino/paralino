@@ -89,11 +89,11 @@ class MapUserMarkerView : ConstraintLayout {
                     }
                     data.active -> when(data.markerStyle)  {
                         MapMarkerStyle.PIN -> 80.dp2px
-                        MapMarkerStyle.CIRCLE -> 65.dp2px
+                        MapMarkerStyle.CIRCLE -> 60.dp2px
                     }
                     else -> when(data.markerStyle)  {
                         MapMarkerStyle.PIN -> 40.dp2px
-                        MapMarkerStyle.CIRCLE -> 30.dp2px
+                        MapMarkerStyle.CIRCLE -> 40.dp2px
                     }
                 }
             }

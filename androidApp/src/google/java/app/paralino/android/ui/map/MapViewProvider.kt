@@ -350,7 +350,7 @@ open class MapViewProviderState constructor(
                     when (model.pinType) {
                         MapPinType.MEMBER -> {
                             it.withFillColor(Color.BLUE)
-                                .withFillOpacity(if (isSatellite) 0.3 else 0.2)
+                                .withFillOpacity(if (isSatellite) 0.45 else 0.4)
                         }
 
                         MapPinType.PLACE -> {
