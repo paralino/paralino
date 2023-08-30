@@ -19,6 +19,7 @@ data class SharingStartScreenState constructor(
     val shareBattery: Boolean = true,
     val shareSpeed: Boolean = true,
     val shareElevation: Boolean = true,
+    val shareNetwork: Boolean = true,
     val devicesLimit: Int = 0,
     val devicesCount: Int = 0,
     val errors: List<ConditionErrorType> = emptyList(),

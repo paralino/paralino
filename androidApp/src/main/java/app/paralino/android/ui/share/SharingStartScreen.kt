@@ -68,6 +68,8 @@ import app.paralino.core.presentation.share.SharingStartScreenState
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
@@ -146,6 +148,14 @@ fun SharingStartScreen(
         LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = null,
             switchState = LargeSeekbarSwitchState.Switch(state.shareElevation)
+        )
+    )
+
+    val shareNetworkState by rememberSeekbarState(
+        key = state,
+        LargeSeekbarSwitchState.SeekbarSwitchState(
+            seekbarState = null,
+            switchState = LargeSeekbarSwitchState.Switch(state.shareNetwork)
         )
     )
 
@@ -459,6 +469,16 @@ fun SharingStartScreen(
                     state = shareBatteryState,
                     onStateChange = {
                         vm.turnOnBatterySharing(it)
+                    }
+                )
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth(),
+                    icon = CoreAppIcons.SignalCell3.asPainterResource(),
+                    title = stringResource(id = R.string.groups_sharing_setting_network_share),
+                    description = null,
+                    state = shareNetworkState,
+                    onStateChange = {
+                        vm.turnOnNetworkSharing(it)
                     }
                 )
 //                LargeSeekbarSwitch(

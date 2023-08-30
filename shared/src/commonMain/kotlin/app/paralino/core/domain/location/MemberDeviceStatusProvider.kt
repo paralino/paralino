@@ -47,12 +47,14 @@ class MemberDeviceStatusProvider(
     }
 
     suspend fun getStatus(groupId: String): MemberDeviceStatus {
+        val sharingBattery = locationSharingManager.currentSharingContractForGroup(groupId)?.shareBattery == true
+        val sharingNetwork = locationSharingManager.currentSharingContractForGroup(groupId)?.shareNetwork == true
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
-            batteryLevel = deviceStatus.batteryLevel.takeIf { locationSharingManager.isSharingActiveForGroup(groupId) },
-            isCharging = deviceStatus.isCharging.takeIf { locationSharingManager.isSharingActiveForGroup(groupId) },
-            network = deviceStatus.connectionStatusProvider.initAndGetStatus().networkType?.key,
-            signal = deviceStatus.connectionStatusProvider.getSignalStrength(),
+            batteryLevel = if(sharingBattery) deviceStatus.batteryLevel else null,
+            isCharging = if(sharingBattery) deviceStatus.isCharging.takeIf { sharingBattery } else null,
+            network = if(sharingNetwork) deviceStatus.connectionStatusProvider.initAndGetStatus().networkType?.key else null,
+            signal = if(sharingNetwork) deviceStatus.connectionStatusProvider.getSignalStrength() else null,
             status = getStatusType(groupId).key
         )
     }

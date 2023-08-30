@@ -170,6 +170,7 @@ class SharingStartViewModel(
                     shareBattery = _uiState.value.shareBattery,
                     shareSpeed = _uiState.value.shareSpeed,
                     shareElevation = _uiState.value.shareElevation,
+                    shareNetwork = _uiState.value.shareNetwork,
                     approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation }
                 )
             )
@@ -238,6 +239,12 @@ class SharingStartViewModel(
     fun turnOnElevationSharing(state: Boolean) {
         _uiState.update {
             it.copy(shareElevation = state)
+        }
+    }
+
+    fun turnOnNetworkSharing(state: Boolean) {
+        _uiState.update {
+            it.copy(shareNetwork = state)
         }
     }
 
