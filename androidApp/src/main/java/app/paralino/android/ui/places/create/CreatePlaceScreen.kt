@@ -21,6 +21,7 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
+import app.paralino.core.MR
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.safeCast
@@ -52,7 +53,9 @@ fun CreatePlaceScreen(
     appState: MainAppState,
     groupId: String,
     placeId: String?,
-    vm: CreatePlaceViewModel = getViewModel { parametersOf(groupId, placeId) },
+    lat: Double? = null,
+    lng: Double? = null,
+    vm: CreatePlaceViewModel = getViewModel { parametersOf(groupId, placeId, lat, lng) },
 ) {
 
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
@@ -65,10 +68,10 @@ fun CreatePlaceScreen(
                     appState.showSnackbar(event.error.errorString(context))
                 }
                 is CreatePlaceScreenEvent.MissingLocation -> {
-                    appState.showSnackbar(context.getString(R.string.places_create_error_no_place))
+                    appState.showSnackbar(context.getString(MR.strings.places_create_error_no_place.resourceId))
                 }
                 is CreatePlaceScreenEvent.MissingInfo -> {
-                    appState.showSnackbar(context.getString(R.string.form_generic_validation))
+                    appState.showSnackbar(context.getString(MR.strings.form_generic_validation.resourceId))
                 }
                 is CreatePlaceScreenEvent.PlaceUpdated -> {
                     delay(400)
@@ -89,9 +92,9 @@ fun CreatePlaceScreen(
                 elevation = 1.dp,
                 title = {
                     if (state.data?.isNewPlace == true) {
-                        Text(stringResource(id = R.string.places_create_screen_title))
+                        Text(stringResource(id = MR.strings.places_create_screen_title.resourceId))
                     } else if (state.data?.isNewPlace == false) {
-                        Text(stringResource(id = R.string.places_edit_screen_title))
+                        Text(stringResource(id = MR.strings.places_edit_screen_title.resourceId))
                     }
                 },
                 navigationIcon = {
@@ -125,9 +128,9 @@ fun CreatePlaceScreen(
                             onClick = { vm.createPlace() }
                         ) {
                             if (finalState.data.isNewPlace) {
-                                Text(text = stringResource(id = R.string.places_create_button_create))
+                                Text(text = stringResource(id = MR.strings.places_create_button_create.resourceId))
                             } else {
-                                Text(text = stringResource(id = R.string.button_save))
+                                Text(text = stringResource(id = MR.strings.button_save.resourceId))
                             }
                         }
                     }
@@ -149,7 +152,7 @@ fun CreatePlaceScreen(
                 }
             }
             is Payload.Error -> {
-                DefaultEmptyState(content = stringResource(id = R.string.error_load_data_generic))
+                DefaultEmptyState(content = stringResource(id = MR.strings.error_load_data_generic.resourceId))
             }
             is Payload.Success -> {
                 CreatePlaceScreen(
@@ -255,7 +258,7 @@ fun CreatePlaceScreen(
                     .fillMaxHeight()
                     .weight(1f),
                 text = state.name,
-                hint = stringResource(id = R.string.login_placeholder_user_name),
+                hint = stringResource(id = MR.strings.login_placeholder_user_name.resourceId),
                 hasError = state.hasNameError,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
@@ -312,7 +315,7 @@ fun CreatePlaceScreen(
                 .fillMaxWidth(),
             style = MaterialTheme.typography.caption,
             textAlign = TextAlign.Center,
-            text = stringResource(id = R.string.places_create_location_hint).annotatedBold()
+            text = stringResource(id = MR.strings.places_create_location_hint.resourceId).annotatedBold()
         )
 
         Spacer(modifier = Modifier.padding(20.dp))
@@ -322,7 +325,7 @@ fun CreatePlaceScreen(
                 .fillMaxWidth()
                 .height(LargeSwitchDefaults.minHeight),
             icon = AppIcons.Adjust,
-            title = stringResource(id = R.string.places_create_seekbar_info),
+            title = stringResource(id = MR.strings.places_create_seekbar_info.resourceId),
             description = "${state.radiusMeters}m",
             focusDescription = true,
             state = seekbarState,

@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 class CreatePlaceViewModel(
     val groupId: String,
     placeId: String?,
+    lat: Double? = null,
+    lng: Double? = null,
     private val placesRepo: PlacesRepository,
     private val groupRepo: GroupRepository,
 ) : CoreViewModel() {
@@ -50,7 +52,14 @@ class CreatePlaceViewModel(
             placeFlow.update { value }
             _uiState.update {
                 when {
-                    placeId.isNullOrBlank() -> Payload.Success(CreatePlaceScreenState.empty(groupId = groupId))
+                    placeId.isNullOrBlank() -> Payload.Success(
+                        CreatePlaceScreenState.empty(
+                            groupId = groupId,
+                            lat = lat,
+                            lng = lng
+                        )
+                    )
+
                     else -> value.mapSuccess { place ->
                         CreatePlaceScreenState(
                             groupId = groupId,
@@ -131,6 +140,7 @@ class CreatePlaceViewModel(
                     is Payload.Error -> {
                         _eventChannel.send(CreatePlaceScreenEvent.Error(data.exception))
                     }
+
                     Payload.Loading -> {}
                     is Payload.Success -> {
                         _eventChannel.send(CreatePlaceScreenEvent.PlaceUpdated)

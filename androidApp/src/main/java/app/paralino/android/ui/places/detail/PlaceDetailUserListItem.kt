@@ -28,6 +28,7 @@ import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.utils.Emojis
 import app.paralino.android.R
 import app.paralino.android.ui.theme.AppIcons
+import app.paralino.core.MR
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 
@@ -75,7 +76,7 @@ fun PlaceDetailUserListItem(
         ) {
             PlaceSettingNotifyButton(
                 state = state.notifyEnter,
-                text = stringResource(id = R.string.place_detail_setting_button_notify_enter),
+                text = stringResource(id = MR.strings.place_detail_setting_button_notify_enter.resourceId),
                 loading = state.loadingEnter,
             ) {
                 onEnterChange(state.memberUserId)
@@ -85,7 +86,7 @@ fun PlaceDetailUserListItem(
 
             PlaceSettingNotifyButton(
                 state = state.notifyExit,
-                text = stringResource(id = R.string.place_detail_setting_button_notify_exit),
+                text = stringResource(id = MR.strings.place_detail_setting_button_notify_exit.resourceId),
                 loading = state.loadingExit,
             ) {
                 onExitChange(state.memberUserId)

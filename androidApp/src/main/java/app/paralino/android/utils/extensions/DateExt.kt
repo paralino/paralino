@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.format.DateFormat
 import androidx.compose.ui.res.stringResource
 import app.paralino.android.R
+import app.paralino.core.MR
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -58,7 +59,7 @@ fun LocalDateTime.fromUTCtoMapSharingTime(context: Context, splitTimeToOneLine: 
     val time = local.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
     return when {
         sameDay -> time
-        isTomorrow -> "${context.getString(R.string.date_name_tomorrow)}, $time"
+        isTomorrow -> "${context.getString(MR.strings.date_name_tomorrow.resourceId)}, $time"
         sameYear -> local.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMd"))) + ", $time"
         else -> {
             val timeFixed = if(splitTimeToOneLine) "\n$time" else ", $time"

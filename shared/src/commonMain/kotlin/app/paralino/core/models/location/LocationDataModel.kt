@@ -1,6 +1,7 @@
 package app.paralino.core.models.location
 
-import app.paralino.core.models.data
+import app.paralino.core.provider.NetworkSignalStrength
+import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
@@ -19,6 +20,7 @@ data class LocationDataModel constructor(
     val altitude: Float? = null
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
+    val isAccurate get() = accuracy < 4f
 
     fun isOlderThan(duration: Duration): Boolean {
         val pinTime = timeUTC?.fromUTCtoInstant() ?: return false
@@ -36,10 +38,14 @@ data class MemberDeviceData constructor(
 data class MemberDeviceStatus constructor(
     val timeUTC: String? = null,
     val batteryLevel: Int? = null,
+    val isCharging: Boolean? = null,
+    val network: String? = null,
+    val signal: Int? = null,
     val status: String? = null,
 ) {
-    val statusType: MemberDeviceStatusType?
-        get() = MemberDeviceStatusType.fromKey(status)
+    val statusType: MemberDeviceStatusType? get() = MemberDeviceStatusType.fromKey(status)
+    val networkType: NetworkType? get() = NetworkType.fromKey(network)
+    val signalStrength: NetworkSignalStrength? get() = NetworkSignalStrength.fromLevel(signal)
 
     val validBatteryLevel: Int?
         get() {
@@ -50,10 +56,18 @@ data class MemberDeviceStatus constructor(
             if(timeUTC.fromUTCtoInstant()?.plus(2.minutes)?.let { it > nowUTC() } != true) return null
             return batteryLevel
         }
+
+    fun isOlderThan(duration: Duration): Boolean {
+        val pinTime = timeUTC?.fromUTCtoInstant() ?: return false
+        return pinTime.plus(duration) < nowUTC()
+    }
 }
 
 enum class MemberDeviceStatusType {
     INACTIVE,
+    ACTIVE_NO_LOCATION,
+    IDLE_NO_LOCATION,
+
     NOT_SHARING,
     ACTIVE,
     GPS_OFF,
@@ -66,6 +80,11 @@ enum class MemberDeviceStatusType {
 
     val key: String = name
 
+    val isDeviceSetupWrong: Boolean get() = when(this) {
+        GPS_OFF, MISSING_PERMISSIONS, BATTERY_SAVER_ON -> true
+        else -> false
+    }
+    val isIdlingOrActive: Boolean get() = isIdling || this == ACTIVE
     val isIdling: Boolean get() = when(this) {
         INACTIVE, BATTERY_SAVER_ON, THROTTLING, IDLE -> true
         else -> false

@@ -50,8 +50,10 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.R
+import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
+import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
@@ -59,6 +61,7 @@ import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapPinType
+import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
@@ -76,15 +79,15 @@ import kotlinx.datetime.toJavaLocalDateTime
 fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
     state: MapHomeScreenState,
-    isTrackingGroup: Boolean,
-    focusedMarker: FocusedMarkerData?,
     onGroupPickerClick: () -> Unit,
     onGroupDetailsClick: () -> Unit,
-    onTrackGroupClick: () -> Unit,
+    onFocusOnMembersClick: () -> Unit,
+    onFocusOnPlacesClick: () -> Unit,
     onSharingStartClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onMemberActionClick: (MemberAction, GroupMemberItemState) -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
+    onPlaceClick: (PlaceListItemData) -> Unit,
     onMapModeSwitch: () -> Unit,
 ) {
     ConstraintLayout(
@@ -100,7 +103,14 @@ fun MapHomeScreenElements(
 
         val readyState = state as? MapHomeScreenState.Ready
         val (groupSelect, groupTrack, userListButton, userList, shareTime, settings, mapMode) = createRefs()
-        var userListExpanded by remember(focusedMarker) { mutableStateOf(focusedMarker?.type == MapPinType.MEMBER) }
+        val areMembersFocused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true
+        val arePlacesFocused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true
+        val isUserListExpanded by remember(readyState?.focusedMarker, areMembersFocused, readyState?.mapHomeScreenFocusType?.areMembersExpanded) {
+            mutableStateOf(areMembersFocused || readyState?.mapHomeScreenFocusType?.areMembersExpanded == true || readyState?.focusedMarker?.type == MapPinType.MEMBER)
+        }
+        val isPlacesListExpanded by remember(readyState?.focusedMarker, arePlacesFocused, readyState?.mapHomeScreenFocusType?.arePlacesExpanded) {
+            mutableStateOf(arePlacesFocused || readyState?.mapHomeScreenFocusType?.arePlacesExpanded == true || readyState?.focusedMarker?.type == MapPinType.PLACE)
+        }
 
         FloatingActionButton(
             modifier = Modifier
@@ -208,7 +218,7 @@ fun MapHomeScreenElements(
         ) {
             ExtendedFloatingActionButton(
                 text = {
-                    Text(text = stringResource(id = R.string.groups_sharing_button_start))
+                    Text(text = stringResource(id = MR.strings.groups_sharing_button_start.resourceId))
                 },
                 icon = {
                     Icon(painter = AppIcons.ShareLocation, contentDescription = null)
@@ -253,7 +263,7 @@ fun MapHomeScreenElements(
                         ?.isoToLocalDateTime()
                         ?.toJavaLocalDateTime()
                         ?.fromUTCtoMapSharingTime(LocalContext.current)
-                        ?: stringResource(id = R.string.groups_sharing_duration_type_infinite),
+                        ?: stringResource(id = MR.strings.groups_sharing_duration_type_infinite.resourceId),
                     style = MaterialTheme.typography.caption.copy(fontSize = 10.sp)
                 )
             }
@@ -272,15 +282,15 @@ fun MapHomeScreenElements(
             exit = scaleOut()
         ) {
             FloatingActionButton(
-                modifier = Modifier.size(40.dp),
-                onClick = { userListExpanded = !userListExpanded },
-                backgroundColor = if (userListExpanded) AppColors.accent else MaterialTheme.colors.surface
+                modifier = Modifier.size(44.dp),
+                onClick = onFocusOnMembersClick,
+                backgroundColor = if (areMembersFocused) AppColors.accent else MaterialTheme.colors.surface
             ) {
                 Icon(
                     painter = AppIcons.Groups,
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = if (userListExpanded) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
+                    modifier = Modifier.size(24.dp),
+                    tint = if (areMembersFocused) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
                 )
             }
         }
@@ -297,16 +307,15 @@ fun MapHomeScreenElements(
             exit = scaleOut()
         ) {
             FloatingActionButton(
-                modifier = Modifier
-                    .size(50.dp),
-                onClick = onTrackGroupClick,
-                backgroundColor = if (isTrackingGroup) AppColors.accent else MaterialTheme.colors.surface
+                modifier = Modifier.size(44.dp),
+                onClick = onFocusOnPlacesClick,
+                backgroundColor = if (arePlacesFocused) AppColors.accent else MaterialTheme.colors.surface
             ) {
                 Icon(
-                    painter = AppIcons.CenterFocusStrong,
+                    painter = CoreAppIcons.MapsHomeWork.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.size(32.dp),
-                    tint = if (isTrackingGroup) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
+                    modifier = Modifier.size(24.dp),
+                    tint = if (arePlacesFocused) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
                 )
             }
         }
@@ -320,9 +329,39 @@ fun MapHomeScreenElements(
                 width = Dimension.fillToConstraints
             }
         ) {
+
             AnimatedVisibility(
                 modifier = Modifier.fillMaxWidth(),
-                visible = userListExpanded && readyState != null,
+                visible = isPlacesListExpanded && readyState != null,
+                enter = fadeIn() + expandVertically(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                if(readyState != null) {
+                    val pagerState = rememberPagerState()
+                    HorizontalPager(
+                        state = pagerState,
+                        itemSpacing = 4.dp,
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        count = readyState.places.size,
+                        key = { readyState.places.get(it).id }
+                    ) { index ->
+                        PlaceListItem(
+                            state = readyState.places.get(index),
+                            onClick = { onPlaceClick(readyState.places.get(index)) }
+                        )
+                    }
+                    LaunchedEffect(readyState.focusedMarker) {
+                        val page = readyState.places.indexOfFirst {
+                            it.id == readyState.focusedMarker?.markerId
+                        }.takeIf { it > 0 } ?: 0
+                        pagerState.animateScrollToPage(page)
+                    }
+                }
+            }
+
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxWidth(),
+                visible = isUserListExpanded && readyState != null,
                 enter = fadeIn() + expandVertically(),
                 exit = shrinkVertically() + fadeOut()
             ) {
@@ -353,12 +392,12 @@ fun MapHomeScreenElements(
                             }
                         )
                     }
-                    LaunchedEffect(focusedMarker) {
+                    LaunchedEffect(readyState.focusedMarker) {
                         val page = readyState.members.indexOfFirst {
                             when (it) {
                                 is GroupMemberItemStateWithLocations -> false
                                 is GroupMemberItemStateWithOneLocation -> {
-                                    it.keyId == focusedMarker?.markerId
+                                    it.keyId == readyState.focusedMarker?.markerId
                                 }
                             }
                         }.takeIf { it > 0 } ?: 0

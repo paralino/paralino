@@ -7,6 +7,7 @@ import app.paralino.android.AppClass
 import app.paralino.android.BuildConfig
 import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.android.utils.extensions.copy
+import app.paralino.android.utils.extensions.isBatteryCharging
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.data.db.AppConfigProvider
 import app.paralino.core.logg
@@ -34,6 +35,9 @@ class DeviceApiProvider constructor(
 
     override val batteryLevel: Int
         get() = appClass.batterLevel
+
+    override val isCharging: Boolean
+        get() = appClass.isBatteryCharging
 
     override val randomUUID: String
         get() = UUID.randomUUID().toString()

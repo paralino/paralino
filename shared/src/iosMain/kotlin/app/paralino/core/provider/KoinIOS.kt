@@ -117,7 +117,7 @@ object KoinIOS {
             factory { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
             factory { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
             factory { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
-            factory { (groupID: String, placeId: String?) -> CreatePlaceViewModel(groupID, placeId, get(), get()) }
+            factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get(), get()) }
             factory { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
             factory { BlocklistVideModel(get()) }
         }

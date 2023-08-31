@@ -2,6 +2,7 @@ package app.paralino.android.ui.map
 
 import android.view.View
 import app.paralino.core.presentation.map.FocusedMarkerData
+import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapPinData
 
 interface IMapViewProviderState {
@@ -13,6 +14,6 @@ interface IMapViewProviderState {
 
     fun initMap()
 
-    fun reDrawMarkers(focusedMarkerData: FocusedMarkerData?, trackPositions: Boolean)
+    fun reDrawMarkers(focusedMarkerData: FocusedMarkerData?, focusType: MapHomeScreenFocusType)
     fun focusToMarker(markerId: String)
 }

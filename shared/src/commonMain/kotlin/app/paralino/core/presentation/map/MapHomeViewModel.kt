@@ -17,13 +17,10 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
-import app.paralino.core.models.Payload
-import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -45,7 +42,6 @@ class MapHomeViewModel constructor(
     val events = _eventChannel.receiveAsFlow()
 
     private val groupIdData = MutableStateFlow("")
-    private val focusedMarker = MutableStateFlow<FocusedMarkerData?>(null)
 
     private var locationSubscriptionJob: Job? = null
 
@@ -96,9 +92,8 @@ class MapHomeViewModel constructor(
                         groupRepo.getGroupWithMembersLocally(it),
                         placesRepo.getPlacesForGroupLocally(it),
                         getSharingContract(),
-                        focusedMarker,
                         userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
-                    ) { group, places, sharingStatus, focusedMarker, userData ->
+                    ) { group, places, sharingStatus, userData ->
 
                         val membersData = group.members.flatMap { member ->
                             if (member.locations.isEmpty()) {
@@ -147,6 +142,8 @@ class MapHomeViewModel constructor(
                             }
                         }
 
+                        val focusedMarker = (_uiState.value as? MapHomeScreenState.Ready)?.focusedMarker
+
                         val memberMarkers = group.members
                             .flatMap { member ->
                                 member.locations.filter { it.locationData.data != null }
@@ -163,17 +160,19 @@ class MapHomeViewModel constructor(
                                     }
                             }
 
-                        val placeMarkers =
-                            places.filter { it.data.data?.lat != null && it.data.data?.lng != null }
-                                .map { place ->
-                                    MapPinData(
-                                        groupId = group.id,
-                                        state = PlaceListItemData(place)
-                                    ).copy(
-                                        active = true,
-                                        focused = focusedMarker?.markerId == place.id
-                                    )
-                                }
+                        val placesData = places
+                            .filter { it.data.data?.lat != null && it.data.data?.lng != null }
+                            .map { PlaceListItemData(it) }
+
+                        val placeMarkers = placesData.map { place ->
+                            MapPinData(
+                                groupId = group.id,
+                                state = place
+                            ).copy(
+                                active = true,
+                                focused = focusedMarker?.markerId == place.id
+                            )
+                        }
 
                         MapHomeScreenState.Ready(
                             groupId = group.id,
@@ -182,11 +181,12 @@ class MapHomeViewModel constructor(
                             userCount = group.memberCount,
                             activeUserCount = group.members.filter { it.isActive }.size,
                             idleUserCount = group.members.filter { it.hasLocation && !it.isActive }.size,
-                            currentUserImage = userData?.userImage
-                                ?: ImageModel.emoji(Emojis.robot),
+                            currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
                             members = membersData,
-                            markers = memberMarkers + placeMarkers,
+                            places = placesData,
+                            markers = placeMarkers + memberMarkers,
                             focusedMarker = focusedMarker,
+                            mapHomeScreenFocusType = (_uiState.value as? MapHomeScreenState.Ready)?.mapHomeScreenFocusType ?: MapHomeScreenFocusType.ALL_MEMBERS,
                             sharingStatus = sharingStatus,
                             isSatelliteMode = _uiState.value.isSatelliteMode
                         )
@@ -211,15 +211,37 @@ class MapHomeViewModel constructor(
         }
     }
 
-    fun trackMarker(marker: FocusedMarkerData?) {
-        focusedMarker.update { marker }
+    fun trackMarker(marker: FocusedMarkerData) {
+        updateReadyState {
+            it.copy(
+                focusedMarker = marker,
+                markers = it.markers.map { it.copy(focused = it.markerId == marker.markerId) },
+                mapHomeScreenFocusType = when(marker.type) {
+                    MapPinType.MEMBER -> MapHomeScreenFocusType.MEMBER
+                    MapPinType.PLACE -> MapHomeScreenFocusType.PLACE
+                }
+            )
+        }
     }
+
+    fun hideFocusedItems() = updateReadyState { it.copy(focusedMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = MapHomeScreenFocusType.NONE) }
+    fun toggleFocusOnMembers() = updateReadyState { it.copy(focusedMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_MEMBERS)) }
+    fun toggleFocusOnPlaces() = updateReadyState { it.copy(focusedMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_PLACES)) }
 
     fun switchMapMode() {
         _uiState.update {
             when (it) {
                 is MapHomeScreenState.Empty -> it.copy(isSatelliteMode = !it.isSatelliteMode)
                 is MapHomeScreenState.Ready -> it.copy(isSatelliteMode = !it.isSatelliteMode)
+            }
+        }
+    }
+
+    private fun updateReadyState(action: (MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) {
+        _uiState.update {
+            when (it) {
+                is MapHomeScreenState.Empty -> it
+                is MapHomeScreenState.Ready -> action(it)
             }
         }
     }
@@ -251,7 +273,7 @@ class MapHomeViewModel constructor(
     private fun keepLocationSubscriptionOn(groupId: String?) {
         locationSubscriptionJob?.cancel()
 
-        if(groupId.isNullOrBlank()) {
+        if (groupId.isNullOrBlank()) {
             logg.v("realtime", "Group id not valid, ignore realtime map subscription")
             return
         }
@@ -264,15 +286,18 @@ class MapHomeViewModel constructor(
     }
 
     fun memberAction(action: MemberAction, state: GroupMemberItemState) {
-        when(action) {
+        when (action) {
             MemberAction.DELETE_MEMBER,
             MemberAction.BLOCK_USER,
-            MemberAction.UNBLOCK_USER -> {}
+            MemberAction.UNBLOCK_USER -> {
+            }
+
             MemberAction.DELETE_LOCATION -> {
                 if (state is GroupMemberItemStateWithOneLocation && state.location != null) {
                     clearMyLocation(state.location!!.locationId)
                 }
             }
+
             MemberAction.REQUEST_LOCATION -> {
                 if (state is GroupMemberItemStateWithOneLocation) {
                     requestLocationUpdate(state)
@@ -289,7 +314,7 @@ class MapHomeViewModel constructor(
 
     private fun requestLocationUpdate(state: GroupMemberItemStateWithOneLocation) {
 
-        if(state.location == null) {
+        if (state.location == null) {
             coroutineScope.launch {
                 _eventChannel.send(MapHomeScreenEvent.Error(Throwable("Active device not found")))
             }

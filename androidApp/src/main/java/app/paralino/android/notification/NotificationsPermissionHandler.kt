@@ -11,6 +11,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
+import app.paralino.core.MR
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.onAction
@@ -92,7 +93,7 @@ class NotificationsPermissionHandlerState constructor(
 
     private fun showPermissionDeniedInfo() {
 
-        val messageRes = R.string.error_notification_permission_missing_sheet_message
+        val messageRes = MR.strings.error_notification_permission_missing_sheet_message.resourceId
 
         appState.uiScope.launch {
             appState.showSnackbar(

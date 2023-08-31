@@ -22,6 +22,7 @@ import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -74,7 +75,7 @@ class LocationService : Service() {
         logg.v(this.hashCode().toString(), "Location service created")
         startForeground(
             notificationHandler.notificationId,
-            notificationHandler.notify(this, groupCount = 0, emptyList())
+            notificationHandler.notify(this, groupCount = 0, errors = emptyList())
         )
     }
 
@@ -102,6 +103,10 @@ class LocationService : Service() {
             }
             .launchIn(serviceDefaultScope)
 
+        deviceApiProvider.connectionStatusProvider.status
+            .onEach { updateNotification() }
+            .launchIn(serviceDefaultScope)
+
         locationSharingManager.allContractsFlow
             .filterIsInstance<Resource.Ready<List<LocationSharingContract>>>()
             .map { it.data.isNotEmpty() }
@@ -124,9 +129,15 @@ class LocationService : Service() {
     }
 
     private fun updateNotification() {
-        val errors = deviceApiProvider.locationStatusProvider.currentStatus.getPossibleErrors(
-            forBackground = !launchedInForeground
-        )
+        val errors = buildList {
+            addAll(
+                deviceApiProvider.locationStatusProvider.currentStatus.getPossibleErrors(
+                    forBackground = !launchedInForeground
+                )
+            )
+            if(!deviceApiProvider.connectionStatusProvider.status.value.isOnline)
+                add(ConditionErrorType.NETWORK)
+        }
         val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0
         notificationHandler.notify(this, count, errors)
     }
@@ -151,7 +162,7 @@ class LocationService : Service() {
         serviceDefaultScope.launch {
             while (isActive) {
                 reInitRealtime()
-                delay(1.hours.inWholeMilliseconds)
+                delay(10.minutes.inWholeMilliseconds)
             }
         }
 
@@ -207,6 +218,7 @@ class LocationService : Service() {
     }
 
     private fun reInitRealtime() {
+        logg.v(this.hashCode().toString(), "Restarting realtime in location service")
         realtimeJob?.cancel()
         realtimeJob = sharingRealtimeEvents.listenForEventsWhileSharing()
             .launchIn(serviceDefaultScope)

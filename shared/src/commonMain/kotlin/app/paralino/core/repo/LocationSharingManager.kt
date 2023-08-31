@@ -46,6 +46,10 @@ class LocationSharingManager(
         }.distinctUntilChanged()
     }
 
+    fun currentSharingContractForGroup(id: String): LocationSharingContract? {
+        return allContractsFlow.value.data?.firstOrNull { it.groupId == id }
+    }
+
     fun isSharingActive(): Boolean {
         return sharingStatus.value.data == true
     }

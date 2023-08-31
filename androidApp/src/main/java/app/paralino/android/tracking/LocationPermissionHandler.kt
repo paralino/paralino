@@ -18,6 +18,7 @@ import app.paralino.android.R
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.android.ui.MainAppState
+import app.paralino.core.MR
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.onAction
@@ -184,7 +185,7 @@ data class LocationPermissionHandlerState constructor(
         appState.uiScope.launch {
             appState.showSnackbar(
                 AppSnackbarData(
-                    text = context.getString(R.string.error_location_service_missing_sheet_message),
+                    text = context.getString(MR.strings.error_location_service_missing_sheet_message.resourceId),
                     actionText = "Settings",
                     duration = SnackbarDuration.Long
                 )
@@ -197,13 +198,13 @@ data class LocationPermissionHandlerState constructor(
     private fun showLocationDeniedInfo() {
 
         val messageRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            R.string.error_location_precise_permission_missing_sheet_message
-        } else R.string.error_location_permission_missing_sheet_message
+            MR.strings.error_location_precise_permission_missing_sheet_message
+        } else MR.strings.error_location_permission_missing_sheet_message
 
         appState.uiScope.launch {
             appState.showSnackbar(
                 AppSnackbarData(
-                    text = context.getString(messageRes),
+                    text = context.getString(messageRes.resourceId),
                     actionText = "Settings",
                     duration = SnackbarDuration.Long
                 )
@@ -220,12 +221,12 @@ data class LocationPermissionHandlerState constructor(
     private fun showBackgroundLocationDeniedInfo() {
         val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             context.getString(
-                R.string.error_location_background_permission_missing_sheet_message_android11,
+                MR.strings.error_location_background_permission_missing_sheet_message_android11.resourceId,
                 context.packageManager.backgroundPermissionOptionLabel
             )
         } else {
             context.getString(
-                R.string.error_location_background_permission_missing_sheet_message,
+                MR.strings.error_location_background_permission_missing_sheet_message.resourceId,
             )
         }
 

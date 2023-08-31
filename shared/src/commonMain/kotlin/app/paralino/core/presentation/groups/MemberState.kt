@@ -6,6 +6,8 @@ import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.NetworkSignalStrength
+import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.Emojis
 
 sealed interface GroupMemberItemState {
@@ -66,10 +68,13 @@ data class GroupMemberItemLocationState constructor(
     val name: String?,
     val image: ImageModel,
     val batterLevel: Int?,
+    val isBatteryCharging: Boolean,
     val speed: String?,
     val elevation: String?,
     val lastPing: String?,
     val status: MemberDeviceStatusType?,
+    val networkType: NetworkType? = null,
+    val signalStrength: NetworkSignalStrength? = null,
     val canEdit: Boolean,
     val currentDevice: Boolean
 ) {
@@ -86,10 +91,13 @@ data class GroupMemberItemLocationState constructor(
         name = name,
         image = image ?: ImageModel.emoji(Emojis.lock),
         batterLevel = memberLocation.status.data?.validBatteryLevel ?: memberLocation.locationData.data?.batteryLevel,
+        isBatteryCharging = memberLocation.status.data?.isCharging ?: false,
         speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
         elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it) },
         lastPing = formatter.getLastPing(memberLocation),
         status = memberLocation.locationAwareStatusType,
+        networkType = memberLocation.status.data?.networkType?.takeIf { showSpeedAndElevation },
+        signalStrength = memberLocation.status.data?.signalStrength?.takeIf { showSpeedAndElevation },
         canEdit = canEdit,
         currentDevice = currentDevice
     )

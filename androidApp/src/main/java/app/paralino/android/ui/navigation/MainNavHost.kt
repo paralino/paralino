@@ -100,11 +100,19 @@ fun NavGraphBuilder.homeGraph(
             PlaceDetailScreen(appState = appState, groupId = groupId, placeId = placeId)
         }
         composable(AppScreen.MainHome.PlaceCreate.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentGroupId)!!
-            val placeId =
-                it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentPlaceId)
-            CreatePlaceScreen(appState = appState, groupId = groupId, placeId = placeId)
+            val groupId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentGroupId)!!
+            val placeId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentPlaceId)
+            val lat = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PlaceCreate.argumentLat) }
+                ?.getString(AppScreen.MainHome.PlaceCreate.argumentLat)?.toDoubleOrNull()
+            val lng = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PlaceCreate.argumentLng) }
+                ?.getString(AppScreen.MainHome.PlaceCreate.argumentLng)?.toDoubleOrNull()
+            CreatePlaceScreen(
+                appState = appState,
+                groupId = groupId,
+                placeId = placeId,
+                lat = lat.takeIf { lng != null },
+                lng = lng.takeIf { lat != null }
+            )
         }
         composable(AppScreen.MainHome.RawDataScreen.routeSignature) {
             val type =

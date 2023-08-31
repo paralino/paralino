@@ -12,6 +12,7 @@ data class MapPinData constructor(
     val groupId: String,
     val markerId: String,
     val pinType: MapPinType,
+    val markerStyle: MapMarkerStyle,
     val focused: Boolean,
     val active: Boolean,
     val image: ImageModel?,
@@ -25,6 +26,7 @@ data class MapPinData constructor(
         groupId = state.groupId,
         markerId = "place_marker",
         pinType = MapPinType.PLACE,
+        markerStyle = MapMarkerStyle.CIRCLE,
         focused = false,
         active = true,
         image = state.image,
@@ -38,6 +40,7 @@ data class MapPinData constructor(
         groupId = state.groupId,
         markerId = state.placeId,
         pinType = MapPinType.PLACE,
+        markerStyle = MapMarkerStyle.CIRCLE,
         focused = false,
         active = true,
         image = state.image,
@@ -51,6 +54,7 @@ data class MapPinData constructor(
         groupId = groupId,
         markerId = state.id,
         pinType = MapPinType.PLACE,
+        markerStyle = MapMarkerStyle.CIRCLE,
         focused = false,
         active = true,
         image = state.image,
@@ -64,6 +68,7 @@ data class MapPinData constructor(
         groupId = location.groupId,
         markerId = location.id,
         pinType = MapPinType.MEMBER,
+        markerStyle = if(location.locationData.data?.isAccurate == true) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
         focused = false,
         active = location.isPinActive,
         image = image,
@@ -76,6 +81,10 @@ data class MapPinData constructor(
 
 enum class MapPinType {
     MEMBER, PLACE
+}
+
+enum class MapMarkerStyle {
+    PIN, CIRCLE
 }
 
 data class FocusedMarkerData constructor(

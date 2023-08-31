@@ -13,6 +13,7 @@ data class PushNotificationRaw constructor(
     @SerialName("\$createdAt")
     val createdAt: Instant,
     val source: String?,
+    val deviceId: String?,
     val type: String,
     val importance: String,
     val content: String?,
@@ -34,6 +35,7 @@ data class PushNotificationRaw constructor(
                     Instant.parse(it)
                 },
                 source = map["source"] as? String?,
+                deviceId = map["deviceId"] as? String?,
                 type = map["type"] as String,
                 importance = map["importance"] as String,
                 content = map["content"] as? String?,

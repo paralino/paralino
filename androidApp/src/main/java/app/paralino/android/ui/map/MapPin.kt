@@ -12,6 +12,7 @@ import app.paralino.android.databinding.ElementMapPinBinding
 import app.paralino.android.databinding.ElementMapPinCenteredBinding
 import app.paralino.android.utils.extensions.*
 import app.paralino.core.models.base.ImageType
+import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.utils.Emojis
@@ -71,21 +72,37 @@ class MapUserMarkerView : ConstraintLayout {
             }
         }
 
-        vb.pinBackground.setBackgroundColorRes(R.color.accentDark)
+        if (data.active) {
+            vb.pinBackground.setBackgroundColorRes(R.color.accentDark)
+        } else {
+            vb.pinBackground.setBackgroundColorRes(R.color.highlightGold)
+        }
     }
 
     private fun getPinSize(data: MapPinData): Int {
         return when (data.pinType) {
             MapPinType.MEMBER -> {
                 when {
-                    data.focused && data.active -> 110.dp2px
-                    data.active -> 80.dp2px
-                    else -> 40.dp2px
+                    data.focused && data.active -> when(data.markerStyle)  {
+                        MapMarkerStyle.PIN -> 110.dp2px
+                        MapMarkerStyle.CIRCLE -> 90.dp2px
+                    }
+                    data.active -> when(data.markerStyle)  {
+                        MapMarkerStyle.PIN -> 80.dp2px
+                        MapMarkerStyle.CIRCLE -> 60.dp2px
+                    }
+                    else -> when(data.markerStyle)  {
+                        MapMarkerStyle.PIN -> 40.dp2px
+                        MapMarkerStyle.CIRCLE -> 40.dp2px
+                    }
                 }
             }
 
             MapPinType.PLACE -> {
-                30.dp2px
+                when {
+                    data.focused  -> 50.dp2px
+                    else -> 30.dp2px
+                }
             }
         }
     }
@@ -93,7 +110,12 @@ class MapUserMarkerView : ConstraintLayout {
     fun getPinForData(data: MapPinData): Bitmap? {
 
         when (data.pinType) {
-            MapPinType.MEMBER -> inflateMemberPin(data)
+            MapPinType.MEMBER -> {
+                when (data.markerStyle) {
+                    MapMarkerStyle.CIRCLE -> inflatePlacePin(data)
+                    else -> inflateMemberPin(data)
+                }
+            }
             MapPinType.PLACE -> inflatePlacePin(data)
         }
 

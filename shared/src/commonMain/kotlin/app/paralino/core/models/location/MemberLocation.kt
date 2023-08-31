@@ -7,8 +7,9 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @Serializable
 data class MemberLocation constructor(
@@ -38,25 +39,39 @@ data class MemberLocation constructor(
         get() {
             return when {
                 isEnded -> MemberDeviceStatusType.NOT_SHARING
-                isExpired -> MemberDeviceStatusType.INACTIVE
-                isIdleButStillActive -> MemberDeviceStatusType.ACTIVE
+                isExpired -> {
+                    if (status.data?.statusType?.isDeviceSetupWrong == true && !isStatusOlderThan(1.hours)) {
+                        status.data?.statusType ?: MemberDeviceStatusType.INACTIVE
+                    } else {
+                        MemberDeviceStatusType.INACTIVE
+                    }
+                }
+                isActiveEvenIfIdle -> MemberDeviceStatusType.ACTIVE
+                isActiveButNotFresh && !isStatusOlderThan(20.seconds) && status.data?.statusType == MemberDeviceStatusType.ACTIVE -> MemberDeviceStatusType.ACTIVE_NO_LOCATION
+                isActiveButNotFresh && !isStatusOlderThan(10.minutes) && status.data?.statusType?.isIdlingOrActive == true -> MemberDeviceStatusType.IDLE
                 isActiveButNotFresh -> null
+                (!hasLocation || isOlderThan(2.minutes)) && !isStatusOlderThan(20.seconds) && status.data?.statusType == MemberDeviceStatusType.ACTIVE -> MemberDeviceStatusType.ACTIVE_NO_LOCATION
+                !hasLocation && isStatusOlderThan(20.seconds) && status.data?.statusType?.isIdlingOrActive == true -> MemberDeviceStatusType.IDLE_NO_LOCATION
+                !hasLocation && status.data?.statusType == MemberDeviceStatusType.IDLE -> MemberDeviceStatusType.IDLE_NO_LOCATION
                 else -> status.data?.statusType ?: MemberDeviceStatusType.INACTIVE
             }
         }
 
+    val hasLocation: Boolean get() = locationData.data != null
+    val hasStatus: Boolean get() = status.data != null
+
     val isPinActive: Boolean
-        get() = !isOlderThan(5.toDuration(DurationUnit.MINUTES))
+        get() = !isOlderThan(5.minutes)
 
     val isExpired: Boolean
-        get() = isOlderThan(1.toDuration(DurationUnit.HOURS))
+        get() = isOlderThan(1.hours) || (!hasLocation && isStatusOlderThan(2.hours))
 
     val isActiveButNotFresh: Boolean
         get() {
             val activeStatus = status.data?.statusType == MemberDeviceStatusType.ACTIVE
-                    && isOlderThan(2.toDuration(DurationUnit.MINUTES))
+                    && isOlderThan(2.minutes)
             val idleStatus = status.data?.statusType?.isIdling == true
-                    && isOlderThan(10.toDuration(DurationUnit.MINUTES))
+                    && isOlderThan(10.minutes)
             return activeStatus || idleStatus
         }
 
@@ -68,13 +83,17 @@ data class MemberLocation constructor(
 
     // even if device status is not active (battery saving is on)
     // consider status as active if location is fairly fresh
-    val isIdleButStillActive: Boolean
+    val isActiveEvenIfIdle: Boolean
         get() {
-            locationData.data ?: return false
-            return status.data?.statusType?.isIdling == true && !isOlderThan(20.toDuration(DurationUnit.SECONDS))
+            if (!hasLocation) return false
+            return status.data?.statusType?.isIdling == true && !isOlderThan(20.seconds)
         }
 
     private fun isOlderThan(duration: Duration): Boolean {
         return locationData.data?.isOlderThan(duration) ?: return false
+    }
+
+    private fun isStatusOlderThan(duration: Duration): Boolean {
+        return status.data?.isOlderThan(duration) ?: return false
     }
 }

@@ -6,7 +6,6 @@ import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.base.DeviceType
-import app.paralino.core.utils.extensions.combine
 import kotlinx.coroutines.flow.combine
 
 abstract class IDeviceApiProvider(
@@ -41,6 +40,7 @@ abstract class IDeviceApiProvider(
     }
 
     abstract val batteryLevel: Int
+    abstract val isCharging: Boolean
     abstract val randomUUID: String
     abstract val deviceType: DeviceType
     abstract val appVersionCode: Long
@@ -54,5 +54,5 @@ abstract class IDeviceApiProvider(
 
 data class DeviceStatusData(
     val locationStatus: LocationConditionStatus,
-    val networkStatus: ConnectionStatus
+    val networkStatus: NetworkConnectionInfo
 )

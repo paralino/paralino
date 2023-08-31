@@ -1,5 +1,6 @@
 package app.paralino.core.notifications
 
+import app.paralino.core.config
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
@@ -38,37 +39,40 @@ class PushNotificationHandler constructor(
 
             logg.tag("push_notifications")
                 .v("Processing ${notifications.size} notifications documents")
-            notifications.forEach { processNotification(it) }
 
-            notifications.forEach { push ->
-                try {
-                    logg.tag("push_notifications").v("Delete push notification document")
-                    docApi.deleteDocument(
-                        databaseType = BackendDatabaseType.DATA,
-                        collectionId = BackendResourceIDs.collectionPushNotificationID,
-                        documentId = push.id
-                    )
-                    delay(400)
-                } catch (e: Exception) {
-                    logg.tag("push_notifications")
-                        .e("Error deleting push notification ${push.id}", e)
+            notifications.forEach {
+                processNotification(it) { push ->
+                    try {
+                        logg.tag("push_notifications").v("Delete push notification document")
+                        docApi.deleteDocument(
+                            databaseType = BackendDatabaseType.DATA,
+                            collectionId = BackendResourceIDs.collectionPushNotificationID,
+                            documentId = push.id
+                        )
+                        delay(400)
+                    } catch (e: Exception) {
+                        logg.tag("push_notifications")
+                            .e("Error deleting push notification ${push.id}", e)
+                    }
                 }
             }
         }
     }
 
-    private suspend fun processNotification(push: PushNotificationRaw) {
+    private suspend fun processNotification(push: PushNotificationRaw, onDelete: suspend (PushNotificationRaw) -> Unit) {
         logg.tag("push_notifications")
             .v("Process ${push.importance} ${push.type} push notification from ${push.source}. Expired (${push.isExpired})")
 
         if (push.isExpired) {
             logg.tag("push_notifications").v("Push notification expired, ignoring")
+            onDelete(push)
             return
         }
 
         when (push.type) {
             PushNotificationRaw.pushTypePlaceAlert -> {
                 placePush.process(push)
+                onDelete(push)
             }
             PushNotificationRaw.pushTypeGroupMemberAdd -> {
                 refreshEverything.scheduleRefreshAllGroupsWithPlaces(
@@ -76,9 +80,16 @@ class PushNotificationHandler constructor(
                     time = 0
                 )
                 groupMemberAddPush.process(push)
+                onDelete(push)
             }
             PushNotificationRaw.pushTypeLocationRequest -> {
-                locationRequestPush.process(push)
+                if (push.deviceId == config.deviceId) {
+                    logg.tag("push_notifications").v("Location request notification matches current device")
+                    locationRequestPush.process(push)
+                    onDelete(push)
+                } else {
+                    logg.tag("push_notifications").v("Location request notification does not match current device, ignoring")
+                }
             }
         }
     }

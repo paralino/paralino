@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -28,6 +29,8 @@ import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.provider.NetworkSignalStrength
+import app.paralino.core.provider.NetworkType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
@@ -89,7 +92,11 @@ fun GroupMemberWithLocations(
                                 modifier = Modifier
                                     .size(14.dp)
                                     .rotate(90f),
-                                painter = CoreAppIcons.BatteryFull.asPainterResource(),
+                                painter = if(state.singleLocation.isBatteryCharging) {
+                                    CoreAppIcons.BatteryChargingFull.asPainterResource()
+                                } else {
+                                    CoreAppIcons.BatteryFull.asPainterResource()
+                                },
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.size(4.dp))
@@ -227,6 +234,15 @@ fun GroupMemberWithLocations(
                         )
                         Spacer(modifier = Modifier.size(8.dp))
                     }
+
+                    if (state.singleLocation?.networkType != null) {
+                        NetworkTypeIcon(state.singleLocation.networkType, state.singleLocation.signalStrength)
+                        Text(
+                            text = state.singleLocation.networkType.networkName,
+                            style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                    }
                 }
             }
 
@@ -248,8 +264,7 @@ fun GroupMemberWithLocations(
 
         // action item
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
 
             AnimatedVisibility(visible = expanded) {
@@ -361,7 +376,11 @@ fun GroupMemberLocationChild(
                             modifier = Modifier
                                 .size(12.dp)
                                 .rotate(90f),
-                            painter = CoreAppIcons.BatteryFull.asPainterResource(),
+                            painter = if(state.isBatteryCharging) {
+                                CoreAppIcons.BatteryChargingFull.asPainterResource()
+                            } else {
+                                CoreAppIcons.BatteryFull.asPainterResource()
+                            },
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.size(2.dp))
@@ -449,6 +468,45 @@ fun GroupMemberLocationChild(
             }
         }
     }
+}
+
+@Composable
+fun NetworkTypeIcon(networkType: NetworkType, signalStrength: NetworkSignalStrength?) {
+    val tint = remember(signalStrength) {
+        when(signalStrength) {
+            NetworkSignalStrength.POOR -> Color.Unspecified
+            NetworkSignalStrength.GOOD -> Color.Unspecified
+            NetworkSignalStrength.GREAT -> AppColors.accent
+            null -> null
+        }
+    }
+    val icon = remember(networkType, signalStrength) {
+        when (networkType) {
+            NetworkType.WIFI -> when(signalStrength) {
+                NetworkSignalStrength.POOR -> CoreAppIcons.SignalWifi1
+                NetworkSignalStrength.GOOD -> CoreAppIcons.SignalWifi2
+                NetworkSignalStrength.GREAT -> CoreAppIcons.SignalWifi3
+                null -> CoreAppIcons.SignalWifi3
+            }
+            NetworkType.G2,
+            NetworkType.G3,
+            NetworkType.G4,
+            NetworkType.G5 -> when(signalStrength) {
+                NetworkSignalStrength.POOR -> CoreAppIcons.SignalCell1
+                NetworkSignalStrength.GOOD -> CoreAppIcons.SignalCell2
+                NetworkSignalStrength.GREAT -> CoreAppIcons.SignalCell3
+                null -> CoreAppIcons.SignalCell3
+            }
+        }
+    }
+    Icon(
+        painter = icon.asPainterResource(),
+        contentDescription = null,
+        tint = tint ?: MaterialTheme.colors.onSurface,
+        modifier = Modifier
+            .padding(end = 2.dp)
+            .size(18.dp)
+    )
 }
 
 val MemberAction.actionIcon: Painter

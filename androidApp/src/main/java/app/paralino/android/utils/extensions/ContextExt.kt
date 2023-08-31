@@ -19,6 +19,15 @@ val Context.batterLevel: Int
         return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
     }
 
+val Context.isBatteryCharging: Boolean
+    get() {
+        val batteryStatus: Intent? = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
+            this.registerReceiver(null, ifilter)
+        }
+        val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+        return (status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL)
+    }
+
 fun Context.isDarkThemeOn(): Boolean {
     return resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES

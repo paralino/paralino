@@ -165,6 +165,7 @@
     <string name="groups_sharing_setting_battery_share">Battery level</string>
     <string name="groups_sharing_setting_speed_share">Speed</string>
     <string name="groups_sharing_setting_elevation_share">Elevation</string>
+    <string name="groups_sharing_setting_network_share">Network state</string>
     <string name="groups_sharing_button_start">Start sharing</string>
     <string name="groups_sharing_title">Share location</string>
     <string name="groups_sharing_device_name_placeholder">Device name (optional)</string>

@@ -17,6 +17,7 @@ data class PlacesListScreenState constructor(
 
 data class PlaceListItemData constructor(
     val id: String,
+    val groupId: String,
     val name: String,
     val image: ImageModel,
     val private: Boolean,
@@ -26,6 +27,7 @@ data class PlaceListItemData constructor(
 ) {
     constructor(place: GroupPlace): this(
         id = place.id,
+        groupId = place.groupId,
         name = place.data.data?.name ?: "---",
         image = place.data.data?.image ?: ImageModel.emoji(Emojis.robot),
         private = place.private,

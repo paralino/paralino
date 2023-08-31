@@ -15,7 +15,8 @@ class RealtimeEventsWhileSharingUseCase constructor(
                 realtimeEventsProcessor.locationFocusChannel,
                 realtimeEventsProcessor.placesChannel,
                 realtimeEventsProcessor.membersChannel,
-                realtimeEventsProcessor.locationsChannel
+                realtimeEventsProcessor.locationsChannel,
+                realtimeEventsProcessor.pushNotificationsChannel,
             ),
             filters = listOf(
                 "${realtimeEventsProcessor.locationFocusChannel}.*.create",
@@ -24,6 +25,7 @@ class RealtimeEventsWhileSharingUseCase constructor(
                 "${realtimeEventsProcessor.placesChannel}.*.update",
                 "${realtimeEventsProcessor.membersChannel}.*",
                 "${realtimeEventsProcessor.locationsChannel}.*",
+                "${realtimeEventsProcessor.pushNotificationsChannel}.*.create",
             )
         )
             .onEach {

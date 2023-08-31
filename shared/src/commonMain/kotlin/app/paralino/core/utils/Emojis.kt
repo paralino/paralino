@@ -142,6 +142,9 @@ object Emojis {
         "emoji_u2600",
         "emoji_u2615",
         "emoji_u2764",
+    )
+
+    val circles = listOf(
         "emoji_u26aa",
         "emoji_u26ab",
         "emoji_u1f7e1",
@@ -159,7 +162,7 @@ object Emojis {
         "emoji_u2708",
     )
 
-    val groupEmojis = groupSpecific + transport
+    val groupEmojis = groupSpecific + circles + transport
     val userEmojis = userSpecific + transport
 
     fun getResourceFromIcon(icon: String): ImageResource {

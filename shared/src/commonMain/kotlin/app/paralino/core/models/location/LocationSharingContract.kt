@@ -12,6 +12,7 @@ data class LocationSharingContract constructor(
     val shareBattery: Boolean,
     val shareSpeed: Boolean,
     val shareElevation: Boolean,
+    val shareNetwork: Boolean,
     val approximateLocationInMeters: Int?
 ) {
 

@@ -11,6 +11,7 @@ object SharingContractsMapper {
             shareBattery = model.shareBattery,
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,
+            shareNetwork = model.shareNetwork,
             approximateLocationInMeters = model.approximateLocationInMeters?.toInt()
         )
     }
@@ -22,6 +23,7 @@ object SharingContractsMapper {
             shareBattery = model.shareBattery,
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,
+            shareNetwork = model.shareNetwork,
             approximateLocationInMeters = model.approximateLocationInMeters?.toLong()
         )
     }

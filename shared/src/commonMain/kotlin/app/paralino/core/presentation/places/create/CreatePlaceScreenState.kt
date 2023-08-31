@@ -27,15 +27,19 @@ data class CreatePlaceScreenState constructor(
             return steps.getOrNull(index-1) ?: defaultRadiusMeters
         }
 
-        fun empty(groupId: String): CreatePlaceScreenState {
+        fun empty(
+            groupId: String,
+            lat: Double? = null,
+            lng: Double? = null
+        ): CreatePlaceScreenState {
             return CreatePlaceScreenState(
                 groupId = groupId,
                 isNewPlace = true,
                 name = "",
-                image = ImageModel.emoji(Emojis.groupSpecific.random()),
+                image = ImageModel.emoji(Emojis.circles.random()),
                 private = false,
-                lat = null,
-                lng = null,
+                lat = lat,
+                lng = lng,
                 radiusMeters = defaultRadiusMeters,
                 hasNameError = false,
                 actionLoading = false,

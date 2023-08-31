@@ -19,18 +19,18 @@ class MemberDeviceStatusProvider(
         val locationStatus = deviceStatus.locationStatusProvider.currentStatus
 
         return when {
+            !locationSharingManager.isSharingActiveForGroup(groupId) -> MemberDeviceStatusType.NOT_SHARING
             !locationStatus.isPermissionAllowed -> MemberDeviceStatusType.MISSING_PERMISSIONS
             !locationStatus.isGpsOn -> MemberDeviceStatusType.GPS_OFF
-            !locationSharingManager.isSharingActiveForGroup(groupId) -> MemberDeviceStatusType.NOT_SHARING
-            locationPerformanceManager.locationPerformanceType.value.current == LocationPerformanceType.BATTERY_SAVER -> MemberDeviceStatusType.BATTERY_SAVER_ON
             locationPerformanceManager.locationPerformanceType.value.isThrottlingLocationRequest -> MemberDeviceStatusType.TOO_MANY_REQUESTS
+            locationPerformanceManager.locationPerformanceType.value.current == LocationPerformanceType.BATTERY_SAVER -> MemberDeviceStatusType.BATTERY_SAVER_ON
             locationPerformanceManager.locationPerformanceType.value.isThrottling -> MemberDeviceStatusType.THROTTLING
             locationPerformanceManager.locationPerformanceType.value.isSlow -> MemberDeviceStatusType.IDLE
             else -> MemberDeviceStatusType.ACTIVE
         }
     }
 
-    fun getPreSharingStatus(groupId: String): MemberDeviceStatus {
+    suspend fun getPreSharingStatus(groupId: String): MemberDeviceStatus {
         val status = getStatusType(groupId).let {
             if(it == MemberDeviceStatusType.NOT_SHARING)
                 MemberDeviceStatusType.ACTIVE
@@ -39,14 +39,22 @@ class MemberDeviceStatusProvider(
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
             batteryLevel = deviceStatus.batteryLevel,
+            isCharging = deviceStatus.isCharging,
+            network = deviceStatus.connectionStatusProvider.initAndGetStatus().networkType?.key,
+            signal = deviceStatus.connectionStatusProvider.getSignalStrength(),
             status = status.key
         )
     }
 
-    fun getStatus(groupId: String): MemberDeviceStatus {
+    suspend fun getStatus(groupId: String): MemberDeviceStatus {
+        val sharingBattery = locationSharingManager.currentSharingContractForGroup(groupId)?.shareBattery == true
+        val sharingNetwork = locationSharingManager.currentSharingContractForGroup(groupId)?.shareNetwork == true
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
-            batteryLevel = deviceStatus.batteryLevel,
+            batteryLevel = if(sharingBattery) deviceStatus.batteryLevel else null,
+            isCharging = if(sharingBattery) deviceStatus.isCharging.takeIf { sharingBattery } else null,
+            network = if(sharingNetwork) deviceStatus.connectionStatusProvider.initAndGetStatus().networkType?.key else null,
+            signal = if(sharingNetwork) deviceStatus.connectionStatusProvider.getSignalStrength() else null,
             status = getStatusType(groupId).key
         )
     }
