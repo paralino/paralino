@@ -77,6 +77,7 @@ data class MemberLocation constructor(
 
     val isEnded: Boolean
         get() {
+            if (status.data?.statusType == MemberDeviceStatusType.NOT_SHARING) return true
             val endTime = locationData.data?.endTimeUTC?.fromUTCtoInstant() ?: return false
             return endTime < nowUTC() && !isPinActive
         }

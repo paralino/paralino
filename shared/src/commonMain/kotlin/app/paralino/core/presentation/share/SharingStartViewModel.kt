@@ -154,8 +154,22 @@ class SharingStartViewModel(
                 return@launch
             }
 
+            val contract = LocationSharingContract(
+                groupId = group.id,
+                endTimeUTC = LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
+                shareBattery = _uiState.value.shareBattery,
+                shareSpeed = _uiState.value.shareSpeed,
+                shareElevation = _uiState.value.shareElevation,
+                shareNetwork = _uiState.value.shareNetwork,
+                approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation }
+            )
+
             try {
-                registerDevice.registerDevice(groupId = group.id, deviceName = _uiState.value.deviceName)
+                registerDevice.registerDevice(
+                    groupId = group.id,
+                    deviceName = _uiState.value.deviceName,
+                    contract = contract
+                )
             } catch (e: Exception) {
                 logg.e("Unable to register device", e)
                 _uiState.update { it.copy(loadingAction = false) }
@@ -163,17 +177,8 @@ class SharingStartViewModel(
                 return@launch
             }
 
-            sharingManager.startSharing(
-                LocationSharingContract(
-                    groupId = group.id,
-                    endTimeUTC = LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
-                    shareBattery = _uiState.value.shareBattery,
-                    shareSpeed = _uiState.value.shareSpeed,
-                    shareElevation = _uiState.value.shareElevation,
-                    shareNetwork = _uiState.value.shareNetwork,
-                    approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation }
-                )
-            )
+            sharingManager.startSharing(contract)
+
             val active = try {
                 poll(
                     firstDelayMillis = 500,

@@ -10,6 +10,7 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.group.GroupIntegrity
+import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.raw.LocationCreatePayload
 import app.paralino.core.repo.api.IFunctionsApi
@@ -42,6 +43,7 @@ class RegisterDeviceForSharingUseCase constructor(
     suspend fun registerDevice(
         groupId: String,
         deviceName: String?,
+        contract: LocationSharingContract?
     ) {
         triggerRemoteOnly {
 
@@ -74,7 +76,10 @@ class RegisterDeviceForSharingUseCase constructor(
 
             val status = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
-                    deviceStatusProvider.getPreSharingStatus(groupId)
+                    deviceStatusProvider.getStatus(
+                        groupId = groupId,
+                        contract = contract
+                    )
                 ),
                 key = keyData.first
             )

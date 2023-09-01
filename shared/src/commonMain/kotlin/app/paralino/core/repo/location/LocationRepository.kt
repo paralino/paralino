@@ -63,7 +63,8 @@ class LocationRepository constructor(
                 try {
                     registerDeviceForSharing.registerDevice(
                         groupId = groupId,
-                        deviceName = null
+                        deviceName = null,
+                        contract = contract
                     )
                 } catch (e: Exception) {
                     // TODO notify user

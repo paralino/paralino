@@ -216,7 +216,7 @@ class MemberDeviceKeyRotation(
         val status = senderKeys.first?.let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
-                    deviceStatusProvider.getPreSharingStatus(group.id)
+                    deviceStatusProvider.getStatus(group.id)
                 ),
                 key = it
             )
