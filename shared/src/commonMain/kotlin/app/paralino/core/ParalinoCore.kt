@@ -18,7 +18,9 @@ import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
+import app.paralino.core.domain.location.LocationPayloadProvider
 import app.paralino.core.domain.location.LocationRefreshUseCase
+import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.domain.location.RealtimeEventsProcessor
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
@@ -168,12 +170,12 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get()) }
     single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationRepository(get(), get(), get(), get(), get(), get()) }
     single { PlacesRepository(get(), get(), get(), get(), get()) }
     single { AppConfigRepository(get(), get(), get(), get(), config) }
 
@@ -182,6 +184,8 @@ val coreModule = module {
     single { UserSessionMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
+    single { LocationPayloadProvider(get(), get(), get(), get()) }
+    single { MemberDeviceStatusProcessor(get(), get(), get(), get()) }
 
     single { CryptoCore(get()) }
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }

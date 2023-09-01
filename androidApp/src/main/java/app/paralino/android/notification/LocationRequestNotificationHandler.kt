@@ -1,6 +1,7 @@
 package app.paralino.android.notification
 
 import app.paralino.core.domain.LimitedExecution
+import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.PushNotificationRaw
@@ -9,7 +10,6 @@ import app.paralino.core.notifications.LocationRequestNotificationPayload
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 class LocationRequestNotificationHandler(
     private val locationPerformanceManager: LocationPerformanceManager,
     private val sharingManager: LocationSharingManager,
-    private val locationRepository: LocationRepository,
+    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val coroutineScopeProvider: ICoroutineScopeProvider
 ) : LimitedExecution(), ILocationRequestNotificationsHandler {
 
@@ -49,7 +49,7 @@ class LocationRequestNotificationHandler(
     private suspend fun updateStatus(payload: LocationRequestNotificationPayload) {
         if (!sharingManager.isSharingActiveForGroup(id = payload.groupId)) {
             try {
-                locationRepository.pushDeviceStatus(payload.groupId)
+                deviceStatusProcessor.pushDeviceStatus(payload.groupId)
             } catch (e: Exception) {
                 logg.w("Error saving location status", e)
             }
@@ -62,7 +62,7 @@ class LocationRequestNotificationHandler(
         )
 
         try {
-            locationRepository.pushDeviceStatus(payload.groupId)
+            deviceStatusProcessor.pushDeviceStatus(payload.groupId)
         } catch (e: Exception) {
             logg.w("Error saving location status", e)
         }

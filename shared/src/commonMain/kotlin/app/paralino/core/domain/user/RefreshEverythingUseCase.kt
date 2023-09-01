@@ -3,6 +3,7 @@ package app.paralino.core.domain.user
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
+import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemotePreference
@@ -21,7 +22,8 @@ class RefreshEverythingUseCase(
     private val personalCodesRepo: PersonalCodesRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupRefreshUseCase: GroupRefreshUseCase,
-    private val configRepo: AppConfigRepository
+    private val configRepo: AppConfigRepository,
+    private val deviceStatusProcessor: MemberDeviceStatusProcessor
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "full_refresh"
@@ -60,6 +62,7 @@ class RefreshEverythingUseCase(
                         time = if (forceGroupRefresh) 0 else 60_000
                     )
                     personalCodesRepo.tryToRestockPreKeys(5.minutes.inWholeMilliseconds)
+                    deviceStatusProcessor.revokeActiveStatus()
                 }
             )
         } catch (e: Exception) {
