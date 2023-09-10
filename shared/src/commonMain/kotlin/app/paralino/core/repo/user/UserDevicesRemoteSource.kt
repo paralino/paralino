@@ -44,17 +44,17 @@ class UserDevicesRemoteSource constructor(
                 deviceType = userMemberIdUseCase.getCurrentDeviceType().key
             )
 
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionUserDeviceUpdate,
                 data = BaseRemoteModule.formatter.encodeToString(payload)
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to update device data",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to update device data",
+                    cause = Exception(response.stderr)
                 )
             }
         }

@@ -260,7 +260,7 @@ dependencies {
     implementation "com.mikepenz:aboutlibraries-compose:10.5.1"
     implementation 'io.sentry:sentry-android:6.9.1'
 
-    implementation("io.appwrite:sdk-for-android:1.1.0")
+    implementation("io.appwrite:sdk-for-android:4.0.0")
     debugImplementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.0"))
     debugImplementation("com.squareup.okhttp3:okhttp")
     debugImplementation("com.squareup.okhttp3:logging-interceptor")

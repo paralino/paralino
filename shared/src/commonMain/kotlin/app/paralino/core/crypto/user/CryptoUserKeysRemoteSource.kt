@@ -47,7 +47,7 @@ class CryptoUserKeysRemoteSource(
         } else {
             // TODO throw better exception
             throw BaseRemoteException.fromCode(
-                code = null,
+                code = response.statusCode,
                 message = "Unable to update user key",
                 cause = Exception(response.stderr)
             )

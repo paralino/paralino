@@ -162,9 +162,9 @@ class MemberCryptoKeyRotation(
 
         if (!response.isSuccess) {
             throw BaseRemoteException.fromCode(
-                null,
-                "Unable to update group member keys",
-                Exception(response.stderr)
+                code = response.statusCode,
+                message = "Unable to update group member keys",
+                cause = Exception(response.stderr)
             )
         }
     }

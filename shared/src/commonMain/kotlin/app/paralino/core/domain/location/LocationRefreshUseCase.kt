@@ -85,7 +85,7 @@ class LocationRefreshUseCase constructor(
             if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    code = null,
+                    code = response.statusCode,
                     message = "Unable to request location update",
                     cause = Exception(response.stderr)
                 )

@@ -50,9 +50,9 @@ class LocationRemoteSource constructor(
             if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to delete location",
-                    Exception(response.stderr)
+                    code = response.statusCode,
+                    message = "Unable to delete location",
+                    cause = Exception(response.stderr)
                 )
             }
         }

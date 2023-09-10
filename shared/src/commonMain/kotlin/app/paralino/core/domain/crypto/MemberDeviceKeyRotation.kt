@@ -147,9 +147,9 @@ class MemberDeviceKeyRotation(
 
         if (!response.isSuccess) {
             throw BaseRemoteException.fromCode(
-                null,
-                "Unable to rotate device keys",
-                Exception(response.stderr)
+                code = response.statusCode,
+                message = "Unable to rotate device keys",
+                cause = Exception(response.stderr)
             )
         } else {
             val groupDeviceIntegrity = GroupIntegrity(

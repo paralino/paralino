@@ -40,19 +40,19 @@ class GroupsRemoteSource constructor(
                 groupData = mapped.data
             )
 
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionUpdateGroupID,
                 data = BaseRemoteModule.formatter.encodeToString(payload)
             )
 
-            if (data.isSuccess) {
-                data.responseMap.parseGroup()
+            if (response.isSuccess) {
+                response.responseMap.parseGroup()
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    code = null,
+                    code = response.statusCode,
                     message = "Unable to update group",
-                    cause = Exception(data.stderr)
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -69,7 +69,7 @@ class GroupsRemoteSource constructor(
                 userId = memberUserId
             )
 
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionDeleteGroupMemberID,
                 data = GenericFunctionPayload(
                     route = "delete-member",
@@ -77,12 +77,12 @@ class GroupsRemoteSource constructor(
                 )
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to delete group member",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to delete group member",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -173,17 +173,17 @@ class GroupsRemoteSource constructor(
 
     suspend fun deleteGroup(groupId: String) {
         blocking {
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionDeleteGroupID,
                 data = groupId
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to delete group",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to delete group",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -210,7 +210,7 @@ class GroupsRemoteSource constructor(
                 groupData = groupData
             )
 
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionDeleteGroupMemberID,
                 data = GenericFunctionPayload(
                     route = "block-group",
@@ -218,12 +218,12 @@ class GroupsRemoteSource constructor(
                 )
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to block group",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to block group",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -251,7 +251,7 @@ class GroupsRemoteSource constructor(
                 userData = userData
             )
 
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionDeleteGroupMemberID,
                 data = GenericFunctionPayload(
                     route = "block-user",
@@ -259,12 +259,12 @@ class GroupsRemoteSource constructor(
                 )
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to block user",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to block user",
+                    cause = Exception(response.stderr)
                 )
             }
         }

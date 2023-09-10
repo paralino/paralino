@@ -7,7 +7,6 @@ import kotlinx.serialization.encodeToString
 
 interface IFunctionsApi {
     suspend fun createExecution(functionId: String, data: String? = null): String
-    suspend fun getExecution(functionId: String, executionId: String): FunctionExecutionRaw
     suspend fun runAndWait(functionId: String, data: String? = null): FunctionExecutionRaw
 }
 

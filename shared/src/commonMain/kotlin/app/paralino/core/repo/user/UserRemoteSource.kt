@@ -102,16 +102,16 @@ class UserRemoteSource constructor(
 
     suspend fun deleteAccount() {
         blocking {
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionDeleteAccountAndData
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to delete user",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to delete user",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -128,17 +128,17 @@ class UserRemoteSource constructor(
                 )
             }
 
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionResetAccount,
                 data = payload?.let { BaseRemoteModule.formatter.encodeToString(it) }
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to reset user",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to reset user",
+                    cause = Exception(response.stderr)
                 )
             }
         }

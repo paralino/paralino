@@ -35,7 +35,7 @@ class AppWriteRemoteModule(
         )
             .setEndpoint(backendConfig.endpoint)
             .setProject(backendConfig.projectId)
-            .run { RemoteClient.setup(this, backendConfig.debug) }
+            .run { RemoteClient.setup(this, backendConfig.debug && backendConfig.logToConsole) }
     }
 
     inline fun <T> execute(action: AppWriteRemoteModule.() -> T): T {

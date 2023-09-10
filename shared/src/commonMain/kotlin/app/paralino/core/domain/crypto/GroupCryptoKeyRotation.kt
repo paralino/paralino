@@ -223,9 +223,9 @@ class GroupCryptoKeyRotation constructor(
 
             if (!response.isSuccess) {
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to update group keys",
-                    Exception(response.stderr)
+                    code = response.statusCode,
+                    message = "Unable to update group keys",
+                    cause = Exception(response.stderr)
                 )
             }
         }

@@ -4,7 +4,7 @@ import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.repo.api.IUserApi
-import io.appwrite.models.Account
+import io.appwrite.models.User
 import io.appwrite.models.Session
 
 class UserApi constructor(
@@ -86,7 +86,7 @@ class UserApi constructor(
         return remoteModule.execute { account.deleteSession("current") }
     }
 
-    private fun Account.parseUser(): UserMeRaw {
+    private fun User<Map<String, Any>>.parseUser(): UserMeRaw {
         return UserMeRaw(
             id = this.id,
             email = this.email,

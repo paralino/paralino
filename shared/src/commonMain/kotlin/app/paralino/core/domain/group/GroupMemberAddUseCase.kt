@@ -155,17 +155,17 @@ class GroupMemberAddUseCase constructor(
             )
         )
 
-        val data = functionsApi.runAndWait(
+        val response = functionsApi.runAndWait(
             functionId = remoteConfig.resourceIds.functionCreateGroupMemberID,
             data = BaseRemoteModule.formatter.encodeToString(payload)
         )
 
-        if (!data.isSuccess) {
+        if (!response.isSuccess) {
             // TODO throw better exception
             throw BaseRemoteException.fromCode(
-                code = null,
+                code = response.statusCode,
                 message = "Unable to create group",
-                cause = Exception(data.stderr)
+                cause = Exception(response.stderr)
             )
         }
     }

@@ -11,27 +11,9 @@ class FunctionsApi constructor(
         return remoteModule.execute {
             functions.createExecution(
                 functionId = functionId,
-                data = data,
+                body = data,
                 async = true
             ).id
-        }
-    }
-
-    override suspend fun getExecution(
-        functionId: String,
-        executionId: String
-    ): FunctionExecutionRaw {
-        return remoteModule.execute {
-            functions.getExecution(functionId, executionId).let {
-                FunctionExecutionRaw(
-                    id = it.id,
-                    functionId = it.functionId,
-                    status = it.status,
-                    statusCode = it.statusCode,
-                    response = it.response,
-                    stderr = it.stderr
-                )
-            }
         }
     }
 
@@ -39,16 +21,16 @@ class FunctionsApi constructor(
         return remoteModule.execute {
             functions.createExecution(
                 functionId = functionId,
-                data = data,
+                body = data,
                 async = false
             ).let {
                 FunctionExecutionRaw(
                     id = it.id,
                     functionId = it.functionId,
                     status = it.status,
-                    statusCode = it.statusCode,
-                    response = it.response,
-                    stderr = it.stderr
+                    statusCode = it.responseStatusCode.toInt(),
+                    response = it.responseBody,
+                    stderr = it.errors
                 )
             }
         }

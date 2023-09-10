@@ -93,7 +93,7 @@ class UpdateUserDataUseCase constructor(
         if (!response.isSuccess) {
             // TODO throw better exception
             throw BaseRemoteException.fromCode(
-                code = null,
+                code = response.statusCode,
                 message = "Unable to update location",
                 cause = Exception(response.stderr)
             )

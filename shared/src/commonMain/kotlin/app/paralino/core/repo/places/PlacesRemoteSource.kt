@@ -68,9 +68,9 @@ class PlacesRemoteSource(
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to create place",
-                    Exception(response.stderr)
+                    code = response.statusCode,
+                    message = "Unable to create place",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -156,22 +156,22 @@ class PlacesRemoteSource(
                 placeData = mapped.data
             )
 
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionPlaceUpdate,
                 data = BaseRemoteModule.formatter.encodeToString(payload)
             )
 
-            if (data.isSuccess) {
-                val response = data.response.fromJsonObjectToMapOfPrimitives()
+            if (response.isSuccess) {
+                val response = response.response.fromJsonObjectToMapOfPrimitives()
                     .filterValues { it != null }
                     .mapValues { it.value!! }
                 response.parsePlace()
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    code = null,
+                    code = response.statusCode,
                     message = "Unable to update group",
-                    cause = Exception(data.stderr)
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -217,17 +217,17 @@ class PlacesRemoteSource(
 
     suspend fun deletePlace(placeId: String) {
         blocking {
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionPlaceDelete,
                 data = placeId
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to delete place",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to delete place",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -270,7 +270,7 @@ class PlacesRemoteSource(
             if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    code = null,
+                    code = response.statusCode,
                     message = "Unable to update location",
                     cause = Exception(response.stderr)
                 )

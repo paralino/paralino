@@ -94,12 +94,12 @@ class RegisterDeviceForSharingUseCase constructor(
             )
 
             logg.tag("sharing_start").d("Send register device request")
-            val data = functionsApi.runAndWait(
+            val response = functionsApi.runAndWait(
                 functionId = remoteConfig.resourceIds.functionLocationCreate,
                 data = BaseRemoteModule.formatter.encodeToString(payload)
             )
 
-            if (data.isSuccess) {
+            if (response.isSuccess) {
                 logg.tag("sharing_start").d("Device registered, save integrity")
 
                 val groupDeviceIntegrity = GroupIntegrity(
@@ -130,9 +130,9 @@ class RegisterDeviceForSharingUseCase constructor(
                 logg.tag("sharing_start").w("Device not registered")
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    code = null,
+                    code = response.statusCode,
                     message = "Unable to register device to group $groupId",
-                    cause = Exception(data.stderr)
+                    cause = Exception(response.stderr)
                 )
             }
         }
