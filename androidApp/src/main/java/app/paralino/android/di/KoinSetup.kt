@@ -122,7 +122,7 @@ object KoinSetup {
 
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config, get()) }
-        viewModel { SettingsViewModel(get(), get(), get(), get()) }
+        viewModel { SettingsViewModel(get(), get(), get(), get(), get(), config) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
         viewModel { (args: String?) ->

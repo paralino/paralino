@@ -28,6 +28,7 @@ class AppConfig(
         const val keyDeviceIDSeed = "prefs.device.ID.seed"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
+        const val keyTrackingBoost = "prefs.device.trackingBoost"
     }
 
     val isTokenValid: Boolean
@@ -121,6 +122,12 @@ class AppConfig(
         get() = provider.appSettings.getLong(keyDismissedAppVersionID, 0)
         set(value) {
             provider.appSettings.putLong(keyDismissedAppVersionID, value)
+        }
+
+    var trackingBoost: Boolean
+        get() = provider.userSettings.getBoolean(keyTrackingBoost, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyTrackingBoost, value)
         }
 
     fun clear() {

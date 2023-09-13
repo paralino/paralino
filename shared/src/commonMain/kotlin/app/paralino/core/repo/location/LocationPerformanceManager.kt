@@ -1,6 +1,6 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.config
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
@@ -32,12 +32,16 @@ class LocationPerformanceManager constructor(
     private val documentApi: IDocumentsApi,
     val scope: ICoroutineScopeProvider,
     val deviceStatus: IDeviceApiProvider,
+    private val config: AppConfig
 ) : BaseRepository() {
 
-    private val _locationPerformanceType = MutableStateFlow(LocationPerformanceModel())
+    private val _locationPerformanceType = MutableStateFlow(
+        LocationPerformanceModel(config.trackingBoost)
+    )
     val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
     private var performanceUpdateJob: Job? = null
     private var locationBoostTracker = mutableMapOf<Long, LocationPerformanceType>()
+
 
     fun boostOnMapFlow(groupId: String): Flow<String> {
         return flow {
@@ -50,7 +54,7 @@ class LocationPerformanceManager constructor(
         }.catch { emit("Error while boosting location") }
     }
 
-    suspend fun boostOnMap(groupId: String) {
+    private suspend fun boostOnMap(groupId: String) {
 
         // TODO most likely this is not needed anymore
 //        if (locationSharingManager.isSharingActiveForGroup(groupId)) {
@@ -79,7 +83,7 @@ class LocationPerformanceManager constructor(
     }
 
     fun locationBoostRequested(
-        groupId: String,
+        groupId: String?,
         performanceType: LocationPerformanceType = LocationPerformanceType.HIGH
     ) {
         logg.tag("location_performance").v("Location boost ($performanceType) requested for $groupId")
@@ -89,7 +93,10 @@ class LocationPerformanceManager constructor(
         // if locations is not yet resolved and someone requests location multiple times, cancel or increase reset
         // that way device will get more time to fetch high quality location
 
-        if (performanceType == LocationPerformanceType.VERY_HIGH) {
+        if (performanceType == LocationPerformanceType.MANUAL_BOOST || _locationPerformanceType.value.current == LocationPerformanceType.MANUAL_BOOST) {
+            logg.tag("location_performance").v("Device in manual boost, ignore performance reset for ($performanceType)")
+            performanceUpdateJob?.cancel()
+        } else if (performanceType == LocationPerformanceType.VERY_HIGH) {
             schedulePerformanceReset(LocationPerformanceType.HIGH, 60_000)
         } else if (_locationPerformanceType.value.current < LocationPerformanceType.VERY_HIGH) {
             if (performanceType < _locationPerformanceType.value.current) {
@@ -102,6 +109,11 @@ class LocationPerformanceManager constructor(
         }
     }
 
+    fun disableManualBoost() {
+        setPerformance(type = LocationPerformanceType.HIGH, allowDowngrade = true)
+        schedulePerformanceReset(LocationPerformanceType.BALANCED, 45_000)
+    }
+
     private fun schedulePerformanceReset(
         type: LocationPerformanceType,
         resetDelayMillis: Long
@@ -110,8 +122,10 @@ class LocationPerformanceManager constructor(
         performanceUpdateJob = scope.userSessionIOScope.launch {
             logg.tag("location_performance").v("Schedule location performance reset from ${_locationPerformanceType.value.current} in $resetDelayMillis")
             delay(resetDelayMillis)
-            logg.tag("location_performance").v("Reset location performance to $type")
-            setPerformance(type = type, allowDowngrade = true)
+            if (_locationPerformanceType.value.current < LocationPerformanceType.MANUAL_BOOST) {
+                logg.tag("location_performance").v("Reset location performance to $type")
+                setPerformance(type = type, allowDowngrade = true)
+            }
         }
     }
 
@@ -146,25 +160,31 @@ class LocationPerformanceManager constructor(
 
         // sum duration of VERY_HIGH requests in 20 minutes
         minuteIterator.forEachIndexed { index, pair ->
-            val next = minuteIterator.getOrNull(index + 1)
-            val durationInSec = ((next?.first ?: now) - pair.first).seconds
+            // don't consider user own boost
+            if(pair.second < LocationPerformanceType.MANUAL_BOOST) {
+                val next = minuteIterator.getOrNull(index + 1)
+                val durationInSec = ((next?.first ?: now) - pair.first).seconds
 
-            // consider very_high performance in the last 20 min
-            if (pair.second >= LocationPerformanceType.VERY_HIGH) {
-                lastVeryHighBoostDiff += durationInSec
+                // consider very_high performance in the last 20 min
+                if (pair.second >= LocationPerformanceType.VERY_HIGH) {
+                    lastVeryHighBoostDiff += durationInSec
+                }
             }
         }
 
         // sum duration of HIGH and MEDIUM_HIGH requests in last hour
         hourIterator.forEachIndexed { index, pair ->
-            val next = hourIterator.getOrNull(index + 1)
-            val durationInSec = ((next?.first ?: now) - pair.first).seconds
+            // don't consider user own boost
+            if(pair.second < LocationPerformanceType.MANUAL_BOOST) {
+                val next = hourIterator.getOrNull(index + 1)
+                val durationInSec = ((next?.first ?: now) - pair.first).seconds
 
-            if (pair.second >= LocationPerformanceType.HIGH) {
-                lastHighBoostDiff += durationInSec
-            }
-            if (pair.second > LocationPerformanceType.MEDIUM_HIGH) {
-                lastMediumBoostDiff += durationInSec
+                if (pair.second >= LocationPerformanceType.HIGH) {
+                    lastHighBoostDiff += durationInSec
+                }
+                if (pair.second >= LocationPerformanceType.MEDIUM_HIGH) {
+                    lastMediumBoostDiff += durationInSec
+                }
             }
         }
 
@@ -211,6 +231,10 @@ class LocationPerformanceManager constructor(
         val batteryMedium = batteryLevel < 20
 
         return when (type) {
+            LocationPerformanceType.MANUAL_BOOST -> {
+                // always allow manual boost
+                LocationPerformanceType.MANUAL_BOOST
+            }
             LocationPerformanceType.VERY_HIGH -> {
                 if (timeCriteriaVeryHigh) {
                     // user consumed very high performance allowance, check with HIGH
@@ -270,6 +294,13 @@ class LocationPerformanceManager constructor(
         val requested: LocationPerformanceType = LocationPerformanceType.BALANCED,
         val current: LocationPerformanceType = LocationPerformanceType.BALANCED,
     ) {
+
+        constructor(isBoostedManually: Boolean): this(
+            old = LocationPerformanceType.BALANCED,
+            requested = if (isBoostedManually) LocationPerformanceType.MANUAL_BOOST else LocationPerformanceType.BALANCED,
+            current = if (isBoostedManually) LocationPerformanceType.MANUAL_BOOST else LocationPerformanceType.BALANCED,
+        )
+
         val isThrottling get() = requested > current
         val isThrottlingLocationRequest get() = isThrottling && requested == LocationPerformanceType.VERY_HIGH
         val isSlow get() = isThrottling || current <= LocationPerformanceType.BALANCED

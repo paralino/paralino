@@ -103,6 +103,8 @@
     <string name="setting_title_delete_account">Delete account</string>
     <string name="setting_title_dangerZone">Danger zone</string>
 
+    <string name="setting_title_locationBoost">Location boost</string>
+
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>
     <string name="login_placeholder_password">Password*</string>
