@@ -9,13 +9,19 @@ import Foundation
 import shared
 
 class PlaceNotificationHandler: IPlaceNotificationsHandler {
-    func process(payload: NotificationPayload) {
-        guard payload is PlaceActivityNotificationPayload else { return }
+    func process(push: PushNotificationRaw) {
+        
     }
 }
 
 class GroupActivityNotificationHandler: IGroupMemberAddedNotificationsHandler {
-    func process(payload: NotificationPayload) {
-        guard payload is GroupMemberAddedNotificationPayload else { return }
+    func process(push: PushNotificationRaw) {
+        
+    }
+}
+
+class LocationRequestNotificationHandler: ILocationRequestNotificationsHandler {
+    func process(push: PushNotificationRaw) {
+        
     }
 }

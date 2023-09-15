@@ -22,7 +22,6 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         serverUrl: "",
         projectId: "",
         debug: true,
-        canUseEmail: true,
         logToConsole: true,
         logErrorsToRemote: true
     )
@@ -36,6 +35,7 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         pushSetupProvider: PushSetupProvider(),
         placeNotificationHandler: PlaceNotificationHandler(),
         groupActivityNotificationHandler: GroupActivityNotificationHandler(),
+        locationRequestNotificationHandler: LocationRequestNotificationHandler(),
         geofenceManager: GeofenceManager(),
         backendConfig: backendConfig,
         remoteModule: { sessionMonitor in AppwriteRemoteModule(sessionMonitor: sessionMonitor, backendConfig: backendConfig) },

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import shared
 
 struct MapPin: View {
     var body: some View {
@@ -17,6 +18,7 @@ struct MapPin: View {
 struct MapAnnotatedItem: Identifiable {
     let id: String
     var name: String
+    var type: MapPinType
     var coordinate: CLLocationCoordinate2D
 }
 
