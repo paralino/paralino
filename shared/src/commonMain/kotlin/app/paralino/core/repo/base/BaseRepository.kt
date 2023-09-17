@@ -39,7 +39,7 @@ abstract class BaseRepository {
             // find a better solution or maybe it will be fixed when FlowAPI reaches stable
             .debounce(10)
             .catch {
-                logg.e(it)
+                logg.e("BaseRepo.mergeDataWithRemote", it)
                 throw it
             }
     }
@@ -66,7 +66,7 @@ abstract class BaseRepository {
                 emit(it)
             }
         }.catch {
-            logg.e(it)
+            logg.e("BaseRepo.getDataOnce", it)
             throw it
         }
     }
@@ -82,7 +82,7 @@ abstract class BaseRepository {
                 remote = remote
             )!!
         } catch (e: Exception) {
-            logg.e(e)
+            logg.e("BaseRepo.triggerRemoteOnly", e)
             throw e
         }
     }
