@@ -16,7 +16,7 @@ class MapHomeState : ObservableObject {
     
     @Published var groupState: Bool? = nil
     @Published var path: [NavigationGraph] = []
-    @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(currentUserImage: ImageModel.companion.placeholder())
+    @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(currentUserImage: ImageModel.companion.placeholder(), isSatelliteMode: false)
     @Published var markers: [MapAnnotatedItem] = []
     
     init() {
@@ -47,6 +47,7 @@ class MapHomeState : ObservableObject {
                         MapAnnotatedItem(
                             id: marker.markerId,
                             name: marker.markerId,
+                            type: marker.pinType,
                             coordinate: CLLocationCoordinate2D(
                                 latitude: marker.lat,
                                 longitude: marker.lng

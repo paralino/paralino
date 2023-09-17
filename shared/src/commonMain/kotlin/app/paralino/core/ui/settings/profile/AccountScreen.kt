@@ -53,6 +53,7 @@ import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.settings.SettingsActionItem
+import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
@@ -181,7 +182,7 @@ fun AccountScreenCore(
                         name = stringResource(MR.strings.setting_title_logout),
                         icon = CoreAppIcons.Logout.asPainterResource(),
                         iconTint = MaterialTheme.colors.error,
-                        showEndArrow = false
+                        type = SettingsActionItemType.Action
                     ) {
                         onShowDialog(MainAlertDialog.Logout)
                     }
@@ -194,7 +195,7 @@ fun AccountScreenCore(
                             name = stringResource(MR.strings.setting_title_delete_account),
                             icon = CoreAppIcons.DeleteForever.asPainterResource(),
                             iconTint = MaterialTheme.colors.error,
-                            showEndArrow = false
+                            type = SettingsActionItemType.Action
                         ) {
                             onShowDialog(MainAlertDialog.DeleteAccount)
                         }
@@ -206,7 +207,7 @@ fun AccountScreenCore(
                         name = stringResource(MR.strings.setting_title_dangerZone),
                         icon = CoreAppIcons.Warning.asPainterResource(),
                         iconTint = MaterialTheme.colors.error,
-                        showEndArrow = false
+                        type = SettingsActionItemType.Action
                     ) {
                         showDangerZoneContent = true
                     }

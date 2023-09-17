@@ -33,7 +33,7 @@ class EditProfileViewModel constructor(
 
     fun proceed() {
         val image = _uiState.value.image
-        val name = _uiState.value.name
+        val name = _uiState.value.name.trim().replace("\n", " ")
 
         val nameValidation = FormValidation.TextNotEmpty.validate(name)
 

@@ -15,6 +15,7 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -53,7 +54,7 @@ fun SettingsScreenCore(
     openProfileDetails: () -> Unit,
     openPersonalCodes: () -> Unit,
     openBlockList: () -> Unit,
-    openLicences: () -> Unit,
+    openLicences: () -> Unit
 ) {
 
     val accountState by viewModel.accountState.collectAsState(Payload.Loading)
@@ -111,6 +112,14 @@ fun SettingsScreenCore(
             }
             Payload.Loading -> {}
             is Payload.Error -> {}
+        }
+
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_locationBoost),
+            icon = CoreAppIcons.ShareLocation.asPainterResource(),
+            type = SettingsActionItemType.Switch(accountState.data?.boostEnabled ?: false)
+        ) {
+            viewModel.toggleBoost()
         }
 
         SettingSectionInfo(
@@ -179,7 +188,7 @@ fun SettingsActionItem(
     name: String,
     icon: Painter,
     iconTint: Color = MaterialTheme.colors.surface,
-    showEndArrow: Boolean = true,
+    type: SettingsActionItemType = SettingsActionItemType.Navigation,
     onClick: () -> Unit
 ) {
     Row(
@@ -210,13 +219,29 @@ fun SettingsActionItem(
             style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
             textAlign = TextAlign.Start
         )
-        if(showEndArrow) {
-            Icon(
-                modifier = Modifier.width(20.dp),
-                painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                contentDescription = null
-            )
+        when (type) {
+            SettingsActionItemType.Action -> {}
+            SettingsActionItemType.Navigation -> {
+                Icon(
+                    modifier = Modifier.width(20.dp),
+                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                    contentDescription = null
+                )
+            }
+            is SettingsActionItemType.Switch -> {
+                Switch(
+                    checked = type.enabled,
+                    onCheckedChange = { onClick() },
+                    enabled = true
+                )
+            }
         }
     }
+}
+
+sealed interface SettingsActionItemType {
+    object Navigation: SettingsActionItemType
+    object Action: SettingsActionItemType
+    data class Switch(val enabled: Boolean): SettingsActionItemType
 }
