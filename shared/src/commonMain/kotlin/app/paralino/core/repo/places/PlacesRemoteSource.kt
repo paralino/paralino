@@ -12,7 +12,6 @@ import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceSettings
 import app.paralino.core.models.raw.CreatePlacePayload
-import app.paralino.core.models.raw.GenericFunctionPayload
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlaceSettingRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
@@ -20,13 +19,12 @@ import app.paralino.core.models.raw.PlaceEventPayload
 import app.paralino.core.models.raw.UpdatePlacePayload
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
-import kotlinx.serialization.encodeToString
 
 class PlacesRemoteSource(
     private val api: IDocumentsApi,
@@ -59,8 +57,8 @@ class PlacesRemoteSource(
             )
 
             val response = functionsApi.runAndWait(
-                remoteConfig.resourceIds.functionPlaceCreate,
-                BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.PLACE_CREATE,
+                data = payload
             )
 
             if (response.isSuccess) {
@@ -157,8 +155,8 @@ class PlacesRemoteSource(
             )
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionPlaceUpdate,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.PLACE_UPDATE,
+                data = payload
             )
 
             if (response.isSuccess) {
@@ -218,7 +216,7 @@ class PlacesRemoteSource(
     suspend fun deletePlace(placeId: String) {
         blocking {
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionPlaceDelete,
+                function = ServerFunction.PLACE_DELETE,
                 data = placeId
             )
 
@@ -256,15 +254,9 @@ class PlacesRemoteSource(
 
     private suspend fun notifyPlaceEvent(placePayload: PlaceEventPayload) {
         blocking {
-
-            val payload = GenericFunctionPayload(
-                route = "place-notify",
-                payload = placePayload
-            )
-
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionUserEvent,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.PLACE_NOTIFY,
+                data = placePayload
             )
 
             if (!response.isSuccess) {
@@ -285,6 +277,4 @@ class PlacesRemoteSource(
     private fun Map<String, Any>.parsePlaceSettings(): GroupPlaceSettingRaw {
         return GroupPlaceSettingRaw.from(this)
     }
-
 }
-

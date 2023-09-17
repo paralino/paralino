@@ -17,6 +17,7 @@ import app.paralino.core.models.raw.GroupMemberGroupKeysData
 import app.paralino.core.models.raw.GroupMemberPublicKeyPayload
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
@@ -156,8 +157,8 @@ class GroupMemberAddUseCase constructor(
         )
 
         val response = functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionCreateGroupMemberID,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+            function = ServerFunction.MEMBER_CREATE,
+            data = payload
         )
 
         if (!response.isSuccess) {
@@ -169,5 +170,4 @@ class GroupMemberAddUseCase constructor(
             )
         }
     }
-
 }

@@ -14,6 +14,7 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.raw.LocationCreatePayload
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
@@ -95,8 +96,8 @@ class RegisterDeviceForSharingUseCase constructor(
 
             logg.tag("sharing_start").d("Send register device request")
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionLocationCreate,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.LOCATION_CREATE,
+                data = payload
             )
 
             if (response.isSuccess) {
@@ -137,5 +138,4 @@ class RegisterDeviceForSharingUseCase constructor(
             }
         }
     }
-
 }

@@ -16,11 +16,11 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberLocation
-import app.paralino.core.models.raw.GenericFunctionPayload
 import app.paralino.core.models.raw.GroupSenderKeyPayload
 import app.paralino.core.models.raw.MemberLocationDataPayload
 import app.paralino.core.models.raw.UpdateGroupMemberSenderKeysPayload
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
@@ -135,14 +135,9 @@ class MemberDeviceKeyRotation(
             locationData = newLocationData,
         )
 
-        val payload = GenericFunctionPayload(
-            route = "rotate-device-keys",
-            payload = payloadData
-        )
-
         val response = functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionUpdateGroupMemberKeysID,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+            function = ServerFunction.KEYS_UPDATE_LOCATIONS,
+            data = payloadData
         )
 
         if (!response.isSuccess) {

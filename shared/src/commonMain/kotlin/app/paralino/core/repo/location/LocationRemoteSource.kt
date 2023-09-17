@@ -16,6 +16,7 @@ import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.CryptoException
@@ -43,8 +44,8 @@ class LocationRemoteSource constructor(
             )
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionLocationDelete,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.LOCATION_DELETE,
+                data = payload
             )
 
             if (!response.isSuccess) {
@@ -154,5 +155,4 @@ class LocationRemoteSource constructor(
             )
         }
     }
-
 }

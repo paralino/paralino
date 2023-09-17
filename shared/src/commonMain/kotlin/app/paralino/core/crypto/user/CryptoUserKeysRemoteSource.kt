@@ -6,10 +6,9 @@ import app.paralino.core.models.raw.UpdateUserKeysFunctionData
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
-import kotlinx.serialization.encodeToString
 
 class CryptoUserKeysRemoteSource(
     private val docApi: IDocumentsApi,
@@ -35,8 +34,8 @@ class CryptoUserKeysRemoteSource(
         )
 
         val response = functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionUserKeysUpdate,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+            function = ServerFunction.KEYS_UPDATE_USER,
+            data = payload
         )
 
         if (response.isSuccess) {

@@ -8,7 +8,6 @@ import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
-import app.paralino.core.models.raw.GenericFunctionPayload
 import app.paralino.core.models.raw.PersonalCodeCreateData
 import app.paralino.core.models.raw.PersonalCodePreKeyData
 import app.paralino.core.models.raw.PersonalCodeRaw
@@ -24,6 +23,7 @@ import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.nowUTC
@@ -72,14 +72,9 @@ class PersonalCodesRemoteSource constructor(
             keys = createPreKeys(userId, personalCode, integrity)
         )
 
-        val payload = GenericFunctionPayload(
-            route = "update",
-            payload = data
-        )
-
         functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+            function = ServerFunction.PERSONAL_CODE_UPDATE,
+            data = data
         )
             .let { response ->
                 if (!response.isSuccess) {
@@ -133,14 +128,9 @@ class PersonalCodesRemoteSource constructor(
             keys = keys
         )
 
-        val payload = GenericFunctionPayload(
-            route = "create",
-            payload = data
-        )
-
         functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+            function = ServerFunction.PERSONAL_CODE_CREATE,
+            data = data
         )
             .let { response ->
                 if (!response.isSuccess) {
@@ -189,14 +179,9 @@ class PersonalCodesRemoteSource constructor(
             keys = keys
         )
 
-        val payload = GenericFunctionPayload(
-            route = "restock-keys",
-            payload = data
-        )
-
         functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+            function = ServerFunction.KEYS_UPDATE_CODE,
+            data = data
         )
             .let { response ->
                 if (!response.isSuccess) {
@@ -284,7 +269,7 @@ class PersonalCodesRemoteSource constructor(
     suspend fun getUserInfoFromCode(code: String): UserPersonalCodeData {
         val codeKeys = cryptoCore.derivePassword(code)
         val response = functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionPersonalCodeReadID,
+            function = ServerFunction.PERSONAL_CODE_READ,
             data = codeKeys.loginPassword
         )
 
@@ -307,13 +292,9 @@ class PersonalCodesRemoteSource constructor(
     }
 
     suspend fun revokeAllCodes() {
-        val payload = GenericFunctionPayload(
-            route = "revoke",
-            payload = ""
-        )
         functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionPersonalCodeCreateID,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+            function = ServerFunction.PERSONAL_CODE_DELETE,
+            data = null
         )
             .let { response ->
                 if (!response.isSuccess) {

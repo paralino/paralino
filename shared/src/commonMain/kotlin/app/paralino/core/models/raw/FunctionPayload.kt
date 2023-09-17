@@ -4,12 +4,6 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class GenericFunctionPayload<T>(
-    val route: String,
-    val payload: T
-)
-
-@Serializable
 data class CreateGroupPayload constructor(
     val encryptedGroupKey: String,
     val signedPublicKey: String,

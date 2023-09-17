@@ -1,15 +1,13 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.config
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.models.raw.GenericFunctionPayload
 import app.paralino.core.models.raw.LocationRequestPayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IRealtimeApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -17,7 +15,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import kotlinx.serialization.encodeToString
 
 class LocationRefreshUseCase constructor(
     private val realtimeApi: IRealtimeApi,
@@ -72,14 +69,10 @@ class LocationRefreshUseCase constructor(
                 locationId = locationId,
                 force = false
             )
-            val payload = GenericFunctionPayload(
-                route = "location-request",
-                payload = requestPayload
-            )
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionUserEvent,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.LOCATION_REQUEST,
+                data = requestPayload
             )
 
             if (!response.isSuccess) {
@@ -92,5 +85,4 @@ class LocationRefreshUseCase constructor(
             }
         }
     }
-
 }

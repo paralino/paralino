@@ -16,6 +16,7 @@ import app.paralino.core.models.raw.CreateGroupPayload
 import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
@@ -157,8 +158,8 @@ class GroupCreateUseCase(
             )
 
             val response = functionsApi.runAndWait(
-                remoteConfig.resourceIds.functionCreateGroupID,
-                BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.GROUP_CREATE,
+                data = payload
             )
 
             if (response.isSuccess) {

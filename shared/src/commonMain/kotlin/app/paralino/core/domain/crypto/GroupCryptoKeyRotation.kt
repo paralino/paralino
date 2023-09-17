@@ -17,6 +17,7 @@ import app.paralino.core.models.raw.GroupKeysPayload
 import app.paralino.core.models.raw.GroupPlaceDataUpdatePayload
 import app.paralino.core.models.raw.UpdateGroupKeysPayload
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
@@ -217,8 +218,8 @@ class GroupCryptoKeyRotation constructor(
             )
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionUpdateGroupKeysID,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.KEYS_UPDATE_GROUP,
+                data = payload
             )
 
             if (!response.isSuccess) {

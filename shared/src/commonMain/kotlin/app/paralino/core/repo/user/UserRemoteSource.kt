@@ -12,10 +12,9 @@ import app.paralino.core.models.user.UserSession
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IUserApi
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
-import kotlinx.serialization.encodeToString
 
 class UserRemoteSource constructor(
     private val api: IUserApi,
@@ -103,7 +102,7 @@ class UserRemoteSource constructor(
     suspend fun deleteAccount() {
         blocking {
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionDeleteAccountAndData
+                function = ServerFunction.ACCOUNT_DELETE
             )
 
             if (!response.isSuccess) {
@@ -129,8 +128,8 @@ class UserRemoteSource constructor(
             }
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionResetAccount,
-                data = payload?.let { BaseRemoteModule.formatter.encodeToString(it) }
+                function = ServerFunction.ACCOUNT_RESET,
+                data = payload
             )
 
             if (!response.isSuccess) {
@@ -147,5 +146,4 @@ class UserRemoteSource constructor(
     suspend fun logout() {
         api.logout()
     }
-
 }

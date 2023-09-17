@@ -10,17 +10,24 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.GroupMapperCore
-import app.paralino.core.models.raw.*
+import app.paralino.core.models.raw.BlockGroupFunctionData
+import app.paralino.core.models.raw.BlockGroupMemberFunctionData
+import app.paralino.core.models.raw.DeleteGroupMemberPayload
+import app.paralino.core.models.raw.GroupDocumentRaw
+import app.paralino.core.models.raw.GroupSettingsRaw
+import app.paralino.core.models.raw.GroupWithMembersRaw
+import app.paralino.core.models.raw.MemberDocumentRaw
+import app.paralino.core.models.raw.MemberLocationRaw
+import app.paralino.core.models.raw.MemberWithLocationsRaw
+import app.paralino.core.models.raw.UpdateGroupPayload
 import app.paralino.core.models.user.BlockListModelData
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.PermissionDeniedException
 import app.paralino.core.utils.extensions.blocking
-import kotlinx.serialization.encodeToString
 
 class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
@@ -41,8 +48,8 @@ class GroupsRemoteSource constructor(
             )
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionUpdateGroupID,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.GROUP_UPDATE,
+                data = payload
             )
 
             if (response.isSuccess) {
@@ -70,11 +77,8 @@ class GroupsRemoteSource constructor(
             )
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionDeleteGroupMemberID,
-                data = GenericFunctionPayload(
-                    route = "delete-member",
-                    payload = payload
-                )
+                function = ServerFunction.MEMBER_DELETE,
+                data = payload
             )
 
             if (!response.isSuccess) {
@@ -174,7 +178,7 @@ class GroupsRemoteSource constructor(
     suspend fun deleteGroup(groupId: String) {
         blocking {
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionDeleteGroupID,
+                function = ServerFunction.GROUP_DELETE,
                 data = groupId
             )
 
@@ -211,11 +215,8 @@ class GroupsRemoteSource constructor(
             )
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionDeleteGroupMemberID,
-                data = GenericFunctionPayload(
-                    route = "block-group",
-                    payload = payload
-                )
+                function = ServerFunction.GROUP_BLOCK,
+                data = payload
             )
 
             if (!response.isSuccess) {
@@ -252,11 +253,8 @@ class GroupsRemoteSource constructor(
             )
 
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionDeleteGroupMemberID,
-                data = GenericFunctionPayload(
-                    route = "block-user",
-                    payload = payload
-                )
+                function = ServerFunction.MEMBER_BLOCK,
+                data = payload
             )
 
             if (!response.isSuccess) {
@@ -285,5 +283,4 @@ class GroupsRemoteSource constructor(
     private fun Map<String, Any>.parseMemberLocation(): MemberLocationRaw {
         return MemberLocationRaw.from(this)
     }
-
 }
