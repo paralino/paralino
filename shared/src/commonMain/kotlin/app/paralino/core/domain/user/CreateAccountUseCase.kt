@@ -85,7 +85,7 @@ class CreateAccountUseCase constructor(
             emit(SignUpStep.ALL_DONE)
         }
             .catch {
-                logg.e(it)
+                logg.e("Error signing up", it)
                 throw it
             }
     }
