@@ -19,7 +19,6 @@ import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.SystemLogr
 import app.paralino.core.utils.exceptions.InternalConnectionException
-import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.sentry.Sentry
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -30,7 +29,7 @@ class DeviceApiProvider constructor(
     backendConfig: BackendConfig,
     locationStatusProvider: ILocationStatusProvider,
     connectionStatusProvider: IConnectionStatusProvider
-): IDeviceApiProvider(backendConfig, locationStatusProvider, connectionStatusProvider) {
+) : IDeviceApiProvider(backendConfig, locationStatusProvider, connectionStatusProvider) {
 
     override val deviceType: DeviceType
         get() = DeviceType.Android
@@ -55,17 +54,37 @@ class DeviceApiProvider constructor(
 
     override fun createSystemLogr(): SystemLogr {
         return if (backendConfig.logToConsole) {
-            DebugLogr("Paralino")
-        } else {
-            object : SystemLogr() {
-                override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
-                    val logAllowed = backendConfig.logErrorsToRemote && priority == LogPriority.ERROR
-                    val exceptionAllowed = t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException
-                    if(logAllowed && exceptionAllowed) {
-                        Sentry.captureException(t!!)
-                    }
+            object : DebugLogr("Paralino") {
+                override fun systemLog(
+                    priority: LogPriority,
+                    tag: String?,
+                    message: String,
+                    t: Throwable?
+                ) {
+                    super.systemLog(priority, tag, message, t)
+                    logToRemote(priority, t)
                 }
             }
+        } else {
+            object : SystemLogr() {
+                override fun systemLog(
+                    priority: LogPriority,
+                    tag: String?,
+                    message: String,
+                    t: Throwable?
+                ) {
+                    logToRemote(priority, t)
+                }
+            }
+        }
+    }
+
+    private fun logToRemote(priority: LogPriority, t: Throwable?) {
+        val logAllowed = backendConfig.logErrorsToRemote && priority == LogPriority.ERROR
+        val exceptionAllowed =
+            t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException
+        if (logAllowed && exceptionAllowed) {
+            Sentry.captureException(t!!)
         }
     }
 
