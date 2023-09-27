@@ -4,6 +4,8 @@ import app.paralino.core.config
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
+import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -33,6 +35,7 @@ import kotlinx.coroutines.launch
 class GroupDetailViewModel(
     val groupId: String,
     private val userRepo: UserRepository,
+    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
     private val connectionStatus: IConnectionStatusProvider,
@@ -289,6 +292,13 @@ class GroupDetailViewModel(
     fun stopSharing() {
         coroutineScope.launch {
             sharingManager.stopSharing(groupId)
+
+            try {
+                deviceStatusProcessor.pushDeviceStatus(groupId)
+            } catch (e: Exception) {
+                logg.w("Error while updating user status", e)
+            }
+
         }
     }
 

@@ -120,7 +120,7 @@ class LocationService : Service() {
                 }
             }
             .catch {
-                logg.e(it)
+                logg.e("Error start/stop tracking", it)
                 stopAll()
             }
             .launchIn(serviceDefaultScope)

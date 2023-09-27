@@ -64,7 +64,7 @@ data class MemberLocation constructor(
         get() = !isOlderThan(5.minutes)
 
     val isExpired: Boolean
-        get() = isOlderThan(1.hours) || (!hasLocation && isStatusOlderThan(2.hours))
+        get() = isOlderThan(1.hours) && isStatusOlderThan(2.hours) || (!hasLocation && isStatusOlderThan(2.hours))
 
     val isActiveButNotFresh: Boolean
         get() {
@@ -77,6 +77,7 @@ data class MemberLocation constructor(
 
     val isEnded: Boolean
         get() {
+            if (status.data?.statusType == MemberDeviceStatusType.NOT_SHARING) return true
             val endTime = locationData.data?.endTimeUTC?.fromUTCtoInstant() ?: return false
             return endTime < nowUTC() && !isPinActive
         }

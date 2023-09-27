@@ -12,5 +12,6 @@ enum class LocationPerformanceType {
     BALANCED,
     MEDIUM_HIGH,
     HIGH,
-    VERY_HIGH
+    VERY_HIGH,
+    MANUAL_BOOST
 }

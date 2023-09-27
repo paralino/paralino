@@ -8,6 +8,7 @@ import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupMemberAddedNotificationsHandler
+import app.paralino.core.notifications.ILocationRequestNotificationsHandler
 import app.paralino.core.notifications.IPlaceNotificationsHandler
 import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
@@ -52,6 +53,7 @@ object KoinIOS {
         pushSetupProvider: IPushProviderManager,
         placeNotificationHandler: IPlaceNotificationsHandler,
         groupActivityNotificationHandler: IGroupMemberAddedNotificationsHandler,
+        locationRequestNotificationHandler: ILocationRequestNotificationsHandler,
         geofenceManager: IGeofenceManager,
         backendConfig: BackendConfig,
         remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
@@ -68,8 +70,9 @@ object KoinIOS {
                 single { connectionStatusProvider }
                 single { locationStatusProvider }
                 single { pushSetupProvider }
-                single { placeNotificationHandler }
-                single { groupActivityNotificationHandler }
+                factory { placeNotificationHandler }
+                factory { groupActivityNotificationHandler }
+                factory { locationRequestNotificationHandler }
                 single { geofenceManager }
                 single { remoteModule(get()) }
                 single { backendConfig }
@@ -90,7 +93,7 @@ object KoinIOS {
         return module {
             factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
             factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config, get()) }
-            factory { SettingsViewModel(get(), get(), get(), get()) }
+            factory { SettingsViewModel(get(), get(), get(), get(), get(), config) }
             factory { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
@@ -107,7 +110,7 @@ object KoinIOS {
                     groupMemberAdd = get()
                 )
             }
-            factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { MainViewModel(get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }

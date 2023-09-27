@@ -1,10 +1,8 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
-import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
-import app.paralino.core.domain.location.MemberDeviceStatusProvider
+import app.paralino.core.domain.location.LocationPayloadProvider
+import app.paralino.core.domain.location.LocationPayloadStatus
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
-import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
@@ -14,7 +12,6 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.utils.extensions.safeLet
 import kotlinx.coroutines.flow.Flow
 
 class LocationRepository constructor(
@@ -22,11 +19,8 @@ class LocationRepository constructor(
     private val local: LocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val placesRepo: PlacesRepository,
-    private val memberIdUseCase: UserMemberIdUseCase,
-    private val memberDeviceStatusProvider: MemberDeviceStatusProvider,
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
-    private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
-    private val deviceKeyRotation: MemberDeviceKeyRotation
+    private val payloadProvider: LocationPayloadProvider
 ) : BaseRepository() {
 
     suspend fun getMembersByUserId(userid: String): List<MemberModel> {
@@ -44,83 +38,56 @@ class LocationRepository constructor(
     private suspend fun getLocationPayload(
         groupId: String,
         data: LocationDataModel?,
-        contract: LocationSharingContract?
+        contract: LocationSharingContract?,
+        retryCount: Int = 0
     ): MemberGroupId? {
-        return triggerRemoteOnly {
-            // skip location update if key rotation is in progress
-            if (
-                memberCryptoKeyRotation.isProcessing(groupId) ||
-                deviceKeyRotation.isProcessing(groupId)
-            ) {
-                return@triggerRemoteOnly null
-            }
 
-            var locationId =
-                memberIdUseCase.getCurrentLocationIdForGroup(groupId = groupId)
+        val payload = payloadProvider.getLocationPayload(
+            groupId = groupId,
+            data = data,
+            contract = contract
+        )
+        return when (payload) {
+            is LocationPayloadStatus.Success -> payload.payload
 
-            if (locationId.isNullOrBlank()) {
-                logg.d("Location is null for ${groupId}, try register new device")
+            LocationPayloadStatus.MissingLocationDocument -> {
                 try {
-                    registerDeviceForSharing.registerDevice(
-                        groupId = groupId,
-                        deviceName = null
-                    )
+                    if (retryCount < 1) {
+                        logg.v("Missing user location document for new location, try registering device")
+                        registerDeviceForSharing.registerDevice(
+                            groupId = groupId,
+                            deviceName = null,
+                            contract = contract
+                        )
+                        logg.v("Device registered, retry payload")
+                        getLocationPayload(
+                            groupId = groupId,
+                            data = data,
+                            contract = contract,
+                            retryCount = retryCount + 1
+                        )
+                    } else {
+                        null
+                    }
                 } catch (e: Exception) {
                     // TODO notify user
                     logg.w("Error registering device for group sharing", e)
-                    return@triggerRemoteOnly null
+                    null
                 }
             }
 
-            locationId =
-                memberIdUseCase.getCurrentLocationIdForGroup(groupId = groupId)
-
-            val member =
-                memberIdUseCase.getCurrentUserMemberForGroup(groupId = groupId)
-
-            if (locationId.isNullOrBlank() || member == null) {
+            LocationPayloadStatus.MissingData -> {
                 logg.d("Location device can not be established for current device, abort sharing")
                 sharingManager.stopSharing(groupId)
                 null
-            } else if (!member.isVerified) {
+            }
+
+            LocationPayloadStatus.Processing -> null
+            LocationPayloadStatus.UnverifiedMember -> {
                 // TODO Notify user and keep sharing contract active for cases where data is not synced yet
                 // that way sharing could continue after refresh if member becomes verified
                 logg.e("Current member is unverified in group ${groupId}, ignore location update")
                 null
-            } else {
-                MemberGroupId(
-                    locationId = locationId,
-                    groupId = groupId,
-                    member = member,
-                    // TODO share approximate location if selected
-                    locationData = safeLet(data, contract) { data, contract ->
-                        LocationDataModel(
-                            timeUTC = data.timeUTC,
-                            endTimeUTC = contract.endTimeUTC,
-                            lat = data.lat,
-                            lng = data.lng,
-                            accuracy = data.accuracy,
-                            batteryLevel = data.batteryLevel?.takeIf { contract.shareBattery },
-                            speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
-                            altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f }
-                        )
-                    },
-                    deviceStatus = memberDeviceStatusProvider.getStatus(groupId = groupId)
-                )
-            }
-        }
-    }
-
-    suspend fun pushDeviceStatus(groupId: String) {
-        triggerRemoteOnly {
-            val payload = getLocationPayload(
-                groupId = groupId,
-                data = null,
-                contract = null
-            )
-
-            if (payload != null) {
-                remote.saveCurrentLocation(payload)
             }
         }
     }
@@ -139,7 +106,11 @@ class LocationRepository constructor(
                 )
             }
 
-            data?.let { placesRepo.processLocation(it) }
+            data?.let {
+                logg.v("Process new location in places")
+                placesRepo.processLocation(it)
+            }
+            logg.v("Upload new location")
             remote.saveCurrentLocation(mapped)
         }
     }

@@ -34,7 +34,7 @@ struct MapHomeScreenElements: View {
                 HStack {
                     Spacer()
                     Button(action: { focusOnGroup() }) {
-                        Label(MR.strings().button_ok.localizedString(), systemImage: "plus")
+                        Label("Focus", systemImage: "plus.magnifyingglass")
                     }
                 }.padding(.bottom)
             }

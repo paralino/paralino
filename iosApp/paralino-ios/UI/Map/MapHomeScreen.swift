@@ -25,8 +25,8 @@ struct MapHomeScreen: View {
     var body: some View {
         ZStack {
             if mapState.uiState is MapHomeScreenState.Ready {
-                Map(coordinateRegion: $region, annotationItems: mapState.markers) { marker in
-                    MapMarker(coordinate: marker.coordinate)
+                Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: mapState.markers) { marker in
+                    MapMarker(coordinate: marker.coordinate, tint: marker.type == MapPinType.member ? Color.themePrimary : Color.redMain)
                 }
                     .ignoresSafeArea(.all, edges: .vertical)
             } else if mapState.uiState is MapHomeScreenState.Empty {
@@ -44,7 +44,19 @@ struct MapHomeScreen: View {
                     path.append(.settings(.settings))
                 },
                 focusOnGroup: {
-                    mapState.vm.trackMarker(marker: nil)
+                    mapState.vm.toggleFocusOnMembers()
+                    let firstUserMarker = mapState.markers.first {
+                        $0.type == MapPinType.member
+                    }
+                    if let marker = firstUserMarker {
+                        region = MKCoordinateRegion(
+                            center: CLLocationCoordinate2D(
+                                latitude: marker.coordinate.latitude,
+                                longitude: marker.coordinate.longitude
+                            ),
+                            span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+                        )
+                    }
                 }
             )
         }

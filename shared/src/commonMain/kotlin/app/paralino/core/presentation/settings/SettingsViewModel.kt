@@ -1,13 +1,17 @@
 package app.paralino.core.presentation.settings
 
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.user.LogoutUseCase
+import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.exception
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -26,7 +30,9 @@ class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository,
     private val appConfigRepository: AppConfigRepository,
-    private val deviceApiProvider: IDeviceApiProvider
+    private val deviceApiProvider: IDeviceApiProvider,
+    private val locationPerformanceManager: LocationPerformanceManager,
+    private val config: AppConfig
 ) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(Payload.Loading)
@@ -39,7 +45,7 @@ class SettingsViewModel(
         combine(
             userRepo.getAndRefreshUser(),
             appConfigRepository.getConfig()
-        ) { userState, config ->
+        ) { userState, appConfig ->
             _accountState.update {
                 when (userState) {
                     Resource.NotInitialized -> it
@@ -57,10 +63,11 @@ class SettingsViewModel(
                                             ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
                                         else null
                                     ),
-                                    canUseEmail = config.emailEnabled,
+                                    canUseEmail = appConfig.emailEnabled,
                                     logoutState = null,
                                     deleteAccountState = null,
-                                    versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})"
+                                    versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
+                                    boostEnabled = config.trackingBoost
                                 )
                             )
                         } else {
@@ -116,4 +123,19 @@ class SettingsViewModel(
         deviceApiProvider.copyToClipboard(data)
     }
 
+    fun toggleBoost() {
+        _accountState.update {
+            it.mapSuccess {
+                val boostValue = !it.boostEnabled
+                logg.v("Toggle manual location boost: $boostValue")
+                config.trackingBoost = boostValue
+                if(boostValue) {
+                    locationPerformanceManager.locationBoostRequested(groupId = null, LocationPerformanceType.MANUAL_BOOST)
+                } else {
+                    locationPerformanceManager.disableManualBoost()
+                }
+                it.copy(boostEnabled = boostValue)
+            }
+        }
+    }
 }

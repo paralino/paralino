@@ -109,7 +109,7 @@ object KoinSetup {
                 projectId = BuildConfig.serverKey,
                 debug = BuildConfig.internalTesting,
                 logToConsole = BuildConfig.forceLogToSystem && BuildConfig.BUILD_TYPE == "debug",
-                logErrorsToRemote = BuildConfig.BUILD_TYPE == "release"
+                logErrorsToRemote = true
             )
         }
         single {
@@ -122,7 +122,7 @@ object KoinSetup {
 
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), config, get()) }
-        viewModel { SettingsViewModel(get(), get(), get(), get()) }
+        viewModel { SettingsViewModel(get(), get(), get(), get(), get(), config) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
         viewModel { (args: String?) ->
@@ -139,7 +139,7 @@ object KoinSetup {
                 groupMemberAdd = get()
             )
         }
-        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }

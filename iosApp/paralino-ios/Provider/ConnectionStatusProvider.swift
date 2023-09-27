@@ -44,4 +44,12 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
             }
         }
     }
+    
+    override func getNetworkType() async throws -> NetworkType? {
+        return NetworkType.wifi
+    }
+    
+    override func getSignalStrength() async throws -> KotlinInt? {
+        return 4
+    }
 }
