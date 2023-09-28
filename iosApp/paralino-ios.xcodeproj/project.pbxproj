@@ -26,6 +26,7 @@
 		252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */; };
 		25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A8F29E9452300CD32F5 /* SealedClasses.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
+		253D31682AC215FD009E5010 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 253D31672AC215FD009E5010 /* Appwrite */; };
 		254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */; };
 		254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2729EC7C50008B1458 /* Image+Extensions.swift */; };
 		254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2929EC7F6A008B1458 /* LoginScreenObject.swift */; };
@@ -69,11 +70,9 @@
 		25FC5CAE2A45FB320006E796 /* BlockListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CAD2A45FB320006E796 /* BlockListScreen.swift */; };
 		25FC5CB02A460A510006E796 /* RawDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CAF2A460A510006E796 /* RawDataScreen.swift */; };
 		25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */; };
-		EF215CBE51401502319554BE /* Pods_paralino_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3F5FE574DDD4D5753A70313 /* Pods_paralino_ios.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		221BD64B3F57ABF2D85AEFE2 /* Pods-paralino-ios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-paralino-ios.release.xcconfig"; path = "Target Support Files/Pods-paralino-ios/Pods-paralino-ios.release.xcconfig"; sourceTree = "<group>"; };
 		252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceApiProvider.swift; sourceTree = "<group>"; };
 		252E361429CF60BA008FC635 /* Logr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logr.swift; sourceTree = "<group>"; };
 		252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionStatusProvider.swift; sourceTree = "<group>"; };
@@ -135,8 +134,6 @@
 		25FC5CAD2A45FB320006E796 /* BlockListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListScreen.swift; sourceTree = "<group>"; };
 		25FC5CAF2A460A510006E796 /* RawDataScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataScreen.swift; sourceTree = "<group>"; };
 		25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileScreen.swift; sourceTree = "<group>"; };
-		37605D00BE01FCF253A6EEF8 /* Pods-paralino-ios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-paralino-ios.debug.xcconfig"; path = "Target Support Files/Pods-paralino-ios/Pods-paralino-ios.debug.xcconfig"; sourceTree = "<group>"; };
-		B3F5FE574DDD4D5753A70313 /* Pods_paralino_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_paralino_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,7 +144,7 @@
 				252EA01529DDA99B00338956 /* Appwrite in Frameworks */,
 				252EA02029E03B4D00338956 /* Clibsodium in Frameworks */,
 				252EA02229E03B4D00338956 /* Sodium in Frameworks */,
-				EF215CBE51401502319554BE /* Pods_paralino_ios.framework in Frameworks */,
+				253D31682AC215FD009E5010 /* Appwrite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,8 +318,6 @@
 				25E044582A3358D5001E1B05 /* Configuration */,
 				25C03A6629CCE77100646364 /* paralino-ios */,
 				25C03A6529CCE77100646364 /* Products */,
-				3AE4CE0D3F24040EF8F9159E /* Pods */,
-				773EB7DDD36507F320E9DA98 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -375,23 +370,6 @@
 			path = Configuration;
 			sourceTree = "<group>";
 		};
-		3AE4CE0D3F24040EF8F9159E /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				37605D00BE01FCF253A6EEF8 /* Pods-paralino-ios.debug.xcconfig */,
-				221BD64B3F57ABF2D85AEFE2 /* Pods-paralino-ios.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		773EB7DDD36507F320E9DA98 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				B3F5FE574DDD4D5753A70313 /* Pods_paralino_ios.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -399,11 +377,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 25C03A7229CCE77200646364 /* Build configuration list for PBXNativeTarget "paralino-ios" */;
 			buildPhases = (
-				5F7C77D036D61A13E563C5BA /* [CP] Check Pods Manifest.lock */,
+				252D59F22AC6133D00C49BBE /* Compile Kotlin */,
 				25C03A6029CCE77100646364 /* Sources */,
 				25C03A6129CCE77100646364 /* Frameworks */,
 				25C03A6229CCE77100646364 /* Resources */,
-				53131422DC8DCC19D7CADF07 /* [CP] Copy Pods Resources */,
 				25C617F42A34C7BB00EB34FA /* Copy Moko resources */,
 			);
 			buildRules = (
@@ -415,6 +392,7 @@
 				252EA01429DDA99B00338956 /* Appwrite */,
 				252EA01F29E03B4D00338956 /* Clibsodium */,
 				252EA02129E03B4D00338956 /* Sodium */,
+				253D31672AC215FD009E5010 /* Appwrite */,
 			);
 			productName = "paralino-ios";
 			productReference = 25C03A6429CCE77100646364 /* paralino-ios.app */;
@@ -473,6 +451,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		252D59F22AC6133D00C49BBE /* Compile Kotlin */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Compile Kotlin";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+		};
 		25C617F42A34C7BB00EB34FA /* Copy Moko resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -489,46 +485,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"$SRCROOT/../gradlew\" -p \"$SRCROOT/../\" :shared:copyFrameworkResourcesToApp \\\n    -Pmoko.resources.BUILT_PRODUCTS_DIR=\"$BUILT_PRODUCTS_DIR\" \\\n    -Pmoko.resources.CONTENTS_FOLDER_PATH=\"$CONTENTS_FOLDER_PATH\" \\\n    -Pkotlin.native.cocoapods.platform=\"$PLATFORM_NAME\" \\\n    -Pkotlin.native.cocoapods.archs=\"$ARCHS\" \\\n    -Pkotlin.native.cocoapods.configuration=\"$CONFIGURATION\" \n";
-		};
-		53131422DC8DCC19D7CADF07 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-paralino-ios/Pods-paralino-ios-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-paralino-ios/Pods-paralino-ios-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-paralino-ios/Pods-paralino-ios-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5F7C77D036D61A13E563C5BA /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-paralino-ios-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"$SRCROOT/../gradlew\" -p \"$SRCROOT/../\" :shared:copyFrameworkResourcesToApp \\\n    -Pmoko.resources.PLATFORM_NAME=\"$PLATFORM_NAME\" \\\n    -Pmoko.resources.CONFIGURATION=\"$CONFIGURATION\" \\\n    -Pmoko.resources.ARCHS=\"$ARCHS\" \\\n    -Pmoko.resources.BUILT_PRODUCTS_DIR=\"$BUILT_PRODUCTS_DIR\" \\\n    -Pmoko.resources.CONTENTS_FOLDER_PATH=\"$CONTENTS_FOLDER_PATH\" \n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -735,7 +692,6 @@
 		};
 		25C03A7329CCE77200646364 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 37605D00BE01FCF253A6EEF8 /* Pods-paralino-ios.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -745,10 +701,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = XWZADCUWC3;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${PODS_ROOT}/../../shared/build/cocoapods/framework\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Paralino;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -764,6 +717,8 @@
 				MARKETING_VERSION = 0.1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
+					"-framework",
+					shared,
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios;
@@ -777,7 +732,6 @@
 		};
 		25C03A7429CCE77200646364 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 221BD64B3F57ABF2D85AEFE2 /* Pods-paralino-ios.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -787,10 +741,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = XWZADCUWC3;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${PODS_ROOT}/../../shared/build/cocoapods/framework\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Paralino;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -806,6 +757,8 @@
 				MARKETING_VERSION = 0.1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
+					"-framework",
+					shared,
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios;
@@ -846,7 +799,7 @@
 			repositoryURL = "https://github.com/appwrite/sdk-for-apple.git";
 			requirement = {
 				kind = exactVersion;
-				version = 2.0.0;
+				version = 4.0.1;
 			};
 		};
 		252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */ = {
@@ -874,6 +827,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */;
 			productName = Sodium;
+		};
+		253D31672AC215FD009E5010 /* Appwrite */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Appwrite;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

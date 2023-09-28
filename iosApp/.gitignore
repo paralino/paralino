@@ -12,6 +12,4 @@ build/
 
 xcuserdata/
 
-Podfile.lock
-Pods/*
 paralino-ios.xcworkspace/*
