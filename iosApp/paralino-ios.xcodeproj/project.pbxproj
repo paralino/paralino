@@ -242,6 +242,13 @@
 			path = Localization;
 			sourceTree = "<group>";
 		};
+		2556B8422AC6FCED00ADEB17 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Frameworks;
+			sourceTree = "<group>";
+		};
 		256C5A5829E8934E00FCF0B7 /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -317,6 +324,7 @@
 			children = (
 				25E044582A3358D5001E1B05 /* Configuration */,
 				25C03A6629CCE77100646364 /* paralino-ios */,
+				2556B8422AC6FCED00ADEB17 /* Frameworks */,
 				25C03A6529CCE77100646364 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -701,7 +709,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = XWZADCUWC3;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Paralino;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -741,7 +752,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = XWZADCUWC3;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Paralino;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
