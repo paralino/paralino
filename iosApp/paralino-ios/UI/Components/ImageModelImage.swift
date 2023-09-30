@@ -25,7 +25,6 @@ struct ImageModelImage: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: imageSize, height: imageSize, alignment: .center)
-                                
                         }
                         .aspectRatio(1.0, contentMode: .fill)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -66,11 +65,5 @@ struct ImageModelImage_Previews: PreviewProvider {
             imageModel: ImageModel.companion.placeholder(),
             useBackgroundForEmoji: true
         )
-    }
-}
-
-extension Image {
-    init(resource: KeyPath<MR.images, ResourcesImageResource>) {
-        self.init(uiImage: MR.images()[keyPath: resource].toUIImage()!)
     }
 }

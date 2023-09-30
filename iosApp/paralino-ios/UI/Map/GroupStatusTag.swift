@@ -28,9 +28,9 @@ struct GroupStatusTag: View {
     var tagText: String {
         if let status = status {
             switch status {
-            case .sharingActive: return MR.strings().group_members_status_active.localizedString()
-            case .unverified: return MR.strings().dashboard_groups_section_unverified.localizedString()
-            case .inactive: return MR.strings().group_members_status_inactive.localizedString()
+            case .sharingActive: return MR.shared.strings.group_members_status_active.localizedString()
+            case .unverified: return MR.shared.strings.dashboard_groups_section_unverified.localizedString()
+            case .inactive: return MR.shared.strings.group_members_status_inactive.localizedString()
             default: return ""
             }
         } else {

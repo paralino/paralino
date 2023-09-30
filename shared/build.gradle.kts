@@ -3,7 +3,6 @@ plugins {
     kotlin("plugin.serialization")
     id("com.android.library")
     id("app.cash.sqldelight")
-    id("dev.icerock.mobile.multiplatform-resources")
     id("org.jetbrains.compose")
 }
 
@@ -20,6 +19,10 @@ kotlin {
                 baseName = "shared"
                 isStatic = true
                 linkerOpts.add("-lsqlite3")
+
+                // required so iOS app can use resource directly in Swift code
+                export(project(":moko"))
+                export("dev.icerock.moko:resources:0.23.0")
             }
         }
     }
@@ -32,6 +35,7 @@ kotlin {
                 implementation(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+                api(project(":moko"))
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
@@ -40,8 +44,6 @@ kotlin {
                 implementation("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
                 implementation("com.russhwolf:multiplatform-settings:1.0.0")
                 api("io.insert-koin:koin-core:3.5.0")
-                api("dev.icerock.moko:resources:0.23.0")
-                api("dev.icerock.moko:resources-compose:0.23.0")
             }
         }
 
@@ -105,13 +107,4 @@ sqldelight {
             packageName.set("app.paralino.core.data.db")
         }
     }
-}
-
-multiplatformResources {
-    multiplatformResourcesPackage = "app.paralino.core"
-    multiplatformResourcesClassName = "MR"
-    multiplatformResourcesVisibility = dev.icerock.gradle.MRVisibility.Public
-    iosBaseLocalizationRegion = "en"
-    multiplatformResourcesSourceSet = "commonMain"
-    disableStaticFrameworkWarning = true
 }
