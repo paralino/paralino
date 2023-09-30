@@ -3,7 +3,7 @@ package app.paralino.core.repo.api
 enum class ServerFunction constructor(
     val method: String,
     val path: String,
-    val functionId: String = "main_server"
+    val functionId: String = "api"
 ) {
     GROUP_CREATE(method = "POST", path = "/groups"),
     GROUP_DELETE(method = "DELETE", path = "/groups"),
