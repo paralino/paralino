@@ -36,7 +36,7 @@ class FunctionsApi: IFunctionsApi {
             let result = try! await module.functions.createExecution(
                 functionId: function.functionId,
                 body: data,
-                async: true,
+                async: false,
                 path: function.path,
                 method: function.method,
                 headers: [clientHeader.first : clientHeader.second]
