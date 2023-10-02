@@ -124,17 +124,6 @@ fun GroupDetailScreen(
             }
         }
 
-        is MainAlertDialog.GroupOptions -> {
-            dialog.Show {
-                showDialog = when (it) {
-                    "delete" -> MainAlertDialog.DeleteGroup
-                    "leave" -> MainAlertDialog.LeaveGroup
-                    "block" -> MainAlertDialog.BlockGroup
-                    else -> null
-                }
-            }
-        }
-
         else -> {}
     }
 

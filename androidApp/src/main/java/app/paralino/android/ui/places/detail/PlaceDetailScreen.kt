@@ -15,10 +15,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.core.ui.components.DefaultEmptyState
-import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.components.Show
 import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
 import app.paralino.android.ui.navigation.AppScreen
