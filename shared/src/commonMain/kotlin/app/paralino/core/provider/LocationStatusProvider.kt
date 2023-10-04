@@ -11,7 +11,7 @@ abstract class ILocationStatusProvider {
     val status: Flow<LocationConditionStatus> = mutableStatus.mapNotNull { it.data }
     val currentStatus get() = mutableStatus.value.data ?: createCurrentStatus()
 
-    fun refreshLocationStatus() {
+    open fun refreshLocationStatus() {
         mutableStatus.update { createCurrentStatus().toResource() }
     }
 

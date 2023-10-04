@@ -35,7 +35,6 @@ abstract class IDeviceApiProvider(
         if(config.deviceIdSeed.isBlank())
             config.deviceIdSeed = randomUUID
 
-        locationStatusProvider.refreshLocationStatus()
         connectionStatus = connectionStatusProvider
     }
 

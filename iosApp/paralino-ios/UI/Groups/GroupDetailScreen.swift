@@ -10,6 +10,7 @@ import shared
 
 struct GroupDetailScreen: View {
     
+    @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var appState: ViewModelFactoryIOS<GroupDetailViewModel>
     @State var alertDialog: AlertDialogData? = nil
@@ -50,7 +51,7 @@ struct GroupDetailScreen: View {
                         path.removeLast()
                     },
                     askNotificationPermission: {
-                        
+                        appDelegate.requestNotificationPermission()
                     },
                     askLocationService: {
                         

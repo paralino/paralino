@@ -33,11 +33,7 @@ struct GroupInitScreen: View {
                         shareText = ShareText(text: data)
                     },
                     askNotificationPermission: {
-                        let center = UNUserNotificationCenter.current()
-                        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-                            appDelegate.locationStatusProvider.hasNotificationPermission = granted
-                            appDelegate.locationStatusProvider.refreshLocationStatus()
-                        }
+                        appDelegate.requestNotificationPermission()
                     },
                     onClose: {}
                 )

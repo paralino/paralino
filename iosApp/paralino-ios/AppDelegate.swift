@@ -17,29 +17,41 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         initKoin(locationStatusProvider: locationStatusProvider)
-        coreAppManager.onAppStart()
+        
         Logr.i(tag:"delegate", message: "App start")
+        
+        coreAppManager.onAppStart()
+        coreAppManager.onAppActive()
+        
         return true
     }
     
     func appInForeground() {
         Logr.i(tag:"delegate", message: "App in foreground")
-        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
-            Logr.i(tag:"delegate", message: "Notification status: \(settings.authorizationStatus)")
-            switch settings.authorizationStatus {
-            case .denied:
-                self?.locationStatusProvider.hasNotificationPermission = false
-            case .authorized, .provisional:
-                self?.locationStatusProvider.hasNotificationPermission = true
-            default:
-                self?.locationStatusProvider.hasNotificationPermission = false
-            }
-        }
         coreAppManager.onAppActive()
     }
     
     func appInBackground() {
         Logr.i(tag:"delegate", message: "App in background")
         coreAppManager.onAppInactive()
+    }
+    
+    func requestNotificationPermission() {
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            Logr.d(tag: "permission_request", message: "Notification result: \(granted)", t: KotlinThrowable(message: error?.localizedDescription))
+            self.locationStatusProvider.refreshLocationStatus()
+            if !granted {
+                self.openAppSettingsPage()
+            }
+        }
+    }
+    
+    func openAppSettingsPage() {
+        DispatchQueue.main.async {
+            if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+                UIApplication.shared.open(appSettings)
+            }
+        }
     }
 }
