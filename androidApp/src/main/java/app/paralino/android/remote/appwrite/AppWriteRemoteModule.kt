@@ -38,24 +38,26 @@ class AppWriteRemoteModule(
             .run { RemoteClient.setup(this, backendConfig.debug && backendConfig.logToConsole) }
     }
 
-    inline fun <T> execute(action: AppWriteRemoteModule.() -> T): T {
+    inline fun <T> execute(forceLogoutOnError: Boolean = false, action: AppWriteRemoteModule.() -> T): T {
         try {
             return action(this)
         } catch (e: Exception) {
-            throw mapException(e).also {
+            throw mapException(e, forceLogoutOnError).also {
                 sessionMonitor.processNetworkError(it)
             }
         }
     }
 
     companion object {
-        fun mapException(exception: Exception): Exception {
+        fun mapException(exception: Exception, forceLogoutOnError: Boolean): Exception {
             return (exception as? AppwriteException)?.let {
                 BaseRemoteException.fromCode(
                     code = it.code,
                     message = it.message,
                     cause = it.cause ?: Throwable(it.response),
-                    type = it.type,
+                    // TODO review: using this as temporary workaround for some user api endpoints not parsing correct type
+                    // in case when session expires calling user.get() will return 401 but with text/html as response
+                    type = it.type ?: if(forceLogoutOnError) UserSessionMonitor.unauthorizedTypes.firstOrNull() else null,
                 )
             } ?: let {
                 if (exception is UnknownHostException) {

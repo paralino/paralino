@@ -32,7 +32,9 @@ class UserApi constructor(
     }
 
     override suspend fun getMe(): UserMeRaw {
-        return remoteModule.execute { account.get().parseUser() }
+        return remoteModule.execute(forceLogoutOnError = true) {
+            account.get().parseUser()
+        }
     }
 
     override suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {
