@@ -10,6 +10,7 @@ import shared
 
 class ConnectionStatusProvider: IConnectionStatusProvider {
     
+    // TODO adjust
     override func isNetworkAvailable() async throws -> KotlinBoolean {
         return true
     }
@@ -45,10 +46,12 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
         }
     }
     
+    // TODO adjust
     override func getNetworkType() async throws -> NetworkType? {
         return NetworkType.wifi
     }
     
+    // TODO adjust
     override func getSignalStrength() async throws -> KotlinInt? {
         return 4
     }

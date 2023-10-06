@@ -10,12 +10,12 @@ data class FunctionExecutionRaw constructor(
     val id: String,
     val functionId: String,
     val status: String,
-    val statusCode: Long,
+    val statusCode: Int,
     val response: String,
     val stderr: String
 ) {
 
-    val isSuccess: Boolean get() = status == "completed"
+    val isSuccess: Boolean get() = status == "completed" && statusCode in 200..299
     val isFail: Boolean get() = status == "failed"
     val isCompleted: Boolean get() = isSuccess || isFail
 

@@ -54,6 +54,7 @@ import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
@@ -70,13 +71,15 @@ fun GroupCreateScreenCore(
     onExit: () -> Unit,
 ) {
 
+    MessageDispatcherEffect(vm, appState)
+
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is CreateGroupScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    vm.showSnackbar(event.error.errorString())
                 }
                 is CreateGroupScreenEvent.GroupUpdated -> {
                     delay(400)

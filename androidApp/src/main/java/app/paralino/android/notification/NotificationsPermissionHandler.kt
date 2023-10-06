@@ -8,14 +8,15 @@ import android.os.Build
 import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
 import app.paralino.core.MR
+import app.paralino.core.presentation.ICoreMessageDispatcher
+import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.onAction
-import app.paralino.core.provider.ILocationStatusProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -25,16 +26,20 @@ import kotlinx.coroutines.launch
 @Composable
 fun rememberNotificationsPermissionHandler(
     appState: MainAppState,
+    messageDispatcher: ICoreMessageDispatcher,
     locationStatusProvider: ILocationStatusProvider,
 ): NotificationsPermissionHandlerState {
 
     val context = LocalContext.current
 
-    val state = NotificationsPermissionHandlerState(
-        appState = appState,
-        context = context,
-        locationStatusProvider = locationStatusProvider
-    )
+    val state = remember(context, appState, locationStatusProvider) {
+        NotificationsPermissionHandlerState(
+            appState = appState,
+            messageDispatcher = messageDispatcher,
+            context = context,
+            locationStatusProvider = locationStatusProvider
+        )
+    }
 
     val notificationPermissionState = rememberMultiplePermissionsState(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -57,6 +62,7 @@ fun rememberNotificationsPermissionHandler(
 @OptIn(ExperimentalPermissionsApi::class)
 class NotificationsPermissionHandlerState constructor(
     val appState: MainAppState,
+    val messageDispatcher: ICoreMessageDispatcher,
     val context: Context,
     val locationStatusProvider: ILocationStatusProvider,
 ) {
@@ -96,13 +102,13 @@ class NotificationsPermissionHandlerState constructor(
         val messageRes = MR.strings.error_notification_permission_missing_sheet_message.resourceId
 
         appState.uiScope.launch {
-            appState.showSnackbar(
+            messageDispatcher.showSnackbarForResult(
                 AppSnackbarData(
                     text = context.getString(messageRes),
                     actionText = "Settings",
                     duration = SnackbarDuration.Long
                 )
-            ).onAction {
+            )?.result?.onAction {
                 openSettings()
             }
         }

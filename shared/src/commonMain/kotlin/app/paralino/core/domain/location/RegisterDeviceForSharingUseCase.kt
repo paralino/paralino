@@ -14,6 +14,7 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.raw.LocationCreatePayload
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
@@ -94,12 +95,12 @@ class RegisterDeviceForSharingUseCase constructor(
             )
 
             logg.tag("sharing_start").d("Send register device request")
-            val data = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionLocationCreate,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.LOCATION_CREATE,
+                data = payload
             )
 
-            if (data.isSuccess) {
+            if (response.isSuccess) {
                 logg.tag("sharing_start").d("Device registered, save integrity")
 
                 val groupDeviceIntegrity = GroupIntegrity(
@@ -130,12 +131,11 @@ class RegisterDeviceForSharingUseCase constructor(
                 logg.tag("sharing_start").w("Device not registered")
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    code = null,
+                    code = response.statusCode,
                     message = "Unable to register device to group $groupId",
-                    cause = Exception(data.stderr)
+                    cause = Exception(response.stderr)
                 )
             }
         }
     }
-
 }

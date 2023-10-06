@@ -1,19 +1,23 @@
 package app.paralino.core.repo.api
 
 import app.paralino.core.models.raw.FunctionExecutionRaw
-import app.paralino.core.models.raw.GenericFunctionPayload
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.encodeToString
 
-interface IFunctionsApi {
-    suspend fun createExecution(functionId: String, data: String? = null): String
-    suspend fun getExecution(functionId: String, executionId: String): FunctionExecutionRaw
-    suspend fun runAndWait(functionId: String, data: String? = null): FunctionExecutionRaw
-}
+abstract class IFunctionsApi(
+    private val deviceApiProvider: IDeviceApiProvider
+) {
+    private val clientHeaderValue: String = "${deviceApiProvider.deviceType.key}/${deviceApiProvider.appVersionCode}/${deviceApiProvider.appVersion}"
+    val clientHeader: Pair<String, String> = "x-paralino-client" to clientHeaderValue
 
-suspend inline fun < reified T> IFunctionsApi.runAndWait(functionId: String, data: GenericFunctionPayload<T>? = null): FunctionExecutionRaw {
-    return runAndWait(
-        functionId = functionId,
-        data = data?.let { BaseRemoteModule.formatter.encodeToString(it) }
-    )
+    abstract suspend fun runAsync(function: ServerFunction, data: String? = null): String
+    abstract suspend fun runAndWait(function: ServerFunction, data: String? = null): FunctionExecutionRaw
+
+    suspend inline fun < reified T> runAndWait(function: ServerFunction, data: T): FunctionExecutionRaw {
+        return runAndWait(
+            function= function,
+            data = BaseRemoteModule.formatter.encodeToString(data)
+        )
+    }
 }

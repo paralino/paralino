@@ -27,6 +27,7 @@ fun GroupInitScreen(
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
+        messageDispatcher = vm.messageDispatcher,
         locationStatusProvider = vm.locationStatusProvider
     )
 

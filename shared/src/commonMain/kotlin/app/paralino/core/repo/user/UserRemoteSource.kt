@@ -12,10 +12,9 @@ import app.paralino.core.models.user.UserSession
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IUserApi
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
-import kotlinx.serialization.encodeToString
 
 class UserRemoteSource constructor(
     private val api: IUserApi,
@@ -102,16 +101,16 @@ class UserRemoteSource constructor(
 
     suspend fun deleteAccount() {
         blocking {
-            val data = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionDeleteAccountAndData
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.ACCOUNT_DELETE
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to delete user",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to delete user",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -128,17 +127,17 @@ class UserRemoteSource constructor(
                 )
             }
 
-            val data = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionResetAccount,
-                data = payload?.let { BaseRemoteModule.formatter.encodeToString(it) }
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.ACCOUNT_RESET,
+                data = payload
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to reset user",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to reset user",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -147,5 +146,4 @@ class UserRemoteSource constructor(
     suspend fun logout() {
         api.logout()
     }
-
 }

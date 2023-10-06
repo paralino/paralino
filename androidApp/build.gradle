@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace 'app.paralino.android'
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     variantFilter { variant ->
         def names = variant.flavors*.name
@@ -37,7 +37,7 @@ android {
     defaultConfig {
         applicationId "app.paralino.android"
         minSdkVersion 29
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
 
@@ -144,7 +144,7 @@ android {
         buildConfig true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.8'
+        kotlinCompilerExtensionVersion '1.5.3'
     }
     packagingOptions {
         resources {
@@ -182,35 +182,33 @@ repositories {
 
 dependencies {
 
-
     implementation project(path: ':shared')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-
     // region android and kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.10"
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.10"
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.legacy:legacy-support-core-utils:1.0.0"
 
     implementation "androidx.work:work-runtime-ktx:2.8.1"
 
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.6.2"
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
     // endregion
 
     // region compose
-    implementation 'androidx.activity:activity-compose:1.7.1'
+    implementation 'androidx.activity:activity-compose:1.7.2'
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-    implementation "androidx.navigation:navigation-compose:2.5.3"
+    implementation "androidx.navigation:navigation-compose:2.7.3"
 
-    implementation platform('androidx.compose:compose-bom:2023.01.00')
+    implementation platform('androidx.compose:compose-bom:2023.09.02')
     implementation "androidx.compose.animation:animation"
     implementation "androidx.compose.material:material:"
     implementation "androidx.compose.material:material-icons-core"
@@ -221,9 +219,9 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling"
     implementation "androidx.compose.ui:ui-tooling-preview"
 
-    implementation "com.google.accompanist:accompanist-pager:0.28.0"
-    implementation "com.google.accompanist:accompanist-permissions:0.28.0"
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
+    implementation "com.google.accompanist:accompanist-pager:0.32.0"
+    implementation "com.google.accompanist:accompanist-permissions:0.32.0"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.32.0"
 
 
 //    implementation "androidx.compose.material3:material3:1.0.0-alpha10"
@@ -234,7 +232,7 @@ dependencies {
     // endregion
 
     // region di
-    def koinVersion = '3.2.0'
+    def koinVersion = '3.5.0'
     implementation "io.insert-koin:koin-android:$koinVersion"
     implementation "io.insert-koin:koin-androidx-compose:$koinVersion"
     // endregion
@@ -244,10 +242,10 @@ dependencies {
 //    googleImplementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     ossImplementation 'org.osmdroid:osmdroid-android:6.1.10'
-    googleImplementation 'com.mapbox.maps:android:10.8.0'
+    googleImplementation 'com.mapbox.maps:android:10.8.1'
     googleImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
 
-    googleImplementation ("com.google.firebase:firebase-messaging-ktx:23.1.2") {
+    googleImplementation ("com.google.firebase:firebase-messaging-ktx:23.2.1") {
         exclude group: 'com.google.firebase', module: 'firebase-core'
         exclude group: 'com.google.firebase', module: 'firebase-analytics'
         exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'
@@ -258,12 +256,11 @@ dependencies {
     implementation "net.java.dev.jna:jna:5.13.0@aar"
 
     implementation "com.mikepenz:aboutlibraries-compose:10.5.1"
-    implementation 'io.sentry:sentry-android:6.9.1'
+    implementation 'io.sentry:sentry-android:6.30.0'
 
-    implementation("io.appwrite:sdk-for-android:1.1.0")
-    debugImplementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.0"))
+    implementation("io.appwrite:sdk-for-android:4.0.0")
+    debugImplementation(platform("com.squareup.okhttp3:okhttp-bom:4.11.0"))
     debugImplementation("com.squareup.okhttp3:okhttp")
     debugImplementation("com.squareup.okhttp3:logging-interceptor")
     // endregion
-
 }

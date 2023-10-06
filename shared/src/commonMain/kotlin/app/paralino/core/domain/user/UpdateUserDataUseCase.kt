@@ -11,6 +11,7 @@ import app.paralino.core.models.raw.UpdateMemberData
 import app.paralino.core.models.raw.UpdateMemberFunctionPayload
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
@@ -86,14 +87,14 @@ class UpdateUserDataUseCase constructor(
         )
 
         val response = functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionGroupMemberUpdateID,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+            function = ServerFunction.MEMBER_UPDATE,
+            data = payload
         )
 
         if (!response.isSuccess) {
             // TODO throw better exception
             throw BaseRemoteException.fromCode(
-                code = null,
+                code = response.statusCode,
                 message = "Unable to update location",
                 cause = Exception(response.stderr)
             )

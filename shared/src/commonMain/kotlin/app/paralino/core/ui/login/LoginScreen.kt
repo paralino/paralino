@@ -62,9 +62,9 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.rememberSeekbarState
-import app.paralino.core.ui.rememberCoreUiState
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
@@ -79,11 +79,14 @@ import org.jetbrains.compose.resources.painterResource
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LoginScreenCore(
-    coreUiState: CoreUiState = rememberCoreUiState(),
+    appState: CoreUiState,
     vm: LoginViewModel,
     onShowDialog: (MainAlertDialog?) -> Unit,
     onExit: () -> Unit
 ) {
+
+    MessageDispatcherEffect(vm, appState)
+
     val uiState by vm.uiState.collectAsState(initial = LoginScreenState(uiType = vm.initialUiType))
     val focusManager = LocalFocusManager.current
 
@@ -111,23 +114,23 @@ fun LoginScreenCore(
         vm.events.collectLatest { event ->
             when (event) {
                 is LoginScreenEvent.Error -> {
-                    coreUiState.showSnackbar(event.exception.errorString())
+                    vm.showSnackbar(event.exception.errorString())
                 }
                 is LoginScreenEvent.LoginError -> {
                     val errorText = getErrorText(event.errorType)
-                    coreUiState.showSnackbar(errorText)
+                    vm.showSnackbar(errorText)
                 }
                 is LoginScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
                         validation = event.validationResult.type
                     )
-                    coreUiState.showSnackbar(errorText)
+                    vm.showSnackbar(errorText)
                 }
                 LoginScreenEvent.UserReady -> {
 //                    appState.navController.navigate(AppScreen.DashboardRoot.routeSignature)
                 }
                 LoginScreenEvent.PasswordResetDone -> {
-                    coreUiState.showSnackbar(MR.strings.login_info_password_reset_done.localizedString())
+                    vm.showSnackbar(MR.strings.login_info_password_reset_done.localizedString())
                     delay(500)
                     onExit()
                 }

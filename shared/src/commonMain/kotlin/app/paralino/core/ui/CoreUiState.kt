@@ -1,47 +1,27 @@
 package app.paralino.core.ui
 
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.SnackbarDuration
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 open class CoreUiState(
     val scaffoldState: ScaffoldState,
     val uiScope: CoroutineScope
 ) {
-
-    fun showSnackbar(text: String, duration: SnackbarDuration = SnackbarDuration.Short) {
-        uiScope.launch {
-            showSnackbar(text = text, actionText = null, duration = duration)
-        }
-    }
-
-    suspend fun showSnackbar(
-        text: String,
-        actionText: String? = null,
-        duration: SnackbarDuration = SnackbarDuration.Short
-    ): SnackbarResult {
-        return scaffoldState.snackbarHostState.showSnackbar(
-            message = text,
-            actionLabel = actionText,
-            duration = duration
-        )
-    }
-
     suspend fun showSnackbar(data: AppSnackbarData): SnackbarResult {
-        return showSnackbar(
-            text = data.text,
-            actionText = data.actionText,
+        return scaffoldState.snackbarHostState.showSnackbar(
+            message = data.text,
+            actionLabel = data.actionText,
             duration = when (data.duration) {
-                app.paralino.core.ui.components.SnackbarDuration.Long -> SnackbarDuration.Long
-                app.paralino.core.ui.components.SnackbarDuration.Forever -> SnackbarDuration.Indefinite
-                else -> SnackbarDuration.Short
+                SnackbarDuration.Long -> androidx.compose.material.SnackbarDuration.Long
+                SnackbarDuration.Forever -> androidx.compose.material.SnackbarDuration.Indefinite
+                else -> androidx.compose.material.SnackbarDuration.Short
             }
         )
     }

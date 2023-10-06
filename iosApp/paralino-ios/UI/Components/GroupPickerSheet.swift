@@ -35,11 +35,11 @@ struct GroupPickerSheet: ViewModifier {
                             Spacer()
                             HStack {
                                 Button(action: { onCreateGroup?() }) {
-                                    Label(MR.strings().group_create_button_text.localizedString(), systemImage: "plus")
+                                    Label(MR.shared.strings.group_create_button_text.localizedString(), systemImage: "plus")
                                 }
                                 Spacer()
                                 Button(action: { onJoinGroup?() }) {
-                                    Label(MR.strings().dashboard_groups_join_button.localizedString(), systemImage: "key.horizontal")
+                                    Label(MR.shared.strings.dashboard_groups_join_button.localizedString(), systemImage: "key.horizontal")
                                 }
                             }
                             .padding()

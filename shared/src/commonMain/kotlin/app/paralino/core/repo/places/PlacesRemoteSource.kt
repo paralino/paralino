@@ -12,7 +12,6 @@ import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceSettings
 import app.paralino.core.models.raw.CreatePlacePayload
-import app.paralino.core.models.raw.GenericFunctionPayload
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlaceSettingRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
@@ -20,13 +19,12 @@ import app.paralino.core.models.raw.PlaceEventPayload
 import app.paralino.core.models.raw.UpdatePlacePayload
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
-import kotlinx.serialization.encodeToString
 
 class PlacesRemoteSource(
     private val api: IDocumentsApi,
@@ -59,8 +57,8 @@ class PlacesRemoteSource(
             )
 
             val response = functionsApi.runAndWait(
-                remoteConfig.resourceIds.functionPlaceCreate,
-                BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.PLACE_CREATE,
+                data = payload
             )
 
             if (response.isSuccess) {
@@ -68,9 +66,9 @@ class PlacesRemoteSource(
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to create place",
-                    Exception(response.stderr)
+                    code = response.statusCode,
+                    message = "Unable to create place",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -156,22 +154,22 @@ class PlacesRemoteSource(
                 placeData = mapped.data
             )
 
-            val data = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionPlaceUpdate,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.PLACE_UPDATE,
+                data = payload
             )
 
-            if (data.isSuccess) {
-                val response = data.response.fromJsonObjectToMapOfPrimitives()
+            if (response.isSuccess) {
+                val response = response.response.fromJsonObjectToMapOfPrimitives()
                     .filterValues { it != null }
                     .mapValues { it.value!! }
                 response.parsePlace()
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    code = null,
+                    code = response.statusCode,
                     message = "Unable to update group",
-                    cause = Exception(data.stderr)
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -217,17 +215,17 @@ class PlacesRemoteSource(
 
     suspend fun deletePlace(placeId: String) {
         blocking {
-            val data = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionPlaceDelete,
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.PLACE_DELETE,
                 data = placeId
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to delete place",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to delete place",
+                    cause = Exception(response.stderr)
                 )
             }
         }
@@ -256,21 +254,15 @@ class PlacesRemoteSource(
 
     private suspend fun notifyPlaceEvent(placePayload: PlaceEventPayload) {
         blocking {
-
-            val payload = GenericFunctionPayload(
-                route = "place-notify",
-                payload = placePayload
-            )
-
             val response = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionUserEvent,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+                function = ServerFunction.PLACE_NOTIFY,
+                data = placePayload
             )
 
             if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    code = null,
+                    code = response.statusCode,
                     message = "Unable to update location",
                     cause = Exception(response.stderr)
                 )
@@ -285,6 +277,4 @@ class PlacesRemoteSource(
     private fun Map<String, Any>.parsePlaceSettings(): GroupPlaceSettingRaw {
         return GroupPlaceSettingRaw.from(this)
     }
-
 }
-

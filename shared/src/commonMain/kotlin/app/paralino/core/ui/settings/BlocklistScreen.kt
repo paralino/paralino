@@ -40,6 +40,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
@@ -53,13 +54,14 @@ fun BlocklistScreenCore(
     onNavigateBack: () -> Unit,
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(BlocklistScreenState())
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is BlockListScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    vm.showSnackbar(event.error.errorString())
                 }
 
                 null -> { /* do nothing */

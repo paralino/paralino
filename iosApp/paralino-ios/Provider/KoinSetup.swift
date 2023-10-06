@@ -27,9 +27,10 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
     )
     
     let connectionStatusProvider = ConnectionStatusProvider(backendConfig: backendConfig)
+    let deviceApiProvider = DeviceApiProvider(backendConfig: backendConfig, locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider)
     
     let coreIOSModules = KoinIOS.shared.createIOSKoinModules(
-        deviceProvider: DeviceApiProvider(backendConfig: backendConfig, locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider),
+        deviceProvider: deviceApiProvider,
         connectionStatusProvider: connectionStatusProvider,
         locationStatusProvider: locationStatusProvider,
         pushSetupProvider: PushSetupProvider(),
@@ -41,7 +42,7 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         remoteModule: { sessionMonitor in AppwriteRemoteModule(sessionMonitor: sessionMonitor, backendConfig: backendConfig) },
         documentsApi: { module, _ in DocumentsApi(remoteModule: module as! AppwriteRemoteModule) },
         userApi: { module, _ in UserApi(remoteModule: module as! AppwriteRemoteModule) },
-        functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule) },
+        functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule, deviceApiProvider: deviceApiProvider) },
         realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) },
         cryptoServiceProvider: CryptoFrameworkProvider(),
         valueFormatter: ValueFormatter()

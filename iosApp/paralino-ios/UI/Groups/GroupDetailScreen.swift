@@ -10,9 +10,11 @@ import shared
 
 struct GroupDetailScreen: View {
     
+    @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var appState: ViewModelFactoryIOS<GroupDetailViewModel>
     @State var alertDialog: AlertDialogData? = nil
+    let notificationPermissionHandler = NotificationPermissionHandler()
     
     var body: some View {
         ZStack {
@@ -50,7 +52,7 @@ struct GroupDetailScreen: View {
                         path.removeLast()
                     },
                     askNotificationPermission: {
-                        
+                        notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
                     },
                     askLocationService: {
                         
@@ -64,19 +66,11 @@ struct GroupDetailScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationBarBackButtonHidden(true)
         }
         .mainAlert($alertDialog) { key in
             if let dialogData = alertDialog?.coreDialog {
-                if dialogData is MainAlertDialogGroupOptions {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        switch key {
-                        case "delete": alertDialog = AlertDialogData(coreData: MainAlertDialogDeleteGroup())
-                        case "leave": alertDialog = AlertDialogData(coreData: MainAlertDialogLeaveGroup())
-                        case "block": alertDialog = AlertDialogData(coreData: MainAlertDialogBlockGroup())
-                        default: do {}
-                        }
-                    }
-                } else if dialogData is MainAlertDialogDeleteGroup || dialogData is MainAlertDialogLeaveGroup {
+                if dialogData is MainAlertDialogDeleteGroup || dialogData is MainAlertDialogLeaveGroup {
                     if key == MainAlertDialogButtons.shared.buttonOk {
                         appState.vm.leaveOrDeleteGroup()
                     }

@@ -94,7 +94,7 @@ object KoinSetup {
 
         single<IUserApi> { UserApi(get()) }
         single<IDocumentsApi> { DocumentsApi(get()) }
-        single<IFunctionsApi> { FunctionsApi(get()) }
+        single<IFunctionsApi> { FunctionsApi(get(), get()) }
         single<IRealtimeApi> { RealtimeApi(get()) }
     }
 

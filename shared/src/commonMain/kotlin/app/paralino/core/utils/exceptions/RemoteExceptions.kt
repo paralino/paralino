@@ -22,7 +22,7 @@ open class BaseRemoteException constructor(
             return when (code) {
                 400 -> InvalidRequestException(message, cause)
                 401 -> UnauthorizedException(type, message, cause)
-                403 -> {
+                403, 402 -> {
                     if(!config.emailConfirmed) UnverifiedUserException(message, cause)
                     else PermissionDeniedException(message, cause)
                 }

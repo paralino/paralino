@@ -35,7 +35,7 @@ object LoginScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             LoginScreenCore(
-                coreUiState = it,
+                appState = it,
                 vm = vm,
                 onShowDialog = onShowDialog,
                 onExit = onExit

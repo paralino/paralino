@@ -17,24 +17,17 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         initKoin(locationStatusProvider: locationStatusProvider)
-        coreAppManager.onAppStart()
+        
         Logr.i(tag:"delegate", message: "App start")
+        
+        coreAppManager.onAppStart()
+        coreAppManager.onAppActive()
+        
         return true
     }
     
     func appInForeground() {
         Logr.i(tag:"delegate", message: "App in foreground")
-        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
-            Logr.i(tag:"delegate", message: "Notification status: \(settings.authorizationStatus)")
-            switch settings.authorizationStatus {
-            case .denied:
-                self?.locationStatusProvider.hasNotificationPermission = false
-            case .authorized, .provisional:
-                self?.locationStatusProvider.hasNotificationPermission = true
-            default:
-                self?.locationStatusProvider.hasNotificationPermission = false
-            }
-        }
         coreAppManager.onAppActive()
     }
     

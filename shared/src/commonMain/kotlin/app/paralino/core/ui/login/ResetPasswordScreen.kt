@@ -36,8 +36,8 @@ import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
-import app.paralino.core.ui.rememberCoreUiState
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
@@ -49,12 +49,13 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ResetPasswordScreenCore(
-    appState: CoreUiState = rememberCoreUiState(),
+    appState: CoreUiState,
     vm: ResetPasswordViewModel,
     openLoginScreen: () -> Unit,
     onClose: () -> Unit
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = ResetPasswordScreenState())
     val focusManager = LocalFocusManager.current
 
@@ -62,28 +63,28 @@ fun ResetPasswordScreenCore(
         vm.events.collectLatest { event ->
             when (event) {
                 is ResetPasswordScreenEvent.Error -> {
-                    appState.showSnackbar(event.exception.errorString())
+                    vm.showSnackbar(event.exception.errorString())
                 }
 
                 is ResetPasswordScreenEvent.CredentialsError -> {
-                    appState.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                    vm.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                 }
 
                 is ResetPasswordScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
                         validation = event.validationResult.type
                     )
-                    appState.showSnackbar(errorText)
+                    vm.showSnackbar(errorText)
                 }
 
                 ResetPasswordScreenEvent.PasswordChanged -> {
-                    appState.showSnackbar(MR.strings.reset_password_success_message.localizedString())
+                    vm.showSnackbar(MR.strings.reset_password_success_message.localizedString())
                     delay(500)
                     openLoginScreen()
                 }
 
                 ResetPasswordScreenEvent.InvalidToken -> {
-                    appState.showSnackbar(MR.strings.reset_password_error_token_message.localizedString())
+                    vm.showSnackbar(MR.strings.reset_password_error_token_message.localizedString())
                 }
 
                 null -> {

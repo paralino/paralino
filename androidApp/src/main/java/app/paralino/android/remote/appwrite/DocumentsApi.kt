@@ -101,11 +101,11 @@ class DocumentsApi constructor(
         }
     }
 
-    private fun Document.parseDocument(): Map<String, Any> {
+    private fun Document<Map<String, Any>>.parseDocument(): Map<String, Any> {
         return this.data
     }
 
-    private fun DocumentList.parseListOfDocuments(): List<Map<String, Any>> {
+    private fun DocumentList<Map<String, Any>>.parseListOfDocuments(): List<Map<String, Any>> {
         return this.documents.map { it.parseDocument() }
     }
 

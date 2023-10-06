@@ -12,7 +12,7 @@ import UIKit
 
 class LocationStatusProvider: ILocationStatusProvider {
     // this is set in app delegate
-    var hasNotificationPermission: Bool = false
+    private var hasNotificationPermission: Bool = false
     
     override func createCurrentStatus() -> LocationConditionStatus {
         let locationManager = CLLocationManager()
@@ -24,6 +24,30 @@ class LocationStatusProvider: ILocationStatusProvider {
             isBackgroundPermissionAllowed: permissionStatus == .authorizedAlways,
             isNotificationPermissionAllowed: hasNotificationPermission
         )
+    }
+    
+    override func refreshLocationStatus() {
+        updateNotificationPermissionStatus()
+        super.refreshLocationStatus()
+    }
+    
+    private func refreshParentStatus() {
+        super.refreshLocationStatus()
+    }
+    
+    private func updateNotificationPermissionStatus() {
+        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+            Logr.i(tag:"delegate", message: "Notification status: \(settings.authorizationStatus)")
+            switch settings.authorizationStatus {
+            case .denied:
+                self?.hasNotificationPermission = false
+            case .authorized, .provisional:
+                self?.hasNotificationPermission = true
+            default:
+                self?.hasNotificationPermission = false
+            }
+            self?.refreshParentStatus()
+        }
     }
     
 }

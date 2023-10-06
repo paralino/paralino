@@ -13,46 +13,42 @@ class FunctionsApi: IFunctionsApi {
     
     let remoteModule: AppwriteRemoteModule
     
-    init(remoteModule: AppwriteRemoteModule) {
+    init(remoteModule: AppwriteRemoteModule, deviceApiProvider: IDeviceApiProvider) {
         self.remoteModule = remoteModule
+        super.init(deviceApiProvider: deviceApiProvider)
     }
     
-    func createExecution(functionId: String, data: String?) async throws -> String {
+    override func runAsync(function: ServerFunction, data: String?) async throws -> String {
         return await remoteModule.execute { module in
-            try! await module.functions.createExecution(functionId: functionId, data: data, async: true).id
+            try! await module.functions.createExecution(
+                functionId: function.functionId,
+                body: data,
+                async: true,
+                path: function.path,
+                method: function.method,
+                headers: [clientHeader.first : clientHeader.second]
+            ).id
         }
     }
     
-    func getExecution(functionId: String, executionId: String) async throws -> FunctionExecutionRaw {
-        return await remoteModule.execute { module in
-            let result = try! await module.functions.getExecution(functionId: functionId, executionId: executionId)
-            return FunctionExecutionRaw(
-                id: result.id,
-                functionId: result.functionId,
-                status: result.status,
-                statusCode: Int64(result.statusCode),
-                response: result.response,
-                stderr: result.stderr
-            )
-        }
-    }
-    
-    func runAndWait(functionId: String, data: String?) async throws -> FunctionExecutionRaw {
+    override func runAndWait(function: ServerFunction, data: String?) async throws -> FunctionExecutionRaw {
         return await remoteModule.execute { module in
             let result = try! await module.functions.createExecution(
-                functionId: functionId,
-                data: data,
-                async: false
+                functionId: function.functionId,
+                body: data,
+                async: false,
+                path: function.path,
+                method: function.method,
+                headers: [clientHeader.first : clientHeader.second]
             )
             return FunctionExecutionRaw(
                 id: result.id,
                 functionId: result.functionId,
                 status: result.status,
-                statusCode: Int64(result.statusCode),
-                response: result.response,
-                stderr: result.stderr
+                statusCode: Int32(result.responseStatusCode),
+                response: result.responseBody,
+                stderr: result.errors
             )
         }
     }
-    
 }
