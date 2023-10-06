@@ -10,16 +10,19 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 
-actual abstract class CoreViewModel actual constructor() {
+actual abstract class BaseViewModel actual constructor() {
     actual val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
     actual fun cleanup() {
         coroutineScope.cancel()
         onCleared()
     }
+
     protected actual open fun onCleared() {}
     fun <T> observe(flow: Flow<T>, onChange: (T) -> Unit) {
         flow.onEach { onChange(it) }.launchIn(coroutineScope)
     }
+
     fun <T> observe(channel: Channel<T>, onChange: (T) -> Unit) {
         observe(channel.receiveAsFlow(), onChange)
     }

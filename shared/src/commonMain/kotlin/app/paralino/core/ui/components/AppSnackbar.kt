@@ -131,6 +131,11 @@ fun SnackbarResult.onDismiss(action: () -> Unit): SnackbarResult {
     return this
 }
 
+data class AppSnackbarResult constructor(
+    val data: AppSnackbarData,
+    val result: SnackbarResult
+)
+
 data class AppSnackbarData constructor(
     val text: String,
     val actionText: String? = null,
