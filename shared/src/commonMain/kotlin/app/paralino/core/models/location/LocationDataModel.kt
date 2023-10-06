@@ -20,7 +20,7 @@ data class LocationDataModel constructor(
     val altitude: Float? = null
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
-    val isAccurate get() = accuracy < 4f
+    val isAccurate get() = accuracy < 10f
 
     fun isOlderThan(duration: Duration): Boolean {
         val pinTime = timeUTC?.fromUTCtoInstant() ?: return false
