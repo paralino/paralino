@@ -8,7 +8,7 @@ object SharingDurationPreset {
     const val day = 24 * hour
     const val infinite = 0L
 
-    const val backgroundAccessThreshold = 2 * day
+    const val backgroundAccessThreshold = 8 * hour
     val publicSharingMaxDurationMillis: Long = 5 * hour
 
     val presets = listOf(

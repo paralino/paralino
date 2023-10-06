@@ -315,8 +315,7 @@ sealed interface MainAlertDialog {
                 ),
                 AlertDialogButtonData(
                     Buttons.buttonCancel,
-                    stringResource(resource = MR.strings.button_skip),
-                    AlertDialogButtonData.destructiveColor
+                    stringResource(resource = MR.strings.button_cancel)
                 ),
             ),
         )

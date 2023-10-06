@@ -135,7 +135,7 @@ class SharingStartViewModel(
         }
     }
 
-    fun proceedWithSharing() {
+    private fun proceedWithSharing() {
         val group = _uiState.value.groupState.data ?: let {
             coroutineScope.launch {
                 _eventChannel.send(SharingStartScreenEvent.SelectGroupInfo)
