@@ -33,6 +33,7 @@
 		254B6F2C29EC7F6A008B1458 /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2A29EC7F6A008B1458 /* LoginScreen.swift */; };
 		254B6F3329EC8039008B1458 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 254B6F2E29EC8039008B1458 /* Localizable.strings */; };
 		254B6F3429EC8039008B1458 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 254B6F3129EC8039008B1458 /* Localizable.strings */; };
+		2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */; };
 		256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */; };
 		258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258E9BF629EBDEBF006BD46C /* AlertDialog.swift */; };
 		259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */; };
@@ -95,6 +96,7 @@
 		254B6F2A29EC7F6A008B1458 /* LoginScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
 		254B6F2F29EC8039008B1458 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Localizable.strings; sourceTree = "<group>"; };
 		254B6F3229EC8039008B1458 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Localizable.strings; sourceTree = "<group>"; };
+		2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionHandler.swift; sourceTree = "<group>"; };
 		256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppObject.swift; sourceTree = "<group>"; };
 		258E9BF629EBDEBF006BD46C /* AlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetupScreen.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				252EA00E29DD9FC300338956 /* GeofenceManager.swift */,
 				25356A8F29E9452300CD32F5 /* SealedClasses.swift */,
 				25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */,
+				2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */,
 			);
 			path = Provider;
 			sourceTree = "<group>";
@@ -555,6 +558,7 @@
 				25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */,
 				259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */,
 				252EA01929DDEFC400338956 /* FunctionsApi.swift in Sources */,
+				2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */,
 				25FC5CB02A460A510006E796 /* RawDataScreen.swift in Sources */,
 				252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */,
 			);
