@@ -40,6 +40,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.delay
@@ -58,6 +59,7 @@ fun CreatePlaceScreen(
     vm: CreatePlaceViewModel = getViewModel { parametersOf(groupId, placeId, lat, lng) },
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
 
     val context = LocalContext.current
@@ -65,13 +67,13 @@ fun CreatePlaceScreen(
         vm.events.collectLatest { event ->
             when (event) {
                 is CreatePlaceScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString(context))
+                    vm.showSnackbar(event.error.errorString(context))
                 }
                 is CreatePlaceScreenEvent.MissingLocation -> {
-                    appState.showSnackbar(context.getString(MR.strings.places_create_error_no_place.resourceId))
+                    vm.showSnackbar(context.getString(MR.strings.places_create_error_no_place.resourceId))
                 }
                 is CreatePlaceScreenEvent.MissingInfo -> {
-                    appState.showSnackbar(context.getString(MR.strings.form_generic_validation.resourceId))
+                    vm.showSnackbar(context.getString(MR.strings.form_generic_validation.resourceId))
                 }
                 is CreatePlaceScreenEvent.PlaceUpdated -> {
                     delay(400)

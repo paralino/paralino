@@ -25,6 +25,7 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
@@ -38,13 +39,14 @@ fun RawDataScreenCore(
     onNavigateBack: () -> Unit
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is RawDataScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    vm.showSnackbar(event.error.errorString())
                 }
 
                 null -> {

@@ -76,6 +76,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.nameRes
 import app.paralino.core.ui.components.rememberSeekbarState
@@ -96,6 +97,7 @@ fun SharingStartScreen(
     vm: SharingStartViewModel = getViewModel { parametersOf(groupId) },
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val state by vm.uiState.collectAsState(
         initial = SharingStartScreenState(
             groupState = if (groupId.isNullOrBlank()) Payload.Success(null) else Payload.Loading
@@ -162,6 +164,7 @@ fun SharingStartScreen(
 
     val permissionHandler = rememberLocationPermissionHandler(
         appState = appState,
+        messageDispatcher = vm.messageDispatcher,
         locationStatusProvider = vm.locationStatusProvider
     )
 
@@ -170,7 +173,7 @@ fun SharingStartScreen(
         vm.events.collectLatest { event ->
             when (event) {
                 is SharingStartScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString(context))
+                    vm.showSnackbar(event.error.errorString(context))
                 }
                 SharingStartScreenEvent.Started -> {
                     delay(400)
@@ -184,10 +187,10 @@ fun SharingStartScreen(
                     showDialog = MainAlertDialog.SharingBackgroundLocationMissing
                 }
                 SharingStartScreenEvent.SelectGroupInfo -> {
-                    appState.showSnackbar(context.getString(MR.strings.invite_connect_alert_pickGroup.resourceId))
+                    vm.showSnackbar(context.getString(MR.strings.invite_connect_alert_pickGroup.resourceId))
                 }
                 SharingStartScreenEvent.CanNotRegisterDevice -> {
-                    appState.showSnackbar(context.getString(MR.strings.error_generic_snacbar.resourceId))
+                    vm.showSnackbar(context.getString(MR.strings.error_generic_snacbar.resourceId))
                 }
                 null -> {
                     /* do nothing */
@@ -236,7 +239,7 @@ fun SharingStartScreen(
                         ConditionErrorType.GPS -> permissionHandler.askLocationService()
                         ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
                         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
-                        ConditionErrorType.NETWORK -> appState.showSnackbar(
+                        ConditionErrorType.NETWORK -> vm.showSnackbar(
                             text = context.getString(MR.strings.error_no_connection_snackbar.resourceId)
                         )
                         else -> {}
@@ -321,7 +324,7 @@ fun SharingStartScreen(
                                 ConditionErrorType.GPS -> permissionHandler.askLocationService()
                                 ConditionErrorType.PERMISSION_LOCATION -> permissionHandler.askLocationPermission()
                                 ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> permissionHandler.askBackgroundLocationPermission()
-                                ConditionErrorType.NETWORK -> appState.showSnackbar(
+                                ConditionErrorType.NETWORK -> vm.showSnackbar(
                                     text = context.getString(
                                         MR.strings.error_no_connection_snackbar.resourceId
                                     )

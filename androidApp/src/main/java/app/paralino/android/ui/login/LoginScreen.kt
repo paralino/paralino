@@ -23,7 +23,7 @@ fun LoginScreen(
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     LoginScreenCore(
-        coreUiState = appState,
+        appState = appState,
         vm = vm,
         onShowDialog = {
             showDialog = it

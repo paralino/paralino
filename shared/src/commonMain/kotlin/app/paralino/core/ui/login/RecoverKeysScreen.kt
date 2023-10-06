@@ -49,8 +49,8 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
-import app.paralino.core.ui.rememberCoreUiState
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
@@ -62,29 +62,30 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RecoverKeysScreenCore(
-    appState: CoreUiState = rememberCoreUiState(),
+    appState: CoreUiState,
     vm: RecoverKeysViewModel,
     onShowDialog: (MainAlertDialog) -> Unit,
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is RecoverKeysScreenEvent.Error -> {
-                    appState.showSnackbar(event.exception.errorString())
+                    vm.showSnackbar(event.exception.errorString())
                 }
 
                 is RecoverKeysScreenEvent.CredentialsError -> {
-                    appState.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                    vm.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                 }
 
                 is RecoverKeysScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
                         validation = event.validationResult.type
                     )
-                    appState.showSnackbar(errorText)
+                    vm.showSnackbar(errorText)
                 }
 
                 null -> {

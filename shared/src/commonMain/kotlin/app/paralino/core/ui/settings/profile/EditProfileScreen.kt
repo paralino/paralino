@@ -27,6 +27,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
@@ -44,19 +45,20 @@ fun EditProfileScreen(
     onExit: () -> Unit
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = EditProfileScreenState())
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is EditProfileScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    vm.showSnackbar(event.error.errorString())
                 }
                 is EditProfileScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
                         validation = event.validationResult.type
                     )
-                    appState.showSnackbar(errorText)
+                    vm.showSnackbar(errorText)
                 }
                 EditProfileScreenEvent.ProfileUpdated -> {
                     onExit()

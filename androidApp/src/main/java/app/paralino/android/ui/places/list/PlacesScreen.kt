@@ -36,6 +36,7 @@ import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.ConditionErrorType
@@ -52,11 +53,13 @@ fun PlacesScreen(
     vm: PlacesViewModel = getViewModel { parametersOf(groupId) },
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
+        messageDispatcher = vm.messageDispatcher,
         locationStatusProvider = vm.locationStatusProvider
     )
 
@@ -65,7 +68,7 @@ fun PlacesScreen(
         vm.events.collectLatest { event ->
             when (event) {
                 is PlacesScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString(context))
+                    vm.showSnackbar(event.error.errorString(context))
                 }
                 PlacesScreenEvent.AddPlace -> {
                     appState.navController.navigate(

@@ -36,10 +36,10 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.invite.manage.PersonalCodeItem
-import app.paralino.core.ui.rememberCoreUiState
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
@@ -48,7 +48,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun GroupInitScreenCore(
-    appState: CoreUiState = rememberCoreUiState(),
+    appState: CoreUiState,
     vm: GroupInitViewModel,
     onShowDialog: (MainAlertDialog?) -> Unit,
     openSettings: () -> Unit,
@@ -59,18 +59,18 @@ fun GroupInitScreenCore(
     onClose: () -> Unit,
 ) {
 
-    val vmState by vm.uiState.collectAsState(GroupInitScreenState())
-    val state = vmState
+    MessageDispatcherEffect(vm, appState)
+    val state by vm.uiState.collectAsState(GroupInitScreenState())
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is GroupInitScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    vm.showSnackbar(event.error.errorString())
                 }
 
                 GroupInitScreenEvent.EmailVerificationSent -> {
-                    appState.showSnackbar(MR.strings.info_email_check_instructions.localizedString())
+                    vm.showSnackbar(MR.strings.info_email_check_instructions.localizedString())
                 }
 
                 null -> {
@@ -128,7 +128,7 @@ fun GroupInitScreenCore(
                         }
 
                         ConditionErrorType.NETWORK -> {
-                            appState.showSnackbar(
+                            vm.showSnackbar(
                                 text = MR.strings.error_no_connection_snackbar.localizedString()
                             )
                         }
@@ -154,14 +154,14 @@ fun GroupInitScreenCore(
 
             if (state.personalCode != null) {
                 PersonalCodeItem(
-                    state = state.personalCode,
+                    state = state.personalCode!!,
                     deleteLoading = false,
                     onCopy = {
                         vm.copyToClipboard()
-                        appState.showSnackbar(MR.strings.toast_copy_invite_code.localizedString())
+                        vm.showSnackbar(MR.strings.toast_copy_invite_code.localizedString())
                     },
                     onShare = {
-                        onSharePersonalCode(state.personalCode.code)
+                        onSharePersonalCode(state.personalCode!!.code)
                     },
                     onDelete = {}
                 )

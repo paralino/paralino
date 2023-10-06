@@ -64,6 +64,7 @@ import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.AppColors
@@ -93,6 +94,9 @@ fun GroupDetailScreenCore(
     askLocationPermission: () -> Unit,
     askBackgroundLocationPermission: () -> Unit,
 ) {
+
+    MessageDispatcherEffect(vm, appState)
+
     if (groupId.isNullOrBlank()) {
         DefaultEmptyState(content = stringResource(MR.strings.group_load_error))
         return
@@ -108,11 +112,11 @@ fun GroupDetailScreenCore(
         vm.events.collectLatest { event ->
             when (event) {
                 is GroupDetailScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    vm.showSnackbar(event.error.errorString())
                 }
 
                 GroupDetailScreenEvent.GroupNotFound -> {
-                    appState.showSnackbar(MR.strings.group_load_error.localizedString())
+                    vm.showSnackbar(MR.strings.group_load_error.localizedString())
                 }
 
                 GroupDetailScreenEvent.GroupDeleted -> {
@@ -310,7 +314,7 @@ fun GroupDetailScreenCore(
                                 ConditionErrorType.PERMISSION_NOTIFICATIONS -> askNotificationPermission()
                                 ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
                                 ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
-                                ConditionErrorType.NETWORK -> appState.showSnackbar(
+                                ConditionErrorType.NETWORK -> vm.showSnackbar(
                                     text = MR.strings.error_no_connection_snackbar.localizedString()
                                 )
 

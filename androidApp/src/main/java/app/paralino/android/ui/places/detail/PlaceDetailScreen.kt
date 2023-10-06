@@ -33,6 +33,7 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
@@ -46,6 +47,7 @@ fun PlaceDetailScreen(
     vm: PlaceDetailViewModel = getViewModel { parametersOf(groupId, placeId) },
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
     var optionMenuExpanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
@@ -55,7 +57,7 @@ fun PlaceDetailScreen(
         vm.events.collectLatest { event ->
             when (event) {
                 is PlaceDetailScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString(context))
+                    vm.showSnackbar(event.error.errorString(context))
                 }
                 is PlaceDetailScreenEvent.PlaceDeleted -> {
                     appState.navController.popBackStack()

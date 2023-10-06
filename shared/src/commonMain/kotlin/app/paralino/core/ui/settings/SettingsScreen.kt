@@ -39,6 +39,7 @@ import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
@@ -57,6 +58,7 @@ fun SettingsScreenCore(
     openLicences: () -> Unit
 ) {
 
+    MessageDispatcherEffect(viewModel, appState)
     val accountState by viewModel.accountState.collectAsState(Payload.Loading)
 
     Column(

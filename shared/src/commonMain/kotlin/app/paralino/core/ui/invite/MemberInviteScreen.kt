@@ -47,6 +47,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.theme.ButtonStyle
@@ -64,21 +65,23 @@ fun MemberInviteScreenCore(
     onNavigateBack: () -> Unit,
 ) {
 
+    MessageDispatcherEffect(vm, appState)
+
     val state by vm.uiState.collectAsState(initial = MemberInviteScreenState.Empty())
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is MemberInviteScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    vm.showSnackbar(event.error.errorString())
                 }
 
                 MemberInviteScreenEvent.ErrorWrongCode -> {
-                    appState.showSnackbar(MR.strings.invite_connect_alert_wrongCode.localizedString())
+                    vm.showSnackbar(MR.strings.invite_connect_alert_wrongCode.localizedString())
                 }
 
                 MemberInviteScreenEvent.ErrorMissingGroup -> {
-                    appState.showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
+                    vm.showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
                 }
 
                 MemberInviteScreenEvent.MemberAdded -> {
