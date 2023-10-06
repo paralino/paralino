@@ -131,6 +131,8 @@ open class MapViewProviderState constructor(
         mapView.apply {
             // disable telemetry by default
             attribution.getMapAttributionDelegate().telemetry()
+                .disableTelemetrySession()
+            attribution.getMapAttributionDelegate().telemetry()
                 .setUserTelemetryRequestState(enabled = false)
 
             compass.updateSettings {
