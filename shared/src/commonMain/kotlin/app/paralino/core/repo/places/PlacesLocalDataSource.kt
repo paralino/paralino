@@ -2,6 +2,7 @@ package app.paralino.core.repo.places
 
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.models.data
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.raw.GroupPlaceRaw
@@ -96,6 +97,7 @@ class PlacesLocalDataSource(
             .distinctFlowOfList()
             .map {
                 it.map { mapper.local2Core(it) }
+                    .sortedBy { it.data.data?.name }
             }
     }
 
