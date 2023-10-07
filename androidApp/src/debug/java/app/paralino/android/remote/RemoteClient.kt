@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 object RemoteClient {
     fun setup(client: Client, debug: Boolean): Client {
         val interceptor = HttpLoggingInterceptor().apply {
-            level = if (debug) HttpLoggingInterceptor.Level.BODY
+            level = if (debug) HttpLoggingInterceptor.Level.BASIC
             else HttpLoggingInterceptor.Level.NONE
         }
         client.http = client
