@@ -55,6 +55,7 @@ android {
             buildConfigField("String", "serverUrl", props['serverUrl'])
             buildConfigField("String", "serverKey", props['serverKey'])
             buildConfigField("String", "mapboxAccessToken", props['MAPBOX_ACCESS_TOKEN'])
+            manifestPlaceholders = [ MAPS_API_KEY: props['MAPS_API_KEY'] ]
             resValue "string", "glitchTipDSN", props['glitchTipDSN']
         }
 
@@ -242,6 +243,11 @@ dependencies {
 //    googleImplementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     ossImplementation 'org.osmdroid:osmdroid-android:6.1.10'
+
+    googleImplementation 'com.google.maps.android:maps-compose:3.0.0'
+    googleImplementation 'com.google.maps.android:maps-compose-utils:3.0.0'
+    googleImplementation 'com.google.maps.android:maps-compose-widgets:3.0.0'
+
     googleImplementation 'com.mapbox.maps:android:10.8.1'
     googleImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
 
