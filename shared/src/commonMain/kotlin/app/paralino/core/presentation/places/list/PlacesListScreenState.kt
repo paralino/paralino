@@ -4,6 +4,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.presentation.groups.GroupDetailScreenEvent
+import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 
@@ -13,7 +14,10 @@ data class PlacesListScreenState constructor(
     val placesLimit: Int,
     val places: List<PlaceListItemData>,
     val errors: List<ConditionErrorType>
-)
+) {
+    val markers: List<MapPinData> = places.filter { it.lat != null && it.lng != null }
+        .map { MapPinData(groupId, it) }
+}
 
 data class PlaceListItemData constructor(
     val id: String,
