@@ -4,15 +4,11 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.groups.GroupInitScreen
 import app.paralino.android.ui.navigation.AppScreen
@@ -27,7 +23,6 @@ import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.groups.GroupPickerAction
 import app.paralino.core.utils.extensions.safeCast
-import com.mapbox.maps.Style
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -67,102 +62,66 @@ fun MapHomeContent(
 
     val uiState by vm.uiState.collectAsState(MapHomeScreenState.Empty())
     val isDarkMode = isSystemInDarkTheme()
-    val mapViewState = rememberMapViewHomeState(
-        darkMode = isDarkMode,
-        satellite = uiState.isSatelliteMode
-    )
     rememberSaveable(startGroupId, isDarkMode, uiState.isSatelliteMode) {
         vm.switchGroup(groupId = startGroupId ?: "")
-        mapViewState.mapAndroidView.getMapboxMap().loadStyleUri(
-            if (uiState.isSatelliteMode) {
-                Style.SATELLITE_STREETS
-            } else if (isDarkMode) {
-                Style.DARK
-            } else {
-                Style.MAPBOX_STREETS
-            }
-        )
         ""
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // map
-        AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = {
-                mapViewState.initMap()
-                mapViewState.onMapLongPress = { lat, lng ->
-                    val groupId = (uiState as? MapHomeScreenState.Ready)?.groupId
-                    if(groupId != null) {
-                        appState.navController.navigate(
-                            AppScreen.MainHome.PlaceCreate.route(
-                                groupId = groupId,
-                                placeId = null,
-                                lat = lat,
-                                lng = lng
-                            )
+        MainHomeMapComposable(
+            isDarkMode = isDarkMode,
+            satelliteMode = uiState.isSatelliteMode,
+            state = (uiState as? MapHomeScreenState.Ready),
+            onMapLongPress = { lat, lng ->
+                val groupId = (uiState as? MapHomeScreenState.Ready)?.groupId
+                if (groupId != null) {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlaceCreate.route(
+                            groupId = groupId,
+                            placeId = null,
+                            lat = lat,
+                            lng = lng
                         )
-                    }
-                    true
+                    )
                 }
-                mapViewState.onMapTouch = {
-                    vm.hideFocusedItems()
-                    false
-                }
-                mapViewState.onMarkerClick = {
-                    when (it.pinType) {
-                        MapPinType.MEMBER -> {
-                            logg.tag("marker_click").v("Member marker clicked")
-                            vm.trackMarker(it.asFocusedMarker())
-                        }
-
-                        MapPinType.PLACE -> {
-                            when (val state = uiState) {
-                                is MapHomeScreenState.Ready -> {
-                                    val focusedMarker = state.focusedMarker
-                                    logg.tag("marker_click")
-                                        .v("Place marker clicked: $focusedMarker")
-                                    if (focusedMarker?.markerId == it.markerId) {
-                                        appState.navController.navigate(
-                                            AppScreen.MainHome.PlaceDetail.route(
-                                                state.groupId,
-                                                it.markerId
-                                            )
-                                        )
-                                    } else {
-                                        vm.trackMarker(it.asFocusedMarker())
-                                    }
-                                }
-
-                                is MapHomeScreenState.Empty -> {}
-                            }
-                        }
-                    }
-                    true
-                }
-
-                mapViewState.mapAndroidView
             },
-            update = { }
+            onMapTouch = {
+                vm.hideFocusedItems()
+            },
+            onMarkerClick = {
+                when (it.pinType) {
+                    MapPinType.MEMBER -> {
+                        logg.tag("marker_click").v("Member marker clicked")
+                        vm.trackMarker(it.asFocusedMarker())
+                    }
+
+                    MapPinType.PLACE -> {
+                        when (val state = uiState) {
+                            is MapHomeScreenState.Ready -> {
+                                val focusedMarker = state.focusedMarker
+                                logg.tag("marker_click")
+                                    .v("Place marker clicked: $focusedMarker")
+                                if (focusedMarker?.markerId == it.markerId) {
+                                    appState.navController.navigate(
+                                        AppScreen.MainHome.PlaceDetail.route(
+                                            state.groupId,
+                                            it.markerId
+                                        )
+                                    )
+                                } else {
+                                    vm.trackMarker(it.asFocusedMarker())
+                                }
+                            }
+
+                            is MapHomeScreenState.Empty -> {}
+                        }
+                    }
+                }
+            }
         )
 
         val data by rememberUpdatedState(uiState)
-
-        when (val state = data) {
-            is MapHomeScreenState.Ready -> {
-                val markers by rememberUpdatedState(state.markers)
-                LaunchedEffect(markers) {
-                    mapViewState.updateMarkers(list = markers)
-                }
-
-                LaunchedEffect(data, state.mapHomeScreenFocusType) {
-                    mapViewState.reDrawMarkers(state.focusedMarker, state.mapHomeScreenFocusType)
-                }
-            }
-
-            is MapHomeScreenState.Empty -> {}
-        }
 
         MapHomeScreenElements(
             modifier = Modifier.fillMaxSize(),
@@ -172,7 +131,7 @@ fun MapHomeContent(
                     val groups = vm.getAllGroups()
                     appState.showBottomSheetForResult(
                         BottomSheetsScreen.GroupPicker(groups)
-                    ).safeCast<GroupPickerAction>()?.let {
+                    ).safeCast<GroupPickerAction>()?.let  {
                         when (it) {
                             is GroupPickerAction.GroupPicked -> {
                                 vm.switchGroup(it.group.id)
@@ -224,7 +183,7 @@ fun MapHomeContent(
                     is GroupMemberItemStateWithLocations -> {}
                     is GroupMemberItemStateWithOneLocation -> {
                         vm.trackMarker(it.asFocusedMarker())
-                        mapViewState.focusToMarker(it.keyId)
+                        // TODO refocus right away
                     }
                 }
             },
