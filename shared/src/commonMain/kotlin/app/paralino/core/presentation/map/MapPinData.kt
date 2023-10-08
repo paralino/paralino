@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.map
 
+import androidx.compose.runtime.Stable
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
@@ -8,6 +9,7 @@ import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 
+@Stable
 data class MapPinData constructor(
     val groupId: String,
     val markerId: String,
@@ -77,6 +79,37 @@ data class MapPinData constructor(
         accuracy = location.locationData.data?.accuracy ?: 0f,
         shouldShowApproximateCircle = location.locationData.data?.shouldShowApproximateCircle ?: false
     )
+
+    @Stable
+    fun getPinSize(): Int {
+        return when (pinType) {
+            MapPinType.MEMBER -> {
+                when {
+                    focused && active -> when (markerStyle) {
+                        MapMarkerStyle.PIN -> 110
+                        MapMarkerStyle.CIRCLE -> 90
+                    }
+
+                    active -> when (markerStyle) {
+                        MapMarkerStyle.PIN -> 80
+                        MapMarkerStyle.CIRCLE -> 60
+                    }
+
+                    else -> when (markerStyle) {
+                        MapMarkerStyle.PIN -> 40
+                        MapMarkerStyle.CIRCLE -> 40
+                    }
+                }
+            }
+
+            MapPinType.PLACE -> {
+                when {
+                    focused -> 50
+                    else -> 30
+                }
+            }
+        }
+    }
 }
 
 enum class MapPinType {

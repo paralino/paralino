@@ -1,0 +1,170 @@
+package app.paralino.android.ui.map
+
+import android.view.MotionEvent
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.presentation.places.create.CreatePlaceScreenState
+import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.Circle
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+
+
+@Composable
+fun PlaceCreateMapComposable(
+    modifier: Modifier = Modifier,
+    state: CreatePlaceScreenState,
+    onMapInteraction: (Boolean) -> Unit,
+    onMapLongPress: (lat: Double, lng: Double) -> Unit,
+) {
+    val pin = remember(state.lat, state.lng, state.radiusMeters, state.image) {
+        if (state.lat != null && state.lng != null)
+            MapPinData(state)
+        else null
+    }
+    SimplePlaceMapComposable(
+        modifier = modifier,
+        markers = listOfNotNull(pin),
+        onMapInteraction = onMapInteraction,
+        onMapLongPress = onMapLongPress
+    )
+}
+
+@Composable
+fun PlaceDetailMapComposable(
+    modifier: Modifier = Modifier,
+    state: PlaceDetailScreenState,
+    onMapInteraction: (Boolean) -> Unit,
+) {
+    val pin = remember(state.lat, state.lng, state.radiusMeters, state.image) {
+        if (state.lat != null && state.lng != null)
+            MapPinData(state)
+        else null
+    }
+    SimplePlaceMapComposable(
+        modifier = modifier,
+        markers = listOfNotNull(pin),
+        onMapInteraction = onMapInteraction,
+        onMapLongPress = { lat, lng -> }
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun SimplePlaceMapComposable(
+    modifier: Modifier = Modifier,
+    markers: List<MapPinData>,
+    onMapInteraction: (Boolean) -> Unit,
+    onMapLongPress: (lat: Double, lng: Double) -> Unit,
+) {
+
+    val scope = rememberCoroutineScope()
+    var mapLoaded by remember { mutableStateOf(false) }
+
+    val cameraPositionState = rememberCameraPositionState {
+        refocus(scope = scope, markers = markers, padding = 150, durationMs = 0)
+    }
+
+    LaunchedEffect(key1 = markers) {
+        if (mapLoaded) {
+            cameraPositionState.refocus(scope = scope, markers = markers)
+        }
+    }
+
+    LaunchedEffect(key1 = cameraPositionState) {
+        snapshotFlow { cameraPositionState.isMoving }
+            .distinctUntilChanged()
+            .collectLatest { onMapInteraction(it) }
+    }
+
+    val uiSettings by defaultMapUiSettings()
+    val properties by defaultMapProperties(
+        satelliteMode = false,
+        isDarkMode = isSystemInDarkTheme()
+    )
+
+    Box(
+        modifier = modifier.pointerInteropFilter {
+            when (it.action) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                    onMapInteraction(true)
+                }
+
+                else -> {
+                    onMapInteraction(false)
+                }
+            }
+            false
+        },
+    ) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = properties,
+            uiSettings = uiSettings,
+            onMapLongClick = { onMapLongPress(it.latitude, it.longitude) },
+            onMapClick = { onMapInteraction(true) },
+            onMapLoaded = { mapLoaded = true }
+        ) {
+            markers.forEach { model ->
+                val latAnim = animateFloatAsState(
+                    targetValue = model.lat.toFloat(),
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+                    label = "latAnim"
+                ).value.toDouble()
+                val lngAnim = animateFloatAsState(
+                    targetValue = model.lng.toFloat(),
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+                    label = "lngAnim"
+                ).value.toDouble()
+                val accuracyAnim = animateFloatAsState(
+                    targetValue = model.accuracy,
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+                    label = "accuracyAnim"
+                ).value.toDouble()
+
+                if (model.shouldShowApproximateCircle) {
+                    Circle(
+                        center = LatLng(latAnim, lngAnim),
+                        clickable = true,
+                        fillColor = Color.Blue.copy(alpha = 0.4f),
+                        radius = accuracyAnim,
+                        strokeColor = Color.Blue,
+                        strokeWidth = 8f,
+                        tag = model.markerId,
+                        onClick = {
+                            cameraPositionState.refocus(scope = scope, markers = markers)
+                        }
+                    )
+                }
+                MapMarkerComposable(
+                    state = model,
+                    position = LatLng(latAnim, lngAnim),
+                    onClick = {
+                        cameraPositionState.refocus(scope = scope, markers = markers)
+                    }
+                )
+            }
+        }
+    }
+}
