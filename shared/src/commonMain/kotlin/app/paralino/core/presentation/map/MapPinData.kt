@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
+import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
@@ -129,6 +130,6 @@ fun MapPinData.asFocusedMarker(): FocusedMarkerData {
     return FocusedMarkerData(markerId = this.markerId, type = this.pinType)
 }
 
-fun GroupMemberItemStateWithOneLocation.asFocusedMarker(): FocusedMarkerData {
+fun GroupMemberItemState.asFocusedMarker(): FocusedMarkerData {
     return FocusedMarkerData(markerId = this.keyId, type = MapPinType.MEMBER)
 }

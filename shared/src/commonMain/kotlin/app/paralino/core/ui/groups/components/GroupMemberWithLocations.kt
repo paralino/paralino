@@ -246,8 +246,8 @@ fun GroupMemberWithLocations(
                 }
             }
 
-            val canExpand =
-                state.memberState.actionItems.isNotEmpty() || extraActions != null || (state.locations.isNotEmpty() && state.allowShowingDevices)
+            val canExpand = state.memberState.canHaveExpandButton &&
+                (state.memberState.actionItems.isNotEmpty() || extraActions != null || (state.locations.isNotEmpty() && state.allowShowingDevices))
 
             // expand icon
             Box(

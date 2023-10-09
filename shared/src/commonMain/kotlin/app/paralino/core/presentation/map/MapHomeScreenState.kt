@@ -22,7 +22,7 @@ sealed class MapHomeScreenState {
         val members: List<GroupMemberItemState>,
         val places: List<PlaceListItemData>,
         val markers: List<MapPinData>,
-        val focusedMarker: FocusedMarkerData?,
+        val trackingMarker: FocusedMarkerData?,
         val mapHomeScreenFocusType: MapHomeScreenFocusType,
 
         val sharingStatus: LocationSharingContract?,
@@ -30,6 +30,15 @@ sealed class MapHomeScreenState {
     ) : MapHomeScreenState() {
         val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
+        val focusedPlace: PlaceListItemData? =
+            (mapHomeScreenFocusType as? MapHomeScreenFocusType.PLACE)?.let { item ->
+                places.firstOrNull { it.id == item.placeId }
+            }
+
+        val focusedMember: GroupMemberItemState? =
+            (mapHomeScreenFocusType as? MapHomeScreenFocusType.MEMBER)?.let { item ->
+                members.firstOrNull { it.keyId == item.memberKeyId }
+            }
     }
 
     data class Empty(
@@ -42,17 +51,21 @@ sealed class MapHomeScreenEvent {
     data class Error(val error: Throwable) : MapHomeScreenEvent()
 }
 
-enum class MapHomeScreenFocusType {
-    NONE, PLACE, MEMBER, ALL_PLACES, ALL_MEMBERS;
+sealed interface MapHomeScreenFocusType {
+    data object NONE : MapHomeScreenFocusType
+    data class PLACE(val placeId: String) : MapHomeScreenFocusType
+    data class MEMBER(val memberKeyId: String) : MapHomeScreenFocusType
+    data object ALL_PLACES : MapHomeScreenFocusType
+    data object ALL_MEMBERS : MapHomeScreenFocusType
+
     val areMembersFocused: Boolean get() = this == ALL_MEMBERS
-    val areMembersExpanded: Boolean get() = this == ALL_MEMBERS || this == MEMBER
     val arePlacesFocused: Boolean get() = this == ALL_PLACES
-    val arePlacesExpanded: Boolean get() = this == ALL_PLACES || this == PLACE
+    val isMemberOrPlaceFocused: Boolean get() = this is MEMBER || this is PLACE
 
     fun toggle(target: MapHomeScreenFocusType): MapHomeScreenFocusType {
-        return when(this) {
+        return when (this) {
             NONE -> target
-            else -> if(target != this) target else NONE
+            else -> if (target != this) target else NONE
         }
     }
 }

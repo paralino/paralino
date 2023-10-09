@@ -3,6 +3,8 @@ package app.paralino.android.ui.map
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,10 +15,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.core.logg
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
+import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
+import app.paralino.core.presentation.map.asFocusedMarker
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
@@ -29,7 +37,55 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun MainHomeMapComposable(
-    isDarkMode: Boolean,
+    appState: MainAppState,
+    uiState: MapHomeScreenState,
+    vm: MapHomeViewModel
+) {
+    MainHomeMapComposable(
+        satelliteMode = uiState.isSatelliteMode,
+        state = (uiState as? MapHomeScreenState.Ready),
+        onMapLongPress = { lat, lng ->
+            val groupId = (uiState as? MapHomeScreenState.Ready)?.groupId
+            if (groupId != null) {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceCreate.route(
+                        groupId = groupId,
+                        placeId = null,
+                        lat = lat,
+                        lng = lng
+                    )
+                )
+            }
+        },
+        onMapTouch = {
+            vm.onMapTouch()
+        },
+        onMarkerClick = {
+            when (it.pinType) {
+                MapPinType.MEMBER -> {
+                    logg.tag("marker_click").v("Member marker clicked")
+                    vm.trackMarker(it.asFocusedMarker())
+                }
+
+                MapPinType.PLACE -> {
+                    if (it.focused) {
+                        appState.navController.navigate(
+                            AppScreen.MainHome.PlaceDetail.route(
+                                groupId = it.groupId,
+                                placeId = it.markerId
+                            )
+                        )
+                    } else {
+                        vm.trackMarker(it.asFocusedMarker())
+                    }
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun MainHomeMapComposable(
     satelliteMode: Boolean,
     state: MapHomeScreenState.Ready?,
     onMapLongPress: (lat: Double, lng: Double) -> Unit,
@@ -46,15 +102,15 @@ fun MainHomeMapComposable(
 
     val stateData by rememberUpdatedState(newValue = state)
 
-    LaunchedEffect(key1 = stateData?.mapHomeScreenFocusType, key2 = stateData?.markers) {
+    LaunchedEffect(stateData?.markers, state?.trackingMarker) {
         snapshotFlow { stateData?.mapHomeScreenFocusType }
             .distinctUntilChanged()
             .collectLatest {
                 val focus = when (it) {
-                    MapHomeScreenFocusType.PLACE,
-                    MapHomeScreenFocusType.MEMBER -> {
+                    is MapHomeScreenFocusType.PLACE,
+                    is MapHomeScreenFocusType.MEMBER -> {
                         listOfNotNull(
-                            stateData?.markers?.firstOrNull { it.markerId == stateData?.focusedMarker?.markerId }
+                            stateData?.markers?.firstOrNull { it.markerId == stateData?.trackingMarker?.markerId }
                         )
                     }
 
@@ -87,13 +143,14 @@ fun MainHomeMapComposable(
     }
 
     var uiSettings by defaultMapUiSettings()
-    var properties by defaultMapProperties(isDarkMode = isDarkMode, satelliteMode = satelliteMode)
+    var properties by defaultMapProperties(isDarkMode = isSystemInDarkTheme(), satelliteMode = satelliteMode)
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         properties = properties,
         uiSettings = uiSettings,
+        contentPadding = PaddingValues(bottom = if(state?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) 0.dp else 140.dp),
         onMapLongClick = { onMapLongPress(it.latitude, it.longitude) },
         onMapClick = { onMapTouch() }
     ) {

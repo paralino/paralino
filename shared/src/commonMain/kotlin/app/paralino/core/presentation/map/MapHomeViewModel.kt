@@ -84,7 +84,7 @@ class MapHomeViewModel constructor(
                     userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
                         .map {
                             MapHomeScreenState.Empty(
-                                it?.userImage ?: ImageModel.emoji(Emojis.robot)
+                                currentUserImage = it?.userImage ?: ImageModel.emoji(Emojis.robot)
                             )
                         }
                 } else {
@@ -101,7 +101,8 @@ class MapHomeViewModel constructor(
                                     GroupMemberItemStateWithOneLocation(
                                         memberState = GroupMemberState(
                                             member = member.member,
-                                            isCurrentUser = member.member.userId == config.userId
+                                            isCurrentUser = member.member.userId == config.userId,
+                                            canHaveExpandButton = false
                                         ),
                                         location = null,
                                         lastPing = null
@@ -110,7 +111,8 @@ class MapHomeViewModel constructor(
                             } else {
                                 val memberState = GroupMemberState(
                                     member = member.member,
-                                    isCurrentUser = member.member.userId == config.userId
+                                    isCurrentUser = member.member.userId == config.userId,
+                                    canHaveExpandButton = false
                                 )
                                 member.locations.map { location ->
                                     val canDelete = member.member.userId == config.userId &&
@@ -142,7 +144,10 @@ class MapHomeViewModel constructor(
                             }
                         }
 
-                        val focusedMarker = (_uiState.value as? MapHomeScreenState.Ready)?.focusedMarker
+                        val oldState = (_uiState.value as? MapHomeScreenState.Ready)?.takeIf { it.groupId == group.id }
+                        val focusedMarker = oldState?.markers?.firstOrNull { it.focused }
+                        val trackingMarker = oldState?.trackingMarker
+                        val focusType = oldState?.mapHomeScreenFocusType
 
                         val memberMarkers = group.members
                             .flatMap { member ->
@@ -185,8 +190,8 @@ class MapHomeViewModel constructor(
                             members = membersData,
                             places = placesData,
                             markers = placeMarkers + memberMarkers,
-                            focusedMarker = focusedMarker,
-                            mapHomeScreenFocusType = (_uiState.value as? MapHomeScreenState.Ready)?.mapHomeScreenFocusType ?: MapHomeScreenFocusType.ALL_MEMBERS,
+                            trackingMarker = trackingMarker,
+                            mapHomeScreenFocusType = focusType ?: MapHomeScreenFocusType.ALL_MEMBERS,
                             sharingStatus = sharingStatus,
                             isSatelliteMode = _uiState.value.isSatelliteMode
                         )
@@ -214,19 +219,27 @@ class MapHomeViewModel constructor(
     fun trackMarker(marker: FocusedMarkerData) {
         updateReadyState {
             it.copy(
-                focusedMarker = marker,
+                trackingMarker = marker,
                 markers = it.markers.map { it.copy(focused = it.markerId == marker.markerId) },
                 mapHomeScreenFocusType = when(marker.type) {
-                    MapPinType.MEMBER -> MapHomeScreenFocusType.MEMBER
-                    MapPinType.PLACE -> MapHomeScreenFocusType.PLACE
+                    MapPinType.MEMBER -> MapHomeScreenFocusType.MEMBER(memberKeyId = marker.markerId)
+                    MapPinType.PLACE -> MapHomeScreenFocusType.PLACE(placeId = marker.markerId)
                 }
             )
         }
     }
 
-    fun hideFocusedItems() = updateReadyState { it.copy(focusedMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = MapHomeScreenFocusType.NONE) }
-    fun toggleFocusOnMembers() = updateReadyState { it.copy(focusedMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_MEMBERS)) }
-    fun toggleFocusOnPlaces() = updateReadyState { it.copy(focusedMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_PLACES)) }
+    fun onMapTouch() = updateReadyState {
+        if (it.mapHomeScreenFocusType.isMemberOrPlaceFocused) {
+            // only de-init focused marker so it is not tracked
+            it.copy(trackingMarker = null)
+        } else {
+            it.copy(trackingMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = MapHomeScreenFocusType.NONE)
+        }
+    }
+    fun hideFocusedItem() = updateReadyState { it.copy(trackingMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = MapHomeScreenFocusType.NONE) }
+    fun toggleFocusOnMembers() = updateReadyState { it.copy(trackingMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_MEMBERS)) }
+    fun toggleFocusOnPlaces() = updateReadyState { it.copy(trackingMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_PLACES)) }
 
     fun switchMapMode() {
         _uiState.update {

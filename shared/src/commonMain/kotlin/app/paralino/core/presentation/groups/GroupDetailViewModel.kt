@@ -69,7 +69,8 @@ class GroupDetailViewModel(
 
                     val memberState = GroupMemberState(
                         member = member.member,
-                        isCurrentUser = member.member.userId == config.userId
+                        isCurrentUser = member.member.userId == config.userId,
+                        canHaveExpandButton = true
                     ).copy(
                         actionItems = buildList {
                             if (group.isCurrentUserOwner && member.member.userId != group.ownerUserId) {

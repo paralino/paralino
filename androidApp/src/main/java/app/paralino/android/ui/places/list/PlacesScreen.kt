@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -279,6 +280,8 @@ fun PlacesScreen(
 
                 if (index == 0)
                     Spacer(modifier = Modifier.size(20.dp))
+                else
+                    Spacer(modifier = Modifier.size(8.dp))
 
                 PlaceListItem(
                     modifier = Modifier.animateItemPlacement(),
@@ -307,15 +310,15 @@ fun PlacesScreen(
 @Composable
 fun PlaceListItem(
     modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colors.surface,
     state: PlaceListItemData,
     onClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colors.surface)
+            .background(backgroundColor)
             .let {
                 if (onClick != null)
                     it.clickable { onClick() }

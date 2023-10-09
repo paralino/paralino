@@ -24,9 +24,14 @@ data class GroupMemberState constructor(
     val name: String,
     val image: ImageModel?,
     val isCurrentUser: Boolean,
-    val isVerified: Boolean
+    val isVerified: Boolean,
+    val canHaveExpandButton: Boolean
 ) {
-    constructor(member: MemberModel, isCurrentUser: Boolean) : this(
+    constructor(
+        member: MemberModel,
+        isCurrentUser: Boolean,
+        canHaveExpandButton: Boolean
+    ) : this(
         groupId = member.groupId,
         memberId = member.id,
         userId = member.userId,
@@ -34,7 +39,8 @@ data class GroupMemberState constructor(
         name = member.name,
         image = member.image,
         isCurrentUser = isCurrentUser,
-        isVerified = member.isVerified
+        isVerified = member.isVerified,
+        canHaveExpandButton = canHaveExpandButton
     )
 }
 

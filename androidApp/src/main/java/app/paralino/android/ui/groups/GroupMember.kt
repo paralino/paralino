@@ -74,7 +74,8 @@ val dummyMemberState = GroupMemberState(
     name = "User name",
     image = ImageModel.emoji(Emojis.robot),
     isCurrentUser = true,
-    isVerified = true
+    isVerified = true,
+    canHaveExpandButton = true
 )
 
 val dummyLocations = listOf(
