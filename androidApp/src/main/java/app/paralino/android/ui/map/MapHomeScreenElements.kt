@@ -190,9 +190,11 @@ fun MapHomeScreenElements(
     ) {
 
         val readyState = state as? MapHomeScreenState.Ready
-        val (groupSelect, placesTrack, membersTrack, focusedItem, shareTime, settings, mapMode) = createRefs()
+        val (groupSelect, placesTrack, membersTrack, focusedItem, shareTime, shareButton, settings, mapMode) = createRefs()
         val areMembersFocused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true
         val arePlacesFocused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true
+        val isMemberOrPlaceFocused =
+            readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true
 
         FloatingActionButton(
             modifier = Modifier
@@ -288,35 +290,38 @@ fun MapHomeScreenElements(
         )
 
         // sharing start
-        AnimatedVisibility(
-            visible = readyState != null && readyState.sharingStatus == null && !readyState.mapHomeScreenFocusType.isMemberOrPlaceFocused,
-            modifier = Modifier
-                .constrainAs(shareTime) {
-                    start.linkTo(parent.start, margin = 8.dp)
-                    bottom.linkTo(placesTrack.bottom)
-                },
-            enter = fadeIn(),
-            exit = scaleOut() + fadeOut()
+        Box(
+            modifier = Modifier.constrainAs(shareButton) {
+                end.linkTo(parent.end, margin = 8.dp)
+                bottom.linkTo(parent.bottom, margin = 144.dp)
+            },
         ) {
-            ExtendedFloatingActionButton(
-                text = {
-                    Text(text = stringResource(id = MR.strings.groups_sharing_button_start.resourceId))
-                },
-                icon = {
-                    Icon(painter = AppIcons.ShareLocation, contentDescription = null)
-                },
-                backgroundColor = MaterialTheme.colors.primary,
-                elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
-                onClick = onSharingStartClick
-            )
+            AnimatedVisibility(
+                visible = readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused,
+                enter = fadeIn(),
+                exit = scaleOut() + fadeOut()
+            ) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    text = {
+                        Text(text = stringResource(id = MR.strings.groups_sharing_button_start.resourceId))
+                    },
+                    icon = {
+                        Icon(painter = AppIcons.ShareLocation, contentDescription = null)
+                    },
+                    backgroundColor = MaterialTheme.colors.primary,
+                    elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
+                    onClick = onSharingStartClick
+                )
+            }
         }
 
         // sharing time info
         AnimatedVisibility(
-            visible = readyState?.sharingStatus != null && !readyState.mapHomeScreenFocusType.isMemberOrPlaceFocused,
+            visible = readyState?.sharingStatus != null && !isMemberOrPlaceFocused,
             modifier = Modifier.constrainAs(shareTime) {
-                start.linkTo(parent.start, margin = 8.dp)
-                bottom.linkTo(placesTrack.bottom)
+                start.linkTo(parent.start, margin = 4.dp)
+                bottom.linkTo(parent.bottom, margin = 174.dp)
             },
             enter = scaleIn(),
             exit = scaleOut() + fadeOut()
@@ -356,9 +361,9 @@ fun MapHomeScreenElements(
                 .constrainAs(membersTrack) {
                     start.linkTo(placesTrack.start)
                     end.linkTo(placesTrack.end)
-                    bottom.linkTo(placesTrack.top, margin = 16.dp)
+                    bottom.linkTo(placesTrack.top, margin = 12.dp)
                 },
-            visible = readyState != null && !readyState.mapHomeScreenFocusType.isMemberOrPlaceFocused,
+            visible = readyState != null && !isMemberOrPlaceFocused,
             enter = scaleIn(),
             exit = scaleOut() + fadeOut()
         ) {
@@ -381,9 +386,9 @@ fun MapHomeScreenElements(
             modifier = Modifier
                 .constrainAs(placesTrack) {
                     end.linkTo(parent.end, margin = 8.dp)
-                    bottom.linkTo(parent.bottom, margin = 170.dp)
+                    bottom.linkTo(shareButton.top, margin = 16.dp)
                 },
-            visible = readyState != null && !readyState.mapHomeScreenFocusType.isMemberOrPlaceFocused,
+            visible = readyState != null && !isMemberOrPlaceFocused,
             enter = scaleIn(),
             exit = scaleOut() + fadeOut()
         ) {
