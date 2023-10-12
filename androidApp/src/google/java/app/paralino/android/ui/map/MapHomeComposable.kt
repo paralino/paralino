@@ -39,11 +39,13 @@ import kotlinx.coroutines.flow.filter
 fun MainHomeMapComposable(
     appState: MainAppState,
     uiState: MapHomeScreenState,
-    vm: MapHomeViewModel
+    vm: MapHomeViewModel,
+    mapContentPadding: PaddingValues = PaddingValues(),
 ) {
     MainHomeMapComposable(
         satelliteMode = uiState.isSatelliteMode,
         state = (uiState as? MapHomeScreenState.Ready),
+        mapContentPadding = mapContentPadding,
         onMapLongPress = { lat, lng ->
             val groupId = (uiState as? MapHomeScreenState.Ready)?.groupId
             if (groupId != null) {
@@ -88,6 +90,7 @@ fun MainHomeMapComposable(
 fun MainHomeMapComposable(
     satelliteMode: Boolean,
     state: MapHomeScreenState.Ready?,
+    mapContentPadding: PaddingValues,
     onMapLongPress: (lat: Double, lng: Double) -> Unit,
     onMapTouch: () -> Unit,
     onMarkerClick: (MapPinData) -> Unit
@@ -150,7 +153,7 @@ fun MainHomeMapComposable(
         cameraPositionState = cameraPositionState,
         properties = properties,
         uiSettings = uiSettings,
-        contentPadding = PaddingValues(bottom = if(state?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) 0.dp else 140.dp),
+        contentPadding = mapContentPadding,
         onMapLongClick = { onMapLongPress(it.latitude, it.longitude) },
         onMapClick = { onMapTouch() }
     ) {

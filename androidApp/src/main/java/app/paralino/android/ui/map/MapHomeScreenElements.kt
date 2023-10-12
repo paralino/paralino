@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -75,13 +76,15 @@ fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
     appState: MainAppState,
     uiState: MapHomeScreenState,
-    vm: MapHomeViewModel
+    vm: MapHomeViewModel,
+    sheetPeekHeight: Dp
 ) {
     val data by rememberUpdatedState(uiState)
 
     MapHomeScreenElements(
         modifier = modifier.fillMaxSize(),
         state = data,
+        sheetPeekHeight = sheetPeekHeight,
         onGroupPickerClick = {
             appState.uiScope.launch {
                 val groups = vm.getAllGroups()
@@ -166,6 +169,7 @@ fun MapHomeScreenElements(
 fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
     state: MapHomeScreenState,
+    sheetPeekHeight: Dp,
     onGroupPickerClick: () -> Unit,
     onGroupDetailsClick: () -> Unit,
     onFocusOnMembersClick: () -> Unit,
@@ -293,7 +297,7 @@ fun MapHomeScreenElements(
         Box(
             modifier = Modifier.constrainAs(shareButton) {
                 end.linkTo(parent.end, margin = 8.dp)
-                bottom.linkTo(parent.bottom, margin = 144.dp)
+                bottom.linkTo(parent.bottom, margin = sheetPeekHeight + 6.dp)
             },
         ) {
             AnimatedVisibility(
@@ -320,8 +324,8 @@ fun MapHomeScreenElements(
         AnimatedVisibility(
             visible = readyState?.sharingStatus != null && !isMemberOrPlaceFocused,
             modifier = Modifier.constrainAs(shareTime) {
-                start.linkTo(parent.start, margin = 4.dp)
-                bottom.linkTo(parent.bottom, margin = 174.dp)
+                start.linkTo(parent.start, margin = 6.dp)
+                bottom.linkTo(parent.bottom, margin = sheetPeekHeight + 32.dp)
             },
             enter = scaleIn(),
             exit = scaleOut() + fadeOut()
@@ -410,9 +414,9 @@ fun MapHomeScreenElements(
         Box(
             modifier = Modifier
                 .constrainAs(focusedItem) {
-                    bottom.linkTo(parent.bottom, 4.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom, 32.dp)
+                    start.linkTo(parent.start, 8.dp)
+                    end.linkTo(parent.end, 8.dp)
                     width = Dimension.fillToConstraints
                 }
                 .padding(horizontal = 4.dp)

@@ -60,6 +60,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
+private val sheetPeekHeight = 72.dp
+
 @Composable
 fun MapHomeScreen(
     appState: MainAppState,
@@ -136,7 +138,7 @@ fun MapHomeContent(
             .collect()
     }
 
-    val sheetHeight by rememberUpdatedState(newValue = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) 0.dp else 140.dp)
+    val sheetHeight by rememberUpdatedState(newValue = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) 0.dp else sheetPeekHeight)
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -147,7 +149,7 @@ fun MapHomeContent(
         sheetBackgroundColor = MaterialTheme.colors.background,
         sheetContent = {
             Column(
-                modifier = Modifier.fillMaxHeight(0.6f)
+                modifier = Modifier.fillMaxHeight(0.5f)
             ) {
 
                 Spacer(modifier = Modifier.size(12.dp))
@@ -169,9 +171,8 @@ fun MapHomeContent(
                         text = "Members",
                         icon = CoreAppIcons.Group.asPainterResource(),
                         onClick = {
-                            appState.uiScope.launch {
-                                pagerState.animateScrollToPage(0)
-                            }
+                            appState.uiScope.launch { scaffoldState.bottomSheetState.expand() }
+                            appState.uiScope.launch { pagerState.animateScrollToPage(0) }
                         }
                     )
                     MapBottomSheetTab(
@@ -180,9 +181,8 @@ fun MapHomeContent(
                         text = "Places",
                         icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
                         onClick = {
-                            appState.uiScope.launch {
-                                pagerState.animateScrollToPage(1)
-                            }
+                            appState.uiScope.launch { scaffoldState.bottomSheetState.expand() }
+                            appState.uiScope.launch { pagerState.animateScrollToPage(1) }
                         }
                     )
                 }
@@ -190,7 +190,7 @@ fun MapHomeContent(
                 Spacer(modifier = Modifier.size(12.dp))
 
                 HorizontalPager(
-                    modifier = Modifier,
+                    modifier = Modifier.weight(1f),
                     state = pagerState,
                     verticalAlignment = Alignment.Top
                 ) {
@@ -249,8 +249,20 @@ fun MapHomeContent(
         },
         content = {
             Box(modifier = Modifier.fillMaxSize()) {
-                MainHomeMapComposable(appState = appState, uiState = uiState, vm = vm)
-                MapHomeScreenElements(appState = appState, uiState = uiState, vm = vm)
+                MainHomeMapComposable(
+                    appState = appState,
+                    uiState = uiState,
+                    vm = vm,
+                    mapContentPadding = PaddingValues(
+                        bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) 0.dp else sheetPeekHeight
+                    )
+                )
+                MapHomeScreenElements(
+                    appState = appState,
+                    uiState = uiState,
+                    sheetPeekHeight = sheetPeekHeight,
+                    vm = vm
+                )
             }
         }
     )
