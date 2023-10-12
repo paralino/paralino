@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
@@ -39,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.android.ui.MainAppState
@@ -46,10 +49,12 @@ import app.paralino.android.ui.groups.GroupInitScreen
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.core.models.Resource
+import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.asFocusedMarker
+import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.groups.components.GroupMember
@@ -148,124 +153,155 @@ fun MapHomeContent(
         sheetGesturesEnabled = true,
         sheetBackgroundColor = MaterialTheme.colors.background,
         sheetContent = {
-            Column(
-                modifier = Modifier.fillMaxHeight(0.5f)
-            ) {
-
-                Spacer(modifier = Modifier.size(12.dp))
-                TabRow(
-                    modifier = Modifier
-                        .height(46.dp)
-                        .fillMaxWidth(0.8f)
-                        .padding(vertical = 4.dp, horizontal = 8.dp)
-                        .clip(RoundedCornerShape(50))
-                        .align(Alignment.CenterHorizontally),
-                    backgroundColor = MaterialTheme.colors.surface,
-                    selectedTabIndex = pagerState.currentPage,
-                    indicator = { Box {} },
-                    divider = { Box {} }
-                ) {
-                    MapBottomSheetTab(
-                        modifier = Modifier,
-                        selected = pagerState.currentPage == 0,
-                        text = "Members",
-                        icon = CoreAppIcons.Group.asPainterResource(),
-                        onClick = {
-                            appState.uiScope.launch { scaffoldState.bottomSheetState.expand() }
-                            appState.uiScope.launch { pagerState.animateScrollToPage(0) }
-                        }
-                    )
-                    MapBottomSheetTab(
-                        modifier = Modifier,
-                        selected = pagerState.currentPage == 1,
-                        text = "Places",
-                        icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                        onClick = {
-                            appState.uiScope.launch { scaffoldState.bottomSheetState.expand() }
-                            appState.uiScope.launch { pagerState.animateScrollToPage(1) }
-                        }
+            MapHomeSheetContent(
+                appState = appState,
+                bottomSheetState = scaffoldState.bottomSheetState,
+                pagerState = pagerState,
+                members = readyState?.members ?: emptyList(),
+                places = readyState?.places ?: emptyList(),
+                onMemberClick = {
+                    vm.trackMarker(it.asFocusedMarker())
+                },
+                onPlaceClick = {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlaceDetail.route(
+                            groupId = it.groupId,
+                            placeId = it.id
+                        )
                     )
                 }
-
-                Spacer(modifier = Modifier.size(12.dp))
-
-                HorizontalPager(
-                    modifier = Modifier.weight(1f),
-                    state = pagerState,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    when (it) {
-                        0 -> {
-                            LazyColumn(
-                                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
-                            ) {
-                                this.items(
-                                    items = readyState?.members ?: emptyList(),
-                                    key = { it.keyId }
-                                ) { itemState ->
-                                    GroupMember(
-                                        state = itemState,
-                                        backgroundColor = MaterialTheme.colors.surface,
-                                        collapseOnActionClick = true,
-                                        forceExpandAction = false,
-                                        onActionClick = {
-
-                                        },
-                                        onClick = { vm.trackMarker(itemState.asFocusedMarker()) }
-                                    )
-                                }
-                            }
-                        }
-
-                        1 -> {
-                            LazyColumn(
-                                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
-                            ) {
-                                this.itemsIndexed(
-                                    items = readyState?.places ?: emptyList(),
-                                    key = { index, item -> item.id }
-                                ) { index, itemState ->
-                                    if (index > 0)
-                                        Spacer(modifier = Modifier.size(8.dp))
-
-                                    PlaceListItem(
-                                        state = itemState,
-                                        backgroundColor = MaterialTheme.colors.surface,
-                                        onClick = {
-                                            appState.navController.navigate(
-                                                AppScreen.MainHome.PlaceDetail.route(
-                                                    groupId = itemState.groupId,
-                                                    placeId = itemState.id
-                                                )
-                                            )
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            )
         },
         content = {
-            Box(modifier = Modifier.fillMaxSize()) {
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val bottomOffset = this.maxHeight - LocalDensity.current.run {
+                    scaffoldState.bottomSheetState.requireOffset().toDp()
+                }
                 MainHomeMapComposable(
                     appState = appState,
                     uiState = uiState,
                     vm = vm,
                     mapContentPadding = PaddingValues(
-                        bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) 0.dp else sheetPeekHeight
+                        top = 50.dp,
+                        bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
+                            0.dp
+                        } else {
+                            bottomOffset
+                        }
                     )
                 )
                 MapHomeScreenElements(
                     appState = appState,
                     uiState = uiState,
-                    sheetPeekHeight = sheetPeekHeight,
+                    sheetPeekHeight = bottomOffset,
                     vm = vm
                 )
             }
         }
     )
+}
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@Composable
+fun MapHomeSheetContent(
+    appState: MainAppState,
+    bottomSheetState: androidx.compose.material.BottomSheetState,
+    pagerState: PagerState,
+    members: List<GroupMemberItemState>,
+    places: List<PlaceListItemData>,
+    onMemberClick: (GroupMemberItemState) -> Unit,
+    onPlaceClick: (PlaceListItemData) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxHeight(0.5f)
+    ) {
+        Spacer(modifier = Modifier.size(12.dp))
+        TabRow(
+            modifier = Modifier
+                .height(46.dp)
+                .fillMaxWidth(0.8f)
+                .padding(vertical = 4.dp, horizontal = 8.dp)
+                .clip(RoundedCornerShape(50))
+                .align(Alignment.CenterHorizontally),
+            backgroundColor = MaterialTheme.colors.surface,
+            selectedTabIndex = pagerState.currentPage,
+            indicator = { Box {} },
+            divider = { Box {} }
+        ) {
+            MapBottomSheetTab(
+                modifier = Modifier,
+                selected = pagerState.currentPage == 0,
+                text = "Members",
+                icon = CoreAppIcons.Group.asPainterResource(),
+                onClick = {
+                    appState.uiScope.launch { bottomSheetState.expand() }
+                    appState.uiScope.launch { pagerState.animateScrollToPage(0) }
+                }
+            )
+            MapBottomSheetTab(
+                modifier = Modifier,
+                selected = pagerState.currentPage == 1,
+                text = "Places",
+                icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
+                onClick = {
+                    appState.uiScope.launch { bottomSheetState.expand() }
+                    appState.uiScope.launch { pagerState.animateScrollToPage(1) }
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.size(12.dp))
+
+        HorizontalPager(
+            modifier = Modifier.weight(1f),
+            state = pagerState,
+            verticalAlignment = Alignment.Top
+        ) {
+            when (it) {
+                0 -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                    ) {
+                        this.items(
+                            items = members,
+                            key = { it.keyId }
+                        ) { itemState ->
+                            GroupMember(
+                                state = itemState,
+                                backgroundColor = MaterialTheme.colors.surface,
+                                collapseOnActionClick = true,
+                                forceExpandAction = false,
+                                onActionClick = {
+
+                                },
+                                onClick = { onMemberClick(itemState) }
+                            )
+                        }
+                    }
+                }
+
+                1 -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                    ) {
+                        this.itemsIndexed(
+                            items = places,
+                            key = { index, item -> item.id }
+                        ) { index, itemState ->
+                            if (index > 0)
+                                Spacer(modifier = Modifier.size(8.dp))
+
+                            PlaceListItem(
+                                state = itemState,
+                                backgroundColor = MaterialTheme.colors.surface,
+                                onClick = { onPlaceClick(itemState) }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
