@@ -51,9 +51,8 @@ data class MemberDeviceStatus constructor(
         get() {
             batteryLevel ?: return null
             if(statusType == MemberDeviceStatusType.NOT_SHARING) return null
-            if(statusType == MemberDeviceStatusType.NOT_SHARING) return null
             if(timeUTC == null) return null
-            if(timeUTC.fromUTCtoInstant()?.plus(2.minutes)?.let { it > nowUTC() } != true) return null
+            if(timeUTC.fromUTCtoInstant()?.plus(20.minutes)?.let { it > nowUTC() } != true) return null
             return batteryLevel
         }
 

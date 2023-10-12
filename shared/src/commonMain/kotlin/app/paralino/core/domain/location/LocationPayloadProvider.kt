@@ -58,7 +58,6 @@ class LocationPayloadProvider(
                                 lat = data.lat,
                                 lng = data.lng,
                                 accuracy = data.accuracy,
-                                batteryLevel = data.batteryLevel?.takeIf { contract.shareBattery },
                                 speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
                                 altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f }
                             )

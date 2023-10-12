@@ -3,7 +3,6 @@ package app.paralino.android.tracking
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
-import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.android.utils.extensions.millisToDateTimeUTC
 import app.paralino.android.utils.extensions.toLocalString
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -129,7 +128,6 @@ class LocationInitHandler constructor(
                     lng = it.longitude,
                     accuracy = it.accuracy,
                     timeUTC = it.time.millisToDateTimeUTC().toLocalString(),
-                    batteryLevel = context.batterLevel,
                     speed = if (it.hasSpeed()) it.speed else null,
                     altitude = if (it.hasAltitude()) it.altitude.toFloat() else null
                 )
