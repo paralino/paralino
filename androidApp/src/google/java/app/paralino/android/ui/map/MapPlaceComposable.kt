@@ -150,7 +150,7 @@ fun SimplePlaceMapComposable(
                         fillColor = Color.Blue.copy(alpha = 0.4f),
                         radius = accuracyAnim,
                         strokeColor = Color.Blue,
-                        strokeWidth = 8f,
+                        strokeWidth = 0f,
                         tag = model.markerId,
                         onClick = {
                             cameraPositionState.refocus(scope = scope, markers = markers)

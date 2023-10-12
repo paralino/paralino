@@ -178,7 +178,10 @@ fun MainHomeMapComposable(
                     fillColor = Color.Blue.copy(alpha = 0.4f),
                     radius = accuracyAnim,
                     strokeColor = Color.Blue,
-                    strokeWidth = 8f,
+                    strokeWidth = when (model.pinType) {
+                        MapPinType.MEMBER -> 8f
+                        MapPinType.PLACE -> 0f
+                    },
                     tag = model.markerId,
                     onClick = {
                         onMarkerClick(model)
