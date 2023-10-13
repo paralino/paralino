@@ -91,7 +91,7 @@ fun defaultMapUiSettings(): MutableState<MapUiSettings> {
         mutableStateOf(
             MapUiSettings(
                 zoomControlsEnabled = false,
-                compassEnabled = false,
+                compassEnabled = true,
                 mapToolbarEnabled = false,
                 myLocationButtonEnabled = false,
                 tiltGesturesEnabled = false

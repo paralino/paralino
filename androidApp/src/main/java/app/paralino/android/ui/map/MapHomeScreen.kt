@@ -182,7 +182,7 @@ fun MapHomeContent(
                     uiState = uiState,
                     vm = vm,
                     mapContentPadding = PaddingValues(
-                        top = 50.dp,
+                        top = 68.dp,
                         bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
                             0.dp
                         } else {
