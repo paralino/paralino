@@ -67,6 +67,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.ButtonStyle
 import kotlinx.coroutines.flow.collect
@@ -76,7 +77,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
-private val sheetPeekHeight = 80.dp
+private val sheetPeekHeight = 84.dp
 
 @Composable
 fun MapHomeScreen(
@@ -85,6 +86,8 @@ fun MapHomeScreen(
     vm: MapHomeViewModel = getViewModel(),
     onClose: () -> Unit,
 ) {
+    MessageDispatcherEffect(vm, appState)
+
     val groupState by vm.allGroups.collectAsState()
     when (val state = groupState) {
         Resource.NotInitialized -> {}
@@ -296,10 +299,12 @@ fun MapHomeSheetContent(
                     LazyColumn(
                         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
                     ) {
-                        this.items(
+                        this.itemsIndexed(
                             items = members,
-                            key = { it.keyId }
-                        ) { itemState ->
+                            key = { index, item -> item.keyId }
+                        ) { index, itemState ->
+                            if (index > 0)
+                                Spacer(modifier = Modifier.size(8.dp))
                             GroupMember(
                                 state = itemState,
                                 backgroundColor = MaterialTheme.colors.surface,

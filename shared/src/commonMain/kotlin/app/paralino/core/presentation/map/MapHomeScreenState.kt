@@ -48,7 +48,7 @@ sealed class MapHomeScreenState {
 }
 
 sealed class MapHomeScreenEvent {
-    data class Error(val error: Throwable) : MapHomeScreenEvent()
+
 }
 
 sealed interface MapHomeScreenFocusType {

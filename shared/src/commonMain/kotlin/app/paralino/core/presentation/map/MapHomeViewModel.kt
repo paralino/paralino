@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.map
 
+import app.paralino.core.MR
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.location.LocationRefreshUseCase
 import app.paralino.core.logg
@@ -17,12 +18,14 @@ import app.paralino.core.presentation.groups.GroupMemberState
 import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -164,7 +167,8 @@ class MapHomeViewModel constructor(
                             }
                         }
 
-                        val oldState = (_uiState.value as? MapHomeScreenState.Ready)?.takeIf { it.groupId == group.id }
+                        val oldState =
+                            (_uiState.value as? MapHomeScreenState.Ready)?.takeIf { it.groupId == group.id }
                         val focusedMarker = oldState?.markers?.firstOrNull { it.focused }
 
                         val memberMarkers = group.members
@@ -209,9 +213,11 @@ class MapHomeViewModel constructor(
                                 is MapHomeScreenFocusType.MEMBER -> {
                                     membersData.any { it.keyId == oldFocusType.memberKeyId }
                                 }
+
                                 is MapHomeScreenFocusType.PLACE -> {
                                     placesData.any { it.id == oldFocusType.placeId }
                                 }
+
                                 else -> true
                             }
                         } ?: MapHomeScreenFocusType.ALL_MEMBERS
@@ -254,15 +260,23 @@ class MapHomeViewModel constructor(
     }
 
     fun trackMarker(marker: FocusedMarkerData) {
-        updateReadyState {
-            it.copy(
-                trackingMarker = marker,
-                markers = it.markers.map { it.copy(focused = it.markerId == marker.markerId) },
-                mapHomeScreenFocusType = when(marker.type) {
-                    MapPinType.MEMBER -> MapHomeScreenFocusType.MEMBER(memberKeyId = marker.markerId)
-                    MapPinType.PLACE -> MapHomeScreenFocusType.PLACE(placeId = marker.markerId)
-                }
-            )
+
+        val isMarkerAvailable = (_uiState.value as? MapHomeScreenState.Ready)
+            ?.markers?.any { it.markerId == marker.markerId } == true
+
+        if (isMarkerAvailable) {
+            updateReadyState {
+                it.copy(
+                    trackingMarker = marker,
+                    markers = it.markers.map { it.copy(focused = it.markerId == marker.markerId) },
+                    mapHomeScreenFocusType = when (marker.type) {
+                        MapPinType.MEMBER -> MapHomeScreenFocusType.MEMBER(memberKeyId = marker.markerId)
+                        MapPinType.PLACE -> MapHomeScreenFocusType.PLACE(placeId = marker.markerId)
+                    }
+                )
+            }
+        } else {
+            messageDispatcher.showSnackbar(MR.strings.group_member_no_location_info_message.localizedString())
         }
     }
 
@@ -271,12 +285,37 @@ class MapHomeViewModel constructor(
             // only de-init focused marker so it is not tracked
             it.copy(trackingMarker = null)
         } else {
-            it.copy(trackingMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = MapHomeScreenFocusType.NONE)
+            it.copy(
+                trackingMarker = null,
+                markers = it.markers.map { it.copy(focused = false) },
+                mapHomeScreenFocusType = MapHomeScreenFocusType.NONE
+            )
         }
     }
-    fun hideFocusedItem() = updateReadyState { it.copy(trackingMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = MapHomeScreenFocusType.NONE) }
-    fun toggleFocusOnMembers() = updateReadyState { it.copy(trackingMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_MEMBERS)) }
-    fun toggleFocusOnPlaces() = updateReadyState { it.copy(trackingMarker = null, markers = it.markers.map { it.copy(focused = false) }, mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_PLACES)) }
+
+    fun hideFocusedItem() = updateReadyState {
+        it.copy(
+            trackingMarker = null,
+            markers = it.markers.map { it.copy(focused = false) },
+            mapHomeScreenFocusType = MapHomeScreenFocusType.NONE
+        )
+    }
+
+    fun toggleFocusOnMembers() = updateReadyState {
+        it.copy(
+            trackingMarker = null,
+            markers = it.markers.map { it.copy(focused = false) },
+            mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_MEMBERS)
+        )
+    }
+
+    fun toggleFocusOnPlaces() = updateReadyState {
+        it.copy(
+            trackingMarker = null,
+            markers = it.markers.map { it.copy(focused = false) },
+            mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_PLACES)
+        )
+    }
 
     fun switchMapMode() {
         _uiState.update {
@@ -344,7 +383,7 @@ class MapHomeViewModel constructor(
 
             MemberAction.DELETE_LOCATION -> {
                 if (state is GroupMemberItemStateWithOneLocation && state.location != null) {
-                    clearMyLocation(state.location!!.locationId)
+                    clearMyLocation(state.location.locationId)
                 }
             }
 
@@ -358,7 +397,7 @@ class MapHomeViewModel constructor(
 
     private fun clearMyLocation(locationId: String) {
         locationRepo.clearLocation(locationId)
-            .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
+            .catch { messageDispatcher.showSnackbar(it.errorString()) }
             .launchIn(coroutineScope)
     }
 
@@ -366,7 +405,7 @@ class MapHomeViewModel constructor(
 
         if (state.location == null) {
             coroutineScope.launch {
-                _eventChannel.send(MapHomeScreenEvent.Error(Throwable("Active device not found")))
+                messageDispatcher.showSnackbar(Throwable("Active device not found").errorString())
             }
             return
         }
@@ -376,7 +415,7 @@ class MapHomeViewModel constructor(
             memberUserId = state.memberState.userId,
             locationId = state.location.locationId
         )
-            .catch { _eventChannel.send(MapHomeScreenEvent.Error(it)) }
+            .catch { messageDispatcher.showSnackbar(it.errorString()) }
             .launchIn(coroutineScope)
     }
 }

@@ -232,6 +232,7 @@
     <string name="group_create_button_text">Kreiraj grupu</string>
     <string name="group_picker_button_create">Kreiraj</string>
     <string name="group_picker_button_join">Pridruži se</string>
+    <string name="group_member_no_location_info_message">Lokacija trenutno nije dostupna za ovaj uređaj.</string>
 
     <string name="group_members_last_active_status_now">Upravo sada</string>
     <string name="group_members_last_active_status_recently_1">Prije 1 minute</string>

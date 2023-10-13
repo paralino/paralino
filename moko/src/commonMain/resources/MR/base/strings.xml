@@ -233,6 +233,7 @@
     <string name="group_create_button_text">Create group</string>
     <string name="group_picker_button_create">Create</string>
     <string name="group_picker_button_join">Join</string>
+    <string name="group_member_no_location_info_message">This device does not have a location yet.</string>
 
     <string name="group_members_last_active_status_now">Just now</string>
     <string name="group_members_last_active_status_recently_1">1 minute ago</string>
