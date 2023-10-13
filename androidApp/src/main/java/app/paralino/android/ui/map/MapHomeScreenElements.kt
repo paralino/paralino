@@ -363,9 +363,9 @@ fun MapHomeScreenElements(
         AnimatedVisibility(
             modifier = Modifier
                 .constrainAs(membersTrack) {
-                    start.linkTo(placesTrack.start)
-                    end.linkTo(placesTrack.end)
-                    bottom.linkTo(placesTrack.top, margin = 12.dp)
+                    end.linkTo(placesTrack.start, margin = 12.dp)
+                    top.linkTo(placesTrack.top)
+                    bottom.linkTo(placesTrack.bottom)
                 },
             visible = readyState != null && !isMemberOrPlaceFocused,
             enter = scaleIn(),

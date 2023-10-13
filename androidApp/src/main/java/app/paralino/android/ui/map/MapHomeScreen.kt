@@ -3,6 +3,7 @@ package app.paralino.android.ui.map
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,6 +25,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -64,7 +67,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
-private val sheetPeekHeight = 72.dp
+private val sheetPeekHeight = 80.dp
 
 @Composable
 fun MapHomeScreen(
@@ -209,12 +212,23 @@ fun MapHomeSheetContent(
     Column(
         modifier = Modifier.fillMaxHeight(0.5f)
     ) {
-        Spacer(modifier = Modifier.size(12.dp))
+        Divider(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 8.dp, bottom = 12.dp)
+                .clip(RoundedCornerShape(percent = 50))
+                .width(30.dp)
+                .clickable {
+                    appState.uiScope.launch {
+                        bottomSheetState.expand()
+                    }
+                },
+            thickness = 6.dp
+        )
         TabRow(
             modifier = Modifier
-                .height(46.dp)
+                .height(40.dp)
                 .fillMaxWidth(0.8f)
-                .padding(vertical = 4.dp, horizontal = 8.dp)
                 .clip(RoundedCornerShape(50))
                 .align(Alignment.CenterHorizontally),
             backgroundColor = MaterialTheme.colors.surface,
