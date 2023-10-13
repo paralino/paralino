@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.groups.GroupInitScreen
-import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.core.models.Resource
 import app.paralino.core.presentation.groups.GroupMemberItemState
@@ -163,12 +162,7 @@ fun MapHomeContent(
                     vm.trackMarker(it.asFocusedMarker())
                 },
                 onPlaceClick = {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.PlaceDetail.route(
-                            groupId = it.groupId,
-                            placeId = it.id
-                        )
-                    )
+                    vm.trackMarker(it.asFocusedMarker())
                 }
             )
         },
@@ -293,6 +287,7 @@ fun MapHomeSheetContent(
 
                             PlaceListItem(
                                 state = itemState,
+                                hasEndArrow = false,
                                 backgroundColor = MaterialTheme.colors.surface,
                                 onClick = { onPlaceClick(itemState) }
                             )

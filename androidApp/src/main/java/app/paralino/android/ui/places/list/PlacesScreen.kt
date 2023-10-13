@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -60,6 +61,8 @@ import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesScreenEvent
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainAlertDialog
@@ -97,6 +100,7 @@ fun PlacesScreen(
                 is PlacesScreenEvent.Error -> {
                     vm.showSnackbar(event.error.errorString(context))
                 }
+
                 PlacesScreenEvent.AddPlace -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.PlaceCreate.route(
@@ -105,12 +109,14 @@ fun PlacesScreen(
                         )
                     )
                 }
+
                 is PlacesScreenEvent.GroupPlacesLimitReached -> {
                     showDialog = MainAlertDialog.PlanLimit(
                         context.getString(MR.strings.plan_limit_places_alert_info.resourceId),
                         limit = event.limit
                     )
                 }
+
                 null -> { /* do nothing */
                 }
             }
@@ -123,6 +129,7 @@ fun PlacesScreen(
                 showDialog = null
             }
         }
+
         else -> {}
     }
 
@@ -136,9 +143,11 @@ fun PlacesScreen(
                 CircularProgressIndicator()
             }
         }
+
         is Payload.Error -> {
             DefaultEmptyState(content = stringResource(id = MR.strings.error_load_data_generic.resourceId))
         }
+
         is Payload.Success -> {
             PlacesScreen(
                 state = state.data,
@@ -267,7 +276,7 @@ fun PlacesScreen(
                             SimplePlaceMapComposable(
                                 markers = state.markers,
                                 onMapInteraction = { userScroll = !it },
-                                onMapLongPress = {lat, lng -> })
+                                onMapLongPress = { lat, lng -> })
                         }
                     }
                 }
@@ -286,6 +295,7 @@ fun PlacesScreen(
                 PlaceListItem(
                     modifier = Modifier.animateItemPlacement(),
                     state = item,
+                    hasEndArrow = true,
                     onClick = { onPlaceClick(item) },
                 )
             }
@@ -312,6 +322,7 @@ fun PlaceListItem(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.surface,
     state: PlaceListItemData,
+    hasEndArrow: Boolean = true,
     onClick: (() -> Unit)? = null
 ) {
     Row(
@@ -342,8 +353,18 @@ fun PlaceListItem(
         Text(
             text = state.name,
             style = MaterialTheme.typography.h6,
-            modifier = Modifier
+            modifier = Modifier.weight(1f)
         )
+        if (hasEndArrow) {
+            Icon(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .width(20.dp),
+                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                contentDescription = null
+            )
+        }
     }
 }
 

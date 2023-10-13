@@ -133,3 +133,7 @@ fun MapPinData.asFocusedMarker(): FocusedMarkerData {
 fun GroupMemberItemState.asFocusedMarker(): FocusedMarkerData {
     return FocusedMarkerData(markerId = this.keyId, type = MapPinType.MEMBER)
 }
+
+fun PlaceListItemData.asFocusedMarker(): FocusedMarkerData {
+    return FocusedMarkerData(markerId = this.id, type = MapPinType.PLACE)
+}

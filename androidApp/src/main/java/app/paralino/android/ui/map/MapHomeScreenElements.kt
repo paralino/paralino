@@ -432,6 +432,7 @@ fun MapHomeScreenElements(
                         PlaceListItem(
                             modifier = Modifier.padding(top = 20.dp),
                             state = placeState,
+                            hasEndArrow = true,
                             onClick = { onPlaceClick(placeState) }
                         )
                         CloseFocusButton(
@@ -453,7 +454,7 @@ fun MapHomeScreenElements(
                 readyState?.focusedMember?.let { memberState ->
                     Box {
                         GroupMember(
-                            modifier = Modifier.padding(top = 26.dp),
+                            modifier = Modifier.padding(top = 20.dp),
                             state = memberState,
                             backgroundColor = MaterialTheme.colors.background,
                             collapseOnActionClick = false,
@@ -484,14 +485,14 @@ fun CloseFocusButton(
     onClick: () -> Unit
 ) {
     FloatingActionButton(
-        modifier = modifier.size(36.dp),
+        modifier = modifier.size(32.dp),
         onClick = onClick,
         backgroundColor = MaterialTheme.colors.primary
     ) {
         Icon(
             painter = CoreAppIcons.Close.asPainterResource(),
             contentDescription = null,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(18.dp),
             tint = MaterialTheme.colors.secondary
         )
     }

@@ -63,25 +63,8 @@ fun MainHomeMapComposable(
             vm.onMapTouch()
         },
         onMarkerClick = {
-            when (it.pinType) {
-                MapPinType.MEMBER -> {
-                    logg.tag("marker_click").v("Member marker clicked")
-                    vm.trackMarker(it.asFocusedMarker())
-                }
-
-                MapPinType.PLACE -> {
-                    if (it.focused) {
-                        appState.navController.navigate(
-                            AppScreen.MainHome.PlaceDetail.route(
-                                groupId = it.groupId,
-                                placeId = it.markerId
-                            )
-                        )
-                    } else {
-                        vm.trackMarker(it.asFocusedMarker())
-                    }
-                }
-            }
+            logg.tag("marker_click").v("Marker clicked: ${it.pinType}")
+            vm.trackMarker(it.asFocusedMarker())
         }
     )
 }

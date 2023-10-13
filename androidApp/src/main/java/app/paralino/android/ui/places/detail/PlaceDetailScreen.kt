@@ -267,7 +267,8 @@ fun PlaceDetailScreen(
                         lat = 0.0,
                         lng = 0.0,
                         radiusMeters = 0
-                    )
+                    ),
+                    hasEndArrow = false
                 )
             }
 
