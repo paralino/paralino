@@ -1,27 +1,47 @@
 package app.paralino.core.presentation.map
 
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.location.LocationRefreshUseCase
+import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.groups.*
+import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.groups.GroupMemberState
+import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
-import app.paralino.core.data.db.AppConfig
-import app.paralino.core.logg
-import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MapHomeViewModel constructor(
@@ -146,8 +166,6 @@ class MapHomeViewModel constructor(
 
                         val oldState = (_uiState.value as? MapHomeScreenState.Ready)?.takeIf { it.groupId == group.id }
                         val focusedMarker = oldState?.markers?.firstOrNull { it.focused }
-                        val trackingMarker = oldState?.trackingMarker
-                        val focusType = oldState?.mapHomeScreenFocusType
 
                         val memberMarkers = group.members
                             .flatMap { member ->
@@ -179,6 +197,25 @@ class MapHomeViewModel constructor(
                             )
                         }
 
+                        val allMarkers = placeMarkers + memberMarkers
+                        // only keep previous tracking marker if it still exists
+                        val trackingMarker = oldState?.trackingMarker?.takeIf { oldMarker ->
+                            allMarkers.any { it.markerId == oldMarker.markerId }
+                        }
+
+                        // only keep previous focus type if it still exists
+                        val focusType = oldState?.mapHomeScreenFocusType?.takeIf { oldFocusType ->
+                            when (oldFocusType) {
+                                is MapHomeScreenFocusType.MEMBER -> {
+                                    membersData.any { it.keyId == oldFocusType.memberKeyId }
+                                }
+                                is MapHomeScreenFocusType.PLACE -> {
+                                    placesData.any { it.id == oldFocusType.placeId }
+                                }
+                                else -> true
+                            }
+                        } ?: MapHomeScreenFocusType.ALL_MEMBERS
+
                         MapHomeScreenState.Ready(
                             groupId = group.id,
                             groupName = group.name,
@@ -191,7 +228,7 @@ class MapHomeViewModel constructor(
                             places = placesData,
                             markers = placeMarkers + memberMarkers,
                             trackingMarker = trackingMarker,
-                            mapHomeScreenFocusType = focusType ?: MapHomeScreenFocusType.ALL_MEMBERS,
+                            mapHomeScreenFocusType = focusType,
                             sharingStatus = sharingStatus,
                             isSatelliteMode = _uiState.value.isSatelliteMode
                         )
