@@ -25,6 +25,8 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -45,11 +47,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.groups.GroupInitScreen
+import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
+import app.paralino.android.ui.theme.AppIcons
+import app.paralino.core.MR
 import app.paralino.core.models.Resource
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
@@ -59,7 +65,10 @@ import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.theme.ButtonStyle
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -166,6 +175,21 @@ fun MapHomeContent(
                 },
                 onPlaceClick = {
                     vm.trackMarker(it.asFocusedMarker())
+                },
+                onOpenPlaces = {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlacesList.route(
+                            groupId = readyState?.groupId ?: ""
+                        )
+                    )
+                },
+                onCreatePlace = {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlaceCreate.route(
+                            groupId = readyState?.groupId ?: "",
+                            placeId = null
+                        )
+                    )
                 }
             )
         },
@@ -208,6 +232,8 @@ fun MapHomeSheetContent(
     places: List<PlaceListItemData>,
     onMemberClick: (GroupMemberItemState) -> Unit,
     onPlaceClick: (PlaceListItemData) -> Unit,
+    onOpenPlaces: () -> Unit,
+    onCreatePlace: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxHeight(0.5f)
@@ -292,19 +318,56 @@ fun MapHomeSheetContent(
                     LazyColumn(
                         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
                     ) {
-                        this.itemsIndexed(
-                            items = places,
-                            key = { index, item -> item.id }
-                        ) { index, itemState ->
-                            if (index > 0)
-                                Spacer(modifier = Modifier.size(8.dp))
-
-                            PlaceListItem(
-                                state = itemState,
-                                hasEndArrow = false,
-                                backgroundColor = MaterialTheme.colors.surface,
-                                onClick = { onPlaceClick(itemState) }
-                            )
+                        if (places.isEmpty()) {
+                            this.item {
+                                DefaultEmptyState(
+                                    content = stringResource(id = MR.strings.places_list_screen_empty_info.resourceId),
+                                    icon = AppIcons.MapsHomeWork,
+                                    buttonText = stringResource(id = MR.strings.places_create_button_create.resourceId),
+                                    buttonIcon = CoreAppIcons.Add.asPainterResource()
+                                ) {
+                                    onCreatePlace()
+                                }
+                            }
+                        } else {
+                            this.itemsIndexed(
+                                items = places,
+                                key = { index, item -> item.id }
+                            ) { index, itemState ->
+                                if (index > 0)
+                                    Spacer(modifier = Modifier.size(8.dp))
+                                PlaceListItem(
+                                    state = itemState,
+                                    hasEndArrow = false,
+                                    backgroundColor = MaterialTheme.colors.surface,
+                                    onClick = { onPlaceClick(itemState) }
+                                )
+                            }
+                            this.item(key = "places_list") {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    FilledButton(
+                                        modifier = Modifier.padding(top = 20.dp),
+                                        style = ButtonStyle.SMALL,
+                                        icon = null,
+                                        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+                                        onClick = onOpenPlaces
+                                    ) {
+                                        Text(stringResource(MR.strings.button_showAll.resourceId))
+                                        Icon(
+                                            modifier = Modifier
+                                                .padding(start = 8.dp)
+                                                .width(20.dp),
+                                            painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                                            tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

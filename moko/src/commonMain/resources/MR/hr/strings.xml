@@ -11,7 +11,7 @@
     <string name="date_name_yesterday">Jučer</string>
 
     <string name="button_cancel">Odustani</string>
-    <string name="button_ok">U redu</string>
+    <string name="button_ok">Uredu</string>
     <string name="button_done">Gotovo</string>
     <string name="button_skip">Preskoči</string>
     <string name="button_retry">Ponovno</string>
@@ -19,6 +19,8 @@
     <string name="button_confirm">Potvrdi</string>
     <string name="button_save">Spremi</string>
     <string name="button_verify">Verificiraj</string>
+    <string name="button_showAll">Prikaži sve</string>
+    <string name="button_open">Otvori</string>
 
     <string name="alert_title_confirm">Molimo potvrdite</string>
     <string name="alert_sessionExpired_title">Sesija istekla</string>
