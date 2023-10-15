@@ -28,8 +28,8 @@
     <string name="error_load_data_generic">Nije moguće dovršiti zahtjev.</string>
     <string name="error_no_connection_snackbar">Nemoguće povezivanje\n**Provjerite svoju internetsku vezu.**</string>
     <string name="error_server_unavailable">Trenutačno nije moguće uspostaviti vezu, molimo pokušajte ponovno uskoro.</string>
-    <string name="error_something_wrong">Nešto nije u redu!</string>
-    <string name="error_something_wrong_http">Nešto nije u redu! [%d]</string>
+    <string name="error_something_wrong">Nešto nije uredu!</string>
+    <string name="error_something_wrong_http">Nešto nije uredu! [%d]</string>
     <string name="error_generic_snacbar">Ups, pokušajte ponovno.</string>
     <string name="error_location_permission_missing_sheet_message">Lokacijska dozvola je **potrebna** kako bi se uspješno pratila i dijelila vaša lokacija s drugima.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Molimo omogućite **preciznu lokacijsku dozvolu** kako biste uspješno pratili i dijelili vašu lokaciju s drugima.</string>
@@ -233,6 +233,7 @@
     <string name="group_picker_button_create">Kreiraj</string>
     <string name="group_picker_button_join">Pridruži se</string>
     <string name="group_member_no_location_info_message">Lokacija trenutno nije dostupna za ovaj uređaj.</string>
+    <string name="group_member_devices_section_title">Uređaji</string>
 
     <string name="group_members_last_active_status_now">Upravo sada</string>
     <string name="group_members_last_active_status_recently_1">Prije 1 minute</string>

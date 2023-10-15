@@ -270,7 +270,12 @@ fun GroupMemberWithLocations(
             AnimatedVisibility(visible = expanded) {
                 Column {
                     state.locations.takeIf { state.allowShowingDevices }?.let {
-                        Column(modifier = Modifier.padding(top = 4.dp)) {
+                        Column(modifier = Modifier.padding(top = 12.dp)) {
+                            Text(
+                                modifier = Modifier.padding(start = 8.dp),
+                                text = stringResource(MR.strings.group_member_devices_section_title),
+                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium)
+                            )
                             it.forEach {
                                 GroupMemberLocationChild(
                                     state = it,
@@ -334,7 +339,7 @@ fun GroupMemberLocationChild(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .padding(start = 12.dp)
+            .padding(start = 8.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .combinedClickable(
