@@ -1,5 +1,6 @@
 package app.paralino.android.ui.map
 
+import android.location.Location
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -71,8 +72,12 @@ fun MapMarkerComposable(
                     contentDescription = null
                 )
             }
+            val maxSize = when (state.markerStyle) {
+                MapMarkerStyle.PIN -> 0.9f
+                MapMarkerStyle.CIRCLE -> 1f
+            }
             Box(
-                modifier = Modifier.fillMaxSize(0.9f),
+                modifier = Modifier.fillMaxSize(maxSize),
                 contentAlignment = Alignment.Center
             ) {
                 ImageModelImage(
@@ -110,7 +115,7 @@ fun defaultMapProperties(
         mutableStateOf(
             MapProperties(
                 mapType = if (satelliteMode) MapType.HYBRID else MapType.NORMAL,
-                isBuildingEnabled = false,
+                isBuildingEnabled = true,
                 isIndoorEnabled = false,
                 isMyLocationEnabled = false,
                 isTrafficEnabled = false,
@@ -128,7 +133,7 @@ fun defaultMapProperties(
 
 
 fun boundsForMarkers(markers: List<MapPinData>): LatLngBounds? {
-    if(markers.isEmpty())
+    if (markers.isEmpty())
         return null
     return LatLngBounds.builder()
         .apply {
@@ -149,19 +154,81 @@ fun boundsForMarkers(markers: List<MapPinData>): LatLngBounds? {
 fun CameraPositionState.refocus(
     scope: CoroutineScope,
     markers: List<MapPinData>,
+    forceZoom: Boolean = true,
     padding: Int = 60,
     durationMs: Int = 500
 ) {
     scope.launch {
+        if (markers.isEmpty()) return@launch
         val bounds = boundsForMarkers(markers) ?: return@launch
-        val update = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+
+        val result = FloatArray(1)
+        Location.distanceBetween(
+            bounds.northeast.latitude,
+            bounds.northeast.longitude,
+            bounds.southwest.latitude,
+            bounds.southwest.longitude,
+            result
+        )
+
+        var cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+
+        val currentBounds = this@refocus.projection?.visibleRegion?.latLngBounds
+        currentBounds?.let {
+            val fitBounds = currentBounds.canFitBounds(bounds)
+            if (forceZoom) {
+                if (fitBounds && result.first() < 500) {
+                    cameraUpdate = CameraUpdateFactory.newLatLngZoom(bounds.center, 17f)
+                }
+            } else {
+                if (fitBounds) {
+                    cameraUpdate = CameraUpdateFactory.newLatLng(bounds.center)
+                }
+            }
+        } ?: let {
+            if (result.first() < 500) {
+                cameraUpdate = CameraUpdateFactory.newLatLngZoom(bounds.center, 17f)
+            }
+        }
+
         if (durationMs > 0) {
             this@refocus.animate(
-                update = update,
+                update = cameraUpdate,
                 durationMs = durationMs
             )
         } else {
-            this@refocus.move(update = update)
+            this@refocus.move(update = cameraUpdate)
         }
     }
+}
+
+private fun LatLngBounds.canFitBounds(
+    bounds: LatLngBounds
+): Boolean {
+
+    val first = this
+    val latDistance1 = SphericalUtil.computeDistanceBetween(
+        first.southwest,
+        // southeast
+        LatLng(first.southwest.latitude, first.northeast.longitude)
+    )
+    val latDistance2 = SphericalUtil.computeDistanceBetween(
+        bounds.southwest,
+        // southeast
+        LatLng(bounds.southwest.latitude, bounds.northeast.longitude)
+    )
+
+    val lngDistance1 = SphericalUtil.computeDistanceBetween(
+        first.southwest,
+        // northwest
+        LatLng(first.northeast.latitude, first.southwest.longitude)
+    )
+
+    val lngDistance2 = SphericalUtil.computeDistanceBetween(
+        bounds.southwest,
+        // northwest
+        LatLng(bounds.northeast.latitude, bounds.southwest.longitude)
+    )
+
+    return latDistance1 >= latDistance2 && lngDistance1 >= lngDistance2
 }

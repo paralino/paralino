@@ -229,7 +229,8 @@ class MapHomeViewModel constructor(
                             userCount = group.memberCount,
                             activeUserCount = group.members.filter { it.isActive }.size,
                             idleUserCount = group.members.filter { it.hasLocation && !it.isActive }.size,
-                            currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
+                            currentUserImage = userData?.userImage
+                                ?: ImageModel.emoji(Emojis.robot),
                             members = membersData,
                             places = placesData,
                             markers = placeMarkers + memberMarkers,
@@ -264,13 +265,20 @@ class MapHomeViewModel constructor(
         val isMarkerAvailable = (_uiState.value as? MapHomeScreenState.Ready)
             ?.markers?.any { it.markerId == marker.markerId } == true
 
+        val isRequestForSameMarker = (_uiState.value as? MapHomeScreenState.Ready)
+            ?.trackingMarker?.markerId == marker.markerId
+
         if (isMarkerAvailable) {
             updateReadyState {
                 it.copy(
                     trackingMarker = marker,
                     markers = it.markers.map { it.copy(focused = it.markerId == marker.markerId) },
                     mapHomeScreenFocusType = when (marker.type) {
-                        MapPinType.MEMBER -> MapHomeScreenFocusType.MEMBER(memberKeyId = marker.markerId)
+                        MapPinType.MEMBER -> MapHomeScreenFocusType.MEMBER(
+                            memberKeyId = marker.markerId,
+                            forceZoom = isRequestForSameMarker
+                        )
+
                         MapPinType.PLACE -> MapHomeScreenFocusType.PLACE(placeId = marker.markerId)
                     }
                 )
@@ -282,8 +290,15 @@ class MapHomeViewModel constructor(
 
     fun onMapTouch() = updateReadyState {
         if (it.mapHomeScreenFocusType.isMemberOrPlaceFocused) {
-            // only de-init focused marker so it is not tracked
-            it.copy(trackingMarker = null)
+            // de-init focused marker so it is not tracked
+            // and reset zoom enforcing for member focus
+            it.copy(
+                trackingMarker = null,
+                mapHomeScreenFocusType = when (it.mapHomeScreenFocusType) {
+                    is MapHomeScreenFocusType.MEMBER -> it.mapHomeScreenFocusType.copy(forceZoom = false)
+                    else -> it.mapHomeScreenFocusType
+                }
+            )
         } else {
             it.copy(
                 trackingMarker = null,

@@ -11,14 +11,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.logg
+import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeViewModel
@@ -28,9 +27,11 @@ import app.paralino.core.presentation.map.asFocusedMarker
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -88,35 +89,30 @@ fun MainHomeMapComposable(
 
     val stateData by rememberUpdatedState(newValue = state)
 
-    LaunchedEffect(stateData?.markers, state?.trackingMarker) {
+    LaunchedEffect(stateData?.markers) {
         snapshotFlow { stateData?.mapHomeScreenFocusType }
             .distinctUntilChanged()
             .collectLatest {
-                val focus = when (it) {
-                    is MapHomeScreenFocusType.PLACE,
-                    is MapHomeScreenFocusType.MEMBER -> {
-                        listOfNotNull(
-                            stateData?.markers?.firstOrNull { it.markerId == stateData?.trackingMarker?.markerId }
-                        )
-                    }
-
-                    MapHomeScreenFocusType.ALL_PLACES -> {
-                        stateData?.markers?.filter { it.pinType == MapPinType.PLACE } ?: emptyList()
-                    }
-
-                    MapHomeScreenFocusType.ALL_MEMBERS -> {
-                        stateData?.markers?.filter { it.pinType == MapPinType.MEMBER } ?: emptyList()
-                    }
-
-                    else -> {
-                        emptyList()
-                    }
-                }
-                cameraPositionState.refocus(
+                cameraPositionState.focusOnMap(
                     scope = scope,
-                    markers = focus,
-                    padding = 100,
+                    focusType = it,
+                    markers = stateData?.markers ?: emptyList(),
+                    focusedMarker = stateData?.trackingMarker,
                     durationMs = 3000
+                )
+            }
+    }
+
+    LaunchedEffect(state?.trackingMarker, state?.mapHomeScreenFocusType) {
+        snapshotFlow { stateData?.mapHomeScreenFocusType }
+            .distinctUntilChanged()
+            .collectLatest {
+                cameraPositionState.focusOnMap(
+                    scope = scope,
+                    focusType = it,
+                    markers = stateData?.markers ?: emptyList(),
+                    focusedMarker = stateData?.trackingMarker,
+                    durationMs = 500
                 )
             }
     }
@@ -128,8 +124,8 @@ fun MainHomeMapComposable(
             .collectLatest { onMapTouch() }
     }
 
-    var uiSettings by defaultMapUiSettings()
-    var properties by defaultMapProperties(isDarkMode = isSystemInDarkTheme(), satelliteMode = satelliteMode)
+    val uiSettings by defaultMapUiSettings()
+    val properties by defaultMapProperties(isDarkMode = isSystemInDarkTheme(), satelliteMode = satelliteMode)
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -178,4 +174,44 @@ fun MainHomeMapComposable(
             MapMarkerComposable(state = model, position = LatLng(latAnim, lngAnim), onClick = onMarkerClick)
         }
     }
+}
+
+private fun CameraPositionState.focusOnMap(
+    scope: CoroutineScope,
+    focusType: MapHomeScreenFocusType?,
+    markers: List<MapPinData>,
+    focusedMarker: FocusedMarkerData?,
+    durationMs: Int
+) {
+    val focus = when (focusType) {
+        is MapHomeScreenFocusType.PLACE,
+        is MapHomeScreenFocusType.MEMBER -> {
+            listOfNotNull(
+                markers.firstOrNull { it.markerId == focusedMarker?.markerId }
+            )
+        }
+
+        MapHomeScreenFocusType.ALL_PLACES -> {
+            markers.filter { it.pinType == MapPinType.PLACE }
+        }
+
+        MapHomeScreenFocusType.ALL_MEMBERS -> {
+            markers.filter { it.pinType == MapPinType.MEMBER }
+        }
+
+        else -> {
+            emptyList()
+        }
+    }
+    val forceZoom = when (focusType) {
+        is MapHomeScreenFocusType.MEMBER -> focusType.forceZoom
+        else -> true
+    }
+    refocus(
+        scope = scope,
+        markers = focus,
+        forceZoom = forceZoom,
+        padding = 100,
+        durationMs = durationMs
+    )
 }

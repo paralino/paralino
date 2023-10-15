@@ -54,7 +54,7 @@ sealed class MapHomeScreenEvent {
 sealed interface MapHomeScreenFocusType {
     data object NONE : MapHomeScreenFocusType
     data class PLACE(val placeId: String) : MapHomeScreenFocusType
-    data class MEMBER(val memberKeyId: String) : MapHomeScreenFocusType
+    data class MEMBER(val memberKeyId: String, val forceZoom: Boolean) : MapHomeScreenFocusType
     data object ALL_PLACES : MapHomeScreenFocusType
     data object ALL_MEMBERS : MapHomeScreenFocusType
 
