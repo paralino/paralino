@@ -45,6 +45,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -259,8 +260,9 @@ fun MapHomeSheetContent(
                 .height(40.dp)
                 .fillMaxWidth(0.8f)
                 .clip(RoundedCornerShape(50))
+                .background(MaterialTheme.colors.surface)
                 .align(Alignment.CenterHorizontally),
-            backgroundColor = MaterialTheme.colors.surface,
+            backgroundColor = Color.Transparent,
             selectedTabIndex = pagerState.currentPage,
             indicator = { Box {} },
             divider = { Box {} }
