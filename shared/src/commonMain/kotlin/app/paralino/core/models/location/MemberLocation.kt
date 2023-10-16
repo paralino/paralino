@@ -7,6 +7,7 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -81,6 +82,12 @@ data class MemberLocation constructor(
             val endTime = locationData.data?.endTimeUTC?.fromUTCtoInstant() ?: return false
             return endTime < nowUTC() && !isPinActive
         }
+
+    val canAutomaticallyClearLocation: Boolean
+        get() { return hasLocation && isOlderThan(7.days) && status.data?.statusType?.isInBlockedState != false }
+
+    val isLocationAvailableButOld: Boolean
+        get() { return hasLocation && isOlderThan(1.days) }
 
     // even if device status is not active (battery saving is on)
     // consider status as active if location is fairly fresh
