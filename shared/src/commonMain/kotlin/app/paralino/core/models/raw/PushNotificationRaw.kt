@@ -4,6 +4,8 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
 @Serializable
@@ -19,7 +21,9 @@ data class PushNotificationRaw constructor(
     val content: String?,
 ) {
 
-    val isExpired: Boolean get() = createdAt < nowUTC().minus(10.minutes)
+    // TODO adjust time check
+    val isExpired: Boolean get() = isOlderThan(1.days)
+    fun isOlderThan(duration: Duration): Boolean = createdAt.plus(duration) < nowUTC()
 
     companion object {
 
