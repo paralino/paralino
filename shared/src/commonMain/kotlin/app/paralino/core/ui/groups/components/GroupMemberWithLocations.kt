@@ -312,7 +312,6 @@ fun GroupMemberWithLocations(
                                 FilledButton(
                                     style = ButtonStyle.SMALL_ACTION,
                                     icon = action.actionIcon,
-                                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
                                     elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                                     onClick = {
                                         if (collapseOnActionClick)
