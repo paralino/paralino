@@ -3,6 +3,7 @@ package app.paralino.core.presentation.map
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.utils.Emojis
 
@@ -19,7 +20,7 @@ sealed class MapHomeScreenState {
         val idleUserCount: Int,
         override val currentUserImage: ImageModel,
 
-        val members: List<GroupMemberItemState>,
+        val members: List<GroupMemberItemStateWithOneLocation>,
         val places: List<PlaceListItemData>,
         val markers: List<MapPinData>,
         val trackingMarker: FocusedMarkerData?,
@@ -28,8 +29,15 @@ sealed class MapHomeScreenState {
         val sharingStatus: LocationSharingContract?,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
+        val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
         val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
+
+        val focusedTypeId: String = when (mapHomeScreenFocusType) {
+            is MapHomeScreenFocusType.PLACE -> mapHomeScreenFocusType.placeId
+            is MapHomeScreenFocusType.MEMBER -> mapHomeScreenFocusType.memberKeyId
+            else -> mapHomeScreenFocusType.toString()
+        }
         val focusedPlace: PlaceListItemData? =
             (mapHomeScreenFocusType as? MapHomeScreenFocusType.PLACE)?.let { item ->
                 places.firstOrNull { it.id == item.placeId }

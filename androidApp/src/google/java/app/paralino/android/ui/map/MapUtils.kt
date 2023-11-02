@@ -1,27 +1,13 @@
 package app.paralino.android.ui.map
 
 import android.location.Location
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import app.paralino.android.R
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.utils.Emojis
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -31,64 +17,9 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.MarkerComposable
-import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
-@Composable
-fun MapMarkerComposable(
-    state: MapPinData,
-    position: LatLng,
-    onClick: (MapPinData) -> Unit
-) {
-    MarkerComposable(
-        keys = listOfNotNull(
-            state.active,
-            state.focused,
-            state.image,
-            state.markerStyle
-        ).toTypedArray(),
-        state = MarkerState(position = position),
-        tag = state.markerId,
-        anchor = when (state.markerStyle) {
-            MapMarkerStyle.PIN -> Offset(0.5f, 1f)
-            MapMarkerStyle.CIRCLE -> Offset(0.5f, 0.5f)
-        },
-        onClick = {
-            onClick(state)
-            true
-        }
-    ) {
-        Box(
-            modifier = Modifier.size(state.getPinSize().dp),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            if (state.markerStyle == MapMarkerStyle.PIN) {
-                Image(
-                    modifier = Modifier.fillMaxSize(),
-                    painter = painterResource(id = R.drawable.ic_pin_bubble),
-                    contentDescription = null
-                )
-            }
-            val maxSize = when (state.markerStyle) {
-                MapMarkerStyle.PIN -> 0.9f
-                MapMarkerStyle.CIRCLE -> 1f
-            }
-            Box(
-                modifier = Modifier.fillMaxSize(maxSize),
-                contentAlignment = Alignment.Center
-            ) {
-                ImageModelImage(
-                    modifier = Modifier.fillMaxSize(0.9f),
-                    imageModel = state.image ?: ImageModel.emoji(Emojis.lock),
-                    clipShape = CircleShape
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun defaultMapUiSettings(): MutableState<MapUiSettings> {
@@ -130,7 +61,6 @@ fun defaultMapProperties(
         )
     }
 }
-
 
 fun boundsForMarkers(markers: List<MapPinData>): LatLngBounds? {
     if (markers.isEmpty())

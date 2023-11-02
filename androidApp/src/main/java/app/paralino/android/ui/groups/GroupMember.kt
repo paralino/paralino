@@ -33,6 +33,7 @@ fun MemberPreview() {
                     state = GroupMemberItemStateWithOneLocation(
                         memberState = dummyMemberState,
                         location = null,
+                        actionItems = listOf(MemberAction.DELETE_MEMBER),
                         lastPing = null
                     )
                 ) { }
@@ -41,6 +42,7 @@ fun MemberPreview() {
                     state = GroupMemberItemStateWithOneLocation(
                         memberState = dummyMemberState.copy(isVerified = false),
                         location = dummyLocations.first(),
+                        actionItems = listOf(MemberAction.DELETE_MEMBER),
                         lastPing = "16:30",
                     )
                 ) { }
@@ -50,6 +52,7 @@ fun MemberPreview() {
                         memberState = dummyMemberState,
                         locations = dummyLocations,
                         allowShowingDevices = true,
+                        actionItems = listOf(MemberAction.DELETE_MEMBER),
                         lastPing = "16:30",
                     )
                 ) { }
@@ -57,6 +60,7 @@ fun MemberPreview() {
                     state = GroupMemberItemStateWithLocations(
                         memberState = dummyMemberState,
                         locations = dummyLocations.take(1),
+                        actionItems = listOf(MemberAction.DELETE_MEMBER),
                         allowShowingDevices = false,
                         lastPing = "16:30",
                     )
@@ -70,7 +74,6 @@ val dummyMemberState = GroupMemberState(
     groupId = "",
     memberId = "",
     userId = "",
-    actionItems = listOf(MemberAction.DELETE_MEMBER),
     name = "User name",
     image = ImageModel.emoji(Emojis.robot),
     isCurrentUser = true,

@@ -203,6 +203,10 @@
     <string name="group_members_item_remove_button">UKLONI</string>
     <string name="group_members_item_clear_location_button">UKLONI LOKACIJU</string>
     <string name="group_members_item_request_location_button">OSVJEŽI</string>
+    <string name="group_members_item_old_location_button">Prikaži posljednju lokaciju</string>
+    <string name="group_members_marker_circle_info">%s je negdje unutar ovog kruga</string>
+    <string name="group_member_title">Korisnik</string>
+    <string name="group_member_device_title">Uređaj</string>
     <string name="group_members_block_user">Blokiraj korisnika</string>
     <string name="group_members_block_user_alert_message">Ako nastavite, korisnik vas neće moći dodati u grupu, te nećete primati obavijesti o lokaciji korisnika u nijednoj zajedničkoj grupi.</string>
     <string name="group_members_remove_alert_title">Jeste li sigurni da želite ukloniti %s iz grupe?</string>
@@ -222,7 +226,7 @@
     <string name="group_details_block_group_alert_button">Blokiraj</string>
     <string name="group_details_add_member_button">Dodaj novog člana</string>
     <string name="group_details_sharing_status_time">Dijeljenje do: **%s**</string>
-    <string name="group_details_sharing_status_infinite">Aktivno dijeljenje **uvijek uključeno**</string>
+    <string name="group_details_sharing_status_infinite">Dijeljenje lokacije **uvijek uključeno**</string>
     <string name="group_details_sharing_action">Dijeljenje lokacije</string>
     <string name="group_details_security_action">Sigurnost</string>
 

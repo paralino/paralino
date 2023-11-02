@@ -18,9 +18,13 @@ data class MapPinData constructor(
     val markerStyle: MapMarkerStyle,
     val focused: Boolean,
     val active: Boolean,
+    val obsolete: Boolean,
+    val hidden: Boolean,
     val image: ImageModel?,
     val lat: Double,
     val lng: Double,
+    val title: String? = null,
+    val timeInfo: String? = null,
     val accuracy: Float = 0f,
     val shouldShowApproximateCircle: Boolean
 ) {
@@ -32,6 +36,8 @@ data class MapPinData constructor(
         markerStyle = MapMarkerStyle.CIRCLE,
         focused = false,
         active = true,
+        obsolete = false,
+        hidden = false,
         image = state.image,
         lat = state.lat ?: 0.0,
         lng = state.lng ?: 0.0,
@@ -46,6 +52,8 @@ data class MapPinData constructor(
         markerStyle = MapMarkerStyle.CIRCLE,
         focused = false,
         active = true,
+        obsolete = false,
+        hidden = false,
         image = state.image,
         lat = state.lat ?: 0.0,
         lng = state.lng ?: 0.0,
@@ -60,6 +68,8 @@ data class MapPinData constructor(
         markerStyle = MapMarkerStyle.CIRCLE,
         focused = false,
         active = true,
+        obsolete = false,
+        hidden = false,
         image = state.image,
         lat = state.lat ?: 0.0,
         lng = state.lng ?: 0.0,
@@ -67,14 +77,23 @@ data class MapPinData constructor(
         shouldShowApproximateCircle = true
     )
 
-    constructor(location: MemberLocation, image: ImageModel?) : this(
+    constructor(
+        location: MemberLocation,
+        name: String?,
+        image: ImageModel?,
+        timeInfo: String?
+    ) : this(
         groupId = location.groupId,
         markerId = location.id,
         pinType = MapPinType.MEMBER,
         markerStyle = if(location.locationData.data?.isAccurate == true) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
         focused = false,
         active = location.isPinActive,
+        obsolete = location.isLocationAvailableButOld,
+        hidden = location.isLocationAvailableButOld,
+        title = name,
         image = image,
+        timeInfo = timeInfo,
         lat = location.locationData.data!!.lat,
         lng = location.locationData.data!!.lng,
         accuracy = location.locationData.data?.accuracy ?: 0f,
@@ -86,7 +105,7 @@ data class MapPinData constructor(
         return when (pinType) {
             MapPinType.MEMBER -> {
                 when {
-                    focused && active -> when (markerStyle) {
+                    focused -> when (markerStyle) {
                         MapMarkerStyle.PIN -> 110
                         MapMarkerStyle.CIRCLE -> 90
                     }

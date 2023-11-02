@@ -69,7 +69,7 @@ class ValueFormatter(): IValueFormatter() {
                 MR.strings.group_members_last_active_status_recently_2.localizedString()
             }
             sameDay -> {
-                time
+                "${MR.strings.date_name_today.localizedString()}, $time"
             }
             isYesterday -> {
                 "${MR.strings.date_name_yesterday.localizedString()}, $time"

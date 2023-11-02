@@ -204,6 +204,10 @@
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
     <string name="group_members_item_request_location_button">REFRESH</string>
+    <string name="group_members_item_old_location_button">Show last location</string>
+    <string name="group_members_marker_circle_info">%s is somewhere inside this circle</string>
+    <string name="group_member_title">Member</string>
+    <string name="group_member_device_title">Device</string>
     <string name="group_members_block_user">Block user</string>
     <string name="group_members_block_user_alert_message">If you proceed, user will not be able to add you to a group and you will not receive users\' location notification in any shared groups.</string>
     <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>

@@ -14,13 +14,15 @@ sealed interface GroupMemberItemState {
     val memberState: GroupMemberState
     val keyId: String
     val lastPing: String?
+    val actionItems: List<MemberAction>
+    val singleLocation: GroupMemberItemLocationState?
+    val singleValidLocation: GroupMemberItemLocationState?
 }
 
 data class GroupMemberState constructor(
     val groupId: String,
     val memberId: String,
     val userId: String,
-    val actionItems: List<MemberAction>,
     val name: String,
     val image: ImageModel?,
     val isCurrentUser: Boolean,
@@ -35,7 +37,6 @@ data class GroupMemberState constructor(
         groupId = member.groupId,
         memberId = member.id,
         userId = member.userId,
-        actionItems = emptyList(),
         name = member.name,
         image = member.image,
         isCurrentUser = isCurrentUser,
@@ -47,25 +48,43 @@ data class GroupMemberState constructor(
 data class GroupMemberItemStateWithOneLocation constructor(
     override val memberState: GroupMemberState,
     val location: GroupMemberItemLocationState?,
+    override val actionItems: List<MemberAction>,
     override val lastPing: String?
 ) : GroupMemberItemState {
     override val keyId: String
         get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
             ?: memberState.memberId
+
+    override val singleLocation: GroupMemberItemLocationState?
+        get() = location
+    override val singleValidLocation: GroupMemberItemLocationState?
+        get() = location?.takeIf { it.isShownAsOldLocation != false }
 }
 
 data class GroupMemberItemStateWithLocations constructor(
     override val memberState: GroupMemberState,
     val locations: List<GroupMemberItemLocationState>,
+    override val actionItems: List<MemberAction>,
     val allowShowingDevices: Boolean,
     override val lastPing: String?
 ) : GroupMemberItemState {
-    override val keyId: String
-        get() = memberState.memberId
 
-    val singleLocation: GroupMemberItemLocationState? = locations.takeIf { it.size == 1 }?.first()
+    override val keyId: String
+        get() = singleLocation?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
+            ?: memberState.memberId
+
+    override val singleLocation = locations.takeIf { it.size == 1 }?.first()
+    override val singleValidLocation = singleLocation?.takeIf { it.isShownAsOldLocation != false }
+
+    val filteredActionItems = actionItems.filter {
+        if (it == MemberAction.DELETE_LOCATION) singleValidLocation != null
+        else true
+    }
+
+    val filteredLastPing: String? = lastPing?.takeIf { singleValidLocation != null }
+
     val statusTag: MemberDeviceStatusType?
-        get() = singleLocation?.status
+        get() = singleValidLocation?.status
             ?: locations.firstOrNull { it.status == MemberDeviceStatusType.ACTIVE }?.status
 }
 
@@ -82,7 +101,8 @@ data class GroupMemberItemLocationState constructor(
     val networkType: NetworkType? = null,
     val signalStrength: NetworkSignalStrength? = null,
     val canEdit: Boolean,
-    val currentDevice: Boolean
+    val currentDevice: Boolean,
+    val isShownAsOldLocation: Boolean? = null
 ) {
     constructor(
         memberLocation: MemberLocation,
@@ -91,6 +111,7 @@ data class GroupMemberItemLocationState constructor(
         canEdit: Boolean,
         currentDevice: Boolean,
         showSpeedAndElevation: Boolean,
+        isShownAsOldLocation: Boolean? = null,
         formatter: IValueFormatter
     ) : this(
         locationId = memberLocation.id,
@@ -105,7 +126,8 @@ data class GroupMemberItemLocationState constructor(
         networkType = memberLocation.status.data?.networkType?.takeIf { showSpeedAndElevation },
         signalStrength = memberLocation.status.data?.signalStrength?.takeIf { showSpeedAndElevation },
         canEdit = canEdit,
-        currentDevice = currentDevice
+        currentDevice = currentDevice,
+        isShownAsOldLocation = isShownAsOldLocation
     )
 }
 

@@ -50,9 +50,11 @@ fun GroupMemberWithLocations(
     state: GroupMemberItemStateWithLocations,
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
+    canShowOldLocation: Boolean = false,
     onActionClick: ((MemberAction) -> Unit)? = null,
     onDeleteDeviceClick: ((GroupMemberItemLocationState) -> Unit)? = null,
     extraActions: (@Composable RowScope.() -> Unit)? = null,
+    onToggleLocation: ((GroupMemberItemStateWithLocations) -> Unit)? = null
 ) {
 
     var expanded by remember(state, forceExpandAction) { mutableStateOf(forceExpandAction) }
@@ -80,7 +82,7 @@ fun GroupMemberWithLocations(
                         )
                 )
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    if (state.singleLocation?.batterLevel != null && (!expanded || !state.allowShowingDevices)) {
+                    if (state.singleValidLocation?.batterLevel != null && (!expanded || !state.allowShowingDevices)) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -92,7 +94,7 @@ fun GroupMemberWithLocations(
                                 modifier = Modifier
                                     .size(14.dp)
                                     .rotate(90f),
-                                painter = if(state.singleLocation.isBatteryCharging) {
+                                painter = if(state.singleValidLocation.isBatteryCharging) {
                                     CoreAppIcons.BatteryChargingFull.asPainterResource()
                                 } else {
                                     CoreAppIcons.BatteryFull.asPainterResource()
@@ -101,7 +103,7 @@ fun GroupMemberWithLocations(
                             )
                             Spacer(modifier = Modifier.size(4.dp))
                             Text(
-                                text = "${state.singleLocation?.batterLevel}%",
+                                text = "${state.singleValidLocation?.batterLevel}%",
                                 style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium)
                             )
                         }
@@ -139,7 +141,7 @@ fun GroupMemberWithLocations(
                 Text(
                     text = buildAnnotatedString {
                         this.append(state.memberState.name)
-                        if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
+                        if (!state.singleValidLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
                             this.append(" • ")
                             appendInlineContent(iconId, "[device]")
                             this.withStyle(
@@ -150,7 +152,7 @@ fun GroupMemberWithLocations(
                                     color = AppColors.accent
                                 )
                             ) {
-                                this.append(state.singleLocation?.name ?: "")
+                                this.append(state.singleValidLocation?.name ?: "")
                             }
                         }
                     },
@@ -186,7 +188,7 @@ fun GroupMemberWithLocations(
                 }
                 GroupStatusTag(status)
 
-                if (state.lastPing != null && (!expanded || !state.allowShowingDevices)) {
+                if (state.filteredLastPing != null && (!expanded || !state.allowShowingDevices)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = CoreAppIcons.AccessTime.asPainterResource(),
@@ -197,7 +199,7 @@ fun GroupMemberWithLocations(
                                 .size(14.dp)
                         )
                         Text(
-                            text = state.lastPing,
+                            text = state.filteredLastPing,
                             style = MaterialTheme.typography.caption,
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                         )
@@ -205,7 +207,7 @@ fun GroupMemberWithLocations(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (state.singleLocation?.speed != null) {
+                    if (state.singleValidLocation?.speed != null) {
                         Icon(
                             painter = CoreAppIcons.Speed.asPainterResource(),
                             contentDescription = null,
@@ -214,13 +216,13 @@ fun GroupMemberWithLocations(
                                 .size(18.dp)
                         )
                         Text(
-                            text = state.singleLocation.speed,
+                            text = state.singleValidLocation.speed,
                             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                         )
                         Spacer(modifier = Modifier.size(8.dp))
                     }
 
-                    if (state.singleLocation?.elevation != null) {
+                    if (state.singleValidLocation?.elevation != null) {
                         Icon(
                             painter = CoreAppIcons.StackedLineChart.asPainterResource(),
                             contentDescription = null,
@@ -229,16 +231,16 @@ fun GroupMemberWithLocations(
                                 .size(18.dp)
                         )
                         Text(
-                            text = state.singleLocation.elevation,
+                            text = state.singleValidLocation.elevation,
                             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                         )
                         Spacer(modifier = Modifier.size(8.dp))
                     }
 
-                    if (state.singleLocation?.networkType != null) {
-                        NetworkTypeIcon(state.singleLocation.networkType, state.singleLocation.signalStrength)
+                    if (state.singleValidLocation?.networkType != null) {
+                        NetworkTypeIcon(state.singleValidLocation.networkType, state.singleValidLocation.signalStrength)
                         Text(
-                            text = state.singleLocation.networkType.networkName,
+                            text = state.singleValidLocation.networkType.networkName,
                             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                         )
                         Spacer(modifier = Modifier.size(8.dp))
@@ -247,7 +249,7 @@ fun GroupMemberWithLocations(
             }
 
             val canExpand = state.memberState.canHaveExpandButton &&
-                (state.memberState.actionItems.isNotEmpty() || extraActions != null || (state.locations.isNotEmpty() && state.allowShowingDevices))
+                (state.filteredActionItems.isNotEmpty() || extraActions != null || (state.locations.isNotEmpty() && state.allowShowingDevices))
 
             // expand icon
             Box(
@@ -260,6 +262,16 @@ fun GroupMemberWithLocations(
                     )
                 }
             }
+        }
+
+        if (canShowOldLocation) {
+            GroupMemberOldLocation(
+                modifier = Modifier,
+                state = state.singleLocation,
+                onToggleLocation = {
+                    onToggleLocation?.invoke(state)
+                }
+            )
         }
 
         // action item
@@ -291,16 +303,17 @@ fun GroupMemberWithLocations(
                         }
                     }
 
-                    if (state.memberState.actionItems.isNotEmpty() || extraActions != null) {
+                    if (state.filteredActionItems.isNotEmpty() || extraActions != null) {
                         Row(
                             modifier = Modifier.padding(top = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            state.memberState.actionItems.forEach { action ->
+                            state.filteredActionItems.forEach { action ->
                                 FilledButton(
                                     style = ButtonStyle.SMALL_ACTION,
                                     icon = action.actionIcon,
-                                    elevation = ButtonDefaults.elevation(pressedElevation = 2.dp),
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
+                                    elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
                                     onClick = {
                                         if (collapseOnActionClick)
                                             expanded = !expanded
@@ -470,6 +483,44 @@ fun GroupMemberLocationChild(
                     )
                     Spacer(modifier = Modifier.size(8.dp))
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun GroupMemberOldLocation(
+    modifier: Modifier = Modifier,
+    state: GroupMemberItemLocationState?,
+    onToggleLocation: () -> Unit
+) {
+    if (state?.isShownAsOldLocation == false) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+            FilledButton(
+                modifier = Modifier.padding(top = 12.dp),
+                style = ButtonStyle.SMALL,
+                icon = null,
+                elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
+                onClick = onToggleLocation
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(MR.strings.group_members_item_old_location_button)
+                )
+                Icon(
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .width(20.dp),
+                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                    contentDescription = null
+                )
             }
         }
     }

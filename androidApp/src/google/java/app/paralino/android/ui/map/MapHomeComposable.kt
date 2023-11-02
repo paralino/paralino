@@ -24,6 +24,7 @@ import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.map.asFocusedMarker
+import app.paralino.core.ui.theme.AppColors
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
@@ -82,21 +83,21 @@ fun MainHomeMapComposable(
 
     val scope = rememberCoroutineScope()
     val cameraPositionState = rememberCameraPositionState {
-        boundsForMarkers(state?.markers ?: emptyList())?.let {
+        boundsForMarkers(state?.visibleMarkers ?: emptyList())?.let {
             move(CameraUpdateFactory.newLatLngBounds(it, 40))
         }
     }
 
     val stateData by rememberUpdatedState(newValue = state)
 
-    LaunchedEffect(stateData?.markers) {
+    LaunchedEffect(stateData?.visibleMarkers) {
         snapshotFlow { stateData?.mapHomeScreenFocusType }
             .distinctUntilChanged()
             .collectLatest {
                 cameraPositionState.focusOnMap(
                     scope = scope,
                     focusType = it,
-                    markers = stateData?.markers ?: emptyList(),
+                    markers = stateData?.visibleMarkers ?: emptyList(),
                     focusedMarker = stateData?.trackingMarker,
                     durationMs = 3000
                 )
@@ -110,7 +111,7 @@ fun MainHomeMapComposable(
                 cameraPositionState.focusOnMap(
                     scope = scope,
                     focusType = it,
-                    markers = stateData?.markers ?: emptyList(),
+                    markers = stateData?.visibleMarkers ?: emptyList(),
                     focusedMarker = stateData?.trackingMarker,
                     durationMs = 500
                 )
@@ -136,7 +137,7 @@ fun MainHomeMapComposable(
         onMapLongClick = { onMapLongPress(it.latitude, it.longitude) },
         onMapClick = { onMapTouch() }
     ) {
-        state?.markers?.forEach { model ->
+        state?.visibleMarkers?.forEach { model ->
             val latAnim = animateFloatAsState(
                 targetValue = model.lat.toFloat(),
                 animationSpec = tween(durationMillis = 3000, easing = LinearEasing),
@@ -153,25 +154,39 @@ fun MainHomeMapComposable(
                 label = "accuracyAnim"
             ).value.toDouble()
 
+            val markerClick: (MapPinData) -> Unit = {
+                onMarkerClick(model)
+            }
+
             if (model.shouldShowApproximateCircle) {
                 Circle(
                     center = LatLng(latAnim, lngAnim),
                     clickable = true,
-                    fillColor = Color.Blue.copy(alpha = 0.4f),
+                    fillColor = when (model.pinType) {
+                        MapPinType.MEMBER -> AppColors.accentDark.copy(alpha = 0.5f)
+                        MapPinType.PLACE -> Color.Blue.copy(alpha = 0.3f)
+                    },
                     radius = accuracyAnim,
-                    strokeColor = Color.Blue,
+                    strokeColor = when (model.pinType) {
+                        MapPinType.MEMBER -> Color.White
+                        MapPinType.PLACE -> Color.Blue
+                    },
                     strokeWidth = when (model.pinType) {
                         MapPinType.MEMBER -> 8f
                         MapPinType.PLACE -> 0f
                     },
                     tag = model.markerId,
                     onClick = {
-                        onMarkerClick(model)
+                        markerClick(model)
                     }
                 )
             }
 
-            MapMarkerComposable(state = model, position = LatLng(latAnim, lngAnim), onClick = onMarkerClick)
+            MapMarkerComposable(
+                state = model,
+                position = LatLng(latAnim, lngAnim),
+                onClick = markerClick
+            )
         }
     }
 }
@@ -203,6 +218,17 @@ private fun CameraPositionState.focusOnMap(
             emptyList()
         }
     }
+
+    val padding = when (focusType) {
+        MapHomeScreenFocusType.ALL_MEMBERS -> {
+            if (markers.size == 1) 200 else 100
+        }
+        MapHomeScreenFocusType.ALL_PLACES -> {
+            if (markers.size == 1) 300 else 100
+        }
+        else -> 100
+    }
+
     val forceZoom = when (focusType) {
         is MapHomeScreenFocusType.MEMBER -> focusType.forceZoom
         else -> true

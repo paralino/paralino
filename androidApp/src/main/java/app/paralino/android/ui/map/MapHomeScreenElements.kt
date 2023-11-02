@@ -51,7 +51,9 @@ import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.core.MR
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
@@ -141,6 +143,9 @@ fun MapHomeScreenElements(
             // TODO refocus right away
             vm.trackMarker(it.asFocusedMarker())
         },
+        onToggleLocation = {
+            vm.toggleMarkerVisibility(it)
+        },
         onPlaceClick = { state ->
             appState.navController.navigate(
                 AppScreen.MainHome.PlaceDetail.route(
@@ -178,6 +183,7 @@ fun MapHomeScreenElements(
     onSettingsClick: () -> Unit,
     onMemberActionClick: (MemberAction, GroupMemberItemState) -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
+    onToggleLocation: (GroupMemberItemStateWithLocations) -> Unit,
     onPlaceClick: (PlaceListItemData) -> Unit,
     onMapModeSwitch: () -> Unit,
     onCloseFocusedItem: () -> Unit,
@@ -459,9 +465,11 @@ fun MapHomeScreenElements(
                             backgroundColor = MaterialTheme.colors.background,
                             collapseOnActionClick = false,
                             forceExpandAction = true,
+                            canShowOldLocation = true,
                             onActionClick = {
                                 onMemberActionClick(it, memberState)
                             },
+                            onToggleLocation = onToggleLocation,
                             onClick = {
                                 onMemberClick(memberState)
                             }

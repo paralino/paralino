@@ -64,6 +64,7 @@ import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
@@ -270,7 +271,7 @@ fun MapHomeSheetContent(
             MapBottomSheetTab(
                 modifier = Modifier,
                 selected = pagerState.currentPage == 0,
-                text = "Members",
+                text = MR.strings.group_details_section_members_title.localizedString(),
                 icon = CoreAppIcons.Group.asPainterResource(),
                 onClick = {
                     appState.uiScope.launch { bottomSheetState.expand() }
@@ -280,7 +281,7 @@ fun MapHomeSheetContent(
             MapBottomSheetTab(
                 modifier = Modifier,
                 selected = pagerState.currentPage == 1,
-                text = "Places",
+                text = MR.strings.places_list_screen_title.localizedString(),
                 icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
                 onClick = {
                     appState.uiScope.launch { bottomSheetState.expand() }
@@ -312,9 +313,7 @@ fun MapHomeSheetContent(
                                 backgroundColor = MaterialTheme.colors.surface,
                                 collapseOnActionClick = true,
                                 forceExpandAction = false,
-                                onActionClick = {
-
-                                },
+                                onActionClick = null,
                                 onClick = { onMemberClick(itemState) }
                             )
                         }
