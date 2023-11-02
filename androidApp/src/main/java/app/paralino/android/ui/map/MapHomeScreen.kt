@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
@@ -241,19 +243,26 @@ fun MapHomeSheetContent(
     onCreatePlace: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxHeight(0.5f)
+        modifier = Modifier.fillMaxHeight(0.6f)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                appState.uiScope.launch {
+                    if (bottomSheetState.isCollapsed) {
+                        bottomSheetState.expand()
+                    } else {
+                        bottomSheetState.collapse()
+                    }
+                }
+            }
     ) {
         Divider(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 8.dp, bottom = 12.dp)
                 .clip(RoundedCornerShape(percent = 50))
-                .width(30.dp)
-                .clickable {
-                    appState.uiScope.launch {
-                        bottomSheetState.expand()
-                    }
-                },
+                .width(30.dp),
             thickness = 6.dp
         )
         TabRow(

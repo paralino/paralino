@@ -209,7 +209,7 @@ fun MapHomeScreenElements(
         FloatingActionButton(
             modifier = Modifier
                 .constrainAs(settings) {
-                    end.linkTo(parent.end, margin = 12.dp)
+                    end.linkTo(parent.end, margin = 8.dp)
                     top.linkTo(groupSelect.top)
                     bottom.linkTo(groupSelect.bottom)
                 }
@@ -235,8 +235,8 @@ fun MapHomeScreenElements(
             modifier = Modifier
                 .constrainAs(groupSelect) {
                     top.linkTo(parent.top, margin = 8.dp)
-                    start.linkTo(parent.start, margin = 12.dp)
-                    end.linkTo(settings.start, margin = 24.dp)
+                    start.linkTo(parent.start, margin = 8.dp)
+                    end.linkTo(settings.start, margin = 20.dp)
                     width = Dimension.fillToConstraints
                 },
             visible = state is MapHomeScreenState.Ready,
