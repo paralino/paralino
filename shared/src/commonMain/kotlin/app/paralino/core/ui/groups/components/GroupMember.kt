@@ -29,8 +29,10 @@ fun GroupMember(
     backgroundColor: Color = MaterialTheme.colors.surface,
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
+    canShowOldLocation: Boolean = false,
     onActionClick: ((MemberAction) -> Unit)? = null,
     onDeleteDeviceClick: ((GroupMemberItemLocationState) -> Unit)? = null,
+    onToggleLocation: ((GroupMemberItemStateWithLocations) -> Unit)? = null,
     extraActions: (@Composable RowScope.() -> Unit)? = null,
     onClick: () -> Unit,
 ) {
@@ -54,13 +56,16 @@ fun GroupMember(
                     state = GroupMemberItemStateWithLocations(
                         memberState = state.memberState,
                         locations = listOfNotNull(state.location),
+                        actionItems = state.actionItems,
                         allowShowingDevices = false,
                         lastPing = state.lastPing
                     ),
+                    canShowOldLocation = canShowOldLocation,
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
                     onActionClick = onActionClick,
                     onDeleteDeviceClick = onDeleteDeviceClick,
+                    onToggleLocation = onToggleLocation,
                     extraActions = extraActions
                 )
             }
@@ -70,8 +75,10 @@ fun GroupMember(
                     state = state,
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
+                    canShowOldLocation = canShowOldLocation,
                     onActionClick = onActionClick,
                     onDeleteDeviceClick = onDeleteDeviceClick,
+                    onToggleLocation = onToggleLocation,
                     extraActions = extraActions
                 )
             }

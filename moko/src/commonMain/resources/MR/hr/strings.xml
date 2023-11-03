@@ -11,7 +11,7 @@
     <string name="date_name_yesterday">Jučer</string>
 
     <string name="button_cancel">Odustani</string>
-    <string name="button_ok">U redu</string>
+    <string name="button_ok">Uredu</string>
     <string name="button_done">Gotovo</string>
     <string name="button_skip">Preskoči</string>
     <string name="button_retry">Ponovno</string>
@@ -19,6 +19,8 @@
     <string name="button_confirm">Potvrdi</string>
     <string name="button_save">Spremi</string>
     <string name="button_verify">Verificiraj</string>
+    <string name="button_showAll">Prikaži sve</string>
+    <string name="button_open">Otvori</string>
 
     <string name="alert_title_confirm">Molimo potvrdite</string>
     <string name="alert_sessionExpired_title">Sesija istekla</string>
@@ -26,8 +28,8 @@
     <string name="error_load_data_generic">Nije moguće dovršiti zahtjev.</string>
     <string name="error_no_connection_snackbar">Nemoguće povezivanje\n**Provjerite svoju internetsku vezu.**</string>
     <string name="error_server_unavailable">Trenutačno nije moguće uspostaviti vezu, molimo pokušajte ponovno uskoro.</string>
-    <string name="error_something_wrong">Nešto nije u redu!</string>
-    <string name="error_something_wrong_http">Nešto nije u redu! [%d]</string>
+    <string name="error_something_wrong">Nešto nije uredu!</string>
+    <string name="error_something_wrong_http">Nešto nije uredu! [%d]</string>
     <string name="error_generic_snacbar">Ups, pokušajte ponovno.</string>
     <string name="error_location_permission_missing_sheet_message">Lokacijska dozvola je **potrebna** kako bi se uspješno pratila i dijelila vaša lokacija s drugima.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Molimo omogućite **preciznu lokacijsku dozvolu** kako biste uspješno pratili i dijelili vašu lokaciju s drugima.</string>
@@ -201,6 +203,10 @@
     <string name="group_members_item_remove_button">UKLONI</string>
     <string name="group_members_item_clear_location_button">UKLONI LOKACIJU</string>
     <string name="group_members_item_request_location_button">OSVJEŽI</string>
+    <string name="group_members_item_old_location_button">Prikaži posljednju lokaciju</string>
+    <string name="group_members_marker_circle_info">%s je negdje unutar ovog kruga</string>
+    <string name="group_member_title">Korisnik</string>
+    <string name="group_member_device_title">Uređaj</string>
     <string name="group_members_block_user">Blokiraj korisnika</string>
     <string name="group_members_block_user_alert_message">Ako nastavite, korisnik vas neće moći dodati u grupu, te nećete primati obavijesti o lokaciji korisnika u nijednoj zajedničkoj grupi.</string>
     <string name="group_members_remove_alert_title">Jeste li sigurni da želite ukloniti %s iz grupe?</string>
@@ -220,7 +226,7 @@
     <string name="group_details_block_group_alert_button">Blokiraj</string>
     <string name="group_details_add_member_button">Dodaj novog člana</string>
     <string name="group_details_sharing_status_time">Dijeljenje do: **%s**</string>
-    <string name="group_details_sharing_status_infinite">Aktivno dijeljenje **uvijek uključeno**</string>
+    <string name="group_details_sharing_status_infinite">Dijeljenje lokacije **uvijek uključeno**</string>
     <string name="group_details_sharing_action">Dijeljenje lokacije</string>
     <string name="group_details_security_action">Sigurnost</string>
 
@@ -230,6 +236,8 @@
     <string name="group_create_button_text">Kreiraj grupu</string>
     <string name="group_picker_button_create">Kreiraj</string>
     <string name="group_picker_button_join">Pridruži se</string>
+    <string name="group_member_no_location_info_message">Lokacija trenutno nije dostupna za ovaj uređaj.</string>
+    <string name="group_member_devices_section_title">Uređaji</string>
 
     <string name="group_members_last_active_status_now">Upravo sada</string>
     <string name="group_members_last_active_status_recently_1">Prije 1 minute</string>

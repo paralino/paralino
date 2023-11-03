@@ -9,6 +9,7 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 class MemberDeviceStatusProcessor(
@@ -61,6 +62,33 @@ class MemberDeviceStatusProcessor(
                     pushDeviceStatus(it.groupId)
                 } catch (e: Exception) {
                     logg.w("Error while resetting device status", e)
+                }
+                delay(300)
+            }
+        }
+    }
+
+    suspend fun deleteOldLocations() {
+        triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(
+                key = "old_location_reset",
+                timeMillis = 4.hours.inWholeMilliseconds
+            )
+        ) {
+            val memberModels = local.getMemberModelsWithLocationForUser(config.userId)
+                .mapNotNull { it.currentDeviceLocation }
+                .filter {
+                    val sharingActive = sharingManager.isSharingActiveForGroup(it.groupId)
+                    val canClear = it.canAutomaticallyClearLocation
+                    !sharingActive && canClear
+                }
+
+            logg.w("Clearing old locations for ${memberModels.size} groups")
+            memberModels.forEach {
+                try {
+                    remote.clearLocation(it.id)
+                } catch (e: Exception) {
+                    logg.w("Error while clearing old location", e)
                 }
                 delay(300)
             }

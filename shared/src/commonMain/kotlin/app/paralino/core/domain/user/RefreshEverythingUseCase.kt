@@ -63,6 +63,7 @@ class RefreshEverythingUseCase(
                     )
                     personalCodesRepo.tryToRestockPreKeys(5.minutes.inWholeMilliseconds)
                     deviceStatusProcessor.revokeActiveStatus()
+                    deviceStatusProcessor.deleteOldLocations()
                 }
             )
         } catch (e: Exception) {

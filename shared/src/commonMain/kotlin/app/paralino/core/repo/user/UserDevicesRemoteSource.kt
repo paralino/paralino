@@ -8,10 +8,9 @@ import app.paralino.core.models.raw.UpdateUserDeviceFunctionData
 import app.paralino.core.models.raw.UserDeviceRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
-import kotlinx.serialization.encodeToString
 
 class UserDevicesRemoteSource constructor(
     private val documentApi: IDocumentsApi,
@@ -44,17 +43,17 @@ class UserDevicesRemoteSource constructor(
                 deviceType = userMemberIdUseCase.getCurrentDeviceType().key
             )
 
-            val data = functionsApi.runAndWait(
-                functionId = remoteConfig.resourceIds.functionUserDeviceUpdate,
-                data = BaseRemoteModule.formatter.encodeToString(payload)
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.DEVICE_UPDATE,
+                data = payload
             )
 
-            if (!data.isSuccess) {
+            if (!response.isSuccess) {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
-                    null,
-                    "Unable to update device data",
-                    Exception(data.stderr)
+                    code = response.statusCode,
+                    message = "Unable to update device data",
+                    cause = Exception(response.stderr)
                 )
             }
         }

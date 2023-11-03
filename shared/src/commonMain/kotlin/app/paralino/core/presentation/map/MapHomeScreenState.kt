@@ -3,6 +3,7 @@ package app.paralino.core.presentation.map
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.utils.Emojis
 
@@ -19,17 +20,33 @@ sealed class MapHomeScreenState {
         val idleUserCount: Int,
         override val currentUserImage: ImageModel,
 
-        val members: List<GroupMemberItemState>,
+        val members: List<GroupMemberItemStateWithOneLocation>,
         val places: List<PlaceListItemData>,
         val markers: List<MapPinData>,
-        val focusedMarker: FocusedMarkerData?,
+        val trackingMarker: FocusedMarkerData?,
         val mapHomeScreenFocusType: MapHomeScreenFocusType,
 
         val sharingStatus: LocationSharingContract?,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
+        val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
         val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
+
+        val focusedTypeId: String = when (mapHomeScreenFocusType) {
+            is MapHomeScreenFocusType.PLACE -> mapHomeScreenFocusType.placeId
+            is MapHomeScreenFocusType.MEMBER -> mapHomeScreenFocusType.memberKeyId
+            else -> mapHomeScreenFocusType.toString()
+        }
+        val focusedPlace: PlaceListItemData? =
+            (mapHomeScreenFocusType as? MapHomeScreenFocusType.PLACE)?.let { item ->
+                places.firstOrNull { it.id == item.placeId }
+            }
+
+        val focusedMember: GroupMemberItemState? =
+            (mapHomeScreenFocusType as? MapHomeScreenFocusType.MEMBER)?.let { item ->
+                members.firstOrNull { it.keyId == item.memberKeyId }
+            }
     }
 
     data class Empty(
@@ -39,20 +56,24 @@ sealed class MapHomeScreenState {
 }
 
 sealed class MapHomeScreenEvent {
-    data class Error(val error: Throwable) : MapHomeScreenEvent()
+
 }
 
-enum class MapHomeScreenFocusType {
-    NONE, PLACE, MEMBER, ALL_PLACES, ALL_MEMBERS;
+sealed interface MapHomeScreenFocusType {
+    data object NONE : MapHomeScreenFocusType
+    data class PLACE(val placeId: String) : MapHomeScreenFocusType
+    data class MEMBER(val memberKeyId: String, val forceZoom: Boolean) : MapHomeScreenFocusType
+    data object ALL_PLACES : MapHomeScreenFocusType
+    data object ALL_MEMBERS : MapHomeScreenFocusType
+
     val areMembersFocused: Boolean get() = this == ALL_MEMBERS
-    val areMembersExpanded: Boolean get() = this == ALL_MEMBERS || this == MEMBER
     val arePlacesFocused: Boolean get() = this == ALL_PLACES
-    val arePlacesExpanded: Boolean get() = this == ALL_PLACES || this == PLACE
+    val isMemberOrPlaceFocused: Boolean get() = this is MEMBER || this is PLACE
 
     fun toggle(target: MapHomeScreenFocusType): MapHomeScreenFocusType {
-        return when(this) {
+        return when (this) {
             NONE -> target
-            else -> if(target != this) target else NONE
+            else -> if (target != this) target else NONE
         }
     }
 }

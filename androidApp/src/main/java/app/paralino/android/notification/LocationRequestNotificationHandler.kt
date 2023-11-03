@@ -13,6 +13,7 @@ import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
 class LocationRequestNotificationHandler(
@@ -30,6 +31,11 @@ class LocationRequestNotificationHandler(
 
         if (payload == null) {
             logg.w("Location request payload is NULL")
+            return
+        }
+
+        if(push.isOlderThan(4.hours)) {
+            logg.w("Location request is expired")
             return
         }
 

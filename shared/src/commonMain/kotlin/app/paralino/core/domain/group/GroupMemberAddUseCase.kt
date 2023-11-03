@@ -17,6 +17,7 @@ import app.paralino.core.models.raw.GroupMemberGroupKeysData
 import app.paralino.core.models.raw.GroupMemberPublicKeyPayload
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
@@ -155,19 +156,18 @@ class GroupMemberAddUseCase constructor(
             )
         )
 
-        val data = functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionCreateGroupMemberID,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+        val response = functionsApi.runAndWait(
+            function = ServerFunction.MEMBER_CREATE,
+            data = payload
         )
 
-        if (!data.isSuccess) {
+        if (!response.isSuccess) {
             // TODO throw better exception
             throw BaseRemoteException.fromCode(
-                code = null,
+                code = response.statusCode,
                 message = "Unable to create group",
-                cause = Exception(data.stderr)
+                cause = Exception(response.stderr)
             )
         }
     }
-
 }

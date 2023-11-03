@@ -18,6 +18,8 @@
     <string name="button_confirm">Confirm</string>
     <string name="button_save">Save</string>
     <string name="button_verify">Verify</string>
+    <string name="button_showAll">Show all</string>
+    <string name="button_open">Open</string>
 
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
@@ -202,6 +204,10 @@
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
     <string name="group_members_item_request_location_button">REFRESH</string>
+    <string name="group_members_item_old_location_button">Show last location</string>
+    <string name="group_members_marker_circle_info">%s is somewhere inside this circle</string>
+    <string name="group_member_title">Member</string>
+    <string name="group_member_device_title">Device</string>
     <string name="group_members_block_user">Block user</string>
     <string name="group_members_block_user_alert_message">If you proceed, user will not be able to add you to a group and you will not receive users\' location notification in any shared groups.</string>
     <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>
@@ -231,6 +237,8 @@
     <string name="group_create_button_text">Create group</string>
     <string name="group_picker_button_create">Create</string>
     <string name="group_picker_button_join">Join</string>
+    <string name="group_member_no_location_info_message">This device does not have a location yet.</string>
+    <string name="group_member_devices_section_title">Devices</string>
 
     <string name="group_members_last_active_status_now">Just now</string>
     <string name="group_members_last_active_status_recently_1">1 minute ago</string>

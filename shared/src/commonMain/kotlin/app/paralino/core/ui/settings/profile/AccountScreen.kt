@@ -50,6 +50,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.settings.SettingsActionItem
@@ -73,6 +74,8 @@ fun AccountScreenCore(
     openChangeEmail: () -> Unit,
     openChangePassword: () -> Unit,
 ) {
+
+    MessageDispatcherEffect(viewModel, appState)
     var showDangerZoneContent by remember { mutableStateOf(false) }
     val accountState by viewModel.accountState.collectAsState(Payload.Loading)
 
@@ -80,11 +83,11 @@ fun AccountScreenCore(
         viewModel.events.collectLatest { event ->
             when (event) {
                 is AccountScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    viewModel.showSnackbar(event.error.errorString())
                 }
 
                 AccountScreenEvent.EmailVerificationSent -> {
-                    appState.showSnackbar(MR.strings.info_email_check_instructions.localizedString())
+                    viewModel.showSnackbar(MR.strings.info_email_check_instructions.localizedString())
                 }
 
                 null -> {

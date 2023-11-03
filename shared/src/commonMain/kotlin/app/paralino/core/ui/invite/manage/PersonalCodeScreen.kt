@@ -35,12 +35,14 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -52,13 +54,14 @@ fun PersonalCodeScreenCore(
     onNavigateBack: () -> Unit,
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is PersonalCodeScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    vm.showSnackbar(event.error.errorString())
                 }
 
                 PersonalCodeScreenEvent.CodeCreated -> {}
@@ -103,7 +106,7 @@ fun PersonalCodeScreenCore(
                             deleteLoading = state.data.actionLoading,
                             onCopy = {
                                 vm.copyToClipboard(state.data.activeCode!!.code)
-                                appState.showSnackbar(text = MR.strings.toast_copy_invite_code.localizedString())
+                                vm.showSnackbar(text = MR.strings.toast_copy_invite_code.localizedString())
                             },
                             onShare = {
                                 onShare(state.data.activeCode!!.code)

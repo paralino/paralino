@@ -20,7 +20,7 @@ data class LocationDataModel constructor(
     val altitude: Float? = null
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
-    val isAccurate get() = accuracy < 4f
+    val isAccurate get() = accuracy < 10f
 
     fun isOlderThan(duration: Duration): Boolean {
         val pinTime = timeUTC?.fromUTCtoInstant() ?: return false
@@ -51,9 +51,8 @@ data class MemberDeviceStatus constructor(
         get() {
             batteryLevel ?: return null
             if(statusType == MemberDeviceStatusType.NOT_SHARING) return null
-            if(statusType == MemberDeviceStatusType.NOT_SHARING) return null
             if(timeUTC == null) return null
-            if(timeUTC.fromUTCtoInstant()?.plus(2.minutes)?.let { it > nowUTC() } != true) return null
+            if(timeUTC.fromUTCtoInstant()?.plus(20.minutes)?.let { it > nowUTC() } != true) return null
             return batteryLevel
         }
 
@@ -84,6 +83,7 @@ enum class MemberDeviceStatusType {
         GPS_OFF, MISSING_PERMISSIONS, BATTERY_SAVER_ON -> true
         else -> false
     }
+    val isInBlockedState: Boolean get() = this == NOT_SHARING || isDeviceSetupWrong
     val isIdlingOrActive: Boolean get() = isIdling || this == ACTIVE
     val isIdling: Boolean get() = when(this) {
         INACTIVE, BATTERY_SAVER_ON, THROTTLING, IDLE -> true

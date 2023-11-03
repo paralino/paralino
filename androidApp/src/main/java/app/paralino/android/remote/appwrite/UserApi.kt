@@ -4,7 +4,7 @@ import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.repo.api.IUserApi
-import io.appwrite.models.Account
+import io.appwrite.models.User
 import io.appwrite.models.Session
 
 class UserApi constructor(
@@ -32,7 +32,9 @@ class UserApi constructor(
     }
 
     override suspend fun getMe(): UserMeRaw {
-        return remoteModule.execute { account.get().parseUser() }
+        return remoteModule.execute(forceLogoutOnError = true) {
+            account.get().parseUser()
+        }
     }
 
     override suspend fun updateUserData(data: Map<String, Any>): UserMeRaw {
@@ -86,7 +88,7 @@ class UserApi constructor(
         return remoteModule.execute { account.deleteSession("current") }
     }
 
-    private fun Account.parseUser(): UserMeRaw {
+    private fun User<Map<String, Any>>.parseUser(): UserMeRaw {
         return UserMeRaw(
             id = this.id,
             email = this.email,

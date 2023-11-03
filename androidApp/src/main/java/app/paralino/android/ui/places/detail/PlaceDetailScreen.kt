@@ -3,28 +3,50 @@ package app.paralino.android.ui.places.detail
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import app.paralino.android.R
 import app.paralino.android.ui.MainAppState
-import app.paralino.core.ui.components.DefaultEmptyState
-import app.paralino.android.ui.components.MainAlertDialog
 import app.paralino.android.ui.components.Show
-import app.paralino.android.ui.map.rememberMapViewPlaceCreateState
+import app.paralino.android.ui.map.PlaceDetailMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.shared.errorString
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
@@ -34,8 +56,10 @@ import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MainAlertDialog
-import kotlinx.coroutines.delay
+import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.theme.AppColors
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -48,6 +72,7 @@ fun PlaceDetailScreen(
     vm: PlaceDetailViewModel = getViewModel { parametersOf(groupId, placeId) },
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
     var optionMenuExpanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
@@ -57,7 +82,7 @@ fun PlaceDetailScreen(
         vm.events.collectLatest { event ->
             when (event) {
                 is PlaceDetailScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString(context))
+                    vm.showSnackbar(event.error.errorString(context))
                 }
                 is PlaceDetailScreenEvent.PlaceDeleted -> {
                     appState.navController.popBackStack()
@@ -215,13 +240,6 @@ fun PlaceDetailScreen(
     onExitChange: (String) -> Unit
 ) {
 
-    val mapViewState = rememberMapViewPlaceCreateState(darkMode = isSystemInDarkTheme())
-
-    LaunchedEffect(state) {
-        delay(50)
-        mapViewState.updateMarkers(state)
-    }
-
     var userScroll by remember {
         mutableStateOf(true)
     }
@@ -249,7 +267,8 @@ fun PlaceDetailScreen(
                         lat = 0.0,
                         lng = 0.0,
                         radiusMeters = 0
-                    )
+                    ),
+                    hasEndArrow = false
                 )
             }
 
@@ -272,20 +291,10 @@ fun PlaceDetailScreen(
                         shape = MaterialTheme.shapes.medium,
                         color = MaterialTheme.colors.background,
                     ) {
-                        AndroidView(
+                        PlaceDetailMapComposable(
                             modifier = Modifier.fillMaxSize(),
-                            factory = {
-                                mapViewState.initMap()
-                                mapViewState.onMapTouchEnd = {
-                                    userScroll = true
-                                }
-                                mapViewState.onMapTouch = {
-                                    userScroll = false
-                                    false
-                                }
-                                mapViewState.mapAndroidView
-                            },
-                            update = { }
+                            state = state,
+                            onMapInteraction = { userScroll = !it }
                         )
                     }
                 }

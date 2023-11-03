@@ -69,20 +69,8 @@ class GroupDetailViewModel(
 
                     val memberState = GroupMemberState(
                         member = member.member,
-                        isCurrentUser = member.member.userId == config.userId
-                    ).copy(
-                        actionItems = buildList {
-                            if (group.isCurrentUserOwner && member.member.userId != group.ownerUserId) {
-                                add(MemberAction.DELETE_MEMBER)
-                            }
-                            if (member.member.userId != config.userId) {
-                                if (blocklist.any { it.resourceId == member.member.userId }) {
-                                    add(MemberAction.UNBLOCK_USER)
-                                } else {
-                                    add(MemberAction.BLOCK_USER)
-                                }
-                            }
-                        }
+                        isCurrentUser = member.member.userId == config.userId,
+                        canHaveExpandButton = true
                     )
                     GroupMemberItemStateWithLocations(
                         memberState = memberState,
@@ -95,6 +83,18 @@ class GroupDetailViewModel(
                                 showSpeedAndElevation = false,
                                 formatter = valueFormatter
                             )
+                        },
+                        actionItems = buildList {
+                            if (group.isCurrentUserOwner && member.member.userId != group.ownerUserId) {
+                                add(MemberAction.DELETE_MEMBER)
+                            }
+                            if (member.member.userId != config.userId) {
+                                if (blocklist.any { it.resourceId == member.member.userId }) {
+                                    add(MemberAction.UNBLOCK_USER)
+                                } else {
+                                    add(MemberAction.BLOCK_USER)
+                                }
+                            }
                         },
                         allowShowingDevices = true,
                         lastPing = valueFormatter.getLastPing(member)

@@ -1,11 +1,9 @@
 package app.paralino.android.ui.map
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -13,12 +11,12 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,51 +32,149 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import app.paralino.android.R
+import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.core.MR
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.MemberAction
-import app.paralino.core.presentation.map.FocusedMarkerData
+import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
-import app.paralino.core.presentation.map.MapPinType
+import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.groups.GroupPickerAction
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.isoToLocalDateTime
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
+import app.paralino.core.utils.extensions.safeCast
+import kotlinx.coroutines.launch
 import kotlinx.datetime.toJavaLocalDateTime
 
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalAnimationApi::class)
+@Composable
+fun MapHomeScreenElements(
+    modifier: Modifier = Modifier,
+    appState: MainAppState,
+    uiState: MapHomeScreenState,
+    vm: MapHomeViewModel,
+    sheetPeekHeight: Dp
+) {
+    val data by rememberUpdatedState(uiState)
+
+    MapHomeScreenElements(
+        modifier = modifier.fillMaxSize(),
+        state = data,
+        sheetPeekHeight = sheetPeekHeight,
+        onGroupPickerClick = {
+            appState.uiScope.launch {
+                val groups = vm.getAllGroups()
+                appState.showBottomSheetForResult(
+                    BottomSheetsScreen.GroupPicker(groups)
+                ).safeCast<GroupPickerAction>()?.let {
+                    when (it) {
+                        is GroupPickerAction.GroupPicked -> {
+                            vm.switchGroup(it.group.id)
+                        }
+
+                        is GroupPickerAction.GroupEditPicked -> {
+                            appState.navController.navigate(
+                                AppScreen.MainHome.GroupDetails.route(it.group.id)
+                            )
+                        }
+
+                        GroupPickerAction.NewGroup -> {
+                            appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
+                        }
+
+                        GroupPickerAction.JoinGroup -> {
+                            appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                        }
+                    }
+                }
+            }
+        },
+        onGroupDetailsClick = {
+            when (val state = uiState) {
+                is MapHomeScreenState.Ready -> {
+                    appState.navController.navigate(AppScreen.MainHome.GroupDetails.route(state.groupId))
+                }
+
+                is MapHomeScreenState.Empty -> {}
+            }
+        },
+        onSharingStartClick = {
+            when (val state = uiState) {
+                is MapHomeScreenState.Ready -> {
+                    appState.navController.navigate(AppScreen.MainHome.SharingStart.route(state.groupId))
+                }
+
+                is MapHomeScreenState.Empty -> {}
+            }
+        },
+        onSettingsClick = {
+            appState.navController.navigate(AppScreen.Settings.routeSignature)
+        },
+        onMemberActionClick = { action, state ->
+            vm.memberAction(action, state)
+        },
+        onMemberClick = {
+            // TODO refocus right away
+            vm.trackMarker(it.asFocusedMarker())
+        },
+        onToggleLocation = {
+            vm.toggleMarkerVisibility(it)
+        },
+        onPlaceClick = { state ->
+            appState.navController.navigate(
+                AppScreen.MainHome.PlaceDetail.route(
+                    groupId = state.groupId,
+                    placeId = state.id
+                )
+            )
+        },
+        onMapModeSwitch = {
+            vm.switchMapMode()
+        },
+        onFocusOnPlacesClick = {
+            vm.toggleFocusOnPlaces()
+        },
+        onFocusOnMembersClick = {
+            vm.toggleFocusOnMembers()
+        },
+        onCloseFocusedItem = {
+            vm.hideFocusedItem()
+        }
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
     state: MapHomeScreenState,
+    sheetPeekHeight: Dp,
     onGroupPickerClick: () -> Unit,
     onGroupDetailsClick: () -> Unit,
     onFocusOnMembersClick: () -> Unit,
@@ -87,8 +183,10 @@ fun MapHomeScreenElements(
     onSettingsClick: () -> Unit,
     onMemberActionClick: (MemberAction, GroupMemberItemState) -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
+    onToggleLocation: (GroupMemberItemStateWithLocations) -> Unit,
     onPlaceClick: (PlaceListItemData) -> Unit,
     onMapModeSwitch: () -> Unit,
+    onCloseFocusedItem: () -> Unit,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -102,20 +200,16 @@ fun MapHomeScreenElements(
     ) {
 
         val readyState = state as? MapHomeScreenState.Ready
-        val (groupSelect, groupTrack, userListButton, userList, shareTime, settings, mapMode) = createRefs()
+        val (groupSelect, placesTrack, membersTrack, focusedItem, shareTime, shareButton, settings, mapMode) = createRefs()
         val areMembersFocused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true
         val arePlacesFocused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true
-        val isUserListExpanded by remember(readyState?.focusedMarker, areMembersFocused, readyState?.mapHomeScreenFocusType?.areMembersExpanded) {
-            mutableStateOf(areMembersFocused || readyState?.mapHomeScreenFocusType?.areMembersExpanded == true || readyState?.focusedMarker?.type == MapPinType.MEMBER)
-        }
-        val isPlacesListExpanded by remember(readyState?.focusedMarker, arePlacesFocused, readyState?.mapHomeScreenFocusType?.arePlacesExpanded) {
-            mutableStateOf(arePlacesFocused || readyState?.mapHomeScreenFocusType?.arePlacesExpanded == true || readyState?.focusedMarker?.type == MapPinType.PLACE)
-        }
+        val isMemberOrPlaceFocused =
+            readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true
 
         FloatingActionButton(
             modifier = Modifier
                 .constrainAs(settings) {
-                    end.linkTo(parent.end, margin = 12.dp)
+                    end.linkTo(parent.end, margin = 8.dp)
                     top.linkTo(groupSelect.top)
                     bottom.linkTo(groupSelect.bottom)
                 }
@@ -141,8 +235,8 @@ fun MapHomeScreenElements(
             modifier = Modifier
                 .constrainAs(groupSelect) {
                     top.linkTo(parent.top, margin = 8.dp)
-                    start.linkTo(parent.start, margin = 12.dp)
-                    end.linkTo(settings.start, margin = 24.dp)
+                    start.linkTo(parent.start, margin = 8.dp)
+                    end.linkTo(settings.start, margin = 20.dp)
                     width = Dimension.fillToConstraints
                 },
             visible = state is MapHomeScreenState.Ready,
@@ -206,39 +300,41 @@ fun MapHomeScreenElements(
         )
 
         // sharing start
-        AnimatedVisibility(
-            visible = readyState != null && readyState.sharingStatus == null,
-            modifier = Modifier
-                .constrainAs(shareTime) {
-                    start.linkTo(parent.start, margin = 16.dp)
-                    bottom.linkTo(groupTrack.bottom)
-                },
-            enter = scaleIn(),
-            exit = scaleOut()
+        Box(
+            modifier = Modifier.constrainAs(shareButton) {
+                end.linkTo(parent.end, margin = 8.dp)
+                bottom.linkTo(parent.bottom, margin = sheetPeekHeight + 6.dp)
+            },
         ) {
-            ExtendedFloatingActionButton(
-                text = {
-                    Text(text = stringResource(id = MR.strings.groups_sharing_button_start.resourceId))
-                },
-                icon = {
-                    Icon(painter = AppIcons.ShareLocation, contentDescription = null)
-                },
-                backgroundColor = MaterialTheme.colors.primary,
-                elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
-                onClick = onSharingStartClick
-            )
+            AnimatedVisibility(
+                visible = readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused,
+                enter = fadeIn(),
+                exit = scaleOut() + fadeOut()
+            ) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    text = {
+                        Text(text = stringResource(id = MR.strings.groups_sharing_button_start.resourceId))
+                    },
+                    icon = {
+                        Icon(painter = AppIcons.ShareLocation, contentDescription = null)
+                    },
+                    backgroundColor = MaterialTheme.colors.primary,
+                    elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
+                    onClick = onSharingStartClick
+                )
+            }
         }
 
         // sharing time info
         AnimatedVisibility(
-            visible = readyState?.sharingStatus != null,
-            modifier = Modifier
-                .constrainAs(shareTime) {
-                    start.linkTo(parent.start, margin = 16.dp)
-                    bottom.linkTo(groupTrack.bottom)
-                },
+            visible = readyState?.sharingStatus != null && !isMemberOrPlaceFocused,
+            modifier = Modifier.constrainAs(shareTime) {
+                start.linkTo(parent.start, margin = 6.dp)
+                bottom.linkTo(parent.bottom, margin = sheetPeekHeight + 32.dp)
+            },
             enter = scaleIn(),
-            exit = scaleOut()
+            exit = scaleOut() + fadeOut()
         ) {
             Row(
                 modifier = Modifier
@@ -269,17 +365,17 @@ fun MapHomeScreenElements(
             }
         }
 
-        // expand member list button
+        // member focus button
         AnimatedVisibility(
             modifier = Modifier
-                .constrainAs(userListButton) {
-                    start.linkTo(groupTrack.start)
-                    end.linkTo(groupTrack.end)
-                    bottom.linkTo(groupTrack.top, margin = 16.dp)
+                .constrainAs(membersTrack) {
+                    end.linkTo(placesTrack.start, margin = 12.dp)
+                    top.linkTo(placesTrack.top)
+                    bottom.linkTo(placesTrack.bottom)
                 },
-            visible = readyState != null,
+            visible = readyState != null && !isMemberOrPlaceFocused,
             enter = scaleIn(),
-            exit = scaleOut()
+            exit = scaleOut() + fadeOut()
         ) {
             FloatingActionButton(
                 modifier = Modifier.size(44.dp),
@@ -295,16 +391,16 @@ fun MapHomeScreenElements(
             }
         }
 
-        // activate group tracking button
+        // places focus button
         AnimatedVisibility(
             modifier = Modifier
-                .constrainAs(groupTrack) {
+                .constrainAs(placesTrack) {
                     end.linkTo(parent.end, margin = 8.dp)
-                    bottom.linkTo(userList.top, margin = 16.dp)
+                    bottom.linkTo(shareButton.top, margin = 16.dp)
                 },
-            visible = readyState != null,
+            visible = readyState != null && !isMemberOrPlaceFocused,
             enter = scaleIn(),
-            exit = scaleOut()
+            exit = scaleOut() + fadeOut()
         ) {
             FloatingActionButton(
                 modifier = Modifier.size(44.dp),
@@ -320,91 +416,92 @@ fun MapHomeScreenElements(
             }
         }
 
-        // user list
+        // focused item
         Box(
-            modifier = Modifier.constrainAs(userList) {
-                bottom.linkTo(parent.bottom, 14.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-            }
+            modifier = Modifier
+                .constrainAs(focusedItem) {
+                    bottom.linkTo(parent.bottom, 32.dp)
+                    start.linkTo(parent.start, 8.dp)
+                    end.linkTo(parent.end, 8.dp)
+                    width = Dimension.fillToConstraints
+                }
+                .padding(horizontal = 4.dp)
         ) {
-
             AnimatedVisibility(
                 modifier = Modifier.fillMaxWidth(),
-                visible = isPlacesListExpanded && readyState != null,
-                enter = fadeIn() + expandVertically(),
+                visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.PLACE,
+                enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
                 exit = shrinkVertically() + fadeOut()
             ) {
-                if(readyState != null) {
-                    val pagerState = rememberPagerState()
-                    HorizontalPager(
-                        state = pagerState,
-                        itemSpacing = 4.dp,
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        count = readyState.places.size,
-                        key = { readyState.places.get(it).id }
-                    ) { index ->
+                readyState?.focusedPlace?.let { placeState ->
+                    Box {
                         PlaceListItem(
-                            state = readyState.places.get(index),
-                            onClick = { onPlaceClick(readyState.places.get(index)) }
+                            modifier = Modifier.padding(top = 20.dp),
+                            state = placeState,
+                            hasEndArrow = true,
+                            onClick = { onPlaceClick(placeState) }
                         )
-                    }
-                    LaunchedEffect(readyState.focusedMarker) {
-                        val page = readyState.places.indexOfFirst {
-                            it.id == readyState.focusedMarker?.markerId
-                        }.takeIf { it > 0 } ?: 0
-                        pagerState.animateScrollToPage(page)
+                        CloseFocusButton(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(end = 8.dp),
+                            onClick = onCloseFocusedItem
+                        )
                     }
                 }
             }
 
             AnimatedVisibility(
                 modifier = Modifier.fillMaxWidth(),
-                visible = isUserListExpanded && readyState != null,
-                enter = fadeIn() + expandVertically(),
+                visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.MEMBER,
+                enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
                 exit = shrinkVertically() + fadeOut()
             ) {
-                if (readyState != null) {
-                    val pagerState = rememberPagerState()
-                    HorizontalPager(
-                        state = pagerState,
-                        itemSpacing = 4.dp,
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        count = readyState.members.size,
-                        key = { readyState.members.get(it).keyId }
-                    ) {
-                        val memberState = readyState.members.get(it)
-                        var expanded by remember {
-                            mutableStateOf(false)
-                        }
+                readyState?.focusedMember?.let { memberState ->
+                    Box {
                         GroupMember(
+                            modifier = Modifier.padding(top = 20.dp),
                             state = memberState,
                             backgroundColor = MaterialTheme.colors.background,
-                            collapseOnActionClick = true,
-                            forceExpandAction = expanded,
+                            collapseOnActionClick = false,
+                            forceExpandAction = true,
+                            canShowOldLocation = true,
                             onActionClick = {
                                 onMemberActionClick(it, memberState)
                             },
+                            onToggleLocation = onToggleLocation,
                             onClick = {
-                                expanded = !expanded
                                 onMemberClick(memberState)
                             }
                         )
-                    }
-                    LaunchedEffect(readyState.focusedMarker) {
-                        val page = readyState.members.indexOfFirst {
-                            when (it) {
-                                is GroupMemberItemStateWithLocations -> false
-                                is GroupMemberItemStateWithOneLocation -> {
-                                    it.keyId == readyState.focusedMarker?.markerId
-                                }
-                            }
-                        }.takeIf { it > 0 } ?: 0
-                        pagerState.animateScrollToPage(page)
+                        CloseFocusButton(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(end = 8.dp),
+                            onClick = onCloseFocusedItem
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun CloseFocusButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    FloatingActionButton(
+        modifier = modifier.size(32.dp),
+        onClick = onClick,
+        backgroundColor = MaterialTheme.colors.primary
+    ) {
+        Icon(
+            painter = CoreAppIcons.Close.asPainterResource(),
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+            tint = MaterialTheme.colors.secondary
+        )
     }
 }

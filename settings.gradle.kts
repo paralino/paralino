@@ -2,6 +2,7 @@ rootProject.name = "Paralino"
 
 include(":androidApp")
 include(":shared")
+include(":moko")
 
 pluginManagement {
     repositories {

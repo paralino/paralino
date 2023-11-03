@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
@@ -26,7 +27,8 @@ fun ImageModelImage(
     imageModel: ImageModel,
     modifier: Modifier = Modifier,
     clipShape: Shape = RoundedCornerShape(8.dp),
-    useBackgroundForEmoji: Boolean = true
+    useBackgroundForEmoji: Boolean = true,
+    colorFilter: ColorFilter? = null
 ) {
     when (imageModel.getImageType()) {
         ImageType.emoji -> {
@@ -34,7 +36,6 @@ fun ImageModelImage(
             BoxWithConstraints(
                 modifier = Modifier
                     .clip(clipShape)
-                    .background(MaterialTheme.colors.surface)
                     .run {
                         if (useBackgroundForEmoji)
                             this.background(MaterialTheme.colors.surface)
@@ -43,9 +44,10 @@ fun ImageModelImage(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
+                    modifier = modifier.padding(min(minHeight, minWidth).times(0.15f)),
                     painter = painterResource(Emojis.getResourceFromIcon(emoji)),
                     contentDescription = null,
-                    modifier = modifier.padding(min(minHeight, minWidth).times(0.15f))
+                    colorFilter = colorFilter
                 )
             }
         }
@@ -62,9 +64,10 @@ fun ImageModelImage(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
+                    modifier = modifier.padding(min(minHeight, minWidth).times(0.15f)),
                     painter = org.jetbrains.compose.resources.painterResource("drawable/ic_person.xml"),
                     contentDescription = null,
-                    modifier = modifier.padding(min(minHeight, minWidth).times(0.15f))
+                    colorFilter = colorFilter
                 )
             }
         }

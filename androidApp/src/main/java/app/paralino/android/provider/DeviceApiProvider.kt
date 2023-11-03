@@ -19,6 +19,7 @@ import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.SystemLogr
 import app.paralino.core.utils.exceptions.InternalConnectionException
+import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.sentry.Sentry
 import java.net.ConnectException
 import java.net.SocketTimeoutException

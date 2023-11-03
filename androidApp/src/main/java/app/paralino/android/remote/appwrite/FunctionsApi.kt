@@ -1,57 +1,47 @@
 package app.paralino.android.remote.appwrite
 
 import app.paralino.core.models.raw.FunctionExecutionRaw
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 
 class FunctionsApi constructor(
-    private val remoteModule: AppWriteRemoteModule
-) : IFunctionsApi {
+    private val remoteModule: AppWriteRemoteModule,
+    deviceApiProvider: IDeviceApiProvider
+) : IFunctionsApi(deviceApiProvider) {
 
-    override suspend fun createExecution(functionId: String, data: String?): String {
+    override suspend fun runAsync(function: ServerFunction, data: String?): String {
         return remoteModule.execute {
             functions.createExecution(
-                functionId = functionId,
-                data = data,
-                async = true
+                functionId = function.functionId,
+                body = data,
+                async = true,
+                path = function.path,
+                method = function.method,
+                headers = mutableMapOf(clientHeader)
             ).id
         }
     }
 
-    override suspend fun getExecution(
-        functionId: String,
-        executionId: String
-    ): FunctionExecutionRaw {
+    override suspend fun runAndWait(function: ServerFunction, data: String?): FunctionExecutionRaw {
         return remoteModule.execute {
-            functions.getExecution(functionId, executionId).let {
-                FunctionExecutionRaw(
-                    id = it.id,
-                    functionId = it.functionId,
-                    status = it.status,
-                    statusCode = it.statusCode,
-                    response = it.response,
-                    stderr = it.stderr
-                )
-            }
+            val execution = functions.createExecution(
+                functionId = function.functionId,
+                body = data,
+                async = false,
+                path = function.path,
+                method = function.method,
+                headers = mutableMapOf(clientHeader)
+            )
+
+            FunctionExecutionRaw(
+                id = execution.id,
+                functionId = execution.functionId,
+                status = execution.status,
+                statusCode = execution.responseStatusCode.toInt(),
+                response = execution.responseBody,
+                stderr = execution.errors
+            )
         }
     }
-
-    override suspend fun runAndWait(functionId: String, data: String?): FunctionExecutionRaw {
-        return remoteModule.execute {
-            functions.createExecution(
-                functionId = functionId,
-                data = data,
-                async = false
-            ).let {
-                FunctionExecutionRaw(
-                    id = it.id,
-                    functionId = it.functionId,
-                    status = it.status,
-                    statusCode = it.statusCode,
-                    response = it.response,
-                    stderr = it.stderr
-                )
-            }
-        }
-    }
-
 }

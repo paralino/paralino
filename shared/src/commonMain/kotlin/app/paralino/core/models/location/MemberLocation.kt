@@ -7,6 +7,7 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -29,7 +30,8 @@ data class MemberLocation constructor(
     @Contextual
     val status: CryptoResource<MemberDeviceStatus>
 ) {
-    val name: String? get() = deviceData.data?.deviceName ?: "---"
+    val name: String get() = nameOrNull ?: "---"
+    val nameOrNull: String? get() = deviceData.data?.deviceName
 
     val canRequestLocation: Boolean get() {
         return locationAwareStatusType != MemberDeviceStatusType.TOO_MANY_REQUESTS && status.data?.statusType != MemberDeviceStatusType.NOT_SHARING
@@ -61,7 +63,7 @@ data class MemberLocation constructor(
     val hasStatus: Boolean get() = status.data != null
 
     val isPinActive: Boolean
-        get() = !isOlderThan(5.minutes)
+        get() = !isOlderThan(5.minutes) && !isEnded
 
     val isExpired: Boolean
         get() = isOlderThan(1.hours) && isStatusOlderThan(2.hours) || (!hasLocation && isStatusOlderThan(2.hours))
@@ -79,8 +81,14 @@ data class MemberLocation constructor(
         get() {
             if (status.data?.statusType == MemberDeviceStatusType.NOT_SHARING) return true
             val endTime = locationData.data?.endTimeUTC?.fromUTCtoInstant() ?: return false
-            return endTime < nowUTC() && !isPinActive
+            return endTime < nowUTC() && isOlderThan(5.minutes)
         }
+
+    val canAutomaticallyClearLocation: Boolean
+        get() { return hasLocation && isOlderThan(7.days) && status.data?.statusType?.isInBlockedState != false }
+
+    val isLocationAvailableButOld: Boolean
+        get() { return hasLocation && isOlderThan(12.hours) }
 
     // even if device status is not active (battery saving is on)
     // consider status as active if location is fairly fresh

@@ -77,11 +77,11 @@ class GroupActivityNotificationHandler(
             }
 
             val notificationId = payload.hashCode()
-            notify(notificationId, title)
+            notify(notificationId, title, push.createdAt.toEpochMilliseconds())
         }
     }
 
-    private fun notify(notificationId: Int, title: String): Notification? {
+    private fun notify(notificationId: Int, title: String, timeMs: Long): Notification? {
 
         if (ActivityCompat.checkSelfPermission(
                 context,
@@ -115,6 +115,8 @@ class GroupActivityNotificationHandler(
             .setGroup("group_notify")
             .setColor(notificationColor)
             .setColorized(true)
+            .setShowWhen(true)
+            .setWhen(timeMs)
 
 
         registerNotificationChannel(context)

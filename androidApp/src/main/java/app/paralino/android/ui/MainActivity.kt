@@ -32,6 +32,7 @@ import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.ui.components.AppSnackbar
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.AppTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -80,6 +81,9 @@ fun RootApp(
 ) {
     AppTheme {
         val appState = rememberAppState()
+
+        MessageDispatcherEffect(vm, appState)
+
         val userState by vm.userState.collectAsState(initial = Resource.NotInitialized)
         var showDialog: MainAlertDialog? by remember { mutableStateOf(null) }
         var showAppUpdateDialog: MainAlertDialog.AppVersionInfo? by remember { mutableStateOf(null) }
@@ -89,10 +93,10 @@ fun RootApp(
             vm.events.collectLatest { event ->
                 when (event) {
                     MainScreenEvent.EmailVerified -> {
-                        appState.showSnackbar(context.getString(MR.strings.info_email_verified.resourceId))
+                        vm.showSnackbar(context.getString(MR.strings.info_email_verified.resourceId))
                     }
                     is MainScreenEvent.Error -> {
-                        appState.showSnackbar(event.error.errorString(context))
+                        vm.showSnackbar(event.error.errorString(context))
                     }
                     is MainScreenEvent.NewAppVersion -> {
                         showAppUpdateDialog = when(event.updateType) {

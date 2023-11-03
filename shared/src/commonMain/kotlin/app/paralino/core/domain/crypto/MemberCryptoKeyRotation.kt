@@ -12,10 +12,10 @@ import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
-import app.paralino.core.models.raw.GenericFunctionPayload
 import app.paralino.core.models.raw.UpdateOwnMemberPublicKeyPayload
 import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
@@ -150,21 +150,16 @@ class MemberCryptoKeyRotation(
             memberKeyVersionsToKeep = memberKeyVersionsToKeep
         )
 
-        val payload = GenericFunctionPayload(
-            route = "update-member-key",
-            payload = payloadData
-        )
-
         val response = functionsApi.runAndWait(
-            functionId = remoteConfig.resourceIds.functionUpdateGroupMemberKeysID,
-            data = BaseRemoteModule.formatter.encodeToString(payload)
+            function = ServerFunction.KEYS_UPDATE_MEMBERS,
+            data = payloadData
         )
 
         if (!response.isSuccess) {
             throw BaseRemoteException.fromCode(
-                null,
-                "Unable to update group member keys",
-                Exception(response.stderr)
+                code = response.statusCode,
+                message = "Unable to update group member keys",
+                cause = Exception(response.stderr)
             )
         }
     }

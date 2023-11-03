@@ -315,8 +315,7 @@ sealed interface MainAlertDialog {
                 ),
                 AlertDialogButtonData(
                     Buttons.buttonCancel,
-                    stringResource(resource = MR.strings.button_skip),
-                    AlertDialogButtonData.destructiveColor
+                    stringResource(resource = MR.strings.button_cancel)
                 ),
             ),
         )
@@ -573,57 +572,6 @@ sealed interface MainAlertDialog {
                         Buttons.buttonOk,
                         stringResource(resource = MR.strings.button_ok),
                         AlertDialogButtonData.positiveColor
-                    )
-                )
-            },
-        )
-    }
-
-    data class GroupOptions(
-        val groupName: String,
-        val canDelete: Boolean,
-        val canBlock: Boolean,
-        val canLeave: Boolean
-    ) : MainAlertDialog {
-        override val key: String = this::class.simpleName ?: "dialog"
-
-        override val dialogData: AlertDialogData = AlertDialogData(
-            id = key,
-            title = groupName,
-            message = "",
-            buttons = buildList {
-                if(canDelete) {
-                    add(
-                        AlertDialogButtonData(
-                            "delete",
-                            stringResource(resource = MR.strings.group_details_menu_delete),
-                            AlertDialogButtonData.destructiveColor
-                        )
-                    )
-                }
-                if(canBlock) {
-                    add(
-                        AlertDialogButtonData(
-                            "block",
-                            stringResource(resource = MR.strings.group_details_menu_block),
-                            AlertDialogButtonData.destructiveColor
-                        )
-                    )
-                }
-                if(canLeave) {
-                    add(
-                        AlertDialogButtonData(
-                            "leave",
-                            stringResource(resource = MR.strings.group_details_menu_leave),
-                            AlertDialogButtonData.destructiveColor
-                        )
-                    )
-                }
-
-                add(
-                    AlertDialogButtonData(
-                        Buttons.buttonCancel,
-                        stringResource(resource = MR.strings.button_cancel),
                     )
                 )
             },

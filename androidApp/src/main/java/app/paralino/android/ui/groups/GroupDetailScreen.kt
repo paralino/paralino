@@ -43,11 +43,13 @@ fun GroupDetailScreen(
 
     val locationPermissionHandler = rememberLocationPermissionHandler(
         appState = appState,
+        messageDispatcher = vm.messageDispatcher,
         locationStatusProvider = vm.locationStatusProvider
     )
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
+        messageDispatcher = vm.messageDispatcher,
         locationStatusProvider = vm.locationStatusProvider
     )
 
@@ -121,17 +123,6 @@ fun GroupDetailScreen(
         is MainAlertDialog.PlanLimit -> {
             dialog.Show {
                 showDialog = null
-            }
-        }
-
-        is MainAlertDialog.GroupOptions -> {
-            dialog.Show {
-                showDialog = when (it) {
-                    "delete" -> MainAlertDialog.DeleteGroup
-                    "leave" -> MainAlertDialog.LeaveGroup
-                    "block" -> MainAlertDialog.BlockGroup
-                    else -> null
-                }
             }
         }
 

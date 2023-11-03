@@ -1,7 +1,11 @@
 package app.paralino.android.ui.map
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -10,7 +14,9 @@ import androidx.core.view.isVisible
 import app.paralino.android.R
 import app.paralino.android.databinding.ElementMapPinBinding
 import app.paralino.android.databinding.ElementMapPinCenteredBinding
-import app.paralino.android.utils.extensions.*
+import app.paralino.android.utils.extensions.dp2px
+import app.paralino.android.utils.extensions.getBitmapFromView
+import app.paralino.android.utils.extensions.imageTintRes
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
@@ -79,34 +85,6 @@ class MapUserMarkerView : ConstraintLayout {
         }
     }
 
-    private fun getPinSize(data: MapPinData): Int {
-        return when (data.pinType) {
-            MapPinType.MEMBER -> {
-                when {
-                    data.focused && data.active -> when(data.markerStyle)  {
-                        MapMarkerStyle.PIN -> 110.dp2px
-                        MapMarkerStyle.CIRCLE -> 90.dp2px
-                    }
-                    data.active -> when(data.markerStyle)  {
-                        MapMarkerStyle.PIN -> 80.dp2px
-                        MapMarkerStyle.CIRCLE -> 60.dp2px
-                    }
-                    else -> when(data.markerStyle)  {
-                        MapMarkerStyle.PIN -> 40.dp2px
-                        MapMarkerStyle.CIRCLE -> 40.dp2px
-                    }
-                }
-            }
-
-            MapPinType.PLACE -> {
-                when {
-                    data.focused  -> 50.dp2px
-                    else -> 30.dp2px
-                }
-            }
-        }
-    }
-
     fun getPinForData(data: MapPinData): Bitmap? {
 
         when (data.pinType) {
@@ -127,7 +105,7 @@ class MapUserMarkerView : ConstraintLayout {
         // we are doing this instead of setting dimensions directly in xml because of better rendering
         // plus it is easier to design and preview bigger view
         val bigBitmap = getBitmapFromView()
-        val size = getPinSize(data)
+        val size = data.getPinSize().dp2px
         val small = Bitmap.createScaledBitmap(bigBitmap!!, size, size, false)
 
         // desaturate the pin if it is inactive

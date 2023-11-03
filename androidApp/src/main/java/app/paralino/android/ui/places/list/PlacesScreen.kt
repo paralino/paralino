@@ -1,28 +1,56 @@
 package app.paralino.android.ui.places.list
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.ExtendedFloatingActionButton
+import androidx.compose.material.FloatingActionButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import app.paralino.android.R
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
-import app.paralino.android.ui.map.rememberMapViewPlacesOverviewState
+import app.paralino.android.ui.components.Show
+import app.paralino.android.ui.map.SimplePlaceMapComposable
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.MR
@@ -33,14 +61,17 @@ import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesScreenEvent
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -52,11 +83,13 @@ fun PlacesScreen(
     vm: PlacesViewModel = getViewModel { parametersOf(groupId) },
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
+        messageDispatcher = vm.messageDispatcher,
         locationStatusProvider = vm.locationStatusProvider
     )
 
@@ -65,8 +98,9 @@ fun PlacesScreen(
         vm.events.collectLatest { event ->
             when (event) {
                 is PlacesScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString(context))
+                    vm.showSnackbar(event.error.errorString(context))
                 }
+
                 PlacesScreenEvent.AddPlace -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.PlaceCreate.route(
@@ -75,12 +109,14 @@ fun PlacesScreen(
                         )
                     )
                 }
+
                 is PlacesScreenEvent.GroupPlacesLimitReached -> {
                     showDialog = MainAlertDialog.PlanLimit(
                         context.getString(MR.strings.plan_limit_places_alert_info.resourceId),
                         limit = event.limit
                     )
                 }
+
                 null -> { /* do nothing */
                 }
             }
@@ -93,6 +129,7 @@ fun PlacesScreen(
                 showDialog = null
             }
         }
+
         else -> {}
     }
 
@@ -106,9 +143,11 @@ fun PlacesScreen(
                 CircularProgressIndicator()
             }
         }
+
         is Payload.Error -> {
             DefaultEmptyState(content = stringResource(id = MR.strings.error_load_data_generic.resourceId))
         }
+
         is Payload.Success -> {
             PlacesScreen(
                 state = state.data,
@@ -143,14 +182,6 @@ fun PlacesScreen(
     onScreenClose: () -> Unit,
     onCreatePlace: () -> Unit
 ) {
-
-    val mapViewState = rememberMapViewPlacesOverviewState(darkMode = isSystemInDarkTheme())
-
-    LaunchedEffect(state) {
-        delay(50)
-        mapViewState.updateMarkers(state.groupId, state.places)
-    }
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -242,21 +273,10 @@ fun PlacesScreen(
                             shape = MaterialTheme.shapes.medium,
                             color = MaterialTheme.colors.background,
                         ) {
-                            AndroidView(
-                                modifier = Modifier.fillMaxSize(),
-                                factory = {
-                                    mapViewState.initMap()
-                                    mapViewState.onMapTouchEnd = {
-                                        userScroll = true
-                                    }
-                                    mapViewState.onMapTouch = {
-                                        userScroll = false
-                                        false
-                                    }
-                                    mapViewState.mapAndroidView
-                                },
-                                update = { }
-                            )
+                            SimplePlaceMapComposable(
+                                markers = state.markers,
+                                onMapInteraction = { userScroll = !it },
+                                onMapLongPress = { lat, lng -> })
                         }
                     }
                 }
@@ -269,10 +289,13 @@ fun PlacesScreen(
 
                 if (index == 0)
                     Spacer(modifier = Modifier.size(20.dp))
+                else
+                    Spacer(modifier = Modifier.size(8.dp))
 
                 PlaceListItem(
                     modifier = Modifier.animateItemPlacement(),
                     state = item,
+                    hasEndArrow = true,
                     onClick = { onPlaceClick(item) },
                 )
             }
@@ -297,15 +320,16 @@ fun PlacesScreen(
 @Composable
 fun PlaceListItem(
     modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colors.surface,
     state: PlaceListItemData,
+    hasEndArrow: Boolean = true,
     onClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colors.surface)
+            .background(backgroundColor)
             .let {
                 if (onClick != null)
                     it.clickable { onClick() }
@@ -329,8 +353,18 @@ fun PlaceListItem(
         Text(
             text = state.name,
             style = MaterialTheme.typography.h6,
-            modifier = Modifier
+            modifier = Modifier.weight(1f)
         )
+        if (hasEndArrow) {
+            Icon(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .width(20.dp),
+                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                contentDescription = null
+            )
+        }
     }
 }
 

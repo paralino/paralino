@@ -38,6 +38,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MainInputField
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.errorString
@@ -52,6 +53,7 @@ fun ConvertAccountScreenCore(
     onNavigateBack: () -> Unit
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = ConvertAccountScreenState())
     val focusManager = LocalFocusManager.current
 
@@ -59,22 +61,22 @@ fun ConvertAccountScreenCore(
         vm.events.collectLatest { event ->
             when (event) {
                 is ConvertAccountScreenEvent.Error -> {
-                    appState.showSnackbar(event.exception.errorString())
+                    vm.showSnackbar(event.exception.errorString())
                 }
 
                 is ConvertAccountScreenEvent.EmailError -> {
-                    appState.showSnackbar(MR.strings.form_invalid_email_conflict_description.localizedString())
+                    vm.showSnackbar(MR.strings.form_invalid_email_conflict_description.localizedString())
                 }
 
                 is ConvertAccountScreenEvent.CredentialsError -> {
-                    appState.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                    vm.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                 }
 
                 is ConvertAccountScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
                         validation = event.validationResult.type
                     )
-                    appState.showSnackbar(errorText)
+                    vm.showSnackbar(errorText)
                 }
 
                 ConvertAccountScreenEvent.AccountUpdated -> {

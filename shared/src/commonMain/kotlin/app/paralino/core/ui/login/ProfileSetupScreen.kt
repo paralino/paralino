@@ -9,43 +9,42 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenEvent
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenState
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsBigHeader
-import app.paralino.core.ui.rememberCoreUiState
 import app.paralino.core.ui.settings.profile.EditProfileScreen
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
-import app.paralino.core.utils.extensions.safeCast
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ProfileSetupScreenCore(
-    appState: CoreUiState = rememberCoreUiState(),
+    appState: CoreUiState,
     vm: EditProfileViewModel,
     onBottomSheetAction: (BottomSheetsScreen) -> Unit,
 ) {
 
+    MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = EditProfileScreenState())
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 is EditProfileScreenEvent.Error -> {
-                    appState.showSnackbar(event.error.errorString())
+                    vm.showSnackbar(event.error.errorString())
                 }
 
                 is EditProfileScreenEvent.ValidationError -> {
                     val errorText = getFormValidationErrorText(
                         validation = event.validationResult.type
                     )
-                    appState.showSnackbar(errorText)
+                    vm.showSnackbar(errorText)
                 }
 
                 EditProfileScreenEvent.ProfileUpdated -> {}
