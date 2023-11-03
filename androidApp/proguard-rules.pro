@@ -15,7 +15,7 @@
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 -keepattributes SourceFile,LineNumberTable
--keepattributes Signature,Exceptions
+-keepattributes Signature,Exceptions,InnerClasses,EnclosingMethod
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
@@ -52,7 +52,12 @@
 -keep class app.paralino.core.data.** { *; }
 -keep class io.appwrite.** { *; }
 
--keep class app.paralino.core.MR$images { *; }
+-keep class app.paralino.core.MokoResources { *; }
+-keep class app.paralino.core.MokoResources$images { *; }
+-keep class app.paralino.core.MokoResources$fonts { *; }
+-keep class app.paralino.core.MokoResources$strings { *; }
+-keep class app.paralino.core.MR { *; }
+-keep class app.paralino.core.MR$fonts { *; }
 
 # keep parcelables
 -keepclassmembers class * implements android.os.Parcelable {
@@ -97,6 +102,7 @@
     public static final int define_*;
 }
 
+# region added from missing_rules file
 -dontwarn com.google.firebase.analytics.connector.AnalyticsConnector
 -dontwarn org.bouncycastle.jsse.BCSSLParameters
 -dontwarn org.bouncycastle.jsse.BCSSLSocket
@@ -107,6 +113,31 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+
+-dontwarn com.google.api.client.http.GenericUrl
+-dontwarn com.google.api.client.http.HttpHeaders
+-dontwarn com.google.api.client.http.HttpRequest
+-dontwarn com.google.api.client.http.HttpRequestFactory
+-dontwarn com.google.api.client.http.HttpResponse
+-dontwarn com.google.api.client.http.HttpTransport
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport
+-dontwarn org.joda.time.Instant
+# endregion
+
+# region gson
+-keep class * extends com.google.gson.TypeAdapter
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+
+-keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
+-keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+# endregion
 
 #create a merged proguard file of all modules and default proguard rules
 -printconfiguration proguard-merged-config.txt
