@@ -45,6 +45,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -161,7 +162,7 @@ fun MapMarkerInfoWindowContent(
                 ) {
                     Icon(
                         painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
-                        tint = Color.Blue.copy(alpha = 0.8f),
+                        tint = AppColors.accentDark.copy(alpha = 0.8f),
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 4.dp)
