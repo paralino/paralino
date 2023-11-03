@@ -81,7 +81,7 @@ data class MemberLocation constructor(
         get() {
             if (status.data?.statusType == MemberDeviceStatusType.NOT_SHARING) return true
             val endTime = locationData.data?.endTimeUTC?.fromUTCtoInstant() ?: return false
-            return endTime < nowUTC() && !isPinActive
+            return endTime < nowUTC() && isOlderThan(5.minutes)
         }
 
     val canAutomaticallyClearLocation: Boolean
