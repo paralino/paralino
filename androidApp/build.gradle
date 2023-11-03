@@ -248,8 +248,8 @@ dependencies {
     googleImplementation 'com.google.maps.android:maps-compose-utils:4.1.1'
     googleImplementation 'com.google.maps.android:maps-compose-widgets:4.1.1'
 
-    googleImplementation 'com.mapbox.maps:android:10.8.1'
-    googleImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
+    ossImplementation 'com.mapbox.maps:android:10.8.1'
+    ossImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
 
     googleImplementation ("com.google.firebase:firebase-messaging-ktx:23.2.1") {
         exclude group: 'com.google.firebase', module: 'firebase-core'
