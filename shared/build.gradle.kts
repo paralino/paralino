@@ -55,7 +55,7 @@ kotlin {
                 implementation("androidx.preference:preference-ktx:1.2.1")
                 implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
                 implementation("app.cash.sqldelight:android-driver:2.0.0")
-                api("androidx.activity:activity-compose:1.7.2")
+                api("androidx.activity:activity-compose:1.8.0")
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.12.0")
             }
