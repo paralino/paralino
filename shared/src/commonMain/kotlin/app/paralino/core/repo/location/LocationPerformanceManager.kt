@@ -12,6 +12,7 @@ import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.nowUTC
+import app.paralino.core.utils.extensions.randomString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -69,7 +70,8 @@ class LocationPerformanceManager constructor(
                     collectionId = BackendResourceIDs.collectionLocationFocusID,
                     docId = "$groupId${config.userId}".take(BackendResourceIDs.databaseIdMaxLength),
                     data = mapOf(
-                        "groupId" to groupId
+                        "groupId" to groupId,
+                        "gibberish" to randomString(length = 30)
                     )
                 )
                 Unit
