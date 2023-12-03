@@ -177,8 +177,10 @@ class SharingStartViewModel(
                 return@launch
             }
 
+            logg.tag("sharing_start").d("Device registered - register sharing contract")
             sharingManager.startSharing(contract)
 
+            logg.tag("sharing_start").d("Check sharing contract validity")
             val active = try {
                 poll(
                     firstDelayMillis = 500,
@@ -191,6 +193,8 @@ class SharingStartViewModel(
                 logg.e("Sharing timeout", e)
                 false
             }
+
+            logg.tag("sharing_start").d("Sharing location setup finished")
 
             _uiState.update { it.copy(loadingAction = false) }
             coroutineScope.launch {

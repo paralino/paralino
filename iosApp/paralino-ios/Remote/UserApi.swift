@@ -93,7 +93,9 @@ class UserApi: IUserApiIOS {
     
     func signUp(userName: String?, email: String, password: String) async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
-            try! await module.account.create(userId: module.backendConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName).parseUser()
+            try! await module.account.create(
+                userId: module.backendConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName
+            ).parseUser()
         }
     }
     

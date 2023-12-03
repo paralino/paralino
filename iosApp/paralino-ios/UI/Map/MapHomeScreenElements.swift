@@ -41,10 +41,13 @@ struct MapHomeScreenElements: View {
             .padding(.horizontal)
             .padding(.bottom)
         } else if let emptyState = state as? MapHomeScreenState.Empty {
-            ImageModelImage(imageModel: emptyState.currentUserImage, useBackgroundForEmoji: true)
-                .frame(width: 60, height: 60)
-                .clipShape(Circle())
-                .onTapGesture { openProfile() }
+            VStack {
+                ImageModelImage(imageModel: emptyState.currentUserImage, useBackgroundForEmoji: true)
+                    .frame(width: 60, height: 60)
+                    .clipShape(Circle())
+                    .onTapGesture { pickGroup() }
+                ProgressView().progressViewStyle(CircularProgressViewStyle())
+            }
         } else {
             EmptyView()
         }
