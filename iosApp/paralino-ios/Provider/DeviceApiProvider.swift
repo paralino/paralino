@@ -29,6 +29,10 @@ class DeviceApiProvider: IDeviceApiProvider {
         return Int32(UIDevice.current.batteryLevel)
     }
     
+    override var isCharging: Bool {
+        false
+    }
+    
     override var deviceType: DeviceType {
         DeviceTypeIOS.shared
     }
