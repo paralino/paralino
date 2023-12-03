@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/appwrite/sdk-for-apple.git",
       "state" : {
-        "revision" : "c53379f2bf3e07085e832dd863bb3a997170cff2",
-        "version" : "4.0.1"
+        "revision" : "d19fb1f26cb0c64a36e96c83a54b631336cfc5b5",
+        "version" : "4.0.2"
       }
     },
     {
@@ -95,7 +95,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jedisct1/swift-sodium.git",
       "state" : {
-        "revision" : "f67e6e0814ca9ab67f9ab20a1c0e63870bd52322"
+        "revision" : "6262c021e108b5fb16d2caa1e319e913cea2406d"
       }
     }
   ],
