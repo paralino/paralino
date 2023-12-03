@@ -46,7 +46,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         ).let { lazySodium.encodeToString(nonce).plus(it) }
     }
 
-    override suspend fun decryptDataWithSymmetricKey(data: String, key: String): String {
+    override fun decryptDataWithSymmetricKey(data: String, key: String): String {
 
         val source = lazySodium.decodeFromString(data)
         val nonce = source.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
@@ -89,7 +89,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         return encryptDataWithSymmetricKey(data, key)
     }
 
-    override suspend fun decryptDataWithPassword(
+    override fun decryptDataWithPassword(
         data: String,
         password: String,
         context: String
