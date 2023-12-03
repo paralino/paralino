@@ -6,7 +6,7 @@ import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
-import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
 import app.paralino.core.ui.invite.MemberInviteScreenCore
@@ -58,7 +58,6 @@ object HomeScreens {
     fun GroupDetailScreenVC(
         vm: GroupDetailViewModel,
         groupId: String?,
-        onShowDialog: (MainAlertDialog?) -> Unit,
         openMemberAdd: () -> Unit,
         openGroupEdit: () -> Unit,
         openMap: () -> Unit,
@@ -77,7 +76,6 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 groupId = groupId,
-                onShowDialog = onShowDialog,
                 openMemberAdd = openMemberAdd,
                 openGroupEdit = openGroupEdit,
                 openMap = openMap,

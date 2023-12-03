@@ -81,7 +81,6 @@ fun GroupDetailScreenCore(
     appState: CoreUiState,
     vm: GroupDetailViewModel,
     groupId: String?,
-    onShowDialog: (MainAlertDialog?) -> Unit,
     openMemberAdd: () -> Unit,
     openGroupEdit: () -> Unit,
     openMap: () -> Unit,
@@ -104,6 +103,8 @@ fun GroupDetailScreenCore(
     }
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
+    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
+    val onShowDialog: (MainAlertDialog?) -> Unit = { showDialog = it }
 
     var optionMenuExpanded by remember {
         mutableStateOf(false)
@@ -145,6 +146,83 @@ fun GroupDetailScreenCore(
                 }
             }
         }
+    }
+
+
+    when (val dialog = showDialog) {
+        is MainAlertDialog.DeleteGroup -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.leaveOrDeleteGroup()
+                }
+            }
+        }
+
+        is MainAlertDialog.LeaveGroup -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.leaveOrDeleteGroup()
+                }
+            }
+        }
+
+        is MainAlertDialog.BlockGroup -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.blockGroup()
+                }
+            }
+        }
+
+        is MainAlertDialog.BlockUser -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.blockUser(userId = dialog.userId)
+                }
+            }
+        }
+
+        is MainAlertDialog.UnblockGroupOrUser -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.unblockUser(userId = dialog.id)
+                }
+            }
+        }
+
+        is MainAlertDialog.DeleteGroupMember -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.removeMember(dialog.memberUserId)
+                }
+            }
+        }
+
+        is MainAlertDialog.DeleteMemberLocation -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.removeMemberLocation(
+                        memberId = dialog.memberId,
+                        locationId = dialog.locationId
+                    )
+                }
+            }
+        }
+
+        is MainAlertDialog.PlanLimit -> {
+            dialog.Show {
+                showDialog = null
+            }
+        }
+
+        else -> {}
     }
 
     when (val state = uiState) {

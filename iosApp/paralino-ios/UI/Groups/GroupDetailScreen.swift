@@ -23,9 +23,6 @@ struct GroupDetailScreen: View {
                 ScreensIOS.shared.home.GroupDetailScreenVC(
                     vm: appState.vm,
                     groupId: appState.vm.groupId,
-                    onShowDialog: { dialog in
-                        alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
-                    },
                     openMemberAdd: {
                         path.append(.home(.memberInvite(groupId: appState.vm.groupId, code: nil)))
                     },
