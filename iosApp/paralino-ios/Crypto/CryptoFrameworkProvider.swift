@@ -26,12 +26,12 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         do {
             guard let result = try action()
             else {
-                return PayloadError(exception: KotlinThrowable(message: "Invalid value"))
+                return PayloadError(exception: KotlinException(message: "Invalid value"))
             }
             return PayloadSuccess(data: result)
         } catch let error {
             Logr.i(message: "Error with crypto: \(error.localizedDescription)")
-            return PayloadError(exception: KotlinThrowable(message: error.localizedDescription))
+            return PayloadError(exception: KotlinException(message: error.localizedDescription))
         }
     }
     

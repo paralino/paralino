@@ -51,7 +51,7 @@ class AppwriteRemoteModule: IRemoteModule {
         }
     }
     
-    func mapError(error: Error, userApi: Bool = false) -> KotlinThrowable {
+    func mapError(error: Error, userApi: Bool = false) -> KotlinException {
         switch error {
         case let error as AppwriteError: return BaseRemoteException.companion.fromCode(
             code: KotlinInt(int: Int32(error.code!)),
@@ -59,7 +59,7 @@ class AppwriteRemoteModule: IRemoteModule {
             cause: nil,
             type: error.type ?? (userApi ? "general_unauthorized_scope" : nil)
         )
-        default: return KotlinThrowable(message: error.localizedDescription)
+        default: return KotlinException(message: error.localizedDescription)
         }
     }
     

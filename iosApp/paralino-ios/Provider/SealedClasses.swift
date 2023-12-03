@@ -57,7 +57,7 @@ public enum PayloadSwift<T : AnyObject> {
         } else if let data = data as? T {
             self = .success(data: data)
         } else {
-            self = .error(error: KotlinThrowable(message: "Invalid payload type"))
+            self = .error(error: KotlinException(message: "Invalid payload type"))
         }
     }
     

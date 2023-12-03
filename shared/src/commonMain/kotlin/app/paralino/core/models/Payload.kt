@@ -22,7 +22,13 @@ val Payload<*>.exception: Throwable?
     get() = (this as? Payload.Error)?.exception
 
 fun <T> Payload<T>.getOrThrow(): T = when(this) {
-    is Payload.Error -> throw this.exception
+    is Payload.Error -> {
+        if(this.exception is Exception) {
+            throw this.exception
+        } else {
+            throw IllegalStateException(this.exception)
+        }
+    }
     Payload.Loading -> throw IllegalStateException("Data still loading")
     is Payload.Success -> this.data
 }
