@@ -15,8 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
-import app.paralino.android.R
-import app.paralino.android.ui.components.Show
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.navigation.MainNavHost
@@ -31,7 +30,7 @@ import app.paralino.core.presentation.MainScreenEvent
 import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.ui.components.AppSnackbar
-import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.AppTheme
 import kotlinx.coroutines.flow.collectLatest

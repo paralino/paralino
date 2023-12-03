@@ -48,7 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.Show
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.android.ui.map.SimplePlaceMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.shared.errorString
@@ -65,7 +65,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SettingsBigHeader

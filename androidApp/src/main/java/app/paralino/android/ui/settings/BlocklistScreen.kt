@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.Show
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
-import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.BlocklistScreenCore
 import org.koin.androidx.compose.getViewModel
 

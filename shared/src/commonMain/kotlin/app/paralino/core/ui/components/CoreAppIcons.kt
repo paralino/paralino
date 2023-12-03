@@ -68,6 +68,11 @@ object CoreAppIcons {
     val MoreVert get() = "drawable/ic_more_vert.xml"
     val PersonAdd get() = "drawable/ic_person_add.xml"
 
+    val NotListedLocation get() = "drawable/ic_not_listed_location.xml"
+    val NotificationsOff get() = "drawable/ic_notifications_off.xml"
+    val Adjust get() = "drawable/ic_adjust.xml"
+    val Groups get() = "drawable/ic_groups.xml"
+
     val SignalWifi3 get() = "drawable/ic_wifi_3.xml"
     val SignalWifi2 get() = "drawable/ic_wifi_2.xml"
     val SignalWifi1 get() = "drawable/ic_wifi_1.xml"

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.*
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel

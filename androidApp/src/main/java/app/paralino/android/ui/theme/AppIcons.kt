@@ -12,12 +12,11 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 
 object AppIcons {
-    val NotListedLocation @Composable get() = R.drawable.ic_not_listed_location.asPainterResource()
-    val NotificationsOff @Composable get() = R.drawable.ic_notifications_off.asPainterResource()
+    val NotificationsOff @Composable get() = CoreAppIcons.NotificationsOff.asPainterResource()
+    val Adjust @Composable get() = CoreAppIcons.Adjust.asPainterResource()
+    val Groups @Composable get() = CoreAppIcons.Groups.asPainterResource()
     val Home @Composable get() = R.drawable.ic_home.asPainterResource()
-    val Adjust @Composable get() = R.drawable.ic_adjust.asPainterResource()
     val CenterFocusStrong @Composable get() = R.drawable.ic_center_focus_strong.asPainterResource()
-    val Groups @Composable get() = R.drawable.ic_groups.asPainterResource()
     val Logout @Composable get() = CoreAppIcons.Logout.asPainterResource()
     val Warning @Composable get() = CoreAppIcons.Warning.asPainterResource()
     val Group @Composable get() = CoreAppIcons.Group.asPainterResource()

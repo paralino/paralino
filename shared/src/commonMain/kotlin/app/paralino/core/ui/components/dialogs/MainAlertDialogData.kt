@@ -1,4 +1,4 @@
-package app.paralino.core.ui.components
+package app.paralino.core.ui.components.dialogs
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color

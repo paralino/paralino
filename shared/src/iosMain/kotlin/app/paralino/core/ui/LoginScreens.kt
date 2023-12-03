@@ -2,13 +2,12 @@ package app.paralino.core.ui
 
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.login.LoggedOutViewModel
-import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
-import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.login.LoginScreenCore
 import app.paralino.core.ui.login.ProfileSetupScreenCore
 import app.paralino.core.ui.login.RecoverKeysScreenCore

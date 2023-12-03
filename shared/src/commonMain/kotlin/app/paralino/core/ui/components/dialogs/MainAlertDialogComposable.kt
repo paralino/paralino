@@ -1,4 +1,4 @@
-package app.paralino.android.ui.components
+package app.paralino.core.ui.components.dialogs
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,9 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import app.paralino.core.ui.components.AlertDialogButtonData
-import app.paralino.core.ui.components.AlertDialogData
-import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.annotatedBold
 
