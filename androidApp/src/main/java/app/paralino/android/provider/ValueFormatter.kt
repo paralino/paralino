@@ -24,7 +24,7 @@ class ValueFormatter(): IValueFormatter() {
         get() = DistanceUnitType.METRIC
 
     override fun getDistanceSmall(
-        meters: Float,
+        meters: Number,
         unitType: DistanceUnitType?,
     ): String {
         val formatter = DecimalFormat.getInstance().apply {
@@ -33,17 +33,17 @@ class ValueFormatter(): IValueFormatter() {
         }
         return when (unitType ?: this.unitType) {
             DistanceUnitType.METRIC -> {
-                if (meters < 1000) {
+                if (meters.toInt() < 1000) {
                     val value = formatter.apply { maximumFractionDigits = 0 }.format(meters)
                     MR.strings.placeholder_unit_meter.localizedString(value)
                 } else {
-                    val value = formatter.apply { maximumFractionDigits = 2 }.format(meters / 1000)
+                    val value = formatter.apply { maximumFractionDigits = 2 }.format(meters.toDouble() / 1000)
                     MR.strings.placeholder_unit_km.localizedString(value)
                 }
             }
             DistanceUnitType.IMPERIAL -> {
                 // TODO add imperial values
-                val mile = meters / 1000 / 1.609344
+                val mile = meters.toDouble() / 1000 / 1.609344
                 val value = formatter.format(mile)
                 MR.strings.placeholder_unit_mile.localizedString(value)
             }

@@ -19,7 +19,7 @@ abstract class IValueFormatter {
 
     abstract val unitType: DistanceUnitType
 
-    abstract fun getDistanceSmall(meters: Float, unitType: DistanceUnitType? = null): String
+    abstract fun getDistanceSmall(meters: Number, unitType: DistanceUnitType? = null): String
     abstract fun getLastPing(time: LocalDateTime?): String?
     abstract fun formatBestPattern(epochSeconds: Long, pattern: String): String
     abstract fun currentTimeForApi(): String
