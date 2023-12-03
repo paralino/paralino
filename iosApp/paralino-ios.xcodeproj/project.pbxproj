@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */; };
+		2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAAB2B113C4D00D88042 /* LocationManager.swift */; };
 		252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */; };
 		252E361529CF60BA008FC635 /* Logr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361429CF60BA008FC635 /* Logr.swift */; };
 		252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */; };
@@ -74,6 +76,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingStartScreen.swift; sourceTree = "<group>"; };
+		2529CAAA2B10CF1500D88042 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2529CAAB2B113C4D00D88042 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceApiProvider.swift; sourceTree = "<group>"; };
 		252E361429CF60BA008FC635 /* Logr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logr.swift; sourceTree = "<group>"; };
 		252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionStatusProvider.swift; sourceTree = "<group>"; };
@@ -216,6 +221,7 @@
 			isa = PBXGroup;
 			children = (
 				254B6F2729EC7C50008B1458 /* Image+Extensions.swift */,
+				2529CAAB2B113C4D00D88042 /* LocationManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -343,6 +349,7 @@
 		25C03A6629CCE77100646364 /* paralino-ios */ = {
 			isa = PBXGroup;
 			children = (
+				2529CAAA2B10CF1500D88042 /* Info.plist */,
 				254B6F3529EC8056008B1458 /* Localization */,
 				256C5A5829E8934E00FCF0B7 /* UI */,
 				252EA02329E03D2400338956 /* Crypto */,
@@ -369,6 +376,7 @@
 				25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */,
 				25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */,
 				25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */,
+				2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */,
 			);
 			path = Groups;
 			sourceTree = "<group>";
@@ -511,6 +519,7 @@
 				25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */,
 				25C91A322A57F38A00A49F06 /* GroupCreateScreen.swift in Sources */,
 				259AEFA02A3E0D0A0083FF4B /* RecoverKeysScreen.swift in Sources */,
+				2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */,
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
 				25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */,
@@ -526,6 +535,7 @@
 				259AEF9C2A3DB1C70083FF4B /* MapRootScreen.swift in Sources */,
 				25C91A2F2A57EFC600A49F06 /* PhotoPickerSheet.swift in Sources */,
 				259AEFA62A3E2EF30083FF4B /* MapHomeScreen.swift in Sources */,
+				2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */,
 				252EA00B29DD99F900338956 /* PushSetupProvider.swift in Sources */,
 				254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */,
 				25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */,
@@ -637,7 +647,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -692,7 +702,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -718,13 +728,17 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "paralino-ios/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Paralino;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always on and when in use location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Always on location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "When in use location permission is required to post updates";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -761,13 +775,17 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "paralino-ios/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Paralino;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always on and when in use location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Always on location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "When in use location permission is required to post updates";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

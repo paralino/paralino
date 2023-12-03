@@ -43,7 +43,7 @@ struct GroupDetailScreen: View {
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupMemberPresentation(memberId: memberId))))
                     },
                     openSharing: {
-                        
+                        path.append(.home(.sharingStart(groupId: appState.vm.groupId)))
                     },
                     onNavigateBack: {
                         path.removeLast()

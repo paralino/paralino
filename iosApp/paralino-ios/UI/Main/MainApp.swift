@@ -10,9 +10,11 @@ import shared
 
 @main
 struct MainApp: App {
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var appState = MainAppObject()
     @Environment(\.scenePhase) var scenePhase
+    @StateObject var locationManager = LocationManager()
     
     
     var body: some Scene {
@@ -25,7 +27,7 @@ struct MainApp: App {
                 case .ready(let data): AppReadyScreen(userState: data)
                 }
             }
-            .onChange(of: scenePhase) { newScenePhase in
+            .onChange(of: scenePhase, initial: true) { old, newScenePhase in
                 switch newScenePhase {
                 case .active:
                     appDelegate.appInForeground()
@@ -35,7 +37,9 @@ struct MainApp: App {
                 @unknown default:
                     Logr.i(tag:"delegate", message: "App scene unknown")
                 }
-            }.environmentObject(appDelegate)
+            }
+            .environmentObject(appDelegate)
+            .environmentObject(locationManager)
         }
     }
 }

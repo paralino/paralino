@@ -36,6 +36,7 @@ import app.paralino.core.presentation.settings.passwordchange.ChangePasswordView
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.api.*
 import app.paralino.core.repo.location.IGeofenceManager
+import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -128,6 +129,7 @@ object KoinIOS {
 
     object Instances: KoinComponent {
         val coreAppManager: CoreAppManager get() = get()
+        val locationRepo: LocationRepository get() = get()
     }
 
     object ViewModels: KoinComponent {
@@ -149,6 +151,7 @@ object KoinIOS {
         fun groupCreateVM(groupId: String?) = get<CreateGroupViewModel> { parametersOf(groupId) }
         fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
         fun memberInviteVM(groupId: String?, code: String?) = get<MemberInviteViewModel> { parametersOf(groupId, code) }
+        fun sharingStartVM(groupId: String?) = get<SharingStartViewModel> { parametersOf(groupId) }
     }
 
 }

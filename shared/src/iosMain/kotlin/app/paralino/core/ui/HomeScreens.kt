@@ -5,12 +5,14 @@ import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
+import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
 import app.paralino.core.ui.invite.MemberInviteScreenCore
 import app.paralino.core.ui.login.GroupInitScreenCore
+import app.paralino.core.ui.share.SharingStartScreenCore
 
 object HomeScreens {
     fun GroupInitScreenVC(
@@ -104,6 +106,31 @@ object HomeScreens {
                 vm = vm,
                 onPickGroup = onPickGroup,
                 onNavigateBack = onExit
+            )
+        }
+    }
+
+    fun StartSharingScreenVC(
+        vm: SharingStartViewModel,
+        groupId: String?,
+        onPickGroup: (BottomSheetsScreen.GroupPicker) -> Unit,
+        onNavigateBack: () -> Unit,
+        askNotificationPermission: () -> Unit,
+        askLocationService: () -> Unit,
+        askLocationPermission: () -> Unit,
+        askBackgroundLocationPermission: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            SharingStartScreenCore(
+                appState = it,
+                vm = vm,
+                groupId = groupId,
+                onPickGroup = onPickGroup,
+                onNavigateBack = onNavigateBack,
+                askNotificationPermission = askNotificationPermission,
+                askLocationService = askLocationService,
+                askLocationPermission = askLocationPermission,
+                askBackgroundLocationPermission = askBackgroundLocationPermission
             )
         }
     }
