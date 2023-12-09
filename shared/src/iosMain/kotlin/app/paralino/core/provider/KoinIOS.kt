@@ -34,9 +34,17 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
-import app.paralino.core.repo.api.*
+import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.api.IDocumentsApi
+import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.IRealtimeApi
+import app.paralino.core.repo.api.IRealtimeApiIOS
+import app.paralino.core.repo.api.IUserApi
+import app.paralino.core.repo.api.IUserApiIOS
+import app.paralino.core.repo.api.RealtimeApiWrapperIOS
+import app.paralino.core.repo.api.UserApiWrapperIOS
 import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.repo.location.LocationRepositoryWrapper
 import app.paralino.core.repo.user.IPushProviderManager
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -129,7 +137,8 @@ object KoinIOS {
 
     object Instances: KoinComponent {
         val coreAppManager: CoreAppManager get() = get()
-        val locationRepo: LocationRepository get() = get()
+        val locationRepo: LocationRepositoryWrapper get() = LocationRepositoryWrapper(get())
+        val locationSharingManager: LocationSharingManager get() = get()
     }
 
     object ViewModels: KoinComponent {

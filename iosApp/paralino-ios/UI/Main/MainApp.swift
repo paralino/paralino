@@ -14,8 +14,6 @@ struct MainApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var appState = MainAppObject()
     @Environment(\.scenePhase) var scenePhase
-    @StateObject var locationManager = LocationManager()
-    
     
     var body: some Scene {
         WindowGroup {
@@ -39,7 +37,7 @@ struct MainApp: App {
                 }
             }
             .environmentObject(appDelegate)
-            .environmentObject(locationManager)
+            .environmentObject(appDelegate.locationManager)
         }
     }
 }

@@ -9,16 +9,19 @@ import Foundation
 import CoreLocation
 import shared
 
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+class LocationManager: NSObject, ObservableObject {
+    
     let manager = CLLocationManager()
-    let locationManager = koin.get
-    lazy var locationRepo: LocationRepository = { KoinIOS.Instances.shared.locationRepo }()
+    
+    lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
 
     @Published var location: CLLocationCoordinate2D?
 
-    override init() {
+    init(delegate: CLLocationManagerDelegate) {
         super.init()
-        manager.delegate = self
+        manager.delegate = delegate
+        manager.allowsBackgroundLocationUpdates = true
+        manager.showsBackgroundLocationIndicator = true
     }
 
     func requestLocationPermission() {
@@ -31,21 +34,27 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func startLocationUpdates() {
         manager.startUpdatingLocation()
+        manager.startMonitoringSignificantLocationChanges()
     }
-
+    
+    func stopLocationUpdates() {
+        manager.stopUpdatingLocation()
+        manager.stopMonitoringSignificantLocationChanges()
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations.first
         guard let location = location else { return }
         
-        let accuracy: Float = if !location.horizontalAccuracy.isNaN { Float(location.horizontalAccuracy) } else { 0 }
-        let speed: KotlinFloat? = if !location.speed.isNaN { KotlinFloat(floatLiteral: location.speed) } else { nil }
+        let accuracy: Float = if !location.horizontalAccuracy.isNaN && location.horizontalAccuracy > 0 { Float(location.horizontalAccuracy) } else { 0 }
+        let speed: KotlinFloat? = if !location.speed.isNaN && location.speed > 0 { KotlinFloat(floatLiteral: location.speed) } else { nil }
         let altitude: KotlinFloat? = if !location.altitude.isNaN { KotlinFloat(floatLiteral: location.altitude) } else { nil }
         
         let locationModel = LocationDataModel(
             lat: location.coordinate.latitude,
             lng: location.coordinate.longitude,
             accuracy: accuracy,
-            timeUTC: location.timestamp.ISO8601Format(.iso8601Date(timeZone: .gmt)),
+            timeUTC: location.timestamp.ISO8601Format(.iso8601(timeZone: .gmt)),
             endTimeUTC: nil,
             speed: speed,
             altitude: altitude
@@ -54,7 +63,18 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         DispatchQueue.main.async { [weak self] in
             Task {
                 do {
-                    try await self?.locationRepo.pushLocation(data: locationModel)
+                    let result = try await self?.locationRepo.pushLocation(data: locationModel)
+                    if let result = result {
+                        let payload = PayloadSwift(result)
+                        switch payload {
+                        case .loading:
+                            Logr.v(tag: "location_Test", message: "error pushing location: loading")
+                        case .success(data: _):
+                            Logr.v(tag: "location_Test", message: "Location pushed successfully")
+                        case .error(error: let error):
+                            Logr.v(tag: "location_Test", message: "error pushing location: \(error)")
+                        }
+                    }
                 } catch let error {
                     Logr.v(tag: "location_Test", message: "error pushing location: \(error)")
                 }
