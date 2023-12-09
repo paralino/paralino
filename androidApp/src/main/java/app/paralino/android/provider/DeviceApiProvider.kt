@@ -35,7 +35,7 @@ class DeviceApiProvider constructor(
     override val deviceType: DeviceType
         get() = DeviceType.Android
 
-    override val batteryLevel: Int
+    override val _batteryLevel: Int
         get() = appClass.batterLevel
 
     override val isCharging: Boolean

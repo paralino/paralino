@@ -38,7 +38,9 @@ abstract class IDeviceApiProvider(
         connectionStatus = connectionStatusProvider
     }
 
-    abstract val batteryLevel: Int
+    val batteryLevel: Int? get() = if (_batteryLevel in 0..100) _batteryLevel else null
+
+    protected abstract val _batteryLevel: Int
     abstract val isCharging: Boolean
     abstract val randomUUID: String
     abstract val deviceType: DeviceType

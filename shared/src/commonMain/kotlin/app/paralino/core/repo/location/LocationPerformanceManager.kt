@@ -220,7 +220,7 @@ class LocationPerformanceManager constructor(
         lastMediumBoostDiff: Duration,
         lastHighBoostDiff: Duration,
         lastVeryHighBoostDiff: Duration,
-        batteryLevel: Int,
+        batteryLevel: Int?,
     ): LocationPerformanceType {
 
         // allow only certain amount of boost per hour
@@ -229,8 +229,10 @@ class LocationPerformanceManager constructor(
         val timeCriteriaVeryHigh = lastVeryHighBoostDiff > 3.minutes
 
         // take certain range of battery in account
-        val batteryLow = batteryLevel < 10
-        val batteryMedium = batteryLevel < 20
+        // assume decent battery level if battery level unavailable
+        val batteryLevelAdjusted = batteryLevel ?: 30
+        val batteryLow = batteryLevelAdjusted < 10
+        val batteryMedium = batteryLevelAdjusted < 20
 
         return when (type) {
             LocationPerformanceType.MANUAL_BOOST -> {
