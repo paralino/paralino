@@ -17,8 +17,7 @@ struct MapPin: View {
 
 struct MapAnnotatedItem: Identifiable {
     let id: String
-    var name: String
-    var type: MapPinType
+    var data: MapPinData
     var coordinate: CLLocationCoordinate2D
 }
 

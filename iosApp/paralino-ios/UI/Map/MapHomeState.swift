@@ -46,8 +46,7 @@ class MapHomeState : ObservableObject {
                     self?.markers = readyState.markers.map { marker in
                         MapAnnotatedItem(
                             id: marker.markerId,
-                            name: marker.markerId,
-                            type: marker.pinType,
+                            data: marker,
                             coordinate: CLLocationCoordinate2D(
                                 latitude: marker.lat,
                                 longitude: marker.lng

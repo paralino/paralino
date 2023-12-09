@@ -14,21 +14,49 @@ struct MapHomeScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var mapState: MapHomeState
     @State var groupPicker: BottomSheetsScreen.GroupPicker? = nil
-    @State private var region: MKCoordinateRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(
-            latitude: 0,
-            longitude: 0
-        ),
-        span: MKCoordinateSpan(latitudeDelta: 60, longitudeDelta: 60)
+    
+    @State private var selectedMarkerId: String?
+    @State private var region: MapCameraPosition = MapCameraPosition.region(
+        MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: 0,
+                longitude: 0
+            ),
+            span: MKCoordinateSpan(latitudeDelta: 60, longitudeDelta: 60)
+        )
     )
     
     var body: some View {
         ZStack {
             if mapState.uiState is MapHomeScreenState.Ready {
-                Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: mapState.markers) { marker in
-                    MapMarker(coordinate: marker.coordinate, tint: marker.type == MapPinType.member ? Color.themePrimary : Color.redMain)
+                Map(position: $region, selection: $selectedMarkerId) {
+                    ForEach(mapState.markers) { marker in
+                        
+                        MapCircle(center: marker.coordinate, radius: CLLocationDistance(Int32(marker.data.accuracy)))
+                            .foregroundStyle(marker.data.pinType == MapPinType.member ? Color.themePrimary.opacity(0.6) : Color.blue.opacity(0.4))
+                            .mapOverlayLevel(level: marker.data.pinType == MapPinType.member ? .aboveLabels : .aboveRoads)
+                        
+                        Marker(marker.data.title ?? "--", coordinate: marker.coordinate)
+                            .tint(marker.data.pinType == MapPinType.member ? Color.themePrimary : Color.yellow)
+                    }
                 }
-                    .ignoresSafeArea(.all, edges: .vertical)
+                .mapControls {
+                    MapUserLocationButton()
+                    MapCompass()
+                    MapScaleView()
+                }
+                .safeAreaPadding(.top, 100)
+                .onChange(of: selectedMarkerId, initial: true) { old, new in
+                    guard let selection = new else { return }
+                    let marker = mapState.markers.first { $0.id == selection }
+                    guard let marker = marker else { return }
+                    let center = CLLocationCoordinate2D(
+                        latitude: marker.coordinate.latitude,
+                        longitude: marker.coordinate.longitude
+                    )
+                    
+                    region = MapCameraPosition.camera(MapCamera(centerCoordinate: center, distance: 3000))
+                }
             } else if mapState.uiState is MapHomeScreenState.Empty {
                 EmptyView()
             } else {
@@ -46,15 +74,17 @@ struct MapHomeScreen: View {
                 focusOnGroup: {
                     mapState.vm.toggleFocusOnMembers()
                     let firstUserMarker = mapState.markers.first {
-                        $0.type == MapPinType.member
+                        $0.data.pinType == MapPinType.member
                     }
                     if let marker = firstUserMarker {
-                        region = MKCoordinateRegion(
-                            center: CLLocationCoordinate2D(
-                                latitude: marker.coordinate.latitude,
-                                longitude: marker.coordinate.longitude
-                            ),
-                            span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+                        region = MapCameraPosition.region(
+                            MKCoordinateRegion(
+                                center: CLLocationCoordinate2D(
+                                    latitude: marker.coordinate.latitude,
+                                    longitude: marker.coordinate.longitude
+                                ),
+                                span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+                            )
                         )
                     }
                 }
