@@ -8,7 +8,11 @@ fun String.isoToLocalDateTime(): LocalDateTime? {
     return try {
         LocalDateTime.parse(isoString = this)
     } catch (e: Exception) {
-        null
+        try {
+            LocalDate.parse(isoString = this).atTime(0, 0)
+        } catch (e: Exception) {
+            null
+        }
     }
 }
 
