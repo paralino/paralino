@@ -51,8 +51,8 @@ class UserRepository constructor(
         }
     }
         .stateIn(
-            scope = scopeProvider.defaultScope,
-            started = SharingStarted.WhileSubscribed(),
+            scope = scopeProvider.defaultIOScope,
+            started = SharingStarted.Eagerly,
             initialValue = Resource.NotInitialized
         )
 
@@ -66,8 +66,8 @@ class UserRepository constructor(
             emit(Resource.NotInitialized)
         }
         .stateIn(
-            scope = scopeProvider.defaultScope,
-            started = SharingStarted.WhileSubscribed(),
+            scope = scopeProvider.defaultIOScope,
+            started = SharingStarted.Eagerly,
             initialValue = Resource.NotInitialized
         )
 

@@ -29,17 +29,12 @@ class CoreAppManager(
     private var wasInBackground: Boolean = false
 
     fun onAppStart() {
-
         sessionMonitor.listenForSessionExpired()
             .onEach {
                 logg.tag("account_session").v("Got session expired event - logout")
                 scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
                 logoutUseCase.logoutLocally()
             }
-            .launchIn(scopeProvider.defaultScope)
-
-        userRepo.localUser
-            .onEach { }
             .launchIn(scopeProvider.defaultScope)
     }
 

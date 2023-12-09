@@ -20,7 +20,7 @@ class LocationSharingManager(
             .map { it.mapNotNull { it.asValidContract() }.toResource() }
             .stateIn(
                 scopeProvider.defaultIOScope,
-                SharingStarted.Lazily,
+                SharingStarted.Eagerly,
                 Resource.NotInitialized
             )
 
@@ -32,7 +32,7 @@ class LocationSharingManager(
     }
         .stateIn(
             scopeProvider.defaultIOScope,
-            SharingStarted.Lazily,
+            SharingStarted.Eagerly,
             Resource.NotInitialized
         )
 
