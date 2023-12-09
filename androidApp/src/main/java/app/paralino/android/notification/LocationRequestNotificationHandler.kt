@@ -45,7 +45,11 @@ class LocationRequestNotificationHandler(
                     key = "location_request",
                     delayedThresholdMillis = 5.seconds.inWholeMilliseconds
                 )
-                updateStatus(payload)
+                try {
+                    updateStatus(payload)
+                } finally {
+                    stopProcessing(key = "location_request")
+                }
             } catch (e: Exception) {
                 logg.w("Location request already in progress", e)
             }
