@@ -112,9 +112,9 @@ private fun MapMarkerContent(
         if (state.markerStyle == MapMarkerStyle.PIN) {
             Image(
                 modifier = Modifier.fillMaxSize(),
-                painter = painterResource(id = R.drawable.ic_pin_bubble),
+                painter = painterResource(id = MR.images.ic_pin_bubble.drawableResId),
                 contentDescription = null,
-                colorFilter = if (state.active) null else ColorFilter.tint(Color.DarkGray)
+                colorFilter = if (state.active) ColorFilter.tint(AppColors.accentDark) else ColorFilter.tint(Color.DarkGray)
             )
         }
         val maxSize = when (state.markerStyle) {

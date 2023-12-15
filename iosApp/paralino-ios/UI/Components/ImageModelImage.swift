@@ -35,9 +35,9 @@ struct ImageModelImage: View {
                 }
             case .placeholder:
                 GeometryReader { geometry in
-                    let imageSize = min(geometry.size.height, geometry.size.width) * 0.8
+                    let imageSize = min(geometry.size.height, geometry.size.width) * imageScale
                     ZStack(alignment: .center) {
-                        Image(systemName: "cart")
+                        Image(systemName: "lock.trianglebadge.exclamationmark.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: imageSize, height: imageSize, alignment: .center)

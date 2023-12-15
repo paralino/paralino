@@ -29,33 +29,51 @@ struct MapHomeScreen: View {
     var body: some View {
         ZStack {
             if mapState.uiState is MapHomeScreenState.Ready {
-                Map(position: $region, selection: $selectedMarkerId) {
-                    ForEach(mapState.markers) { marker in
+                MapReader { reader in
+                    Map(position: $region, selection: $selectedMarkerId) {
+                        ForEach(mapState.markers) { marker in
+                            
+                            MapCircle(center: marker.coordinate, radius: CLLocationDistance(Int32(marker.data.accuracy)))
+                                .foregroundStyle(marker.data.pinType == MapPinType.member ? Color.themePrimary.opacity(0.6) : Color.blue.opacity(0.4))
+                                .mapOverlayLevel(level: marker.data.pinType == MapPinType.member ? .aboveLabels : .aboveRoads)
+                            
+                            Annotation(
+                                coordinate: marker.coordinate,
+                                anchor: UnitPoint(x: 0.5, y: marker.data.markerStyle == MapMarkerStyle.pin ? 1.0 : 0.5),
+                                content: {
+                                    Button(
+                                        action: { mapState.vm.trackMarker(markerData: FocusedMarkerData(markerId: marker.id, type: marker.data.pinType)) },
+                                        label: { MapMarker(pinData: marker.data) }
+                                    )
+                                },
+                                label: {
+                                    Text(marker.data.title ?? "--")
+                                }
+                            )
+                        }
+                    }
+                    .mapControls {
+//                        MapUserLocationButton()
+                        MapCompass()
+                    }
+                    .mapStyle(.hybrid)
+                    .safeAreaPadding(.top, 80)
+                    .safeAreaPadding(.horizontal)
+                    .onChange(of: selectedMarkerId, initial: true) { old, new in
+                        guard let selection = new else { return }
+                        let marker = mapState.markers.first { $0.id == selection }
+                        guard let marker = marker else { return }
+                        let center = CLLocationCoordinate2D(
+                            latitude: marker.coordinate.latitude,
+                            longitude: marker.coordinate.longitude
+                        )
                         
-                        MapCircle(center: marker.coordinate, radius: CLLocationDistance(Int32(marker.data.accuracy)))
-                            .foregroundStyle(marker.data.pinType == MapPinType.member ? Color.themePrimary.opacity(0.6) : Color.blue.opacity(0.4))
-                            .mapOverlayLevel(level: marker.data.pinType == MapPinType.member ? .aboveLabels : .aboveRoads)
-                        
-                        Marker(marker.data.title ?? "--", coordinate: marker.coordinate)
-                            .tint(marker.data.pinType == MapPinType.member ? Color.themePrimary : Color.yellow)
+                        region = MapCameraPosition.camera(MapCamera(centerCoordinate: center, distance: 3000))
                     }
                 }
-                .mapControls {
-                    MapUserLocationButton()
-                    MapCompass()
-                    MapScaleView()
-                }
-                .safeAreaPadding(.top, 100)
-                .onChange(of: selectedMarkerId, initial: true) { old, new in
-                    guard let selection = new else { return }
-                    let marker = mapState.markers.first { $0.id == selection }
-                    guard let marker = marker else { return }
-                    let center = CLLocationCoordinate2D(
-                        latitude: marker.coordinate.latitude,
-                        longitude: marker.coordinate.longitude
-                    )
-                    
-                    region = MapCameraPosition.camera(MapCamera(centerCoordinate: center, distance: 3000))
+                .onTapGesture {
+                    // TODO fix: not working
+                    mapState.vm.onMapTouch()
                 }
             } else if mapState.uiState is MapHomeScreenState.Empty {
                 EmptyView()
