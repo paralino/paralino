@@ -27,7 +27,6 @@ struct SharingStartScreen: View {
                     groupId: nil,
                     onPickGroup: { sheet in bottomSheet = sheet },
                     onNavigateBack: {
-                        locationManager.startLocationUpdates()
                         path.removeLast()
                     },
                     askNotificationPermission: {
