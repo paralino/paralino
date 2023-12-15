@@ -244,9 +244,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     ossImplementation 'org.osmdroid:osmdroid-android:6.1.10'
 
-    googleImplementation 'com.google.maps.android:maps-compose:4.1.1'
-    googleImplementation 'com.google.maps.android:maps-compose-utils:4.1.1'
-    googleImplementation 'com.google.maps.android:maps-compose-widgets:4.1.1'
+    googleImplementation 'com.google.maps.android:maps-compose:4.3.0'
+    googleImplementation 'com.google.maps.android:maps-compose-utils:4.3.0'
+    googleImplementation 'com.google.maps.android:maps-compose-widgets:4.3.0'
 
     ossImplementation 'com.mapbox.maps:android:10.8.1'
     ossImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
