@@ -93,6 +93,7 @@ android {
         }
         debug {
             debuggable true
+            versionNameSuffix "D"
         }
     }
 
