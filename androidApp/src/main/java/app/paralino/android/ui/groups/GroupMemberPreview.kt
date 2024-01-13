@@ -25,7 +25,7 @@ import app.paralino.core.utils.Emojis
 
 @Preview(device = Devices.PIXEL_3A)
 @Composable
-fun MemberPreview() {
+fun GroupMemberPreview() {
     AppTheme {
         Surface(color = MaterialTheme.colors.background) {
             Column(modifier = Modifier.padding(40.dp)) {

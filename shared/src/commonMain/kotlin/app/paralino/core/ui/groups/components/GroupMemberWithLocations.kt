@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,7 +58,7 @@ fun GroupMemberWithLocations(
     onToggleLocation: ((GroupMemberItemStateWithLocations) -> Unit)? = null
 ) {
 
-    var expanded by remember(state, forceExpandAction) { mutableStateOf(forceExpandAction) }
+    var expanded by rememberSaveable(state.keyId, forceExpandAction) { mutableStateOf(forceExpandAction) }
 
     Column {
         Row(
