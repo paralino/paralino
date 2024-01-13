@@ -22,6 +22,8 @@ class LocationManager: NSObject, ObservableObject {
         manager.delegate = delegate
         manager.allowsBackgroundLocationUpdates = true
         manager.showsBackgroundLocationIndicator = true
+        manager.pausesLocationUpdatesAutomatically = false
+        manager.desiredAccuracy = kCLLocationAccuracyBest
     }
 
     func requestLocationPermission() {
@@ -34,12 +36,12 @@ class LocationManager: NSObject, ObservableObject {
     
     func startLocationUpdates() {
         manager.startUpdatingLocation()
-        manager.startMonitoringSignificantLocationChanges()
+//        manager.startMonitoringSignificantLocationChanges()
     }
     
     func stopLocationUpdates() {
         manager.stopUpdatingLocation()
-        manager.stopMonitoringSignificantLocationChanges()
+//        manager.stopMonitoringSignificantLocationChanges()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
