@@ -19,7 +19,7 @@ class FunctionsApi: IFunctionsApi {
     }
     
     override func runAsync(function: ServerFunction, data: String?) async throws -> String {
-        return await remoteModule.execute { module in
+        return try await remoteModule.execute { module in
             try! await module.functions.createExecution(
                 functionId: function.functionId,
                 body: data,
@@ -32,7 +32,7 @@ class FunctionsApi: IFunctionsApi {
     }
     
     override func runAndWait(function: ServerFunction, data: String?) async throws -> FunctionExecutionRaw {
-        return await remoteModule.execute { module in
+        return try await remoteModule.execute { module in
             let result = try! await module.functions.createExecution(
                 functionId: function.functionId,
                 body: data,

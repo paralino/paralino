@@ -18,7 +18,7 @@ class DocumentsApi: IDocumentsApi {
     }
     
     override func createDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String?, data: Any) async throws -> [String : Any] {
-        return await remoteModule.execute { module in
+        return try await remoteModule.execute { module in
             try! await module.database.createDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
@@ -29,7 +29,7 @@ class DocumentsApi: IDocumentsApi {
     }
     
     override func deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws {
-        await remoteModule.execute { module in
+        try await remoteModule.execute { module in
             try! await module.database.deleteDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
@@ -39,7 +39,7 @@ class DocumentsApi: IDocumentsApi {
     }
     
     override func getDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> [String : Any] {
-        return await remoteModule.execute { module in
+        return try await remoteModule.execute { module in
             try! await module.database.getDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
@@ -55,7 +55,7 @@ class DocumentsApi: IDocumentsApi {
         limit: Int32,
         onNewValues: @escaping ([[String : Any]]) -> KotlinBoolean
     ) async throws {
-        await remoteModule.execute { module in
+        try await remoteModule.execute { module in
             var cursor: String = ""
             repeat {
                 var queries: [String] = []
@@ -84,8 +84,8 @@ class DocumentsApi: IDocumentsApi {
     }
     
     override func updateDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String, data: Any) async throws -> [String : Any] {
-        return await remoteModule.execute { module in
-            try! await module.database.updateDocument(
+        return try await remoteModule.execute { module in
+            try await module.database.updateDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: docId,

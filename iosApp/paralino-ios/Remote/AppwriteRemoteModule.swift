@@ -31,13 +31,13 @@ class AppwriteRemoteModule: IRemoteModule {
     lazy var functions: Functions = { return Functions(client) }()
     lazy var realtime: Realtime = { return Realtime(client) }()
     
-    func execute<T>(action: (AppwriteRemoteModule) async throws -> T) async -> T {
+    func execute<T>(action: (AppwriteRemoteModule) async throws -> T) async throws -> T {
         do {
             return try await action(self)
         } catch let error {
             let mappedError = mapError(error: error, userApi: false)
             sessionMonitor.processNetworkError(error: mappedError)
-            return wrap(error: mappedError) as! T
+            throw error
         }
     }
     
