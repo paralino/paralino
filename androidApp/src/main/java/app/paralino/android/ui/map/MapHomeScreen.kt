@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -56,7 +55,7 @@ import androidx.compose.ui.unit.sp
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.groups.GroupInitScreen
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.places.list.PlaceListItem
+import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.MR
 import app.paralino.core.models.Resource

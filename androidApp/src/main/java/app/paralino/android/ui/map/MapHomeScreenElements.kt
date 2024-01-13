@@ -47,7 +47,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.places.list.PlaceListItem
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.core.MR
@@ -66,6 +65,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.GroupPickerAction
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.safeCast

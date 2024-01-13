@@ -45,7 +45,7 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.android.ui.map.PlaceDetailMapComposable
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.places.list.PlaceListItem
+import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.android.ui.shared.errorString
 import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.MR
