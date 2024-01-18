@@ -39,8 +39,8 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
-                api("app.cash.sqldelight:coroutines-extensions:2.0.0")
-                api("app.cash.sqldelight:primitive-adapters:2.0.0")
+                api("app.cash.sqldelight:coroutines-extensions:2.0.1")
+                api("app.cash.sqldelight:primitive-adapters:2.0.1")
                 implementation("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
                 implementation("com.russhwolf:multiplatform-settings:1.0.0")
                 api("io.insert-koin:koin-core:3.5.0")
@@ -54,7 +54,7 @@ kotlin {
                 api("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
                 implementation("androidx.preference:preference-ktx:1.2.1")
                 implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
-                implementation("app.cash.sqldelight:android-driver:2.0.0")
+                implementation("app.cash.sqldelight:android-driver:2.0.1")
                 api("androidx.activity:activity-compose:1.8.0")
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.12.0")
@@ -64,7 +64,7 @@ kotlin {
         val iosMain by creating {
             dependsOn(commonMain)
             dependencies {
-                implementation("app.cash.sqldelight:native-driver:2.0.0")
+                implementation("app.cash.sqldelight:native-driver:2.0.1")
             }
         }
         val iosX64Main by getting { dependsOn(iosMain) }
