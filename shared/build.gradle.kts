@@ -43,14 +43,14 @@ kotlin {
                 api("app.cash.sqldelight:primitive-adapters:2.0.1")
                 implementation("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
                 implementation("com.russhwolf:multiplatform-settings:1.0.0")
-                api("io.insert-koin:koin-core:3.5.0")
+                api("io.insert-koin:koin-core:3.5.3")
             }
         }
 
         val androidMain by getting {
             dependencies {
                 dependsOn(commonMain)
-                api("io.insert-koin:koin-android:3.5.0")
+                api("io.insert-koin:koin-android:3.5.3")
                 api("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
                 implementation("androidx.preference:preference-ktx:1.2.1")
                 implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")

@@ -234,7 +234,7 @@ dependencies {
     // endregion
 
     // region di
-    def koinVersion = '3.5.0'
+    def koinVersion = '3.5.3'
     implementation "io.insert-koin:koin-android:$koinVersion"
     implementation "io.insert-koin:koin-androidx-compose:$koinVersion"
     // endregion
