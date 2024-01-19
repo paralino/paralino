@@ -9,6 +9,7 @@ import Foundation
 import shared
 import SwiftUI
 import CoreLocation
+import MapKit
 
 class MapHomeState : ObservableObject {
     
@@ -17,7 +18,22 @@ class MapHomeState : ObservableObject {
     @Published var groupState: Bool? = nil
     @Published var path: [NavigationGraph] = []
     @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(currentUserImage: ImageModel.companion.placeholder(), isSatelliteMode: false)
+    
+    var readyState: MapHomeScreenState.Ready? {
+        uiState as? MapHomeScreenState.Ready
+    }
+    
     @Published var markers: [MapAnnotatedItem] = []
+    
+    @Published var region: MapCameraPosition = MapCameraPosition.region(
+        MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: 0,
+                longitude: 0
+            ),
+            span: MKCoordinateSpan(latitudeDelta: 160, longitudeDelta: 160)
+        )
+    )
     
     init() {
         vm = KoinIOS.ViewModels.shared.mapHomeVM
