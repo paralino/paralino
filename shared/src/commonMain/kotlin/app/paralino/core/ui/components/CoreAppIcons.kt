@@ -81,7 +81,7 @@ object CoreAppIcons {
     val SignalCell1 get() = "drawable/ic_signal_cell_1.xml"
 
     val CircleFull get() = MR.images.ic_circle_full
-    val CircleWithOutline get() = MR.images.ic_circle_with_outline
+    val CircleWithOutline get() = "drawable/ic_circle_with_outline.xml"
     val MapModeSatellite get() = "drawable-nodpi/image_map_type_satellite.jpg"
     val MapModeDefaultLight get() = "drawable-nodpi/image_map_type_default_light.png"
     val MapModeDefaultDark get() = "drawable-nodpi/image_map_type_default_dark.png"
