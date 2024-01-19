@@ -27,6 +27,7 @@ sealed class MapHomeScreenState {
         val mapHomeScreenFocusType: MapHomeScreenFocusType,
 
         val sharingStatus: LocationSharingContract?,
+        val sharingEndTime: String?,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
         val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
@@ -54,6 +55,8 @@ sealed class MapHomeScreenState {
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState()
 }
+
+fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeScreenState.Ready?
 
 sealed class MapHomeScreenEvent {
 

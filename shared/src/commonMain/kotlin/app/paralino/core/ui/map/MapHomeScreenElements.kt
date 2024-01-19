@@ -1,4 +1,4 @@
-package app.paralino.android.ui.map
+package app.paralino.core.ui.map
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -32,139 +32,30 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.theme.AppIcons
-import app.paralino.android.utils.extensions.fromUTCtoMapSharingTime
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.MemberAction
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
-import app.paralino.core.presentation.map.MapHomeViewModel
-import app.paralino.core.presentation.map.asFocusedMarker
+import app.paralino.core.presentation.map.asReady
 import app.paralino.core.presentation.places.list.PlaceListItemData
-import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.groups.GroupPickerAction
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.isoToLocalDateTime
-import app.paralino.core.utils.extensions.safeCast
-import kotlinx.coroutines.launch
-import kotlinx.datetime.toJavaLocalDateTime
+import dev.icerock.moko.resources.compose.stringResource
 
-
-@Composable
-fun MapHomeScreenElements(
-    modifier: Modifier = Modifier,
-    appState: MainAppState,
-    uiState: MapHomeScreenState,
-    vm: MapHomeViewModel,
-    sheetPeekHeight: Dp
-) {
-    val data by rememberUpdatedState(uiState)
-
-    MapHomeScreenElements(
-        modifier = modifier.fillMaxSize(),
-        state = data,
-        sheetPeekHeight = sheetPeekHeight,
-        onGroupPickerClick = {
-            appState.uiScope.launch {
-                val groups = vm.getAllGroups()
-                appState.showBottomSheetForResult(
-                    BottomSheetsScreen.GroupPicker(groups)
-                ).safeCast<GroupPickerAction>()?.let {
-                    when (it) {
-                        is GroupPickerAction.GroupPicked -> {
-                            vm.switchGroup(it.group.id)
-                        }
-
-                        is GroupPickerAction.GroupEditPicked -> {
-                            appState.navController.navigate(
-                                AppScreen.MainHome.GroupDetails.route(it.group.id)
-                            )
-                        }
-
-                        GroupPickerAction.NewGroup -> {
-                            appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
-                        }
-
-                        GroupPickerAction.JoinGroup -> {
-                            appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
-                        }
-                    }
-                }
-            }
-        },
-        onGroupDetailsClick = {
-            when (val state = uiState) {
-                is MapHomeScreenState.Ready -> {
-                    appState.navController.navigate(AppScreen.MainHome.GroupDetails.route(state.groupId))
-                }
-
-                is MapHomeScreenState.Empty -> {}
-            }
-        },
-        onSharingStartClick = {
-            when (val state = uiState) {
-                is MapHomeScreenState.Ready -> {
-                    appState.navController.navigate(AppScreen.MainHome.SharingStart.route(state.groupId))
-                }
-
-                is MapHomeScreenState.Empty -> {}
-            }
-        },
-        onSettingsClick = {
-            appState.navController.navigate(AppScreen.Settings.routeSignature)
-        },
-        onMemberActionClick = { action, state ->
-            vm.memberAction(action, state)
-        },
-        onMemberClick = {
-            // TODO refocus right away
-            vm.trackMarker(it.asFocusedMarker())
-        },
-        onToggleLocation = {
-            vm.toggleMarkerVisibility(it)
-        },
-        onPlaceClick = { state ->
-            appState.navController.navigate(
-                AppScreen.MainHome.PlaceDetail.route(
-                    groupId = state.groupId,
-                    placeId = state.id
-                )
-            )
-        },
-        onMapModeSwitch = {
-            vm.switchMapMode()
-        },
-        onFocusOnPlacesClick = {
-            vm.toggleFocusOnPlaces()
-        },
-        onFocusOnMembersClick = {
-            vm.toggleFocusOnMembers()
-        },
-        onCloseFocusedItem = {
-            vm.hideFocusedItem()
-        }
-    )
-}
 
 @Composable
 fun MapHomeScreenElements(
@@ -177,10 +68,10 @@ fun MapHomeScreenElements(
     onFocusOnPlacesClick: () -> Unit,
     onSharingStartClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    onMemberActionClick: (MemberAction, GroupMemberItemState) -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
-    onToggleLocation: (GroupMemberItemStateWithLocations) -> Unit,
     onPlaceClick: (PlaceListItemData) -> Unit,
+    onMemberActionClick: (MemberAction, GroupMemberItemState) -> Unit,
+    onToggleLocation: (GroupMemberItemStateWithLocations) -> Unit,
     onMapModeSwitch: () -> Unit,
     onCloseFocusedItem: () -> Unit,
 ) {
@@ -195,7 +86,7 @@ fun MapHomeScreenElements(
             )
     ) {
 
-        val readyState = state as? MapHomeScreenState.Ready
+        val readyState = rememberUpdatedState(state.asReady()).value
 
         val areMembersFocused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true
         val arePlacesFocused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true
@@ -211,7 +102,6 @@ fun MapHomeScreenElements(
             // group picker button
             AnimatedVisibility(
                 modifier = Modifier
-                    .weight(1f)
                     .padding(horizontal = 8.dp),
                 visible = state is MapHomeScreenState.Ready,
                 enter = fadeIn() + slideInVertically(),
@@ -220,18 +110,13 @@ fun MapHomeScreenElements(
                 if (readyState != null) {
                     MapGroupPicker(
                         modifier = Modifier,
-                        groupName = readyState.groupName,
                         groupImage = readyState.groupImage,
-                        userCount = readyState.userCount,
-                        inactiveUserCount = readyState.inactiveUserCount,
-                        activeUserCount = readyState.activeUserCount,
-                        idleUserCount = readyState.idleUserCount,
-                        verified = readyState.allMembersVerified,
-                        onGroupClick = onGroupDetailsClick,
                         onExpandClick = onGroupPickerClick
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.weight(1f))
 
             FloatingActionButton(
                 modifier = Modifier
@@ -304,17 +189,14 @@ fun MapHomeScreenElements(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = AppIcons.Timer,
+                        painter = CoreAppIcons.Timer.asPainterResource(),
                         contentDescription = null,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.size(4.dp))
                     Text(
-                        text = readyState?.sharingStatus?.endTimeUTC
-                            ?.isoToLocalDateTime()
-                            ?.toJavaLocalDateTime()
-                            ?.fromUTCtoMapSharingTime(LocalContext.current)
-                            ?: stringResource(id = MR.strings.groups_sharing_duration_type_infinite.resourceId),
+                        text = readyState?.sharingEndTime
+                            ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
                         style = MaterialTheme.typography.caption.copy(fontSize = 10.sp)
                     )
                 }
@@ -345,7 +227,7 @@ fun MapHomeScreenElements(
                             backgroundColor = if (areMembersFocused) AppColors.accent else MaterialTheme.colors.surface
                         ) {
                             Icon(
-                                painter = AppIcons.Groups,
+                                painter = CoreAppIcons.Groups.asPainterResource(),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp),
                                 tint = if (areMembersFocused) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
@@ -387,10 +269,13 @@ fun MapHomeScreenElements(
                     ExtendedFloatingActionButton(
                         modifier = Modifier.padding(bottom = 8.dp),
                         text = {
-                            Text(text = stringResource(id = MR.strings.groups_sharing_button_start.resourceId))
+                            Text(text = stringResource(MR.strings.groups_sharing_button_start))
                         },
                         icon = {
-                            Icon(painter = AppIcons.ShareLocation, contentDescription = null)
+                            Icon(
+                                painter = CoreAppIcons.ShareLocation.asPainterResource(),
+                                contentDescription = null
+                            )
                         },
                         backgroundColor = MaterialTheme.colors.primary,
                         elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),

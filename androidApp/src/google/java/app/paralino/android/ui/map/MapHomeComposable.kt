@@ -25,6 +25,7 @@ import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.map.asFocusedMarker
+import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.theme.AppColors
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
@@ -47,10 +48,10 @@ fun MainHomeMapComposable(
 ) {
     MainHomeMapComposable(
         satelliteMode = uiState.isSatelliteMode,
-        state = (uiState as? MapHomeScreenState.Ready),
+        state = uiState.asReady(),
         mapContentPadding = mapContentPadding,
         onMapLongPress = { lat, lng ->
-            val groupId = (uiState as? MapHomeScreenState.Ready)?.groupId
+            val groupId = uiState.asReady()?.groupId
             if (groupId != null) {
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceCreate.route(

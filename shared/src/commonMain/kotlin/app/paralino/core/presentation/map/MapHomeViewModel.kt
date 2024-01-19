@@ -56,7 +56,7 @@ class MapHomeViewModel constructor(
     private val locationRefreshUseCase: LocationRefreshUseCase,
     private val userRepository: UserRepository,
     private val config: AppConfig,
-    private val valueFormatter: IValueFormatter
+    val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(MapHomeScreenState.Empty())
@@ -141,7 +141,7 @@ class MapHomeViewModel constructor(
                                 )
                                 member.locations.map { location ->
 
-                                    val previousState = (_uiState.value as? MapHomeScreenState.Ready)?.members?.firstOrNull {
+                                    val previousState = _uiState.value.asReady()?.members?.firstOrNull {
                                         it.memberState.memberId == memberState.memberId && it.location?.locationId == location.id
                                     }
 
@@ -187,8 +187,7 @@ class MapHomeViewModel constructor(
                             }
                         }
 
-                        val oldState =
-                            (_uiState.value as? MapHomeScreenState.Ready)?.takeIf { it.groupId == group.id }
+                        val oldState = _uiState.value.asReady()?.takeIf { it.groupId == group.id }
                         val focusedMarker = oldState?.markers?.firstOrNull { it.focused }
 
                         val memberMarkers = group.members
@@ -271,6 +270,12 @@ class MapHomeViewModel constructor(
                             trackingMarker = trackingMarker,
                             mapHomeScreenFocusType = focusType,
                             sharingStatus = sharingStatus,
+                            sharingEndTime = sharingStatus?.endTimeUTC?.let {
+                                valueFormatter.fromUTCtoMapSharingTime(
+                                    timeUTC = it,
+                                    splitTimeToOneLine = true
+                                )
+                            },
                             isSatelliteMode = _uiState.value.isSatelliteMode
                         )
                     }
@@ -329,10 +334,10 @@ class MapHomeViewModel constructor(
 
     fun trackMarker(markerData: FocusedMarkerData) {
 
-        val marker = (_uiState.value as? MapHomeScreenState.Ready)
+        val marker = _uiState.value.asReady()
             ?.markers?.firstOrNull { it.markerId == markerData.markerId }
 
-        val isRequestForSameVisibleMarker = (_uiState.value as? MapHomeScreenState.Ready)
+        val isRequestForSameVisibleMarker = _uiState.value.asReady()
             ?.trackingMarker?.markerId == markerData.markerId
 
         if (marker != null) {
