@@ -1,13 +1,8 @@
 package app.paralino.core.ui.map
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -64,8 +59,6 @@ fun MapHomeScreenElements(
     sheetPeekHeight: Dp,
     onGroupPickerClick: () -> Unit,
     onGroupDetailsClick: () -> Unit,
-    onFocusOnMembersClick: () -> Unit,
-    onFocusOnPlacesClick: () -> Unit,
     onSharingStartClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
@@ -78,18 +71,11 @@ fun MapHomeScreenElements(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessMedium
-                )
-            )
+            .padding(bottom = sheetPeekHeight)
     ) {
 
         val readyState = rememberUpdatedState(state.asReady()).value
 
-        val areMembersFocused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true
-        val arePlacesFocused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true
         val isMemberOrPlaceFocused =
             readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true
 
@@ -151,7 +137,7 @@ fun MapHomeScreenElements(
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.End)
-                .padding(top = 20.dp, end = 12.dp)
+                .padding(top = 20.dp, end = 8.dp)
                 .size(40.dp)
                 .background(
                     color = AppColors.accentDark,
@@ -166,13 +152,14 @@ fun MapHomeScreenElements(
         Spacer(modifier = Modifier.weight(1f))
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             // sharing time info
             AnimatedVisibility(
                 visible = readyState?.sharingStatus != null && !isMemberOrPlaceFocused,
                 modifier = Modifier
-                    .padding(start = 6.dp, bottom = sheetPeekHeight + 32.dp),
+                    .padding(start = 6.dp, bottom = 32.dp),
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
@@ -204,84 +191,23 @@ fun MapHomeScreenElements(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Column(
-                modifier = Modifier.padding(bottom = sheetPeekHeight)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(bottom = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // member focus button
-                    AnimatedVisibility(
-                        modifier = Modifier
-                            .padding(end = 12.dp),
-                        visible = readyState != null && !isMemberOrPlaceFocused,
-                        enter = scaleIn(),
-                        exit = scaleOut() + fadeOut()
-                    ) {
-                        FloatingActionButton(
-                            modifier = Modifier.size(44.dp),
-                            onClick = onFocusOnMembersClick,
-                            backgroundColor = if (areMembersFocused) AppColors.accent else MaterialTheme.colors.surface
-                        ) {
-                            Icon(
-                                painter = CoreAppIcons.Groups.asPainterResource(),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = if (areMembersFocused) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
-                            )
-                        }
-                    }
-
-                    // places focus button
-                    AnimatedVisibility(
-                        modifier = Modifier
-                            .padding(end = 8.dp),
-                        visible = readyState != null && !isMemberOrPlaceFocused,
-                        enter = scaleIn(),
-                        exit = scaleOut() + fadeOut()
-                    ) {
-                        FloatingActionButton(
-                            modifier = Modifier.size(44.dp),
-                            onClick = onFocusOnPlacesClick,
-                            backgroundColor = if (arePlacesFocused) AppColors.accent else MaterialTheme.colors.surface
-                        ) {
-                            Icon(
-                                painter = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = if (arePlacesFocused) AppColors.darkThemePrimary else MaterialTheme.colors.secondary
-                            )
-                        }
-                    }
-                }
-
-                // sharing start
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .padding(end = 8.dp, bottom = 6.dp),
-                    visible = readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused,
-                    enter = fadeIn(),
-                    exit = scaleOut() + fadeOut()
-                ) {
-                    ExtendedFloatingActionButton(
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        text = {
-                            Text(text = stringResource(MR.strings.groups_sharing_button_start))
-                        },
-                        icon = {
-                            Icon(
-                                painter = CoreAppIcons.ShareLocation.asPainterResource(),
-                                contentDescription = null
-                            )
-                        },
-                        backgroundColor = MaterialTheme.colors.primary,
-                        elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
-                        onClick = onSharingStartClick
-                    )
-                }
+            // sharing start
+            if (readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
+                    text = {
+                        Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                    },
+                    icon = {
+                        Icon(
+                            painter = CoreAppIcons.ShareLocation.asPainterResource(),
+                            contentDescription = null
+                        )
+                    },
+                    backgroundColor = MaterialTheme.colors.primary,
+                    elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
+                    onClick = onSharingStartClick
+                )
             }
         }
 
@@ -289,13 +215,15 @@ fun MapHomeScreenElements(
         AnimatedVisibility(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 32.dp, start = 8.dp, end = 8.dp),
+                .padding(start = 8.dp, end = 8.dp),
             visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.PLACE,
             enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
             readyState?.focusedPlace?.let { placeState ->
-                Box {
+                Box(
+                    modifier = Modifier.padding(bottom = 32.dp)
+                ) {
                     PlaceListItem(
                         modifier = Modifier.padding(top = 20.dp),
                         state = placeState,
@@ -315,13 +243,15 @@ fun MapHomeScreenElements(
         AnimatedVisibility(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 32.dp, start = 8.dp, end = 8.dp),
+                .padding(start = 8.dp, end = 8.dp),
             visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.MEMBER,
             enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
             readyState?.focusedMember?.let { memberState ->
-                Box {
+                Box(
+                    modifier = Modifier.padding(bottom = 32.dp)
+                ) {
                     GroupMember(
                         modifier = Modifier.padding(top = 20.dp),
                         state = memberState,

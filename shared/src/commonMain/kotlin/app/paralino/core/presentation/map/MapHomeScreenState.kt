@@ -25,6 +25,7 @@ sealed class MapHomeScreenState {
         val markers: List<MapPinData>,
         val trackingMarker: FocusedMarkerData?,
         val mapHomeScreenFocusType: MapHomeScreenFocusType,
+        val mapSheetSelectedContentType: MapSheetSelectedContentType,
 
         val sharingStatus: LocationSharingContract?,
         val sharingEndTime: String?,
@@ -60,6 +61,10 @@ fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeSc
 
 sealed class MapHomeScreenEvent {
 
+}
+
+enum class MapSheetSelectedContentType {
+    PLACES, MEMBERS
 }
 
 sealed interface MapHomeScreenFocusType {

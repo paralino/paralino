@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,13 +52,14 @@ fun MapGroupNameAndMemberInfo(
     Row(
         modifier = modifier
             .background(
-                color = MaterialTheme.colors.surface.copy(alpha = interactionVisibilityFraction),
+                color = Color.Transparent,
                 shape = RoundedCornerShape(percent = 100)
             )
             .clip(RoundedCornerShape(percent = 100))
             .clickable(
+                enabled = interactionVisibilityFraction == 0f,
                 interactionSource = remember { MutableInteractionSource() },
-                indication = if (interactionVisibilityFraction == 1f) LocalIndication.current else null
+                indication = null
             ) { onGroupClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -109,18 +111,20 @@ fun MapGroupNameAndMemberInfo(
                         modifier = Modifier
                             .padding(start = 4.dp)
                             .background(
-                                color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                                color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
                                 shape = MaterialTheme.shapes.medium
                             )
                             .padding(start = 4.dp, end = 6.dp)
                             .padding(vertical = 1.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
-                            modifier = Modifier.size(14.dp),
-                            tint = AppColors.accent,
-                            contentDescription = null
+                        Box(
+                            modifier = Modifier
+                                .size(14.dp)
+                                .background(
+                                    color = AppColors.accent,
+                                    shape = CircleShape
+                                )
                         )
                         Spacer(Modifier.size(2.dp))
                         Text(
@@ -134,11 +138,13 @@ fun MapGroupNameAndMemberInfo(
 
                         if (idleUserCount > 0) {
                             Spacer(Modifier.size(8.dp))
-                            Icon(
-                                painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
-                                modifier = Modifier.size(14.dp),
-                                tint = AppColors.highlightGold,
-                                contentDescription = null
+                            Box(
+                                modifier = Modifier
+                                    .size(14.dp)
+                                    .background(
+                                        color = AppColors.highlightGold,
+                                        shape = CircleShape
+                                    )
                             )
                             Spacer(Modifier.size(2.dp))
                             Text(
@@ -153,11 +159,13 @@ fun MapGroupNameAndMemberInfo(
 
                         if (inactiveUserCount > 0) {
                             Spacer(Modifier.size(8.dp))
-                            Icon(
-                                painter = CoreAppIcons.CircleWithOutline.asPainterResource(),
-                                modifier = Modifier.size(14.dp),
-                                tint = AppColors.redMain,
-                                contentDescription = null
+                            Box(
+                                modifier = Modifier
+                                    .size(14.dp)
+                                    .background(
+                                        color = AppColors.redMain,
+                                        shape = CircleShape
+                                    )
                             )
                             Spacer(Modifier.size(2.dp))
                             Text(
@@ -181,11 +189,16 @@ fun MapGroupNameAndMemberInfo(
                 .alpha(interactionVisibilityFraction)
                 .size(56.dp)
                 .padding(4.dp)
+                .clip(RoundedCornerShape(percent = 100))
                 .border(
                     0.5.dp,
                     MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                     RoundedCornerShape(percent = 100)
                 )
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = if (interactionVisibilityFraction == 1f) LocalIndication.current else null
+                ) { onGroupClick() }
                 .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {

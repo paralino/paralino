@@ -23,6 +23,7 @@ import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.presentation.places.list.PlaceListItemData
@@ -228,6 +229,12 @@ object HomeScreens {
                     onOpenPlacesScreen = onOpenPlacesScreen,
                     onOpenCreatePlaceScreen = onOpenCreatePlaceScreen,
                     onOpenGroupScreen = onGroupDetailsClick,
+                    onFocusOnPlacesClick = {
+                        vm.setSelectedContentType(MapSheetSelectedContentType.PLACES)
+                    },
+                    onFocusOnMembersClick = {
+                        vm.setSelectedContentType(MapSheetSelectedContentType.MEMBERS)
+                    },
                     screenContent = {
                         UIKitView(
                             factory = mapUIView,
@@ -255,12 +262,6 @@ object HomeScreens {
                             },
                             onMapModeSwitch = {
                                 vm.switchMapMode()
-                            },
-                            onFocusOnPlacesClick = {
-                                vm.toggleFocusOnPlaces()
-                            },
-                            onFocusOnMembersClick = {
-                                vm.toggleFocusOnMembers()
                             },
                             onCloseFocusedItem = {
                                 vm.hideFocusedItem()

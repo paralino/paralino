@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtMost
+import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.groups.GroupInitScreen
@@ -22,6 +23,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.Resource
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.components.BottomSheetsScreen
@@ -139,6 +141,12 @@ private fun MapHomeContent(
                 vm = vm,
                 bottomOffset = bottomOffset
             )
+        },
+        onFocusOnMembersClick = {
+            vm.setSelectedContentType(MapSheetSelectedContentType.MEMBERS)
+        },
+        onFocusOnPlacesClick = {
+            vm.setSelectedContentType(MapSheetSelectedContentType.PLACES)
         }
     )
 }
@@ -161,14 +169,14 @@ private fun MapContent(
                 bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
                     0.dp
                 } else {
-                    (this.maxHeight - bottomOffset).coerceAtMost(this.maxHeight * 0.4f)
+                    (this.maxHeight - bottomOffset).coerceIn(0.dp, this.maxHeight * 0.4f)
                 }
             )
         )
 
         MapHomeScreenElements(
             state = uiState,
-            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceAtMost(this.maxHeight * 0.4f),
+            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(0.dp, this.maxHeight * 0.4f),
             onGroupPickerClick = {
                 appState.uiScope.launch {
                     val groups = vm.getAllGroups()
@@ -246,12 +254,6 @@ private fun MapContent(
             },
             onMapModeSwitch = {
                 vm.switchMapMode()
-            },
-            onFocusOnPlacesClick = {
-                vm.toggleFocusOnPlaces()
-            },
-            onFocusOnMembersClick = {
-                vm.toggleFocusOnMembers()
             },
             onCloseFocusedItem = {
                 vm.hideFocusedItem()

@@ -1,16 +1,11 @@
 package app.paralino.core.ui.map
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SwipeableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.FocusedMarkerData
-import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.ui.CoreUiState
@@ -36,6 +31,8 @@ fun MainMapSheet(
     onOpenGroupScreen: () -> Unit,
     onOpenPlacesScreen: () -> Unit,
     onOpenCreatePlaceScreen: () -> Unit,
+    onFocusOnMembersClick: () -> Unit,
+    onFocusOnPlacesClick: () -> Unit,
     screenContent: @Composable () -> Unit,
 ) {
     SwipeableBottomSheet(
@@ -50,13 +47,15 @@ fun MainMapSheet(
                 readyState = readyState,
                 onOpenPlacesScreen = onOpenPlacesScreen,
                 onOpenCreatePlaceScreen = onOpenCreatePlaceScreen,
-                onOpenGroupScreen = onOpenGroupScreen
+                onOpenGroupScreen = onOpenGroupScreen,
+                onFocusOnMembersClick = onFocusOnMembersClick,
+                onFocusOnPlacesClick = onFocusOnPlacesClick
             )
         }
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MainMapSheetActiveBody(
     appState: CoreUiState,
@@ -66,9 +65,9 @@ private fun MainMapSheetActiveBody(
     onOpenGroupScreen: () -> Unit,
     onOpenPlacesScreen: () -> Unit,
     onOpenCreatePlaceScreen: () -> Unit,
+    onFocusOnMembersClick: () -> Unit,
+    onFocusOnPlacesClick: () -> Unit,
 ) {
-    val pagerState = rememberPagerState { 2 }
-
     LaunchedEffect(readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused) {
         snapshotFlow { readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused }
             .distinctUntilChanged()
@@ -87,28 +86,7 @@ private fun MainMapSheetActiveBody(
             .collect()
     }
 
-    LaunchedEffect(readyState?.mapHomeScreenFocusType) {
-        snapshotFlow { readyState?.mapHomeScreenFocusType }
-            .distinctUntilChanged()
-            .onEach {
-                when (it) {
-                    MapHomeScreenFocusType.ALL_MEMBERS -> {
-                        pagerState.scrollToPage(0)
-                    }
-
-                    MapHomeScreenFocusType.ALL_PLACES -> {
-                        pagerState.scrollToPage(1)
-                    }
-
-                    else -> {}
-                }
-            }
-            .collect()
-    }
-
     MapHomeSheetContent(
-        appState = appState,
-        pagerState = pagerState,
         swipeableState = swipeableState,
         readyState = readyState,
         members = readyState?.members ?: emptyList(),
@@ -128,9 +106,7 @@ private fun MainMapSheetActiveBody(
         },
         onWholeContentClick = {
             appState.uiScope.launch {
-                if (swipeableState.currentValue == BottomSheetPosition.HALF_EXPANDED) {
-                    swipeableState.animateTo(BottomSheetPosition.COLLAPSED)
-                } else {
+                if (swipeableState.isCollapsed() || swipeableState.isFullyExpanded()) {
                     swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
                 }
             }
@@ -144,6 +120,8 @@ private fun MainMapSheetActiveBody(
             appState.uiScope.launch {
                 swipeableState.animateTo(BottomSheetPosition.COLLAPSED)
             }
-        }
+        },
+        onFocusOnMembersClick = onFocusOnMembersClick,
+        onFocusOnPlacesClick = onFocusOnPlacesClick,
     )
 }

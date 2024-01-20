@@ -255,6 +255,9 @@ class MapHomeViewModel constructor(
                             ?: MapHomeScreenFocusType.ALL_PLACES.takeIf { placeMarkers.any { !it.hidden } }
                             ?: MapHomeScreenFocusType.NONE
 
+                        val mapSheetSelectedContentType = oldState?.mapSheetSelectedContentType
+                            ?: MapSheetSelectedContentType.MEMBERS
+
                         MapHomeScreenState.Ready(
                             groupId = group.id,
                             groupName = group.name,
@@ -269,6 +272,7 @@ class MapHomeViewModel constructor(
                             markers = placeMarkers + memberMarkers,
                             trackingMarker = trackingMarker,
                             mapHomeScreenFocusType = focusType,
+                            mapSheetSelectedContentType = mapSheetSelectedContentType,
                             sharingStatus = sharingStatus,
                             sharingEndTime = sharingStatus?.endTimeUTC?.let {
                                 valueFormatter.fromUTCtoMapSharingTime(
@@ -406,6 +410,18 @@ class MapHomeViewModel constructor(
             trackingMarker = null,
             markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
             mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_PLACES)
+        )
+    }
+
+    fun setSelectedContentType(selectedContentType: MapSheetSelectedContentType) = updateReadyState {
+        it.copy(
+            trackingMarker = null,
+            markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
+            mapHomeScreenFocusType = when (selectedContentType) {
+                MapSheetSelectedContentType.PLACES -> MapHomeScreenFocusType.ALL_PLACES
+                MapSheetSelectedContentType.MEMBERS -> MapHomeScreenFocusType.ALL_MEMBERS
+            },
+            mapSheetSelectedContentType = selectedContentType
         )
     }
 
