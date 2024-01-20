@@ -49,7 +49,9 @@ struct MapComponent: View {
 //                        MapUserLocationButton()
                 MapCompass()
             }
-            .mapStyle(.standard(showsTraffic: true))
+            .mapStyle(
+                mapState.uiState.isSatelliteMode ? .hybrid(showsTraffic: true) : .standard(showsTraffic: true)
+            )
             .safeAreaPadding(.top, 80)
             .safeAreaPadding(.horizontal)
             .onChange(of: selectedMarkerId, initial: true) { old, new in
