@@ -113,10 +113,10 @@ fun SwipeableBottomSheet(
         ) {
             Column(
                 Modifier
-                    .fillMaxHeight(0.75f)
+                    .fillMaxHeight(0.9f)
                     .background(
                         color = MaterialTheme.colors.background,
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                     )
             ) {
                 body()
@@ -126,7 +126,7 @@ fun SwipeableBottomSheet(
 }
 
 enum class BottomSheetPosition constructor(val screenHeightPercent: Float) {
-    EXPANDED(screenHeightPercent = 0.7f),
+    EXPANDED(screenHeightPercent = 0.85f),
     HALF_EXPANDED(screenHeightPercent = 0.4f),
     COLLAPSED(screenHeightPercent = 0.12f),
     HIDDEN(screenHeightPercent = 0f);
