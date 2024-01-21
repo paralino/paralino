@@ -63,6 +63,7 @@ object CoreAppIcons {
     val BatteryChargingFull get() = "drawable/ic_battery_charging_full.xml"
     val MapsHomeWork get() = "drawable/ic_home_work.xml"
     val Map get() = "drawable/ic_map.xml"
+    val Home get() = "drawable/ic_home.xml"
     val ShareLocation get() = "drawable/ic_share_location.xml"
     val StopCircle get() = "drawable/ic_stop_circle.xml"
     val MoreVert get() = "drawable/ic_more_vert.xml"

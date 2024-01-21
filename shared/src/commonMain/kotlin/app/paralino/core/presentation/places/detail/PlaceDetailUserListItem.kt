@@ -1,9 +1,15 @@
-package app.paralino.android.ui.places.detail
+package app.paralino.core.presentation.places.detail
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
@@ -14,23 +20,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.FilledButton
-import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.theme.AppTheme
-import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.places.detail.PlaceSettingsState
-import app.paralino.core.utils.Emojis
-import app.paralino.android.R
-import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.MR
+import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.theme.ButtonStyle
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun PlaceDetailUserListItem(
@@ -76,7 +75,7 @@ fun PlaceDetailUserListItem(
         ) {
             PlaceSettingNotifyButton(
                 state = state.notifyEnter,
-                text = stringResource(id = MR.strings.place_detail_setting_button_notify_enter.resourceId),
+                text = stringResource(MR.strings.place_detail_setting_button_notify_enter),
                 loading = state.loadingEnter,
             ) {
                 onEnterChange(state.memberUserId)
@@ -86,7 +85,7 @@ fun PlaceDetailUserListItem(
 
             PlaceSettingNotifyButton(
                 state = state.notifyExit,
-                text = stringResource(id = MR.strings.place_detail_setting_button_notify_exit.resourceId),
+                text = stringResource(MR.strings.place_detail_setting_button_notify_exit),
                 loading = state.loadingExit,
             ) {
                 onExitChange(state.memberUserId)
@@ -117,7 +116,7 @@ fun PlaceSettingNotifyButton(
         icon = if (state)
             CoreAppIcons.NotificationsActive.asPainterResource()
         else
-            AppIcons.NotificationsOff,
+            CoreAppIcons.NotificationsOff.asPainterResource(),
         elevation = ButtonDefaults.elevation(defaultElevation = if (state) 2.dp else 0.dp),
         state = AppButtonState.loadingState(loading),
         colors = colors,
@@ -130,45 +129,5 @@ fun PlaceSettingNotifyButton(
             text = text,
             style = MaterialTheme.typography.subtitle2.copy(fontSize = 12.sp)
         )
-    }
-}
-
-@Preview("place_item")
-@Composable
-fun PlaceListItemPreview() {
-    AppTheme {
-        Column {
-            val item = PlaceSettingsState(
-                groupId = "",
-                placeId = "",
-                memberUserId = "",
-                name = "Some user",
-                image = ImageModel.emoji(Emojis.lightBulb),
-                notifyEnter = false,
-                notifyExit = false,
-                loadingEnter = false,
-                loadingExit = false
-            )
-            PlaceDetailUserListItem(
-                state = item,
-                onEnterChange = {},
-                onExitChange = {}
-            )
-            PlaceDetailUserListItem(
-                state = item.copy(notifyEnter = true, notifyExit = true),
-                onEnterChange = {},
-                onExitChange = {}
-            )
-            PlaceDetailUserListItem(
-                state = item.copy(notifyEnter = true, loadingEnter = true),
-                onEnterChange = {},
-                onExitChange = {}
-            )
-            PlaceDetailUserListItem(
-                state = item.copy(loadingExit = true),
-                onEnterChange = {},
-                onExitChange = {}
-            )
-        }
     }
 }

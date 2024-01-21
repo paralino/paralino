@@ -264,6 +264,7 @@
     <string name="place_list_delete_place_alert_title">Jeste li sigurni da želite izbrisati ovo mjesto?</string>
     <string name="place_detail_setting_button_notify_enter">Dolazak</string>
     <string name="place_detail_setting_button_notify_exit">Odlazak</string>
+    <string name="place_detail_notification_settings_title">Postavke obavijesti</string>
 
     <string name="place_notification_enter">%s je stigao/la u %s</string>
     <string name="place_notification_exit">%s je napustio/la %s</string>
