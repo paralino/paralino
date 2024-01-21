@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -118,63 +119,24 @@ fun MapGroupNameAndMemberInfo(
                             .padding(vertical = 1.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(14.dp)
-                                .background(
-                                    color = AppColors.accent,
-                                    shape = CircleShape
-                                )
-                        )
-                        Spacer(Modifier.size(2.dp))
-                        Text(
-                            text = "$activeUserCount",
-                            style = MaterialTheme.typography.caption.copy(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier
+                        MapUserCountElement(
+                            count = activeUserCount,
+                            color = AppColors.accent
                         )
 
                         if (idleUserCount > 0) {
                             Spacer(Modifier.size(8.dp))
-                            Box(
-                                modifier = Modifier
-                                    .size(14.dp)
-                                    .background(
-                                        color = AppColors.highlightGold,
-                                        shape = CircleShape
-                                    )
-                            )
-                            Spacer(Modifier.size(2.dp))
-                            Text(
-                                text = "$idleUserCount",
-                                style = MaterialTheme.typography.caption.copy(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                modifier = Modifier
+                            MapUserCountElement(
+                                count = idleUserCount,
+                                color = AppColors.highlightGold
                             )
                         }
 
                         if (inactiveUserCount > 0) {
                             Spacer(Modifier.size(8.dp))
-                            Box(
-                                modifier = Modifier
-                                    .size(14.dp)
-                                    .background(
-                                        color = AppColors.redMain,
-                                        shape = CircleShape
-                                    )
-                            )
-                            Spacer(Modifier.size(2.dp))
-                            Text(
-                                text = "$inactiveUserCount",
-                                style = MaterialTheme.typography.caption.copy(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                modifier = Modifier
+                            MapUserCountElement(
+                                count = inactiveUserCount,
+                                color = AppColors.redMain
                             )
                         }
                     }
@@ -218,4 +180,28 @@ fun MapGroupNameAndMemberInfo(
             }
         }
     }
+}
+
+@Composable
+private fun RowScope.MapUserCountElement(
+    count: Int,
+    color: Color
+) {
+    Box(
+        modifier = Modifier
+            .size(12.dp)
+            .background(
+                color = color,
+                shape = CircleShape
+            )
+    )
+    Spacer(Modifier.size(3.dp))
+    Text(
+        text = "$count",
+        style = MaterialTheme.typography.caption.copy(
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold
+        ),
+        modifier = Modifier
+    )
 }
