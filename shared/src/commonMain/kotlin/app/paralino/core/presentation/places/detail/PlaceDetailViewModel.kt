@@ -19,8 +19,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class PlaceDetailViewModel(
-    groupId: String,
-    placeId: String,
+    val groupId: String,
+    val placeId: String,
     private val placesRepo: PlacesRepository,
     private val groupRepo: GroupRepository,
 ) : CoreViewModel() {

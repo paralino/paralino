@@ -61,7 +61,7 @@ fun PlacesScreenCore(
     userScrollEnabled: Boolean,
     askNotificationPermission: () -> Unit,
     addNewPlace: () -> Unit,
-    openPlaceDetails: (placeId: String) -> Unit,
+    openPlaceDetails: (place: PlaceListItemData) -> Unit,
     onNavigateBack: () -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
@@ -127,7 +127,7 @@ fun PlacesScreenCore(
                     onNavigateBack()
                 },
                 onPlaceClick = {
-                    openPlaceDetails(it.id)
+                    openPlaceDetails(it)
                 },
                 onCreatePlace = {
                     vm.tryCreatePlace()

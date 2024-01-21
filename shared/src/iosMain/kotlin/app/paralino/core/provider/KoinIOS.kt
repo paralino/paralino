@@ -161,6 +161,8 @@ object KoinIOS {
         fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
         fun memberInviteVM(groupId: String?, code: String?) = get<MemberInviteViewModel> { parametersOf(groupId, code) }
         fun sharingStartVM(groupId: String?) = get<SharingStartViewModel> { parametersOf(groupId) }
+        fun placesVM(groupId: String) = get<PlacesViewModel> { parametersOf(groupId) }
+        fun placeDetailVM(groupId: String, placeId: String) = get<PlaceDetailViewModel> { parametersOf(groupId, placeId) }
     }
 
 }

@@ -34,7 +34,7 @@ struct GroupDetailScreen: View {
                         path.append(.home(.map))
                     },
                     openPlaces: {
-                        
+                        path.append(.home(.places(groupId: appState.vm.groupId)))
                     },
                     openGroupRawData: {
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupPresentation(groupId: appState.vm.groupId))))

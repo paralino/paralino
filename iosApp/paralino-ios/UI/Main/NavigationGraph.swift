@@ -26,6 +26,8 @@ enum HomeGraph: Hashable {
     case groupDetail(groupId: String)
     case sharingStart(groupId: String?)
     case memberInvite(groupId: String?, code: String?)
+    case places(groupId: String)
+    case placeDetail(groupId: String, placeId: String)
 }
 
 enum SettingsGraph: Hashable {

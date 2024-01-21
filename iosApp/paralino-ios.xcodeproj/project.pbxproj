@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */; };
+		2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */; };
 		2522C6872B322923007C4913 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2522C6862B322923007C4913 /* MapComponent.swift */; };
 		2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */; };
 		2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAAB2B113C4D00D88042 /* LocationManager.swift */; };
@@ -76,6 +78,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacesScreen.swift; sourceTree = "<group>"; };
+		2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailScreen.swift; sourceTree = "<group>"; };
 		2522C6862B322923007C4913 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
 		2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingStartScreen.swift; sourceTree = "<group>"; };
 		2529CAAA2B10CF1500D88042 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -377,6 +381,8 @@
 				25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */,
 				25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */,
 				2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */,
+				2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */,
+				2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */,
 			);
 			path = Groups;
 			sourceTree = "<group>";
@@ -519,6 +525,7 @@
 				25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */,
 				25C91A322A57F38A00A49F06 /* GroupCreateScreen.swift in Sources */,
 				259AEFA02A3E0D0A0083FF4B /* RecoverKeysScreen.swift in Sources */,
+				2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */,
 				2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */,
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
@@ -562,6 +569,7 @@
 				254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */,
 				2522C6872B322923007C4913 /* MapComponent.swift in Sources */,
 				25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */,
+				2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */,
 				25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */,
 				252EA01729DDE5A800338956 /* DocumentsApi.swift in Sources */,
 				252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */,

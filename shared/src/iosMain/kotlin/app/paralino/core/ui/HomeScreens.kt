@@ -1,5 +1,6 @@
 package app.paralino.core.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -8,7 +9,10 @@ import androidx.compose.material.rememberSwipeableState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
@@ -26,7 +30,13 @@ import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
+import app.paralino.core.presentation.places.detail.PlaceDetailScreenCore
+import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
+import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.places.list.PlacesListScreenState
+import app.paralino.core.presentation.places.list.PlacesScreenCore
+import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.components.MessageDispatcherEffect
@@ -122,7 +132,6 @@ object HomeScreens {
             )
         }
     }
-
 
     fun MemberInviteScreenVC(
         vm: MemberInviteViewModel,
@@ -270,6 +279,78 @@ object HomeScreens {
                     }
                 )
             }
+        }
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    fun PlacesScreenVC(
+        vm: PlacesViewModel,
+        addNewPlace: () -> Unit,
+        openPlaceDetailScreen: (place: PlaceListItemData) -> Unit,
+        onNavigateBack: () -> Unit,
+        askNotificationPermission: () -> Unit,
+        mapUIView: (PlacesListScreenState) -> UIView,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+
+            var userScroll by remember {
+                mutableStateOf(true)
+            }
+
+            PlacesScreenCore(
+                appState = it,
+                vm = vm,
+                userScrollEnabled = userScroll,
+                askNotificationPermission = askNotificationPermission,
+                addNewPlace = addNewPlace,
+                openPlaceDetails = openPlaceDetailScreen,
+                onNavigateBack = onNavigateBack,
+                mapContent = { state ->
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        UIKitView(
+                            factory = { mapUIView(state) },
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    fun PlaceDetailScreenVC(
+        vm: PlaceDetailViewModel,
+        openPlaceRawDataScreen: () -> Unit,
+        openPlaceEditScreen: () -> Unit,
+        onNavigateBack: () -> Unit,
+        mapUIView: (PlaceDetailScreenState) -> UIView,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+
+            var userScroll by remember {
+                mutableStateOf(true)
+            }
+
+            PlaceDetailScreenCore(
+                appState = it,
+                vm = vm,
+                userScrollEnabled = userScroll,
+                onNavigateBack = onNavigateBack,
+                openPlaceRawDataScreen = openPlaceRawDataScreen,
+                openPlaceEditScreen = openPlaceEditScreen,
+                mapContent = { state ->
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        UIKitView(
+                            factory = { mapUIView(state) },
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                }
+            )
         }
     }
 }

@@ -55,11 +55,11 @@ fun PlacesScreen(
                 )
             )
         },
-        openPlaceDetails = { placeId ->
+        openPlaceDetails = { place ->
             appState.navController.navigate(
                 AppScreen.MainHome.PlaceDetail.route(
-                    groupId = groupId,
-                    placeId = placeId
+                    groupId = place.groupId,
+                    placeId = place.id
                 )
             )
         },

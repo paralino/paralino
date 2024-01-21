@@ -25,7 +25,11 @@ struct MapHomeScreen: View {
                         trackMarker: { data in
                             mapState.vm.trackMarker(markerData: data)
                         },
-                        onOpenPlacesScreen: {},
+                        onOpenPlacesScreen: {
+                            if let groupId = mapState.uiState.asReady()?.groupId {
+                                path.append(.home(.places(groupId: groupId)))
+                            }
+                        },
                         onOpenCreatePlaceScreen: {},
                         onSheetOffsetChange: { offset in },
                         onGroupPickerClick: {
@@ -44,7 +48,9 @@ struct MapHomeScreen: View {
                         onSettingsClick: {
                             path.append(.settings(.settings))
                         },
-                        onPlaceClick: { place in },
+                        onPlaceClick: { place in
+                            path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
+                        },
                         mapUIView: { () -> UIView in
                             SwiftUIInUIView(
                                 content: VStack {
