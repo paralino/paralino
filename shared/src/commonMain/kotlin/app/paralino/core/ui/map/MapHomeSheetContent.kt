@@ -132,34 +132,35 @@ fun MapHomeSheetContent(
                     }
                 }
             )
-            Spacer(modifier = Modifier.size(12.dp))
-        }
 
-        Row(
-            modifier = Modifier
-                .padding(start = 20.dp)
-                .alpha(contentAlpha)
-                .align(Alignment.Start)
-                .horizontalScroll(rememberScrollState()),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            MapBottomSheetTab(
-                modifier = Modifier,
-                selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
-                focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
-                text = MR.strings.group_details_section_members_title.localizedString(),
-                icon = CoreAppIcons.Group.asPainterResource(),
-                onClick = onFocusOnMembersClick
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            MapBottomSheetTab(
-                modifier = Modifier,
-                selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.PLACES,
-                focused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true,
-                text = MR.strings.places_list_screen_title.localizedString(),
-                icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                onClick = onFocusOnPlacesClick
-            )
+            Spacer(modifier = Modifier.size(12.dp))
+
+            Row(
+                modifier = Modifier
+                    .padding(start = 20.dp)
+                    .alpha(contentAlpha)
+                    .align(Alignment.Start)
+                    .horizontalScroll(rememberScrollState()),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                MapBottomSheetTab(
+                    modifier = Modifier,
+                    selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
+                    focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
+                    text = MR.strings.group_details_section_members_title.localizedString(),
+                    icon = CoreAppIcons.Group.asPainterResource(),
+                    onClick = onFocusOnMembersClick
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                MapBottomSheetTab(
+                    modifier = Modifier,
+                    selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.PLACES,
+                    focused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true,
+                    text = MR.strings.places_list_screen_title.localizedString(),
+                    icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
+                    onClick = onFocusOnPlacesClick
+                )
+            }
         }
 
         Spacer(modifier = Modifier.size(12.dp))
