@@ -15,8 +15,6 @@ struct MapHomeScreen: View {
     @StateObject var mapState: MapHomeState
     @State var groupPicker: BottomSheetsScreen.GroupPicker? = nil
     
-    @State private var selectedMarkerId: String?
-    
     var body: some View {
         ZStack {
             if mapState.uiState is MapHomeScreenState.Ready {
@@ -26,23 +24,6 @@ struct MapHomeScreen: View {
                         initialUiState: mapState.uiState,
                         trackMarker: { data in
                             mapState.vm.trackMarker(markerData: data)
-                            
-                            let firstUserMarker = mapState.markers.first {
-                                $0.data.markerId == data.markerId
-                            }
-                            if let marker = firstUserMarker {
-                                withAnimation {
-                                    mapState.region = MapCameraPosition.region(
-                                        MKCoordinateRegion(
-                                            center: CLLocationCoordinate2D(
-                                                latitude: marker.coordinate.latitude,
-                                                longitude: marker.coordinate.longitude
-                                            ),
-                                            span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
-                                        )
-                                    )
-                                }
-                            }
                         },
                         onOpenPlacesScreen: {},
                         onOpenCreatePlaceScreen: {},
@@ -69,10 +50,6 @@ struct MapHomeScreen: View {
                                 content: VStack {
                                     MapComponent(
                                         mapState: mapState,
-                                        selectedMarkerId: selectedMarkerId,
-                                        trackMarker: { data in
-                                            mapState.vm.trackMarker(markerData: data)
-                                        },
                                         onMapTouch: {
                                             mapState.vm.onMapTouch()
                                         }

@@ -35,6 +35,9 @@ class MapHomeState : ObservableObject {
         )
     )
     
+    @Published var trackingMarker: FocusedMarkerData? = nil
+    var isUpdatingRegion: Bool = false
+    
     init() {
         vm = KoinIOS.ViewModels.shared.mapHomeVM
         vm.observe(flow: vm.allGroupsState) { [weak self] state in
@@ -59,7 +62,7 @@ class MapHomeState : ObservableObject {
                 let oldState = self?.uiState as? MapHomeScreenState.Ready
                 self?.uiState = state
                 if let readyState = state as? MapHomeScreenState.Ready {
-                    self?.markers = readyState.markers.map { marker in
+                    self?.markers = readyState.visibleMarkers.map { marker in
                         MapAnnotatedItem(
                             id: marker.markerId,
                             data: marker,
@@ -70,7 +73,29 @@ class MapHomeState : ObservableObject {
                         )
                     }
                 }
+                self?.trackingMarker = state.asReady()?.trackingMarker
+                self?.updateRegion()
             }
+        }
+    }
+    
+    func updateRegion() {
+        guard let selection = trackingMarker else { return }
+        let marker = markers.first { $0.id == selection.markerId }
+        guard let marker = marker else { return }
+        guard !isUpdatingRegion else {
+            Logr.v(tag: "marker_update", message: "Marker animation in progress, abort update")
+            return
+        }
+        let center = CLLocationCoordinate2D(
+            latitude: marker.coordinate.latitude,
+            longitude: marker.coordinate.longitude
+        )
+        
+        withAnimation {
+            isUpdatingRegion = true
+            Logr.v(tag: "marker_update", message: "Start animation")
+            region = MapCameraPosition.camera(MapCamera(centerCoordinate: center, distance: 3000))
         }
     }
     
