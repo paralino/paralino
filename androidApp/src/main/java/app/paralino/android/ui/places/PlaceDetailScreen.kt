@@ -1,4 +1,4 @@
-package app.paralino.android.ui.places.detail
+package app.paralino.android.ui.places
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,12 +13,11 @@ import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.map.PlaceDetailMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.places.detail.PlaceDetailScreenCore
-import app.paralino.core.presentation.places.detail.PlaceDetailUserListItem
+import app.paralino.core.ui.places.PlaceDetailScreenCore
+import app.paralino.core.ui.places.PlaceDetailUserListItem
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
 import org.koin.androidx.compose.getViewModel
@@ -31,8 +30,6 @@ fun PlaceDetailScreen(
     placeId: String,
     vm: PlaceDetailViewModel = getViewModel { parametersOf(groupId, placeId) },
 ) {
-
-    MessageDispatcherEffect(vm, appState)
 
     var userScroll by remember {
         mutableStateOf(true)
@@ -72,9 +69,9 @@ fun PlaceDetailScreen(
     )
 }
 
-@Preview("place_item")
+@Preview("place_detail_user_item")
 @Composable
-fun PlaceListItemPreview() {
+private fun PlaceDetailUserItemPreview() {
     AppTheme {
         Column {
             val item = PlaceSettingsState(

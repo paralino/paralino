@@ -1,4 +1,4 @@
-package app.paralino.android.ui.places.create
+package app.paralino.android.ui.places
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable

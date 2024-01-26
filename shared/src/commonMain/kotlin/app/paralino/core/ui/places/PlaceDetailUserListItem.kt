@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.places.detail
+package app.paralino.core.ui.places
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
+import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource

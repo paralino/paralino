@@ -30,14 +30,13 @@ import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
-import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
-import app.paralino.core.presentation.places.detail.PlaceDetailScreenCore
+import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
-import app.paralino.core.presentation.places.list.PlacesScreenCore
+import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen

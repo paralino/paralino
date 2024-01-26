@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.places.detail
+package app.paralino.core.ui.places
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
+import app.paralino.core.presentation.places.detail.PlaceDetailScreenEvent
+import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
+import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
@@ -52,7 +55,6 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
@@ -70,6 +72,7 @@ fun PlaceDetailScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
+
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
     var optionMenuExpanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
@@ -319,5 +322,4 @@ private fun PlaceDetailScreen(
             }
         }
     }
-
 }

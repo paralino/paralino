@@ -18,9 +18,9 @@ import app.paralino.android.ui.login.ProfileSetupScreen
 import app.paralino.android.ui.login.ResetPasswordScreen
 import app.paralino.android.ui.login.RecoverKeysScreen
 import app.paralino.android.ui.map.MapHomeScreen
-import app.paralino.android.ui.places.create.CreatePlaceScreen
-import app.paralino.android.ui.places.detail.PlaceDetailScreen
-import app.paralino.android.ui.places.list.PlacesScreen
+import app.paralino.android.ui.places.CreatePlaceScreen
+import app.paralino.android.ui.places.PlaceDetailScreen
+import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.settings.RawDataScreen
 import app.paralino.android.ui.settings.profile.AccountScreen
 import app.paralino.android.ui.settings.BlocklistScreen

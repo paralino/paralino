@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.places.list
+package app.paralino.core.ui.places
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -37,6 +37,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
+import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.places.list.PlacesListScreenState
+import app.paralino.core.presentation.places.list.PlacesScreenEvent
+import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
@@ -48,7 +52,6 @@ import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource

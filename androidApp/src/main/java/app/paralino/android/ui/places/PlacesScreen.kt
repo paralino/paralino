@@ -1,4 +1,4 @@
-package app.paralino.android.ui.places.list
+package app.paralino.android.ui.places
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,9 +12,8 @@ import app.paralino.android.ui.map.SimplePlaceMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
-import app.paralino.core.presentation.places.list.PlacesScreenCore
+import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.presentation.places.list.PlacesViewModel
-import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
@@ -27,8 +26,6 @@ fun PlacesScreen(
     groupId: String,
     vm: PlacesViewModel = getViewModel { parametersOf(groupId) },
 ) {
-
-    MessageDispatcherEffect(vm, appState)
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
@@ -78,7 +75,7 @@ fun PlacesScreen(
 
 @Preview("place_item")
 @Composable
-fun PlaceListItemPreview() {
+private fun PlaceListItemPreview() {
     AppTheme {
         PlaceListItem(
             state = PlaceListItemData(
