@@ -30,7 +30,11 @@ struct MapHomeScreen: View {
                                 path.append(.home(.places(groupId: groupId)))
                             }
                         },
-                        onOpenCreatePlaceScreen: {},
+                        onOpenCreatePlaceScreen: {
+                            if let readyState = mapState.uiState.asReady() {
+                                path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: nil, lng: nil)))
+                            }
+                        },
                         onSheetOffsetChange: { offset in },
                         onGroupPickerClick: {
                             groupPicker = BottomSheetsScreen.GroupPicker(groups: mapState.vm.getAllGroups())

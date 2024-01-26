@@ -30,6 +30,8 @@ import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
+import app.paralino.core.presentation.places.create.CreatePlaceScreenState
+import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenCore
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
@@ -48,6 +50,7 @@ import app.paralino.core.ui.login.GroupInitScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
+import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.collectLatest
@@ -346,6 +349,39 @@ object HomeScreens {
                     ) {
                         UIKitView(
                             factory = { mapUIView(state) },
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    fun PlaceCreateScreenVC(
+        vm: CreatePlaceViewModel,
+        onNavigateBack: () -> Unit,
+        onBottomSheetAction: (BottomSheetsScreen?) -> Unit,
+        mapUIView: () -> UIView,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+
+            var userScroll by remember {
+                mutableStateOf(true)
+            }
+
+            CreatePlaceScreenCore(
+                appState = it,
+                vm = vm,
+                userScrollEnabled = userScroll,
+                onNavigateBack = onNavigateBack,
+                onBottomSheetAction = onBottomSheetAction,
+                mapContent = {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        UIKitView(
+                            factory = { mapUIView() },
                             modifier = Modifier.fillMaxSize(),
                         )
                     }

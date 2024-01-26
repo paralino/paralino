@@ -175,5 +175,4 @@ class CreatePlaceViewModel(
             it.mapSuccess { it.copy(radiusMeters = radiusMeters) }
         }
     }
-
 }

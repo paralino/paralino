@@ -19,10 +19,6 @@ class MapHomeState : BaseMapObservableObject {
     @Published var path: [NavigationGraph] = []
     @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(currentUserImage: ImageModel.companion.placeholder(), isSatelliteMode: false)
     
-    var readyState: MapHomeScreenState.Ready? {
-        uiState as? MapHomeScreenState.Ready
-    }
-    
     override init() {
         vm = KoinIOS.ViewModels.shared.mapHomeVM
         
@@ -66,9 +62,9 @@ class MapHomeState : BaseMapObservableObject {
                         self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.place }, animate: true)
                     } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeALL_MEMBERS {
                         self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.member }, animate: true)
-                    } else if let focus = readyState.mapHomeScreenFocusType as? shared.MapHomeScreenFocusTypeMEMBER {
+                    } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeMEMBER {
                         self?.focusToMarker(data: readyState.trackingMarker)
-                    } else if let focus = readyState.mapHomeScreenFocusType as? shared.MapHomeScreenFocusTypePLACE {
+                    } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypePLACE {
                         self?.focusToMarker(data: readyState.trackingMarker)
                     } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeNONE {
 //                        do nothing

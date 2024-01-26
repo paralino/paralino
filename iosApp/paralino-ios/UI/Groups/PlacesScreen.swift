@@ -22,7 +22,9 @@ struct PlacesScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.PlacesScreenVC(
                     vm: appState.vm,
-                    addNewPlace: {},
+                    addNewPlace: {
+                        path.append(.home(.placeCreate(groupId: appState.groupId, placeId: nil, lat: nil, lng: nil)))
+                    },
                     openPlaceDetailScreen: { place in
                         path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
                     },

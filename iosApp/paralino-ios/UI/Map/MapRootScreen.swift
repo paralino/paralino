@@ -43,6 +43,8 @@ struct MapRootScreen: View {
                                 PlacesScreen(path: $mapState.path, appState: PlacesScreen.createState(groupId: groupId))
                             case .placeDetail(groupId: let groupId, placeId: let placeId):
                                 PlaceDetailScreen(path: $mapState.path, appState: PlaceDetailScreen.createState(groupId: groupId, placeId: placeId))
+                            case .placeCreate(groupId: let groupId, placeId: let placeId, lat: let lat, lng: let lng):
+                                PlaceCreateScreen(path: $mapState.path, appState: PlaceCreateScreen.createState(groupId: groupId, placeId: placeId, lat: lat, lng: lng))
                             }
                         }
                     }.onAppear {

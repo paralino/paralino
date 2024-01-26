@@ -13,7 +13,6 @@ struct PlaceDetailScreen: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var appState: PlaceDetailState
-    let notificationPermissionHandler = NotificationPermissionHandler()
     
     var body: some View {
         ZStack {
@@ -25,7 +24,7 @@ struct PlaceDetailScreen: View {
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupPlacePresentation(placeId: appState.vm.placeId))))
                     },
                     openPlaceEditScreen: {
-                        
+                        path.append(.home(.placeCreate(groupId: appState.groupId, placeId: appState.placeId, lat: nil, lng: nil)))
                     },
                     onNavigateBack: {
                         path.removeLast()

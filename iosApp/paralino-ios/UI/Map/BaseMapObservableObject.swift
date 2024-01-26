@@ -27,9 +27,13 @@ class BaseMapObservableObject : ObservableObject {
         focusToMarkers([marker], animate: true)
     }
     
-    func focusToMarkers(_ markers: [MapAnnotatedItem], animate: Bool = true) {
-        guard !isUpdatingRegion && animate else {
+    func focusToMarkers(_ markers: [MapAnnotatedItem], animate: Bool = true, canInteruptAnimation: Bool = false) {
+        if isUpdatingRegion && !canInteruptAnimation {
             Logr.v(tag: "marker_update", message: "Marker animation in progress, abort update")
+            return
+        }
+        
+        if markers.isEmpty {
             return
         }
         
@@ -54,6 +58,7 @@ class BaseMapObservableObject : ObservableObject {
         
         if animate {
             withAnimation {
+                // region update flag is reset from map component
                 isUpdatingRegion = true
                 Logr.v(tag: "marker_update", message: "Start animation")
                 region = MapCameraPosition.rect(mappedRect)
@@ -63,8 +68,8 @@ class BaseMapObservableObject : ObservableObject {
         }
     }
     
-    func refocusMap(animate: Bool = true) {
-        focusToMarkers(markers, animate: animate)
+    func refocusMap(animate: Bool = true, canInteruptAnimation: Bool = false) {
+        focusToMarkers(markers, animate: animate, canInteruptAnimation: canInteruptAnimation)
     }
 }
 
