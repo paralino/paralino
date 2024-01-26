@@ -58,6 +58,21 @@ struct MapAnnotatedItem: Identifiable {
     let id: String
     var data: MapPinData
     var coordinate: CLLocationCoordinate2D
+    
+    init(id: String, data: MapPinData, coordinate: CLLocationCoordinate2D) {
+        self.id = id
+        self.data = data
+        self.coordinate = coordinate
+    }
+    
+    init(marker: MapPinData) {
+        id = marker.markerId
+        data = marker
+        coordinate = CLLocationCoordinate2D(
+            latitude: marker.lat,
+            longitude: marker.lng
+        )
+    }
 }
 
 struct MapPin_Previews: PreviewProvider {

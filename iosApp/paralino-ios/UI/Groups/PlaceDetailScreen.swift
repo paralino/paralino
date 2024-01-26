@@ -12,14 +12,13 @@ struct PlaceDetailScreen: View {
     
     @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
-    @StateObject var appState: ViewModelFactoryIOS<PlaceDetailViewModel>
+    @StateObject var appState: PlaceDetailState
     let notificationPermissionHandler = NotificationPermissionHandler()
     
     var body: some View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
-                
                 ScreensIOS.shared.home.PlaceDetailScreenVC(
                     vm: appState.vm,
                     openPlaceRawDataScreen: {
@@ -32,9 +31,13 @@ struct PlaceDetailScreen: View {
                         path.removeLast()
                     },
                     mapUIView: { state in
-                        SwiftUIInUIView(
+                        appState.updateMarkers(state: state)
+                        return SwiftUIInUIView(
                             content: VStack {
-                                
+                                MapComponent(
+                                    mapState: appState,
+                                    onMapTouch: {}
+                                )
                             }
                         )
                     }
@@ -45,8 +48,34 @@ struct PlaceDetailScreen: View {
         }
     }
     
-    static func createState(groupId: String, placeId: String) -> ViewModelFactoryIOS<PlaceDetailViewModel> {
-        ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.placeDetailVM(groupId: groupId, placeId: placeId))
+    static func createState(groupId: String, placeId: String) -> PlaceDetailState {
+        PlaceDetailState(groupId: groupId, placeId: placeId)
+    }
+}
+
+class PlaceDetailState: BaseMapObservableObject {
+    
+    let groupId: String
+    let placeId: String
+    let vm: PlaceDetailViewModel
+    
+    init(groupId: String, placeId: String) {
+        self.groupId = groupId
+        self.placeId = placeId
+        self.vm = KoinIOS.ViewModels.shared.placeDetailVM(groupId: groupId, placeId: placeId)
+    }
+    
+    func updateMarkers(state: PlaceDetailScreenState) {
+        markers = [MapAnnotatedItem(marker: MapPinData(state_: state))]
+        refocusMap(animate: false)
+    }
+    
+    override func onMarkerTap(markerData: FocusedMarkerData) {
+        focusToMarker(data: markerData)
+    }
+    
+    deinit {
+        vm.cleanup()
     }
 }
 
