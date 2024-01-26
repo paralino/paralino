@@ -31,6 +31,7 @@
 		252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */; };
 		25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A8F29E9452300CD32F5 /* SealedClasses.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
+		25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25395C1E2B630042000394DA /* BaseMapObservableObject.swift */; };
 		253D31682AC215FD009E5010 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 253D31672AC215FD009E5010 /* Appwrite */; };
 		254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */; };
 		254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2729EC7C50008B1458 /* Image+Extensions.swift */; };
@@ -100,6 +101,7 @@
 		252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoFrameworkProvider.swift; sourceTree = "<group>"; };
 		25356A8F29E9452300CD32F5 /* SealedClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SealedClasses.swift; sourceTree = "<group>"; };
 		25356A9929EAB8E100CD32F5 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		25395C1E2B630042000394DA /* BaseMapObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMapObservableObject.swift; sourceTree = "<group>"; };
 		254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
 		254B6F2729EC7C50008B1458 /* Image+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+Extensions.swift"; sourceTree = "<group>"; };
 		254B6F2929EC7F6A008B1458 /* LoginScreenObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginScreenObject.swift; sourceTree = "<group>"; };
@@ -312,6 +314,7 @@
 				25EFDE292A5B0DCA00522293 /* GroupListItem.swift */,
 				25EFDE2F2A5B45C300522293 /* MapMarker.swift */,
 				2522C6862B322923007C4913 /* MapComponent.swift */,
+				25395C1E2B630042000394DA /* BaseMapObservableObject.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -570,6 +573,7 @@
 				2522C6872B322923007C4913 /* MapComponent.swift in Sources */,
 				25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */,
 				2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */,
+				25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */,
 				25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */,
 				252EA01729DDE5A800338956 /* DocumentsApi.swift in Sources */,
 				252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */,

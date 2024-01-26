@@ -11,7 +11,7 @@ import MapKit
 
 struct MapComponent: View {
     
-    @StateObject var mapState: MapHomeState
+    @StateObject var mapState: BaseMapObservableObject
     
     let onMapTouch: () -> Void
     
@@ -30,7 +30,7 @@ struct MapComponent: View {
                     content: {
                         Button(
                             action: {
-                                mapState.vm.trackMarker(markerData: marker.data.asFocusedMarker())
+                                mapState.onMarkerTap(markerData: marker.data.asFocusedMarker())
                             },
                             label: { MapMarker(pinData: marker.data) }
                         )
@@ -46,13 +46,11 @@ struct MapComponent: View {
             MapCompass()
         }
         .mapStyle(
-            mapState.uiState.isSatelliteMode ? .hybrid(showsTraffic: true) : .standard(showsTraffic: true)
+            mapState.isSatelliteMode ? .hybrid(showsTraffic: true) : .standard(showsTraffic: true)
         )
         .onMapCameraChange(frequency: .onEnd) { action in
             mapState.isUpdatingRegion = false
         }
-        .safeAreaPadding(.top, 80)
-        .safeAreaPadding(.horizontal)
         //        }
         //        .onTapGesture {
         //            // TODO fix: not working

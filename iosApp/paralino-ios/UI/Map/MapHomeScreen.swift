@@ -60,6 +60,8 @@ struct MapHomeScreen: View {
                                             mapState.vm.onMapTouch()
                                         }
                                     )
+                                    .safeAreaPadding(.top, 80)
+                                    .safeAreaPadding(.horizontal)
                                 }
                             )
                         }
