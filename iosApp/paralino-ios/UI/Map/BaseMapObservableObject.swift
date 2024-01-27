@@ -54,8 +54,8 @@ class BaseMapObservableObject : ObservableObject {
             .map {
                 let region = MKCoordinateRegion.init(
                     center: $0.coordinate,
-                    latitudinalMeters: Double($0.data.accuracy) * 2,
-                    longitudinalMeters: Double($0.data.accuracy) * 2
+                    latitudinalMeters: max(Double($0.data.accuracy) * 2, 300),
+                    longitudinalMeters: max(Double($0.data.accuracy) * 2, 300)
                 )
                 return region.rect
             }
