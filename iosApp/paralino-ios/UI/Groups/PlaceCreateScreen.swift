@@ -32,6 +32,8 @@ struct PlaceCreateScreen: View {
                             content: VStack {
                                 MapComponent(
                                     mapState: appState,
+                                    onMapTap: { point in },
+                                    onMapLongPress: { point in appState.vm.updatePosition(lat: point.latitude, lng: point.longitude) },
                                     onMapTouch: {}
                                 )
                             }

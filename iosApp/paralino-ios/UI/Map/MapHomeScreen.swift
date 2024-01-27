@@ -60,12 +60,18 @@ struct MapHomeScreen: View {
                                 content: VStack {
                                     MapComponent(
                                         mapState: mapState,
+                                        onMapTap: { point in },
+                                        onMapLongPress: { point in
+                                            if let readyState = mapState.uiState.asReady() {
+                                                path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
+                                            }
+                                        },
                                         onMapTouch: {
                                             mapState.vm.onMapTouch()
                                         }
                                     )
-                                    .safeAreaPadding(.top, 80)
-                                    .safeAreaPadding(.horizontal)
+                                    .safeAreaPadding(.top, 70)
+                                    .safeAreaPadding(.bottom, 80)
                                 }
                             )
                         }
