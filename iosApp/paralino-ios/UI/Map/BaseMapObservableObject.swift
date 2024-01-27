@@ -11,27 +11,40 @@ import SwiftUI
 import shared
 
 class BaseMapObservableObject : ObservableObject {
+    
     @Published var markers: [MapAnnotatedItem] = []
     
-    @Published var region: MapCameraPosition = MapCameraPosition.automatic
+    @Published var cameraPosition: MapCameraPosition = MapCameraPosition.automatic
     
-    var isUpdatingRegion: Bool = false
+    @Published var isUpdatingRegion: Bool = false
     @Published var isSatelliteMode: Bool = false
     
     func onMarkerTap(markerData: FocusedMarkerData) {}
     
-    func focusToMarker(data: FocusedMarkerData?) {
+    func focusToMarker(data: FocusedMarkerData?, forceZoom: Bool = true) {
         guard let data = data else { return }
         let marker = markers.first { $0.id == data.markerId }
         guard let marker = marker else { return }
-        focusToMarkers([marker], animate: true)
+        
+        if forceZoom {
+            focusToMarkers([marker], animate: true)
+        } else {
+            // mapping from region to rect and vice-versa to get proper center and map size
+            guard let rect = cameraPosition.rect else {
+                focusToMarkers([marker], animate: true)
+                return
+            }
+            let region = MKCoordinateRegion.init(rect)
+            let newRegion = MKCoordinateRegion.init(
+                center: marker.coordinate,
+                span: region.span
+            )
+            let newRect = MKMapRect(origin: newRegion.rect.origin, size: rect.size)
+            focusCamera(rect: newRect, animate: true)
+        }
     }
     
     func focusToMarkers(_ markers: [MapAnnotatedItem], animate: Bool = true, canInteruptAnimation: Bool = false) {
-        if isUpdatingRegion && !canInteruptAnimation {
-            Logr.v(tag: "marker_update", message: "Marker animation in progress, abort update")
-            return
-        }
         
         if markers.isEmpty {
             return
@@ -56,15 +69,25 @@ class BaseMapObservableObject : ObservableObject {
         )
             .offsetBy(dx: -rect.width * 0.2, dy: -rect.height * 0.2)
         
+        focusCamera(rect: mappedRect, animate: animate, canInteruptAnimation: canInteruptAnimation)
+    }
+    
+    func focusCamera(rect: MKMapRect, animate: Bool = true, canInteruptAnimation: Bool = false) {
+        
+        if isUpdatingRegion && !canInteruptAnimation {
+            Logr.v(tag: "marker_update", message: "Marker animation in progress, abort update")
+            return
+        }
+        
         if animate {
             withAnimation {
                 // region update flag is reset from map component
                 isUpdatingRegion = true
                 Logr.v(tag: "marker_update", message: "Start animation")
-                region = MapCameraPosition.rect(mappedRect)
+                cameraPosition = MapCameraPosition.rect(rect)
             }
         } else {
-            region = MapCameraPosition.rect(mappedRect)
+            cameraPosition = MapCameraPosition.rect(rect)
         }
     }
     
@@ -78,7 +101,7 @@ extension MKCoordinateRegion {
     public var rect : MKMapRect {
         let topLeft = CLLocationCoordinate2D(latitude: self.center.latitude + (self.span.latitudeDelta/2), longitude: self.center.longitude - (self.span.longitudeDelta/2))
         let bottomRight = CLLocationCoordinate2D(latitude: self.center.latitude - (self.span.latitudeDelta/2), longitude: self.center.longitude + (self.span.longitudeDelta/2))
-
+        
         let a = MKMapPoint(topLeft)
         let b = MKMapPoint(bottomRight)
         
