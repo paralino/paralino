@@ -56,11 +56,13 @@ struct MapComponent: View {
                     )
                     .onMapCameraChange(frequency: .onEnd) { action in
                         mapState.isUpdatingRegion = false
+                        let oldCameraRect = mapState.cameraPosition.rect
                         
                         task?.cancel()
                         task = Task {
                             try? await Task.sleep(for: .seconds(1))
-                            if !Task.isCancelled {
+                            // ensure camera didn't change in the meantime
+                            if !Task.isCancelled, oldCameraRect == mapState.cameraPosition.rect {
                                 mapState.cameraPosition = MapCameraPosition.rect(action.rect)
                             }
                         }
@@ -106,7 +108,6 @@ struct MapComponent: View {
 }
 
 private extension MapComponent {
-    
     func convertTap(at point: CGPoint, for mapSize: CGSize) -> CLLocationCoordinate2D? {
         guard let rect = mapState.cameraPosition.rect else { return nil }
         let region = MKCoordinateRegion.init(rect)
@@ -126,4 +127,9 @@ private extension MapComponent {
         
         return CLLocationCoordinate2D(latitude: lat - ySpan, longitude: lng + xSpan)
     }
+}
+
+extension MKMapRect : Equatable { }
+public func ==(lhs: MKMapRect, rhs: MKMapRect) -> Bool {
+    return (lhs.size.width, lhs.size.height, lhs.origin.x, lhs.origin.y) == (rhs.size.width, rhs.size.height, rhs.origin.x, rhs.origin.y)
 }
