@@ -46,17 +46,12 @@ class MapHomeState : BaseMapObservableObject {
                 self?.uiState = state
                 if let readyState = state as? MapHomeScreenState.Ready {
                     let markers = readyState.visibleMarkers.map { marker in
-                        MapAnnotatedItem(
-                            id: marker.markerId,
-                            data: marker,
-                            coordinate: CLLocationCoordinate2D(
-                                latitude: marker.lat,
-                                longitude: marker.lng
-                            )
-                        )
+                        MapAnnotatedItem(marker: marker)
                     }
                     
-                    self?.markers = markers
+                    withAnimation {
+                        self?.markers = markers
+                    }
                     
                     if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeALL_PLACES {
                         self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.place }, animate: true)
