@@ -116,9 +116,9 @@ fun ConvertAccountScreenCore(
                 ) {
                     focusManager.clearFocus()
                 }
+                .verticalScroll(rememberScrollState())
                 .padding(it)
-                .padding(20.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(20.dp),
             verticalArrangement = Arrangement.Center
         ) {
 
