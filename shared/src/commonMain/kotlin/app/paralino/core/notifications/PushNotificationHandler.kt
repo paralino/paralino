@@ -60,11 +60,17 @@ class PushNotificationHandler constructor(
     }
 
     private suspend fun processNotification(push: PushNotificationRaw, onDelete: suspend (PushNotificationRaw) -> Unit) {
+
+        if (push.deviceId != config.deviceId) {
+            logg.tag("push_notifications").v("Push notification ${push.type} (${push.importance}) from ${push.source} does not match current device, ignoring")
+            return
+        }
+
         logg.tag("push_notifications")
             .v("Process ${push.importance} ${push.type} push notification from ${push.source}. Expired (${push.isExpired})")
 
         if (push.isExpired) {
-            logg.tag("push_notifications").v("Push notification expired, ignoring")
+            logg.tag("push_notifications").v("Push notification expired, delete and ignore")
             onDelete(push)
             return
         }
@@ -83,13 +89,8 @@ class PushNotificationHandler constructor(
                 onDelete(push)
             }
             PushNotificationRaw.pushTypeLocationRequest -> {
-                if (push.deviceId == config.deviceId) {
-                    logg.tag("push_notifications").v("Location request notification matches current device")
-                    locationRequestPush.process(push)
-                    onDelete(push)
-                } else {
-                    logg.tag("push_notifications").v("Location request notification does not match current device, ignoring")
-                }
+                locationRequestPush.process(push)
+                onDelete(push)
             }
         }
     }
