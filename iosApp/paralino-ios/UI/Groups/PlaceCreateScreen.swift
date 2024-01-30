@@ -75,7 +75,9 @@ class PlaceCreateState: BaseMapObservableObject {
         vm.observe(flow: vm.uiState) { [weak self] state in
             if let uiState = PayloadSwift<CreatePlaceScreenState>(data: state).dataOrNil {
                 if uiState.lat != nil && uiState.lng != nil {
-                    self?.markers = [MapAnnotatedItem(marker: MapPinData(state: uiState))]
+                    withAnimation {
+                        self?.markers = [MapAnnotatedItem(marker: MapPinData(state: uiState))]
+                    }
                 }
                 self?.refocusMap(animate: true, canInteruptAnimation: true)
             }
