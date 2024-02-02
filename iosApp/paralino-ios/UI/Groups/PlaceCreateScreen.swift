@@ -41,6 +41,7 @@ struct PlaceCreateScreen: View {
                     }
                 )
             }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationBarBackButtonHidden(false)
         }
         .photoPickerSheet($bottomSheet) { image in
