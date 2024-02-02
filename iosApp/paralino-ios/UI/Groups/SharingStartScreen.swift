@@ -43,7 +43,6 @@ struct SharingStartScreen: View {
                     }
                 )
             }
-            .ignoresSafeArea(.all, edges: .bottom)
         }
     }
     
