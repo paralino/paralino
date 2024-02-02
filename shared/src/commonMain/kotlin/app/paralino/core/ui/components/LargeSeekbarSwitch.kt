@@ -62,7 +62,7 @@ fun LargeSeekbarSwitch(
     icon: Painter?,
     title: String,
     description: String? = null,
-    titleStyle: TextStyle = MaterialTheme.typography.caption,
+    titleStyle: TextStyle = MaterialTheme.typography.body2,
     focusDescription: Boolean = false,
     state: LargeSeekbarSwitchState.SeekbarSwitchState,
     size: LargeSwitchSize = LargeSwitchSize(),
