@@ -99,7 +99,6 @@ fun PersonalCodeItem(
     onShare: () -> Unit,
     onDelete: () -> Unit,
 ) {
-
     Column {
         Surface(
             modifier = modifier
@@ -108,11 +107,9 @@ fun PersonalCodeItem(
             color = MaterialTheme.colors.primary,
             elevation = 16.dp
         ) {
-
             Column(
                 modifier = modifier.padding(10.dp)
             ) {
-
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()

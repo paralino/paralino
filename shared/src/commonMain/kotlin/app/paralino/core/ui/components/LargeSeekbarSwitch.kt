@@ -80,13 +80,13 @@ fun LargeSeekbarSwitch(
             .defaultMinSize(
                 minHeight = size.minHeight
             )
-            .clip(RoundedCornerShape(12.dp))
-            .background(backgroundColor)
             .run {
                 if (state.switchState != null)
                     this.clickable { onStateChange?.invoke(!state.switchState.checkState) }
                 else this
             }
+            .clip(RoundedCornerShape(12.dp))
+            .background(backgroundColor)
     ) {
 
         if (state.seekbarState != null && state.switchState?.checkState != false) {

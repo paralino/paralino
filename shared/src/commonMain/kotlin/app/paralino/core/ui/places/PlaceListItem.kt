@@ -36,13 +36,13 @@ fun PlaceListItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(backgroundColor)
             .let {
                 if (onClick != null)
                     it.clickable { onClick() }
                 else it
             }
+            .clip(RoundedCornerShape(12.dp))
+            .background(backgroundColor)
             .padding(horizontal = 5.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

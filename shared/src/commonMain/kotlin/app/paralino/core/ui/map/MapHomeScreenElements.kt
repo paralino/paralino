@@ -139,13 +139,13 @@ fun MapHomeScreenElements(
                 .align(Alignment.End)
                 .padding(top = 20.dp, end = 8.dp)
                 .size(40.dp)
+                .clickable { onMapModeSwitch() }
                 .background(
                     color = AppColors.accentDark,
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(4.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .clickable { onMapModeSwitch() },
+                .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop
         )
 

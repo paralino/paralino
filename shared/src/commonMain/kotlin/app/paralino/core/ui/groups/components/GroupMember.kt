@@ -39,9 +39,9 @@ fun GroupMember(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
-            .clickable { onClick() }
             .padding(horizontal = 10.dp, vertical = 10.dp)
             .animateContentSize(
                 animationSpec = spring(

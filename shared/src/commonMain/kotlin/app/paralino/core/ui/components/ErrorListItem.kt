@@ -62,9 +62,9 @@ fun ConditionErrorItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp)
+            .clickable { onClick() }
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
-            .clickable { onClick() }
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

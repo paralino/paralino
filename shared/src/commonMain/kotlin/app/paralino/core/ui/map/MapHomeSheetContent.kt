@@ -311,9 +311,9 @@ fun MapBottomSheetTab(
     Row(
         modifier = modifier
             .height(40.dp)
+            .clickable(onClick = onClick)
             .clip(RoundedCornerShape(100))
             .background(backgroundColor)
-            .clickable(onClick = onClick)
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

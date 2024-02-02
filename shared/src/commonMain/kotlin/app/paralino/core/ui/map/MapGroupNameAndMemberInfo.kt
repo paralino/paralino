@@ -151,16 +151,16 @@ fun MapGroupNameAndMemberInfo(
                 .alpha(interactionVisibilityFraction)
                 .size(56.dp)
                 .padding(4.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = if (interactionVisibilityFraction == 1f) LocalIndication.current else null
+                ) { onGroupClick() }
                 .clip(RoundedCornerShape(percent = 100))
                 .border(
                     0.5.dp,
                     MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
                     RoundedCornerShape(percent = 100)
                 )
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = if (interactionVisibilityFraction == 1f) LocalIndication.current else null
-                ) { onGroupClick() }
                 .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {

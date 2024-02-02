@@ -36,12 +36,12 @@ fun MapGroupPicker(
         modifier = modifier
             .height(height)
             .wrapContentWidth()
+            .clickable { onExpandClick() }
             .background(
                 color = MaterialTheme.colors.surface,
                 shape = RoundedCornerShape(percent = 100)
             )
             .clip(RoundedCornerShape(percent = 100))
-            .clickable { onExpandClick() }
             .padding(horizontal = 8.dp)
     ) {
         ImageModelImage(
