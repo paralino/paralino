@@ -108,10 +108,7 @@ fun EmbeddedSlider(
             Row(
                 modifier = Modifier
                     .defaultMinSize(
-                        minHeight = size.minHeight,
-                        minWidth = with(LocalDensity.current) {
-                            contentWidthPx.toDp()
-                        }
+                        minHeight = size.minHeight
                     )
                     .fillMaxHeight()
                     .width(
