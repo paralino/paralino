@@ -31,12 +31,10 @@ import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
-import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
-import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
@@ -50,6 +48,8 @@ import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.places.CreatePlaceScreenCore
+import app.paralino.core.ui.places.PlaceDetailScreenCore
+import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.collectLatest
@@ -364,15 +364,9 @@ object HomeScreens {
         mapUIView: () -> UIView,
     ) = ComposeUIViewController {
         RootScreenIOS {
-
-            var userScroll by remember {
-                mutableStateOf(true)
-            }
-
             CreatePlaceScreenCore(
                 appState = it,
                 vm = vm,
-                userScrollEnabled = userScroll,
                 onNavigateBack = onNavigateBack,
                 onBottomSheetAction = onBottomSheetAction,
                 mapContent = {
