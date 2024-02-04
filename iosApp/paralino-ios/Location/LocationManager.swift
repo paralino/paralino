@@ -14,6 +14,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     let manager = CLLocationManager()
     
     lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
+    lazy var placeRepo: PlacesRepository = { KoinIOS.Instances.shared.placesRepo }()
 
     @Published var location: CLLocationCoordinate2D?
 
@@ -80,6 +81,22 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 } catch let error {
                     Logr.v(tag: "location_Test", message: "error pushing location: \(error)")
                 }
+            }
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        DispatchQueue.main.async { [weak self] in
+            Task {
+                try await self?.placeRepo.placesEnter(placesIds: [region.identifier])
+            }
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        DispatchQueue.main.async { [weak self] in
+            Task {
+                try await self?.placeRepo.placesExit(placesIds: [region.identifier])
             }
         }
     }
