@@ -11,18 +11,19 @@ import app.paralino.android.R
 import app.paralino.core.MR
 import app.paralino.core.ui.theme.AppColors
 
-object PushSyncNotificationHandler {
+sealed class SyncNotificationProvider {
 
-    private const val channelId = "push_sync_channel"
-    const val notificationId = 6725
-    private val notificationColor: Int by lazy {
+    protected abstract val channelId: String
+    protected abstract val channelDescriptionRes: Int
+    abstract val notificationId: Int
+
+    protected open val notificationColor: Int by lazy {
         AppColors.lightThemePrimary.toArgb()
     }
 
     fun create(context: Context): Notification {
-
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
-            .setContentTitle(context.getString(MR.strings.notifications_channel_push_sync.resourceId))
+            .setContentTitle(context.getString(channelDescriptionRes))
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setSmallIcon(R.drawable.ic_notification_icon)
             .setOngoing(true)
@@ -47,7 +48,7 @@ object PushSyncNotificationHandler {
 
         val channel = NotificationChannel(
             channelId,
-            context.getString(MR.strings.notifications_channel_push_sync.resourceId),
+            context.getString(channelDescriptionRes),
             NotificationManager.IMPORTANCE_MIN
         )
 
@@ -58,4 +59,17 @@ object PushSyncNotificationHandler {
         notificationManager?.createNotificationChannel(channel)
     }
 
+    data object DataSyncNotification : SyncNotificationProvider() {
+        override val channelId: String = "data_sync_channel"
+        override val channelDescriptionRes: Int =
+            MR.strings.notifications_channel_data_sync.resourceId
+        override val notificationId: Int = 6724
+    }
+
+    data object PushSyncNotification : SyncNotificationProvider() {
+        override val channelId: String = "push_sync_channel"
+        override val channelDescriptionRes: Int =
+            MR.strings.notifications_channel_push_sync.resourceId
+        override val notificationId: Int = 6725
+    }
 }

@@ -50,6 +50,7 @@
     <string name="notifications_channel_place_alert">Obavijesti o mjestima</string>
     <string name="notifications_channel_group_activity">Aktivnosti grupe</string>
     <string name="notifications_channel_push_sync">Sinkronizacija obavijesti</string>
+    <string name="notifications_channel_data_sync">Sinkronizacija podataka</string>
 
     <string name="location_banner_info_stop">Zaustavi dijeljenje</string>
     <string name="location_banner_fix">Ispravi</string>

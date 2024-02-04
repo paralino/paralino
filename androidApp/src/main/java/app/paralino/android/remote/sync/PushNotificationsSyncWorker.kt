@@ -1,9 +1,17 @@
-package app.paralino.android.fcm
+package app.paralino.android.remote.sync
 
 import android.content.Context
 import android.content.pm.ServiceInfo
-import androidx.work.*
-import app.paralino.android.notification.PushSyncNotificationHandler
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
+import app.paralino.android.notification.SyncNotificationProvider
 import app.paralino.core.logg
 import app.paralino.core.notifications.PushNotificationHandler
 import org.koin.core.component.KoinComponent
@@ -30,8 +38,8 @@ class PushNotificationsSyncWorker(
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
         return ForegroundInfo(
-            PushSyncNotificationHandler.notificationId,
-            PushSyncNotificationHandler.create(applicationContext),
+            SyncNotificationProvider.PushSyncNotification.notificationId,
+            SyncNotificationProvider.PushSyncNotification.create(applicationContext),
             ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
         )
     }
