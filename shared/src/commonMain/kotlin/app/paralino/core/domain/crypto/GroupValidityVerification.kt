@@ -207,7 +207,6 @@ class GroupValidityVerification(
     }
 
     suspend fun checkIntegrityForDeviceKey(group: UserGroupWithMembers): IntegrityResult {
-
         val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = group.id)
         if (keyIntegrity.isNullOrBlank()) {
             logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id} (missing)")
@@ -245,18 +244,17 @@ class GroupValidityVerification(
             return null
         }
 
-        val remoteIntegrity: GroupIntegrity
-        val realIntegritySignature = try {
-            remoteIntegrity = try {
-                cryptoCore.decryptDataWithKey(
-                    data = myIntegrity,
-                    key = userKeyRepo.personalKey()
-                ).let { BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it) }
-            } catch (e: Exception) {
-                logg.tag(tag).w("CORRUPTED for $groupId - Error parsing: ${e.message}")
-                return null
-            }
+        val remoteIntegrity = try {
+            cryptoCore.decryptDataWithKey(
+                data = myIntegrity,
+                key = userKeyRepo.personalKey()
+            ).let { BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it) }
+        } catch (e: Exception) {
+            logg.tag(tag).w("CORRUPTED for $groupId - Error parsing: ${e.message}")
+            return null
+        }
 
+        val realIntegritySignature = try {
             GroupIntegrity.createSignature(
                 hashProvider = cryptoCore.hashProvider,
                 serverIntegrity = serverIntegrity,
