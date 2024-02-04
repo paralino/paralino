@@ -33,7 +33,8 @@ struct MainApp: App {
                 switch newScenePhase {
                 case .active:
                     appDelegate.appInForeground()
-                case .inactive: break
+                case .inactive: 
+                    appDelegate.appInactive()
                 case .background:
                     appDelegate.appInBackground()
                 @unknown default:

@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 import shared
+import UserNotifications
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
@@ -86,6 +87,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        notifyUser(id: "placeEnter_\(region.identifier)", message: "User entered place \(region.identifier)")
         DispatchQueue.main.async { [weak self] in
             Task {
                 try await self?.placeRepo.placesEnter(placesIds: [region.identifier])
@@ -94,10 +96,32 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        notifyUser(id: "placeExit_\(region.identifier)", message: "User exited place \(region.identifier)")
         DispatchQueue.main.async { [weak self] in
             Task {
                 try await self?.placeRepo.placesExit(placesIds: [region.identifier])
             }
         }
+    }
+    
+    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
+        notifyUser(id: "LocationResume", message: "Location updates are paused")
+    }
+    
+    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
+        notifyUser(id: "LocationResume", message: "Location updates are resumed")
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        notifyUser(id: "LocationResume", message: "Permission changed: \(manager.authorizationStatus)")
+    }
+    
+    private func notifyUser(id: String, message: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Paralino location updates"
+        content.body = message
+    
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request) { (error : Error?) in }
     }
 }

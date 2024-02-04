@@ -11,7 +11,7 @@ import shared
 import UserNotifications
 import CoreLocation
 
-class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
+class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNotificationCenterDelegate {
     
     static internal var shared: AppDelegate!
     
@@ -27,6 +27,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
         Logr.i(tag:"delegate", message: "App start")
         
         locationManager.manager.delegate = locationManager
+        UNUserNotificationCenter.current().delegate = self
         
         coreAppManager.locationSharingStatus { [weak self] state in
             switch ResourceSwift<KotlinBoolean>.init(data: state) {
@@ -55,5 +56,13 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     func appInBackground() {
         Logr.i(tag:"delegate", message: "App in background")
         coreAppManager.onAppInactive()
+    }
+    
+    func appInactive() {
+        Logr.i(tag:"delegate", message: "App inactive")
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.list, .banner, .badge, .sound])
     }
 }
