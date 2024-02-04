@@ -6,8 +6,8 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
 import app.paralino.android.notification.LocationNotificationHandler
+import app.paralino.android.remote.sync.FullRefreshSyncWorker
 import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
-import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
@@ -62,7 +62,6 @@ class LocationService : Service() {
     private val deviceApiProvider: IDeviceApiProvider by inject()
     private val placesRepository: PlacesRepository by inject()
     private val geofenceManager: IGeofenceManager by inject()
-    private val fullRefresh: RefreshEverythingUseCase by inject()
 
     private var launchedInForeground: Boolean = false
 
@@ -141,18 +140,7 @@ class LocationService : Service() {
         updateNotification()
 
         logg.v(this.hashCode().toString(), "Subscribing to location updates")
-
-        serviceDefaultScope.launch {
-            while (isActive) {
-                // try refreshing everything every 4 hours
-                // if refresh already occurred in last 20 hours it will be skipped
-                fullRefresh.refreshEverything(
-                    forceGroupRefresh = false,
-                    minimumDelayMillis = 20.hours.inWholeMilliseconds
-                )
-                delay(4.hours.inWholeMilliseconds)
-            }
-        }
+        FullRefreshSyncWorker.createRequest(applicationContext)
 
         serviceDefaultScope.launch {
             while (isActive) {
@@ -267,6 +255,7 @@ class LocationService : Service() {
 
     private fun stopAll() {
         logg.v(this.hashCode().toString(), "Stop all - location service")
+        FullRefreshSyncWorker.cancelWork(applicationContext)
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
