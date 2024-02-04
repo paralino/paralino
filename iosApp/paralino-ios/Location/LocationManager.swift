@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 import shared
 
-class LocationManager: NSObject, ObservableObject {
+class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     let manager = CLLocationManager()
     
@@ -17,9 +17,8 @@ class LocationManager: NSObject, ObservableObject {
 
     @Published var location: CLLocationCoordinate2D?
 
-    init(delegate: CLLocationManagerDelegate) {
+    override init() {
         super.init()
-        manager.delegate = delegate
         manager.allowsBackgroundLocationUpdates = true
         manager.showsBackgroundLocationIndicator = true
         manager.pausesLocationUpdatesAutomatically = false
@@ -47,6 +46,7 @@ class LocationManager: NSObject, ObservableObject {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         guard let location = locations.last else { return }
+        self.location = location.coordinate
         
         let accuracy: Float = if !location.horizontalAccuracy.isNaN && location.horizontalAccuracy > 0 { Float(location.horizontalAccuracy) } else { 0 }
         let speed: KotlinFloat? = if !location.speed.isNaN && location.speed > 0 { KotlinFloat(floatLiteral: location.speed) } else { nil }

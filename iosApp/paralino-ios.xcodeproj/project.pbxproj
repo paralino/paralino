@@ -229,7 +229,6 @@
 			isa = PBXGroup;
 			children = (
 				254B6F2729EC7C50008B1458 /* Image+Extensions.swift */,
-				2529CAAB2B113C4D00D88042 /* LocationManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -337,6 +336,14 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		25B4E5DB2B6F994200F2E24D /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				2529CAAB2B113C4D00D88042 /* LocationManager.swift */,
+			);
+			path = Location;
+			sourceTree = "<group>";
+		};
 		25C03A5B29CCE77100646364 = {
 			isa = PBXGroup;
 			children = (
@@ -359,13 +366,14 @@
 			isa = PBXGroup;
 			children = (
 				2529CAAA2B10CF1500D88042 /* Info.plist */,
-				254B6F3529EC8056008B1458 /* Localization */,
-				256C5A5829E8934E00FCF0B7 /* UI */,
 				252EA02329E03D2400338956 /* Crypto */,
-				252EA01029DDA66400338956 /* Remote */,
+				25B4E5DB2B6F994200F2E24D /* Location */,
+				254B6F3529EC8056008B1458 /* Localization */,
 				252E361129CF5EB0008FC635 /* Provider */,
-				25C03A6B29CCE77200646364 /* Assets.xcassets */,
+				252EA01029DDA66400338956 /* Remote */,
+				256C5A5829E8934E00FCF0B7 /* UI */,
 				25C03A6D29CCE77200646364 /* Preview Content */,
+				25C03A6B29CCE77200646364 /* Assets.xcassets */,
 				25D8A43429CE24A00023A0E5 /* AppDelegate.swift */,
 			);
 			path = "paralino-ios";

@@ -3,6 +3,7 @@ package app.paralino.core
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.models.Resource
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.ILocationStatusProvider
@@ -55,6 +56,9 @@ class CoreAppManager(
         wasInBackground = true
     }
 
+    fun locationSharingStatus(onChange: (Resource<Boolean>) -> Unit) {
+        locationSharing.sharingStatus.onEach { onChange(it) }.launchIn(scopeProvider.defaultIOScope)
+    }
 
     fun updateLocationStatus() {
         locationStatus.refreshLocationStatus()
@@ -83,5 +87,4 @@ class CoreAppManager(
             }
         }
     }
-
 }

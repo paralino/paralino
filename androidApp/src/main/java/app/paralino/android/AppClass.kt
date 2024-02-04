@@ -53,7 +53,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
     override val defaultDispatcher: CoroutineContext get() = Dispatchers.Default
     override val ioDispatcher: CoroutineContext get() = Dispatchers.IO
 
-    private val launcher: PreCheckControl by inject()
+    private val androidPreCheck: PreCheckControl by inject()
     private val coreAppManager: CoreAppManager by inject()
 
     val isForeground get() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
@@ -75,7 +75,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
-        launcher.start()
+        androidPreCheck.start()
         coreAppManager.onAppStart()
         coreAppManager.locationSharing.sharingStatus
             .onEach {

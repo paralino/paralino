@@ -11,28 +11,38 @@ import shared
 import UserNotifications
 import CoreLocation
 
-class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, CLLocationManagerDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
+    
+    static internal var shared: AppDelegate!
     
     let locationStatusProvider = LocationStatusProvider()
     lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
     
     lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
-    lazy var locationManager = LocationManager(delegate: self)
+    lazy var locationManager = LocationManager()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         initKoin(locationStatusProvider: locationStatusProvider)
         
         Logr.i(tag:"delegate", message: "App start")
         
+        locationManager.manager.delegate = locationManager
+        
+        coreAppManager.locationSharingStatus { [weak self] state in
+            switch ResourceSwift<KotlinBoolean>.init(data: state) {
+            case .notInitialized:
+                break
+            case .ready(data: let data):
+                if data.boolValue {
+                    self?.locationManager.startLocationUpdates()
+                } else {
+                    self?.locationManager.stopLocationUpdates()
+                }
+            }
+        }
+        
         coreAppManager.onAppStart()
         coreAppManager.onAppActive()
-        
-        if locationStatusProvider.currentStatus.isBackgroundPermissionAllowed
-            && locationSharingManager.isSharingActive() {
-            locationManager.startLocationUpdates()
-        } else {
-            locationManager.stopLocationUpdates()
-        }
         
         return true
     }
@@ -45,9 +55,5 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, CLLocation
     func appInBackground() {
         Logr.i(tag:"delegate", message: "App in background")
         coreAppManager.onAppInactive()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        locationManager.locationManager(manager, didUpdateLocations: locations)
     }
 }
