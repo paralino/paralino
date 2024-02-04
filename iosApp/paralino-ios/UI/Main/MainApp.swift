@@ -15,6 +15,10 @@ struct MainApp: App {
     @StateObject var appState = MainAppObject()
     @Environment(\.scenePhase) var scenePhase
     
+    init() {
+        AppDelegate.shared = appDelegate
+    }
+    
     var body: some Scene {
         WindowGroup {
             ZStack {

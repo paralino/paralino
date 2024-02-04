@@ -34,6 +34,7 @@ data class GroupPlaceWithSettings constructor(
 )
 
 data class GroupPlaceGeofenceData constructor(
+    val groupId: String,
     val placeId: String,
     val lat: Double,
     val lng: Double,

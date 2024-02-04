@@ -45,6 +45,7 @@ import app.paralino.core.repo.api.RealtimeApiWrapperIOS
 import app.paralino.core.repo.api.UserApiWrapperIOS
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationRepositoryWrapper
+import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -138,6 +139,7 @@ object KoinIOS {
     object Instances: KoinComponent {
         val coreAppManager: CoreAppManager get() = get()
         val locationRepo: LocationRepositoryWrapper get() = LocationRepositoryWrapper(get())
+        val placesRepo: PlacesRepository get() = get()
         val locationSharingManager: LocationSharingManager get() = get()
     }
 

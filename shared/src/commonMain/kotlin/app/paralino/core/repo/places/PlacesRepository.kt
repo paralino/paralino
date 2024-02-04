@@ -31,9 +31,15 @@ class PlacesRepository constructor(
         return local.getNumberOfPlaces().map { it > 0 }
     }
 
-    fun getAllActivePlaces(): Flow<List<GroupPlace>> {
+    fun subscribeToAllActivePlaces(): Flow<List<GroupPlace>> {
         return local.getAllPlaces().map {
             it.filter { locationSharingManager.isSharingActiveForGroup(it.groupId) }
+        }
+    }
+
+    suspend fun getAllActivePlaces(): List<GroupPlace> {
+        return local.getAllPlacesOnce().filter {
+            locationSharingManager.isSharingActiveForGroup(it.groupId)
         }
     }
 
@@ -152,7 +158,9 @@ class PlacesRepository constructor(
     }
 
     suspend fun processLocation(data: LocationDataModel) {
-        val places = local.getAllPlaces().first()
+        // TODO filter out frequent calls and calculations of distance between points
+
+        val places = getAllActivePlaces()
 
         val entered = mutableListOf<String>()
         val exited = mutableListOf<String>()
@@ -162,6 +170,7 @@ class PlacesRepository constructor(
                 val distance = geofenceManager.distanceBetweenPoints(
                     data,
                     GroupPlaceGeofenceData(
+                        groupId = place.groupId,
                         placeId = place.id,
                         lat = placeData.lat,
                         lng = placeData.lng,

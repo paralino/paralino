@@ -109,6 +109,13 @@ class PlacesLocalDataSource(
             }
     }
 
+    suspend fun getAllPlacesOnce(): List<GroupPlace> {
+        return database.placesQueries
+            .getAll()
+            .executeAsList()
+            .map { mapper.local2Core(it) }
+    }
+
     fun getNumberOfPlaces(): Flow<Int> {
         return database.mapToOneOrNull { placesQueries.getPlacesCount() }
             .filterNotNull()

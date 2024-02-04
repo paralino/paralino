@@ -230,11 +230,12 @@ class LocationService : Service() {
             }
         }
 
-        val places = placesRepository.getAllActivePlaces()
+        val places = placesRepository.subscribeToAllActivePlaces()
             .map {
                 it.mapNotNull { place ->
                     place.data.data?.let {
                         GroupPlaceGeofenceData(
+                            groupId = place.groupId,
                             placeId = place.id,
                             lat = it.lat,
                             lng = it.lng,
