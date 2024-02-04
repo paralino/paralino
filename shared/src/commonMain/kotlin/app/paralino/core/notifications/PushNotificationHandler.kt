@@ -81,10 +81,7 @@ class PushNotificationHandler constructor(
                 onDelete(push)
             }
             PushNotificationRaw.pushTypeGroupMemberAdd -> {
-                refreshEverything.scheduleRefreshAllGroupsWithPlaces(
-                    key = "group_activity",
-                    time = 0
-                )
+                refreshEverything.scheduleRefreshAllGroupsWithPlaces(time = 0)
                 groupMemberAddPush.process(push)
                 onDelete(push)
             }
