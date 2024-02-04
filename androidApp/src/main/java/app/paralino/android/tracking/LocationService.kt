@@ -99,12 +99,7 @@ class LocationService : Service() {
                 } else {
                     locationInitHandler.stopLocationUpdates()
                 }
-                updateNotification()
             }
-            .launchIn(serviceDefaultScope)
-
-        deviceApiProvider.connectionStatusProvider.status
-            .onEach { updateNotification() }
             .launchIn(serviceDefaultScope)
 
         locationSharingManager.allContractsFlow
@@ -189,6 +184,7 @@ class LocationService : Service() {
         deviceApiProvider.deviceStatus
             .onEach {
                 logg.v("device_status", "Status changed: $it")
+                updateNotification()
                 saveLocation(null)
             }
             .launchIn(serviceDefaultScope)
