@@ -133,46 +133,43 @@ class GroupsRemoteSource constructor(
     }
 
     suspend fun getGroupWithMembers(groupId: String): GroupWithMembersRaw {
-        return blocking {
+        val group = api.getDocument(
+            databaseType = BackendDatabaseType.DATA,
+            remoteConfig.resourceIds.collectionGroupsID,
+            groupId
+        ).parseGroup()
 
-            val group = api.getDocument(
-                databaseType = BackendDatabaseType.DATA,
-                remoteConfig.resourceIds.collectionGroupsID,
-                groupId
-            ).parseGroup()
+        val members = api.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
+            keyValues = listOf("groupId" to groupId)
+        ).map { it.parseGroupMember() }
 
-            val members = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
-                keyValues = listOf("groupId" to groupId)
-            ).map { it.parseGroupMember() }
+        val settings = api.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
+            keyValues = listOf("groupId" to groupId)
+        ).map { it.parseGroupSettings() }
+            .takeIf { it.size == 1 && it.first().ownerUserId == config.userId }
+            ?.firstOrNull()
 
-            val settings = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
-                keyValues = listOf("groupId" to groupId)
-            ).map { it.parseGroupSettings() }
-                .takeIf { it.size == 1 && it.first().ownerUserId == config.userId }
-                ?.firstOrNull()
+        val locations = api.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+            keyValues = listOf("groupId" to groupId)
+        ).map { it.parseMemberLocation() }
 
-            val locations = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
-                keyValues = listOf("groupId" to groupId)
-            ).map { it.parseMemberLocation() }
-
-            GroupWithMembersRaw(
-                group = group,
-                members = members.map { member ->
-                    MemberWithLocationsRaw(
-                        member = member.copy(settingsRaw = settings?.takeIf { it.id == member.id }),
-                        locations = locations.filter { location ->
-                            member.locationIds.contains(location.id)
-                        }
-                    )
-                }
-            )
-        }
+        return GroupWithMembersRaw(
+            group = group,
+            members = members.map { member ->
+                MemberWithLocationsRaw(
+                    member = member.copy(settingsRaw = settings?.takeIf { it.id == member.id }),
+                    locations = locations.filter { location ->
+                        member.locationIds.contains(location.id)
+                    }
+                )
+            }
+        )
     }
 
     suspend fun deleteGroup(groupId: String) {

@@ -77,102 +77,98 @@ class GroupCreateUseCase(
         name: String,
         image: ImageModel,
     ): GroupWithMembersRaw {
-        return blocking {
+        val user = userRepository.cachedUser!!
+        val userData = user.data!!
+        val myData = MemberModelData(userData.userName, userData.userImage)
+        val myIdentityKeys = userKeyRepo.latestKeyPair()
 
-            val user = userRepository.cachedUser!!
-            val userData = user.data!!
-            val myData = MemberModelData(userData.userName, userData.userImage)
-            val myIdentityKeys = userKeyRepo.latestKeyPair()
+        val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
 
-            val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
+        val groupKey = cryptoCore.getNewSymmetricKey()
 
-            val groupKey = cryptoCore.getNewSymmetricKey()
+        val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
+            data = groupKey,
+            myPrivateKey = exchangeKeyPair.privateKey,
+            publicKey = exchangeKeyPair.publicKey
+        )
 
-            val encryptedGroupKey = cryptoCore.encryptDataWithKeyPair(
-                data = groupKey,
-                myPrivateKey = exchangeKeyPair.privateKey,
-                publicKey = exchangeKeyPair.publicKey
-            )
+        val signedPublicKey = cryptoCore.signData(
+            data = exchangeKeyPair.publicKey,
+            myPrivateKey = myIdentityKeys.privateKey
+        )
 
-            val signedPublicKey = cryptoCore.signData(
-                data = exchangeKeyPair.publicKey,
-                myPrivateKey = myIdentityKeys.privateKey
-            )
+        val userKeys = SimpleKeyPairData(
+            privateKey = exchangeKeyPair.privateKey,
+            publicKey = exchangeKeyPair.publicKey
+        )
 
-            val userKeys = SimpleKeyPairData(
-                privateKey = exchangeKeyPair.privateKey,
-                publicKey = exchangeKeyPair.publicKey
-            )
+        val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
+        val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
+            data = myIdentityKeys.publicKey,
+            type = HashType.SHA256
+        )
 
-            val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
-            val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
-                data = myIdentityKeys.publicKey,
-                type = HashType.SHA256
-            )
+        val memberVerification = cryptoCore.signData(
+            data = ownerVerificationSecret,
+            myPrivateKey = myIdentityKeys.privateKey,
+        )
 
-            val memberVerification = cryptoCore.signData(
-                data = ownerVerificationSecret,
-                myPrivateKey = myIdentityKeys.privateKey,
-            )
-
-            val groupIntegrity = GroupIntegrity(
-                timeUtc = nowUTC().toString(),
-                signature = GroupIntegrity.createSignature(
-                    hashProvider = cryptoCore.hashProvider,
-                    serverIntegrity = cryptoCore.hashProvider.computeHash(
-                        data = user.id,
-                        type = HashType.SHA256
-                    ),
-                    memberVerifications = listOf(memberVerification),
-                    encryptedMemberPublicKeys = listOf(signedPublicKey)
-                )
-            ).let {
-                cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(it),
-                    key = userKeyRepo.personalKey()
-                )
-            }
-
-            val payload = CreateGroupPayload(
-                encryptedGroupKey = encryptedGroupKey,
-                signedPublicKey = signedPublicKey,
-                ownerIdentityKey = myIdentityKeys.publicKey,
-                groupData = cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(groupData),
-                    key = groupKey
-                ),
-                groupMemberIntegrity = groupIntegrity,
-                keyId = cryptoCore.hashProvider.computeHash(
-                    data = exchangeKeyPair.publicKey,
+        val groupIntegrity = GroupIntegrity(
+            timeUtc = nowUTC().toString(),
+            signature = GroupIntegrity.createSignature(
+                hashProvider = cryptoCore.hashProvider,
+                serverIntegrity = cryptoCore.hashProvider.computeHash(
+                    data = user.id,
                     type = HashType.SHA256
                 ),
-                encryptedUserKeys = cryptoCore.encryptModel(
-                    data = userKeys,
-                    key = userKeyRepo.personalKey()
-                ),
-                memberVerification = memberVerification,
-                memberData = cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(myData),
-                    key = groupKey
-                )
+                memberVerifications = listOf(memberVerification),
+                encryptedMemberPublicKeys = listOf(signedPublicKey)
             )
-
-            val response = functionsApi.runAndWait(
-                function = ServerFunction.GROUP_CREATE,
-                data = payload
+        ).let {
+            cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(it),
+                key = userKeyRepo.personalKey()
             )
+        }
 
-            if (response.isSuccess) {
-                remote.getGroupWithMembers(response.response)
-            } else {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to create group",
-                    cause = Exception(response.stderr)
-                )
-            }
+        val payload = CreateGroupPayload(
+            encryptedGroupKey = encryptedGroupKey,
+            signedPublicKey = signedPublicKey,
+            ownerIdentityKey = myIdentityKeys.publicKey,
+            groupData = cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(groupData),
+                key = groupKey
+            ),
+            groupMemberIntegrity = groupIntegrity,
+            keyId = cryptoCore.hashProvider.computeHash(
+                data = exchangeKeyPair.publicKey,
+                type = HashType.SHA256
+            ),
+            encryptedUserKeys = cryptoCore.encryptModel(
+                data = userKeys,
+                key = userKeyRepo.personalKey()
+            ),
+            memberVerification = memberVerification,
+            memberData = cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(myData),
+                key = groupKey
+            )
+        )
+
+        val response = functionsApi.runAndWait(
+            function = ServerFunction.GROUP_CREATE,
+            data = payload
+        )
+
+        if (response.isSuccess) {
+            return remote.getGroupWithMembers(response.response)
+        } else {
+            // TODO throw better exception
+            throw BaseRemoteException.fromCode(
+                code = response.statusCode,
+                message = "Unable to create group",
+                cause = Exception(response.stderr)
+            )
         }
     }
-
 }
