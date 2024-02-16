@@ -149,7 +149,7 @@ val coreModule = module {
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
-    factory { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
+    factory { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
