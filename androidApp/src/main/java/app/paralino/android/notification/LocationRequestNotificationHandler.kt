@@ -4,7 +4,9 @@ import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationPerformanceType
+import app.paralino.core.models.raw.PushNotificationImportance
 import app.paralino.core.models.raw.PushNotificationRaw
+import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.notifications.ILocationRequestNotificationsHandler
 import app.paralino.core.notifications.LocationRequestNotificationPayload
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -13,7 +15,7 @@ import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class LocationRequestNotificationHandler(
@@ -34,32 +36,36 @@ class LocationRequestNotificationHandler(
             return
         }
 
-        if(push.isOlderThan(4.hours)) {
-            logg.w("Location request is expired")
-            return
-        }
+        val performanceType = push.performanceType ?: return
+        val key = push.pushType?.key ?: "location_request"
 
         coroutineScopeProvider.userSessionIOScope.launch {
             try {
                 startProcessing(
-                    key = "location_request",
-                    delayedThresholdMillis = 5.seconds.inWholeMilliseconds
+                    key = key,
+                    delayedThresholdMillis = push.processingDelay.inWholeMilliseconds
                 )
                 try {
-                    updateStatus(payload)
+                    updateStatusAndPerformance(
+                        groupId = payload.groupId,
+                        performanceType = performanceType
+                    )
                 } finally {
-                    stopProcessing(key = "location_request")
+                    stopProcessing(key = key)
                 }
             } catch (e: Exception) {
-                logg.w("Location request already in progress", e)
+                logg.w("Location $key already in progress", e)
             }
         }
     }
 
-    private suspend fun updateStatus(payload: LocationRequestNotificationPayload) {
-        if (!sharingManager.isSharingActiveForGroup(id = payload.groupId)) {
+    private suspend fun updateStatusAndPerformance(
+        groupId: String,
+        performanceType: LocationPerformanceType
+    ) {
+        if (!sharingManager.isSharingActiveForGroup(id = groupId)) {
             try {
-                deviceStatusProcessor.pushDeviceStatus(payload.groupId)
+                deviceStatusProcessor.pushDeviceStatus(groupId)
             } catch (e: Exception) {
                 logg.w("Error saving location status", e)
             }
@@ -67,14 +73,53 @@ class LocationRequestNotificationHandler(
         }
 
         locationPerformanceManager.locationBoostRequested(
-            groupId = payload.groupId,
-            performanceType = LocationPerformanceType.VERY_HIGH
+            groupId = groupId,
+            performanceType = performanceType
         )
 
         try {
-            deviceStatusProcessor.pushDeviceStatus(payload.groupId)
+            deviceStatusProcessor.pushDeviceStatus(groupId)
         } catch (e: Exception) {
             logg.w("Error saving location status", e)
         }
     }
+
+    private val PushNotificationRaw.performanceType: LocationPerformanceType?
+        get() {
+            return when (pushType) {
+                PushNotificationType.LOCATION_REQUEST -> {
+                    LocationPerformanceType.VERY_HIGH
+                }
+
+                PushNotificationType.LOCATION_FOCUS -> {
+                    when (pushImportance) {
+                        PushNotificationImportance.HIGH -> LocationPerformanceType.VERY_HIGH
+                        // TODO check if we should use HIGH by default (this was previous behavior)
+                        PushNotificationImportance.MEDIUM -> LocationPerformanceType.HIGH
+                        else -> LocationPerformanceType.MEDIUM_HIGH
+                    }
+                }
+
+                else -> null
+            }
+        }
+
+    private val PushNotificationRaw.processingDelay: Duration
+        get() {
+            return when (pushType) {
+                PushNotificationType.LOCATION_REQUEST -> {
+                    5.seconds
+                }
+
+                PushNotificationType.LOCATION_FOCUS -> {
+                    when (pushImportance) {
+                        PushNotificationImportance.HIGH -> 10.seconds
+                        PushNotificationImportance.MEDIUM -> 15.seconds
+                        else -> 20.seconds
+                    }
+                }
+
+                else -> 20.seconds
+            }
+        }
 }

@@ -6,7 +6,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.minutes
 
 @Serializable
 data class PushNotificationRaw constructor(
@@ -25,12 +24,10 @@ data class PushNotificationRaw constructor(
     val isExpired: Boolean get() = isOlderThan(1.days)
     fun isOlderThan(duration: Duration): Boolean = createdAt.plus(duration) < nowUTC()
 
+    val pushType: PushNotificationType? = PushNotificationType.fromKey(key = type)
+    val pushImportance: PushNotificationImportance? = PushNotificationImportance.fromKey(key = type)
+
     companion object {
-
-        const val pushTypePlaceAlert: String = "place_activity"
-        const val pushTypeGroupMemberAdd = "group_member_added"
-        const val pushTypeLocationRequest = "location_request"
-
         @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): PushNotificationRaw {
             return PushNotificationRaw(
@@ -44,6 +41,31 @@ data class PushNotificationRaw constructor(
                 importance = map["importance"] as String,
                 content = map["content"] as? String?,
             )
+        }
+    }
+}
+
+enum class PushNotificationImportance constructor(val key: String) {
+    NORMAL("normal"),
+    MEDIUM("medium"),
+    HIGH("high");
+
+    companion object {
+        fun fromKey(key: String?): PushNotificationImportance? {
+            return entries.firstOrNull { it.key == key }
+        }
+    }
+}
+
+enum class PushNotificationType constructor(val key: String) {
+    PLACE_ALERT("place_activity"),
+    GROUP_MEMBER_ADDED("group_member_added"),
+    LOCATION_REQUEST("location_request"),
+    LOCATION_FOCUS("location_focus");
+
+    companion object {
+        fun fromKey(key: String?): PushNotificationType? {
+            return entries.firstOrNull { it.key == key }
         }
     }
 }

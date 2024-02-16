@@ -6,6 +6,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.raw.PushNotificationRaw
+import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.delay
@@ -75,20 +76,22 @@ class PushNotificationHandler constructor(
             return
         }
 
-        when (push.type) {
-            PushNotificationRaw.pushTypePlaceAlert -> {
+        when (push.pushType) {
+            PushNotificationType.PLACE_ALERT -> {
                 placePush.process(push)
                 onDelete(push)
             }
-            PushNotificationRaw.pushTypeGroupMemberAdd -> {
+            PushNotificationType.GROUP_MEMBER_ADDED -> {
                 refreshEverything.scheduleRefreshAllGroupsWithPlaces(time = 0)
                 groupMemberAddPush.process(push)
                 onDelete(push)
             }
-            PushNotificationRaw.pushTypeLocationRequest -> {
+            PushNotificationType.LOCATION_REQUEST, PushNotificationType.LOCATION_FOCUS -> {
                 locationRequestPush.process(push)
                 onDelete(push)
             }
+
+            null -> {}
         }
     }
 }
