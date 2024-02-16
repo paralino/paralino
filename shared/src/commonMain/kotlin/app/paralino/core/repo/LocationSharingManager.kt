@@ -9,7 +9,7 @@ import app.paralino.core.repo.location.SharingContractsLocalDataSource
 import kotlinx.coroutines.flow.*
 
 class LocationSharingManager(
-    scopeProvider: ICoroutineScopeProvider,
+    private val scopeProvider: ICoroutineScopeProvider,
     private val contractsDataSource: SharingContractsLocalDataSource
 ) {
 
@@ -40,6 +40,10 @@ class LocationSharingManager(
         return allContractsFlow.map {
             it.data?.any { it.groupId == id } ?: false
         }.distinctUntilChanged()
+    }
+
+    fun locationSharingStatus(onChange: (Resource<Boolean>) -> Unit) {
+        sharingStatus.onEach { onChange(it) }.launchIn(scopeProvider.defaultIOScope)
     }
 
     fun sharingContractForGroup(id: String): Flow<LocationSharingContract?> {

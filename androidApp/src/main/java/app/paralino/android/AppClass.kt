@@ -20,14 +20,10 @@ import app.paralino.android.di.KoinSetup
 import app.paralino.android.tracking.LocationService
 import app.paralino.core.CoreAppManager
 import app.paralino.core.ParalinoCore
-import app.paralino.core.domain.user.LogoutUseCase
-import app.paralino.core.domain.user.RefreshEverythingUseCase
-import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.provider.*
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.user.UserRepository
 import io.sentry.*
 import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.*
@@ -55,6 +51,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
 
     private val androidPreCheck: PreCheckControl by inject()
     private val coreAppManager: CoreAppManager by inject()
+    private val locationSharingManager: LocationSharingManager by inject()
 
     val isForeground get() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
 
@@ -77,7 +74,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
 
         androidPreCheck.start()
         coreAppManager.onAppStart()
-        coreAppManager.locationSharing.sharingStatus
+        locationSharingManager.sharingStatus
             .onEach {
                 logg.v("Location sharing status changed: $it")
                 if (it.data == true) {

@@ -124,7 +124,7 @@ val mappersModule = module {
 
 
 val dataSourceModule = module {
-    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get()) }
     single { LocationLocalDataSource(get(), get()) }
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
