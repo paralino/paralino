@@ -2,13 +2,18 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.logg
 import app.paralino.core.repo.api.IRealtimeApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
-class RealtimeEventsWhileSharingUseCase constructor(
+class RealtimeEventsMaker constructor(
     private val realtimeApi: IRealtimeApi,
     private val realtimeEventsProcessor: RealtimeEventsProcessor
 ) {
 
+    // TODO remove location focus subscription
     fun listenForEventsWhileSharing(): Flow<Unit> {
         return realtimeApi.subscribeWithFilter(
             channels = listOf(
@@ -39,4 +44,28 @@ class RealtimeEventsWhileSharingUseCase constructor(
             .map { }
     }
 
+    fun listenForEventsWhileActive(): Flow<Unit> {
+        logg.tag("realtime_events").v("Start realtime subscription for map")
+        return realtimeApi.subscribeWithFilter(
+            channels = listOf(
+                realtimeEventsProcessor.membersChannel,
+                realtimeEventsProcessor.locationsChannel,
+                realtimeEventsProcessor.pushNotificationsChannel
+            ),
+            filters = listOf(
+                "${realtimeEventsProcessor.membersChannel}.*",
+                "${realtimeEventsProcessor.locationsChannel}.*",
+                "${realtimeEventsProcessor.pushNotificationsChannel}.*.create"
+            )
+        )
+            .onEach {
+                realtimeEventsProcessor.processEvent(it)
+            }
+            .catch {
+                logg.tag("realtime_events")
+                    .e("Error parsing member or location on map", it)
+            }
+            .distinctUntilChanged()
+            .map { }
+    }
 }

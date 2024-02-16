@@ -19,11 +19,11 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.LocationPayloadProvider
-import app.paralino.core.domain.location.LocationRefreshUseCase
+import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
+import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.domain.location.RealtimeEventsProcessor
-import app.paralino.core.domain.location.RealtimeEventsWhileSharingUseCase
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.user.AppAccountStateMonitor
@@ -153,8 +153,8 @@ val coreModule = module {
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
-    factory { LocationRefreshUseCase(get(), get(), get(), get(), get(), get()) }
-    factory { RealtimeEventsWhileSharingUseCase(get(), get()) }
+    factory { LocationRequestUseCase(get()) }
+    factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get()) }
@@ -192,5 +192,5 @@ val coreModule = module {
     single { CryptoUserKeyRepository(get(), get()) }
 
     factory { PushNotificationHandler(get(), get(), get(), get(), get()) }
-    single { LocationPerformanceManager(get(), get(), get(), config) }
+    single { LocationPerformanceManager(get(), get(), config) }
 }

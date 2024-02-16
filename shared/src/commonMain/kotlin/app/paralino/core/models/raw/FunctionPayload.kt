@@ -272,5 +272,11 @@ data class LocationRequestPayload constructor(
     val groupId: String,
     val userId: String,
     val locationId: String,
-    val force: Boolean
+)
+
+@Serializable
+data class LocationFocusPayload constructor(
+    val groupId: String,
+    val userId: String?,
+    val locationId: String?
 )

@@ -1,0 +1,98 @@
+package app.paralino.core.domain.location
+
+import app.paralino.core.logg
+import app.paralino.core.models.raw.LocationFocusPayload
+import app.paralino.core.models.raw.LocationRequestPayload
+import app.paralino.core.presentation.map.MapHomeScreenFocusType
+import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.utils.exceptions.BaseRemoteException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
+
+class LocationRequestUseCase constructor(
+    private val functionsApi: IFunctionsApi,
+) : BaseRepository() {
+
+    fun keepLocationFocus(
+        groupId: String,
+        focusType: MapHomeScreenFocusType
+    ): Flow<String> {
+        return flow {
+            do {
+                logg.tag("location_performance").v("User is looking at map, send ping")
+                emit("User is looking at map")
+                sendLocationFocusEvent(groupId, focusType)
+                val delayMillis = when (focusType) {
+                    is MapHomeScreenFocusType.MEMBER -> 20_000L
+                    else -> 60_000L
+                }
+                logg.tag("location_performance").v("Delay active ping by $delayMillis")
+                delay(delayMillis)
+            } while (currentCoroutineContext().isActive)
+        }.catch { emit("Error while boosting location") }
+    }
+
+    private suspend fun sendLocationFocusEvent(groupId: String, focusType: MapHomeScreenFocusType) {
+        triggerRemoteOnly {
+            try {
+                val requestPayload = LocationFocusPayload(
+                    groupId = groupId,
+                    userId = (focusType as? MapHomeScreenFocusType.MEMBER)?.memberUserId,
+                    locationId = (focusType as? MapHomeScreenFocusType.MEMBER)?.memberLocationId
+                )
+
+                val response = functionsApi.runAndWait(
+                    function = ServerFunction.LOCATION_FOCUS,
+                    data = requestPayload
+                )
+
+                if (!response.isSuccess) {
+                    logg.tag("location_performance").w(
+                        BaseRemoteException.fromCode(
+                            code = response.statusCode,
+                            message = "Unable to update location boost",
+                            cause = Exception(response.stderr)
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+    }
+
+    fun requestMemberDeviceLocation(
+        groupId: String,
+        memberUserId: String,
+        locationId: String
+    ): Flow<Unit> {
+        return flow {
+
+            val requestPayload = LocationRequestPayload(
+                groupId = groupId,
+                userId = memberUserId,
+                locationId = locationId
+            )
+
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.LOCATION_REQUEST,
+                data = requestPayload
+            )
+
+            if (!response.isSuccess) {
+                // TODO throw better exception
+                throw BaseRemoteException.fromCode(
+                    code = response.statusCode,
+                    message = "Unable to request location update",
+                    cause = Exception(response.stderr)
+                )
+            }
+        }
+    }
+}

@@ -2,7 +2,9 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
 import app.paralino.core.data.db.AppConfig
-import app.paralino.core.domain.location.LocationRefreshUseCase
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.location.LocationRequestUseCase
+import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
@@ -13,7 +15,6 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberState
 import app.paralino.core.presentation.groups.MemberAction
@@ -35,14 +36,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -53,7 +55,9 @@ class MapHomeViewModel constructor(
     private val sharingManager: LocationSharingManager,
     private val groupRepo: GroupRepository,
     private val placesRepo: PlacesRepository,
-    private val locationRefreshUseCase: LocationRefreshUseCase,
+    private val groupPreRefresh: GroupPreRefreshUseCase,
+    private val locationRequestUseCase: LocationRequestUseCase,
+    private val realtimeEvents: RealtimeEventsMaker,
     private val userRepository: UserRepository,
     private val config: AppConfig,
     val valueFormatter: IValueFormatter
@@ -67,7 +71,7 @@ class MapHomeViewModel constructor(
 
     private val groupIdData = MutableStateFlow("")
 
-    private var locationSubscriptionJob: Job? = null
+    private var activePingSubscriptionJob: Job? = null
 
     val allGroups: StateFlow<Resource<List<UserGroup>>> = groupRepo.getAllGroupsLocally()
         .map { Resource.Ready(it) }
@@ -99,9 +103,27 @@ class MapHomeViewModel constructor(
             }
         }.launchIn(coroutineScope)
 
+        realtimeEvents.listenForEventsWhileActive()
+            .mapToPayload { Unit }
+            .launchIn(coroutineScope)
+
+        combine(
+            groupIdData,
+            uiState.map { it.asReady()?.mapHomeScreenFocusType }
+                .filterNotNull()
+                .distinctUntilChanged()
+        ) { groupId, focusType ->
+            keepLocationSubscriptionOn(
+                groupId,
+                focusType
+            )
+        }.launchIn(coroutineScope)
+
         groupIdData
-            .onEach { groupId ->
-                keepLocationSubscriptionOn(groupId)
+            .onEach {
+                if (!it.isNullOrBlank()) {
+                    groupPreRefresh.refreshGroupWithMembers(it)
+                }
             }
             .flatMapLatest {
                 if (it.isBlank()) {
@@ -141,15 +163,18 @@ class MapHomeViewModel constructor(
                                 )
                                 member.locations.map { location ->
 
-                                    val previousState = _uiState.value.asReady()?.members?.firstOrNull {
-                                        it.memberState.memberId == memberState.memberId && it.location?.locationId == location.id
-                                    }
+                                    val previousState =
+                                        _uiState.value.asReady()?.members?.firstOrNull {
+                                            it.memberState.memberId == memberState.memberId && it.location?.locationId == location.id
+                                        }
 
-                                    val canToggleOldLocation = if (location.isLocationAvailableButOld) {
-                                        previousState?.location?.isShownAsOldLocation?.let { true } ?: true
-                                    } else {
-                                        false
-                                    }
+                                    val canToggleOldLocation =
+                                        if (location.isLocationAvailableButOld) {
+                                            previousState?.location?.isShownAsOldLocation?.let { true }
+                                                ?: true
+                                        } else {
+                                            false
+                                        }
 
                                     val isLocationShown = if (canToggleOldLocation) {
                                         previousState?.location?.isShownAsOldLocation == true
@@ -179,7 +204,7 @@ class MapHomeViewModel constructor(
                                             currentDevice = location.deviceId == config.deviceId,
                                             showSpeedAndElevation = true,
                                             formatter = valueFormatter,
-                                            isShownAsOldLocation = if(canToggleOldLocation) isLocationShown else null
+                                            isShownAsOldLocation = if (canToggleOldLocation) isLocationShown else null
                                         ),
                                         lastPing = valueFormatter.getLastPing(location)
                                     )
@@ -315,6 +340,9 @@ class MapHomeViewModel constructor(
                 },
                 mapHomeScreenFocusType = when (it.mapHomeScreenFocusType) {
                     is MapHomeScreenFocusType.MEMBER -> MapHomeScreenFocusType.MEMBER(
+                        memberUserId = memberItem.memberState.userId,
+                        memberId = memberItem.memberState.memberId,
+                        memberLocationId = memberItem.singleLocation?.locationId,
                         memberKeyId = memberItem.keyId,
                         forceZoom = false
                     )
@@ -344,18 +372,31 @@ class MapHomeViewModel constructor(
         val isRequestForSameVisibleMarker = _uiState.value.asReady()
             ?.trackingMarker?.markerId == markerData.markerId
 
+        val memberStateForMarker = _uiState.value.asReady()
+            ?.members?.firstOrNull { it.keyId == markerData.markerId }
+
         if (marker != null) {
-            updateReadyState {
-                it.copy(
+            updateReadyState { readyState ->
+                readyState.copy(
                     trackingMarker = markerData.takeIf { !marker.hidden },
-                    markers = it.markers.map {
+                    markers = readyState.markers.map {
                         it.copy(focused = it.markerId == markerData.markerId)
                     },
                     mapHomeScreenFocusType = when (markerData.type) {
-                        MapPinType.MEMBER -> MapHomeScreenFocusType.MEMBER(
-                            memberKeyId = markerData.markerId,
-                            forceZoom = isRequestForSameVisibleMarker
-                        )
+                        MapPinType.MEMBER -> {
+                            if (memberStateForMarker != null) {
+                                MapHomeScreenFocusType.MEMBER(
+                                    memberUserId = memberStateForMarker.memberState.userId,
+                                    memberId = memberStateForMarker.memberState.memberId,
+                                    memberLocationId = memberStateForMarker.location?.locationId,
+                                    memberKeyId = markerData.markerId,
+                                    forceZoom = isRequestForSameVisibleMarker
+                                )
+                            } else {
+                                messageDispatcher.showSnackbar(MR.strings.group_member_no_location_info_message.localizedString())
+                                readyState.mapHomeScreenFocusType
+                            }
+                        }
 
                         MapPinType.PLACE -> MapHomeScreenFocusType.PLACE(placeId = markerData.markerId)
                     }
@@ -413,17 +454,18 @@ class MapHomeViewModel constructor(
         )
     }
 
-    fun setSelectedContentType(selectedContentType: MapSheetSelectedContentType) = updateReadyState {
-        it.copy(
-            trackingMarker = null,
-            markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
-            mapHomeScreenFocusType = when (selectedContentType) {
-                MapSheetSelectedContentType.PLACES -> MapHomeScreenFocusType.ALL_PLACES
-                MapSheetSelectedContentType.MEMBERS -> MapHomeScreenFocusType.ALL_MEMBERS
-            },
-            mapSheetSelectedContentType = selectedContentType
-        )
-    }
+    fun setSelectedContentType(selectedContentType: MapSheetSelectedContentType) =
+        updateReadyState {
+            it.copy(
+                trackingMarker = null,
+                markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
+                mapHomeScreenFocusType = when (selectedContentType) {
+                    MapSheetSelectedContentType.PLACES -> MapHomeScreenFocusType.ALL_PLACES
+                    MapSheetSelectedContentType.MEMBERS -> MapHomeScreenFocusType.ALL_MEMBERS
+                },
+                mapSheetSelectedContentType = selectedContentType
+            )
+        }
 
     fun switchMapMode() {
         _uiState.update {
@@ -467,19 +509,24 @@ class MapHomeViewModel constructor(
         } ?: emptyList()
     }
 
-    private fun keepLocationSubscriptionOn(groupId: String?) {
-        locationSubscriptionJob?.cancel()
+    private fun keepLocationSubscriptionOn(
+        groupId: String?,
+        focusType: MapHomeScreenFocusType
+    ) {
+        activePingSubscriptionJob?.cancel()
 
         if (groupId.isNullOrBlank()) {
-            logg.v("realtime", "Group id not valid, ignore realtime map subscription")
+            logg.v("realtime", "Group id not valid, ignore active ping")
             return
         }
 
         logg.tag("location_performance").v("Map active for $groupId")
-        locationSubscriptionJob = coroutineScope.launch {
-            logg.v("realtime", "Group ready ($groupId), activate realtime subscription")
-            locationRefreshUseCase.locationRefresh(groupId).mapToPayload { Unit }.collect()
-        }
+        activePingSubscriptionJob = locationRequestUseCase.keepLocationFocus(
+            groupId = groupId,
+            focusType = focusType
+        )
+            .onStart { logg.v("realtime", "Group ready ($groupId), send active ping") }
+            .launchIn(coroutineScope)
     }
 
     fun memberAction(action: MemberAction, state: GroupMemberItemState) {
@@ -518,7 +565,7 @@ class MapHomeViewModel constructor(
             return
         }
 
-        locationRefreshUseCase.refreshMemberDeviceLocation(
+        locationRequestUseCase.requestMemberDeviceLocation(
             groupId = state.memberState.groupId,
             memberUserId = state.memberState.userId,
             locationId = state.location.locationId
