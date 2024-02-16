@@ -10,7 +10,6 @@ import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.user.UserRepository
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -33,7 +32,6 @@ class CoreAppManager(
         sessionMonitor.listenForSessionExpired()
             .onEach {
                 logg.tag("account_session").v("Got session expired event - logout")
-                scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
                 logoutUseCase.logoutLocally()
             }
             .launchIn(scopeProvider.defaultScope)
