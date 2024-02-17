@@ -7,6 +7,7 @@ import app.paralino.core.models.raw.LocationRequestPayload
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.utils.exceptions.BaseRemoteException

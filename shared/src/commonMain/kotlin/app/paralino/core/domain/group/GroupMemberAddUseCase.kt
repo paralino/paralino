@@ -18,6 +18,7 @@ import app.paralino.core.models.raw.GroupMemberPublicKeyPayload
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException

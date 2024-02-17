@@ -13,6 +13,7 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
 

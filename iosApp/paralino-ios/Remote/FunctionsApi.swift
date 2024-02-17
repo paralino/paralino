@@ -9,7 +9,7 @@ import Foundation
 import shared
 import Appwrite
 
-class FunctionsApi: IFunctionsApi {
+class FunctionsApi: IFunctionsApiIOS {
     
     let remoteModule: AppwriteRemoteModule
     
@@ -18,9 +18,9 @@ class FunctionsApi: IFunctionsApi {
         super.init(deviceApiProvider: deviceApiProvider)
     }
     
-    override func runAsync(function: ServerFunction, data: String?) async throws -> String {
-        return try await remoteModule.execute { module in
-            try! await module.functions.createExecution(
+    override func runAsync(function: ServerFunction, data: String?) async throws -> Payload<NSString> {
+        return await remoteModule.execute { module in
+            let result = try! await module.functions.createExecution(
                 functionId: function.functionId,
                 body: data,
                 async: true,
@@ -28,11 +28,12 @@ class FunctionsApi: IFunctionsApi {
                 method: function.method,
                 headers: [clientHeader.first : clientHeader.second]
             ).id
+            return NSString(string: result)
         }
     }
     
-    override func runAndWait(function: ServerFunction, data: String?) async throws -> FunctionExecutionRaw {
-        return try await remoteModule.execute { module in
+    override func runAndWait(function: ServerFunction, data: String?) async throws -> Payload<FunctionExecutionRaw> {
+        return await remoteModule.execute { module in
             let result = try! await module.functions.createExecution(
                 functionId: function.functionId,
                 body: data,

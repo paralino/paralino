@@ -17,6 +17,7 @@ import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository

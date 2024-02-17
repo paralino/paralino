@@ -2,13 +2,14 @@ package app.paralino.android.remote.appwrite
 
 import app.paralino.core.models.raw.FunctionExecutionRaw
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.repo.api.BaseFunctionsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 
 class FunctionsApi constructor(
     private val remoteModule: AppWriteRemoteModule,
     deviceApiProvider: IDeviceApiProvider
-) : IFunctionsApi(deviceApiProvider) {
+) : BaseFunctionsApi(deviceApiProvider), IFunctionsApi {
 
     override suspend fun runAsync(function: ServerFunction, data: String?): String {
         return remoteModule.execute {

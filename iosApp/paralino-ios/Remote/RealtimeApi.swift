@@ -10,8 +10,14 @@ import shared
 import Appwrite
 
 class RealtimeApi: IRealtimeApiIOS {
+    
+    let remoteModule: AppwriteRemoteModule
+    
+    init(remoteModule: AppwriteRemoteModule) {
+        self.remoteModule = remoteModule
+    }
+    
     func subscribeWithFilter(channels: [String], filters: [String], onResult: @escaping (RealtimeResponse<NSDictionary>) -> Void) -> () -> Void {
-        
         let subscription = remoteModule.realtime.subscribe(channels: Set(channels.map { $0 })) { response in
             if filters.isEmpty || (response.events?.contains(where: { event in filters.contains(where: { filter in filter == event}) }) ?? false) {
                 onResult(
@@ -29,13 +35,4 @@ class RealtimeApi: IRealtimeApiIOS {
             subscription.close()
         }
     }
-    
-    
-    let remoteModule: AppwriteRemoteModule
-    
-    init(remoteModule: AppwriteRemoteModule) {
-        self.remoteModule = remoteModule
-    }
-    
-    
 }

@@ -21,6 +21,7 @@ import app.paralino.core.models.raw.MemberLocationDataPayload
 import app.paralino.core.models.raw.UpdateGroupMemberSenderKeysPayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException

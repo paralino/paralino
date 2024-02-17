@@ -37,9 +37,11 @@ import app.paralino.core.presentation.settings.passwordchange.ChangePasswordView
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.DocumentApiWrapper
+import app.paralino.core.repo.api.FunctionsApiWrapper
 import app.paralino.core.repo.api.IDocumentApiIOS
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.IFunctionsApiIOS
 import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.api.IRealtimeApiIOS
 import app.paralino.core.repo.api.IUserApi
@@ -72,7 +74,7 @@ object KoinIOS {
         remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
         documentsApi: (IRemoteModule, BackendConfig) -> IDocumentApiIOS,
         userApi: (IRemoteModule, BackendConfig) -> IUserApiIOS,
-        functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApi,
+        functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApiIOS,
         realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
         cryptoServiceProvider: ICryptoServiceProviderIOS,
         valueFormatter: IValueFormatter
@@ -90,7 +92,7 @@ object KoinIOS {
                 single { backendConfig }
                 single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
                 single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
-                single { functionsApi(get(), get()) }
+                single { FunctionsApiWrapper(functionsApi(get(), get())) } bind IFunctionsApi::class
                 single { RealtimeApiWrapperIOS(realtimeApi(get(), get())) } bind IRealtimeApi::class
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
