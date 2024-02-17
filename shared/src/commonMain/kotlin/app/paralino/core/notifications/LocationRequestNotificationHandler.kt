@@ -1,4 +1,4 @@
-package app.paralino.android.notification
+package app.paralino.core.notifications
 
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
@@ -7,8 +7,6 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.PushNotificationImportance
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.models.raw.PushNotificationType
-import app.paralino.core.notifications.ILocationRequestNotificationsHandler
-import app.paralino.core.notifications.LocationRequestNotificationPayload
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationPerformanceManager

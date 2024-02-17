@@ -7,7 +7,7 @@ import app.paralino.android.data.PreCheckControl
 import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.notification.GroupActivityNotificationHandler
 import app.paralino.android.notification.LocationNotificationHandler
-import app.paralino.android.notification.LocationRequestNotificationHandler
+import app.paralino.core.notifications.LocationRequestNotificationHandler
 import app.paralino.android.notification.PlaceNotificationHandler
 import app.paralino.android.provider.ConnectionStatusProvider
 import app.paralino.android.provider.DeviceApiProvider
@@ -90,7 +90,6 @@ object KoinSetup {
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
         factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) } bind IPlaceNotificationsHandler::class
         factory { GroupActivityNotificationHandler(androidContext(), get(), get()) } bind IGroupMemberAddedNotificationsHandler::class
-        factory { LocationRequestNotificationHandler(get(), get(), get(), get()) } bind ILocationRequestNotificationsHandler::class
 
         single<IUserApi> { UserApi(get()) }
         single<IDocumentsApi> { DocumentsApi(get()) }

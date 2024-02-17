@@ -8,7 +8,6 @@ import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupMemberAddedNotificationsHandler
-import app.paralino.core.notifications.ILocationRequestNotificationsHandler
 import app.paralino.core.notifications.IPlaceNotificationsHandler
 import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
@@ -64,7 +63,6 @@ object KoinIOS {
         pushSetupProvider: IPushProviderManager,
         placeNotificationHandler: IPlaceNotificationsHandler,
         groupActivityNotificationHandler: IGroupMemberAddedNotificationsHandler,
-        locationRequestNotificationHandler: ILocationRequestNotificationsHandler,
         geofenceManager: IGeofenceManager,
         backendConfig: BackendConfig,
         remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
@@ -83,7 +81,6 @@ object KoinIOS {
                 single { pushSetupProvider }
                 factory { placeNotificationHandler }
                 factory { groupActivityNotificationHandler }
-                factory { locationRequestNotificationHandler }
                 single { geofenceManager }
                 single { remoteModule(get()) }
                 single { backendConfig }
