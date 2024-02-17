@@ -107,8 +107,12 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
         coreAppManager.onAppActive()
     }
 
-    override fun onStop(owner: LifecycleOwner) {
+    override fun onPause(owner: LifecycleOwner) {
         coreAppManager.onAppInactive()
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        coreAppManager.onAppBackground()
     }
 
     private val gpsReceiver = object: BroadcastReceiver() {

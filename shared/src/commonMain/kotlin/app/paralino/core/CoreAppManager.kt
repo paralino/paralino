@@ -7,8 +7,11 @@ import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.base.AppConfigRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CoreAppManager(
@@ -21,7 +24,8 @@ class CoreAppManager(
     private val locationStatus: ILocationStatusProvider
 ) {
 
-    private var wasInBackground: Boolean = false
+    private var _appLifecycleState = MutableStateFlow(AppLifecycleState())
+    val appLifecycleState = _appLifecycleState.asStateFlow()
 
     fun onAppStart() {
         sessionMonitor.listenForSessionExpired()
@@ -30,23 +34,48 @@ class CoreAppManager(
                 logoutUseCase.logoutLocally()
             }
             .launchIn(scopeProvider.defaultScope)
+
+        appLifecycleState.onEach {
+            if (appLifecycleState.value.current == AppLifecycleType.ACTIVE && appLifecycleState.value.previous == AppLifecycleType.BACKGROUND) {
+                logg.tag("app_state").v("App is active but was in background, refresh groups")
+                updateGroups()
+            }
+        }
+            .launchIn(scopeProvider.defaultScope)
     }
 
     fun onAppActive() {
         logg.tag("app_state").v("App is in foreground")
+        _appLifecycleState.update {
+            it.copy(
+                previous = it.current,
+                current = AppLifecycleType.ACTIVE
+            )
+        }
+
         updateLocationStatus()
         updateConnectionStatus()
         updateConfig()
-
-        if (wasInBackground) {
-            wasInBackground = false
-            updateGroups()
-        }
     }
 
     fun onAppInactive() {
+        logg.tag("app_state").v("App is inactive")
+        _appLifecycleState.update {
+            it.copy(
+                previous = it.current,
+                current = AppLifecycleType.INACTIVE
+            )
+        }
+    }
+
+    fun onAppBackground() {
         logg.tag("app_state").v("App is in background")
-        wasInBackground = true
+        _appLifecycleState.update {
+            it.copy(
+                previous = it.current,
+                current = AppLifecycleType.BACKGROUND
+            )
+        }
     }
 
     fun updateLocationStatus() {
@@ -76,4 +105,12 @@ class CoreAppManager(
             }
         }
     }
+}
+
+data class AppLifecycleState(
+    val previous: AppLifecycleType = AppLifecycleType.DESTROYED,
+    val current: AppLifecycleType = AppLifecycleType.DESTROYED
+)
+enum class AppLifecycleType {
+    ACTIVE, INACTIVE, BACKGROUND, DESTROYED
 }
