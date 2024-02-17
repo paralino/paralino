@@ -22,7 +22,7 @@ abstract class IDeviceApiProvider(
     }
 
     fun initialize() {
-        config = createConfig()
+        AppConfig.instance = createConfig()
 
         val logr = Logr
         logr.setLogr(createSystemLogr())

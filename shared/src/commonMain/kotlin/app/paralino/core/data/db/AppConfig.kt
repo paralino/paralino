@@ -13,6 +13,8 @@ class AppConfig(
 ) {
 
     companion object {
+        lateinit var instance: AppConfig
+
         const val keyToken = "prefs.profile.token"
         const val keyUserKey = "prefs.user.masterKey"
         const val keySessionKey = "prefs.user.sessionKey"

@@ -5,6 +5,7 @@ import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
+import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupMemberAddedNotificationsHandler
@@ -140,6 +141,7 @@ object KoinIOS {
         val placesRepo: PlacesRepository get() = get()
         val locationSharingManager: LocationSharingManager get() = get()
         val locationPerformanceManager: LocationPerformanceManager get() = get()
+        val userDataUpdate: UpdateUserDataUseCase get() = get()
     }
 
     object ViewModels: KoinComponent {

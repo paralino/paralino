@@ -10,6 +10,8 @@ import shared
 
 class PushSetupProvider: IPushProviderManager {
     
+    lazy var userDataUpdate: UpdateUserDataUseCase = { KoinIOS.Instances.shared.userDataUpdate }()
+    
     func logout() async throws {
         
     }
@@ -19,6 +21,16 @@ class PushSetupProvider: IPushProviderManager {
     }
     
     func syncPushToken() {
-        
+        DispatchQueue.main.async { [weak self] in
+            Task {
+                do {
+                    // TODO replace with correct token
+                    shared.AppConfig.companion.instance.pushTokenUnsynced = "NOOP_IOS_TOKEN"
+                    try await self?.userDataUpdate.registerPushTokenIfNeeded()
+                } catch let error {
+                    Logr.v(tag: "push_sync", message: "error syncing push token: \(error)")
+                }
+            }
+        }
     }
 }
