@@ -19,6 +19,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
     
     lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
+    lazy var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
     lazy var locationManager = LocationManager()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
@@ -39,6 +40,28 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
                 } else {
                     self?.locationManager.stopLocationUpdates()
                 }
+            }
+        }
+        
+        locationPerformanceManager.locationPerformanceStatus { model in
+            Logr.v(tag: "location_Test", message: "Location performance changed: \(model)")
+            switch model.current {
+            case .batterySaver: 
+                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyReduced
+                self.locationManager.manager.distanceFilter = 500
+            case .balanced:
+                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyKilometer
+                self.locationManager.manager.distanceFilter = 200
+            case .mediumHigh:
+                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+                self.locationManager.manager.distanceFilter = 30
+            case .high:
+                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyBest
+                self.locationManager.manager.distanceFilter = 2
+            case .veryHigh, .manualBoost:
+                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyBest
+                self.locationManager.manager.distanceFilter = kCLDistanceFilterNone
+            default: break
             }
         }
         
