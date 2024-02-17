@@ -64,6 +64,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             altitude: altitude
         )
         
+        Logr.v(tag: "location_Test", message: "Got location update")
+        
         DispatchQueue.main.async { [weak self] in
             Task {
                 do {

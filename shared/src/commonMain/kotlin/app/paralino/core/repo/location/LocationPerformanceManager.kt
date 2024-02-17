@@ -32,6 +32,9 @@ class LocationPerformanceManager constructor(
     private var performanceUpdateJob: Job? = null
     private var locationBoostTracker = mutableMapOf<Long, LocationPerformanceType>()
 
+    /**
+     * Used for subscription in iOS
+     */
     fun locationPerformanceStatus(onChange: (LocationPerformanceModel) -> Unit) {
         locationPerformanceType.onEach { onChange(it) }.launchIn(scope.defaultIOScope)
     }

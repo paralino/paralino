@@ -22,13 +22,15 @@ class LocationRequestUseCase constructor(
     private val locationPerformanceManager: LocationPerformanceManager
 ) : BaseRepository() {
 
+    // TODO not called while in background so location performance is not reset
+    // pass isActive flag here
     fun keepLocationFocus(
         groupId: String,
         focusType: MapHomeScreenFocusType
     ): Flow<String> {
         return flow {
             do {
-                logg.tag("location_performance").v("User is looking at map, send ping")
+                logg.tag("location_performance").v("User is looking at map, sending ping")
                 emit("User is looking at map")
                 locationPerformanceManager.locationBoostRequested(groupId, LocationPerformanceType.MEDIUM_HIGH)
                 sendLocationFocusEvent(groupId, focusType)
