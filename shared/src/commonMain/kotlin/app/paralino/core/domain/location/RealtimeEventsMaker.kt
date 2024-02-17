@@ -50,11 +50,14 @@ class RealtimeEventsMaker constructor(
             channels = listOf(
                 realtimeEventsProcessor.membersChannel,
                 realtimeEventsProcessor.locationsChannel,
+                realtimeEventsProcessor.placesChannel,
                 realtimeEventsProcessor.pushNotificationsChannel
             ),
             filters = listOf(
                 "${realtimeEventsProcessor.membersChannel}.*",
                 "${realtimeEventsProcessor.locationsChannel}.*",
+                "${realtimeEventsProcessor.placesChannel}.*.create",
+                "${realtimeEventsProcessor.placesChannel}.*.update",
                 "${realtimeEventsProcessor.pushNotificationsChannel}.*.create"
             )
         )
