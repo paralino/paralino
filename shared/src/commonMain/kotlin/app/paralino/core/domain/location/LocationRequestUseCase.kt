@@ -1,12 +1,14 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.logg
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.LocationFocusPayload
 import app.paralino.core.models.raw.LocationRequestPayload
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -17,6 +19,7 @@ import kotlinx.coroutines.isActive
 
 class LocationRequestUseCase constructor(
     private val functionsApi: IFunctionsApi,
+    private val locationPerformanceManager: LocationPerformanceManager
 ) : BaseRepository() {
 
     fun keepLocationFocus(
@@ -27,6 +30,7 @@ class LocationRequestUseCase constructor(
             do {
                 logg.tag("location_performance").v("User is looking at map, send ping")
                 emit("User is looking at map")
+                locationPerformanceManager.locationBoostRequested(groupId, LocationPerformanceType.MEDIUM_HIGH)
                 sendLocationFocusEvent(groupId, focusType)
                 val delayMillis = when (focusType) {
                     is MapHomeScreenFocusType.MEMBER -> 20_000L
