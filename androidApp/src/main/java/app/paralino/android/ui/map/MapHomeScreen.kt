@@ -169,14 +169,14 @@ private fun MapContent(
                 bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
                     0.dp
                 } else {
-                    (this.maxHeight - bottomOffset).coerceIn(0.dp, this.maxHeight * 0.4f)
+                    (this.maxHeight - bottomOffset).coerceIn(0.dp, this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent)
                 }
             )
         )
 
         MapHomeScreenElements(
             state = uiState,
-            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(0.dp, this.maxHeight * 0.4f),
+            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(0.dp, this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent),
             onGroupPickerClick = {
                 appState.uiScope.launch {
                     val groups = vm.getAllGroups()

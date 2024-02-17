@@ -104,6 +104,7 @@ struct MapComponent: View {
                 }
             }
         }
+        .safeAreaPadding(.bottom, mapState.bottomSafeArea)
     }
 }
 

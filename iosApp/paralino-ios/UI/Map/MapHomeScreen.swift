@@ -35,7 +35,9 @@ struct MapHomeScreen: View {
                                 path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: nil, lng: nil)))
                             }
                         },
-                        onSheetOffsetChange: { offset in },
+                        onSheetOffsetChange: { offset in
+                            mapState.bottomSafeArea = CGFloat(offset.floatValue) - 35
+                        },
                         onGroupPickerClick: {
                             groupPicker = BottomSheetsScreen.GroupPicker(groups: mapState.vm.getAllGroups())
                         },
@@ -71,7 +73,6 @@ struct MapHomeScreen: View {
                                         }
                                     )
                                     .safeAreaPadding(.top, 70)
-                                    .safeAreaPadding(.bottom, 80)
                                 }
                             )
                         }
@@ -83,34 +84,6 @@ struct MapHomeScreen: View {
             } else {
                 ProgressView().progressViewStyle(CircularProgressViewStyle())
             }
-            
-            //            MapHomeScreenElements(
-            //                state: mapState.uiState,
-            //                pickGroup: {
-            //                    groupPicker = BottomSheetsScreen.GroupPicker(groups: mapState.vm.getAllGroups())
-            //                },
-            //                openProfile: {
-            //                    path.append(.settings(.settings))
-            //                },
-            //                focusOnGroup: {
-            //                    mapState.vm.toggleFocusOnMembers()
-            //                    let firstUserMarker = mapState.markers.first {
-            //                        $0.data.pinType == MapPinType.member
-            //                    }
-            //                    if let marker = firstUserMarker {
-            //                        region = MapCameraPosition.region(
-            //                            MKCoordinateRegion(
-            //                                center: CLLocationCoordinate2D(
-            //                                    latitude: marker.coordinate.latitude,
-            //                                    longitude: marker.coordinate.longitude
-            //                                ),
-            //                                span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
-            //                            )
-            //                        )
-            //                    }
-            //                }
-            //            )
-            
         }
         .groupPickerSheet(
             $groupPicker,

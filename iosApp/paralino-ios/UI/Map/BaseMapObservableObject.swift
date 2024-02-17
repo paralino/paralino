@@ -19,6 +19,8 @@ class BaseMapObservableObject : ObservableObject {
     @Published var isUpdatingRegion: Bool = false
     @Published var isSatelliteMode: Bool = false
     
+    @Published var bottomSafeArea: CGFloat = 80
+    
     func onMarkerTap(markerData: FocusedMarkerData) {}
     
     func focusToMarker(data: FocusedMarkerData?, forceZoom: Bool = true) {

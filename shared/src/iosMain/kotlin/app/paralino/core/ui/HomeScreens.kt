@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.coerceAtMost
+import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.groups.CreateGroupViewModel
@@ -47,6 +48,7 @@ import app.paralino.core.ui.login.GroupInitScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
+import app.paralino.core.ui.map.isCollapsed
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
@@ -219,9 +221,12 @@ object HomeScreens {
                     15.dp.toPx()
                 }
 
-                LaunchedEffect(bottomOffset) {
-                    snapshotFlow { bottomOffset }.collectLatest {
-                        val bottomOffset = height - bottomOffset
+                LaunchedEffect(sheetState.currentValue) {
+                    snapshotFlow { sheetState.currentValue }.collectLatest {
+                        val bottomOffset = (height - bottomOffset).coerceIn(
+                            0.dp,
+                            height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                        )
                         onSheetOffsetChange(bottomOffset.value)
                     }
                 }
@@ -255,7 +260,9 @@ object HomeScreens {
                         MapHomeScreenElements(
                             modifier = Modifier.padding(top = 50.dp),
                             state = uiState,
-                            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceAtMost(this.maxHeight * 0.4f),
+                            sheetPeekHeight = (this.maxHeight - bottomOffset)
+                                .plus(if (sheetState.currentValue == BottomSheetPosition.HIDDEN) 35.dp else 0.dp)
+                                .coerceAtMost(this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent),
                             onGroupPickerClick = onGroupPickerClick,
                             onGroupDetailsClick = onGroupDetailsClick,
                             onSharingStartClick = onSharingStartClick,
