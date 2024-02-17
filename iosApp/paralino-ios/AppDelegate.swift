@@ -29,7 +29,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
         locationManager.manager.delegate = locationManager
         UNUserNotificationCenter.current().delegate = self
         
-        coreAppManager.locationSharingStatus { [weak self] state in
+        locationSharingManager.locationSharingStatus { [weak self] state in
             switch ResourceSwift<KotlinBoolean>.init(data: state) {
             case .notInitialized:
                 break
