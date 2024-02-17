@@ -29,16 +29,21 @@ struct MainApp: App {
                 case .ready(let data): AppReadyScreen(userState: data)
                 }
             }
-            .onChange(of: scenePhase, initial: true) { old, newScenePhase in
-                switch newScenePhase {
-                case .active:
-                    appDelegate.appInForeground()
-                case .inactive: 
-                    appDelegate.appInactive()
-                case .background:
-                    appDelegate.appInBackground()
-                @unknown default:
-                    Logr.i(tag:"delegate", message: "App scene unknown")
+            .onChange(of: scenePhase, initial: true) { oldScene, newScene in
+                Logr.i(tag:"delegate", message: "App scene switch (old: \(oldScene)) - (new: \(newScene))")
+                if oldScene != newScene {
+                    switch newScene {
+                    case .active:
+                        appDelegate.appInForeground()
+                    case .inactive:
+                        appDelegate.appInactive()
+                    case .background:
+                        appDelegate.appInBackground()
+                    @unknown default:
+                        Logr.i(tag:"delegate", message: "App scene unknown")
+                    }
+                } else {
+                    Logr.i(tag:"delegate", message: "Same app scene phase triggered")
                 }
             }
             .environmentObject(appDelegate)
