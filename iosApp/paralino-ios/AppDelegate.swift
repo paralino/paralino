@@ -43,24 +43,24 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
             }
         }
         
-        locationPerformanceManager.locationPerformanceStatus { model in
+        locationPerformanceManager.locationPerformanceStatus { [weak self] model in
             Logr.v(tag: "location_Test", message: "Location performance changed: \(model)")
             switch model.current {
             case .batterySaver: 
-                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyReduced
-                self.locationManager.manager.distanceFilter = 500
+                self?.locationManager.manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+                self?.locationManager.manager.distanceFilter = 1500
             case .balanced:
-                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyKilometer
-                self.locationManager.manager.distanceFilter = 200
+                self?.locationManager.manager.desiredAccuracy = kCLLocationAccuracyKilometer
+                self?.locationManager.manager.distanceFilter = 300
             case .mediumHigh:
-                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-                self.locationManager.manager.distanceFilter = 30
+                self?.locationManager.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+                self?.locationManager.manager.distanceFilter = 50
             case .high:
-                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyBest
-                self.locationManager.manager.distanceFilter = 2
+                self?.locationManager.manager.desiredAccuracy = kCLLocationAccuracyBest
+                self?.locationManager.manager.distanceFilter = 5
             case .veryHigh, .manualBoost:
-                self.locationManager.manager.desiredAccuracy = kCLLocationAccuracyBest
-                self.locationManager.manager.distanceFilter = kCLDistanceFilterNone
+                self?.locationManager.manager.desiredAccuracy = kCLLocationAccuracyBest
+                self?.locationManager.manager.distanceFilter = kCLDistanceFilterNone
             default: break
             }
         }
