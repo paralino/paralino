@@ -2,23 +2,23 @@ package app.paralino.core.repo.api
 
 import app.paralino.core.models.BackendDatabaseType
 
-abstract class IDocumentsApi {
+interface IDocumentsApi {
 
-    abstract suspend fun createDocument(
+    suspend fun createDocument(
         databaseType: BackendDatabaseType,
         collectionId: String,
         docId: String? = null,
         data: Any
     ): Map<String, Any>
 
-    abstract suspend fun updateDocument(
+    suspend fun updateDocument(
         databaseType: BackendDatabaseType,
         collectionId: String,
         docId: String,
         data: Any
     ): Map<String, Any>
 
-    abstract suspend fun getDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String): Map<String, Any>
+    suspend fun getDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String): Map<String, Any>
 
     suspend fun listAllDocuments(
         databaseType: BackendDatabaseType,
@@ -39,7 +39,7 @@ abstract class IDocumentsApi {
         return result.toList()
     }
 
-    abstract suspend fun listDocuments(
+    suspend fun listDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
         keyValues: List<Pair<String, Any>> = emptyList(),
@@ -47,6 +47,6 @@ abstract class IDocumentsApi {
         onNewValues: (List<Map<String, Any>>) -> Boolean,
     )
 
-    abstract suspend fun deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String)
+    suspend fun deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String)
 
 }

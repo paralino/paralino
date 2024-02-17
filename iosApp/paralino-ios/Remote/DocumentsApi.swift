@@ -9,7 +9,7 @@ import Foundation
 import Appwrite
 import shared
 
-class DocumentsApi: IDocumentsApi {
+class DocumentsApi: IDocumentApiIOS {
     
     let remoteModule: AppwriteRemoteModule
     
@@ -17,45 +17,48 @@ class DocumentsApi: IDocumentsApi {
         self.remoteModule = remoteModule
     }
     
-    override func createDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String?, data: Any) async throws -> [String : Any] {
-        return try await remoteModule.execute { module in
-            try! await module.database.createDocument(
+    func createDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String?, data: Any) async throws -> Payload<NSDictionary> {
+        return await remoteModule.execute { module in
+            let result = try! await module.database.createDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: docId ?? module.backendConfig.resourceIds.uniqueIdPlaceholder,
                 data: data
             ).parseDocument()
+            return NSDictionary(dictionary: result)
         }
     }
     
-    override func deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws {
-        try await remoteModule.execute { module in
-            try! await module.database.deleteDocument(
+    func deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> Payload<KotlinUnit> {
+        await remoteModule.execute { module in
+            let result = try! await module.database.deleteDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: documentId
             )
+            return KotlinUnit()
         }
     }
     
-    override func getDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> [String : Any] {
-        return try await remoteModule.execute { module in
-            try! await module.database.getDocument(
+    func getDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> Payload<NSDictionary> {
+        return await remoteModule.execute { module in
+            let result = try! await module.database.getDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: documentId
             ).parseDocument()
+            return NSDictionary(dictionary: result)
         }
     }
     
-    override func listDocuments(
+    func listDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
         keyValues: [KotlinPair<NSString, AnyObject>],
         limit: Int32,
         onNewValues: @escaping ([[String : Any]]) -> KotlinBoolean
-    ) async throws {
-        try await remoteModule.execute { module in
+    ) async throws -> Payload<KotlinUnit> {
+        await remoteModule.execute { module in
             var cursor: String = ""
             repeat {
                 var queries: [String] = []
@@ -80,17 +83,19 @@ class DocumentsApi: IDocumentsApi {
                     cursor = ""
                 }
             } while !cursor.isEmpty
+            return KotlinUnit()
         }
     }
     
-    override func updateDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String, data: Any) async throws -> [String : Any] {
-        return try await remoteModule.execute { module in
-            try await module.database.updateDocument(
+    func updateDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String, data: Any) async throws -> Payload<NSDictionary> {
+        return await remoteModule.execute { module in
+            let result = try await module.database.updateDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: docId,
                 data: data
             ).parseDocument()
+            return NSDictionary(dictionary: result)
         }
     }
 }

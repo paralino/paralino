@@ -36,6 +36,8 @@ import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.api.DocumentApiWrapper
+import app.paralino.core.repo.api.IDocumentApiIOS
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IRealtimeApi
@@ -68,7 +70,7 @@ object KoinIOS {
         geofenceManager: IGeofenceManager,
         backendConfig: BackendConfig,
         remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
-        documentsApi: (IRemoteModule, BackendConfig) -> IDocumentsApi,
+        documentsApi: (IRemoteModule, BackendConfig) -> IDocumentApiIOS,
         userApi: (IRemoteModule, BackendConfig) -> IUserApiIOS,
         functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApi,
         realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
@@ -86,7 +88,7 @@ object KoinIOS {
                 single { geofenceManager }
                 single { remoteModule(get()) }
                 single { backendConfig }
-                single { documentsApi(get(), get()) }
+                single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
                 single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
                 single { functionsApi(get(), get()) }
                 single { RealtimeApiWrapperIOS(realtimeApi(get(), get())) } bind IRealtimeApi::class

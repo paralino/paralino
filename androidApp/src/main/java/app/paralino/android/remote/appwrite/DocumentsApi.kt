@@ -8,7 +8,7 @@ import io.appwrite.models.DocumentList
 
 class DocumentsApi constructor(
     private val remoteModule: AppWriteRemoteModule
-) : IDocumentsApi() {
+) : IDocumentsApi {
 
     override suspend fun createDocument(
         databaseType: BackendDatabaseType,
