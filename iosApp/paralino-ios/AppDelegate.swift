@@ -77,11 +77,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     
     func appInBackground() {
         Logr.i(tag:"delegate", message: "App in background")
-        coreAppManager.onAppInactive()
+        coreAppManager.onAppBackground()
     }
     
     func appInactive() {
         Logr.i(tag:"delegate", message: "App inactive")
+        coreAppManager.onAppInactive()
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
