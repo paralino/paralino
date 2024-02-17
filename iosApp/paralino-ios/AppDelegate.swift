@@ -45,6 +45,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
         
         locationPerformanceManager.locationPerformanceStatus { [weak self] model in
             Logr.v(tag: "location_Test", message: "Location performance changed: \(model)")
+            self?.notifyPerformance(performance: "\(model.current)")
             switch model.current {
             case .batterySaver: 
                 self?.locationManager.manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
@@ -87,5 +88,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.list, .banner, .badge, .sound])
+    }
+    
+    func notifyPerformance(performance: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Paralino tracking"
+        content.body = performance
+    
+        let request = UNNotificationRequest(identifier: "app_track", content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request) { (error : Error?) in }
     }
 }
