@@ -37,12 +37,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func startLocationUpdates() {
         manager.startUpdatingLocation()
-//        manager.startMonitoringSignificantLocationChanges()
+        manager.startMonitoringSignificantLocationChanges()
     }
     
     func stopLocationUpdates() {
         manager.stopUpdatingLocation()
-//        manager.stopMonitoringSignificantLocationChanges()
+        manager.stopMonitoringSignificantLocationChanges()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
