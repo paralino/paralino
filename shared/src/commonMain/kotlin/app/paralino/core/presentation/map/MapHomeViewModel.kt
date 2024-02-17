@@ -1,5 +1,8 @@
 package app.paralino.core.presentation.map
 
+import app.paralino.core.AppLifecycleState
+import app.paralino.core.AppLifecycleType
+import app.paralino.core.CoreAppManager
 import app.paralino.core.MR
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
@@ -38,6 +41,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -60,6 +64,7 @@ class MapHomeViewModel constructor(
     private val realtimeEvents: RealtimeEventsMaker,
     private val userRepository: UserRepository,
     private val config: AppConfig,
+    private val coreAppManager: CoreAppManager,
     val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
@@ -72,6 +77,7 @@ class MapHomeViewModel constructor(
     private val groupIdData = MutableStateFlow("")
 
     private var activePingSubscriptionJob: Job? = null
+    private var realtimeSubscriptionJob: Job? = null
 
     val allGroups: StateFlow<Resource<List<UserGroup>>> = groupRepo.getAllGroupsLocally()
         .map { Resource.Ready(it) }
@@ -103,21 +109,28 @@ class MapHomeViewModel constructor(
             }
         }.launchIn(coroutineScope)
 
-        realtimeEvents.listenForEventsWhileActive()
-            .mapToPayload { Unit }
-            .launchIn(coroutineScope)
-
         combine(
             groupIdData,
             uiState.map { it.asReady()?.mapHomeScreenFocusType }
                 .filterNotNull()
+                .distinctUntilChanged(),
+            coreAppManager.appLifecycleState
+                .map { it.current != AppLifecycleType.BACKGROUND }
                 .distinctUntilChanged()
-        ) { groupId, focusType ->
-            keepLocationSubscriptionOn(
-                groupId,
-                focusType
-            )
-        }.launchIn(coroutineScope)
+        ) { groupId, focusType, appState ->
+            Triple(groupId, focusType, appState)
+        }
+            .debounce(2000)
+            .distinctUntilChanged()
+            .onEach {
+                initRealtime()
+                keepLocationFocusOn(
+                    groupId = it.first,
+                    focusType = it.second,
+                    isActive = it.third
+                )
+            }
+            .launchIn(coroutineScope)
 
         groupIdData
             .onEach {
@@ -509,9 +522,10 @@ class MapHomeViewModel constructor(
         } ?: emptyList()
     }
 
-    private fun keepLocationSubscriptionOn(
+    private fun keepLocationFocusOn(
         groupId: String?,
-        focusType: MapHomeScreenFocusType
+        focusType: MapHomeScreenFocusType,
+        isActive: Boolean
     ) {
         activePingSubscriptionJob?.cancel()
 
@@ -520,12 +534,24 @@ class MapHomeViewModel constructor(
             return
         }
 
+        if (!isActive) {
+            logg.v("realtime", "App is in background, ignore active ping")
+            return
+        }
+
         logg.tag("location_performance").v("Map active for $groupId")
         activePingSubscriptionJob = locationRequestUseCase.keepLocationFocus(
             groupId = groupId,
             focusType = focusType
         )
-            .onStart { logg.v("realtime", "Group ready ($groupId), send active ping") }
+            .onStart { logg.v("realtime", "Group ready ($groupId), start active ping") }
+            .launchIn(coroutineScope)
+    }
+
+    private fun initRealtime() {
+        realtimeSubscriptionJob?.cancel()
+        realtimeSubscriptionJob = realtimeEvents.listenForEventsWhileActive()
+            .mapToPayload { Unit }
             .launchIn(coroutineScope)
     }
 
