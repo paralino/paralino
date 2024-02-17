@@ -11,13 +11,23 @@ import shared
 class PushSetupProvider: IPushProviderManager {
     
     lazy var userDataUpdate: UpdateUserDataUseCase = { KoinIOS.Instances.shared.userDataUpdate }()
+    lazy var pushHandler: PushNotificationHandler = { KoinIOS.Instances.shared.pushNotificationsHandler }()
+    
     
     func logout() async throws {
         
     }
     
     func syncPushNotifications() {
-        
+        DispatchQueue.main.async { [weak self] in
+            Task {
+                do {
+                    try await self?.pushHandler.checkForPushNotifications()
+                } catch let error {
+                    Logr.v(tag: "push_sync", message: "error syncing push notifications: \(error)")
+                }
+            }
+        }
     }
     
     func syncPushToken() {

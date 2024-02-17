@@ -10,6 +10,7 @@ import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupMemberAddedNotificationsHandler
 import app.paralino.core.notifications.IPlaceNotificationsHandler
+import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
@@ -141,6 +142,7 @@ object KoinIOS {
         val placesRepo: PlacesRepository get() = get()
         val locationSharingManager: LocationSharingManager get() = get()
         val locationPerformanceManager: LocationPerformanceManager get() = get()
+        val pushNotificationsHandler: PushNotificationHandler get() = get()
         val userDataUpdate: UpdateUserDataUseCase get() = get()
     }
 
