@@ -66,7 +66,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
         }
         
         coreAppManager.onAppStart()
-        coreAppManager.onAppActive()
         
         return true
     }
