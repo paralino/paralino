@@ -156,7 +156,7 @@ val coreModule = module {
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
-    factory { LocationRequestUseCase(get()) }
+    factory { LocationRequestUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -194,7 +194,7 @@ val coreModule = module {
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get()) }
 
-    factory { PushNotificationHandler(get(), get(), get(), get(), get()) }
+    single { PushNotificationHandler(get(), get(), get(), get(), get()) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get()) } bind ILocationRequestNotificationsHandler::class
     single { LocationPerformanceManager(get(), get(), config) }
 }
