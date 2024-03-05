@@ -2,28 +2,30 @@ package app.paralino.core.notifications
 
 import app.paralino.core.MR
 import app.paralino.core.config
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 
-class GroupMemberAddedNotificationsHandler(
+class GroupActivityNotificationsHandler(
     private val groupRepo: GroupRepository,
+    private val refreshEverything: RefreshEverythingUseCase,
+    private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val presenter: IGroupMemberAddedNotificationPresenter
-) : IPushNotificationsHandler {
+    private val presenter: IGroupActivityNotificationPresenter
+) {
+    suspend fun processMemberAdded(push: PushNotificationRaw) {
 
-    override fun process(push: PushNotificationRaw) {
+        val payload = push.content?.tryParseFromJson<GroupMemberAddedNotificationPayload>() ?: return
 
-        val payload = push.content?.let {
-            BaseRemoteModule.formatter.decodeFromString<GroupMemberAddedNotificationPayload>(it)
-        } ?: return
+        refreshEverything.scheduleRefreshAllGroupsWithPlaces(time = 0)
 
         scopeProvider.userSessionIOScope.launch {
             val title = try {
@@ -55,13 +57,29 @@ class GroupMemberAddedNotificationsHandler(
             }
 
             val notificationId = payload.hashCode()
-            presenter.notify(notificationId, title, message = null, push.createdAt.toEpochMilliseconds())
+            presenter.notify(
+                notificationId,
+                title,
+                message = null,
+                push.createdAt.toEpochMilliseconds()
+            )
         }
+    }
+
+    suspend fun processMemberDeleted(push: PushNotificationRaw) {
+        val payload = push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return
+        preRefreshUseCase.refreshGroupWithMembers(groupId = payload.groupId)
     }
 }
 
 @Serializable
 data class GroupMemberAddedNotificationPayload constructor(
+    val groupId: String,
+    val memberUserId: String
+)
+
+@Serializable
+data class GroupMemberDeletedNotificationPayload constructor(
     val groupId: String,
     val memberUserId: String
 )

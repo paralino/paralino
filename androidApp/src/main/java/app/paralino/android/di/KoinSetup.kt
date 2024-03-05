@@ -24,7 +24,7 @@ import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.notifications.IGroupMemberAddedNotificationPresenter
+import app.paralino.core.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
@@ -87,7 +87,7 @@ object KoinSetup {
 
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
         factory { PlaceNotificationPresenter(androidContext()) } bind IPlaceActivityNotificationPresenter::class
-        factory { GroupActivityNotificationPresenter(androidContext()) } bind IGroupMemberAddedNotificationPresenter::class
+        factory { GroupActivityNotificationPresenter(androidContext()) } bind IGroupActivityNotificationPresenter::class
 
         single<IUserApi> { UserApi(get()) }
         single<IDocumentsApi> { DocumentsApi(get()) }

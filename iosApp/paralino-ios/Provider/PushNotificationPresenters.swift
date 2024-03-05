@@ -20,7 +20,7 @@ class PlaceNotificationPresenter: IPlaceActivityNotificationPresenter {
     }
 }
 
-class GroupActivityNotificationPresenter: IGroupMemberAddedNotificationPresenter {
+class GroupActivityNotificationPresenter: IGroupActivityNotificationPresenter {
     func notify(notificationId: Int32, title: String, message: String?, timeMillis: Int64) {
         let content = UNMutableNotificationContent()
         content.title = title

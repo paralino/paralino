@@ -270,6 +270,8 @@
     <string name="place_notification_enter">%s je stigao/la u %s</string>
     <string name="place_notification_exit">%s je napustio/la %s</string>
     <string name="place_notification_default">Vaše mjesto ima aktivnost</string>
+    <string name="place_created_notification">Grupa %1$s ima novo mjesto: %2$s</string>
+    <string name="place_created_notification_default">Novo mjesto je kreirano u vašoj grupi</string>
     <string name="group_member_current_add_notification">🙌 Upravo ste se pridružili grupi %s</string>
     <string name="group_member_current_add_notification_default">🙌 Upravo ste se pridružili novoj grupi</string>
     <string name="group_member_add_notification">%1$s se upravo pridružio/la grupi %2$s</string>

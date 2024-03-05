@@ -1,7 +1,6 @@
 package app.paralino.core.notifications
 
 import app.paralino.core.config
-import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
@@ -13,10 +12,9 @@ import kotlinx.coroutines.delay
 
 class PushNotificationHandler constructor(
     private val placePush: PlaceActivityNotificationHandler,
-    private val groupMemberAddPush: GroupMemberAddedNotificationsHandler,
+    private val groupMemberActivityPush: GroupActivityNotificationsHandler,
     private val locationRequestPush: LocationRequestNotificationHandler,
     private val docApi: IDocumentsApi,
-    private val refreshEverything: RefreshEverythingUseCase
 ) {
 
     suspend fun checkForPushNotifications() {
@@ -82,18 +80,32 @@ class PushNotificationHandler constructor(
 
         when (push.pushType) {
             PushNotificationType.PLACE_ALERT -> {
-                placePush.process(push)
+                placePush.processPlaceActivity(push)
                 onDelete(push)
             }
 
             PushNotificationType.GROUP_MEMBER_ADDED -> {
-                refreshEverything.scheduleRefreshAllGroupsWithPlaces(time = 0)
-                groupMemberAddPush.process(push)
+                groupMemberActivityPush.processMemberAdded(push)
                 onDelete(push)
             }
 
             PushNotificationType.LOCATION_REQUEST, PushNotificationType.LOCATION_FOCUS -> {
                 locationRequestPush.process(push)
+                onDelete(push)
+            }
+
+            PushNotificationType.PLACE_CREATED -> {
+                placePush.processPlaceCreated(push)
+                onDelete(push)
+            }
+
+            PushNotificationType.PLACE_DELETED -> {
+                placePush.processPlaceDeleted(push)
+                onDelete(push)
+            }
+
+            PushNotificationType.GROUP_MEMBER_DELETED -> {
+                groupMemberActivityPush.processMemberDeleted(push)
                 onDelete(push)
             }
 

@@ -52,7 +52,7 @@ import app.paralino.core.models.mappers.SharingContractsMapper
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.mappers.UserMapperLocal
-import app.paralino.core.notifications.GroupMemberAddedNotificationsHandler
+import app.paralino.core.notifications.GroupActivityNotificationsHandler
 import app.paralino.core.notifications.PlaceActivityNotificationHandler
 import app.paralino.core.notifications.LocationRequestNotificationHandler
 import app.paralino.core.notifications.PushNotificationHandler
@@ -194,9 +194,9 @@ val coreModule = module {
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get()) }
 
-    single { PushNotificationHandler(get(), get(), get(), get(), get()) }
+    single { PushNotificationHandler(get(), get(), get(), get()) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get()) }
-    factory { PlaceActivityNotificationHandler(get(), get(), get(), get()) }
-    factory { GroupMemberAddedNotificationsHandler(get(), get(), get()) }
+    factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get(), get()) }
+    factory { GroupActivityNotificationsHandler(get(), get(), get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), config) }
 }

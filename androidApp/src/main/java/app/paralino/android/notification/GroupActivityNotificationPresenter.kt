@@ -17,10 +17,10 @@ import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.core.MR
 import app.paralino.core.logg
-import app.paralino.core.notifications.IGroupMemberAddedNotificationPresenter
+import app.paralino.core.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.ui.theme.AppColors
 
-class GroupActivityNotificationPresenter(private val context: Context) : IGroupMemberAddedNotificationPresenter {
+class GroupActivityNotificationPresenter(private val context: Context) : IGroupActivityNotificationPresenter {
 
     private val channelId = "group_activity_channel"
     private val notificationColor: Int by lazy {

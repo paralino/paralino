@@ -271,6 +271,8 @@
     <string name="place_notification_enter">%s arrived at %s</string>
     <string name="place_notification_exit">%s left %s</string>
     <string name="place_notification_default">Your place have activity</string>
+    <string name="place_created_notification">Group %1$s just got a new place: %2$s</string>
+    <string name="place_created_notification_default">New place is created in your group</string>
     <string name="group_member_current_add_notification">🙌 You just joined %s</string>
     <string name="group_member_current_add_notification_default">🙌 You just joined a new group</string>
     <string name="group_member_add_notification">%1$s just joined %2$s</string>

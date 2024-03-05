@@ -2,6 +2,7 @@ package app.paralino.core.utils.extensions
 
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 
 fun Any?.toJsonElement(): JsonElement = when (this) {
@@ -47,4 +48,12 @@ fun JsonElement.toMapOfPrimitives(): Any? {
 fun String.fromJsonObjectToMapOfPrimitives(): Map<String, Any?> {
     val json = BaseRemoteModule.formatter.parseToJsonElement(this).jsonObject
     return json.toMapOfPrimitives() as Map<String, Any?>
+}
+
+inline fun <reified T> String.tryParseFromJson(): T? {
+    return try {
+        BaseRemoteModule.formatter.decodeFromString<T>(this)
+    } catch (e: Exception) {
+        null
+    }
 }

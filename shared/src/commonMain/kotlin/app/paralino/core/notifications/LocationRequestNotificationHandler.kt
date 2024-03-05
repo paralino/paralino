@@ -10,10 +10,9 @@ import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -22,13 +21,11 @@ class LocationRequestNotificationHandler(
     private val sharingManager: LocationSharingManager,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val coroutineScopeProvider: ICoroutineScopeProvider
-) : LimitedExecution(), IPushNotificationsHandler {
+) : LimitedExecution() {
 
-    override fun process(push: PushNotificationRaw) {
+    fun process(push: PushNotificationRaw) {
 
-        val payload = push.content?.let {
-            BaseRemoteModule.formatter.decodeFromString<LocationRequestNotificationPayload>(it)
-        }
+        val payload = push.content?.tryParseFromJson<LocationRequestNotificationPayload>()
 
         if (payload == null) {
             logg.w("Location request payload is NULL")

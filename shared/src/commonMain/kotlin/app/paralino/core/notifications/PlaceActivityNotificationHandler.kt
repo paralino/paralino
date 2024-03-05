@@ -1,30 +1,31 @@
 package app.paralino.core.notifications
 
 import app.paralino.core.MR
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.extensions.tryParseFromJson
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 
 class PlaceActivityNotificationHandler(
+    private val groupRepo: GroupRepository,
     private val locationRepo: LocationRepository,
     private val placeRepo: PlacesRepository,
+    private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val scopeProvider: ICoroutineScopeProvider,
     private val presenter: IPlaceActivityNotificationPresenter
-) : IPushNotificationsHandler {
+) {
+    suspend fun processPlaceActivity(push: PushNotificationRaw) {
 
-    override fun process(push: PushNotificationRaw) {
-
-        val payload = push.content?.let {
-            BaseRemoteModule.formatter.decodeFromString<PlaceActivityNotificationPayload>(it)
-        } ?: return
+        val payload = push.content?.tryParseFromJson<PlaceActivityNotificationPayload>() ?: return
 
         scopeProvider.userSessionIOScope.launch {
 
@@ -48,8 +49,51 @@ class PlaceActivityNotificationHandler(
             }
 
             val notificationId = payload.hashCode()
-            presenter.notify(notificationId, title, message = null, push.createdAt.toEpochMilliseconds())
+            presenter.notify(
+                notificationId,
+                title,
+                message = null,
+                push.createdAt.toEpochMilliseconds()
+            )
         }
+    }
+
+    suspend fun processPlaceCreated(push: PushNotificationRaw) {
+        val payload =
+            push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return
+
+        preRefreshUseCase.refreshGroupWithMembers(groupId = payload.groupId)
+
+        var placeName: String? = null
+        var groupName: String? = null
+
+        try {
+            val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
+            placeName = place?.nameOrNull
+            groupName = groupRepo.getGroupWithoutMembersLocally(place!!.groupId).first().nameOrNull
+        } catch (e: Exception) {
+        }
+
+        val title = if (placeName.isNullOrBlank() || groupName.isNullOrBlank()) {
+            MR.strings.place_created_notification_default.localizedString()
+        } else {
+            MR.strings.place_created_notification.localizedString(groupName, placeName)
+        }
+
+        // TODO use different presenter or channel
+        val notificationId = payload.hashCode()
+        presenter.notify(
+            notificationId,
+            title,
+            message = null,
+            push.createdAt.toEpochMilliseconds()
+        )
+    }
+
+    suspend fun processPlaceDeleted(push: PushNotificationRaw) {
+        val payload =
+            push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return
+        preRefreshUseCase.refreshGroupWithMembers(groupId = payload.groupId)
     }
 }
 
@@ -59,4 +103,10 @@ data class PlaceActivityNotificationPayload constructor(
     val locationId: String,
     val placeId: String,
     val enter: Boolean
+)
+
+@Serializable
+data class PlaceCreateDeleteNotificationPayload constructor(
+    val groupId: String,
+    val placeId: String,
 )
