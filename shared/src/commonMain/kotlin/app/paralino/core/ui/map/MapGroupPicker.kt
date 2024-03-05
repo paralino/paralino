@@ -1,7 +1,5 @@
 package app.paralino.core.ui.map
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -11,13 +9,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
@@ -25,6 +24,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapGroupPicker(
     modifier: Modifier = Modifier,
@@ -32,37 +32,39 @@ fun MapGroupPicker(
     onExpandClick: () -> Unit,
 ) {
     val height: Dp = remember { 56.dp }
-    Row(
+    Surface(
         modifier = modifier
             .height(height)
-            .wrapContentWidth()
-            .clickable { onExpandClick() }
-            .background(
-                color = MaterialTheme.colors.surface,
-                shape = RoundedCornerShape(percent = 100)
-            )
-            .clip(RoundedCornerShape(percent = 100))
-            .padding(horizontal = 8.dp)
+            .wrapContentWidth(),
+        elevation = 8.dp,
+        shape = RoundedCornerShape(percent = 100),
+        color = MaterialTheme.colors.surface,
+        onClick = onExpandClick
     ) {
-        ImageModelImage(
-            imageModel = groupImage,
-            useBackgroundForEmoji = false,
-            clipShape = CircleShape,
-            modifier = Modifier
-                .size(height)
-        )
-        Box(
-            modifier = Modifier
-                .padding(4.dp)
-                .fillMaxHeight()
-                .padding(4.dp),
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = CoreAppIcons.ExpandMore.asPainterResource(),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
+            ImageModelImage(
+                imageModel = groupImage,
+                useBackgroundForEmoji = false,
+                clipShape = CircleShape,
+                modifier = Modifier
+                    .size(height)
             )
+            Box(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxHeight()
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = CoreAppIcons.ExpandMore.asPainterResource(),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
