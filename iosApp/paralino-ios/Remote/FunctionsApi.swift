@@ -20,7 +20,7 @@ class FunctionsApi: IFunctionsApiIOS {
     
     override func runAsync(function: ServerFunction, data: String?) async throws -> Payload<NSString> {
         return await remoteModule.execute { module in
-            let result = try! await module.functions.createExecution(
+            let result = try await module.functions.createExecution(
                 functionId: function.functionId,
                 body: data,
                 async: true,
@@ -34,7 +34,7 @@ class FunctionsApi: IFunctionsApiIOS {
     
     override func runAndWait(function: ServerFunction, data: String?) async throws -> Payload<FunctionExecutionRaw> {
         return await remoteModule.execute { module in
-            let result = try! await module.functions.createExecution(
+            let result = try await module.functions.createExecution(
                 functionId: function.functionId,
                 body: data,
                 async: false,

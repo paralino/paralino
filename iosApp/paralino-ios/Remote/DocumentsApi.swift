@@ -19,7 +19,7 @@ class DocumentsApi: IDocumentApiIOS {
     
     func createDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String?, data: Any) async throws -> Payload<NSDictionary> {
         return await remoteModule.execute { module in
-            let result = try! await module.database.createDocument(
+            let result = try await module.database.createDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: docId ?? module.backendConfig.resourceIds.uniqueIdPlaceholder,
@@ -31,7 +31,7 @@ class DocumentsApi: IDocumentApiIOS {
     
     func deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.execute { module in
-            let result = try! await module.database.deleteDocument(
+            let result = try await module.database.deleteDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: documentId
@@ -42,7 +42,7 @@ class DocumentsApi: IDocumentApiIOS {
     
     func getDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> Payload<NSDictionary> {
         return await remoteModule.execute { module in
-            let result = try! await module.database.getDocument(
+            let result = try await module.database.getDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: documentId
@@ -70,13 +70,13 @@ class DocumentsApi: IDocumentApiIOS {
                     queries.append(Query.cursorAfter(cursor))
                 }
                 
-                let results = try! await module.database.listDocuments(
+                let results = try await module.database.listDocuments(
                     databaseId: databaseType.id,
                     collectionId: collectionId,
                     queries: queries
                 )
                 
-                let shouldLoadMore = onNewValues(results.documents.map { $0.parseDocument() }) == true
+                let shouldLoadMore = onNewValues(results.documents.map { try! $0.parseDocument() }) == true
                 if shouldLoadMore && results.documents.count >= Int(limit) {
                     cursor = results.documents.last?.id ?? ""
                 } else {
@@ -101,8 +101,8 @@ class DocumentsApi: IDocumentApiIOS {
 }
 
 private extension Appwrite.Document {
-    func parseDocument() -> [String: Any] {
-        let result = try! self.data.toJson()
+    func parseDocument() throws -> [String: Any]{
+        let result = try self.data.toJson()
         return SerializationExtKt.fromJsonObjectToMapOfPrimitives(result)
     }
 }

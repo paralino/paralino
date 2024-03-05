@@ -20,7 +20,7 @@ class UserApi: IUserApiIOS {
     
     func changePassword(newPassword: String, oldPassword: String?) async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
-            try! await module.account.updatePassword(password: newPassword, oldPassword: oldPassword).parseUser()
+            try await module.account.updatePassword(password: newPassword, oldPassword: oldPassword).parseUser()
         }
     }
     
@@ -41,13 +41,13 @@ class UserApi: IUserApiIOS {
     
     func getAllSessions() async throws -> Payload<NSArray> {
         return await remoteModule.executeUserApi { module in
-            try! await NSArray(array: module.account.listSessions().sessions.map { $0.parseSession() })
+            try await NSArray(array: module.account.listSessions().sessions.map { $0.parseSession() })
         }
     }
     
     func getCurrentSession() async throws -> Payload<UserSession> {
         return await remoteModule.executeUserApi { module in
-            try! await module.account.getSession(sessionId: "current").parseSession()
+            try await module.account.getSession(sessionId: "current").parseSession()
         }
     }
     
@@ -73,7 +73,7 @@ class UserApi: IUserApiIOS {
     
     func login(email: String, password: String) async throws -> Payload<UserSession> {
         return await remoteModule.executeUserApi { module in
-            try! await module.account.createEmailSession(email: email, password: password).parseSession()
+            try await module.account.createEmailSession(email: email, password: password).parseSession()
         }
     }
     
@@ -93,7 +93,7 @@ class UserApi: IUserApiIOS {
     
     func signUp(userName: String?, email: String, password: String) async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
-            try! await module.account.create(
+            try await module.account.create(
                 userId: module.backendConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName
             ).parseUser()
         }
@@ -101,13 +101,13 @@ class UserApi: IUserApiIOS {
     
     func updateEmail(email: String, password: String) async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
-            try! await module.account.updateEmail(email: email, password: password).parseUser()
+            try await module.account.updateEmail(email: email, password: password).parseUser()
         }
     }
     
     func updateUserData(data: [String : Any]) async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
-            try! await module.account.updatePrefs(prefs: data).parseUser()
+            try await module.account.updatePrefs(prefs: data).parseUser()
         }
     }
 }
