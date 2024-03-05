@@ -12,9 +12,9 @@ import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.delay
 
 class PushNotificationHandler constructor(
-    private val placePush: IPlaceNotificationsHandler,
-    private val groupMemberAddPush: IGroupMemberAddedNotificationsHandler,
-    private val locationRequestPush: ILocationRequestNotificationsHandler,
+    private val placePush: PlaceActivityNotificationHandler,
+    private val groupMemberAddPush: GroupMemberAddedNotificationsHandler,
+    private val locationRequestPush: LocationRequestNotificationHandler,
     private val docApi: IDocumentsApi,
     private val refreshEverything: RefreshEverythingUseCase
 ) {
@@ -60,10 +60,14 @@ class PushNotificationHandler constructor(
         }
     }
 
-    private suspend fun processNotification(push: PushNotificationRaw, onDelete: suspend (PushNotificationRaw) -> Unit) {
+    private suspend fun processNotification(
+        push: PushNotificationRaw,
+        onDelete: suspend (PushNotificationRaw) -> Unit
+    ) {
 
         if (push.deviceId != config.deviceId) {
-            logg.tag("push_notifications").v("Push notification ${push.type} (${push.importance}) from ${push.source} does not match current device, ignoring")
+            logg.tag("push_notifications")
+                .v("Push notification ${push.type} (${push.importance}) from ${push.source} does not match current device, ignoring")
             return
         }
 
@@ -81,11 +85,13 @@ class PushNotificationHandler constructor(
                 placePush.process(push)
                 onDelete(push)
             }
+
             PushNotificationType.GROUP_MEMBER_ADDED -> {
                 refreshEverything.scheduleRefreshAllGroupsWithPlaces(time = 0)
                 groupMemberAddPush.process(push)
                 onDelete(push)
             }
+
             PushNotificationType.LOCATION_REQUEST, PushNotificationType.LOCATION_FOCUS -> {
                 locationRequestPush.process(push)
                 onDelete(push)

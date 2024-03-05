@@ -52,7 +52,8 @@ import app.paralino.core.models.mappers.SharingContractsMapper
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.mappers.UserMapperLocal
-import app.paralino.core.notifications.ILocationRequestNotificationsHandler
+import app.paralino.core.notifications.GroupMemberAddedNotificationsHandler
+import app.paralino.core.notifications.PlaceActivityNotificationHandler
 import app.paralino.core.notifications.LocationRequestNotificationHandler
 import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.core.provider.IDeviceApiProvider
@@ -79,7 +80,6 @@ import app.paralino.core.repo.user.UserRepository
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
-import org.koin.dsl.bind
 import org.koin.dsl.module
 
 object ParalinoCore {
@@ -195,6 +195,8 @@ val coreModule = module {
     single { CryptoUserKeyRepository(get(), get()) }
 
     single { PushNotificationHandler(get(), get(), get(), get(), get()) }
-    factory { LocationRequestNotificationHandler(get(), get(), get(), get()) } bind ILocationRequestNotificationsHandler::class
+    factory { LocationRequestNotificationHandler(get(), get(), get(), get()) }
+    factory { PlaceActivityNotificationHandler(get(), get(), get(), get()) }
+    factory { GroupMemberAddedNotificationsHandler(get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), config) }
 }

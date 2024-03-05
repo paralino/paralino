@@ -18,7 +18,7 @@
 		252EA00729DD89C800338956 /* KoinSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00629DD89C800338956 /* KoinSetup.swift */; };
 		252EA00929DD8BE100338956 /* LocationStatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00829DD8BE100338956 /* LocationStatusProvider.swift */; };
 		252EA00B29DD99F900338956 /* PushSetupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00A29DD99F900338956 /* PushSetupProvider.swift */; };
-		252EA00D29DD9AF500338956 /* PushNotificationHandlerIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00C29DD9AF500338956 /* PushNotificationHandlerIOS.swift */; };
+		252EA00D29DD9AF500338956 /* PushNotificationPresenters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */; };
 		252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00E29DD9FC300338956 /* GeofenceManager.swift */; };
 		252EA01229DDA67700338956 /* AppwriteRemoteModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01129DDA67700338956 /* AppwriteRemoteModule.swift */; };
 		252EA01529DDA99B00338956 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 252EA01429DDA99B00338956 /* Appwrite */; };
@@ -92,7 +92,7 @@
 		252EA00629DD89C800338956 /* KoinSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinSetup.swift; sourceTree = "<group>"; };
 		252EA00829DD8BE100338956 /* LocationStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationStatusProvider.swift; sourceTree = "<group>"; };
 		252EA00A29DD99F900338956 /* PushSetupProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushSetupProvider.swift; sourceTree = "<group>"; };
-		252EA00C29DD9AF500338956 /* PushNotificationHandlerIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationHandlerIOS.swift; sourceTree = "<group>"; };
+		252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationPresenters.swift; sourceTree = "<group>"; };
 		252EA00E29DD9FC300338956 /* GeofenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceManager.swift; sourceTree = "<group>"; };
 		252EA01129DDA67700338956 /* AppwriteRemoteModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppwriteRemoteModule.swift; sourceTree = "<group>"; };
 		252EA01629DDE5A800338956 /* DocumentsApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsApi.swift; sourceTree = "<group>"; };
@@ -175,7 +175,7 @@
 				252EA00629DD89C800338956 /* KoinSetup.swift */,
 				252EA00829DD8BE100338956 /* LocationStatusProvider.swift */,
 				252EA00A29DD99F900338956 /* PushSetupProvider.swift */,
-				252EA00C29DD9AF500338956 /* PushNotificationHandlerIOS.swift */,
+				252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */,
 				252EA00E29DD9FC300338956 /* GeofenceManager.swift */,
 				25356A8F29E9452300CD32F5 /* SealedClasses.swift */,
 				25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */,
@@ -580,7 +580,7 @@
 				252EA01229DDA67700338956 /* AppwriteRemoteModule.swift in Sources */,
 				254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */,
 				252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */,
-				252EA00D29DD9AF500338956 /* PushNotificationHandlerIOS.swift in Sources */,
+				252EA00D29DD9AF500338956 /* PushNotificationPresenters.swift in Sources */,
 				254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */,
 				2522C6872B322923007C4913 /* MapComponent.swift in Sources */,
 				25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */,

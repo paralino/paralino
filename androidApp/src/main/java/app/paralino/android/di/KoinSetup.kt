@@ -5,10 +5,9 @@ import app.paralino.android.BuildConfig
 import app.paralino.android.crpyto.CryptoFrameworkLibsodium
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.fcm.PushProviderManager
-import app.paralino.android.notification.GroupActivityNotificationHandler
+import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
-import app.paralino.core.notifications.LocationRequestNotificationHandler
-import app.paralino.android.notification.PlaceNotificationHandler
+import app.paralino.android.notification.PlaceNotificationPresenter
 import app.paralino.android.provider.ConnectionStatusProvider
 import app.paralino.android.provider.DeviceApiProvider
 import app.paralino.android.provider.LocationStatusProvider
@@ -25,9 +24,8 @@ import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.models.BackendConfig
-import app.paralino.core.notifications.IGroupMemberAddedNotificationsHandler
-import app.paralino.core.notifications.ILocationRequestNotificationsHandler
-import app.paralino.core.notifications.IPlaceNotificationsHandler
+import app.paralino.core.notifications.IGroupMemberAddedNotificationPresenter
+import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
@@ -88,8 +86,8 @@ object KoinSetup {
         single<IValueFormatter> { ValueFormatter() }
 
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
-        factory { PlaceNotificationHandler(androidContext(), get(), get(), get()) } bind IPlaceNotificationsHandler::class
-        factory { GroupActivityNotificationHandler(androidContext(), get(), get()) } bind IGroupMemberAddedNotificationsHandler::class
+        factory { PlaceNotificationPresenter(androidContext()) } bind IPlaceActivityNotificationPresenter::class
+        factory { GroupActivityNotificationPresenter(androidContext()) } bind IGroupMemberAddedNotificationPresenter::class
 
         single<IUserApi> { UserApi(get()) }
         single<IDocumentsApi> { DocumentsApi(get()) }

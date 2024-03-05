@@ -12,6 +12,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -21,7 +22,7 @@ class LocationRequestNotificationHandler(
     private val sharingManager: LocationSharingManager,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val coroutineScopeProvider: ICoroutineScopeProvider
-) : LimitedExecution(), ILocationRequestNotificationsHandler {
+) : LimitedExecution(), IPushNotificationsHandler {
 
     override fun process(push: PushNotificationRaw) {
 
@@ -121,3 +122,9 @@ class LocationRequestNotificationHandler(
             }
         }
 }
+
+@Serializable
+data class LocationRequestNotificationPayload constructor(
+    val groupId: String,
+    val memberUserId: String
+)

@@ -1,7 +1,6 @@
 package app.paralino.android.notification
 
 import android.Manifest
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -18,63 +17,17 @@ import app.paralino.android.R
 import app.paralino.android.ui.MainActivity
 import app.paralino.core.MR
 import app.paralino.core.logg
-import app.paralino.core.models.data
-import app.paralino.core.models.raw.PushNotificationRaw
-import app.paralino.core.notifications.IPlaceNotificationsHandler
-import app.paralino.core.notifications.PlaceActivityNotificationPayload
-import app.paralino.core.provider.ICoroutineScopeProvider
-import app.paralino.core.repo.location.LocationRepository
-import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.BaseRemoteModule
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 
-class PlaceNotificationHandler(
-    private val context: Context,
-    private val locationRepo: LocationRepository,
-    private val placeRepo: PlacesRepository,
-    private val scopeProvider: ICoroutineScopeProvider,
-): IPlaceNotificationsHandler {
+class PlaceNotificationPresenter(private val context: Context) : IPlaceActivityNotificationPresenter {
 
     private val channelId = "place_activity_channel"
     private val notificationColor: Int by lazy {
         AppColors.lightThemePrimary.toArgb()
     }
 
-    override fun process(push: PushNotificationRaw) {
-
-        val payload = push.content?.let {
-            BaseRemoteModule.formatter.decodeFromString<PlaceActivityNotificationPayload>(it)
-        } ?: return
-
-        scopeProvider.userSessionIOScope.launch {
-
-            var placeName: String? = null
-            var userName: String? = null
-
-            try {
-                val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
-                placeName = place?.data?.data?.name
-                userName = locationRepo.getMember(place!!.groupId, payload.memberUserId)?.name
-            } catch (e: Exception) { }
-
-            val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
-                context.getString(MR.strings.place_notification_default.resourceId)
-            } else {
-                if (payload.enter)
-                    context.getString(MR.strings.place_notification_enter.resourceId, userName, placeName)
-                else
-                    context.getString(MR.strings.place_notification_exit.resourceId, userName, placeName)
-            }
-
-            val notificationId = payload.hashCode()
-            notify(notificationId, title, push.createdAt.toEpochMilliseconds())
-        }
-    }
-
-    private fun notify(notificationId: Int, title: String, timeMs: Long): Notification? {
+    override fun notify(notificationId: Int, title: String, message: String?, timeMillis: Long) {
 
         if (ActivityCompat.checkSelfPermission(
                 context,
@@ -82,7 +35,7 @@ class PlaceNotificationHandler(
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             logg.w("push_notifications", "Missing push notification permission!")
-            return null
+            return
         }
 
         val notificationManager = NotificationManagerCompat.from(context)
@@ -98,6 +51,7 @@ class PlaceNotificationHandler(
 
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
             .setContentTitle(title)
+            .setContentText(message)
             .setCategory(NotificationCompat.CATEGORY_SOCIAL)
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_notification_icon)
@@ -109,13 +63,12 @@ class PlaceNotificationHandler(
             .setColor(notificationColor)
             .setColorized(true)
             .setShowWhen(true)
-            .setWhen(timeMs)
+            .setWhen(timeMillis)
 
         registerNotificationChannel(context)
 
         val notification = notificationBuilder.build()
         notificationManager.notify(notificationId, notification)
-        return notification
     }
 
     private fun buildNotificationIntent(context: Context): Intent {
@@ -142,6 +95,4 @@ class PlaceNotificationHandler(
         channel.enableLights(true)
         notificationManager?.createNotificationChannel(channel)
     }
-
 }
-
