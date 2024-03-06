@@ -3,7 +3,6 @@ package app.paralino.core.notifications
 import app.paralino.core.MR
 import app.paralino.core.config
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
-import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -13,19 +12,23 @@ import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.seconds
 
 class GroupActivityNotificationsHandler(
     private val groupRepo: GroupRepository,
-    private val refreshEverything: RefreshEverythingUseCase,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val scopeProvider: ICoroutineScopeProvider,
     private val presenter: IGroupActivityNotificationPresenter
 ) {
     suspend fun processMemberAdded(push: PushNotificationRaw) {
 
-        val payload = push.content?.tryParseFromJson<GroupMemberAddedNotificationPayload>() ?: return
+        val payload =
+            push.content?.tryParseFromJson<GroupMemberAddedNotificationPayload>() ?: return
 
-        refreshEverything.scheduleRefreshAllGroupsWithPlaces(time = 0)
+        preRefreshUseCase.refreshGroupWithMembers(
+            groupId = payload.groupId,
+            cacheTimeMillis = 10.seconds.inWholeMilliseconds
+        )
 
         scopeProvider.userSessionIOScope.launch {
             val title = try {
@@ -67,8 +70,12 @@ class GroupActivityNotificationsHandler(
     }
 
     suspend fun processMemberDeleted(push: PushNotificationRaw) {
-        val payload = push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return
-        preRefreshUseCase.refreshGroupWithMembers(groupId = payload.groupId)
+        val payload =
+            push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return
+        preRefreshUseCase.refreshGroupWithMembers(
+            groupId = payload.groupId,
+            cacheTimeMillis = 10.seconds.inWholeMilliseconds
+        )
     }
 }
 

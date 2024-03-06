@@ -89,6 +89,11 @@ class PushNotificationHandler constructor(
                 onDelete(push)
             }
 
+            PushNotificationType.GROUP_MEMBER_DELETED -> {
+                groupMemberActivityPush.processMemberDeleted(push)
+                onDelete(push)
+            }
+
             PushNotificationType.LOCATION_REQUEST, PushNotificationType.LOCATION_FOCUS -> {
                 locationRequestPush.process(push)
                 onDelete(push)
@@ -99,13 +104,13 @@ class PushNotificationHandler constructor(
                 onDelete(push)
             }
 
-            PushNotificationType.PLACE_DELETED -> {
-                placePush.processPlaceDeleted(push)
+            PushNotificationType.PLACE_UPDATED -> {
+                placePush.processPlaceUpdated(push)
                 onDelete(push)
             }
 
-            PushNotificationType.GROUP_MEMBER_DELETED -> {
-                groupMemberActivityPush.processMemberDeleted(push)
+            PushNotificationType.PLACE_DELETED -> {
+                placePush.processPlaceDeleted(push)
                 onDelete(push)
             }
 

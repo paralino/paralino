@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.seconds
 
 class PlaceActivityNotificationHandler(
     private val groupRepo: GroupRepository,
@@ -36,16 +37,17 @@ class PlaceActivityNotificationHandler(
                 val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
                 placeName = place?.data?.data?.name
                 userName = locationRepo.getMember(place!!.groupId, payload.memberUserId)?.name
-            } catch (e: Exception) {
+            } catch (_: Exception) {
             }
 
             val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
                 MR.strings.place_notification_default.localizedString()
             } else {
-                if (payload.enter)
+                if (payload.enter) {
                     MR.strings.place_notification_enter.localizedString(userName, placeName)
-                else
+                } else {
                     MR.strings.place_notification_exit.localizedString(userName, placeName)
+                }
             }
 
             val notificationId = payload.hashCode()
@@ -62,7 +64,10 @@ class PlaceActivityNotificationHandler(
         val payload =
             push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return
 
-        preRefreshUseCase.refreshGroupWithMembers(groupId = payload.groupId)
+        preRefreshUseCase.refreshGroupWithMembers(
+            groupId = payload.groupId,
+            cacheTimeMillis = 20.seconds.inWholeMilliseconds
+        )
 
         var placeName: String? = null
         var groupName: String? = null
@@ -93,7 +98,19 @@ class PlaceActivityNotificationHandler(
     suspend fun processPlaceDeleted(push: PushNotificationRaw) {
         val payload =
             push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return
-        preRefreshUseCase.refreshGroupWithMembers(groupId = payload.groupId)
+        preRefreshUseCase.refreshGroupWithMembers(
+            groupId = payload.groupId,
+            cacheTimeMillis = 20.seconds.inWholeMilliseconds
+        )
+    }
+
+    suspend fun processPlaceUpdated(push: PushNotificationRaw) {
+        val payload =
+            push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return
+        preRefreshUseCase.refreshGroupWithMembers(
+            groupId = payload.groupId,
+            cacheTimeMillis = 20.seconds.inWholeMilliseconds
+        )
     }
 }
 

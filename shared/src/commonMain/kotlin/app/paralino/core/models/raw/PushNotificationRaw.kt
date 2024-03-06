@@ -60,6 +60,7 @@ enum class PushNotificationImportance constructor(val key: String) {
 enum class PushNotificationType constructor(val key: String) {
     PLACE_ALERT("place_activity"),
     PLACE_CREATED("place_created"),
+    PLACE_UPDATED("place_updated"),
     PLACE_DELETED("place_deleted"),
     GROUP_MEMBER_ADDED("group_member_added"),
     GROUP_MEMBER_DELETED("group_member_deleted"),
