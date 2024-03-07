@@ -17,20 +17,20 @@ class RealtimeEventsMaker constructor(
     fun listenForEventsWhileSharing(): Flow<Unit> {
         return realtimeApi.subscribeWithFilter(
             channels = listOf(
-                realtimeEventsProcessor.locationFocusChannel,
-                realtimeEventsProcessor.placesChannel,
                 realtimeEventsProcessor.membersChannel,
                 realtimeEventsProcessor.locationsChannel,
+                realtimeEventsProcessor.placesChannel,
                 realtimeEventsProcessor.pushNotificationsChannel,
+                realtimeEventsProcessor.locationFocusChannel,
             ),
             filters = listOf(
-                "${realtimeEventsProcessor.locationFocusChannel}.*.create",
-                "${realtimeEventsProcessor.locationFocusChannel}.*.update",
-                "${realtimeEventsProcessor.placesChannel}.*.create",
-                "${realtimeEventsProcessor.placesChannel}.*.update",
                 "${realtimeEventsProcessor.membersChannel}.*",
                 "${realtimeEventsProcessor.locationsChannel}.*",
+                "${realtimeEventsProcessor.placesChannel}.*.create",
+                "${realtimeEventsProcessor.placesChannel}.*.update",
                 "${realtimeEventsProcessor.pushNotificationsChannel}.*.create",
+                "${realtimeEventsProcessor.locationFocusChannel}.*.create",
+                "${realtimeEventsProcessor.locationFocusChannel}.*.update",
             )
         )
             .onEach {
@@ -51,7 +51,7 @@ class RealtimeEventsMaker constructor(
                 realtimeEventsProcessor.membersChannel,
                 realtimeEventsProcessor.locationsChannel,
                 realtimeEventsProcessor.placesChannel,
-                realtimeEventsProcessor.pushNotificationsChannel
+                realtimeEventsProcessor.pushNotificationsChannel,
             ),
             filters = listOf(
                 "${realtimeEventsProcessor.membersChannel}.*",
