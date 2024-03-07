@@ -55,9 +55,10 @@ class SettingsViewModel(
                                 AccountScreenState(
                                     userState = UserState(
                                         name = userState.data.name,
-                                        userId = userState.data.id,
-                                        email = userState.data.email,
                                         image = userState.data.data?.userImage,
+                                        email = userState.data.email,
+                                        userId = userState.data.id,
+                                        deviceId = config.deviceId,
                                         isGuestUser = userState.data.isGuestUser,
                                         errorItem = if (userState.data.needsEmailVerification)
                                             ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)

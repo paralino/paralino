@@ -17,9 +17,10 @@ data class AccountScreenState constructor(
 
 data class UserState constructor(
     val name: String,
-    val userId: String,
-    val email: String,
     val image: ImageModel?,
+    val email: String,
+    val userId: String,
+    val deviceId: String,
     val isGuestUser: Boolean,
     val errorItem: ConditionErrorType?,
 )

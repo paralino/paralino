@@ -132,6 +132,7 @@ fun AccountScreenCore(
                     name = state.data.userState.name,
                     email = state.data.userState.email,
                     userId = state.data.userState.userId,
+                    deviceId = state.data.userState.deviceId,
                     image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
                     isGuestUser = state.data.userState.isGuestUser,
                     errorItem = state.data.userState.errorItem,
@@ -245,6 +246,7 @@ fun AccountInfoHeader(
     name: String,
     email: String,
     userId: String,
+    deviceId: String,
     image: ImageModel,
     isGuestUser: Boolean,
     errorItem: ConditionErrorType?,
@@ -313,7 +315,21 @@ fun AccountInfoHeader(
                     modifier = Modifier.clickable {
                         onCopy(userId)
                     },
-                    text = "ID: **$userId**".annotatedBold(),
+                    text = "UserID: **$userId**".annotatedBold(),
+                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.size(8.dp))
+
+        if (deviceId.isNotBlank()) {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                Text(
+                    modifier = Modifier.clickable {
+                        onCopy(deviceId)
+                    },
+                    text = "DeviceID: **$deviceId**".annotatedBold(),
                     style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
                 )
             }
