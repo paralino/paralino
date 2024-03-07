@@ -8,6 +8,7 @@ import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.api.runAsync
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.utils.exceptions.BaseRemoteException
@@ -54,20 +55,10 @@ class LocationRequestUseCase constructor(
                     locationId = (focusType as? MapHomeScreenFocusType.MEMBER)?.memberLocationId
                 )
 
-                val response = functionsApi.runAndWait(
+                functionsApi.runAsync(
                     function = ServerFunction.LOCATION_FOCUS,
                     data = requestPayload
                 )
-
-                if (!response.isSuccess) {
-                    logg.tag("location_performance").w(
-                        BaseRemoteException.fromCode(
-                            code = response.statusCode,
-                            message = "Unable to update location boost",
-                            cause = Exception(response.stderr)
-                        )
-                    )
-                }
             } catch (e: Exception) {
                 throw e
             }

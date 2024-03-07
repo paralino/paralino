@@ -27,3 +27,13 @@ suspend inline fun <reified T> IFunctionsApi.runAndWait(
         data = BaseRemoteModule.formatter.encodeToString(data)
     )
 }
+
+suspend inline fun <reified T> IFunctionsApi.runAsync(
+    function: ServerFunction,
+    data: T
+): String {
+    return runAsync(
+        function = function,
+        data = BaseRemoteModule.formatter.encodeToString(data)
+    )
+}

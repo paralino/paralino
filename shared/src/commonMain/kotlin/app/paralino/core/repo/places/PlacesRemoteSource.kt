@@ -21,6 +21,7 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.api.runAsync
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -255,19 +256,10 @@ class PlacesRemoteSource(
 
     private suspend fun notifyPlaceEvent(placePayload: PlaceEventPayload) {
         blocking {
-            val response = functionsApi.runAndWait(
+            functionsApi.runAsync(
                 function = ServerFunction.PLACE_NOTIFY,
                 data = placePayload
             )
-
-            if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to update location",
-                    cause = Exception(response.stderr)
-                )
-            }
         }
     }
 
