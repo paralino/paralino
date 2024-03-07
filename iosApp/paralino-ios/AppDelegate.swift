@@ -94,6 +94,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
         let content = UNMutableNotificationContent()
         content.title = "Paralino tracking"
         content.body = performance
+        content.interruptionLevel = .passive
     
         let request = UNNotificationRequest(identifier: "app_track", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { (error : Error?) in }
