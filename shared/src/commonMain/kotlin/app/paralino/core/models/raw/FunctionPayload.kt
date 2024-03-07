@@ -214,6 +214,7 @@ data class LocationCreatePayload constructor(
     val deviceData: String?,
     val status: String,
     val groupKeyVersion: Long,
+    val notify: Boolean,
     val keys: List<GroupSenderKeyPayload>
 )
 

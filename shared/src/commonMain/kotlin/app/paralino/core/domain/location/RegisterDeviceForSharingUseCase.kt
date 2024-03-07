@@ -92,6 +92,7 @@ class RegisterDeviceForSharingUseCase constructor(
                     deviceData = deviceData,
                     status = status,
                     groupKeyVersion = groupKey.version,
+                    notify = true,
                     keys = keyData.second
                 )
 
