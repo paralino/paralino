@@ -1,61 +1,89 @@
 package app.paralino.core.notifications
 
 import app.paralino.core.config
+import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.repo.api.IDocumentsApi
+import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 class PushNotificationHandler constructor(
     private val placePush: PlaceActivityNotificationHandler,
     private val groupMemberActivityPush: GroupActivityNotificationsHandler,
     private val locationRequestPush: LocationRequestNotificationHandler,
     private val docApi: IDocumentsApi,
-) {
+): LimitedExecutionRepository() {
 
-    suspend fun checkForPushNotifications() {
-        blocking {
-            logg.tag("push_notifications").v("Start checking push notifications")
-            val notifications = docApi.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = BackendResourceIDs.collectionPushNotificationID
+    private val executionKey = "notification_sync"
+
+    suspend fun checkForPushNotifications(): Result<Unit> {
+        try {
+            startProcessing(executionKey)
+        } catch (e: Exception) {
+            logg.tag(executionKey).v("Processing, can't sync notifications")
+            return Result.failure(e)
+        }
+
+        try {
+            triggerRemoteMaybe(
+                remotePreference = RemotePreference.CACHE(key = executionKey, timeMillis = 10.seconds.inWholeMilliseconds),
+                remote = { checkForPushNotificationsImpl() }
             )
-                .also {
-                    logg.tag("push_notifications").v("Got ${it.size} notifications documents")
-                }
-                .mapNotNull {
-                    try {
-                        PushNotificationRaw.from(it)
-                    } catch (e: Exception) {
-                        logg.tag("push_notifications").e("Error parsing push notification", e)
-                        null
-                    }
-                }
+        } catch (e: Exception) {
+            logg.tag(executionKey).w("Error refreshing push notifications - ${e.message}")
+            return Result.failure(e)
+        } finally {
+            stopProcessing(executionKey)
+        }
 
-            logg.tag("push_notifications")
-                .v("Processing ${notifications.size} notifications documents")
+        return Result.success(Unit)
+    }
 
-            notifications.forEach {
-                processNotification(it) { push ->
-                    try {
-                        logg.tag("push_notifications").v("Delete push notification document")
-                        docApi.deleteDocument(
-                            databaseType = BackendDatabaseType.DATA,
-                            collectionId = BackendResourceIDs.collectionPushNotificationID,
-                            documentId = push.id
-                        )
-                        delay(400)
-                    } catch (e: Exception) {
-                        logg.tag("push_notifications")
-                            .e("Error deleting push notification ${push.id}", e)
-                    }
+    private suspend fun checkForPushNotificationsImpl() {
+        logg.tag("push_notifications").v("Start checking push notifications")
+        val notifications = docApi.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = BackendResourceIDs.collectionPushNotificationID
+        )
+            .also {
+                logg.tag("push_notifications").v("Got ${it.size} notifications documents")
+            }
+            .mapNotNull {
+                try {
+                    PushNotificationRaw.from(it)
+                } catch (e: Exception) {
+                    logg.tag("push_notifications").e("Error parsing push notification", e)
+                    null
+                }
+            }
+
+        logg.tag("push_notifications")
+            .v("Processing ${notifications.size} notifications documents")
+
+        notifications.forEach {
+            processNotification(it) { push ->
+                try {
+                    logg.tag("push_notifications").v("Delete push notification document")
+                    docApi.deleteDocument(
+                        databaseType = BackendDatabaseType.DATA,
+                        collectionId = BackendResourceIDs.collectionPushNotificationID,
+                        documentId = push.id
+                    )
+                    delay(400)
+                } catch (e: Exception) {
+                    logg.tag("push_notifications")
+                        .e("Error deleting push notification ${push.id}", e)
                 }
             }
         }
+
+        logg.tag("push_notifications").v("Processing notifications done")
     }
 
     private suspend fun processNotification(
@@ -64,13 +92,11 @@ class PushNotificationHandler constructor(
     ) {
 
         if (push.deviceId != config.deviceId) {
-            logg.tag("push_notifications")
-                .v("Push notification ${push.type} (${push.importance}) from ${push.source} does not match current device, ignoring")
             return
         }
 
         logg.tag("push_notifications")
-            .v("Process ${push.importance} ${push.type} push notification from ${push.source}. Expired (${push.isExpired})")
+            .v("Process ${push.importance} ${push.type} push notification. Expired (${push.isExpired})")
 
         if (push.isExpired) {
             logg.tag("push_notifications").v("Push notification expired, delete and ignore")

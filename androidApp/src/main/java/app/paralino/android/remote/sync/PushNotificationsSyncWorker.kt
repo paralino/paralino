@@ -28,6 +28,9 @@ class PushNotificationsSyncWorker(
         try {
             logg.tag("push_notifications").v("Try to get push notifications from server")
             pushHandler.pushHandler.checkForPushNotifications()
+                .onFailure {
+                    if (runAttemptCount < 3) Result.retry() else Result.failure()
+                }
         } catch (e: Exception) {
             logg.tag("push_notifications").e("Error fetching push notifications", e)
             return if (runAttemptCount < 3) Result.retry() else Result.failure()
