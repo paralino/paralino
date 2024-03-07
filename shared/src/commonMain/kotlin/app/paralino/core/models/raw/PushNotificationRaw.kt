@@ -79,6 +79,7 @@ enum class PushNotificationType constructor(val key: String) {
     PLACE_DELETED("place_deleted"),
     GROUP_MEMBER_ADDED("group_member_added"),
     GROUP_MEMBER_DELETED("group_member_deleted"),
+    LOCATION_STARTED("location_sharing_start"),
     LOCATION_REQUEST("location_request"),
     LOCATION_FOCUS("location_focus");
 

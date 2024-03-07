@@ -140,6 +140,11 @@ class PushNotificationHandler constructor(
                 onDelete(push)
             }
 
+            PushNotificationType.LOCATION_STARTED -> {
+                groupMemberActivityPush.processLocationSharingStarted(push)
+                onDelete(push)
+            }
+
             null -> {}
         }
     }

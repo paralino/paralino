@@ -276,6 +276,9 @@
     <string name="group_member_current_add_notification_default">🙌 Upravo ste se pridružili novoj grupi</string>
     <string name="group_member_add_notification">%1$s se upravo pridružio/la grupi %2$s</string>
     <string name="group_member_add_notification_default">🙌 Novi član se upravo pridružio vašoj grupi</string>
+    <string name="group_member_sharing_started_notification_default">Tvoj prijatelj upravo dijeli svoju lokaciju</string>
+    <string name="group_member_sharing_started_notification">%s upravo dijeli svoju lokaciju</string>
+    <string name="group_member_current_sharing_started_notification">Tvoj uređaj je započeo dijeljenje lokacije</string>
 
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>

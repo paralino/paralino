@@ -277,6 +277,9 @@
     <string name="group_member_current_add_notification_default">🙌 You just joined a new group</string>
     <string name="group_member_add_notification">%1$s just joined %2$s</string>
     <string name="group_member_add_notification_default">🙌 New member just joined your group</string>
+    <string name="group_member_sharing_started_notification_default">Your friend just started sharing their location</string>
+    <string name="group_member_sharing_started_notification">%s just started sharing their location</string>
+    <string name="group_member_current_sharing_started_notification">You just started sharing your location</string>
 
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
