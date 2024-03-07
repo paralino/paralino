@@ -13,15 +13,20 @@ data class PushNotificationRaw constructor(
     val id: String,
     @SerialName("\$createdAt")
     val createdAt: Instant,
-    val source: String?,
+    val expiresAt: Instant?,
     val deviceId: String?,
     val type: String,
     val importance: String,
     val content: String?,
 ) {
 
-    // TODO adjust time check
-    val isExpired: Boolean get() = isOlderThan(1.days)
+    val isExpired: Boolean get() {
+        return if (expiresAt != null) {
+            expiresAt < nowUTC()
+        } else {
+            isOlderThan(1.days)
+        }
+    }
     fun isOlderThan(duration: Duration): Boolean = createdAt.plus(duration) < nowUTC()
 
     val pushType: PushNotificationType? = PushNotificationType.fromKey(key = type)
@@ -33,9 +38,19 @@ data class PushNotificationRaw constructor(
             return PushNotificationRaw(
                 id = map["\$id"] as String,
                 createdAt = (map["\$createdAt"] as String).let {
-                    Instant.parse(it)
+                    try {
+                        Instant.parse(it)
+                    } catch (e: Exception) {
+                        nowUTC()
+                    }
                 },
-                source = map["source"] as? String?,
+                expiresAt = (map["expiresAt"] as? String)?.let {
+                    try {
+                        Instant.parse(it)
+                    } catch (e: Exception) {
+                        nowUTC()
+                    }
+                },
                 deviceId = map["deviceId"] as? String?,
                 type = map["type"] as String,
                 importance = map["importance"] as String,
