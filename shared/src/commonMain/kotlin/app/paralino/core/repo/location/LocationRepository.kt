@@ -12,7 +12,12 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.datetime.Instant
+import kotlin.time.Duration.Companion.minutes
 
 class LocationRepository constructor(
     private val sharingManager: LocationSharingManager,
@@ -22,6 +27,9 @@ class LocationRepository constructor(
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
     private val payloadProvider: LocationPayloadProvider
 ) : BaseRepository() {
+
+    private val deviceRegisterTimeMillis = MutableStateFlow(mapOf<String, Long>())
+    private var failedRegistrationAttempts = MutableStateFlow(mapOf<String, Int>())
 
     suspend fun getMembersByUserId(userid: String): List<MemberModel> {
         return local.getMemberModelsForUser(userid)
@@ -39,7 +47,6 @@ class LocationRepository constructor(
         groupId: String,
         data: LocationDataModel?,
         contract: LocationSharingContract?,
-        retryCount: Int = 0
     ): MemberGroupId? {
 
         val payload = payloadProvider.getLocationPayload(
@@ -52,8 +59,17 @@ class LocationRepository constructor(
 
             LocationPayloadStatus.MissingLocationDocument -> {
                 try {
-                    if (retryCount < 1) {
+                    val timeBetweenRequests = nowUTC() - Instant.fromEpochMilliseconds(
+                        epochMilliseconds = deviceRegisterTimeMillis.value[groupId] ?: 0
+                    )
+                    if (timeBetweenRequests > 10.minutes) {
                         logg.v("Missing user location document for new location, try registering device")
+                        failedRegistrationAttempts.update {
+                            it.toMutableMap().apply { set(groupId, 0) }
+                        }
+                        deviceRegisterTimeMillis.update {
+                            it.toMutableMap().apply { set(groupId, nowUTC().toEpochMilliseconds()) }
+                        }
                         registerDeviceForSharing.registerDevice(
                             groupId = groupId,
                             deviceName = null,
@@ -63,10 +79,18 @@ class LocationRepository constructor(
                         getLocationPayload(
                             groupId = groupId,
                             data = data,
-                            contract = contract,
-                            retryCount = retryCount + 1
+                            contract = contract
                         )
                     } else {
+                        failedRegistrationAttempts.update {
+                            it.toMutableMap().apply { set(groupId, this[groupId]?.plus(1) ?: 1) }
+                        }
+                        if ((failedRegistrationAttempts.value[groupId] ?: 0) > 3) {
+                            failedRegistrationAttempts.update {
+                                it.toMutableMap().apply { set(groupId, 0) }
+                            }
+                            // TODO notify user about failed attempts
+                        }
                         null
                     }
                 } catch (e: Exception) {
@@ -120,5 +144,10 @@ class LocationRepository constructor(
             remote = { remote.clearLocation(locationId) },
             localUpdate = { local.clearMemberLocationData(locationId = locationId) }
         )
+    }
+
+    fun logout() {
+        failedRegistrationAttempts.update { emptyMap() }
+        deviceRegisterTimeMillis.update { emptyMap() }
     }
 }

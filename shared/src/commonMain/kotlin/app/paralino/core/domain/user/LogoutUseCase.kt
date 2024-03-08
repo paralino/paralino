@@ -12,6 +12,7 @@ import app.paralino.core.data.db.AppConfig
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.location.LocationRepository
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -27,6 +28,7 @@ class LogoutUseCase(
     private val codeRepo: PersonalCodesRepository,
     private val pushManager: IPushProviderManager,
     private val deviceStatus: IDeviceApiProvider,
+    private val locationRepo: LocationRepository,
     private val scopeProvider: ICoroutineScopeProvider,
     private val config: AppConfig
 ) {
@@ -75,10 +77,10 @@ class LogoutUseCase(
         cryptoKEKRepo.clearKeys()
         pushManager.logout()
         deviceStatus.logout()
+        locationRepo.logout()
         groupsRepo.clear()
         placesRepo.clear()
         codeRepo.clearLocally()
         sharingManager.stopAllSharing()
     }
-
 }
