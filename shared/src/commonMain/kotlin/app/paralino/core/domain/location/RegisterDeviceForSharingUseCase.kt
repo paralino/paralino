@@ -43,7 +43,8 @@ class RegisterDeviceForSharingUseCase constructor(
     suspend fun registerDevice(
         groupId: String,
         deviceName: String?,
-        contract: LocationSharingContract?
+        contract: LocationSharingContract?,
+        notifyOthers: Boolean
     ) {
         startProcessing(groupId)
 
@@ -92,7 +93,7 @@ class RegisterDeviceForSharingUseCase constructor(
                     deviceData = deviceData,
                     status = status,
                     groupKeyVersion = groupKey.version,
-                    notify = true,
+                    notify = notifyOthers,
                     keys = keyData.second
                 )
 

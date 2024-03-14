@@ -21,6 +21,7 @@ import kotlin.time.Duration.Companion.minutes
 
 class LocationRepository constructor(
     private val sharingManager: LocationSharingManager,
+    private val performanceManager: LocationPerformanceManager,
     private val local: LocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val placesRepo: PlacesRepository,
@@ -73,7 +74,8 @@ class LocationRepository constructor(
                         registerDeviceForSharing.registerDevice(
                             groupId = groupId,
                             deviceName = null,
-                            contract = contract
+                            contract = contract,
+                            notifyOthers = false
                         )
                         logg.v("Device registered, retry payload")
                         getLocationPayload(
@@ -134,7 +136,7 @@ class LocationRepository constructor(
                 logg.v("Process new location in places")
                 placesRepo.processLocation(it)
             }
-            logg.v("Upload new location")
+            logg.v("Upload new location with performance ${performanceManager.locationPerformanceType.value.current}")
             remote.saveCurrentLocation(mapped)
         }
     }
