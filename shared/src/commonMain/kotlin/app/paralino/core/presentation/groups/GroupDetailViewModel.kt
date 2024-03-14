@@ -81,21 +81,25 @@ class GroupDetailViewModel(
                                 canEdit = canEdit,
                                 currentDevice = it.deviceId == config.deviceId,
                                 showSpeedAndElevation = false,
-                                formatter = valueFormatter
+                                formatter = valueFormatter,
+                                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
                             )
                         },
-                        actionItems = buildList {
-                            if (group.isCurrentUserOwner && member.member.userId != group.ownerUserId) {
-                                add(MemberAction.DELETE_MEMBER)
-                            }
-                            if (member.member.userId != config.userId) {
-                                if (blocklist.any { it.resourceId == member.member.userId }) {
-                                    add(MemberAction.UNBLOCK_USER)
-                                } else {
-                                    add(MemberAction.BLOCK_USER)
+                        actions = MemberActionsState(
+                            deleteMember = takeIf { group.isCurrentUserOwner && member.member.userId != group.ownerUserId }?.let {
+                                MemberActionItemState(MemberActionType.DELETE_MEMBER)
+                            },
+                            blockUser = takeIf { member.member.userId != config.userId }
+                                ?.takeIf { blocklist.any { it.resourceId == member.member.userId } }
+                                ?.let {
+                                    MemberActionItemState(MemberActionType.BLOCK_USER)
+                                },
+                            unblockUser = takeIf { member.member.userId != config.userId }
+                                ?.takeIf { blocklist.none { it.resourceId == member.member.userId } }
+                                ?.let {
+                                    MemberActionItemState(MemberActionType.BLOCK_USER)
                                 }
-                            }
-                        },
+                        ),
                         allowShowingDevices = true,
                         lastPing = valueFormatter.getLastPing(member)
                     )

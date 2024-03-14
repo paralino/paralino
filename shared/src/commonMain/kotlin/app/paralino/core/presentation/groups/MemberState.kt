@@ -9,12 +9,13 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.Emojis
+import kotlinx.datetime.Instant
 
 sealed interface GroupMemberItemState {
     val memberState: GroupMemberState
     val keyId: String
     val lastPing: String?
-    val actionItems: List<MemberAction>
+    val actions: MemberActionsState
     val singleLocation: GroupMemberItemLocationState?
     val singleValidLocation: GroupMemberItemLocationState?
 }
@@ -48,8 +49,8 @@ data class GroupMemberState constructor(
 data class GroupMemberItemStateWithOneLocation constructor(
     override val memberState: GroupMemberState,
     val location: GroupMemberItemLocationState?,
-    override val actionItems: List<MemberAction>,
-    override val lastPing: String?
+    override val actions: MemberActionsState,
+    override val lastPing: String?,
 ) : GroupMemberItemState {
     override val keyId: String
         get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
@@ -58,13 +59,13 @@ data class GroupMemberItemStateWithOneLocation constructor(
     override val singleLocation: GroupMemberItemLocationState?
         get() = location
     override val singleValidLocation: GroupMemberItemLocationState?
-        get() = location?.takeIf { it.isShownAsOldLocation != false }
+        get() = location?.takeIf { it.visibility.isVisible() }
 }
 
 data class GroupMemberItemStateWithLocations constructor(
     override val memberState: GroupMemberState,
     val locations: List<GroupMemberItemLocationState>,
-    override val actionItems: List<MemberAction>,
+    override val actions: MemberActionsState,
     val allowShowingDevices: Boolean,
     override val lastPing: String?
 ) : GroupMemberItemState {
@@ -74,12 +75,7 @@ data class GroupMemberItemStateWithLocations constructor(
             ?: memberState.memberId
 
     override val singleLocation = locations.takeIf { it.size == 1 }?.first()
-    override val singleValidLocation = singleLocation?.takeIf { it.isShownAsOldLocation != false }
-
-    val filteredActionItems = actionItems.filter {
-        if (it == MemberAction.DELETE_LOCATION) singleValidLocation != null
-        else true
-    }
+    override val singleValidLocation = singleLocation?.takeIf { it.visibility.isVisible() }
 
     val filteredLastPing: String? = lastPing?.takeIf { singleValidLocation != null }
 
@@ -98,11 +94,11 @@ data class GroupMemberItemLocationState constructor(
     val elevation: String?,
     val lastPing: String?,
     val status: MemberDeviceStatusType?,
-    val networkType: NetworkType? = null,
-    val signalStrength: NetworkSignalStrength? = null,
+    val networkType: NetworkType?,
+    val signalStrength: NetworkSignalStrength?,
     val canEdit: Boolean,
     val currentDevice: Boolean,
-    val isShownAsOldLocation: Boolean? = null
+    val visibility: MemberLocationVisibilityType
 ) {
     constructor(
         memberLocation: MemberLocation,
@@ -111,7 +107,7 @@ data class GroupMemberItemLocationState constructor(
         canEdit: Boolean,
         currentDevice: Boolean,
         showSpeedAndElevation: Boolean,
-        isShownAsOldLocation: Boolean? = null,
+        visibility: MemberLocationVisibilityType,
         formatter: IValueFormatter
     ) : this(
         locationId = memberLocation.id,
@@ -127,10 +123,59 @@ data class GroupMemberItemLocationState constructor(
         signalStrength = memberLocation.status.data?.signalStrength?.takeIf { showSpeedAndElevation },
         canEdit = canEdit,
         currentDevice = currentDevice,
-        isShownAsOldLocation = isShownAsOldLocation
+        visibility = visibility
     )
 }
 
-enum class MemberAction {
-    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER, REQUEST_LOCATION;
+data class MemberActionsState(
+    val deleteMember: MemberActionItemState? = null,
+    val deleteLocation: MemberActionItemState? = null,
+    val blockUser: MemberActionItemState? = null,
+    val unblockUser: MemberActionItemState? = null,
+    val locationRequest: LocationRequestItemState? = null
+) {
+    val isActive = listOfNotNull(deleteMember, deleteLocation, blockUser, unblockUser, locationRequest).isNotEmpty()
+}
+
+data class MemberActionItemState(
+    val type: MemberActionType,
+    val isLoading: Boolean = false,
+    val isEnabled: Boolean = true,
+)
+
+data class LocationRequestItemState(
+    val isWaitingForUser: Boolean = false,
+    val hasRequestError: Boolean = false,
+    val hasUserUnreachableError: Boolean = false,
+    val isLoading: Boolean = false,
+    val isEnabled: Boolean = true,
+    val lastLocationRequest: Instant? = null
+) {
+    val canInteract: Boolean = isEnabled && !isLoading && !isWaitingForUser
+}
+
+enum class MemberActionType {
+    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER;
+}
+
+enum class MemberLocationVisibilityType {
+    VISIBLE_ALWAYS, VISIBLE_ONCE, HIDDEN, MISSING;
+
+    fun isVisible(): Boolean {
+        return this == VISIBLE_ALWAYS || this == VISIBLE_ONCE
+    }
+
+    fun show(): MemberLocationVisibilityType {
+        return when (this) {
+            HIDDEN -> VISIBLE_ONCE
+            else -> this
+        }
+    }
+
+    fun tryToHide(): MemberLocationVisibilityType {
+        return when (this) {
+            VISIBLE_ONCE -> HIDDEN
+            else -> this
+        }
+    }
 }

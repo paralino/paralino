@@ -53,8 +53,9 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.GroupDetailViewModel
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.LocationSharingState
-import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
@@ -64,9 +65,9 @@ import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.AppColors
@@ -467,44 +468,6 @@ fun GroupDetailScreenCore(
                             state = item,
                             forceExpandAction = expanded,
                             collapseOnActionClick = false,
-                            onClick = { expanded = !expanded },
-                            onActionClick = {
-                                when (it) {
-                                    MemberAction.DELETE_MEMBER -> {
-                                        onShowDialog(
-                                            MainAlertDialog.DeleteGroupMember(
-                                                item.memberState.userId,
-                                                item.memberState.name
-                                            )
-                                        )
-                                    }
-
-                                    MemberAction.BLOCK_USER -> {
-                                        onShowDialog(MainAlertDialog.BlockUser(userId = item.memberState.userId))
-                                    }
-
-                                    MemberAction.UNBLOCK_USER -> {
-                                        onShowDialog(
-                                            MainAlertDialog.UnblockGroupOrUser(
-                                                id = item.memberState.userId,
-                                                type = BlocklistType.USER
-                                            )
-                                        )
-                                    }
-
-                                    MemberAction.DELETE_LOCATION, MemberAction.REQUEST_LOCATION -> {}
-                                }
-                            },
-                            onDeleteDeviceClick = {
-                                onShowDialog(
-                                    MainAlertDialog.DeleteMemberLocation(
-                                        memberId = item.memberState.memberId,
-                                        locationId = it.locationId,
-                                        isUserOwnDevice = item.memberState.isCurrentUser,
-                                        memberName = item.memberState.name
-                                    )
-                                )
-                            },
                             extraActions = {
                                 IconButton(
                                     onClick = {
@@ -516,6 +479,55 @@ fun GroupDetailScreenCore(
                                         tint = AppColors.accent,
                                         contentDescription = null
                                     )
+                                }
+                            },
+                            onEvent = { event ->
+                                when (event) {
+                                    is GroupMemberItemEvent.onActionClick -> {
+                                        when (event.action.type) {
+                                            MemberActionType.DELETE_MEMBER -> {
+                                                onShowDialog(
+                                                    MainAlertDialog.DeleteGroupMember(
+                                                        item.memberState.userId,
+                                                        item.memberState.name
+                                                    )
+                                                )
+                                            }
+
+                                            MemberActionType.BLOCK_USER -> {
+                                                onShowDialog(MainAlertDialog.BlockUser(userId = item.memberState.userId))
+                                            }
+
+                                            MemberActionType.UNBLOCK_USER -> {
+                                                onShowDialog(
+                                                    MainAlertDialog.UnblockGroupOrUser(
+                                                        id = item.memberState.userId,
+                                                        type = BlocklistType.USER
+                                                    )
+                                                )
+                                            }
+
+                                            MemberActionType.DELETE_LOCATION -> {}
+                                        }
+                                    }
+
+                                    is GroupMemberItemEvent.onDeleteDeviceClick -> {
+                                        onShowDialog(
+                                            MainAlertDialog.DeleteMemberLocation(
+                                                memberId = item.memberState.memberId,
+                                                locationId = event.item.locationId,
+                                                isUserOwnDevice = item.memberState.isCurrentUser,
+                                                memberName = item.memberState.name
+                                            )
+                                        )
+                                    }
+
+                                    is GroupMemberItemEvent.onItemClick -> {
+                                        expanded = !expanded
+                                    }
+
+                                    is GroupMemberItemEvent.onShowLocation -> {}
+                                    is GroupMemberItemEvent.onLocationRequest -> {}
                                 }
                             }
                         )

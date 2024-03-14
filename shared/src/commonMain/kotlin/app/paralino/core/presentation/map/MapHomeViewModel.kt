@@ -1,6 +1,5 @@
 package app.paralino.core.presentation.map
 
-import app.paralino.core.AppLifecycleState
 import app.paralino.core.AppLifecycleType
 import app.paralino.core.CoreAppManager
 import app.paralino.core.MR
@@ -14,13 +13,18 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberState
-import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.presentation.groups.LocationRequestItemState
+import app.paralino.core.presentation.groups.MemberActionItemState
+import app.paralino.core.presentation.groups.MemberActionType
+import app.paralino.core.presentation.groups.MemberActionsState
+import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
@@ -31,28 +35,32 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.mapToPayload
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 
 class MapHomeViewModel constructor(
     private val locationRepo: LocationRepository,
@@ -163,9 +171,9 @@ class MapHomeViewModel constructor(
                                             isCurrentUser = member.member.userId == config.userId,
                                             canHaveExpandButton = false
                                         ),
-                                        actionItems = emptyList(),
+                                        actions = MemberActionsState(),
                                         location = null,
-                                        lastPing = null
+                                        lastPing = null,
                                     )
                                 )
                             } else {
@@ -181,34 +189,44 @@ class MapHomeViewModel constructor(
                                             it.memberState.memberId == memberState.memberId && it.location?.locationId == location.id
                                         }
 
-                                    val canToggleOldLocation =
+                                    val locationVisibility =
                                         if (location.isLocationAvailableButOld) {
-                                            previousState?.location?.isShownAsOldLocation?.let { true }
-                                                ?: true
+                                            previousState?.location?.visibility
+                                                ?: MemberLocationVisibilityType.HIDDEN
+                                        } else if (location.hasLocation) {
+                                            MemberLocationVisibilityType.VISIBLE_ALWAYS
                                         } else {
-                                            false
+                                            MemberLocationVisibilityType.MISSING
                                         }
-
-                                    val isLocationShown = if (canToggleOldLocation) {
-                                        previousState?.location?.isShownAsOldLocation == true
-                                    } else {
-                                        location.hasLocation
-                                    }
-
-                                    val canDelete = member.member.userId == config.userId &&
-                                            location.hasLocation &&
-                                            !sharingManager.isSharingActiveForGroup(groupIdData.value)
 
                                     GroupMemberItemStateWithOneLocation(
                                         memberState = memberState,
-                                        actionItems = buildList {
-                                            if (canDelete)
-                                                add(MemberAction.DELETE_LOCATION)
-
-                                            if (location.canRequestLocation) {
-                                                add(MemberAction.REQUEST_LOCATION)
+                                        actions = MemberActionsState(
+                                            deleteLocation = takeIf {
+                                                canDeleteLocation(
+                                                    userId = member.member.userId,
+                                                    groupId = group.id,
+                                                    hasLocation = locationVisibility.isVisible()
+                                                )
+                                            }?.let {
+                                                MemberActionItemState(
+                                                    type = MemberActionType.DELETE_LOCATION,
+                                                    isLoading = previousState?.actions?.deleteLocation?.isLoading
+                                                        ?: false,
+                                                )
+                                            },
+                                            locationRequest = takeIf { location.canRequestLocation }?.let {
+                                                val hasUserResponded = (previousState?.actions?.locationRequest?.lastLocationRequest?.toEpochMilliseconds() ?: 0) < (location.status.data?.timeUTC?.fromUTCtoInstant()?.toEpochMilliseconds() ?: 0)
+                                                val canRequestLocationAgain = previousState?.actions?.locationRequest?.lastLocationRequest?.plus(1.minutes)?.let { it < nowUTC() } ?: true
+                                                if (hasUserResponded) {
+                                                    LocationRequestItemState(isEnabled = canRequestLocationAgain, lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest)
+                                                } else if (canRequestLocationAgain) {
+                                                    LocationRequestItemState(lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest)
+                                                } else {
+                                                    previousState?.actions?.locationRequest
+                                                }
                                             }
-                                        },
+                                        ),
                                         location = GroupMemberItemLocationState(
                                             memberLocation = location,
                                             name = location.name,
@@ -216,8 +234,8 @@ class MapHomeViewModel constructor(
                                             canEdit = false,
                                             currentDevice = location.deviceId == config.deviceId,
                                             showSpeedAndElevation = true,
-                                            formatter = valueFormatter,
-                                            isShownAsOldLocation = if (canToggleOldLocation) isLocationShown else null
+                                            visibility = locationVisibility,
+                                            formatter = valueFormatter
                                         ),
                                         lastPing = valueFormatter.getLastPing(location)
                                     )
@@ -327,6 +345,19 @@ class MapHomeViewModel constructor(
             .launchIn(coroutineScope)
     }
 
+    private fun MemberLocation.canDeleteLocation(): Boolean {
+        return canDeleteLocation(
+            userId = this.userId,
+            groupId = this.groupId,
+            hasLocation = this.hasLocation
+        )
+    }
+
+    private fun canDeleteLocation(userId: String, groupId: String, hasLocation: Boolean): Boolean {
+        return userId == config.userId && hasLocation &&
+                !sharingManager.isSharingActiveForGroup(groupId)
+    }
+
     fun switchGroup(groupId: String) {
         if (groupId.isBlank()) {
             val newGroupId =
@@ -347,9 +378,7 @@ class MapHomeViewModel constructor(
             it.copy(
                 trackingMarker = if (targetMarker?.hidden != true) null else memberItem.asFocusedMarker(),
                 markers = it.markers.map {
-                    it.copy(
-                        hidden = if (it.markerId == memberItem.keyId) false else it.hidden
-                    )
+                    it.copy(hidden = if (it.markerId == memberItem.keyId) false else it.hidden)
                 },
                 mapHomeScreenFocusType = when (it.mapHomeScreenFocusType) {
                     is MapHomeScreenFocusType.MEMBER -> MapHomeScreenFocusType.MEMBER(
@@ -366,7 +395,10 @@ class MapHomeViewModel constructor(
                     if (it.keyId == memberItem.keyId) {
                         it.copy(
                             location = it.location?.copy(
-                                isShownAsOldLocation = it.location.isShownAsOldLocation?.let { true }
+                                visibility = it.location.visibility.show()
+                            ),
+                            actions = it.actions.copy(
+                                deleteMember = null
                             )
                         )
                     } else {
@@ -445,7 +477,7 @@ class MapHomeViewModel constructor(
             trackingMarker = null,
             markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
             members = it.members.map {
-                it.copy(location = it.location?.copy(isShownAsOldLocation = it.location.isShownAsOldLocation?.let { false }))
+                it.copy(location = it.location?.copy(visibility = it.location.visibility.tryToHide()))
             },
             mapHomeScreenFocusType = MapHomeScreenFocusType.NONE
         )
@@ -555,34 +587,83 @@ class MapHomeViewModel constructor(
             .launchIn(coroutineScope)
     }
 
-    fun memberAction(action: MemberAction, state: GroupMemberItemState) {
+    fun memberAction(action: MemberActionType, state: GroupMemberItemState) {
         when (action) {
-            MemberAction.DELETE_MEMBER,
-            MemberAction.BLOCK_USER,
-            MemberAction.UNBLOCK_USER -> {
+            MemberActionType.DELETE_MEMBER,
+            MemberActionType.BLOCK_USER,
+            MemberActionType.UNBLOCK_USER -> {
             }
 
-            MemberAction.DELETE_LOCATION -> {
-                if (state is GroupMemberItemStateWithOneLocation && state.location != null) {
-                    clearMyLocation(state.location.locationId)
-                }
-            }
-
-            MemberAction.REQUEST_LOCATION -> {
+            MemberActionType.DELETE_LOCATION -> {
                 if (state is GroupMemberItemStateWithOneLocation) {
-                    requestLocationUpdate(state)
+                    clearMyLocation(state)
                 }
             }
         }
     }
 
-    private fun clearMyLocation(locationId: String) {
-        locationRepo.clearLocation(locationId)
-            .catch { messageDispatcher.showSnackbar(it.errorString()) }
+    private fun clearMyLocation(state: GroupMemberItemStateWithOneLocation) {
+        if (state.location == null) {
+            return
+        }
+
+        locationRepo.clearLocation(state.location.locationId)
+            .onStart {
+                updateReadyState { readyState ->
+                    readyState.copy(
+                        members = readyState.members.map {
+                            if (it.keyId == state.keyId) {
+                                it.copy(
+                                    actions = it.actions.copy(
+                                        deleteLocation = it.actions.deleteLocation?.copy(isLoading = true)
+                                    )
+                                )
+                            } else {
+                                it
+                            }
+                        }
+                    )
+                }
+            }
+            .onCompletion {
+                updateReadyState { readyState ->
+                    readyState.copy(
+                        members = readyState.members.map { item ->
+                            if (item.keyId == state.keyId) {
+                                item.copy(
+                                    actions = item.actions.copy(
+                                        deleteLocation = item.actions.deleteLocation
+                                            ?.takeIf {
+                                                canDeleteLocation(
+                                                    userId = item.memberState.userId,
+                                                    groupId = item.memberState.groupId,
+                                                    hasLocation = item.location?.visibility?.isVisible() == true
+                                                )
+                                            }
+                                            ?.copy(isLoading = false)
+                                    )
+                                )
+                            } else {
+                                item
+                            }
+                        }
+                    )
+                }
+
+                if (it != null) {
+                    messageDispatcher.showSnackbar(it.errorString())
+                }
+            }
             .launchIn(coroutineScope)
     }
 
-    private fun requestLocationUpdate(state: GroupMemberItemStateWithOneLocation) {
+    fun requestLocationUpdate(state: GroupMemberItemState) {
+
+        logg.v("location_request", "Got location request click: ${state::class}")
+        if (state !is GroupMemberItemStateWithOneLocation) {
+            logg.v("location_request", "Abort location request")
+            return
+        }
 
         if (state.location == null) {
             coroutineScope.launch {
@@ -591,12 +672,65 @@ class MapHomeViewModel constructor(
             return
         }
 
-        locationRequestUseCase.requestMemberDeviceLocation(
-            groupId = state.memberState.groupId,
-            memberUserId = state.memberState.userId,
-            locationId = state.location.locationId
-        )
-            .catch { messageDispatcher.showSnackbar(it.errorString()) }
+        flow {
+            locationRequestUseCase.requestMemberDeviceLocation(
+                groupId = state.memberState.groupId,
+                memberUserId = state.memberState.userId,
+                locationId = state.location.locationId
+            )
+            emit(Unit)
+        }
+            .onStart {
+                updateReadyState { readyState ->
+                    readyState.copy(
+                        members = readyState.members.map {
+                            if (it.keyId == state.keyId) {
+                                it.copy(
+                                    actions = it.actions.copy(
+                                        locationRequest = LocationRequestItemState(
+                                            isLoading = true,
+                                            hasRequestError = false,
+                                            hasUserUnreachableError = false,
+                                            isWaitingForUser = false,
+                                            lastLocationRequest = nowUTC()
+                                        )
+                                    )
+                                )
+                            } else {
+                                it
+                            }
+                        }
+                    )
+                }
+            }
+            .onCompletion { error ->
+                updateReadyState { readyState ->
+                    readyState.copy(
+                        members = readyState.members.map {
+                            if (it.keyId == state.keyId) {
+                                it.copy(
+                                    actions = it.actions.copy(
+                                        locationRequest = it.actions.locationRequest?.copy(
+                                            isLoading = error == null,
+                                            isEnabled = true,
+                                            isWaitingForUser = error == null,
+                                            // TODO adjust for proper error type
+                                            hasRequestError = error != null,
+                                            hasUserUnreachableError = error != null
+                                        )
+                                    )
+                                )
+                            } else {
+                                it
+                            }
+                        }
+                    )
+                }
+
+                if (error != null) {
+                    messageDispatcher.showSnackbar(error.errorString())
+                }
+            }
             .launchIn(coroutineScope)
     }
 }

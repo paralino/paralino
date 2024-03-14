@@ -36,9 +36,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
+import app.paralino.core.logg
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
-import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.asReady
@@ -63,8 +65,9 @@ fun MapHomeScreenElements(
     onSettingsClick: () -> Unit,
     onMemberClick: (GroupMemberItemState) -> Unit,
     onPlaceClick: (PlaceListItemData) -> Unit,
-    onMemberActionClick: (MemberAction, GroupMemberItemState) -> Unit,
+    onMemberActionClick: (MemberActionType, GroupMemberItemState) -> Unit,
     onToggleLocation: (GroupMemberItemStateWithLocations) -> Unit,
+    onRequestLocation: (GroupMemberItemState) -> Unit,
     onMapModeSwitch: () -> Unit,
     onCloseFocusedItem: () -> Unit,
 ) {
@@ -259,12 +262,26 @@ fun MapHomeScreenElements(
                         collapseOnActionClick = false,
                         forceExpandAction = true,
                         canShowOldLocation = true,
-                        onActionClick = {
-                            onMemberActionClick(it, memberState)
-                        },
-                        onToggleLocation = onToggleLocation,
-                        onClick = {
-                            onMemberClick(memberState)
+                        onEvent = { event ->
+                            when (event) {
+                                is GroupMemberItemEvent.onActionClick -> {
+                                    onMemberActionClick(event.action.type, event.item)
+                                }
+
+                                is GroupMemberItemEvent.onItemClick -> {
+                                    onMemberClick(event.item)
+                                }
+
+                                is GroupMemberItemEvent.onShowLocation -> {
+                                    onToggleLocation(event.item)
+                                }
+
+                                is GroupMemberItemEvent.onDeleteDeviceClick -> {}
+                                is GroupMemberItemEvent.onLocationRequest -> {
+                                    logg.v("location_request", "pass request click")
+                                    onRequestLocation(memberState)
+                                }
+                            }
                         }
                     )
                     CloseFocusButton(

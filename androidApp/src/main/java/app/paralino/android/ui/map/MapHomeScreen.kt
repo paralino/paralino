@@ -252,6 +252,9 @@ private fun MapContent(
             onToggleLocation = {
                 vm.toggleMarkerVisibility(it)
             },
+            onRequestLocation = {
+                vm.requestLocationUpdate(it)
+            },
             onMapModeSwitch = {
                 vm.switchMapMode()
             },

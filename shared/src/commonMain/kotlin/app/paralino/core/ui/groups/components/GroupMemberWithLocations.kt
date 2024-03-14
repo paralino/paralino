@@ -1,16 +1,44 @@
 package app.paralino.core.ui.groups.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
@@ -25,13 +53,20 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
+import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.MemberDeviceStatusType
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
-import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.presentation.groups.LocationRequestItemState
+import app.paralino.core.presentation.groups.MemberActionItemState
+import app.paralino.core.presentation.groups.MemberActionType
+import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
+import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
@@ -46,19 +81,22 @@ import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GroupMemberWithLocations(
     state: GroupMemberItemStateWithLocations,
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
-    onActionClick: ((MemberAction) -> Unit)? = null,
-    onDeleteDeviceClick: ((GroupMemberItemLocationState) -> Unit)? = null,
     extraActions: (@Composable RowScope.() -> Unit)? = null,
-    onToggleLocation: ((GroupMemberItemStateWithLocations) -> Unit)? = null
+    onEvent: ((GroupMemberItemEvent) -> Unit)? = null
 ) {
 
-    var expanded by rememberSaveable(state.keyId, forceExpandAction) { mutableStateOf(forceExpandAction) }
+    var expanded by rememberSaveable(state.keyId, forceExpandAction) {
+        mutableStateOf(
+            forceExpandAction
+        )
+    }
 
     Column {
         Row(
@@ -95,7 +133,7 @@ fun GroupMemberWithLocations(
                                 modifier = Modifier
                                     .size(14.dp)
                                     .rotate(90f),
-                                painter = if(state.singleValidLocation.isBatteryCharging) {
+                                painter = if (state.singleValidLocation.isBatteryCharging) {
                                     CoreAppIcons.BatteryChargingFull.asPainterResource()
                                 } else {
                                     CoreAppIcons.BatteryFull.asPainterResource()
@@ -239,7 +277,10 @@ fun GroupMemberWithLocations(
                     }
 
                     if (state.singleValidLocation?.networkType != null) {
-                        NetworkTypeIcon(state.singleValidLocation.networkType, state.singleValidLocation.signalStrength)
+                        NetworkTypeIcon(
+                            state.singleValidLocation.networkType,
+                            state.singleValidLocation.signalStrength
+                        )
                         Text(
                             text = state.singleValidLocation.networkType.networkName,
                             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
@@ -250,7 +291,7 @@ fun GroupMemberWithLocations(
             }
 
             val canExpand = state.memberState.canHaveExpandButton &&
-                (state.filteredActionItems.isNotEmpty() || extraActions != null || (state.locations.isNotEmpty() && state.allowShowingDevices))
+                    (state.actions.isActive || extraActions != null || (state.locations.isNotEmpty() && state.allowShowingDevices))
 
             // expand icon
             Box(
@@ -270,7 +311,7 @@ fun GroupMemberWithLocations(
                 modifier = Modifier,
                 state = state.singleLocation,
                 onToggleLocation = {
-                    onToggleLocation?.invoke(state)
+                    onEvent?.invoke(GroupMemberItemEvent.onShowLocation(state))
                 }
             )
         }
@@ -297,36 +338,27 @@ fun GroupMemberWithLocations(
                                     },
                                     onDelete = {
                                         // delete device
-                                        onDeleteDeviceClick?.invoke(it)
+                                        onEvent?.invoke(GroupMemberItemEvent.onDeleteDeviceClick(it))
                                     }
                                 )
                             }
                         }
                     }
 
-                    if (state.filteredActionItems.isNotEmpty() || extraActions != null) {
+                    if (state.actions.isActive || extraActions != null) {
                         Row(
                             modifier = Modifier.padding(top = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            state.filteredActionItems.forEach { action ->
-                                FilledButton(
-                                    style = ButtonStyle.SMALL_ACTION,
-                                    icon = action.actionIcon,
-                                    elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
-                                    onClick = {
-                                        if (collapseOnActionClick)
-                                            expanded = !expanded
-                                        onActionClick?.invoke(action)
-                                    }
-                                ) {
-                                    Text(
-                                        text = stringResource(action.actionText),
-                                        style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
-                                    )
+                            GroupMemberActions(
+                                state = state,
+                                onEvent = { event ->
+                                    if (collapseOnActionClick)
+                                        expanded = !expanded
+                                    logg.v("location_request", "Invoking action: ${event::class}")
+                                    onEvent?.invoke(event)
                                 }
-                                Spacer(modifier = Modifier.size(4.dp))
-                            }
+                            )
 
                             if (extraActions != null) {
                                 extraActions()
@@ -337,6 +369,55 @@ fun GroupMemberWithLocations(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun GroupMemberActions(
+    state: GroupMemberItemState,
+    onEvent: (GroupMemberItemEvent) -> Unit
+) {
+    FlowRow {
+        GroupMemberAction(state.actions.deleteMember) {
+            onEvent(GroupMemberItemEvent.onActionClick(it, state))
+        }
+        GroupMemberAction(state.actions.blockUser) {
+            onEvent(GroupMemberItemEvent.onActionClick(it, state))
+        }
+        GroupMemberAction(state.actions.unblockUser) {
+            onEvent(GroupMemberItemEvent.onActionClick(it, state))
+        }
+        GroupMemberAction(state.actions.deleteLocation) {
+            onEvent(GroupMemberItemEvent.onActionClick(it, state))
+        }
+        if (state.actions.locationRequest != null) {
+            LocationRequestItem(state = state.actions.locationRequest!!) {
+                onEvent(GroupMemberItemEvent.onLocationRequest(state))
+            }
+        }
+    }
+}
+
+@Composable
+private fun GroupMemberAction(
+    state: MemberActionItemState?,
+    onClick: (MemberActionItemState) -> Unit
+) {
+    if (state != null) {
+        FilledButton(
+            style = ButtonStyle.SMALL_ACTION,
+            icon = state.type.actionIcon,
+            elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+            onClick = { onClick(state) },
+            state = AppButtonState.loadingStateWithCheck(isLoading = state.isLoading)
+        ) {
+            Text(
+                text = stringResource(state.type.actionText),
+                style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
+            )
+        }
+        Spacer(modifier = Modifier.size(4.dp))
     }
 }
 
@@ -394,7 +475,7 @@ fun GroupMemberLocationChild(
                             modifier = Modifier
                                 .size(12.dp)
                                 .rotate(90f),
-                            painter = if(state.isBatteryCharging) {
+                            painter = if (state.isBatteryCharging) {
                                 CoreAppIcons.BatteryChargingFull.asPainterResource()
                             } else {
                                 CoreAppIcons.BatteryFull.asPainterResource()
@@ -494,7 +575,7 @@ fun GroupMemberOldLocation(
     state: GroupMemberItemLocationState?,
     onToggleLocation: () -> Unit
 ) {
-    if (state?.isShownAsOldLocation == false) {
+    if (state?.visibility == MemberLocationVisibilityType.HIDDEN) {
         Column(
             modifier = modifier
                 .fillMaxWidth(),
@@ -527,9 +608,60 @@ fun GroupMemberOldLocation(
 }
 
 @Composable
+fun LocationRequestItem(
+    modifier: Modifier = Modifier,
+    state: LocationRequestItemState,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .padding(vertical = 2.dp)
+            .clickable(enabled = state.canInteract) {
+                logg.v("location_request", "Location request clicked")
+                onClick()
+            }
+            .alpha(if (state.isEnabled) 1f else 0.4f)
+            .clip(RoundedCornerShape(12.dp))
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            text = when {
+                state.isWaitingForUser -> "Waiting for device..."
+                state.isLoading -> "Requesting..."
+                state.hasUserUnreachableError -> "Device can not be reached"
+                state.hasRequestError -> "Request failed, please try again"
+                else -> stringResource(MR.strings.group_members_item_request_location_button)
+            },
+            style = MaterialTheme.typography.caption,
+        )
+
+        Box {
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(16.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Icon(
+                    painter = if (state.hasRequestError || state.hasUserUnreachableError) {
+                        CoreAppIcons.Warning.asPainterResource()
+                    } else {
+                        CoreAppIcons.ShareLocation.asPainterResource()
+                    },
+                    modifier = Modifier.size(16.dp),
+                    contentDescription = null
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun NetworkTypeIcon(networkType: NetworkType, signalStrength: NetworkSignalStrength?) {
     val tint = remember(signalStrength) {
-        when(signalStrength) {
+        when (signalStrength) {
             NetworkSignalStrength.POOR -> Color.Unspecified
             NetworkSignalStrength.GOOD -> Color.Unspecified
             NetworkSignalStrength.GREAT -> AppColors.accent
@@ -538,16 +670,17 @@ fun NetworkTypeIcon(networkType: NetworkType, signalStrength: NetworkSignalStren
     }
     val icon = remember(networkType, signalStrength) {
         when (networkType) {
-            NetworkType.WIFI -> when(signalStrength) {
+            NetworkType.WIFI -> when (signalStrength) {
                 NetworkSignalStrength.POOR -> CoreAppIcons.SignalWifi1
                 NetworkSignalStrength.GOOD -> CoreAppIcons.SignalWifi2
                 NetworkSignalStrength.GREAT -> CoreAppIcons.SignalWifi3
                 null -> CoreAppIcons.SignalWifi3
             }
+
             NetworkType.G2,
             NetworkType.G3,
             NetworkType.G4,
-            NetworkType.G5 -> when(signalStrength) {
+            NetworkType.G5 -> when (signalStrength) {
                 NetworkSignalStrength.POOR -> CoreAppIcons.SignalCell1
                 NetworkSignalStrength.GOOD -> CoreAppIcons.SignalCell2
                 NetworkSignalStrength.GREAT -> CoreAppIcons.SignalCell3
@@ -565,20 +698,18 @@ fun NetworkTypeIcon(networkType: NetworkType, signalStrength: NetworkSignalStren
     )
 }
 
-val MemberAction.actionIcon: Painter
+val MemberActionType.actionIcon: Painter
     @Composable get() = when (this) {
-        MemberAction.DELETE_MEMBER -> CoreAppIcons.PersonRemove.asPainterResource()
-        MemberAction.DELETE_LOCATION -> CoreAppIcons.Delete.asPainterResource()
-        MemberAction.BLOCK_USER -> CoreAppIcons.Block.asPainterResource()
-        MemberAction.UNBLOCK_USER -> CoreAppIcons.LockOpen.asPainterResource()
-        MemberAction.REQUEST_LOCATION -> CoreAppIcons.ShareLocation.asPainterResource()
+        MemberActionType.DELETE_MEMBER -> CoreAppIcons.PersonRemove.asPainterResource()
+        MemberActionType.DELETE_LOCATION -> CoreAppIcons.Delete.asPainterResource()
+        MemberActionType.BLOCK_USER -> CoreAppIcons.Block.asPainterResource()
+        MemberActionType.UNBLOCK_USER -> CoreAppIcons.LockOpen.asPainterResource()
     }
 
-val MemberAction.actionText: StringResource
+val MemberActionType.actionText: StringResource
     get() = when (this) {
-        MemberAction.DELETE_MEMBER -> MR.strings.group_members_item_remove_button
-        MemberAction.DELETE_LOCATION -> MR.strings.group_members_item_clear_location_button
-        MemberAction.BLOCK_USER -> MR.strings.group_details_block_group_alert_button
-        MemberAction.UNBLOCK_USER -> MR.strings.blocklist_unblock_alert_button
-        MemberAction.REQUEST_LOCATION -> MR.strings.group_members_item_request_location_button
+        MemberActionType.DELETE_MEMBER -> MR.strings.group_members_item_remove_button
+        MemberActionType.DELETE_LOCATION -> MR.strings.group_members_item_clear_location_button
+        MemberActionType.BLOCK_USER -> MR.strings.group_details_block_group_alert_button
+        MemberActionType.UNBLOCK_USER -> MR.strings.blocklist_unblock_alert_button
     }

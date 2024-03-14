@@ -16,11 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
-import app.paralino.core.presentation.groups.MemberAction
 
 @Composable
 fun GroupMember(
@@ -30,16 +29,13 @@ fun GroupMember(
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
-    onActionClick: ((MemberAction) -> Unit)? = null,
-    onDeleteDeviceClick: ((GroupMemberItemLocationState) -> Unit)? = null,
-    onToggleLocation: ((GroupMemberItemStateWithLocations) -> Unit)? = null,
     extraActions: (@Composable RowScope.() -> Unit)? = null,
-    onClick: () -> Unit,
+    onEvent: (GroupMemberItemEvent) -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onEvent(GroupMemberItemEvent.onItemClick(state)) }
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
             .padding(horizontal = 10.dp, vertical = 10.dp)
@@ -56,17 +52,15 @@ fun GroupMember(
                     state = GroupMemberItemStateWithLocations(
                         memberState = state.memberState,
                         locations = listOfNotNull(state.location),
-                        actionItems = state.actionItems,
+                        actions = state.actions,
                         allowShowingDevices = false,
                         lastPing = state.lastPing
                     ),
                     canShowOldLocation = canShowOldLocation,
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
-                    onActionClick = onActionClick,
-                    onDeleteDeviceClick = onDeleteDeviceClick,
-                    onToggleLocation = onToggleLocation,
-                    extraActions = extraActions
+                    extraActions = extraActions,
+                    onEvent = onEvent
                 )
             }
 
@@ -76,10 +70,8 @@ fun GroupMember(
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
                     canShowOldLocation = canShowOldLocation,
-                    onActionClick = onActionClick,
-                    onDeleteDeviceClick = onDeleteDeviceClick,
-                    onToggleLocation = onToggleLocation,
-                    extraActions = extraActions
+                    extraActions = extraActions,
+                    onEvent = onEvent
                 )
             }
         }

@@ -34,7 +34,10 @@ class LocationRequestUseCase constructor(
             do {
                 logg.tag("location_performance").v("User is looking at map, sending ping")
                 emit("User is looking at map")
-                locationPerformanceManager.locationBoostRequested(groupId, LocationPerformanceType.MEDIUM_HIGH)
+                locationPerformanceManager.locationBoostRequested(
+                    groupId,
+                    LocationPerformanceType.MEDIUM_HIGH
+                )
                 sendLocationFocusEvent(groupId, focusType)
                 val delayMillis = when (focusType) {
                     is MapHomeScreenFocusType.MEMBER -> 20_000L
@@ -65,32 +68,29 @@ class LocationRequestUseCase constructor(
         }
     }
 
-    fun requestMemberDeviceLocation(
+    suspend fun requestMemberDeviceLocation(
         groupId: String,
         memberUserId: String,
         locationId: String
-    ): Flow<Unit> {
-        return flow {
+    ) {
+        val requestPayload = LocationRequestPayload(
+            groupId = groupId,
+            userId = memberUserId,
+            locationId = locationId
+        )
 
-            val requestPayload = LocationRequestPayload(
-                groupId = groupId,
-                userId = memberUserId,
-                locationId = locationId
+        val response = functionsApi.runAndWait(
+            function = ServerFunction.LOCATION_REQUEST,
+            data = requestPayload
+        )
+
+        if (!response.isSuccess) {
+            // TODO throw better exception
+            throw BaseRemoteException.fromCode(
+                code = response.statusCode,
+                message = "Unable to request location update",
+                cause = Exception(response.stderr)
             )
-
-            val response = functionsApi.runAndWait(
-                function = ServerFunction.LOCATION_REQUEST,
-                data = requestPayload
-            )
-
-            if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to request location update",
-                    cause = Exception(response.stderr)
-                )
-            }
         }
     }
 }

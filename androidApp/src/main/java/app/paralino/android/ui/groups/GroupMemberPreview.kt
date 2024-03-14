@@ -17,11 +17,15 @@ import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberState
-import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.presentation.groups.MemberActionItemState
+import app.paralino.core.presentation.groups.MemberActionType
+import app.paralino.core.presentation.groups.MemberActionsState
+import app.paralino.core.presentation.groups.MemberLocationVisibilityType
+import app.paralino.core.provider.NetworkSignalStrength
+import app.paralino.core.provider.NetworkType
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
-
 
 @Preview(device = Devices.PIXEL_3A)
 @Composable
@@ -33,7 +37,11 @@ fun GroupMemberPreview() {
                     state = GroupMemberItemStateWithOneLocation(
                         memberState = dummyMemberState,
                         location = null,
-                        actionItems = listOf(MemberAction.DELETE_MEMBER),
+                        actions = MemberActionsState(
+                            deleteMember = MemberActionItemState(
+                                MemberActionType.DELETE_MEMBER
+                            )
+                        ),
                         lastPing = null
                     )
                 ) { }
@@ -42,8 +50,12 @@ fun GroupMemberPreview() {
                     state = GroupMemberItemStateWithOneLocation(
                         memberState = dummyMemberState.copy(isVerified = false),
                         location = dummyLocations.first(),
-                        actionItems = listOf(MemberAction.DELETE_MEMBER),
-                        lastPing = "16:30",
+                        actions = MemberActionsState(
+                            deleteMember = MemberActionItemState(
+                                MemberActionType.DELETE_MEMBER
+                            )
+                        ),
+                        lastPing = "16:30"
                     )
                 ) { }
                 Spacer(modifier = Modifier.size(8.dp))
@@ -52,7 +64,11 @@ fun GroupMemberPreview() {
                         memberState = dummyMemberState,
                         locations = dummyLocations,
                         allowShowingDevices = true,
-                        actionItems = listOf(MemberAction.DELETE_MEMBER),
+                        actions = MemberActionsState(
+                            deleteMember = MemberActionItemState(
+                                MemberActionType.DELETE_MEMBER
+                            )
+                        ),
                         lastPing = "16:30",
                     )
                 ) { }
@@ -60,8 +76,12 @@ fun GroupMemberPreview() {
                     state = GroupMemberItemStateWithLocations(
                         memberState = dummyMemberState,
                         locations = dummyLocations.take(1),
-                        actionItems = listOf(MemberAction.DELETE_MEMBER),
                         allowShowingDevices = false,
+                        actions = MemberActionsState(
+                            deleteMember = MemberActionItemState(
+                                MemberActionType.DELETE_MEMBER
+                            )
+                        ),
                         lastPing = "16:30",
                     )
                 ) { }
@@ -93,7 +113,10 @@ val dummyLocations = listOf(
         lastPing = "16:30",
         status = MemberDeviceStatusType.ACTIVE,
         canEdit = true,
-        currentDevice = true
+        currentDevice = true,
+        networkType = NetworkType.G2,
+        signalStrength = NetworkSignalStrength.GOOD,
+        visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
     ),
     GroupMemberItemLocationState(
         locationId = "",
@@ -106,7 +129,10 @@ val dummyLocations = listOf(
         lastPing = null,
         status = MemberDeviceStatusType.GPS_OFF,
         canEdit = true,
-        currentDevice = true
+        currentDevice = true,
+        networkType = NetworkType.G4,
+        signalStrength = NetworkSignalStrength.POOR,
+        visibility = MemberLocationVisibilityType.VISIBLE_ONCE
     ),
     GroupMemberItemLocationState(
         locationId = "",
@@ -119,6 +145,9 @@ val dummyLocations = listOf(
         lastPing = "16:30",
         status = MemberDeviceStatusType.NOT_SHARING,
         canEdit = false,
-        currentDevice = false
+        currentDevice = false,
+        networkType = NetworkType.WIFI,
+        signalStrength = NetworkSignalStrength.GOOD,
+        visibility = MemberLocationVisibilityType.HIDDEN
     )
 )

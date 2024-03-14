@@ -102,7 +102,7 @@ data class MemberLocation constructor(
         return locationData.data?.isOlderThan(duration) ?: return false
     }
 
-    private fun isStatusOlderThan(duration: Duration): Boolean {
+    fun isStatusOlderThan(duration: Duration): Boolean {
         return status.data?.isOlderThan(duration) ?: return false
     }
 }
