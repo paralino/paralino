@@ -49,7 +49,8 @@ class PushNotificationHandler constructor(
         logg.tag("push_notifications").v("Start checking push notifications")
         val notifications = docApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = BackendResourceIDs.collectionPushNotificationID
+            collectionId = BackendResourceIDs.collectionPushNotificationID,
+            keyValues = listOfNotNull(config.deviceId.takeIf { it.isNotBlank() }?.let { "deviceId" to it })
         )
             .also {
                 logg.tag("push_notifications").v("Got ${it.size} notifications documents")
@@ -64,9 +65,15 @@ class PushNotificationHandler constructor(
             }
 
         logg.tag("push_notifications")
-            .v("Processing ${notifications.size} notifications documents")
+            .v("Got ${notifications.size} notifications documents")
 
-        notifications.forEach {
+        notifications
+            .filter { it.deviceId == config.deviceId }
+            .also {
+                logg.tag("push_notifications")
+                    .v("Processing ${notifications.size} notifications documents for this device")
+            }
+            .forEach {
             processNotification(it) { push ->
                 try {
                     logg.tag("push_notifications").v("Delete push notification document")
