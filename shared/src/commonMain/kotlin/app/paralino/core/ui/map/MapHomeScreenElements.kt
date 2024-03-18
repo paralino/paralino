@@ -265,7 +265,7 @@ fun MapHomeScreenElements(
                         onEvent = { event ->
                             when (event) {
                                 is GroupMemberItemEvent.onActionClick -> {
-                                    onMemberActionClick(event.action.type, event.item)
+                                    onMemberActionClick(event.action.type, memberState)
                                 }
 
                                 is GroupMemberItemEvent.onItemClick -> {

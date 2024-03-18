@@ -33,6 +33,7 @@ import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.fromUTCtoInstant
@@ -40,6 +41,8 @@ import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -59,8 +62,10 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class MapHomeViewModel constructor(
     private val locationRepo: LocationRepository,
@@ -86,6 +91,17 @@ class MapHomeViewModel constructor(
 
     private var activePingSubscriptionJob: Job? = null
     private var realtimeSubscriptionJob: Job? = null
+    private val locationRequestDuration = 20.seconds
+    private val locationRequestDelay = 2.minutes
+
+    private val timeRefreshPingFlow = flow<Unit> {
+        emit(Unit)
+        delay(20)
+        while (currentCoroutineContext().isActive) {
+            delay(5.seconds)
+            emit(Unit)
+        }
+    }
 
     val allGroups: StateFlow<Resource<List<UserGroup>>> = groupRepo.getAllGroupsLocally()
         .map { Resource.Ready(it) }
@@ -100,6 +116,9 @@ class MapHomeViewModel constructor(
             initialValue = Resource.NotInitialized
         )
 
+    /**
+     * Used in iOS
+     */
     val allGroupsState: Flow<Boolean?> = allGroups.map {
         when (it) {
             Resource.NotInitialized -> null
@@ -142,8 +161,10 @@ class MapHomeViewModel constructor(
 
         groupIdData
             .onEach {
-                if (!it.isNullOrBlank()) {
-                    groupPreRefresh.refreshGroupWithMembers(it)
+                if (it.isNotBlank()) {
+                    coroutineScope.launch {
+                        groupPreRefresh.refreshGroupWithMembers(it)
+                    }
                 }
             }
             .flatMapLatest {
@@ -156,11 +177,12 @@ class MapHomeViewModel constructor(
                         }
                 } else {
                     combine(
+                        timeRefreshPingFlow,
                         groupRepo.getGroupWithMembersLocally(it),
                         placesRepo.getPlacesForGroupLocally(it),
                         getSharingContract(),
                         userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
-                    ) { group, places, sharingStatus, userData ->
+                    ) { _, group, places, sharingStatus, userData ->
 
                         val membersData = group.members.flatMap { member ->
                             if (member.locations.isEmpty()) {
@@ -204,8 +226,9 @@ class MapHomeViewModel constructor(
                                         actions = MemberActionsState(
                                             deleteLocation = takeIf {
                                                 canDeleteLocation(
-                                                    userId = member.member.userId,
                                                     groupId = group.id,
+                                                    isCurrentUser = member.member.userId == config.userId,
+                                                    isCurrentDevice = location.deviceId == config.deviceId,
                                                     hasLocation = locationVisibility.isVisible()
                                                 )
                                             }?.let {
@@ -216,12 +239,15 @@ class MapHomeViewModel constructor(
                                                 )
                                             },
                                             locationRequest = takeIf { location.canRequestLocation }?.let {
+                                                val isRequestInProgress = previousState?.actions?.locationRequest?.run { isLoading && !isWaitingForUser } ?: false
                                                 val hasUserResponded = (previousState?.actions?.locationRequest?.lastLocationRequest?.toEpochMilliseconds() ?: 0) < (location.status.data?.timeUTC?.fromUTCtoInstant()?.toEpochMilliseconds() ?: 0)
-                                                val canRequestLocationAgain = previousState?.actions?.locationRequest?.lastLocationRequest?.plus(1.minutes)?.let { it < nowUTC() } ?: true
-                                                if (hasUserResponded) {
+                                                val isRequestExpired = previousState?.actions?.locationRequest?.lastLocationRequest?.plus(locationRequestDuration)?.let { it < nowUTC() } ?: true
+                                                val canRequestLocationAgain = previousState?.actions?.locationRequest?.lastLocationRequest?.plus(locationRequestDelay)?.let { it < nowUTC() } ?: true
+
+                                                if (hasUserResponded && !isRequestInProgress) {
                                                     LocationRequestItemState(isEnabled = canRequestLocationAgain, lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest)
-                                                } else if (canRequestLocationAgain) {
-                                                    LocationRequestItemState(lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest)
+                                                } else if (isRequestExpired && !isRequestInProgress) {
+                                                    LocationRequestItemState(isEnabled = canRequestLocationAgain, lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest)
                                                 } else {
                                                     previousState?.actions?.locationRequest
                                                 }
@@ -345,17 +371,15 @@ class MapHomeViewModel constructor(
             .launchIn(coroutineScope)
     }
 
-    private fun MemberLocation.canDeleteLocation(): Boolean {
-        return canDeleteLocation(
-            userId = this.userId,
-            groupId = this.groupId,
-            hasLocation = this.hasLocation
-        )
-    }
-
-    private fun canDeleteLocation(userId: String, groupId: String, hasLocation: Boolean): Boolean {
-        return userId == config.userId && hasLocation &&
-                !sharingManager.isSharingActiveForGroup(groupId)
+    private fun canDeleteLocation(
+        groupId: String,
+        isCurrentUser: Boolean,
+        isCurrentDevice: Boolean,
+        hasLocation: Boolean
+    ): Boolean {
+        return isCurrentUser
+                && hasLocation
+                && (!isCurrentDevice || !sharingManager.isSharingActiveForGroup(groupId))
     }
 
     fun switchGroup(groupId: String) {
@@ -480,22 +504,6 @@ class MapHomeViewModel constructor(
                 it.copy(location = it.location?.copy(visibility = it.location.visibility.tryToHide()))
             },
             mapHomeScreenFocusType = MapHomeScreenFocusType.NONE
-        )
-    }
-
-    fun toggleFocusOnMembers() = updateReadyState {
-        it.copy(
-            trackingMarker = null,
-            markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
-            mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_MEMBERS)
-        )
-    }
-
-    fun toggleFocusOnPlaces() = updateReadyState {
-        it.copy(
-            trackingMarker = null,
-            markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
-            mapHomeScreenFocusType = it.mapHomeScreenFocusType.toggle(MapHomeScreenFocusType.ALL_PLACES)
         )
     }
 
@@ -624,27 +632,29 @@ class MapHomeViewModel constructor(
                         }
                     )
                 }
+                delay(500)
             }
             .onCompletion {
                 updateReadyState { readyState ->
                     readyState.copy(
-                        members = readyState.members.map { item ->
-                            if (item.keyId == state.keyId) {
-                                item.copy(
-                                    actions = item.actions.copy(
-                                        deleteLocation = item.actions.deleteLocation
-                                            ?.takeIf {
+                        members = readyState.members.map { memberState ->
+                            if (memberState.keyId == state.keyId) {
+                                memberState.copy(
+                                    actions = memberState.actions.copy(
+                                        deleteLocation = memberState.actions.deleteLocation
+                                            ?.takeIf { action ->
                                                 canDeleteLocation(
-                                                    userId = item.memberState.userId,
-                                                    groupId = item.memberState.groupId,
-                                                    hasLocation = item.location?.visibility?.isVisible() == true
+                                                    groupId = memberState.memberState.groupId,
+                                                    isCurrentUser = memberState.memberState.userId == config.userId,
+                                                    isCurrentDevice = memberState.location?.currentDevice == true,
+                                                    hasLocation = memberState.location?.visibility?.isVisible() == true
                                                 )
                                             }
                                             ?.copy(isLoading = false)
                                     )
                                 )
                             } else {
-                                item
+                                memberState
                             }
                         }
                     )
@@ -665,9 +675,16 @@ class MapHomeViewModel constructor(
             return
         }
 
-        if (state.location == null) {
+        if (state.location == null || state.actions.locationRequest == null) {
             coroutineScope.launch {
                 messageDispatcher.showSnackbar(Throwable("Active device not found").errorString())
+            }
+            return
+        }
+
+        if (state.actions.locationRequest?.isEnabled == false) {
+            coroutineScope.launch {
+                messageDispatcher.showSnackbar(MR.strings.group_member_device_request_disabled.localizedString())
             }
             return
         }
@@ -678,6 +695,7 @@ class MapHomeViewModel constructor(
                 memberUserId = state.memberState.userId,
                 locationId = state.location.locationId
             )
+            delay(500)
             emit(Unit)
         }
             .onStart {
@@ -691,8 +709,7 @@ class MapHomeViewModel constructor(
                                             isLoading = true,
                                             hasRequestError = false,
                                             hasUserUnreachableError = false,
-                                            isWaitingForUser = false,
-                                            lastLocationRequest = nowUTC()
+                                            isWaitingForUser = false
                                         )
                                     )
                                 )
@@ -716,7 +733,8 @@ class MapHomeViewModel constructor(
                                             isWaitingForUser = error == null,
                                             // TODO adjust for proper error type
                                             hasRequestError = error != null,
-                                            hasUserUnreachableError = error != null
+                                            hasUserUnreachableError = error != null,
+                                            lastLocationRequest = nowUTC()
                                         )
                                     )
                                 )
@@ -729,8 +747,30 @@ class MapHomeViewModel constructor(
 
                 if (error != null) {
                     messageDispatcher.showSnackbar(error.errorString())
+                } else {
+                    scheduleDeviceResponseCheck()
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    private fun scheduleDeviceResponseCheck() {
+        coroutineScope.launch {
+            delay(locationRequestDuration)
+            val anyObsoleteRequests = _uiState.value.asReady()?.members?.any { member ->
+                member.actions.locationRequest?.let { request ->
+                    val isWaiting = request.isWaitingForUser
+                    val isObsolete = request.lastLocationRequest?.plus(locationRequestDuration)?.let { it < nowUTC() } ?: true
+                    isWaiting && isObsolete
+                } ?: false
+            } ?: false
+
+            if (anyObsoleteRequests) {
+                messageDispatcher.showSnackbar(
+                    text = MR.strings.group_member_device_not_responding_message.localizedString(),
+                    duration = SnackbarDuration.Long
+                )
+            }
+        }
     }
 }

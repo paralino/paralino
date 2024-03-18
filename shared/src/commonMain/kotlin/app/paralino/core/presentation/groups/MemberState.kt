@@ -151,7 +151,7 @@ data class LocationRequestItemState(
     val isEnabled: Boolean = true,
     val lastLocationRequest: Instant? = null
 ) {
-    val canInteract: Boolean = isEnabled && !isLoading && !isWaitingForUser
+    val canInteract: Boolean = !isLoading && !isWaitingForUser
 }
 
 enum class MemberActionType {

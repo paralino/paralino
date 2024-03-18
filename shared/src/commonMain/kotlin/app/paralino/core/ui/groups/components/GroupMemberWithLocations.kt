@@ -93,9 +93,7 @@ fun GroupMemberWithLocations(
 ) {
 
     var expanded by rememberSaveable(state.keyId, forceExpandAction) {
-        mutableStateOf(
-            forceExpandAction
-        )
+        mutableStateOf(forceExpandAction)
     }
 
     Column {
@@ -453,12 +451,12 @@ fun GroupMemberLocationChild(
                     .padding(end = 2.dp)
                     .size(36.dp)
                     .border(
-                        if (state.currentDevice) 2.dp else 0.5.dp,
-                        if (state.currentDevice)
+                        width = if (state.currentDevice) 2.dp else 0.5.dp,
+                        color = if (state.currentDevice)
                             MaterialTheme.colors.primary
                         else
                             MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                        RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(10.dp)
                     )
                     .padding(8.dp),
                 painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
@@ -628,10 +626,10 @@ fun LocationRequestItem(
         Text(
             modifier = Modifier.padding(horizontal = 8.dp),
             text = when {
-                state.isWaitingForUser -> "Waiting for device..."
-                state.isLoading -> "Requesting..."
-                state.hasUserUnreachableError -> "Device can not be reached"
-                state.hasRequestError -> "Request failed, please try again"
+                state.isWaitingForUser -> stringResource(MR.strings.group_member_device_waiting)
+                state.isLoading -> stringResource(MR.strings.group_member_device_requesting)
+                state.hasUserUnreachableError -> stringResource(MR.strings.group_member_device_unreachable)
+                state.hasRequestError -> stringResource(MR.strings.group_member_device_request_failed)
                 else -> stringResource(MR.strings.group_members_item_request_location_button)
             },
             style = MaterialTheme.typography.caption,

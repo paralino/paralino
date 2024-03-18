@@ -239,6 +239,12 @@
     <string name="group_picker_button_join">Pridruži se</string>
     <string name="group_member_no_location_info_message">Lokacija trenutno nije dostupna za ovaj uređaj.</string>
     <string name="group_member_devices_section_title">Uređaji</string>
+    <string name="group_member_device_not_responding_message">**Uređaj trenutno nije dostupan ili nije na mreži.**\n\nUkoliko uređaj ne odgovori u roku od par minuta, probaj osvježiti lokaciju ponovno.</string>
+    <string name="group_member_device_waiting">Čekanje na uređaj...</string>
+    <string name="group_member_device_requesting">Zahtjev za lokaciju u tijeku...</string>
+    <string name="group_member_device_unreachable">Uređaj nije dostupan!</string>
+    <string name="group_member_device_request_failed">Zahtjev nije uspio, pokušaj ponovno</string>
+    <string name="group_member_device_request_disabled">Moraš sačekati nekoliko trenutaka prije nego što ponovno osvježiš lokaciju 🙏</string>
 
     <string name="group_members_last_active_status_now">Upravo sada</string>
     <string name="group_members_last_active_status_recently_1">Prije 1 minute</string>
@@ -246,9 +252,9 @@
     <string name="group_members_status_inactive">Nema aktivnosti</string>
     <string name="group_members_status_offline">Uređaj je izvan mreže</string>
     <string name="group_members_status_gps_off">GPS je isključen</string>
-    <string name="group_members_status_battery_saver">Energetska ušteda</string>
-    <string name="group_members_status_active">Aktivno</string>
-    <string name="group_members_status_throttle">U mirovanju</string>
+    <string name="group_members_status_battery_saver">Štednja baterije</string>
+    <string name="group_members_status_active">Uživo</string>
+    <string name="group_members_status_throttle">Bez promjene</string>
     <string name="group_members_status_too_many_requests">Previše zahtjeva</string>
     <string name="group_members_status_missing_permissions">Nedostaju dozvole</string>
 
