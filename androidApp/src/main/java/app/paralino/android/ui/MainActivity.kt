@@ -101,7 +101,8 @@ fun RootApp(
                         showAppUpdateDialog = when(event.updateType) {
                             AppUpdateType.NONE -> null
                             AppUpdateType.SOFT -> MainAlertDialog.AppVersionInfo(forceUpdate = false)
-                            AppUpdateType.FORCE -> MainAlertDialog.AppVersionInfo(forceUpdate = true)
+                            AppUpdateType.FORCE,
+                            AppUpdateType.FORCE_AND_CANCEL -> MainAlertDialog.AppVersionInfo(forceUpdate = true)
                         }
                     }
                     MainScreenEvent.SessionExpired -> {

@@ -98,13 +98,18 @@ class AppConfigRepository(
             DeviceType.Android -> configData.minVersionAndroid
             DeviceType.iOS -> configData.minVersionIOS
         }
+        val minUiVersion = when (deviceApiProvider.deviceType) {
+            DeviceType.Android -> configData.minUiVersionAndroid
+            DeviceType.iOS -> configData.minUiVersionIOS
+        }
         val newVersion = when (deviceApiProvider.deviceType) {
             DeviceType.Android -> configData.newVersionAndroid
             DeviceType.iOS -> configData.newVersionIOS
         }
 
         return when {
-            currentVersion < minVersion -> AppUpdateType.FORCE
+            currentVersion < minVersion -> AppUpdateType.FORCE_AND_CANCEL
+            currentVersion < minUiVersion -> AppUpdateType.FORCE
             currentVersion < newVersion && newVersion > config.dismissedAppVersion -> AppUpdateType.SOFT
             else -> AppUpdateType.NONE
         }
@@ -112,5 +117,5 @@ class AppConfigRepository(
 }
 
 enum class AppUpdateType {
-    NONE, SOFT, FORCE
+    NONE, SOFT, FORCE, FORCE_AND_CANCEL
 }

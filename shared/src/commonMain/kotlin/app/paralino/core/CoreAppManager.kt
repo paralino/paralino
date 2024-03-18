@@ -7,6 +7,7 @@ import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.AppUpdateType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -42,6 +43,14 @@ class CoreAppManager(
             }
         }
             .launchIn(scopeProvider.defaultScope)
+
+        configRepo.getUpdateType()
+            .onEach { updateType ->
+                if (updateType == AppUpdateType.FORCE_AND_CANCEL) {
+                    logoutUseCase.logoutLocally()
+                }
+            }
+            .launchIn(scopeProvider.defaultIOScope)
     }
 
     fun onAppActive() {

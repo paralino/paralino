@@ -28,6 +28,7 @@ import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 
@@ -47,10 +48,12 @@ class GroupMemberAddUseCase constructor(
     ): Flow<Unit> {
         return getDataOnce(
             remote = {
-                val group = local.getGroupWithMembers(groupId).first()
+                val group = local.getGroupWithMembers(groupId).firstOrNull()
+                    ?: throw IllegalStateException("Group does not exist: $groupId")
+
                 addUserToGroup(
-                    group,
-                    code
+                    group = group,
+                    codeData = code
                 )
                 groupRefreshUseCase.refreshRemoteGroupWithMembersAndPlaces(groupId)
             }

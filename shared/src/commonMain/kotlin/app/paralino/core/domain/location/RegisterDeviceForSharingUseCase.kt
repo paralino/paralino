@@ -22,6 +22,7 @@ import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.encodeToString
 
 class RegisterDeviceForSharingUseCase constructor(
@@ -54,7 +55,8 @@ class RegisterDeviceForSharingUseCase constructor(
                 logg.tag("sharing_start").d("Start location register, refresh group data")
                 val result1 = groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
                 logg.tag("sharing_start").d("Group refreshed ($result1), fetch group")
-                val group = groupLocal.getGroupWithMembers(groupId).first()
+                val group = groupLocal.getGroupWithMembers(groupId).firstOrNull()
+                    ?: throw IllegalStateException("Group does not exist: $groupId")
 
                 val member = userMemberId.getCurrentUserMemberForGroup(groupId)
                     ?: throw IllegalStateException("Missing member for a group $groupId")

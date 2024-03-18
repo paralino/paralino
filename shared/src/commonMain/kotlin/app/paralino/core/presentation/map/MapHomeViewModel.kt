@@ -184,6 +184,10 @@ class MapHomeViewModel constructor(
                         userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
                     ) { _, group, places, sharingStatus, userData ->
 
+                        if (group == null) {
+                            return@combine MapHomeScreenState.Empty()
+                        }
+
                         val membersData = group.members.flatMap { member ->
                             if (member.locations.isEmpty()) {
                                 listOf(

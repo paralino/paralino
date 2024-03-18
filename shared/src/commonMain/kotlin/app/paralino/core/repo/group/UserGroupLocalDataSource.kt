@@ -87,10 +87,12 @@ class UserGroupLocalDataSource constructor(
             }
     }
 
-    fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
+    fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers?> {
         return database.mapToOneOrNull { groupQueries.getGroup(groupId) }
             .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
                 if(group != null && members.isNotEmpty()) {
+                    // TODO double check this - sometimes it crashes on logout or expired session with NoSuchElement exception
+                    // mostly likely because clearing database currently is not one transaction
                     val verificationResult =
                         members.first { it.member.userId == config.userId }.member.verificationResult
                     UserGroupWithMembers(
@@ -99,7 +101,6 @@ class UserGroupLocalDataSource constructor(
                     )
                 } else null
             }
-            .filterNotNull()
     }
 
     fun getAllGroups(): Flow<List<UserGroup>> {

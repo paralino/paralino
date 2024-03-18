@@ -38,7 +38,7 @@ class PlaceDetailViewModel(
 
     init {
         combine(
-            groupRepo.getGroupWithMembersLocally(groupId),
+            groupRepo.getGroupWithMembersLocally(groupId).filterNotNull(),
             placesRepo.getPlaceWithSettings(placeId)
         ) { group, place ->
 

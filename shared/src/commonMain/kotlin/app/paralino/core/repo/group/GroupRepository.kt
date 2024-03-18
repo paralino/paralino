@@ -17,7 +17,7 @@ class GroupRepository constructor(
         return local.getAllGroupIds()
     }
 
-    fun getGroupWithMembersLocally(id: String): Flow<UserGroupWithMembers> {
+    fun getGroupWithMembersLocally(id: String): Flow<UserGroupWithMembers?> {
         return local.getGroupWithMembers(id)
     }
 
