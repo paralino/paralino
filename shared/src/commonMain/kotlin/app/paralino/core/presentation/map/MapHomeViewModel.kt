@@ -35,6 +35,7 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.mapToPayload
@@ -47,6 +48,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
@@ -668,6 +670,7 @@ class MapHomeViewModel constructor(
                     messageDispatcher.showSnackbar(it.errorString())
                 }
             }
+            .catch { /* errors are handled in onCompletion */ }
             .launchIn(coroutineScope)
     }
 
@@ -711,8 +714,6 @@ class MapHomeViewModel constructor(
                                     actions = it.actions.copy(
                                         locationRequest = LocationRequestItemState(
                                             isLoading = true,
-                                            hasRequestError = false,
-                                            hasUserUnreachableError = false,
                                             isWaitingForUser = false
                                         )
                                     )
@@ -735,9 +736,9 @@ class MapHomeViewModel constructor(
                                             isLoading = error == null,
                                             isEnabled = true,
                                             isWaitingForUser = error == null,
-                                            // TODO adjust for proper error type
                                             hasRequestError = error != null,
-                                            hasUserUnreachableError = error != null,
+                                            hasDeviceUnreachableError = error?.asRemoteException()?.code == 404,
+                                            hasDeviceSetupWrongError = error?.asRemoteException()?.type == "device_setup_invalid",
                                             lastLocationRequest = nowUTC()
                                         )
                                     )
@@ -755,6 +756,7 @@ class MapHomeViewModel constructor(
                     scheduleDeviceResponseCheck()
                 }
             }
+            .catch { /* errors are handled in onCompletion */ }
             .launchIn(coroutineScope)
     }
 

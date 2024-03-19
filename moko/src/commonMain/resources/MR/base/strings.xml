@@ -240,10 +240,11 @@
     <string name="group_picker_button_join">Join</string>
     <string name="group_member_no_location_info_message">This device does not have a location yet.</string>
     <string name="group_member_devices_section_title">Devices</string>
-    <string name="group_member_device_not_responding_message">**User device is not responding or is offline.**\n\nCheck again shortly, it might take few minutes to respond if device is online.</string>
+    <string name="group_member_device_not_responding_message">**Device is not responding or is offline.**\n\nCheck again shortly, it might take few minutes to respond if device is online.</string>
     <string name="group_member_device_waiting">Waiting for device to respond...</string>
     <string name="group_member_device_requesting">Requesting location...</string>
     <string name="group_member_device_unreachable">Device can not be reached</string>
+    <string name="group_member_device_setup_invalid">Device is not fully compatible and can not be reached</string>
     <string name="group_member_device_request_failed">Request failed, please try again</string>
     <string name="group_member_device_request_disabled">Please wait a few moments before requesting location again 🙏</string>
 

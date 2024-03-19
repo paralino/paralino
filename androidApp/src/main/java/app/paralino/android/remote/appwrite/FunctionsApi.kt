@@ -41,7 +41,7 @@ class FunctionsApi constructor(
                 status = execution.status,
                 statusCode = execution.responseStatusCode.toInt(),
                 response = execution.responseBody,
-                stderr = execution.errors
+                errors = execution.errors
             )
         }
     }

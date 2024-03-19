@@ -146,12 +146,14 @@ data class MemberActionItemState(
 data class LocationRequestItemState(
     val isWaitingForUser: Boolean = false,
     val hasRequestError: Boolean = false,
-    val hasUserUnreachableError: Boolean = false,
+    val hasDeviceSetupWrongError: Boolean = false,
+    val hasDeviceUnreachableError: Boolean = false,
     val isLoading: Boolean = false,
     val isEnabled: Boolean = true,
     val lastLocationRequest: Instant? = null
 ) {
     val canInteract: Boolean = !isLoading && !isWaitingForUser
+    val hasError = hasRequestError || hasDeviceSetupWrongError || hasDeviceUnreachableError
 }
 
 enum class MemberActionType {

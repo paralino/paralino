@@ -73,24 +73,24 @@ class LocationRequestUseCase constructor(
         memberUserId: String,
         locationId: String
     ) {
-        val requestPayload = LocationRequestPayload(
-            groupId = groupId,
-            userId = memberUserId,
-            locationId = locationId
-        )
-
-        val response = functionsApi.runAndWait(
-            function = ServerFunction.LOCATION_REQUEST,
-            data = requestPayload
-        )
-
-        if (!response.isSuccess) {
-            // TODO throw better exception
-            throw BaseRemoteException.fromCode(
-                code = response.statusCode,
-                message = "Unable to request location update",
-                cause = Exception(response.stderr)
+        triggerRemoteOnly {
+            val requestPayload = LocationRequestPayload(
+                groupId = groupId,
+                userId = memberUserId,
+                locationId = locationId
             )
+
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.LOCATION_REQUEST,
+                data = requestPayload
+            )
+
+            if (!response.isSuccess) {
+                throw BaseRemoteException.fromRemote(
+                    code = response.statusCode,
+                    error = response.errorResponse
+                )
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
@@ -621,20 +622,9 @@ fun LocationRequestItem(
             .alpha(if (state.isEnabled) 1f else 0.4f)
             .clip(RoundedCornerShape(12.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
     ) {
-        Text(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            text = when {
-                state.isWaitingForUser -> stringResource(MR.strings.group_member_device_waiting)
-                state.isLoading -> stringResource(MR.strings.group_member_device_requesting)
-                state.hasUserUnreachableError -> stringResource(MR.strings.group_member_device_unreachable)
-                state.hasRequestError -> stringResource(MR.strings.group_member_device_request_failed)
-                else -> stringResource(MR.strings.group_members_item_request_location_button)
-            },
-            style = MaterialTheme.typography.caption,
-        )
-
         Box {
             if (state.isLoading) {
                 CircularProgressIndicator(
@@ -643,7 +633,7 @@ fun LocationRequestItem(
                 )
             } else {
                 Icon(
-                    painter = if (state.hasRequestError || state.hasUserUnreachableError) {
+                    painter = if (state.hasError) {
                         CoreAppIcons.Warning.asPainterResource()
                     } else {
                         CoreAppIcons.ShareLocation.asPainterResource()
@@ -653,6 +643,19 @@ fun LocationRequestItem(
                 )
             }
         }
+
+        Text(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            text = when {
+                state.isWaitingForUser -> stringResource(MR.strings.group_member_device_waiting)
+                state.isLoading -> stringResource(MR.strings.group_member_device_requesting)
+                state.hasDeviceSetupWrongError -> stringResource(MR.strings.group_member_device_setup_invalid)
+                state.hasDeviceUnreachableError -> stringResource(MR.strings.group_member_device_unreachable)
+                state.hasRequestError -> stringResource(MR.strings.group_member_device_request_failed)
+                else -> stringResource(MR.strings.group_members_item_request_location_button)
+            },
+            style = MaterialTheme.typography.caption,
+        )
     }
 }
 
