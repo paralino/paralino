@@ -434,7 +434,10 @@ fun GroupDetailScreenCore(
 
                     this.stickyHeader(key = "member_list_header") {
                         Row(
-                            modifier = Modifier.padding(vertical = 8.dp),
+                            modifier = Modifier
+                                .fillParentMaxWidth()
+                                .background(MaterialTheme.colors.background)
+                                .padding(vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
