@@ -88,7 +88,8 @@ data class GroupMemberItemLocationState constructor(
     val locationId: String,
     val name: String?,
     val image: ImageModel,
-    val batterLevel: Int?,
+    val actualBatteryLevel: Int?,
+    val adjustedBatteryLevel: Int?,
     val isBatteryCharging: Boolean,
     val speed: String?,
     val elevation: String?,
@@ -113,7 +114,8 @@ data class GroupMemberItemLocationState constructor(
         locationId = memberLocation.id,
         name = name,
         image = image ?: ImageModel.emoji(Emojis.lock),
-        batterLevel = memberLocation.status.data?.validBatteryLevel,
+        actualBatteryLevel = memberLocation.status.data?.validBatteryLevel(checkForTime = false),
+        adjustedBatteryLevel = memberLocation.status.data?.validBatteryLevel(checkForTime = true),
         isBatteryCharging = memberLocation.status.data?.isCharging ?: false,
         speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
         elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it) },
@@ -125,6 +127,13 @@ data class GroupMemberItemLocationState constructor(
         currentDevice = currentDevice,
         visibility = visibility
     )
+
+    val visibleBatteryLevel: Int? = when(visibility) {
+        MemberLocationVisibilityType.VISIBLE_ALWAYS -> adjustedBatteryLevel
+        MemberLocationVisibilityType.VISIBLE_ONCE -> actualBatteryLevel
+        MemberLocationVisibilityType.HIDDEN -> adjustedBatteryLevel
+        MemberLocationVisibilityType.MISSING -> adjustedBatteryLevel
+    }
 }
 
 data class MemberActionsState(

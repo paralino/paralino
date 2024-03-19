@@ -46,12 +46,11 @@ data class MemberDeviceStatus constructor(
     val networkType: NetworkType? get() = NetworkType.fromKey(network)
     val signalStrength: NetworkSignalStrength? get() = NetworkSignalStrength.fromLevel(signal)
 
-    val validBatteryLevel: Int?
-        get() {
+    fun validBatteryLevel(checkForTime: Boolean): Int? {
             batteryLevel ?: return null
             if(statusType == MemberDeviceStatusType.NOT_SHARING) return null
             if(timeUTC == null) return null
-            if(timeUTC.fromUTCtoInstant()?.plus(20.minutes)?.let { it > nowUTC() } != true) return null
+            if(checkForTime && isOlderThan(30.minutes)) return null
             return batteryLevel
         }
 

@@ -426,9 +426,6 @@ class MapHomeViewModel constructor(
                         it.copy(
                             location = it.location?.copy(
                                 visibility = it.location.visibility.show()
-                            ),
-                            actions = it.actions.copy(
-                                deleteMember = null
                             )
                         )
                     } else {

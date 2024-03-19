@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
@@ -120,7 +119,7 @@ fun GroupMemberWithLocations(
                         )
                 )
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    if (state.singleValidLocation?.batterLevel != null && (!expanded || !state.allowShowingDevices)) {
+                    if (state.singleValidLocation?.visibleBatteryLevel != null && (!expanded || !state.allowShowingDevices)) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -141,7 +140,7 @@ fun GroupMemberWithLocations(
                             )
                             Spacer(modifier = Modifier.size(4.dp))
                             Text(
-                                text = "${state.singleValidLocation?.batterLevel}%",
+                                text = "${state.singleValidLocation?.visibleBatteryLevel}%",
                                 style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium)
                             )
                         }
@@ -463,7 +462,7 @@ fun GroupMemberLocationChild(
                 painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
                 contentDescription = null
             )
-            if (state.batterLevel != null) {
+            if (state.visibleBatteryLevel != null) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -483,7 +482,7 @@ fun GroupMemberLocationChild(
                         )
                         Spacer(modifier = Modifier.size(2.dp))
                         Text(
-                            text = "${state.batterLevel}%",
+                            text = "${state.visibleBatteryLevel}%",
                             style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium)
                         )
                     }
@@ -497,7 +496,7 @@ fun GroupMemberLocationChild(
                 .padding(
                     start = 8.dp,
                     end = 4.dp,
-                    bottom = if (state.batterLevel != null && state.lastPing == null) 12.dp else 0.dp
+                    bottom = if (state.visibleBatteryLevel != null && state.lastPing == null) 12.dp else 0.dp
                 ),
             verticalArrangement = Arrangement.Center
         ) {
