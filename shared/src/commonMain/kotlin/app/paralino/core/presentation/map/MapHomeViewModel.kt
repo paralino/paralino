@@ -13,7 +13,6 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
-import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
@@ -200,8 +199,7 @@ class MapHomeViewModel constructor(
                                             canHaveExpandButton = false
                                         ),
                                         actions = MemberActionsState(),
-                                        location = null,
-                                        lastPing = null,
+                                        location = null
                                     )
                                 )
                             } else {
@@ -268,8 +266,7 @@ class MapHomeViewModel constructor(
                                             showSpeedAndElevation = true,
                                             visibility = locationVisibility,
                                             formatter = valueFormatter
-                                        ),
-                                        lastPing = valueFormatter.getLastPing(location)
+                                        )
                                     )
                                 }
                             }
@@ -295,7 +292,7 @@ class MapHomeViewModel constructor(
                                                     ?.let { "($it)" }
                                             ).joinToString(" "),
                                             image = member.member.image,
-                                            timeInfo = valueFormatter.getLastPing(location)
+                                            timeInfo = valueFormatter.getLastLocationPing(location)
                                         )
                                         marker.copy(
                                             markerId = memberLocationState.keyId,

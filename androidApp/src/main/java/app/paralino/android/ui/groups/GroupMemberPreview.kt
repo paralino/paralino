@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
@@ -41,8 +42,7 @@ fun GroupMemberPreview() {
                             deleteMember = MemberActionItemState(
                                 MemberActionType.DELETE_MEMBER
                             )
-                        ),
-                        lastPing = null
+                        )
                     )
                 ) { }
                 Spacer(modifier = Modifier.size(8.dp))
@@ -54,8 +54,7 @@ fun GroupMemberPreview() {
                             deleteMember = MemberActionItemState(
                                 MemberActionType.DELETE_MEMBER
                             )
-                        ),
-                        lastPing = "16:30"
+                        )
                     )
                 ) { }
                 Spacer(modifier = Modifier.size(8.dp))
@@ -69,7 +68,8 @@ fun GroupMemberPreview() {
                                 MemberActionType.DELETE_MEMBER
                             )
                         ),
-                        lastPing = "16:30",
+                        lastLocationPing = "16:30",
+                        lastStatusPing = "16:30",
                     )
                 ) { }
                 GroupMember(
@@ -82,7 +82,8 @@ fun GroupMemberPreview() {
                                 MemberActionType.DELETE_MEMBER
                             )
                         ),
-                        lastPing = "16:30",
+                        lastLocationPing = "16:30",
+                        lastStatusPing = "16:30",
                     )
                 ) { }
             }
@@ -111,10 +112,12 @@ val dummyLocations = listOf(
         isBatteryCharging = false,
         speed = "35 km/h",
         elevation = "250m",
-        lastPing = "16:30",
-        status = MemberDeviceStatusType.ACTIVE,
+        lastLocationPing = "16:30",
+        lastStatusPing = "16:30",
+        deviceStatus = MemberDeviceStatusType.ACTIVE,
         canEdit = true,
         currentDevice = true,
+        onlineStatus = MemberDeviceOnlineStatusType.ONLINE,
         networkType = NetworkType.G2,
         signalStrength = NetworkSignalStrength.GOOD,
         visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
@@ -128,10 +131,12 @@ val dummyLocations = listOf(
         isBatteryCharging = false,
         speed = "35 km/h",
         elevation = "250m",
-        lastPing = null,
-        status = MemberDeviceStatusType.GPS_OFF,
+        lastLocationPing = null,
+        lastStatusPing = "16:30",
+        deviceStatus = MemberDeviceStatusType.GPS_OFF,
         canEdit = true,
         currentDevice = true,
+        onlineStatus = MemberDeviceOnlineStatusType.OFFLINE,
         networkType = NetworkType.G4,
         signalStrength = NetworkSignalStrength.POOR,
         visibility = MemberLocationVisibilityType.VISIBLE_ONCE
@@ -145,10 +150,12 @@ val dummyLocations = listOf(
         isBatteryCharging = true,
         speed = "35 km/h",
         elevation = "250m",
-        lastPing = "16:30",
-        status = MemberDeviceStatusType.NOT_SHARING,
+        lastLocationPing = "16:30",
+        lastStatusPing = "16:30",
+        deviceStatus = MemberDeviceStatusType.NOT_SHARING,
         canEdit = false,
         currentDevice = false,
+        onlineStatus = MemberDeviceOnlineStatusType.BUSY,
         networkType = NetworkType.WIFI,
         signalStrength = NetworkSignalStrength.GOOD,
         visibility = MemberLocationVisibilityType.HIDDEN

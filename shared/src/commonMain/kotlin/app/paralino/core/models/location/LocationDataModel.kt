@@ -6,6 +6,7 @@ import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 @Serializable
@@ -45,6 +46,15 @@ data class MemberDeviceStatus constructor(
     val statusType: MemberDeviceStatusType? get() = MemberDeviceStatusType.fromKey(status)
     val networkType: NetworkType? get() = NetworkType.fromKey(network)
     val signalStrength: NetworkSignalStrength? get() = NetworkSignalStrength.fromLevel(signal)
+    val onlineStatus: MemberDeviceOnlineStatusType get() {
+        return when {
+            timeUTC == null -> MemberDeviceOnlineStatusType.UNKNOWN
+            isOlderThan(3.hours) -> MemberDeviceOnlineStatusType.UNKNOWN
+            isOlderThan(10.minutes) -> MemberDeviceOnlineStatusType.OFFLINE
+            isOlderThan(1.minutes) -> MemberDeviceOnlineStatusType.BUSY
+            else -> MemberDeviceOnlineStatusType.ONLINE
+        }
+    }
 
     fun validBatteryLevel(checkForTime: Boolean): Int? {
             batteryLevel ?: return null
@@ -58,6 +68,10 @@ data class MemberDeviceStatus constructor(
         val pinTime = timeUTC?.fromUTCtoInstant() ?: return false
         return pinTime.plus(duration) < nowUTC()
     }
+}
+
+enum class MemberDeviceOnlineStatusType {
+    ONLINE, BUSY, OFFLINE, UNKNOWN
 }
 
 enum class MemberDeviceStatusType {

@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -38,7 +37,6 @@ fun GroupMember(
             .clickable { onEvent(GroupMemberItemEvent.onItemClick(state)) }
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
-            .padding(horizontal = 10.dp, vertical = 10.dp)
             .animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioLowBouncy,
@@ -54,7 +52,8 @@ fun GroupMember(
                         locations = listOfNotNull(state.location),
                         actions = state.actions,
                         allowShowingDevices = false,
-                        lastPing = state.lastPing
+                        lastLocationPing = state.lastLocationPing,
+                        lastStatusPing = state.lastStatusPing
                     ),
                     canShowOldLocation = canShowOldLocation,
                     forceExpandAction = forceExpandAction,

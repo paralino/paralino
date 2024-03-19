@@ -101,7 +101,8 @@ class GroupDetailViewModel(
                                 }
                         ),
                         allowShowingDevices = true,
-                        lastPing = valueFormatter.getLastPing(member)
+                        lastLocationPing = valueFormatter.getLastLocationPing(member),
+                        lastStatusPing = valueFormatter.getLastStatusPing(member)
                     )
                 }
 

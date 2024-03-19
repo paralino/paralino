@@ -2,6 +2,7 @@ package app.paralino.core.presentation.groups
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
@@ -14,10 +15,11 @@ import kotlinx.datetime.Instant
 sealed interface GroupMemberItemState {
     val memberState: GroupMemberState
     val keyId: String
-    val lastPing: String?
+    val lastLocationPing: String?
+    val lastStatusPing: String?
     val actions: MemberActionsState
     val singleLocation: GroupMemberItemLocationState?
-    val singleValidLocation: GroupMemberItemLocationState?
+    val singleVisibleLocation: GroupMemberItemLocationState?
 }
 
 data class GroupMemberState constructor(
@@ -50,7 +52,6 @@ data class GroupMemberItemStateWithOneLocation constructor(
     override val memberState: GroupMemberState,
     val location: GroupMemberItemLocationState?,
     override val actions: MemberActionsState,
-    override val lastPing: String?,
 ) : GroupMemberItemState {
     override val keyId: String
         get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
@@ -58,8 +59,10 @@ data class GroupMemberItemStateWithOneLocation constructor(
 
     override val singleLocation: GroupMemberItemLocationState?
         get() = location
-    override val singleValidLocation: GroupMemberItemLocationState?
+    override val singleVisibleLocation: GroupMemberItemLocationState?
         get() = location?.takeIf { it.visibility.isVisible() }
+    override val lastLocationPing: String? get() = singleVisibleLocation?.lastLocationPing
+    override val lastStatusPing: String? get() = singleVisibleLocation?.lastStatusPing
 }
 
 data class GroupMemberItemStateWithLocations constructor(
@@ -67,7 +70,8 @@ data class GroupMemberItemStateWithLocations constructor(
     val locations: List<GroupMemberItemLocationState>,
     override val actions: MemberActionsState,
     val allowShowingDevices: Boolean,
-    override val lastPing: String?
+    override val lastLocationPing: String?,
+    override val lastStatusPing: String?
 ) : GroupMemberItemState {
 
     override val keyId: String
@@ -75,13 +79,13 @@ data class GroupMemberItemStateWithLocations constructor(
             ?: memberState.memberId
 
     override val singleLocation = locations.takeIf { it.size == 1 }?.first()
-    override val singleValidLocation = singleLocation?.takeIf { it.visibility.isVisible() }
+    override val singleVisibleLocation = singleLocation?.takeIf { it.visibility.isVisible() }
 
-    val filteredLastPing: String? = lastPing?.takeIf { singleValidLocation != null }
+    val filteredLastPing: String? = lastLocationPing?.takeIf { singleVisibleLocation != null }
 
     val statusTag: MemberDeviceStatusType?
-        get() = singleValidLocation?.status
-            ?: locations.firstOrNull { it.status == MemberDeviceStatusType.ACTIVE }?.status
+        get() = singleVisibleLocation?.deviceStatus
+            ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
 }
 
 data class GroupMemberItemLocationState constructor(
@@ -93,8 +97,10 @@ data class GroupMemberItemLocationState constructor(
     val isBatteryCharging: Boolean,
     val speed: String?,
     val elevation: String?,
-    val lastPing: String?,
-    val status: MemberDeviceStatusType?,
+    val lastLocationPing: String?,
+    val lastStatusPing: String?,
+    val deviceStatus: MemberDeviceStatusType?,
+    val onlineStatus: MemberDeviceOnlineStatusType?,
     val networkType: NetworkType?,
     val signalStrength: NetworkSignalStrength?,
     val canEdit: Boolean,
@@ -119,8 +125,10 @@ data class GroupMemberItemLocationState constructor(
         isBatteryCharging = memberLocation.status.data?.isCharging ?: false,
         speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
         elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it) },
-        lastPing = formatter.getLastPing(memberLocation),
-        status = memberLocation.locationAwareStatusType,
+        lastLocationPing = formatter.getLastLocationPing(memberLocation),
+        lastStatusPing = formatter.getLastStatusPing(memberLocation),
+        deviceStatus = memberLocation.locationAwareStatusType,
+        onlineStatus = memberLocation.status.data?.onlineStatus,
         networkType = memberLocation.status.data?.networkType?.takeIf { showSpeedAndElevation },
         signalStrength = memberLocation.status.data?.signalStrength?.takeIf { showSpeedAndElevation },
         canEdit = canEdit,

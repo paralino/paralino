@@ -204,7 +204,6 @@ private fun LazyListScope.membersList(
             Spacer(modifier = Modifier.size(8.dp))
         GroupMember(
             state = itemState,
-            backgroundColor = Color.Transparent,
             collapseOnActionClick = true,
             forceExpandAction = false,
             onEvent = { event ->
