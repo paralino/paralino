@@ -82,6 +82,7 @@ import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.conditional
 import app.paralino.core.utils.extensions.pulsate
 import dev.icerock.moko.resources.StringResource
@@ -106,7 +107,7 @@ fun GroupMemberWithLocations(
     Column {
         Row(
             modifier = Modifier
-                .padding(top = 10.dp)
+                .padding(vertical = 10.dp)
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -230,7 +231,7 @@ fun GroupMemberWithLocations(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 12.dp, end = 8.dp, bottom = 4.dp),
+                    .padding(start = 12.dp, end = 8.dp),
                 verticalArrangement = Arrangement.Center
             ) {
                 val iconId = "deviceIcon"
@@ -374,52 +375,70 @@ fun GroupMemberWithLocations(
         }
 
         // action item
-        Column(
+        AnimatedVisibility(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .padding(bottom = 10.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            visible = expanded
         ) {
-
-            AnimatedVisibility(visible = expanded) {
-                Column {
-                    state.locations.takeIf { state.allowShowingDevices }?.let {
-                        Column(modifier = Modifier.padding(top = 12.dp)) {
-                            Text(
-                                modifier = Modifier.padding(start = 8.dp),
-                                text = stringResource(MR.strings.group_member_devices_section_title),
-                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium)
+            Column {
+                state.locations.takeIf { state.allowShowingDevices }?.let {
+                    Column(modifier = Modifier.padding(top = 12.dp)) {
+                        Text(
+                            modifier = Modifier.padding(start = 8.dp),
+                            text = stringResource(MR.strings.group_member_devices_section_title),
+                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium)
+                        )
+                        it.forEach {
+                            GroupMemberLocationChild(
+                                state = it,
+                                onClick = {
+                                    // open device
+                                },
+                                onDelete = {
+                                    // delete device
+                                    onEvent?.invoke(GroupMemberItemEvent.onDeleteDeviceClick(it))
+                                }
                             )
-                            it.forEach {
-                                GroupMemberLocationChild(
-                                    state = it,
-                                    onClick = {
-                                        // open device
-                                    },
-                                    onDelete = {
-                                        // delete device
-                                        onEvent?.invoke(GroupMemberItemEvent.onDeleteDeviceClick(it))
-                                    }
-                                )
-                            }
                         }
                     }
-
-                    if (state.actions.isActive || extraActions != null) {
-                        GroupMemberActions(
-                            modifier = Modifier.padding(top = 10.dp),
-                            state = state,
-                            extraContent = extraActions,
-                            onEvent = { event ->
-                                if (collapseOnActionClick)
-                                    expanded = !expanded
-                                logg.v("location_request", "Invoking action: ${event::class}")
-                                onEvent?.invoke(event)
-                            }
-                        )
-                    }
-
                 }
+
+                if (state.actions.isActive || extraActions != null) {
+                    GroupMemberActions(
+                        modifier = Modifier.padding(top = 10.dp),
+                        state = state,
+                        extraContent = extraActions,
+                        onEvent = { event ->
+                            if (collapseOnActionClick)
+                                expanded = !expanded
+                            logg.v("location_request", "Invoking action: ${event::class}")
+                            onEvent?.invoke(event)
+                        }
+                    )
+                }
+
+            }
+        }
+
+        if (state.lastStatusPing != null && state.lastStatusPing != state.filteredLastPing && canShowOldLocation) {
+            FlowRow(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .padding(bottom = 10.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(MR.strings.group_members_last_status_update).annotatedBold(),
+                    style = MaterialTheme.typography.caption,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                )
+                Text(
+                    text = " ${state.lastStatusPing}",
+                    style = MaterialTheme.typography.caption,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                )
             }
         }
     }
