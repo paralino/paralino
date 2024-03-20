@@ -33,7 +33,7 @@ class LocationRequestNotificationHandler(
         }
 
         val performanceType = push.performanceType ?: return
-        val key = push.pushType?.key ?: "location_request"
+        val key = (push.pushType?.key ?: "location_request") + "_${payload.groupId}"
 
         coroutineScopeProvider.userSessionIOScope.launch {
             try {
@@ -59,6 +59,7 @@ class LocationRequestNotificationHandler(
         groupId: String,
         performanceType: LocationPerformanceType
     ) {
+        logg.v("Update location status and performance for group $groupId")
         if (!sharingManager.isSharingActiveForGroup(id = groupId)) {
             try {
                 deviceStatusProcessor.pushDeviceStatus(groupId)
@@ -90,8 +91,9 @@ class LocationRequestNotificationHandler(
                 PushNotificationType.LOCATION_FOCUS -> {
                     when (pushImportance) {
                         PushNotificationImportance.HIGH -> LocationPerformanceType.VERY_HIGH
-                        // TODO check if we should use HIGH by default (this was previous behavior)
                         PushNotificationImportance.MEDIUM -> LocationPerformanceType.HIGH
+                        // TODO check if we should use HIGH by default (this was previous behavior)
+                        PushNotificationImportance.NORMAL -> LocationPerformanceType.MEDIUM_HIGH
                         else -> LocationPerformanceType.MEDIUM_HIGH
                     }
                 }
@@ -111,6 +113,7 @@ class LocationRequestNotificationHandler(
                     when (pushImportance) {
                         PushNotificationImportance.HIGH -> 10.seconds
                         PushNotificationImportance.MEDIUM -> 15.seconds
+                        PushNotificationImportance.NORMAL -> 20.seconds
                         else -> 20.seconds
                     }
                 }

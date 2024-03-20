@@ -5,11 +5,11 @@ import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.raw.LocationFocusRaw
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.base.RemotePreference
-import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -64,8 +64,24 @@ class PushNotificationHandler constructor(
                 }
             }
 
+        val locationFocusDocuments = docApi.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = BackendResourceIDs.collectionLocationFocusID
+        )
+            .also {
+                logg.tag("push_notifications").v("Got ${it.size} location focus documents")
+            }
+            .mapNotNull {
+                try {
+                    LocationFocusRaw.fromDocument(it)
+                } catch (e: Exception) {
+                    logg.tag("push_notifications").e("Error parsing location focus", e)
+                    null
+                }
+            }
+
         logg.tag("push_notifications")
-            .v("Got ${notifications.size} notifications documents")
+            .v("Got ${notifications.size} notifications documents and ${locationFocusDocuments.size} location focus documents")
 
         notifications
             .filter { it.deviceId == config.deviceId }
@@ -90,6 +106,21 @@ class PushNotificationHandler constructor(
             }
         }
 
+        locationFocusDocuments
+            .groupBy { it.groupId }
+            .map {
+                // take latest document for each group
+                it.value.maxBy { it.updatedAt }
+            }
+            .map { it.asValidPushNotification(deviceId = config.deviceId) }
+            .also {
+                logg.tag("push_notifications")
+                    .v("Processing ${it.size} location focus documents")
+            }
+            .forEach {
+                processNotification(it) {}
+            }
+
         logg.tag("push_notifications").v("Processing notifications done")
     }
 
@@ -106,7 +137,7 @@ class PushNotificationHandler constructor(
             .v("Process ${push.importance} ${push.type} push notification. Expired (${push.isExpired})")
 
         if (push.isExpired) {
-            logg.tag("push_notifications").v("Push notification expired, delete and ignore")
+            logg.tag("push_notifications").v("Push notification expired, ignore")
             onDelete(push)
             return
         }
