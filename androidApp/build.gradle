@@ -94,6 +94,7 @@ android {
         debug {
             debuggable true
             versionNameSuffix "D"
+            signingConfig signingConfigs.testConfig
         }
     }
 
