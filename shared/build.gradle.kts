@@ -37,7 +37,7 @@ kotlin {
                 implementation(compose.components.resources)
                 api(project(":moko"))
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                api("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
                 api("app.cash.sqldelight:coroutines-extensions:2.0.1")
                 api("app.cash.sqldelight:primitive-adapters:2.0.1")
