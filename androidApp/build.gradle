@@ -187,23 +187,23 @@ dependencies {
 
     implementation project(path: ':shared')
     testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // region android and kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.10"
-    implementation 'com.google.android.material:material:1.10.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.23"
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.legacy:legacy-support-core-utils:1.0.0"
 
-    implementation "androidx.work:work-runtime-ktx:2.8.1"
+    implementation "androidx.work:work-runtime-ktx:2.9.0"
 
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.7.0"
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0'
     // endregion
 
     // region compose
@@ -243,7 +243,7 @@ dependencies {
     // region utils
     // TODO Replace to googleImplementation when LocationManager API is implemented
 //    googleImplementation 'com.google.android.gms:play-services-location:19.0.1'
-    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-location:21.2.0'
     ossImplementation 'org.osmdroid:osmdroid-android:6.1.10'
 
     googleImplementation 'com.google.maps.android:maps-compose:4.3.0'
@@ -253,15 +253,16 @@ dependencies {
     ossImplementation 'com.mapbox.maps:android:10.8.1'
     ossImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
 
-    googleImplementation ("com.google.firebase:firebase-messaging-ktx:23.3.1") {
+    googleImplementation ("com.google.firebase:firebase-messaging-ktx:23.4.1") {
         exclude group: 'com.google.firebase', module: 'firebase-core'
         exclude group: 'com.google.firebase', module: 'firebase-analytics'
         exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'
     }
 
     implementation 'com.cossacklabs.com:themis:0.14.0'
+    // TODO fork and use own updated sodium
     implementation "com.goterl:lazysodium-android:5.1.0@aar"
-    implementation "net.java.dev.jna:jna:5.13.0@aar"
+    implementation 'net.java.dev.jna:jna:5.14.0@aar'
 
     implementation "com.mikepenz:aboutlibraries-compose:10.5.1"
     implementation 'io.sentry:sentry-android:6.33.0'
