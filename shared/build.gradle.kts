@@ -41,8 +41,8 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
                 api("app.cash.sqldelight:coroutines-extensions:2.0.1")
                 api("app.cash.sqldelight:primitive-adapters:2.0.1")
-                implementation("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
-                implementation("com.russhwolf:multiplatform-settings:1.0.0")
+                implementation("com.russhwolf:multiplatform-settings-coroutines:1.1.1")
+                implementation("com.russhwolf:multiplatform-settings:1.1.1")
                 api("io.insert-koin:koin-core:3.5.3")
             }
         }
