@@ -48,7 +48,7 @@ class FunctionsApi: IFunctionsApiIOS {
                 status: result.status,
                 statusCode: Int32(result.responseStatusCode),
                 response: result.responseBody,
-                stderr: result.errors
+                errors: result.errors
             )
         }
     }
