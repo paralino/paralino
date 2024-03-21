@@ -21,7 +21,6 @@ import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import paralino.shared.generated.resources.Res
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
