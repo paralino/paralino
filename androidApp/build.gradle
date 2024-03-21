@@ -267,7 +267,12 @@ dependencies {
     implementation "com.mikepenz:aboutlibraries-compose:10.5.1"
     implementation 'io.sentry:sentry-android:6.33.0'
 
-    implementation("io.appwrite:sdk-for-android:4.0.0")
+    implementation("io.appwrite:sdk-for-android:4.0.1") {
+        // Appwrite 4.0.1 does not work with 8.2+ AGP
+        // We have to manually exclude and include okhttp bom library
+        // TODO Check if fixed later
+        exclude group: "com.squareup.okhttp3", module: "okhttp-bom"
+    }
     debugImplementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
     debugImplementation("com.squareup.okhttp3:okhttp")
     debugImplementation("com.squareup.okhttp3:logging-interceptor")
