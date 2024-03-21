@@ -19,7 +19,9 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.painterResource
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import paralino.shared.generated.resources.Res
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -65,7 +67,7 @@ fun ImageModelImage(
             ) {
                 Image(
                     modifier = modifier.padding(min(minHeight, minWidth).times(0.15f)),
-                    painter = org.jetbrains.compose.resources.painterResource("drawable/ic_person.xml"),
+                    painter = org.jetbrains.compose.resources.painterResource(resource = DrawableResource("drawable/ic_person.xml")),
                     contentDescription = null,
                     colorFilter = colorFilter
                 )

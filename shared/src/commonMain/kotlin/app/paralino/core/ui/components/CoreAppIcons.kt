@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import app.paralino.core.MR
 import dev.icerock.moko.resources.ImageResource
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -89,7 +90,7 @@ object CoreAppIcons {
 
     @Composable
     fun String.asPainterResource(): Painter {
-        return painterResource(res = this)
+        return painterResource(resource = DrawableResource(path = this))
     }
 
     @Composable

@@ -73,6 +73,7 @@ import app.paralino.core.utils.extensions.getFormValidationErrorText
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -159,7 +160,7 @@ fun LoginScreenCore(
         Spacer(modifier = Modifier.weight(0.2f))
 
         Image(
-            painter = painterResource(res = "drawable/ic_launcher_foreground.xml"),
+            painter = painterResource(resource = DrawableResource("drawable/ic_launcher_foreground.xml")),
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
