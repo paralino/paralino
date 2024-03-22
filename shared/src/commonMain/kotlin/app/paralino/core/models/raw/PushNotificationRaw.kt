@@ -30,7 +30,7 @@ data class PushNotificationRaw constructor(
     fun isOlderThan(duration: Duration): Boolean = createdAt.plus(duration) < nowUTC()
 
     val pushType: PushNotificationType? = PushNotificationType.fromKey(key = type)
-    val pushImportance: PushNotificationImportance? = PushNotificationImportance.fromKey(key = type)
+    val pushImportance: PushNotificationImportance? = PushNotificationImportance.fromKey(key = importance)
 
     companion object {
         @Suppress("UNCHECKED_CAST")
