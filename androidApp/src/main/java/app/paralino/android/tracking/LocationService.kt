@@ -58,7 +58,6 @@ class LocationService : Service() {
     private val locationSharingManager: LocationSharingManager by inject()
     private val locationPerformanceManager: LocationPerformanceManager by inject()
     private val locationRepository: LocationRepository by inject()
-    private val sharingRealtimeEvents: RealtimeEventsMaker by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
     private val placesRepository: PlacesRepository by inject()
     private val geofenceManager: IGeofenceManager by inject()
@@ -144,13 +143,6 @@ class LocationService : Service() {
 
         serviceDefaultScope.launch {
             while (isActive) {
-                reInitRealtime()
-                delay(10.minutes.inWholeMilliseconds)
-            }
-        }
-
-        serviceDefaultScope.launch {
-            while (isActive) {
                 if (locationInitHandler.currentLocation.value.data?.isOlderThan(5.minutes) != false) {
                     saveLocation(null)
                 }
@@ -199,13 +191,6 @@ class LocationService : Service() {
                 logg.w("Error saving saving location", e)
             }
         }
-    }
-
-    private fun reInitRealtime() {
-        logg.v(this.hashCode().toString(), "Restarting realtime in location service")
-        realtimeJob?.cancel()
-        realtimeJob = sharingRealtimeEvents.listenForEventsWhileSharing()
-            .launchIn(serviceDefaultScope)
     }
 
     private fun listenForPlaces() {
