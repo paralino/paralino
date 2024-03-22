@@ -32,7 +32,7 @@ class PushNotificationHandler constructor(
 
         try {
             triggerRemoteMaybe(
-                remotePreference = RemotePreference.CACHE(key = executionKey, timeMillis = 10.seconds.inWholeMilliseconds),
+                remotePreference = RemotePreference.CACHE(key = executionKey, timeMillis = 5.seconds.inWholeMilliseconds),
                 remote = { checkForPushNotificationsImpl() }
             )
         } catch (e: Exception) {

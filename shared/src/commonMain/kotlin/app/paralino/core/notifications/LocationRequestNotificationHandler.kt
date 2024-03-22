@@ -35,6 +35,8 @@ class LocationRequestNotificationHandler(
         val performanceType = push.performanceType ?: return
         val key = (push.pushType?.key ?: "location_request") + "_${payload.groupId}"
 
+        logg.tag("location_performance").v("Start location performance request $key - (${push.importance} - ${push.pushImportance}) $performanceType")
+
         coroutineScopeProvider.userSessionIOScope.launch {
             try {
                 startProcessing(
@@ -69,6 +71,7 @@ class LocationRequestNotificationHandler(
             return
         }
 
+        logg.tag("location_performance").v("Boosting location from location request handler - $performanceType")
         locationPerformanceManager.locationBoostRequested(
             groupId = groupId,
             performanceType = performanceType

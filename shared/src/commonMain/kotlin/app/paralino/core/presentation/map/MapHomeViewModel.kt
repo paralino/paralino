@@ -570,12 +570,12 @@ class MapHomeViewModel constructor(
         activePingSubscriptionJob?.cancel()
 
         if (groupId.isNullOrBlank()) {
-            logg.v("realtime", "Group id not valid, ignore active ping")
+            logg.v("location_performance", "Group id not valid, ignore active ping")
             return
         }
 
         if (!isActive) {
-            logg.v("realtime", "App is in background, ignore active ping")
+            logg.v("location_performance", "App is in background, ignore active ping")
             return
         }
 
@@ -584,7 +584,7 @@ class MapHomeViewModel constructor(
             groupId = groupId,
             focusType = focusType
         )
-            .onStart { logg.v("realtime", "Group ready ($groupId), start active ping") }
+            .onStart { logg.v("location_performance", "Group ready ($groupId), start active ping") }
             .launchIn(coroutineScope)
     }
 

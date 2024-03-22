@@ -102,7 +102,7 @@ class LocationPerformanceManager constructor(
         }
 
         logg.tag("location_performance")
-            .v("Adjust performance update ${_locationPerformanceType.value.current} -> $type")
+            .v("Try to adjust performance update from ${_locationPerformanceType.value.current} -> to $type")
 
         val now = nowUTC().epochSeconds
         val last20min = nowUTC().minus(20, DateTimeUnit.MINUTE).epochSeconds

@@ -36,7 +36,7 @@ class LocationRequestUseCase constructor(
                 emit("User is looking at map")
                 locationPerformanceManager.locationBoostRequested(
                     groupId,
-                    LocationPerformanceType.MEDIUM_HIGH
+                    LocationPerformanceType.HIGH
                 )
                 sendLocationFocusEvent(groupId, focusType)
                 val delayMillis = when (focusType) {
