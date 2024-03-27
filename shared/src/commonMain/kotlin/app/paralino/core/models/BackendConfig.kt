@@ -27,7 +27,6 @@ object BackendResourceIDs {
     const val privacyPolicyUrl = "https://paralino.app/privacy"
     const val termsOfUseUrl = "https://paralino.app/terms"
 
-    const val databaseIdMaxLength = 36
     const val uniqueIdPlaceholder = "unique()"
 
     const val databaseKeysID = "data_keys"

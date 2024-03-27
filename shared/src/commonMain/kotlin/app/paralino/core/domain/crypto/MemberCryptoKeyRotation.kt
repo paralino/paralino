@@ -89,13 +89,8 @@ class MemberCryptoKeyRotation(
         group: UserGroupWithMembers
     ) {
         val myKey = userKeyRepo.latestKeyPair()
-        val currentExchangeKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = null)
         val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
-        val groupKey =
-            cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId, keyVersion = null)
-
-        if (currentExchangeKeys !is UserGroupPersonalKeyPair.Valid)
-            throw MissingMemberKeyException(group.id, config.userId)
+        val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId, keyVersion = null)
 
         if (myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
             throw MissingMemberKeyException(group.id, config.userId)
@@ -146,7 +141,6 @@ class MemberCryptoKeyRotation(
                 ),
                 key = userKeyRepo.personalKey()
             ),
-            memberKeyVersion = currentExchangeKeys.version.plus(1),
             groupKeyVersion = groupKey.version,
             memberKeyVersionsToKeep = memberKeyVersionsToKeep
         )

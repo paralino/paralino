@@ -213,7 +213,6 @@ class GroupCryptoKeyRotation constructor(
                 integrity = groupIntegrity,
                 keyVersionsToKeep = usedKeys.distinct(),
                 encryptedGroupKeys = keys,
-                groupKeyVersion = usedKeys.max().plus(1),
                 groupData = groupData,
                 places = placesData
             )
