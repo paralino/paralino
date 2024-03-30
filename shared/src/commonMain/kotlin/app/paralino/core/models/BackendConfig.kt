@@ -26,6 +26,7 @@ object BackendResourceIDs {
     const val sourceCodeUrl = "https://github.com/paralino"
     const val privacyPolicyUrl = "https://paralino.app/privacy"
     const val termsOfUseUrl = "https://paralino.app/terms"
+    const val storeUrlGooglePlay = "https://play.google.com/store/apps/details?id=app.paralino.android"
 
     const val uniqueIdPlaceholder = "unique()"
 

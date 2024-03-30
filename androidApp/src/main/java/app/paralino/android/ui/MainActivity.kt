@@ -127,8 +127,7 @@ fun RootApp(
                             vm.cancelVersion()
                             showAppUpdateDialog = null
                         } else if(it == MainAlertDialog.Buttons.buttonOk) {
-                            // TODO update
-                            context.openUri(BackendResourceIDs.homeUrl.toUri())
+                            context.openUri(BackendResourceIDs.storeUrlGooglePlay.toUri())
                         }
                     }
                 }
