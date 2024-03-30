@@ -107,8 +107,8 @@ android {
         }
         playStoreTest {
             dimension "version"
-            versionCode 1
-            versionName "0.1.0"
+            versionCode 14
+            versionName "0.5.1"
         }
         direct {
             dimension "version"
