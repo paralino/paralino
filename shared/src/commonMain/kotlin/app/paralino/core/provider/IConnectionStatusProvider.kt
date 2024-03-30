@@ -65,7 +65,7 @@ enum class ConnectionStatus {
 }
 
 enum class NetworkType {
-    WIFI, G2, G3, G4, G5;
+    WIFI, G2, G3, G4, G5, GENERIC_CELL;
     val key: String = name
     val networkName: String get() = when (this){
         WIFI -> "WiFi"
@@ -73,6 +73,7 @@ enum class NetworkType {
         G3 -> "3G"
         G4 -> "4G"
         G5 -> "5G"
+        GENERIC_CELL -> ""
     }
     companion object {
         fun fromKey(key: String?): NetworkType? {

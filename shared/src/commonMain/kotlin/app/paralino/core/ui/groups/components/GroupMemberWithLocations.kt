@@ -775,6 +775,7 @@ fun NetworkTypeIcon(networkType: NetworkType, signalStrength: NetworkSignalStren
                 null -> CoreAppIcons.SignalWifi3
             }
 
+            NetworkType.GENERIC_CELL,
             NetworkType.G2,
             NetworkType.G3,
             NetworkType.G4,

@@ -11,7 +11,6 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat
-import androidx.core.content.PackageManagerCompat
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.NetworkType
@@ -56,8 +55,7 @@ class ConnectionStatusProvider constructor(
                         ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_BASIC_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
                     } else false
 
-                    if(hasDangerousPermission || hasSystemPermission) {
-
+                    val cellType = if(hasDangerousPermission || hasSystemPermission) {
                         val telephonyManager =
                             context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
                         when (telephonyManager.dataNetworkType) {
@@ -89,8 +87,9 @@ class ConnectionStatusProvider constructor(
                             else -> null
                         }
                     } else {
-                        return null
+                        null
                     }
+                    cellType ?: NetworkType.GENERIC_CELL
                 }
 
                 else -> null
