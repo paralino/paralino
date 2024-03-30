@@ -169,7 +169,7 @@ class GroupMemberAddUseCase constructor(
             // TODO throw better exception
             throw BaseRemoteException.fromCode(
                 code = response.statusCode,
-                message = "Unable to create group",
+                message = "Unable to add user to a group",
                 cause = Exception(response.stderr)
             )
         }

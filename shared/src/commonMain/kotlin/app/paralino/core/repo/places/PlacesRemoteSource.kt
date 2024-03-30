@@ -26,7 +26,6 @@ import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
-import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
 
 class PlacesRemoteSource(
     private val api: IDocumentsApi,
@@ -44,7 +43,8 @@ class PlacesRemoteSource(
         data: GroupPlaceData,
     ): GroupPlacesWithSettingsRaw {
         return blocking {
-            val groupKey = cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
+            val groupKey =
+                cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
 
             val encryptedData = cryptoCore.encryptModel(
                 data = data,
@@ -64,7 +64,9 @@ class PlacesRemoteSource(
             )
 
             if (response.isSuccess) {
-                getPlaceWithSettings(response.response)
+                getPlaceWithSettings(
+                    placeId = response.responseDataMap!!.get("placeId") as String
+                )
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
@@ -162,10 +164,7 @@ class PlacesRemoteSource(
             )
 
             if (response.isSuccess) {
-                val response = response.response.fromJsonObjectToMapOfPrimitives()
-                    .filterValues { it != null }
-                    .mapValues { it.value!! }
-                response.parsePlace()
+                response.responseDataMap!!.parsePlace()
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(

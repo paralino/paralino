@@ -162,7 +162,9 @@ class GroupCreateUseCase(
         )
 
         if (response.isSuccess) {
-            return remote.getGroupWithMembers(response.response)
+            return remote.getGroupWithMembers(
+                groupId = response.responseDataMap!!.get("groupId") as String
+            )
         } else {
             // TODO throw better exception
             throw BaseRemoteException.fromCode(

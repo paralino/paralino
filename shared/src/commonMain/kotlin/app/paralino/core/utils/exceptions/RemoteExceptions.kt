@@ -54,15 +54,23 @@ class UnverifiedUserException(message: String?, cause: Throwable? = null): Unaut
 class PermissionDeniedException(message: String?, cause: Throwable? = null): UnauthorizedException(null, message, cause)
 open class UnauthorizedException(type: String?, message: String?, cause: Throwable? = null): BaseRemoteException(
     message = message,
-    cause = cause, type = type)
+    cause = cause,
+    type = type
+)
+
 class InvalidRequestException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+
 open class NotFoundException(message: String?, type: String? = null, cause: Throwable? = null): BaseRemoteException(
     type = type,
     message = message,
     cause = cause,
     code = 404
 )
-class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteException(
+    message = message,
+    cause = cause,
+    code = 409
+)
 class GenericServerException(message: String?, code: Int?, cause: Throwable? = null) : BaseRemoteException(message, cause, code)
 class TimeoutException(message: String?, cause: Throwable? = null) : BaseRemoteException(message, cause)
 

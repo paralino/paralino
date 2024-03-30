@@ -28,7 +28,7 @@ import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.serialization.decodeFromString
+import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.serialization.encodeToString
 
 class PersonalCodesRemoteSource constructor(
@@ -97,7 +97,7 @@ class PersonalCodesRemoteSource constructor(
         val codeUserData = PersonalCodeUserData(
             ownerUserId = user.id,
             ownerName = userMeData?.userName ?: user.data?.userName ?: "",
-            ownerImage =  userMeData?.userImage ?: user.data?.userImage,
+            ownerImage = userMeData?.userImage ?: user.data?.userImage,
             ownerIdentityKey = myKey.publicKey,
         )
 
@@ -155,7 +155,7 @@ class PersonalCodesRemoteSource constructor(
         ).map { it.parsePreKey() }
             .filter { !it.encryptedCodeKeyData.isNullOrBlank() }
 
-        if(currentUnusedKeys.size > 3) {
+        if (currentUnusedKeys.size > 3) {
             logg.v("Found ${currentUnusedKeys.size} unused pre keys, skip restock")
             return
         }
@@ -281,8 +281,8 @@ class PersonalCodesRemoteSource constructor(
                 cause = Exception(response.stderr)
             )
         } else {
-            val responseContent =
-                BaseRemoteModule.formatter.decodeFromString<PersonalCodeResponse>(response.response)
+            val responseContent = response.responseDataMap
+                ?.tryParseFromJson<PersonalCodeResponse>()!!
             return personalCodeMapper.remote2CoreRead(
                 code = code,
                 encryptedUserData = responseContent.encryptedCodeUserData,

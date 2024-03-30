@@ -4,7 +4,6 @@ import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 
 @Serializable
 data class FunctionExecutionRaw constructor(
@@ -31,10 +30,13 @@ data class FunctionExecutionRaw constructor(
             }
         }
 
-    val responseMap
-        get() = response.fromJsonObjectToMapOfPrimitives()
-            .filterValues { it != null }
-            .mapValues { it.value!! }
+    val responseDataMap: Map<String, Any>?
+        get() {
+            return response.fromJsonObjectToMapOfPrimitives()
+                .filterValues { it != null }
+                .mapValues { it.value!! }
+                .get("data") as? Map<String, Any>
+        }
 }
 
 @Serializable

@@ -54,7 +54,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (response.isSuccess) {
-                response.responseMap.parseGroup()
+                response.responseDataMap!!.parseGroup()
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(

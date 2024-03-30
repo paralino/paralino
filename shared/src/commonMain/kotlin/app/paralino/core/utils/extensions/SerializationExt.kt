@@ -59,6 +59,14 @@ inline fun <reified T> String.tryParseFromJson(): T? {
     }
 }
 
+inline fun <reified T> Map<String, Any>.tryParseFromJson(): T? {
+    return try {
+        BaseRemoteModule.formatter.decodeFromJsonElement<T>(this.toJsonObject())
+    } catch (e: Exception) {
+        null
+    }
+}
+
 inline fun <reified T> T.toJson(): String? {
     return try {
         BaseRemoteModule.formatter.encodeToString(this)
