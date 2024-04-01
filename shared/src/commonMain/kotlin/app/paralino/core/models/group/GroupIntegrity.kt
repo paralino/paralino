@@ -6,8 +6,9 @@ import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 @Serializable
 data class GroupIntegrity(
@@ -20,16 +21,17 @@ data class GroupIntegrity(
     }
 
     fun isValidForGroup(signature: String): Boolean {
-        return this.signature == signature
+        val timeValidity = isTimeValid(7.days)
+        return this.signature == signature && timeValidity
     }
 
     fun isValidForMember(signature: String): Boolean {
-        val timeValidity = isTimeValid(30.toDuration(DurationUnit.DAYS))
+        val timeValidity = isTimeValid(2.hours)
         return this.signature == signature && timeValidity
     }
 
     fun isValidForDevice(signature: String): Boolean {
-        val timeValidity = isTimeValid(7.toDuration(DurationUnit.DAYS))
+        val timeValidity = isTimeValid(60.minutes)
         return this.signature == signature && timeValidity
     }
 
