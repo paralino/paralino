@@ -102,12 +102,12 @@ android {
         playStore {
             dimension "version"
             versionCode 14
-            versionName "1.5.1"
+            versionName "0.5.1"
         }
         direct {
             dimension "version"
-            versionCode 13
-            versionName "0.5.00"
+            versionCode 14
+            versionName "0.5.1"
             versionNameSuffix "-int"
             applicationIdSuffix ".int"
             buildConfigField("boolean", "forceLogToSystem", "true")
@@ -115,8 +115,8 @@ android {
         }
         dev {
             dimension "version"
-            versionCode 13
-            versionName "0.5.0"
+            versionCode 14
+            versionName "0.5.1"
             versionNameSuffix "-dev"
             applicationIdSuffix ".dev"
 
