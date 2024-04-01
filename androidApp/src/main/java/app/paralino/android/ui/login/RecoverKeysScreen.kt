@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.ui.components.dialogs.MainAlertDialog

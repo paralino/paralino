@@ -3,7 +3,7 @@ package app.paralino.android.ui.places
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.PlaceCreateMapComposable
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel

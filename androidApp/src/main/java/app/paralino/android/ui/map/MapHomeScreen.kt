@@ -14,10 +14,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.groups.GroupInitScreen
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.Resource

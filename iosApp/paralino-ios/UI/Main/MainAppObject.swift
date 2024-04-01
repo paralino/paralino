@@ -16,8 +16,9 @@ class MainAppObject: ObservableObject {
     
     init() {
         vm = KoinIOS.ViewModels.shared.mainVM
-        vm.observe(flow: vm.userState) { [weak self] state in
-            self?.uiState = ResourceSwift(data: state)
+        vm.observe(flow: vm.uiState) { [weak self] state in
+            let uiState = state as? MainActivityState
+            self?.uiState = ResourceSwift(data: uiState?.userState)
         }
     }
     

@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen

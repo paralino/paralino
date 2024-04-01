@@ -2,6 +2,7 @@ package app.paralino.android.di
 
 import app.paralino.android.AppClass
 import app.paralino.android.BuildConfig
+import app.paralino.android.app_update.AppUpdateManager
 import app.paralino.android.crpyto.CryptoFrameworkLibsodium
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.fcm.PushProviderManager
@@ -19,6 +20,7 @@ import app.paralino.android.remote.appwrite.RealtimeApi
 import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
+import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
@@ -26,7 +28,6 @@ import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
-import app.paralino.core.presentation.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
@@ -37,6 +38,7 @@ import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
+import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
@@ -117,6 +119,8 @@ object KoinSetup {
             )
         }
 
+        single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
+
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), config, get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), config) }
@@ -137,7 +141,7 @@ object KoinSetup {
             )
         }
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { MainViewModel(get(), get(), get(), get()) }
+        viewModel { MainViewModel(get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }
         viewModel { ConvertAccountViewModel(get()) }
@@ -150,5 +154,4 @@ object KoinSetup {
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
         viewModel { BlocklistVideModel(get()) }
     }
-
 }

@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.PlaceDetailMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.base.ImageModel

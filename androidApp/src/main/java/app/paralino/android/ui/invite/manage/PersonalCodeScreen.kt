@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel

@@ -1,7 +1,7 @@
 package app.paralino.android.ui.invite.input
 
 import androidx.compose.runtime.Composable
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.ui.invite.MemberInviteScreenCore

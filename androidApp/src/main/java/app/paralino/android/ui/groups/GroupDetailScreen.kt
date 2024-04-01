@@ -3,7 +3,7 @@ package app.paralino.android.ui.groups
 import androidx.compose.runtime.Composable
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupDetailViewModel

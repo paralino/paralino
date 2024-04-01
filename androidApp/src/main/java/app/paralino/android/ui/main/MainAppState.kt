@@ -1,4 +1,4 @@
-package app.paralino.android.ui
+package app.paralino.android.ui.main
 
 import androidx.compose.material.*
 import androidx.compose.runtime.*

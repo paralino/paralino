@@ -1,7 +1,7 @@
 package app.paralino.android.ui.settings
 
 import androidx.compose.runtime.Composable
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.settings.RawDataScreenCore

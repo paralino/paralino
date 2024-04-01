@@ -1,6 +1,7 @@
 package app.paralino.core.provider
 
 import app.paralino.core.CoreAppManager
+import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
@@ -11,7 +12,7 @@ import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.notifications.PushNotificationHandler
-import app.paralino.core.presentation.MainViewModel
+import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
@@ -77,7 +78,8 @@ object KoinIOS {
         functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApiIOS,
         realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
         cryptoServiceProvider: ICryptoServiceProviderIOS,
-        valueFormatter: IValueFormatter
+        valueFormatter: IValueFormatter,
+        appUpdateManager: IAppUpdateManager
     ): List<Module> {
         return listOf(
             module {
@@ -98,6 +100,7 @@ object KoinIOS {
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
                 single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
                 single { valueFormatter } bind IValueFormatter::class
+                single { appUpdateManager } bind IAppUpdateManager::class
             },
             createViewModelModule()
         )
@@ -125,7 +128,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            factory { MainViewModel(get(), get(), get(), get()) }
+            factory { MainViewModel(get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }

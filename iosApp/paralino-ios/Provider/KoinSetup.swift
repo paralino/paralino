@@ -44,7 +44,8 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule, deviceApiProvider: deviceApiProvider) },
         realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) },
         cryptoServiceProvider: CryptoFrameworkProvider(),
-        valueFormatter: ValueFormatter()
+        valueFormatter: ValueFormatter(),
+        appUpdateManager: AppUpdateManager()
     )
     
     return coreIOSModules

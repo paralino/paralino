@@ -1,0 +1,22 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <application>
+        <receiver
+            android:name=".app_update.InstallRequestReceiver"
+            android:exported="true" />
+
+        <receiver
+            android:name=".app_update.InstalledReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="com.android.packageinstaller.notification.smallIcon"
+            android:resource="@drawable/ic_notification_icon" />
+    </application>
+</manifest>

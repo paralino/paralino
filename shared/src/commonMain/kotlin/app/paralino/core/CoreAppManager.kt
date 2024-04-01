@@ -46,7 +46,7 @@ class CoreAppManager(
 
         configRepo.getUpdateType()
             .onEach { updateType ->
-                if (updateType == AppUpdateType.FORCE_AND_CANCEL) {
+                if (updateType is AppUpdateType.FORCE_AND_CANCEL) {
                     logoutUseCase.logoutLocally()
                 }
             }

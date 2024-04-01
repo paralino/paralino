@@ -1,7 +1,7 @@
 package app.paralino.android.ui.settings.profile
 
 import androidx.compose.runtime.Composable
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.ui.settings.profile.ConvertAccountScreenCore
 import org.koin.androidx.compose.getViewModel

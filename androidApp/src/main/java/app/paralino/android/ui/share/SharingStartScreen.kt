@@ -2,7 +2,7 @@ package app.paralino.android.ui.share
 
 import androidx.compose.runtime.Composable
 import app.paralino.android.tracking.rememberLocationPermissionHandler
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.share.SharingStartScreenCore

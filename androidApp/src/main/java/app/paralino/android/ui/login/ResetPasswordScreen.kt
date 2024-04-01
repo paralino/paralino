@@ -1,11 +1,9 @@
 package app.paralino.android.ui.login
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.navigation.navOptions
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel

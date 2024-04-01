@@ -1,11 +1,8 @@
 package app.paralino.android.ui.groups
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.runtime.*
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel

@@ -108,14 +108,25 @@ class AppConfigRepository(
         }
 
         return when {
-            currentVersion < minVersion -> AppUpdateType.FORCE_AND_CANCEL
-            currentVersion < minUiVersion -> AppUpdateType.FORCE
-            currentVersion < newVersion && newVersion > config.dismissedAppVersion -> AppUpdateType.SOFT
-            else -> AppUpdateType.NONE
+            currentVersion < minVersion -> AppUpdateType.FORCE_AND_CANCEL(configData)
+            currentVersion < minUiVersion -> AppUpdateType.FORCE(configData)
+            currentVersion < newVersion && newVersion > config.dismissedAppVersion -> AppUpdateType.SOFT(configData)
+            else -> AppUpdateType.NONE(configData)
         }
     }
 }
 
-enum class AppUpdateType {
-    NONE, SOFT, FORCE, FORCE_AND_CANCEL
+sealed interface AppUpdateType {
+    val configData: ConfigData
+    data class NONE(override val configData: ConfigData): AppUpdateType
+    data class SOFT(override val configData: ConfigData): AppUpdateType
+    data class FORCE(override val configData: ConfigData): AppUpdateType
+    data class FORCE_AND_CANCEL(override val configData: ConfigData): AppUpdateType
+
+    val isForced: Boolean get() = when (this) {
+        is FORCE,
+        is FORCE_AND_CANCEL -> true
+        is NONE,
+        is SOFT -> false
+    }
 }

@@ -14,7 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
-import app.paralino.android.ui.MainActivity
+import app.paralino.android.ui.main.MainActivity
 import app.paralino.core.MR
 import app.paralino.core.logg
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
