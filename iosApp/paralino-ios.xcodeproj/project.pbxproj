@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */; };
 		2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */; };
+		25129FED2BBDE6B800D1A5AE /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 25129FEC2BBDE6B800D1A5AE /* Sentry */; };
 		2522C6872B322923007C4913 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2522C6862B322923007C4913 /* MapComponent.swift */; };
 		2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */; };
 		2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAAB2B113C4D00D88042 /* LocationManager.swift */; };
@@ -158,6 +159,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25129FED2BBDE6B800D1A5AE /* Sentry in Frameworks */,
 				252EA01529DDA99B00338956 /* Appwrite in Frameworks */,
 				252EA02029E03B4D00338956 /* Clibsodium in Frameworks */,
 				252EA02229E03B4D00338956 /* Sodium in Frameworks */,
@@ -435,6 +437,7 @@
 				252EA01F29E03B4D00338956 /* Clibsodium */,
 				252EA02129E03B4D00338956 /* Sodium */,
 				253D31672AC215FD009E5010 /* Appwrite */,
+				25129FEC2BBDE6B800D1A5AE /* Sentry */,
 			);
 			productName = "paralino-ios";
 			productReference = 25C03A6429CCE77100646364 /* paralino-ios.app */;
@@ -468,6 +471,7 @@
 			packageReferences = (
 				252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */,
 				252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */,
+				25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			productRefGroup = 25C03A6529CCE77100646364 /* Products */;
 			projectDirPath = "";
@@ -858,6 +862,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.23.0;
+			};
+		};
 		252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/appwrite/sdk-for-apple.git";
@@ -877,6 +889,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		25129FEC2BBDE6B800D1A5AE /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
+		};
 		252EA01429DDA99B00338956 /* Appwrite */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */;

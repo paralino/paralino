@@ -10,6 +10,7 @@ import UIKit
 import shared
 import UserNotifications
 import CoreLocation
+import Sentry
 
 class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNotificationCenterDelegate {
     
@@ -23,6 +24,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     lazy var locationManager = LocationManager()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        
+        SentrySDK.start { options in
+            options.dsn = ""
+            options.debug = false
+        }
+        
         initKoin(locationStatusProvider: locationStatusProvider)
         
         Logr.i(tag:"delegate", message: "App start")
