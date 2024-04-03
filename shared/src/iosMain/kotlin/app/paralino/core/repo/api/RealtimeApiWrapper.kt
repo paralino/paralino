@@ -24,7 +24,7 @@ class RealtimeApiWrapperIOS(
 }
 
 interface IRealtimeApiIOS {
-    fun subscribeWithFilter(
+    suspend fun subscribeWithFilter(
         channels: List<String>,
         filters: List<String> = listOf(),
         onResult: (

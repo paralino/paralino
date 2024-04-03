@@ -1,9 +1,7 @@
 package app.paralino.core.repo.api
 
 import app.paralino.core.models.base.RealtimeResponse
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 
 abstract class IRealtimeApi {
     fun subscribe(vararg channels: String): Flow<RealtimeResponse<Map<String, Any>>> {
