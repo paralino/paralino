@@ -16,6 +16,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
     lazy var placeRepo: PlacesRepository = { KoinIOS.Instances.shared.placesRepo }()
+    lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
+    lazy var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
 
     @Published var location: CLLocationCoordinate2D?
 
@@ -25,6 +27,41 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.showsBackgroundLocationIndicator = true
         manager.pausesLocationUpdatesAutomatically = false
         manager.desiredAccuracy = kCLLocationAccuracyBest
+    }
+    
+    func startMonitoringAppState() {
+        locationSharingManager.locationSharingStatus { [weak self] state in
+            switch ResourceSwift<KotlinBoolean>.init(data: state) {
+            case .notInitialized:
+                break
+            case .ready(data: let data):
+                if data.boolValue {
+                    self?.startLocationUpdates()
+                } else {
+                    self?.stopLocationUpdates()
+                }
+            }
+        }
+        
+        locationPerformanceManager.locationPerformanceStatus { [weak self] model in
+            Logr.v(tag: "location_Test", message: "Location performance changed: \(model)")
+            self?.notifyPerformance(performance: "\(model.current)")
+            switch model.current {
+            case .batterySaver:
+                self?.manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+                self?.manager.distanceFilter = 1500
+            case .balanced:
+                self?.manager.desiredAccuracy = kCLLocationAccuracyKilometer
+                self?.manager.distanceFilter = 300
+            case .mediumHigh:
+                self?.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+                self?.manager.distanceFilter = 50
+            case .high, .veryHigh, .manualBoost:
+                self?.manager.desiredAccuracy = kCLLocationAccuracyBest
+                self?.manager.distanceFilter = kCLDistanceFilterNone
+            default: break
+            }
+        }
     }
 
     func requestLocationPermission() {
@@ -124,6 +161,16 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         content.body = message
     
         let request = UNNotificationRequest(identifier: id, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request) { (error : Error?) in }
+    }
+    
+    func notifyPerformance(performance: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Paralino tracking"
+        content.body = performance
+        content.interruptionLevel = .passive
+        
+        let request = UNNotificationRequest(identifier: "app_track", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { (error : Error?) in }
     }
 }
