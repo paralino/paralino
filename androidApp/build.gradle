@@ -51,11 +51,8 @@ android {
         if (propsFile.exists()) {
             def props = new Properties()
             props.load(new FileInputStream(propsFile))
-            buildConfigField("String", "serverUrl", props['serverUrl'])
-            buildConfigField("String", "serverKey", props['serverKey'])
-            buildConfigField("String", "mapboxAccessToken", props['MAPBOX_ACCESS_TOKEN'])
             manifestPlaceholders = [MAPS_API_KEY: props['MAPS_API_KEY']]
-            resValue "string", "glitchTipDSN", props['glitchTipDSN']
+            resValue "string", "glitchTipDSN", props['glitchTipDSNAndroid']
         }
 
         // room schema export

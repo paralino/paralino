@@ -19,8 +19,8 @@ func initKoin(locationStatusProvider: LocationStatusProvider) {
 func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_coreModule] {
     
     let backendConfig = BackendConfig(
-        serverUrl: "",
-        projectId: "",
+        serverUrl: BuildKonfig.shared.serverUrl,
+        projectId: BuildKonfig.shared.serverKey,
         debug: true,
         logToConsole: true,
         logErrorsToRemote: true

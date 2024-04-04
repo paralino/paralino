@@ -22,7 +22,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
         SentrySDK.start { options in
-            options.dsn = ""
+            options.dsn = BuildKonfig.shared.glitchTipDSN
             options.debug = false
         }
         

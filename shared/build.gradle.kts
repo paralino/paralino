@@ -1,9 +1,16 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.kotlin.daemon.common.trimQuotes
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.util.Properties
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.android.library")
     id("app.cash.sqldelight")
     id("org.jetbrains.compose")
+    id("com.codingfeline.buildkonfig")
 }
 
 kotlin {
@@ -105,6 +112,34 @@ sqldelight {
     databases {
         create("AppDatabase") {
             packageName.set("app.paralino.core.data.db")
+        }
+    }
+}
+
+buildkonfig {
+    packageName = "app.paralino.core"
+    exposeObjectWithName = "BuildKonfig"
+
+    val propsFile = rootProject.file("user.properties")
+    if (!propsFile.exists()) {
+        throw FileNotFoundException("user.properties file not found")
+    }
+
+    val props = Properties()
+    props.load(FileInputStream(propsFile))
+
+    defaultConfigs {
+        buildConfigField(FieldSpec.Type.STRING, "serverUrl", props.getProperty("serverUrl").trimQuotes())
+        buildConfigField(FieldSpec.Type.STRING, "serverKey", props.getProperty("serverKey").trimQuotes())
+    }
+
+    targetConfigs {
+        create("android") {
+            buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNAndroid").trimQuotes())
+            buildConfigField(FieldSpec.Type.STRING, "mapboxAccessToken", props.getProperty("MAPBOX_ACCESS_TOKEN").trimQuotes())
+        }
+        create("ios") {
+            buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNiOS").trimQuotes())
         }
     }
 }

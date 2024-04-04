@@ -6,6 +6,7 @@ plugins {
     id("com.mikepenz.aboutlibraries.plugin").version("10.5.1").apply(false)
     id("app.cash.sqldelight").version("2.0.1").apply(false)
     id("dev.icerock.mobile.multiplatform-resources").version("0.23.0").apply(false)
+    id("com.codingfeline.buildkonfig").version("0.15.1").apply(false)
     kotlin("android").version("1.9.23").apply(false)
     kotlin("multiplatform").version("1.9.23").apply(false)
     kotlin("plugin.serialization").version("1.9.23").apply(false)
