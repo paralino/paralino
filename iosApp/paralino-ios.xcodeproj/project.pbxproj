@@ -56,6 +56,7 @@
 		25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB422A44D7F60007E89D /* SettingsScreen.swift */; };
 		25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB442A44D89B0007E89D /* AccountScreen.swift */; };
 		25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */; };
+		25B3A0C12BBEBF11002F1CB4 /* BackgroundRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */; };
 		25B85F2C2A4A1F1E007618E6 /* ValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */; };
 		25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
@@ -127,6 +128,7 @@
 		25B2DB422A44D7F60007E89D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		25B2DB442A44D89B0007E89D /* AccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountScreen.swift; sourceTree = "<group>"; };
 		25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCodeScreen.swift; sourceTree = "<group>"; };
+		25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefresh.swift; sourceTree = "<group>"; };
 		25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueFormatter.swift; sourceTree = "<group>"; };
 		25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCreateScreen.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -345,6 +347,7 @@
 			isa = PBXGroup;
 			children = (
 				2529CAAB2B113C4D00D88042 /* LocationManager.swift */,
+				25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */,
 			);
 			path = Location;
 			sourceTree = "<group>";
@@ -541,6 +544,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
+				25B3A0C12BBEBF11002F1CB4 /* BackgroundRefresh.swift in Sources */,
 				25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */,
 				259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */,
 				25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */,
