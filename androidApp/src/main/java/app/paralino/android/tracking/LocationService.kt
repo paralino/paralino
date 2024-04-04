@@ -7,44 +7,34 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.remote.sync.FullRefreshSyncWorker
-import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
-import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
-import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepository
-import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.extensions.distinctFlowOfList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 
@@ -59,8 +49,6 @@ class LocationService : Service() {
     private val locationPerformanceManager: LocationPerformanceManager by inject()
     private val locationRepository: LocationRepository by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
-    private val placesRepository: PlacesRepository by inject()
-    private val geofenceManager: IGeofenceManager by inject()
 
     private var launchedInForeground: Boolean = false
 
@@ -117,8 +105,6 @@ class LocationService : Service() {
                 stopAll()
             }
             .launchIn(serviceDefaultScope)
-
-        listenForPlaces()
     }
 
     private fun updateNotification() {
@@ -191,51 +177,6 @@ class LocationService : Service() {
                 logg.w("Error saving saving location", e)
             }
         }
-    }
-
-    private fun listenForPlaces() {
-
-        // timer to reregister places after certain time
-        val timer = flow {
-            while (currentCoroutineContext().isActive) {
-                emit(Unit)
-                delay(20L.hours.inWholeMilliseconds)
-            }
-        }
-
-        val places = placesRepository.subscribeToAllActivePlaces()
-            .map {
-                it.mapNotNull { place ->
-                    place.data.data?.let {
-                        GroupPlaceGeofenceData(
-                            groupId = place.groupId,
-                            placeId = place.id,
-                            lat = it.lat,
-                            lng = it.lng,
-                            radiusMeters = it.radiusMeters
-                        )
-                    }
-                }
-            }
-            .distinctFlowOfList()
-
-        combine(
-            places,
-            deviceApiProvider.locationStatusProvider.status,
-            timer
-        ) { geofences, locationStatus, _ ->
-            if (locationStatus.isOK(forAlwaysOnAccess = true)) {
-                geofenceManager.registerGeofences(geofences)
-            } else {
-                geofenceManager.deleteAllGeofences()
-            }
-        }
-            .catch {
-                // delete all geofences when coroutine is canceled
-                if (it is CancellationException)
-                    geofenceManager.deleteAllGeofences()
-            }
-            .launchIn(serviceDefaultScope)
     }
 
     private fun stopAll() {

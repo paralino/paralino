@@ -18,6 +18,7 @@ import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
+import app.paralino.core.domain.location.GeofenceRegistrationMonitor
 import app.paralino.core.domain.location.LocationPayloadProvider
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
@@ -127,7 +128,6 @@ val mappersModule = module {
 
 
 val dataSourceModule = module {
-    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get()) }
     single { LocationLocalDataSource(get(), get()) }
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
@@ -148,6 +148,9 @@ val dataSourceModule = module {
 }
 
 val coreModule = module {
+    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
+
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get()) }

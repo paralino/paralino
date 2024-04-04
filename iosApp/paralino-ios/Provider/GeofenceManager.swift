@@ -15,6 +15,7 @@ class GeofenceManager: IGeofenceManager {
     let appDelegate = AppDelegate.shared!
     
     func deleteAllGeofences() {
+        Logr.d(tag: "geofences", message: "Removing all geofences")
         let locationManager = appDelegate.locationManager.manager
         for region in locationManager.monitoredRegions {
             locationManager.stopMonitoring(for: region)
@@ -42,6 +43,10 @@ class GeofenceManager: IGeofenceManager {
     
     func registerGeofences(places: [GroupPlaceGeofenceData]) {
         if CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
+            Logr.d(tag: "geofences", message: "Region monitoring supported, re-init geofences")
+            
+            deleteAllGeofences()
+            
             let locationManager = appDelegate.locationManager.manager
             let lastLocation = locationManager.location
             
@@ -76,9 +81,13 @@ class GeofenceManager: IGeofenceManager {
                 .sorted{ a, b in return a.1 < b.1 }
                 .prefix(20)
             
+            Logr.d(tag: "geofences", message: "Registering \(nearbyRegions.count) nearby geofences")
+            
             nearbyRegions.forEach {
                 locationManager.startMonitoring(for: $0.0)
             }
+        } else {
+            Logr.w(tag: "geofences", message: "Region monitoring not supported")
         }
     }
 }

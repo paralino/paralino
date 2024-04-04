@@ -3,7 +3,12 @@ package app.paralino.core.repo.places
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
-import app.paralino.core.models.places.*
+import app.paralino.core.models.places.GroupPlace
+import app.paralino.core.models.places.GroupPlaceData
+import app.paralino.core.models.places.GroupPlaceGeofenceData
+import app.paralino.core.models.places.GroupPlaceSettings
+import app.paralino.core.models.places.GroupPlaceSettingsData
+import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.repo.LocationSharingManager
@@ -12,7 +17,11 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.seconds
 
