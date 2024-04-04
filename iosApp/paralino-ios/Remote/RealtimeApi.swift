@@ -17,7 +17,7 @@ class RealtimeApi: IRealtimeApiIOS {
         self.remoteModule = remoteModule
     }
     
-    func subscribeWithFilter(channels: [String], filters: [String], onResult: @escaping (RealtimeResponse<NSDictionary>) -> Void) async throws -> () -> KotlinUnit {
+    func subscribeWithFilter(channels: [String], filters: [String], onResult: @escaping (RealtimeResponse<NSDictionary>) -> Void) async throws -> RealtimeSubscriptionCallbackIOS {
         let subscription = await remoteModule.execute { module in
             module.realtime.subscribe(channels: Set(channels.map { $0 })) { response in
                 if filters.isEmpty || (response.events?.contains(where: { event in filters.contains(where: { filter in filter == event}) }) ?? false) {
@@ -33,9 +33,6 @@ class RealtimeApi: IRealtimeApiIOS {
             }
         }
         
-        return {
-            PayloadSwift(subscription).dataOrNil?.close()
-            return KotlinUnit()
-        }
+        return RealtimeSubscriptionCallbackIOS { PayloadSwift(subscription).dataOrNil?.close() }
     }
 }

@@ -14,10 +14,12 @@ class RealtimeApiWrapperIOS(
         filters: List<String>
     ): Flow<RealtimeResponse<Map<String, Any>>> {
         return callbackFlow {
-            val action = api.subscribeWithFilter(channels, filters) {
-                trySend(it)
-            }
-            awaitClose { action() }
+            val action = api.subscribeWithFilter(
+                channels = channels,
+                filters = filters,
+                onResult = { trySend(it) }
+            )
+            awaitClose { action.close?.invoke() }
         }
     }
 
@@ -27,8 +29,8 @@ interface IRealtimeApiIOS {
     suspend fun subscribeWithFilter(
         channels: List<String>,
         filters: List<String> = listOf(),
-        onResult: (
-            RealtimeResponse<Map<String, Any>>
-        ) -> Unit
-    ): () -> Unit
+        onResult: (RealtimeResponse<Map<String, Any>>) -> Unit
+    ): RealtimeSubscriptionCallbackIOS
 }
+
+class RealtimeSubscriptionCallbackIOS(var close: (() -> Unit)? = null)
