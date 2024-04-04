@@ -124,7 +124,7 @@ data class GroupMemberItemLocationState constructor(
         adjustedBatteryLevel = memberLocation.status.data?.validBatteryLevel(checkForTime = true),
         isBatteryCharging = memberLocation.status.data?.isCharging ?: false,
         speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
-        elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it) },
+        elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it.toDouble()) },
         lastLocationPing = formatter.getLastLocationPing(memberLocation),
         lastStatusPing = formatter.getLastStatusPing(memberLocation),
         deviceStatus = memberLocation.locationAwareStatusType,

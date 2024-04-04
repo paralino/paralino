@@ -296,7 +296,7 @@ fun GroupMemberWithLocations(
                                 .size(14.dp)
                         )
                         Text(
-                            text = state.filteredLastPing,
+                            text = state.filteredLastPing.annotatedBold(),
                             style = MaterialTheme.typography.caption,
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                         )
@@ -435,7 +435,7 @@ fun GroupMemberWithLocations(
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                 )
                 Text(
-                    text = " ${state.lastStatusPing}",
+                    text = " ${state.lastStatusPing}".annotatedBold(),
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                 )

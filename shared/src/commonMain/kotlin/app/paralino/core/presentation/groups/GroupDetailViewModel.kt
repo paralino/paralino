@@ -130,7 +130,7 @@ class GroupDetailViewModel(
                     shareSpeed = it.shareSpeed,
                     shareElevation = it.shareElevation,
                     approximateLocation = it.approximateLocationInMeters?.let {
-                        valueFormatter.getDistanceSmall(it.toFloat())
+                        valueFormatter.getDistanceSmall(it.toDouble())
                     }
                 )
             }

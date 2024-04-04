@@ -5,6 +5,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.format.DistanceUnitType
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -13,15 +14,41 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 abstract class IValueFormatter {
 
     abstract val unitType: DistanceUnitType
 
-    abstract fun getDistanceSmall(meters: Number, unitType: DistanceUnitType? = null): String
-    abstract fun getLastPing(time: LocalDateTime?): String?
+    abstract fun formatTime(time: LocalDateTime?): String?
+    abstract fun formatNumber(number: Double, minFractions: Int, maxFractions: Int): String
     abstract fun formatBestPattern(epochSeconds: Long, pattern: String): String
     abstract fun currentTimeForApi(): String
+
+    fun getDistanceSmall(
+        meters: Double,
+        unitType: DistanceUnitType? = null,
+    ): String {
+        return when (unitType ?: this.unitType) {
+            DistanceUnitType.METRIC -> {
+                if (meters.toInt() < 1000) {
+                    val value = formatNumber(meters, minFractions = 0, maxFractions = 0)
+                    MR.strings.placeholder_unit_meter.localizedString(value)
+                } else {
+                    val value = formatNumber(meters / 1000, minFractions = 0, maxFractions = 2)
+                    MR.strings.placeholder_unit_km.localizedString(value)
+                }
+            }
+            DistanceUnitType.IMPERIAL -> {
+                // TODO add smaller imperial values
+                val mile = meters / 1000 / 1.609344
+                val value = formatNumber(mile, minFractions = 0, maxFractions = 2)
+                MR.strings.placeholder_unit_mile.localizedString(value)
+            }
+        }
+    }
 
     fun getLastLocationPing(member: MemberModelWithLocations): String? {
         return getLastPing(
@@ -45,6 +72,54 @@ abstract class IValueFormatter {
 
     fun getLastStatusPing(location: MemberLocation?): String? {
         return getLastPing(location?.status?.data?.timeUTC?.isoToLocalDateTime())
+    }
+
+    fun getLastPing(time: LocalDateTime?): String? {
+        val local = time?.fromUTCtoLocal() ?: return null
+        val timeInstant = time.toInstant(TimeZone.UTC)
+        val now = nowUTC()
+        val nowTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
+        val sameYear = local.year == nowTime.year
+        val sameDay = sameYear && local.dayOfYear == nowTime.dayOfYear
+        val isYesterday = sameYear && local.dayOfYear == now.minus(1.days)
+            .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfYear
+        val formattedTime = formatTime(time)
+
+        return when {
+            timeInstant > now.minus(20.seconds) -> {
+                MR.strings.group_members_last_active_status_now.localizedString()
+            }
+
+            timeInstant > now.minus(1.minutes) -> {
+                MR.strings.group_members_last_active_status_recently_1.localizedString()
+            }
+
+            timeInstant > now.minus(2.minutes) -> {
+                MR.strings.group_members_last_active_status_recently_2.localizedString()
+            }
+
+            sameDay -> {
+                "${MR.strings.date_name_today.localizedString()}, $formattedTime"
+            }
+
+            isYesterday -> {
+                "${MR.strings.date_name_yesterday.localizedString()}, $formattedTime"
+            }
+
+            sameYear -> {
+                formatBestPattern(
+                    local.toInstant(TimeZone.UTC).epochSeconds,
+                    "MMMMd"
+                ) + ", $formattedTime"
+            }
+
+            else -> {
+                formatBestPattern(
+                    local.toInstant(TimeZone.UTC).epochSeconds,
+                    "MMMMdyyyy"
+                ).let { "**$it**" } + ", $formattedTime"
+            }
+        }
     }
 
     fun getSpeedSmall(
@@ -75,7 +150,7 @@ abstract class IValueFormatter {
         val isTomorrow = sameYear && local.dayOfYear == now.plus(1, DateTimeUnit.DAY, timeZone)
             .toLocalDateTime(timeZone).dayOfYear
 
-        val time = formatBestPattern(local.toInstant(TimeZone.UTC).epochSeconds, "HHmm")
+        val time = formatTime(dateTimeUTC)
         return when {
             sameDay -> time
             isTomorrow -> "${MR.strings.date_name_tomorrow.localizedString()}, $time"
