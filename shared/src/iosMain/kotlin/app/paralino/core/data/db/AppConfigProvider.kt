@@ -10,6 +10,6 @@ actual class AppConfigProvider {
         service = "paralino_prefs_user"
     )
     actual val appSettings: Settings = KeychainSettings(
-        service = "paralino_prefs_user"
+        service = "paralino_prefs_app"
     )
 }
