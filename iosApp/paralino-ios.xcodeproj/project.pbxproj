@@ -57,6 +57,7 @@
 		25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB442A44D89B0007E89D /* AccountScreen.swift */; };
 		25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */; };
 		25B3A0C12BBEBF11002F1CB4 /* BackgroundRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */; };
+		25B3A0C82BBF08E7002F1CB4 /* AsyncHTTPClient in Frameworks */ = {isa = PBXBuildFile; productRef = 25B3A0C72BBF08E7002F1CB4 /* AsyncHTTPClient */; };
 		25B85F2C2A4A1F1E007618E6 /* ValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */; };
 		25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
@@ -165,6 +166,7 @@
 				252EA01529DDA99B00338956 /* Appwrite in Frameworks */,
 				252EA02029E03B4D00338956 /* Clibsodium in Frameworks */,
 				252EA02229E03B4D00338956 /* Sodium in Frameworks */,
+				25B3A0C82BBF08E7002F1CB4 /* AsyncHTTPClient in Frameworks */,
 				253D31682AC215FD009E5010 /* Appwrite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -441,6 +443,7 @@
 				252EA02129E03B4D00338956 /* Sodium */,
 				253D31672AC215FD009E5010 /* Appwrite */,
 				25129FEC2BBDE6B800D1A5AE /* Sentry */,
+				25B3A0C72BBF08E7002F1CB4 /* AsyncHTTPClient */,
 			);
 			productName = "paralino-ios";
 			productReference = 25C03A6429CCE77100646364 /* paralino-ios.app */;
@@ -475,6 +478,7 @@
 				252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */,
 				252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */,
 				25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */,
 			);
 			productRefGroup = 25C03A6529CCE77100646364 /* Products */;
 			projectDirPath = "";
@@ -879,7 +883,7 @@
 			repositoryURL = "https://github.com/appwrite/sdk-for-apple.git";
 			requirement = {
 				kind = exactVersion;
-				version = 4.0.2;
+				version = 5.0.0;
 			};
 		};
 		252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */ = {
@@ -888,6 +892,14 @@
 			requirement = {
 				kind = revision;
 				revision = 6262c021e108b5fb16d2caa1e319e913cea2406d;
+			};
+		};
+		25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swift-server/async-http-client.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.20.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -916,6 +928,11 @@
 		253D31672AC215FD009E5010 /* Appwrite */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Appwrite;
+		};
+		25B3A0C72BBF08E7002F1CB4 /* AsyncHTTPClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */;
+			productName = AsyncHTTPClient;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

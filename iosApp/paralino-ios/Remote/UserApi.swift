@@ -73,7 +73,7 @@ class UserApi: IUserApiIOS {
     
     func login(email: String, password: String) async throws -> Payload<UserSession> {
         return await remoteModule.executeUserApi { module in
-            try await module.account.createEmailSession(email: email, password: password).parseSession()
+            try await module.account.createEmailPasswordSession(email: email, password: password).parseSession()
         }
     }
     
@@ -86,7 +86,7 @@ class UserApi: IUserApiIOS {
     
     func resetPassword(userId: String, secret: String, password: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.executeUserApi { module in
-            let result = try! await module.account.updateRecovery(userId: userId, secret: secret, password: password, passwordAgain: password)
+            let result = try! await module.account.updateRecovery(userId: userId, secret: secret, password: password)
             return KotlinUnit()
         }
     }

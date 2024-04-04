@@ -8,6 +8,7 @@
 import Foundation
 import shared
 import Appwrite
+import AppwriteEnums
 
 class FunctionsApi: IFunctionsApiIOS {
     
@@ -25,7 +26,7 @@ class FunctionsApi: IFunctionsApiIOS {
                 body: data,
                 async: true,
                 path: function.path,
-                method: function.method,
+                method: AppwriteEnums.ExecutionMethod(rawValue: function.method),
                 headers: [clientHeader.first : clientHeader.second]
             ).id
             return NSString(string: result)
@@ -39,7 +40,7 @@ class FunctionsApi: IFunctionsApiIOS {
                 body: data,
                 async: false,
                 path: function.path,
-                method: function.method,
+                method: AppwriteEnums.ExecutionMethod(rawValue: function.method),
                 headers: [clientHeader.first : clientHeader.second]
             )
             return FunctionExecutionRaw(
