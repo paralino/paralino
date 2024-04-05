@@ -78,8 +78,6 @@ fun SettingsScreenCore(
                 AccountInfoHeader(
                     name = state.data.userState.name,
                     email = "",
-                    userId = "",
-                    deviceId = "",
                     image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
                     isGuestUser = state.data.userState.isGuestUser,
                     errorItem = null,
