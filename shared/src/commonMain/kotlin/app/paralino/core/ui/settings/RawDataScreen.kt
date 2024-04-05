@@ -170,10 +170,7 @@ private fun RawDataScreenSection(
     ) {
         if (section.title != null) {
             Text(
-                text = stringResource(
-                    MR.strings.raw_data_screen_section_info,
-                    section.title
-                ).annotatedBold(),
+                text = section.title.annotatedBold(),
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -183,10 +180,7 @@ private fun RawDataScreenSection(
 
         if (section.subtitle != null) {
             Text(
-                text = stringResource(
-                    MR.strings.raw_data_screen_section_info,
-                    section.subtitle
-                ).annotatedBold(),
+                text = section.subtitle.annotatedBold(),
                 style = MaterialTheme.typography.subtitle2,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -258,7 +252,6 @@ private fun RawDataChip(
 ) {
     Row(
         modifier = modifier
-            .shadow(elevation = 8.dp, shape = RoundedCornerShape(percent = 50))
             .background(
                 color = MaterialTheme.colors.background,
                 shape = RoundedCornerShape(percent = 50)

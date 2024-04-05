@@ -319,7 +319,6 @@
     <string name="reset_password_success_message">Molimo prijavite se ponovno!</string>
     <string name="reset_password_error_token_message">Vaša veza za ponovno postavljanje lozinke je istekla, zatražite novu.</string>
     <string name="raw_data_screen_info">Ovdje možete pregledati svoje podatke onako kako su pohranjeni na poslužitelju.\nSamo vaš uređaj može otključati (dekriptirati) i vidjeti ove informacije.</string>
-    <string name="raw_data_screen_section_info">Podatci za: %s</string>
     <string name="raw_data_screen_title">Enkripcija</string>
     <string name="raw_data_section_encrypted">Kriptirani podaci na poslužitelju</string>
     <string name="raw_data_section_decrypted">Dekriptirani podaci na uređaju</string>

@@ -10,8 +10,8 @@ data class RawDataScreenState constructor(
     constructor(model: RawPresentationModel) : this(
         model.sections.map { section ->
             RawDataSectionState(
-                title = section.title?.let { "**${it}**" },
-                subtitle = section.subtitle?.let { "**${it}**" },
+                title = section.title,
+                subtitle = section.subtitle,
                 rawContent = section.rawData,
                 contentIdInfo = section.contentIdInfo,
                 decryptedContent = when (section.decryptedData) {
