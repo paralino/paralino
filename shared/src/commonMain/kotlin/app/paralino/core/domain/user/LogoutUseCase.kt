@@ -12,6 +12,7 @@ import app.paralino.core.data.db.AppConfig
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationRepository
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +31,7 @@ class LogoutUseCase(
     private val deviceStatus: IDeviceApiProvider,
     private val locationRepo: LocationRepository,
     private val scopeProvider: ICoroutineScopeProvider,
+    private val geofenceManager: IGeofenceManager,
     private val config: AppConfig
 ) {
 
@@ -82,5 +84,6 @@ class LogoutUseCase(
         placesRepo.clear()
         codeRepo.clearLocally()
         sharingManager.stopAllSharing()
+        geofenceManager.deleteAllGeofences()
     }
 }
