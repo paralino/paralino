@@ -6,17 +6,22 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class GroupActivityNotificationsHandler(
     private val groupRepo: GroupRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
-    private val presenter: IGroupActivityNotificationPresenter
+    private val presenter: IGroupActivityNotificationPresenter,
+    private val valueFormatter: IValueFormatter
 ) {
     suspend fun processMemberAdded(push: PushNotificationRaw) {
 
@@ -55,10 +60,19 @@ class GroupActivityNotificationsHandler(
 
         val notificationId = "new_member_${payload}".hashCode()
         presenter.notify(
-            notificationId,
-            title,
+            notificationId = notificationId,
+            title = title,
             message = null,
-            push.createdAt.toEpochMilliseconds()
+            timeMillis = push.createdAt.toEpochMilliseconds(),
+            timeInfo = if (push.isOlderThan(30.minutes)) {
+                valueFormatter.formatSimpleDateTime(
+                    timeUTC = push.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()),
+                    optionalYear = true,
+                    optionalMonth = true
+                )
+            } else {
+                null
+            }
         )
     }
 
@@ -95,10 +109,19 @@ class GroupActivityNotificationsHandler(
 
         val notificationId = "sharing_start_${payload}".hashCode()
         presenter.notify(
-            notificationId,
-            title,
+            notificationId = notificationId,
+            title = title,
             message = null,
-            push.createdAt.toEpochMilliseconds()
+            timeMillis = push.createdAt.toEpochMilliseconds(),
+            timeInfo = if (push.isOlderThan(10.minutes)) {
+                valueFormatter.formatSimpleDateTime(
+                    timeUTC = push.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()),
+                    optionalYear = true,
+                    optionalMonth = true
+                )
+            } else {
+                null
+            }
         )
     }
 }

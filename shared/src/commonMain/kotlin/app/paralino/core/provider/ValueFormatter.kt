@@ -22,7 +22,7 @@ abstract class IValueFormatter {
 
     abstract val unitType: DistanceUnitType
 
-    abstract fun formatTime(time: LocalDateTime?): String?
+    abstract fun formatTimeOnly(timeUTC: LocalDateTime?): String?
     abstract fun formatNumber(number: Double, minFractions: Int, maxFractions: Int): String
     abstract fun formatBestPattern(epochSeconds: Long, pattern: String): String
     abstract fun currentTimeForApi(): String
@@ -51,7 +51,7 @@ abstract class IValueFormatter {
     }
 
     fun getLastLocationPing(member: MemberModelWithLocations): String? {
-        return getLastPing(
+        return formatRelativeDateTime(
             member.locations
                 .mapNotNull { it.locationData.data?.timeUTC?.isoToLocalDateTime() }
                 .minOrNull()
@@ -59,7 +59,7 @@ abstract class IValueFormatter {
     }
 
     fun getLastStatusPing(member: MemberModelWithLocations): String? {
-        return getLastPing(
+        return formatRelativeDateTime(
             member.locations
                 .mapNotNull { it.status.data?.timeUTC?.isoToLocalDateTime() }
                 .minOrNull()
@@ -67,23 +67,23 @@ abstract class IValueFormatter {
     }
 
     fun getLastLocationPing(location: MemberLocation?): String? {
-        return getLastPing(location?.locationData?.data?.timeUTC?.isoToLocalDateTime())
+        return formatRelativeDateTime(location?.locationData?.data?.timeUTC?.isoToLocalDateTime())
     }
 
     fun getLastStatusPing(location: MemberLocation?): String? {
-        return getLastPing(location?.status?.data?.timeUTC?.isoToLocalDateTime())
+        return formatRelativeDateTime(location?.status?.data?.timeUTC?.isoToLocalDateTime())
     }
 
-    fun getLastPing(time: LocalDateTime?): String? {
-        val local = time?.fromUTCtoLocal() ?: return null
-        val timeInstant = time.toInstant(TimeZone.UTC)
+    fun formatRelativeDateTime(timeUTC: LocalDateTime?): String? {
+        val local = timeUTC?.fromUTCtoLocal() ?: return null
+        val timeInstant = timeUTC.toInstant(TimeZone.UTC)
         val now = nowUTC()
         val nowTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
         val sameYear = local.year == nowTime.year
         val sameDay = sameYear && local.dayOfYear == nowTime.dayOfYear
         val isYesterday = sameYear && local.dayOfYear == now.minus(1.days)
             .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfYear
-        val formattedTime = formatTime(time)
+        val formattedTime = formatTimeOnly(timeUTC)
 
         return when {
             timeInstant > now.minus(20.seconds) -> {
@@ -122,6 +122,38 @@ abstract class IValueFormatter {
         }
     }
 
+    fun formatSimpleDateTime(
+        timeUTC: LocalDateTime?,
+        optionalYear: Boolean = true,
+        optionalMonth: Boolean = true,
+    ): String? {
+        val local = timeUTC?.fromUTCtoLocal() ?: return null
+        val nowTime = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault())
+        val sameYear = local.year == nowTime.year
+        val sameDay = sameYear && local.dayOfYear == nowTime.dayOfYear
+        val formattedTime = formatTimeOnly(timeUTC)
+
+        return when {
+            sameDay && optionalMonth -> {
+                formattedTime
+            }
+
+            optionalYear && sameYear -> {
+                formatBestPattern(
+                    local.toInstant(TimeZone.UTC).epochSeconds,
+                    "MMMMd"
+                ) + ", $formattedTime"
+            }
+
+            else -> {
+                formatBestPattern(
+                    local.toInstant(TimeZone.UTC).epochSeconds,
+                    "MMMMdyyyy"
+                ) + ", $formattedTime"
+            }
+        }
+    }
+
     fun getSpeedSmall(
         metersPerSecond: Float,
         unitType: DistanceUnitType? = null,
@@ -150,7 +182,7 @@ abstract class IValueFormatter {
         val isTomorrow = sameYear && local.dayOfYear == now.plus(1, DateTimeUnit.DAY, timeZone)
             .toLocalDateTime(timeZone).dayOfYear
 
-        val time = formatTime(dateTimeUTC)
+        val time = formatTimeOnly(dateTimeUTC)
         return when {
             sameDay -> time
             isTomorrow -> "${MR.strings.date_name_tomorrow.localizedString()}, $time"

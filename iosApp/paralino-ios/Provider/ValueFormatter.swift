@@ -21,8 +21,8 @@ class ValueFormatter: IValueFormatter {
         return formatter.string(from: NSNumber(value: number)) ?? ""
     }
     
-    override func formatTime(time: Kotlinx_datetimeLocalDateTime?) -> String? {
-        guard let time = time else { return nil }
+    override func formatTimeOnly(timeUTC: Kotlinx_datetimeLocalDateTime?) -> String? {
+        guard let time = timeUTC else { return nil }
         let dateComponents = DateComponents(
             timeZone: .gmt,
             year: Int(time.year),

@@ -28,8 +28,8 @@ class ValueFormatter(): IValueFormatter() {
         return formatter.format(number)
     }
 
-    override fun formatTime(time: LocalDateTime?): String? {
-        val local = time?.toJavaLocalDateTime()?.fromUTCtoLocal() ?: return null
+    override fun formatTimeOnly(timeUTC: LocalDateTime?): String? {
+        val local = timeUTC?.toJavaLocalDateTime()?.fromUTCtoLocal() ?: return null
         return local.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
     }
 

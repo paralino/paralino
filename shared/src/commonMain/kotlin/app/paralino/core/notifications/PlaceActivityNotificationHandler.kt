@@ -5,6 +5,7 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationRepository
@@ -13,7 +14,10 @@ import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class PlaceActivityNotificationHandler(
@@ -22,7 +26,8 @@ class PlaceActivityNotificationHandler(
     private val placeRepo: PlacesRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val presenter: IPlaceActivityNotificationPresenter
+    private val presenter: IPlaceActivityNotificationPresenter,
+    private val valueFormatter: IValueFormatter
 ) {
     suspend fun processPlaceActivity(push: PushNotificationRaw) {
 
@@ -52,10 +57,19 @@ class PlaceActivityNotificationHandler(
 
             val notificationId = payload.hashCode()
             presenter.notify(
-                notificationId,
-                title,
+                notificationId = notificationId,
+                title = title,
                 message = null,
-                push.createdAt.toEpochMilliseconds()
+                timeMillis = push.createdAt.toEpochMilliseconds(),
+                timeInfo = if (push.isOlderThan(10.minutes)) {
+                    valueFormatter.formatSimpleDateTime(
+                        timeUTC = push.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()),
+                        optionalYear = true,
+                        optionalMonth = true
+                    )
+                } else {
+                    null
+                }
             )
         }
     }
@@ -88,10 +102,11 @@ class PlaceActivityNotificationHandler(
         // TODO use different presenter or channel
         val notificationId = payload.hashCode()
         presenter.notify(
-            notificationId,
-            title,
+            notificationId = notificationId,
+            title = title,
             message = null,
-            push.createdAt.toEpochMilliseconds()
+            timeMillis = push.createdAt.toEpochMilliseconds(),
+            timeInfo = null
         )
     }
 

@@ -10,10 +10,17 @@ import shared
 import UserNotifications
 
 class PlaceNotificationPresenter: IPlaceActivityNotificationPresenter {
-    func notify(notificationId: Int32, title: String, message: String?, timeMillis: Int64) {
+    func notify(notificationId: Int32, title: String, message: String?, timeMillis: Int64, timeInfo: String?) {
         let content = UNMutableNotificationContent()
-        content.title = title
-        if let message = message { content.body = message }
+        
+        let formattedDate = timeInfo != nil ? "\n \(timeInfo ?? "")" : ""
+        
+        if let message = message {
+            content.title = title
+            content.body = message + formattedDate
+        } else {
+            content.body = title + formattedDate
+        }
     
         let request = UNNotificationRequest(identifier: "\(notificationId)", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { (error : Error?) in }
@@ -21,10 +28,17 @@ class PlaceNotificationPresenter: IPlaceActivityNotificationPresenter {
 }
 
 class GroupActivityNotificationPresenter: IGroupActivityNotificationPresenter {
-    func notify(notificationId: Int32, title: String, message: String?, timeMillis: Int64) {
+    func notify(notificationId: Int32, title: String, message: String?, timeMillis: Int64, timeInfo: String?) {
         let content = UNMutableNotificationContent()
-        content.title = title
-        if let message = message { content.body = message }
+        
+        let formattedDate = timeInfo != nil ? "\n \(timeInfo ?? "")" : ""
+        
+        if let message = message {
+            content.title = title
+            content.body = message + formattedDate
+        } else {
+            content.body = title + formattedDate
+        }
     
         let request = UNNotificationRequest(identifier: "\(notificationId)", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { (error : Error?) in }
