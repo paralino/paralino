@@ -1,6 +1,6 @@
 package app.paralino.core
 
-import app.paralino.core.domain.location.GeofenceRegistrationMonitor
+import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
@@ -24,7 +24,7 @@ class CoreAppManager(
     private val logoutUseCase: LogoutUseCase,
     private val connectionStatusProvider: IConnectionStatusProvider,
     private val locationStatus: ILocationStatusProvider,
-    private val geofenceRegistrationMonitor: GeofenceRegistrationMonitor
+    private val activeSharingEngine: ActiveSharingEngine
 ) {
 
     private var _appLifecycleState = MutableStateFlow(AppLifecycleState())
@@ -54,7 +54,7 @@ class CoreAppManager(
             }
             .launchIn(scopeProvider.defaultIOScope)
 
-        geofenceRegistrationMonitor.startGeofenceRegistration(reRegisterPeriodically = true)
+        activeSharingEngine.startMonitoring()
     }
 
     fun onAppActive() {

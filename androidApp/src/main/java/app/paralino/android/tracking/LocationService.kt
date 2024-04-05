@@ -46,7 +46,6 @@ class LocationService : Service() {
     private val notificationHandler: LocationNotificationHandler by inject()
     private val locationInitHandler: LocationInitHandler by inject()
     private val locationSharingManager: LocationSharingManager by inject()
-    private val locationPerformanceManager: LocationPerformanceManager by inject()
     private val locationRepository: LocationRepository by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
 
@@ -127,15 +126,6 @@ class LocationService : Service() {
         logg.v(this.hashCode().toString(), "Subscribing to location updates")
         FullRefreshSyncWorker.createRequest(applicationContext)
 
-        serviceDefaultScope.launch {
-            while (isActive) {
-                if (locationInitHandler.currentLocation.value.data?.isOlderThan(5.minutes) != false) {
-                    saveLocation(null)
-                }
-                delay(5.minutes.inWholeMilliseconds)
-            }
-        }
-
         locationInitHandler.currentLocation
             .onEach {
                 logg.v(this.hashCode().toString(), "Got location: $it")
@@ -151,16 +141,6 @@ class LocationService : Service() {
             .onEach {
                 logg.v("device_status", "Status changed: $it")
                 updateNotification()
-                saveLocation(null)
-            }
-            .launchIn(serviceDefaultScope)
-
-        locationPerformanceManager.locationPerformanceType
-            .filter { it.current <= LocationPerformanceType.BALANCED }
-            .distinctUntilChanged()
-            .onEach {
-                logg.v("device_status", "Location performance changed: $it")
-                saveLocation(null)
             }
             .launchIn(serviceDefaultScope)
     }
@@ -206,5 +186,4 @@ class LocationService : Service() {
             ContextCompat.startForegroundService(context, intent)
         }
     }
-
 }

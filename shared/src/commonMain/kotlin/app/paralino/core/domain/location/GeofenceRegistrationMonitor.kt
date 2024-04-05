@@ -14,10 +14,10 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.isActive
 import kotlin.time.Duration.Companion.hours
 
@@ -59,7 +59,7 @@ class GeofenceRegistrationMonitor(
         combine(
             places,
             deviceApiProvider.locationStatusProvider.status.map { it.isOK(forAlwaysOnAccess = true) },
-            locationSharingManager.sharingStatus.map { it.data }.filterNotNull(),
+            locationSharingManager.sharingStatus.mapNotNull { it.data },
             timer
         ) { geofences, locationStatus, sharingStatus, _ ->
             logg.v(
@@ -77,6 +77,6 @@ class GeofenceRegistrationMonitor(
                     geofenceManager.deleteAllGeofences()
                 }
             }
-            .launchIn(scopeProvider.userSessionIOScope)
+            .launchIn(scopeProvider.defaultIOScope)
     }
 }

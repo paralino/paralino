@@ -15,6 +15,7 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.minutes
@@ -31,6 +32,9 @@ class LocationRepository constructor(
 
     private val deviceRegisterTimeMillis = MutableStateFlow(mapOf<String, Long>())
     private var failedRegistrationAttempts = MutableStateFlow(mapOf<String, Int>())
+
+    private val _lastLocation = MutableStateFlow<LocationDataModel?>(null)
+    val lastLocation = _lastLocation.asStateFlow()
 
     suspend fun getMembersByUserId(userid: String): List<MemberModel> {
         return local.getMemberModelsForUser(userid)
@@ -132,10 +136,12 @@ class LocationRepository constructor(
                 )
             }
 
-            data?.let {
+            if (data != null) {
+                _lastLocation.update { data }
                 logg.v("Process new location in places")
-                placesRepo.processLocation(it)
+                placesRepo.processLocation(data)
             }
+
             logg.v("Upload new location with performance ${performanceManager.locationPerformanceType.value.current}")
             remote.saveCurrentLocation(mapped)
         }
