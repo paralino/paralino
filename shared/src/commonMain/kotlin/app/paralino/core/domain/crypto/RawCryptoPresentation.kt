@@ -152,6 +152,7 @@ class RawCryptoPresentation constructor(
                                     add("UserID: **${config.userId}**")
                                     add("MemberID: **${rawPair.first.member.id}**")
                                 }
+                                add("Devices: **${rawPair.first.locations.size}**")
                                 add("Verification: **${rawPair.second.member.verificationResult}**")
                             },
                             rawData = rawPair.first.member.data,

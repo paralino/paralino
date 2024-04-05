@@ -252,7 +252,8 @@
     <string name="group_members_last_active_status_recently_1">1 minute ago</string>
     <string name="group_members_last_active_status_recently_2">2 minutes ago</string>
     <string name="group_members_last_status_update">**Last update:**</string>
-    <string name="group_members_status_inactive">INACTIVE</string>
+    <string name="group_members_status_inactive">Inactive</string>
+    <string name="group_members_status_not_sharing">Not sharing</string>
     <string name="group_members_status_offline">Device is offline</string>
     <string name="group_members_status_gps_off">GPS is off</string>
     <string name="group_members_status_battery_saver">Battery saving is on</string>

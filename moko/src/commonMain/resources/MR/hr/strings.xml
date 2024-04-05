@@ -252,6 +252,7 @@
     <string name="group_members_last_active_status_recently_2">Prije 2 minute</string>
     <string name="group_members_last_status_update">**Zadnje ažuriranje:**</string>
     <string name="group_members_status_inactive">Nema aktivnosti</string>
+    <string name="group_members_status_not_sharing">Ne dijeli lokaciju</string>
     <string name="group_members_status_offline">Uređaj je izvan mreže</string>
     <string name="group_members_status_gps_off">GPS je isključen</string>
     <string name="group_members_status_battery_saver">Štednja baterije</string>

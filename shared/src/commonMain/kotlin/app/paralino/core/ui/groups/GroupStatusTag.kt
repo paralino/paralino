@@ -83,8 +83,8 @@ fun GroupStatusTag(
             GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> stringResource(resource = MR.strings.group_members_status_active)
 
             GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
-            GroupStatusTagType.INACTIVE,
-            GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_inactive)
+            GroupStatusTagType.INACTIVE -> stringResource(resource = MR.strings.group_members_status_inactive)
+            GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_not_sharing)
 
             GroupStatusTagType.GPS_OFF -> stringResource(resource = MR.strings.group_members_status_gps_off)
             GroupStatusTagType.MISSING_PERMISSION -> stringResource(resource = MR.strings.group_members_status_missing_permissions)
