@@ -111,15 +111,24 @@ class RawCryptoPresentation constructor(
                         val decryptedLocationData = decryptedLocation?.let {
                                 CryptoResource.Ready(
                                     locationDataPrint(
-                                        deviceData = it.deviceData.mapSuccess {
-                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
-                                        }.data,
-                                        locationData = it.locationData.mapSuccess {
-                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
-                                        }.data,
-                                        status = it.status.mapSuccess {
-                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
-                                        }.data
+                                        deviceData = when (it.deviceData) {
+                                            is CryptoResource.Ready -> {
+                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(it.deviceData.data)
+                                            }
+                                            else -> it.deviceData.toString()
+                                        },
+                                        locationData = when (it.locationData) {
+                                            is CryptoResource.Ready -> {
+                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(it.locationData.data)
+                                            }
+                                            else -> it.locationData.toString()
+                                        },
+                                        status = when (it.status) {
+                                            is CryptoResource.Ready -> {
+                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(it.status.data)
+                                            }
+                                            else -> it.status.toString()
+                                        }
                                     )
                                 )
                             } ?: CryptoResource.NotInitialized
