@@ -40,6 +40,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -85,6 +86,7 @@ fun LargeSeekbarSwitch(
                     this.clickable { onStateChange?.invoke(!state.switchState.checkState) }
                 else this
             }
+            .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
     ) {
