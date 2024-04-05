@@ -1,12 +1,17 @@
 package app.paralino.core.presentation.rawdata
 
 import app.paralino.core.domain.crypto.RawCryptoPresentation
+import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 
 class RawDataPresentationViewModel constructor(
     private val rawCryptoPresentation: RawCryptoPresentation,
@@ -20,32 +25,33 @@ class RawDataPresentationViewModel constructor(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        when (rawPresentationType) {
+        val rawFlow = when (rawPresentationType) {
             is RawPresentationDataType.GroupMemberPresentation -> {
                 rawCryptoPresentation.getGroupMemberRawPresentation(rawPresentationType.memberId)
-                    .mapToPayload { it }
-                    .onEach { _uiState.value = it.mapSuccess { RawDataScreenState(it) } }
-                    .launchIn(coroutineScope)
             }
+
             is RawPresentationDataType.GroupPlacePresentation -> {
                 rawCryptoPresentation.getGroupPlaceRawPresentation(rawPresentationType.placeId)
-                    .mapToPayload { it }
-                    .onEach { _uiState.value = it.mapSuccess { RawDataScreenState(it) } }
-                    .launchIn(coroutineScope)
             }
+
             is RawPresentationDataType.GroupPresentation -> {
                 rawCryptoPresentation.getGroupRawPresentation(rawPresentationType.groupId)
-                    .mapToPayload { it }
-                    .onEach { _uiState.value = it.mapSuccess { RawDataScreenState(it) } }
-                    .launchIn(coroutineScope)
             }
+
             RawPresentationDataType.UserPresentation -> {
                 rawCryptoPresentation.getUserRawPresentation()
-                    .mapToPayload { it }
-                    .onEach { _uiState.value = it.mapSuccess { RawDataScreenState(it) } }
-                    .launchIn(coroutineScope)
             }
         }
+
+        rawFlow
+            .mapToPayload { it }
+            .onEach {
+                _uiState.value = it.mapSuccess { RawDataScreenState(it) }
+                if (it is Payload.Error) {
+                    logg.e("raw_data", "Error getting raw data", it.exception)
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
 }

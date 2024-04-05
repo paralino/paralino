@@ -165,7 +165,7 @@ val coreModule = module {
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory { RawCryptoPresentation(get(), get(), get(), get()) }
+    factory { RawCryptoPresentation(get(), get(), get(), get(), config) }
 
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }

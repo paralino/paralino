@@ -14,7 +14,7 @@ data class UserMe constructor(
     val data: UserMeData? = null
 ) {
 
-    val name: String get() = data?.userName ?: ""
+    val name: String get() = data?.userName ?: "---"
 
     val isGuestUser: Boolean get() = email.endsWith(guestUserEmail)
     val hasValidData: Boolean get() = !data?.userName.isNullOrBlank() && data?.userImage?.takeIfValid() != null
