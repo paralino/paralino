@@ -149,9 +149,10 @@ data class MemberActionsState(
     val deleteLocation: MemberActionItemState? = null,
     val blockUser: MemberActionItemState? = null,
     val unblockUser: MemberActionItemState? = null,
-    val locationRequest: LocationRequestItemState? = null
+    val locationRequest: LocationRequestItemState? = null,
+    val securityAction: Boolean = false
 ) {
-    val isActive = listOfNotNull(deleteMember, deleteLocation, blockUser, unblockUser, locationRequest).isNotEmpty()
+    val isActive = listOfNotNull(deleteMember, deleteLocation, blockUser, unblockUser, locationRequest, securityAction.takeIf { it }).isNotEmpty()
 }
 
 data class MemberActionItemState(

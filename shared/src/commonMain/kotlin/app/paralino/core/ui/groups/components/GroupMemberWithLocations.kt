@@ -30,6 +30,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -96,7 +97,6 @@ fun GroupMemberWithLocations(
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
-    extraActions: (@Composable RowScope.() -> Unit)? = null,
     onEvent: ((GroupMemberItemEvent) -> Unit)? = null
 ) {
 
@@ -349,7 +349,7 @@ fun GroupMemberWithLocations(
             }
 
             val canExpand = state.memberState.canHaveExpandButton &&
-                    (state.actions.isActive || extraActions != null || (state.locations.isNotEmpty() && state.allowShowingDevices))
+                    (state.actions.isActive || (state.locations.isNotEmpty() && state.allowShowingDevices))
 
             // expand icon
             Box(
@@ -405,11 +405,10 @@ fun GroupMemberWithLocations(
                     }
                 }
 
-                if (state.actions.isActive || extraActions != null) {
+                if (state.actions.isActive) {
                     GroupMemberActions(
                         modifier = Modifier.padding(top = 10.dp),
                         state = state,
-                        extraContent = extraActions,
                         onEvent = { event ->
                             if (collapseOnActionClick)
                                 expanded = !expanded
@@ -449,7 +448,6 @@ fun GroupMemberWithLocations(
 private fun GroupMemberActions(
     modifier: Modifier = Modifier,
     state: GroupMemberItemState,
-    extraContent: (@Composable RowScope.() -> Unit)?,
     onEvent: (GroupMemberItemEvent) -> Unit
 ) {
     FlowRow(
@@ -487,8 +485,18 @@ private fun GroupMemberActions(
                 onEvent(GroupMemberItemEvent.onLocationRequest(state))
             }
         }
-        if (extraContent != null) {
-            extraContent()
+        if (state.actions.securityAction) {
+            IconButton(
+                onClick = {
+                    onEvent(GroupMemberItemEvent.onOpenRawData(state))
+                }
+            ) {
+                Icon(
+                    painter = CoreAppIcons.Security.asPainterResource(),
+                    tint = AppColors.accent,
+                    contentDescription = null
+                )
+            }
         }
     }
 }

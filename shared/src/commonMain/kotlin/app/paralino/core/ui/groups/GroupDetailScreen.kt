@@ -471,19 +471,6 @@ fun GroupDetailScreenCore(
                             state = item,
                             forceExpandAction = expanded,
                             collapseOnActionClick = false,
-                            extraActions = {
-                                IconButton(
-                                    onClick = {
-                                        openMemberRawData(item.memberState.memberId)
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = CoreAppIcons.Security.asPainterResource(),
-                                        tint = AppColors.accent,
-                                        contentDescription = null
-                                    )
-                                }
-                            },
                             onEvent = { event ->
                                 when (event) {
                                     is GroupMemberItemEvent.onActionClick -> {
@@ -531,6 +518,9 @@ fun GroupDetailScreenCore(
 
                                     is GroupMemberItemEvent.onShowLocation -> {}
                                     is GroupMemberItemEvent.onLocationRequest -> {}
+                                    is GroupMemberItemEvent.onOpenRawData -> {
+                                        openMemberRawData(item.memberState.memberId)
+                                    }
                                 }
                             }
                         )

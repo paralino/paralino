@@ -98,7 +98,9 @@ class GroupDetailViewModel(
                                 ?.takeIf { blocklist.none { it.resourceId == member.member.userId } }
                                 ?.let {
                                     MemberActionItemState(MemberActionType.BLOCK_USER)
-                                }
+                                },
+                            // TODO remove when on production
+                            securityAction = true
                         ),
                         allowShowingDevices = true,
                         lastLocationPing = valueFormatter.getLastLocationPing(member),

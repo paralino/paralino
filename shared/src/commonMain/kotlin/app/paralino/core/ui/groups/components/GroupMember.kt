@@ -28,7 +28,6 @@ fun GroupMember(
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
-    extraActions: (@Composable RowScope.() -> Unit)? = null,
     onEvent: (GroupMemberItemEvent) -> Unit
 ) {
     Box(
@@ -58,7 +57,6 @@ fun GroupMember(
                     canShowOldLocation = canShowOldLocation,
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
-                    extraActions = extraActions,
                     onEvent = onEvent
                 )
             }
@@ -69,7 +67,6 @@ fun GroupMember(
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
                     canShowOldLocation = canShowOldLocation,
-                    extraActions = extraActions,
                     onEvent = onEvent
                 )
             }
