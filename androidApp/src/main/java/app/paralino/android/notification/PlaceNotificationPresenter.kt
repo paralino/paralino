@@ -27,7 +27,7 @@ class PlaceNotificationPresenter(private val context: Context) : IPlaceActivityN
         AppColors.lightThemePrimary.toArgb()
     }
 
-    override fun notify(notificationId: Int, title: String, message: String?, timeMillis: Long) {
+    override fun notify(notificationId: Int, title: String, message: String?, timeMillis: Long, timeInfo: String?) {
 
         if (ActivityCompat.checkSelfPermission(
                 context,
