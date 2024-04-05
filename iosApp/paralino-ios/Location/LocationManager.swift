@@ -126,18 +126,20 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        notifyUser(id: "placeEnter_\(region.identifier)", message: "User entered place \(region.identifier)")
         DispatchQueue.main.async { [weak self] in
             Task {
+                let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
+                self?.notifyUser(id: "placeEnter_\(region.identifier)", message: "User entered place \(place?.nameOrNull ?? region.identifier)")
                 try await self?.placeRepo.placesEnter(placesIds: [region.identifier])
             }
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        notifyUser(id: "placeExit_\(region.identifier)", message: "User exited place \(region.identifier)")
         DispatchQueue.main.async { [weak self] in
             Task {
+                let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
+                self?.notifyUser(id: "placeExit_\(region.identifier)", message: "User exited place \(place?.nameOrNull ?? region.identifier)")
                 try await self?.placeRepo.placesExit(placesIds: [region.identifier])
             }
         }

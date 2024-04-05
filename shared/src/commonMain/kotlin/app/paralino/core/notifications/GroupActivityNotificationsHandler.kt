@@ -64,15 +64,7 @@ class GroupActivityNotificationsHandler(
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),
-            timeInfo = if (push.isOlderThan(30.minutes)) {
-                valueFormatter.formatSimpleDateTime(
-                    timeUTC = push.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()),
-                    optionalYear = true,
-                    optionalMonth = true
-                )
-            } else {
-                null
-            }
+            timeInfo = null
         )
     }
 
@@ -115,7 +107,7 @@ class GroupActivityNotificationsHandler(
             timeMillis = push.createdAt.toEpochMilliseconds(),
             timeInfo = if (push.isOlderThan(10.minutes)) {
                 valueFormatter.formatSimpleDateTime(
-                    timeUTC = push.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()),
+                    timeUTC = push.createdAt.toLocalDateTime(TimeZone.UTC),
                     optionalYear = true,
                     optionalMonth = true
                 )

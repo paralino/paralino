@@ -60,6 +60,10 @@ class PlacesRepository constructor(
         return local.getPlaceWithoutSettings(placeId)
     }
 
+    suspend fun getPlaceLocallyOnce(placeId: String): GroupPlace? {
+        return local.getPlaceWithoutSettingsOnce(placeId)
+    }
+
     fun getPlaceWithSettings(placeId: String): Flow<GroupPlaceWithSettings> {
         return mergeDataWithRemote(
             local = local.getPlaceWithSettings(placeId),

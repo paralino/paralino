@@ -13,7 +13,7 @@ class PlaceNotificationPresenter: IPlaceActivityNotificationPresenter {
     func notify(notificationId: Int32, title: String, message: String?, timeMillis: Int64, timeInfo: String?) {
         let content = UNMutableNotificationContent()
         
-        let formattedDate = timeInfo != nil ? "\n \(timeInfo ?? "")" : ""
+        let formattedDate = timeInfo != nil ? "\n\(timeInfo ?? "")" : ""
         
         if let message = message {
             content.title = title
@@ -31,7 +31,7 @@ class GroupActivityNotificationPresenter: IGroupActivityNotificationPresenter {
     func notify(notificationId: Int32, title: String, message: String?, timeMillis: Int64, timeInfo: String?) {
         let content = UNMutableNotificationContent()
         
-        let formattedDate = timeInfo != nil ? "\n \(timeInfo ?? "")" : ""
+        let formattedDate = timeInfo != nil ? "\n\(timeInfo ?? "")" : ""
         
         if let message = message {
             content.title = title

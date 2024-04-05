@@ -55,15 +55,15 @@ class PlaceActivityNotificationHandler(
                 }
             }
 
-            val notificationId = payload.hashCode()
+            val notificationId = "place_activity_${payload}_${push.createdAt}".hashCode()
             presenter.notify(
                 notificationId = notificationId,
                 title = title,
                 message = null,
                 timeMillis = push.createdAt.toEpochMilliseconds(),
-                timeInfo = if (push.isOlderThan(10.minutes)) {
+                timeInfo = if (push.isOlderThan(2.minutes)) {
                     valueFormatter.formatSimpleDateTime(
-                        timeUTC = push.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()),
+                        timeUTC = push.createdAt.toLocalDateTime(TimeZone.UTC),
                         optionalYear = true,
                         optionalMonth = true
                     )
