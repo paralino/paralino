@@ -52,6 +52,7 @@ class GroupActivityNotificationPresenter(private val context: Context) : IGroupA
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
             .setContentTitle(title)
             .setContentText(message)
+            .setSubText(timeInfo)
             .setCategory(NotificationCompat.CATEGORY_SOCIAL)
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_notification_icon)
