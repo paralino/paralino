@@ -143,7 +143,7 @@ class MapHomeViewModel constructor(
                 .filterNotNull()
                 .distinctUntilChanged(),
             coreAppManager.appLifecycleState
-                .map { it.current != AppLifecycleType.BACKGROUND }
+                .map { it.current.activeOrInactive }
                 .distinctUntilChanged()
         ) { groupId, focusType, appState ->
             Triple(groupId, focusType, appState)

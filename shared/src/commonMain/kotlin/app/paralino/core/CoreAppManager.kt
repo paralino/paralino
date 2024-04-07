@@ -29,6 +29,7 @@ class CoreAppManager(
 
     private var _appLifecycleState = MutableStateFlow(AppLifecycleState())
     val appLifecycleState = _appLifecycleState.asStateFlow()
+    val currentAppLifecycleState get() = appLifecycleState.value
 
     fun onAppStart() {
         sessionMonitor.listenForSessionExpired()
@@ -38,10 +39,14 @@ class CoreAppManager(
             }
             .launchIn(scopeProvider.defaultScope)
 
-        appLifecycleState.onEach {
-            if (appLifecycleState.value.current == AppLifecycleType.ACTIVE && appLifecycleState.value.previous == AppLifecycleType.BACKGROUND) {
+        appLifecycleState.onEach { state ->
+            if (state.current == AppLifecycleType.ACTIVE && state.previous == AppLifecycleType.BACKGROUND) {
                 logg.tag("app_state").v("App is active but was in background, refresh groups")
                 updateGroups()
+            } else if (state.current == AppLifecycleType.ACTIVE) {
+                updateLocationStatus()
+                updateConnectionStatus()
+                updateConfig()
             }
         }
             .launchIn(scopeProvider.defaultScope)
@@ -62,13 +67,10 @@ class CoreAppManager(
         _appLifecycleState.update {
             it.copy(
                 previous = it.current,
-                current = AppLifecycleType.ACTIVE
+                current = AppLifecycleType.ACTIVE,
+                wasEverActive = true
             )
         }
-
-        updateLocationStatus()
-        updateConnectionStatus()
-        updateConfig()
     }
 
     fun onAppInactive() {
@@ -122,8 +124,11 @@ class CoreAppManager(
 
 data class AppLifecycleState(
     val previous: AppLifecycleType = AppLifecycleType.DESTROYED,
-    val current: AppLifecycleType = AppLifecycleType.DESTROYED
+    val current: AppLifecycleType = AppLifecycleType.DESTROYED,
+    val wasEverActive: Boolean = false
 )
 enum class AppLifecycleType {
-    ACTIVE, INACTIVE, BACKGROUND, DESTROYED
+    ACTIVE, INACTIVE, BACKGROUND, DESTROYED;
+
+    val activeOrInactive: Boolean get() = this == ACTIVE || this == INACTIVE
 }
