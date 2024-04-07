@@ -40,11 +40,12 @@ class LocationPerformanceManager constructor(
     }
 
     fun locationBoostRequested(
+        performanceType: LocationPerformanceType,
         groupId: String?,
-        performanceType: LocationPerformanceType = LocationPerformanceType.HIGH
+        from: String?,
     ) {
         logg.tag("location_performance")
-            .v("Location boost ($performanceType) requested for $groupId")
+            .v("Location boost ($performanceType) requested for $groupId from $from")
         setPerformance(performanceType, allowDowngrade = false)
 
         // TODO check if someone is requesting location multiple times and don't reset performance in that case

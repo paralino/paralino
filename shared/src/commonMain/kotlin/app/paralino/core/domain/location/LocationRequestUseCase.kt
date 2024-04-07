@@ -35,8 +35,9 @@ class LocationRequestUseCase constructor(
                 logg.tag("location_performance").v("User is looking at map, sending ping")
                 emit("User is looking at map")
                 locationPerformanceManager.locationBoostRequested(
-                    groupId,
-                    LocationPerformanceType.HIGH
+                    performanceType = LocationPerformanceType.HIGH,
+                    groupId = groupId,
+                    from = "map focus ping"
                 )
                 sendLocationFocusEvent(groupId, focusType)
                 val delayMillis = when (focusType) {

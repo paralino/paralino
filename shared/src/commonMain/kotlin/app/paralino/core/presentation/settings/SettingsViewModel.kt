@@ -129,7 +129,11 @@ class SettingsViewModel(
                 logg.v("Toggle manual location boost: $boostValue")
                 config.trackingBoost = boostValue
                 if(boostValue) {
-                    locationPerformanceManager.locationBoostRequested(groupId = null, LocationPerformanceType.MANUAL_BOOST)
+                    locationPerformanceManager.locationBoostRequested(
+                        performanceType = LocationPerformanceType.MANUAL_BOOST,
+                        groupId = null,
+                        from = "Settings manual boost"
+                    )
                 } else {
                     locationPerformanceManager.disableManualBoost()
                 }

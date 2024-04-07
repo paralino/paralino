@@ -142,7 +142,7 @@ class LocationRepository constructor(
                 placesRepo.processLocation(data)
             }
 
-            logg.v("Upload new location with performance ${performanceManager.locationPerformanceType.value.current}")
+            logg.v("Upload new ${if (data != null) "location" else "status"} with performance ${performanceManager.locationPerformanceType.value.current}")
             remote.saveCurrentLocation(mapped)
         }
     }

@@ -50,6 +50,7 @@ class ActiveSharingEngine(
                 if (it) {
                     sendStatusPeriodically()
                 } else {
+                    logg.v("Cancel periodic location status update")
                     activePingJob?.cancel()
                 }
             }
@@ -59,12 +60,16 @@ class ActiveSharingEngine(
     }
 
     private fun sendStatusPeriodically() {
+        logg.v("Start periodic location status update")
         activePingJob?.cancel()
         activePingJob = scopeProvider.userSessionIOScope.launch {
             while (isActive) {
                 delay(5.minutes.inWholeMilliseconds)
                 if (locationRepo.lastLocation.value?.isOlderThan(5.minutes) != false) {
+                    logg.v("Sending location status after inactivity")
                     updateStatus()
+                } else {
+                    logg.v("Skip sending location status after inactivity")
                 }
             }
         }

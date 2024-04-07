@@ -73,8 +73,9 @@ class LocationRequestNotificationHandler(
 
         logg.tag("location_performance").v("Boosting location from location request handler - $performanceType")
         locationPerformanceManager.locationBoostRequested(
+            performanceType = performanceType,
             groupId = groupId,
-            performanceType = performanceType
+            from = "location request notification"
         )
 
         try {

@@ -73,7 +73,11 @@ class RealtimeEventsProcessor constructor(
 
         if (locationSharingManager.isSharingActiveForGroup(groupId)) {
             logg.tag("location_performance").v("Boosting location from location focus realtime event")
-            locationPerformanceManager.locationBoostRequested(groupId = groupId, LocationPerformanceType.MEDIUM_HIGH)
+            locationPerformanceManager.locationBoostRequested(
+                performanceType = LocationPerformanceType.MEDIUM_HIGH,
+                groupId = groupId,
+                from = "realtime location focus event"
+            )
         }
     }
 
