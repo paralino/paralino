@@ -65,7 +65,7 @@ class ActiveSharingEngine(
         activePingJob = scopeProvider.userSessionIOScope.launch {
             while (isActive) {
                 delay(5.minutes.inWholeMilliseconds)
-                if (locationRepo.lastLocation.value?.isOlderThan(5.minutes) != false) {
+                if (locationRepo.lastLocation.value?.isOlderThan(15.minutes) != false) {
                     logg.v("Sending location status after inactivity")
                     updateStatus()
                 } else {
