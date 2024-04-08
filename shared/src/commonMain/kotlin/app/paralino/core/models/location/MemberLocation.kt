@@ -75,7 +75,7 @@ data class MemberLocation constructor(
     val isActiveButNotFresh: Boolean
         get() {
             val activeStatus = status.data?.statusType == MemberDeviceStatusType.ACTIVE
-                    && isOlderThan(2.minutes)
+                    && isOlderThan(30.seconds)
             val idleStatus = status.data?.statusType?.isIdling == true
                     && isOlderThan(10.minutes)
             return activeStatus || idleStatus
