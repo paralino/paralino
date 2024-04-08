@@ -238,7 +238,7 @@ fun GroupMemberWithLocations(
                 Text(
                     text = buildAnnotatedString {
                         this.append(state.memberState.name)
-                        if (!state.singleVisibleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
+                        if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
                             this.append(" • ")
                             appendInlineContent(iconId, "[device]")
                             this.withStyle(
@@ -249,7 +249,7 @@ fun GroupMemberWithLocations(
                                     color = AppColors.accent
                                 )
                             ) {
-                                this.append(state.singleVisibleLocation?.name ?: "")
+                                this.append(state.singleLocation?.name ?: "")
                             }
                         }
                     },
@@ -613,11 +613,7 @@ fun GroupMemberLocationChild(
                 modifier = Modifier
             )
 
-            val status = when (state.deviceStatus) {
-                MemberDeviceStatusType.NOT_SHARING -> GroupStatusTagType.INACTIVE
-                else -> state.deviceStatus?.toStatusTagType()
-            }
-            GroupStatusTag(status)
+            GroupStatusTag(state.deviceStatus?.toStatusTagType())
 
             if (state.lastLocationPing != null) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

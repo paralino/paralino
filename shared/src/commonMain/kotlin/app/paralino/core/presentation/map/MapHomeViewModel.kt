@@ -11,6 +11,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
@@ -270,6 +271,11 @@ class MapHomeViewModel constructor(
                                 }
                             }
                         }
+                            .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE }
+                            .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE_NO_LOCATION }
+                            .sortedByDescending { it.location?.deviceStatus?.isIdlingOrActive }
+                            .sortedByDescending { it.location?.visibility?.isVisible() }
+
 
                         val oldState = _uiState.value.asReady()?.takeIf { it.groupId == group.id }
                         val focusedMarker = oldState?.markers?.firstOrNull { it.focused }

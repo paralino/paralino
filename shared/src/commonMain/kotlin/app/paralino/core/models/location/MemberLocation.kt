@@ -45,6 +45,7 @@ data class MemberLocation constructor(
         get() {
             return when {
                 isEnded -> MemberDeviceStatusType.NOT_SHARING
+                status.data?.statusType == MemberDeviceStatusType.NOT_SHARING -> MemberDeviceStatusType.NOT_SHARING
                 isExpired -> {
                     if (status.data?.statusType?.isDeviceSetupWrong == true && !isStatusOlderThan(1.hours)) {
                         status.data?.statusType ?: MemberDeviceStatusType.INACTIVE

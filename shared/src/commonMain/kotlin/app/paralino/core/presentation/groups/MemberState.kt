@@ -61,7 +61,7 @@ data class GroupMemberItemStateWithOneLocation constructor(
         get() = location
     override val singleVisibleLocation: GroupMemberItemLocationState?
         get() = location?.takeIf { it.visibility.isVisible() }
-    override val lastLocationPing: String? get() = singleVisibleLocation?.lastLocationPing
+    override val lastLocationPing: String? get() = singleLocation?.lastLocationPing
     override val lastStatusPing: String? get() = singleVisibleLocation?.lastStatusPing
 }
 
@@ -81,10 +81,10 @@ data class GroupMemberItemStateWithLocations constructor(
     override val singleLocation = locations.takeIf { it.size == 1 }?.first()
     override val singleVisibleLocation = singleLocation?.takeIf { it.visibility.isVisible() }
 
-    val filteredLastPing: String? = lastLocationPing?.takeIf { singleVisibleLocation != null }
+    val filteredLastPing: String? = lastLocationPing?.takeIf { singleLocation != null }
 
     val statusTag: MemberDeviceStatusType?
-        get() = singleVisibleLocation?.deviceStatus
+        get() = singleLocation?.deviceStatus
             ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
 }
 
