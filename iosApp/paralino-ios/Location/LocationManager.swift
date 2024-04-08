@@ -48,15 +48,19 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             self?.notifyPerformance(performance: "\(model.current)")
             switch model.current {
             case .batterySaver:
+                self?.manager.pausesLocationUpdatesAutomatically = true
                 self?.manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
                 self?.manager.distanceFilter = 1500
             case .balanced:
+                self?.manager.pausesLocationUpdatesAutomatically = true
                 self?.manager.desiredAccuracy = kCLLocationAccuracyKilometer
                 self?.manager.distanceFilter = 300
             case .mediumHigh:
+                self?.manager.pausesLocationUpdatesAutomatically = true
                 self?.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
                 self?.manager.distanceFilter = 50
             case .high, .veryHigh, .manualBoost:
+                self?.manager.pausesLocationUpdatesAutomatically = false
                 self?.manager.desiredAccuracy = kCLLocationAccuracyBest
                 self?.manager.distanceFilter = kCLDistanceFilterNone
             default: break
