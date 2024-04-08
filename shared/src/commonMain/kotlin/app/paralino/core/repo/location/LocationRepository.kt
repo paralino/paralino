@@ -130,9 +130,16 @@ class LocationRepository constructor(
 
             LocationPayloadStatus.Processing -> null
             LocationPayloadStatus.UnverifiedMember -> {
-                // TODO Notify user and keep sharing contract active for cases where data is not synced yet
+                // Notify user and keep sharing contract active for cases where data is not synced yet
                 // that way sharing could continue after refresh if member becomes verified
                 logg.e("Current member is unverified in group ${groupId}, ignore location update")
+                infoNotificationPresenter.notify(
+                    notificationId = 6345,
+                    title = MR.strings.error_something_wrong.localizedString(),
+                    message = MR.strings.error_unverified_member_notification_message.localizedString(),
+                    timeMillis = null,
+                    timeInfo = null
+                )
                 null
             }
         }
