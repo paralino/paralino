@@ -1,5 +1,6 @@
 package app.paralino.core.repo.location
 
+import app.paralino.core.MR
 import app.paralino.core.domain.location.LocationPayloadProvider
 import app.paralino.core.domain.location.LocationPayloadStatus
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
@@ -8,6 +9,8 @@ import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.location.MemberModel
+import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.base.BaseRepository
@@ -27,7 +30,8 @@ class LocationRepository constructor(
     private val remote: LocationRemoteSource,
     private val placesRepo: PlacesRepository,
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
-    private val payloadProvider: LocationPayloadProvider
+    private val payloadProvider: LocationPayloadProvider,
+    private val infoNotificationPresenter: IInfoMessagesNotificationPresenter
 ) : BaseRepository() {
 
     private val deviceRegisterTimeMillis = MutableStateFlow(mapOf<String, Long>())
@@ -95,13 +99,25 @@ class LocationRepository constructor(
                             failedRegistrationAttempts.update {
                                 it.toMutableMap().apply { set(groupId, 0) }
                             }
-                            // TODO notify user about failed attempts
+                            infoNotificationPresenter.notify(
+                                notificationId = 54343,
+                                title = MR.strings.error_something_wrong.localizedString(),
+                                message = MR.strings.error_device_registration_notification_message.localizedString(),
+                                timeMillis = null,
+                                timeInfo = null
+                            )
                         }
                         null
                     }
                 } catch (e: Exception) {
-                    // TODO notify user
                     logg.w("Error registering device for group sharing", e)
+                    infoNotificationPresenter.notify(
+                        notificationId = 54343,
+                        title = MR.strings.error_something_wrong.localizedString(),
+                        message = MR.strings.error_device_registration_notification_message.localizedString(),
+                        timeMillis = null,
+                        timeInfo = null
+                    )
                     null
                 }
             }

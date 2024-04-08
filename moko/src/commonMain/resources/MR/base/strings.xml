@@ -38,6 +38,8 @@
     <string name="error_notification_permission_missing_sheet_message">Please enable **notifications** in order to receive **important** alerts for your places.</string>
     <string name="error_location_background_permission_missing_notification_message">Location sharing can\'t start because you are missing all time location permission!\nPlease open the app to restart location sharing!</string>
     <string name="error_location_sharing_start_notification_message">Location sharing can\'t start!\nPlease open the app again!</string>
+    <string name="error_device_registration_notification_message">Your device can not be registered!\nPlease restart location sharing!</string>
+    <string name="error_unverified_member_notification_message">Your membership could not be verified. Please try refreshing data or contact group admin.</string>
 
     <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
     <string name="error_crypto_key_missing_user">Your cryptographic keys are not properly configured.</string>
