@@ -36,6 +36,8 @@
     <string name="error_location_background_permission_missing_sheet_message_android11">Please grant **%s** location permission in order to **reliably and always** track and share your location with others.</string>
     <string name="error_location_service_missing_sheet_message">Please enable **device location** in order to locate your device.</string>
     <string name="error_notification_permission_missing_sheet_message">Please enable **notifications** in order to receive **important** alerts for your places.</string>
+    <string name="error_location_background_permission_missing_notification_message">Location sharing can\'t start because you are missing all time location permission!\nPlease open the app to restart location sharing!</string>
+    <string name="error_location_sharing_start_notification_message">Location sharing can\'t start!\nPlease open the app again!</string>
 
     <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
     <string name="error_crypto_key_missing_user">Your cryptographic keys are not properly configured.</string>
@@ -50,6 +52,7 @@
     <string name="notifications_channel_group_activity">Group activity</string>
     <string name="notifications_channel_push_sync">Notification sync</string>
     <string name="notifications_channel_data_sync">Data sync</string>
+    <string name="notifications_channel_info_message">System information</string>
 
     <string name="location_banner_info_stop">Stop sharing</string>
     <string name="location_banner_fix">Fix</string>

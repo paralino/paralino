@@ -11,6 +11,7 @@ import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
+import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.core.presentation.main.MainViewModel
@@ -71,6 +72,7 @@ object KoinIOS {
         pushSetupProvider: IPushProviderManager,
         placeNotificationPresenter: IPlaceActivityNotificationPresenter,
         groupActivityNotificationPresenter: IGroupActivityNotificationPresenter,
+        infoNotificationPresenter: IInfoMessagesNotificationPresenter,
         geofenceManager: IGeofenceManager,
         backendConfig: BackendConfig,
         remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
@@ -90,6 +92,7 @@ object KoinIOS {
                 single { pushSetupProvider }
                 factory { placeNotificationPresenter } bind IPlaceActivityNotificationPresenter::class
                 factory { groupActivityNotificationPresenter } bind IGroupActivityNotificationPresenter::class
+                factory { infoNotificationPresenter } bind IInfoMessagesNotificationPresenter::class
                 single { geofenceManager }
                 single { remoteModule(get()) }
                 single { backendConfig }

@@ -28,7 +28,7 @@ class GroupActivityNotificationPresenter(private val context: Context) : IGroupA
     }
 
 
-    override fun notify(notificationId: Int, title: String, message: String?, timeMillis: Long, timeInfo: String?) {
+    override fun notify(notificationId: Int, title: String, message: String?, timeMillis: Long?, timeInfo: String?) {
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
@@ -64,8 +64,7 @@ class GroupActivityNotificationPresenter(private val context: Context) : IGroupA
             .setColor(notificationColor)
             .setColorized(true)
             .setShowWhen(true)
-            .setWhen(timeMillis)
-
+            .setWhen(timeMillis ?: System.currentTimeMillis())
 
         registerNotificationChannel(context)
 

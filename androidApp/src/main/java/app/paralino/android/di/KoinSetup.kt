@@ -7,6 +7,7 @@ import app.paralino.android.crpyto.CryptoFrameworkLibsodium
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.notification.GroupActivityNotificationPresenter
+import app.paralino.android.notification.InfoMessagesNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.notification.PlaceNotificationPresenter
 import app.paralino.android.provider.ConnectionStatusProvider
@@ -28,6 +29,7 @@ import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
+import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
@@ -91,6 +93,7 @@ object KoinSetup {
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
         factory { PlaceNotificationPresenter(androidContext()) } bind IPlaceActivityNotificationPresenter::class
         factory { GroupActivityNotificationPresenter(androidContext()) } bind IGroupActivityNotificationPresenter::class
+        factory { InfoMessagesNotificationPresenter(androidContext()) } bind IInfoMessagesNotificationPresenter::class
 
         single<IUserApi> { UserApi(get()) }
         single<IDocumentsApi> { DocumentsApi(get()) }

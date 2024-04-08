@@ -11,12 +11,10 @@ import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
-import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
-import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.CoroutineScope
@@ -24,24 +22,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import kotlin.time.Duration.Companion.minutes
-
 
 class LocationService : Service() {
 
     private val serviceDefaultScope = CoroutineScope(Dispatchers.Default + Job())
-    private var realtimeJob: Job? = null
 
     private val notificationHandler: LocationNotificationHandler by inject()
     private val locationInitHandler: LocationInitHandler by inject()
@@ -66,8 +58,8 @@ class LocationService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        logg.v(this.hashCode().toString(), "Location service started - action: ${intent.action}")
         launchedInForeground = intent.getBooleanExtra(startedInForeground, false)
+        logg.v(this.hashCode().toString(), "Location service started - action: ${intent.action} - launched in foreground: $launchedInForeground")
         isServiceActive = true
         serviceDefaultScope.coroutineContext.cancelChildren()
         initTracking()
@@ -113,8 +105,9 @@ class LocationService : Service() {
                     forBackground = !launchedInForeground
                 )
             )
-            if(!deviceApiProvider.connectionStatusProvider.status.value.isOnline)
+            if(!deviceApiProvider.connectionStatusProvider.status.value.isOnline) {
                 add(ConditionErrorType.NETWORK)
+            }
         }
         val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0
         notificationHandler.notify(this, count, errors)

@@ -37,6 +37,8 @@
     <string name="error_location_background_permission_missing_sheet_message_android11">Molimo omogućite pristup lokaciji **%s** kako biste **pouzdano i uvijek** pratili i dijelili svoju lokaciju s drugima.</string>
     <string name="error_location_service_missing_sheet_message">Molimo omogućite **lokaciju uređaja** kako biste pronašli svoj uređaj.</string>
     <string name="error_notification_permission_missing_sheet_message">Molimo omogućite **obavijesti** kako biste primili **važna** obavijest za vaša mjesta.</string>
+    <string name="error_location_background_permission_missing_notification_message">Nemoguće pokrenuti dijeljenje lokacije jer nedostaje dozvola za stalnu lokaciju!\nPonovno pokrenite aplikaciju da bi nastavili dijeliti lokaciju!</string>
+    <string name="error_location_sharing_start_notification_message">Nemoguće pokrenuti dijeljenje lokacije!\nPonovno pokrenite aplikaciju!</string>
 
     <string name="error_crypto_key_missing">Podaci za šifriranje su nepotpuni (%s), molimo pokušajte osvježiti.</string>
     <string name="error_crypto_key_missing_user">Vaši kriptografski ključevi nisu pravilno konfigurirani.</string>
@@ -51,6 +53,7 @@
     <string name="notifications_channel_group_activity">Aktivnosti grupe</string>
     <string name="notifications_channel_push_sync">Sinkronizacija obavijesti</string>
     <string name="notifications_channel_data_sync">Sinkronizacija podataka</string>
+    <string name="notifications_channel_info_message">Informacije sistema</string>
 
     <string name="location_banner_info_stop">Zaustavi dijeljenje</string>
     <string name="location_banner_fix">Ispravi</string>

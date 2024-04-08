@@ -36,6 +36,7 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         pushSetupProvider: PushSetupProvider(),
         placeNotificationPresenter: PlaceNotificationPresenter(),
         groupActivityNotificationPresenter: GroupActivityNotificationPresenter(),
+        infoNotificationPresenter: InfoNotificationPresenter(),
         geofenceManager: GeofenceManager(),
         backendConfig: backendConfig,
         remoteModule: { sessionMonitor in AppwriteRemoteModule(sessionMonitor: sessionMonitor, backendConfig: backendConfig) },

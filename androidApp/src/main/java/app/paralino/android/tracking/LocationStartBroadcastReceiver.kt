@@ -6,22 +6,10 @@ import android.content.Intent
 import app.paralino.core.logg
 
 class LocationStartBroadcastReceiver: BroadcastReceiver() {
-
     override fun onReceive(context: Context?, intent: Intent?) {
         val appUpdated = intent?.action == Intent.ACTION_MY_PACKAGE_REPLACED
         val phoneBooted = intent?.action == Intent.ACTION_BOOT_COMPLETED
 
-        logg.v("location_service", "got broadcast: ${intent?.action}")
-        if(appUpdated || phoneBooted) {
-            try {
-                logg.v("location_service", "starting location service from action: ${intent?.action}")
-                // TODO review and test if starting service from contract subscription is enough
-//                context?.let { LocationService.start(context) }
-            } catch (e: IllegalStateException) {
-                // TODO show error to the user if location service can not be started
-                logg.tag("location_service").e("Not allowed to start location service from action: ${intent?.action}", e)
-            }
-        }
+        logg.v("location_service", "Waking the app from action: ${intent?.action}")
     }
-
 }
