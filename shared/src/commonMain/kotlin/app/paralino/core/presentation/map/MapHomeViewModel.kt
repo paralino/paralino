@@ -1,7 +1,5 @@
 package app.paralino.core.presentation.map
 
-import app.paralino.core.AppLifecycleType
-import app.paralino.core.CoreAppManager
 import app.paralino.core.MR
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
@@ -25,6 +23,7 @@ import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
@@ -78,7 +77,7 @@ class MapHomeViewModel constructor(
     private val realtimeEvents: RealtimeEventsMaker,
     private val userRepository: UserRepository,
     private val config: AppConfig,
-    private val coreAppManager: CoreAppManager,
+    private val deviceApiProvider: IDeviceApiProvider,
     val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
@@ -142,7 +141,7 @@ class MapHomeViewModel constructor(
             uiState.map { it.asReady()?.mapHomeScreenFocusType }
                 .filterNotNull()
                 .distinctUntilChanged(),
-            coreAppManager.appLifecycleState
+            deviceApiProvider.appLifecycleState
                 .map { it.current.activeOrInactive }
                 .distinctUntilChanged()
         ) { groupId, focusType, appState ->
