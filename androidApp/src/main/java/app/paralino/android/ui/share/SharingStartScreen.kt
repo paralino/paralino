@@ -1,6 +1,7 @@
 package app.paralino.android.ui.share
 
 import androidx.compose.runtime.Composable
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.presentation.groups.GroupItemState
@@ -24,6 +25,12 @@ fun SharingStartScreen(
         locationStatusProvider = vm.locationStatusProvider
     )
 
+    val notificationPermissionHandler = rememberNotificationsPermissionHandler(
+        appState = appState,
+        messageDispatcher = vm.messageDispatcher,
+        locationStatusProvider = vm.locationStatusProvider
+    )
+
     SharingStartScreenCore(
         appState = appState,
         groupId = groupId,
@@ -36,7 +43,7 @@ fun SharingStartScreen(
                 }
             }
         },
-        askNotificationPermission = { },
+        askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
         askLocationService = { permissionHandler.askLocationService() },
         askLocationPermission = { permissionHandler.askLocationPermission() },
         askBackgroundLocationPermission = { permissionHandler.askBackgroundLocationPermission() }

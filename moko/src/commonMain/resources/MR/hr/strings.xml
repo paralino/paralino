@@ -170,13 +170,15 @@
     <string name="groups_sharing_setting_speed_share">Brzina</string>
     <string name="groups_sharing_setting_elevation_share">Visina</string>
     <string name="groups_sharing_setting_network_share">Stanje mreže</string>
+    <string name="groups_sharing_setting_notifyOthers_title">Obavijesti članove</string>
+    <string name="groups_sharing_setting_notifyOthers_description">Ukoliko je opcija uključena, članovi grupe ce biti obaviješteni da dijeliš svoju lokaciju.</string>
     <string name="groups_sharing_button_start">Započni dijeljenje</string>
     <string name="groups_sharing_title">Podijeli lokaciju</string>
     <string name="groups_sharing_device_name_placeholder">Naziv uređaja (opcionalno)</string>
     <string name="groups_sharing_devices">Uređaji</string>
     <string name="groups_sharing_potential_error_title">Upozorenje</string>
     <string name="groups_sharing_potential_error_message">Za dijeljenje lokacije riješite sve greške:\n\n%s\n</string>
-    <string name="groups_sharing_potential_error_background_location_message">Vašu lokaciju nije moguće dijeliti ako ponovno pokrenete telefon!\n\nMolimo omogućite pristup lokaciji **uvijek** za pouzdano dijeljenje.</string>
+    <string name="groups_sharing_potential_error_background_location_message">Tvoju lokaciju nije moguće dijeliti ako ponovno pokreneš telefon!\n\nMolim omogući pristup lokaciji **uvijek** za pouzdano dijeljenje.</string>
     <string name="groups_sharing_error_unverified_group_title">Nepotvrđena grupa ili član</string>
     <string name="groups_sharing_error_unverified_group_message">Nemoguće je dijeliti lokaciju s nepotvrđenom grupom ili članom.\nPokušajte osvježiti podatke grupe.</string>
 

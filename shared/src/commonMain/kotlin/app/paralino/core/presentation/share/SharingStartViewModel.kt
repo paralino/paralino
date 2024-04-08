@@ -59,15 +59,21 @@ class SharingStartViewModel(
                 else
                     locationRepository.getLocationCountForMember(userMemberIdUseCase.getCurrentUserMemberIdForGroup(it.id)!!)
             }
-        ) { location, connection, locationCount ->
+        ) { locationStatus, connection, locationCount ->
             _uiState.update {
                 it.copy(
                     deviceName = userMemberIdUseCase.getDefaultDeviceName(groupId),
                     devicesCount = locationCount,
                     errors = buildList {
-                        addAll(location.getPossibleErrors(it.isLongTerm))
+                        addAll(locationStatus.getPossibleErrors(it.isLongTerm))
+
                         if (!connection.isOnline) {
                             add(ConditionErrorType.NETWORK)
+                        }
+                    },
+                    warnings = buildList {
+                        if (!locationStatus.isNotificationPermissionAllowed) {
+                            add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
                         }
                     }
                 )
@@ -169,7 +175,7 @@ class SharingStartViewModel(
                     groupId = group.id,
                     deviceName = _uiState.value.deviceName,
                     contract = contract,
-                    notifyOthers = true
+                    notifyOthers = _uiState.value.notifyOthers
                 )
             } catch (e: Exception) {
                 logg.e("Unable to register device", e)
@@ -255,6 +261,12 @@ class SharingStartViewModel(
     fun turnOnNetworkSharing(state: Boolean) {
         _uiState.update {
             it.copy(shareNetwork = state)
+        }
+    }
+
+    fun toggleNotifyOthers(state: Boolean) {
+        _uiState.update {
+            it.copy(notifyOthers = state)
         }
     }
 

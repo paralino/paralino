@@ -238,6 +238,7 @@ fun SharingStartScreenCore(
                         ConditionErrorType.GPS -> askLocationService()
                         ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
                         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
+                        ConditionErrorType.PERMISSION_NOTIFICATIONS -> askNotificationPermission()
                         ConditionErrorType.NETWORK -> vm.showSnackbar(
                             text = MR.strings.error_no_connection_snackbar.localizedString()
                         )
@@ -314,17 +315,18 @@ fun SharingStartScreenCore(
                 ),
         ) {
 
-            AnimatedVisibility(visible = state.errors.isNotEmpty()) {
+            AnimatedVisibility(visible = state.errorsAndWarnings.isNotEmpty()) {
                 Column(modifier = Modifier.animateContentSize()) {
                     Spacer(modifier = Modifier
                         .size(20.dp)
                         .onGloballyPositioned { scrollToPosition = it.positionInParent().y })
-                    state.errors.forEach {
+                    state.errorsAndWarnings.forEach {
                         ConditionErrorItem(data = it) {
                             when (it) {
                                 ConditionErrorType.GPS -> askLocationService()
                                 ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
                                 ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
+                                ConditionErrorType.PERMISSION_NOTIFICATIONS -> askNotificationPermission()
                                 ConditionErrorType.NETWORK -> vm.showSnackbar(
                                     text = MR.strings.error_no_connection_snackbar.localizedString()
                                 )
@@ -502,6 +504,25 @@ fun SharingStartScreenCore(
 //                )
             }
 
+            Spacer(modifier = Modifier.size(10.dp))
+
+            val notifyOthersState by rememberSeekbarState(
+                key = state,
+                LargeSeekbarSwitchState.SeekbarSwitchState(
+                    seekbarState = null,
+                    switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
+                )
+            )
+            LargeSeekbarSwitch(
+                modifier = Modifier.fillMaxWidth(),
+                icon = CoreAppIcons.NotificationsActive.asPainterResource(),
+                title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
+                description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
+                state = notifyOthersState,
+                onStateChange = {
+                    vm.toggleNotifyOthers(it)
+                }
+            )
         }
     }
 
