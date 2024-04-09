@@ -248,11 +248,7 @@ dependencies {
     ossImplementation 'com.mapbox.maps:android:10.8.1'
     ossImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
 
-    googleImplementation("com.google.firebase:firebase-messaging-ktx:23.4.1") {
-        exclude group: 'com.google.firebase', module: 'firebase-core'
-        exclude group: 'com.google.firebase', module: 'firebase-analytics'
-        exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'
-    }
+    googleImplementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
 
     implementation 'com.cossacklabs.com:themis:0.14.0'
     // TODO fork and use own updated sodium
