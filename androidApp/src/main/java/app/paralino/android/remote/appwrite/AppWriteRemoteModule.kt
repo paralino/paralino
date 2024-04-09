@@ -30,7 +30,7 @@ class AppWriteRemoteModule(
     private val client: Client by lazy {
         Client(
             context = app,
-            endPoint = backendConfig.endpoint,
+            endpoint = backendConfig.endpoint,
             selfSigned = false
         )
             .setEndpoint(backendConfig.endpoint)

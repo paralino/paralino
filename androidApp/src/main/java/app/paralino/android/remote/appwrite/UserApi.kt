@@ -19,7 +19,7 @@ class UserApi constructor(
 
     override suspend fun login(email: String, password: String): UserSession {
         return remoteModule.execute {
-            account.createEmailSession(email, password).parseSession()
+            account.createEmailPasswordSession(email, password).parseSession()
         }
     }
 
@@ -58,8 +58,7 @@ class UserApi constructor(
             account.updateRecovery(
                 userId = userId,
                 secret = secret,
-                password = password,
-                passwordAgain = password
+                password = password
             )
         }
     }

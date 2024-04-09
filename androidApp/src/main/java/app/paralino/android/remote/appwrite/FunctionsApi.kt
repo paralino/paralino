@@ -5,6 +5,7 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.api.BaseFunctionsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import io.appwrite.enums.ExecutionMethod
 
 class FunctionsApi constructor(
     private val remoteModule: AppWriteRemoteModule,
@@ -18,7 +19,7 @@ class FunctionsApi constructor(
                 body = data,
                 async = true,
                 path = function.path,
-                method = function.method,
+                method = ExecutionMethod.entries.first { it.value == function.method },
                 headers = mutableMapOf(clientHeader)
             ).id
         }
@@ -31,7 +32,7 @@ class FunctionsApi constructor(
                 body = data,
                 async = false,
                 path = function.path,
-                method = function.method,
+                method = ExecutionMethod.entries.first { it.value == function.method },
                 headers = mutableMapOf(clientHeader)
             )
 
