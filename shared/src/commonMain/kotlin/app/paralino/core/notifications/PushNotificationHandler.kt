@@ -1,6 +1,6 @@
 package app.paralino.core.notifications
 
-import app.paralino.core.config
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
@@ -19,7 +19,8 @@ class PushNotificationHandler constructor(
     private val groupMemberActivityPush: GroupActivityNotificationsHandler,
     private val locationRequestPush: LocationRequestNotificationHandler,
     private val docApi: IDocumentsApi,
-): LimitedExecutionRepository() {
+    private val config: AppConfig,
+) : LimitedExecutionRepository() {
 
     private val executionKey = "notification_sync"
 
@@ -102,26 +103,29 @@ class PushNotificationHandler constructor(
             .v("Got ${notifications.size} notifications documents and ${locationFocusDocuments.size} location focus documents")
 
         notifications
-            .filter { it.deviceId == config.deviceId }
+            .filter { it.isForThisDevice() }
             .also {
                 logg.tag("push_notifications")
                     .v("Processing ${notifications.size} notifications documents for this device")
             }
             .forEach {
-                processNotification(it) { push ->
-                    try {
-                        logg.tag("push_notifications").v("Delete push notification document")
-                        docApi.deleteDocument(
-                            databaseType = BackendDatabaseType.DATA,
-                            collectionId = BackendResourceIDs.collectionPushNotificationID,
-                            documentId = push.id
-                        )
-                        delay(400)
-                    } catch (e: Exception) {
-                        logg.tag("push_notifications")
-                            .e("Error deleting push notification ${push.id}", e)
+                processNotification(
+                    push = it,
+                    onDelete = { push ->
+                        try {
+                            logg.tag("push_notifications").v("Delete push notification document")
+                            docApi.deleteDocument(
+                                databaseType = BackendDatabaseType.DATA,
+                                collectionId = BackendResourceIDs.collectionPushNotificationID,
+                                documentId = push.id
+                            )
+                            delay(400)
+                        } catch (e: Exception) {
+                            logg.tag("push_notifications")
+                                .w("Error deleting push notification ${push.id} - ${e.message}")
+                        }
                     }
-                }
+                )
             }
 
         locationFocusDocuments
@@ -130,13 +134,13 @@ class PushNotificationHandler constructor(
                 // take latest document for each group
                 it.value.maxBy { it.updatedAt }
             }
-            .map { it.asValidPushNotification(deviceId = config.deviceId) }
+            .map { it.asValidPushNotification() }
             .also {
                 logg.tag("push_notifications")
                     .v("Processing ${it.size} location focus documents")
             }
             .forEach {
-                processNotification(it) {}
+                processNotification(push = it)
             }
 
         logg.tag("push_notifications").v("Processing notifications done")
@@ -144,10 +148,10 @@ class PushNotificationHandler constructor(
 
     private suspend fun processNotification(
         push: PushNotificationRaw,
-        onDelete: suspend (PushNotificationRaw) -> Unit
+        onDelete: (suspend (PushNotificationRaw) -> Unit)? = null
     ) {
 
-        if (push.deviceId != config.deviceId) {
+        if (!push.isForThisDevice()) {
             return
         }
 
@@ -156,52 +160,56 @@ class PushNotificationHandler constructor(
 
         if (push.isExpired) {
             logg.tag("push_notifications").v("Push notification expired, ignore")
-            onDelete(push)
+            onDelete?.invoke(push)
             return
         }
 
         when (push.pushType) {
             PushNotificationType.PLACE_ALERT -> {
                 placePush.processPlaceActivity(push)
-                onDelete(push)
+                onDelete?.invoke(push)
             }
 
             PushNotificationType.GROUP_MEMBER_ADDED -> {
                 groupMemberActivityPush.processMemberAdded(push)
-                onDelete(push)
+                onDelete?.invoke(push)
             }
 
             PushNotificationType.GROUP_MEMBER_DELETED -> {
                 groupMemberActivityPush.processMemberDeleted(push)
-                onDelete(push)
+                onDelete?.invoke(push)
             }
 
             PushNotificationType.LOCATION_REQUEST, PushNotificationType.LOCATION_FOCUS -> {
                 locationRequestPush.process(push)
-                onDelete(push)
+                onDelete?.invoke(push)
             }
 
             PushNotificationType.PLACE_CREATED -> {
                 placePush.processPlaceCreated(push)
-                onDelete(push)
+                onDelete?.invoke(push)
             }
 
             PushNotificationType.PLACE_UPDATED -> {
                 placePush.processPlaceUpdated(push)
-                onDelete(push)
+                onDelete?.invoke(push)
             }
 
             PushNotificationType.PLACE_DELETED -> {
                 placePush.processPlaceDeleted(push)
-                onDelete(push)
+                onDelete?.invoke(push)
             }
 
             PushNotificationType.LOCATION_STARTED -> {
                 groupMemberActivityPush.processLocationSharingStarted(push)
-                onDelete(push)
+                onDelete?.invoke(push)
             }
 
             null -> {}
         }
+    }
+
+    private fun PushNotificationRaw.isForThisDevice(): Boolean {
+        return this.deviceId.isNullOrBlank() || this.deviceId == config.deviceId || this.deviceId == config.sessionId
     }
 }

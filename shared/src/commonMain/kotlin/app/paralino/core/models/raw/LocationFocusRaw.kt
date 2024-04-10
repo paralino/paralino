@@ -19,12 +19,12 @@ data class LocationFocusRaw(
     val ownerUserId: String,
     val groupId: String,
 ) {
-    fun asValidPushNotification(deviceId: String): PushNotificationRaw {
+    fun asValidPushNotification(): PushNotificationRaw {
         return PushNotificationRaw(
             id = id,
             createdAt = createdAt,
             expiresAt = updatedAt.plus(20.minutes),
-            deviceId = deviceId,
+            deviceId = null,
             type = PushNotificationType.LOCATION_FOCUS.key,
             importance = PushNotificationImportance.NORMAL.key,
             content = LocationRequestNotificationPayload(
