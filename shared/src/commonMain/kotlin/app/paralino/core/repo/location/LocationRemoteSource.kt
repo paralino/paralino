@@ -14,6 +14,7 @@ import app.paralino.core.models.raw.LocationDeletePayload
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
+import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
@@ -147,7 +148,7 @@ class LocationRemoteSource constructor(
             val locations = documentApi.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
-                keyValues = listOf("groupId" to member.groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = member.groupId))
             ).map { MemberLocationRaw.from(it) }
 
             MemberWithLocationsRaw(

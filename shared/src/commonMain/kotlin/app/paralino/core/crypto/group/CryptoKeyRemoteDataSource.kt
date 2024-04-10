@@ -6,6 +6,7 @@ import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
+import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.utils.extensions.blocking
 
@@ -28,7 +29,7 @@ class CryptoKeyRemoteDataSource constructor(
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
                 collectionId = remoteConfig.resourceIds.collectionGroupKeysID,
-                keyValues = listOf("groupId" to groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parseGroupKey() }
         }
     }
@@ -47,7 +48,7 @@ class CryptoKeyRemoteDataSource constructor(
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
                 collectionId = remoteConfig.resourceIds.collectionGroupMembersKeysID,
-                keyValues = listOf("groupId" to groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parseGroupMemberKey() }
         }
     }
@@ -66,7 +67,7 @@ class CryptoKeyRemoteDataSource constructor(
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
                 collectionId = remoteConfig.resourceIds.collectionGroupDeviceKeysID,
-                keyValues = listOf("groupId" to groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parseGroupDeviceKey() }
         }
     }
@@ -85,7 +86,7 @@ class CryptoKeyRemoteDataSource constructor(
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
                 collectionId = remoteConfig.resourceIds.collectionPersonalGroupKeysID,
-                keyValues = listOf("groupId" to groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parseGPersonalGroupKey() }
         }
     }

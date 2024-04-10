@@ -17,6 +17,7 @@ import app.paralino.core.models.raw.GroupPlaceSettingRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.models.raw.PlaceEventPayload
 import app.paralino.core.models.raw.UpdatePlacePayload
+import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
@@ -90,7 +91,7 @@ class PlacesRemoteSource(
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
                     collectionId = BackendResourceIDs.collectionPlacesSettingsID,
-                    keyValues = listOf("placeId" to placeId)
+                    queries = listOf(BackendQuery.Equals(key = "placeId", value = placeId))
                 ).first().parsePlaceSettings()
             } catch (e: Exception) {
                 null
@@ -108,13 +109,13 @@ class PlacesRemoteSource(
             val places = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = BackendResourceIDs.collectionPlacesID,
-                keyValues = listOf("groupId" to groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parsePlace() }
 
             val settings = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = BackendResourceIDs.collectionPlacesSettingsID,
-                keyValues = listOf("groupId" to groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parsePlaceSettings() }
 
             places.map { place ->

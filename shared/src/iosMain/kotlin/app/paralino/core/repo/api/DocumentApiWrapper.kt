@@ -37,11 +37,11 @@ class DocumentApiWrapper(
     override suspend fun listDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
-        keyValues: List<Pair<String, Any>>,
+        queries: List<BackendQuery>,
         limit: Int,
         onNewValues: (List<Map<String, Any>>) -> Boolean
     ) {
-        api.listDocuments(databaseType, collectionId, keyValues, limit, onNewValues).getOrThrow()
+        api.listDocuments(databaseType, collectionId, queries, limit, onNewValues).getOrThrow()
     }
 
     override suspend fun deleteDocument(
@@ -77,7 +77,7 @@ interface IDocumentApiIOS {
     suspend fun listDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
-        keyValues: List<Pair<String, Any>>,
+        queries: List<BackendQuery>,
         limit: Int,
         onNewValues: (List<Map<String, Any>>) -> Boolean
     ): Payload<Unit>

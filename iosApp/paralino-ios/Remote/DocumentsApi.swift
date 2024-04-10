@@ -54,26 +54,25 @@ class DocumentsApi: IDocumentApiIOS {
     func listDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
-        keyValues: [KotlinPair<NSString, AnyObject>],
+        queries: [any BackendQuery],
         limit: Int32,
         onNewValues: @escaping ([[String : Any]]) -> KotlinBoolean
     ) async throws -> Payload<KotlinUnit> {
         await remoteModule.execute { module in
             var cursor: String = ""
             repeat {
-                var queries: [String] = []
-                keyValues.forEach { element in
-                    queries.append(Query.equal(element.first! as String, value: element.second!))
-                }
-                queries.append(Query.limit(Int(limit)))
+                var mappedQueries: [String] = []
+                
+                mappedQueries.append(contentsOf: buildQueries(queries: queries))
+                mappedQueries.append(Query.limit(Int(limit)))
                 if !cursor.isEmpty {
-                    queries.append(Query.cursorAfter(cursor))
+                    mappedQueries.append(Query.cursorAfter(cursor))
                 }
                 
                 let results = try await module.database.listDocuments(
                     databaseId: databaseType.id,
                     collectionId: collectionId,
-                    queries: queries
+                    queries: mappedQueries
                 )
                 
                 let shouldLoadMore = onNewValues(results.documents.map { try! $0.parseDocument() }) == true
@@ -96,6 +95,19 @@ class DocumentsApi: IDocumentApiIOS {
                 data: data
             ).parseDocument()
             return NSDictionary(dictionary: result)
+        }
+    }
+    
+    private func buildQueries(queries: [any BackendQuery]) -> [String] {
+        queries.compactMap { element in
+            if let element = element as? shared.BackendQueryOR {
+                return Query.or(buildQueries(queries: element.queries))
+            } else if let element = element as? shared.BackendQueryEquals {
+                return Query.equal(element.key, value: element.value)
+            } else if let element = element as? shared.BackendQueryIsNull {
+                return Query.isNull(element.key)
+            }
+            return nil
         }
     }
 }

@@ -8,6 +8,7 @@ import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.raw.LocationFocusRaw
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.models.raw.PushNotificationType
+import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.base.RemotePreference
 import kotlinx.coroutines.delay
@@ -32,7 +33,10 @@ class PushNotificationHandler constructor(
 
         try {
             triggerRemoteMaybe(
-                remotePreference = RemotePreference.CACHE(key = executionKey, timeMillis = 5.seconds.inWholeMilliseconds),
+                remotePreference = RemotePreference.CACHE(
+                    key = executionKey,
+                    timeMillis = 5.seconds.inWholeMilliseconds
+                ),
                 remote = { checkForPushNotificationsImpl() }
             )
         } catch (e: Exception) {
@@ -47,10 +51,24 @@ class PushNotificationHandler constructor(
 
     private suspend fun checkForPushNotificationsImpl() {
         logg.tag("push_notifications").v("Start checking push notifications")
+
+        val deviceQuery = listOfNotNull(config.deviceId, config.sessionId)
+            .filter { it.isNotBlank() }
+            .takeIf { it.isNotEmpty() }
+            ?.let { BackendQuery.Equals(key = "deviceId", value = it) }
+
         val notifications = docApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
             collectionId = BackendResourceIDs.collectionPushNotificationID,
-            keyValues = listOfNotNull(config.deviceId.takeIf { it.isNotBlank() }?.let { "deviceId" to it })
+            queries = buildList {
+                if (deviceQuery != null) {
+                    BackendQuery.OR(
+                        queries = listOf(deviceQuery, BackendQuery.IsNull(key = "deviceId"))
+                    )
+                } else {
+                    add(BackendQuery.IsNull(key = "deviceId"))
+                }
+            }
         )
             .also {
                 logg.tag("push_notifications").v("Got ${it.size} notifications documents")
@@ -90,21 +108,21 @@ class PushNotificationHandler constructor(
                     .v("Processing ${notifications.size} notifications documents for this device")
             }
             .forEach {
-            processNotification(it) { push ->
-                try {
-                    logg.tag("push_notifications").v("Delete push notification document")
-                    docApi.deleteDocument(
-                        databaseType = BackendDatabaseType.DATA,
-                        collectionId = BackendResourceIDs.collectionPushNotificationID,
-                        documentId = push.id
-                    )
-                    delay(400)
-                } catch (e: Exception) {
-                    logg.tag("push_notifications")
-                        .e("Error deleting push notification ${push.id}", e)
+                processNotification(it) { push ->
+                    try {
+                        logg.tag("push_notifications").v("Delete push notification document")
+                        docApi.deleteDocument(
+                            databaseType = BackendDatabaseType.DATA,
+                            collectionId = BackendResourceIDs.collectionPushNotificationID,
+                            documentId = push.id
+                        )
+                        delay(400)
+                    } catch (e: Exception) {
+                        logg.tag("push_notifications")
+                            .e("Error deleting push notification ${push.id}", e)
+                    }
                 }
             }
-        }
 
         locationFocusDocuments
             .groupBy { it.groupId }

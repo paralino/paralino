@@ -23,13 +23,13 @@ interface IDocumentsApi {
     suspend fun listAllDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
-        keyValues: List<Pair<String, Any>> = emptyList(),
+        queries: List<BackendQuery> = emptyList(),
     ): List<Map<String, Any>> {
         val result = mutableListOf<Map<String, Any>>()
         listDocuments(
             databaseType = databaseType,
             collectionId = collectionId,
-            keyValues = keyValues,
+            queries = queries,
             limit = 50,
             onNewValues = {
                 result.addAll(it)
@@ -42,11 +42,16 @@ interface IDocumentsApi {
     suspend fun listDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
-        keyValues: List<Pair<String, Any>> = emptyList(),
+        queries: List<BackendQuery> = emptyList(),
         limit: Int = 50,
         onNewValues: (List<Map<String, Any>>) -> Boolean,
     )
 
     suspend fun deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String)
+}
 
+sealed interface BackendQuery {
+    data class OR(val queries: List<BackendQuery>): BackendQuery
+    data class Equals(val key: String, val value: Any): BackendQuery
+    data class IsNull(val key: String): BackendQuery
 }

@@ -21,6 +21,7 @@ import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.models.raw.UpdateGroupPayload
 import app.paralino.core.models.user.BlockListModelData
+import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
@@ -143,13 +144,13 @@ class GroupsRemoteSource constructor(
         val members = api.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
-            keyValues = listOf("groupId" to groupId)
+            queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
         ).map { it.parseGroupMember() }
 
         val settings = api.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
-            keyValues = listOf("groupId" to groupId)
+            queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
         ).map { it.parseGroupSettings() }
             .takeIf { it.size == 1 && it.first().ownerUserId == config.userId }
             ?.firstOrNull()
@@ -157,7 +158,7 @@ class GroupsRemoteSource constructor(
         val locations = api.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
-            keyValues = listOf("groupId" to groupId)
+            queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
         ).map { it.parseMemberLocation() }
 
         return GroupWithMembersRaw(
