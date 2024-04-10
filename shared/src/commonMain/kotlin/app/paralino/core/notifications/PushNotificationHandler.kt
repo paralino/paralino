@@ -63,8 +63,10 @@ class PushNotificationHandler constructor(
             collectionId = BackendResourceIDs.collectionPushNotificationID,
             queries = buildList {
                 if (deviceQuery != null) {
-                    BackendQuery.OR(
-                        queries = listOf(deviceQuery, BackendQuery.IsNull(key = "deviceId"))
+                    add(
+                        BackendQuery.OR(
+                            queries = listOf(deviceQuery, BackendQuery.IsNull(key = "deviceId"))
+                        )
                     )
                 } else {
                     add(BackendQuery.IsNull(key = "deviceId"))
@@ -106,7 +108,19 @@ class PushNotificationHandler constructor(
             .filter { it.isForThisDevice() }
             .also {
                 logg.tag("push_notifications")
-                    .v("Processing ${notifications.size} notifications documents for this device")
+                    .v("Got ${it.size} notifications documents for this device")
+            }
+            .let {
+                // if push have eventId, only use one of each with same event
+                // otherwise use all of them
+                val withoutEvent = it.filter { it.eventId.isNullOrBlank() }
+                val withEvent = it.filter { !it.eventId.isNullOrBlank() }
+                    .distinctBy { it.eventId }
+                withoutEvent + withEvent
+            }
+            .also {
+                logg.tag("push_notifications")
+                    .v("Processing ${it.size} notifications documents for this device")
             }
             .forEach {
                 processNotification(

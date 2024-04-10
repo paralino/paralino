@@ -25,6 +25,7 @@ data class LocationFocusRaw(
             createdAt = createdAt,
             expiresAt = updatedAt.plus(20.minutes),
             deviceId = null,
+            eventId = "$groupId$ownerUserId",
             type = PushNotificationType.LOCATION_FOCUS.key,
             importance = PushNotificationImportance.NORMAL.key,
             content = LocationRequestNotificationPayload(

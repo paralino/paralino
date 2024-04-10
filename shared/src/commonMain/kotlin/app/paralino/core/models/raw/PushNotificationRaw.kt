@@ -15,6 +15,7 @@ data class PushNotificationRaw constructor(
     val createdAt: Instant,
     val expiresAt: Instant?,
     val deviceId: String?,
+    val eventId: String?,
     val type: String,
     val importance: String,
     val content: String?,
@@ -52,6 +53,7 @@ data class PushNotificationRaw constructor(
                     }
                 },
                 deviceId = map["deviceId"] as? String?,
+                eventId = map["eventId"] as? String?,
                 type = map["type"] as String,
                 importance = map["importance"] as String,
                 content = map["content"] as? String?,
