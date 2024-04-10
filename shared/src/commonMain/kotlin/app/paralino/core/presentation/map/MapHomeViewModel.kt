@@ -737,7 +737,9 @@ class MapHomeViewModel constructor(
                                             isWaitingForUser = error == null,
                                             hasRequestError = error != null,
                                             hasDeviceUnreachableError = error?.asRemoteException()?.code == 404,
-                                            hasDeviceSetupWrongError = error?.asRemoteException()?.type == "device_setup_invalid",
+                                            hasDeviceSetupWrongError = error?.asRemoteException()?.type.let {
+                                                it == "device_setup_invalid" || it == "push_message_failed"
+                                            },
                                             lastLocationRequest = nowUTC()
                                         )
                                     )
@@ -765,7 +767,8 @@ class MapHomeViewModel constructor(
             val anyObsoleteRequests = _uiState.value.asReady()?.members?.any { member ->
                 member.actions.locationRequest?.let { request ->
                     val isWaiting = request.isWaitingForUser
-                    val isObsolete = request.lastLocationRequest?.plus(locationRequestDuration)?.let { it < nowUTC() } ?: true
+                    val isObsolete = request.lastLocationRequest?.plus(locationRequestDuration)
+                        ?.let { it < nowUTC() } ?: true
                     isWaiting && isObsolete
                 } ?: false
             } ?: false
