@@ -72,7 +72,7 @@
     <string name="location_banner_error_offline">Uređaj je izvan mreže</string>
 
     <string name="settings_section_account_title">Račun</string>
-    <string name="settings_section_personal_code_title">Osobni kod</string>
+    <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Neaktivni kodovi</string>
     <string name="settings_account_edit_profile">Uredi profil</string>
     <string name="settings_account_edit_email">Promijeni e-mail</string>
@@ -189,23 +189,23 @@
 
     <string name="groups_sharing_duration_type_infinite">Uvijek uključeno</string>
 
-    <string name="invite_create_button">STVORI OSOBNI KOD</string>
+    <string name="invite_create_button">KREIRAJ PARALINO.ID</string>
     <string name="invite_create_new_button">STVORI NOVI KOD</string>
     <string name="toast_copy_invite_code">Kod kopiran</string>
     <string name="invite_delete_alert_title">Jeste li sigurni da želite onemogućiti ovaj kod?</string>
-    <string name="invite_manage_empty_description">Nemate aktivan **osobni kod**.\nStvorite jedan kako biste se pridružili drugim grupama i sigurno dijelili svoju lokaciju s prijateljima.</string>
+    <string name="invite_manage_empty_description">Nemate aktivan **Paralino.ID**.\nStvorite jedan kako biste se pridružili drugim grupama i sigurno dijelili svoju lokaciju s prijateljima.</string>
     <string name="invite_manage_description">Podijelite ovaj kod kako biste se pridružili grupi i sigurno dijelili svoju lokaciju.</string>
-    <string name="invite_connect_code_placeholder">Osobni kod korisnika</string>
+    <string name="invite_connect_code_placeholder">Korisnikov Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">Dodajete **%1$s** u grupu **%2$s**.\nNakon toga možete sigurno dijeliti svoju lokaciju.</string>
     <string name="invite_connect_button_addToGroup">DODAJ U GRUPU</string>
     <string name="invite_connect_button_pickGroup">Odaberite grupu</string>
     <string name="invite_connect_alert_pickGroup">Molimo odaberite grupu</string>
     <string name="invite_connect_alert_wrongCode">Molimo provjerite svoj kod ili pokušajte s drugim</string>
-    <string name="invite_connect_title">Za dodavanje novog člana, unesite njihov **osobni kod**</string>
+    <string name="invite_connect_title">Za dodavanje novog člana, unesite njihov **Paralino.ID**</string>
     <string name="invite_section_title_group">Grupa</string>
     <string name="invite_section_title_user">Korisnik</string>
     <string name="invite_code_button_copy">Kopiraj</string>
-    <string name="invite_code_button_share">Podijeli kod</string>
+    <string name="invite_code_button_share">Podijeli</string>
     <string name="invite_code_button_activate">Aktiviraj</string>
 
     <string name="group_members_item_remove_button">UKLONI</string>
