@@ -14,6 +14,7 @@ import app.paralino.android.notification.SyncNotificationProvider
 import app.paralino.core.config
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.getOrThrow
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
@@ -34,7 +35,7 @@ class PushTokenSyncWorker(
             val token = FirebaseMessaging.getInstance().token.await()
             logg.tag("push_notifications").v("Got token from firebase: $token")
             config.pushTokenUnsynced = token
-            userDataUpdate.userDataUpdate.registerPushTokenIfNeeded()
+            userDataUpdate.userDataUpdate.registerPushTokenIfNeeded()?.getOrThrow()
         } catch (e: Exception) {
             logg.tag("push_notifications").e("Error syncing push token", e)
             return if (runAttemptCount < 3) Result.retry() else Result.failure()

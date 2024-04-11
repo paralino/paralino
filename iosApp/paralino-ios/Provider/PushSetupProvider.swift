@@ -36,7 +36,14 @@ class PushSetupProvider: IPushProviderManager {
                 do {
                     // TODO replace with correct token
                     shared.AppConfig.companion.instance.pushTokenUnsynced = "NOOP_IOS_TOKEN"
-                    try await self?.userDataUpdate.registerPushTokenIfNeeded()
+                    let response = try await self?.userDataUpdate.registerPushTokenIfNeeded()
+                    let payload = PayloadSwift<KotlinUnit>(data: response)
+                    switch payload {
+                    case .loading: break
+                    case .success: Logr.v(tag: "push_sync", message: "Push token synced")
+                    case .error(error: let error):
+                        Logr.v(tag: "push_sync", message: "error syncing push token: \(error)")
+                    }
                 } catch let error {
                     Logr.v(tag: "push_sync", message: "error syncing push token: \(error)")
                 }
