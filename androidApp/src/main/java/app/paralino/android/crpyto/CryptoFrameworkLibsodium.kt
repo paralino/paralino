@@ -1,5 +1,6 @@
 package app.paralino.android.crpyto
 
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KeyPair
@@ -11,11 +12,19 @@ import com.goterl.lazysodium.interfaces.PwHash
 import com.goterl.lazysodium.interfaces.SecretBox
 import com.goterl.lazysodium.utils.HexMessageEncoder
 import com.goterl.lazysodium.utils.Key
+import io.viascom.nanoid.NanoId
 import java.nio.charset.StandardCharsets
 
 class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
     private val lazySodium = LazySodiumAndroid(SodiumAndroid(), StandardCharsets.UTF_8, HexMessageEncoder())
+
+    override fun createRandomId(length: Int, alphabet: AlphabetType): String {
+        return NanoId.generate(
+            size = length,
+            alphabet = alphabet.alphabet
+        )
+    }
 
     override fun createNewSymmetricKey(): String {
         return lazySodium.cryptoSecretBoxKeygen().asHexString

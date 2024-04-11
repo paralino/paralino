@@ -254,6 +254,7 @@ dependencies {
     // TODO fork and use own updated sodium
     implementation "com.goterl:lazysodium-android:5.1.0@aar"
     implementation 'net.java.dev.jna:jna:5.14.0@aar'
+    implementation 'io.viascom.nanoid:nanoid:1.0.1'
 
     implementation "com.mikepenz:aboutlibraries-compose:10.5.1"
     implementation 'io.sentry:sentry-android:6.33.0'

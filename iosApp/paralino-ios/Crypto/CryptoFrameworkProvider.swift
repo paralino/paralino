@@ -35,6 +35,22 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         }
     }
     
+    func createRandomId(length: Int32, alphabet: AlphabetType) -> Payload<NSString> {
+        return execute {
+            var randomID = ""
+            for _ in 0..<length {
+                randomID.append(randomCharacter(from: alphabet.alphabet))
+            }
+            return NSString(string: randomID)
+        }
+    }
+    
+    private func randomCharacter(from string: String) -> Character {
+        let randomNum = Int(arc4random_uniform(UInt32(string.count)))
+        let randomIndex = string.index(string.startIndex, offsetBy: randomNum)
+        return string[randomIndex]
+    }
+    
     func createNewSymmetricKey() -> Payload<NSString> {
         return execute {
             NSString(string: try sodium.secretBox.key().toHex(sodium))

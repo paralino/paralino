@@ -1,5 +1,6 @@
 package app.paralino.core.provider
 
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KeyPair
@@ -10,6 +11,11 @@ import app.paralino.core.models.getOrThrow
 class CryptoServiceWrapperIOS(
     private val cryptoIOS: ICryptoServiceProviderIOS
 ): ICryptoServiceProvider {
+
+    override fun createRandomId(length: Int, alphabet: AlphabetType): String {
+        return cryptoIOS.createRandomId(length, alphabet).getOrThrow()
+    }
+
     override fun createNewSymmetricKey(): String {
         return cryptoIOS.createNewSymmetricKey().getOrThrow()
     }
@@ -82,6 +88,7 @@ class CryptoServiceWrapperIOS(
 }
 
 interface ICryptoServiceProviderIOS {
+    fun createRandomId(length: Int, alphabet: AlphabetType): Payload<String>
     fun createNewSymmetricKey(): Payload<String>
     fun createNewCryptoKeyPair(): Payload<KeyPair>
     fun createNewSignatureKeyPair(): Payload<KeyPair>
