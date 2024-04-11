@@ -12,9 +12,11 @@ import UIKit
 
 class DeviceApiProvider: IDeviceApiProvider {
     
-    override init(backendConfig: BackendConfig, locationStatusProvider: ILocationStatusProvider, connectionStatusProvider: IConnectionStatusProvider) {
-        UIDevice.current.isBatteryMonitoringEnabled = true
-        super.init(backendConfig: backendConfig, locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider)
+    private let backendConfig: BackendConfig
+    
+    init(backendConfig: BackendConfig, locationStatusProvider: ILocationStatusProvider, connectionStatusProvider: IConnectionStatusProvider) {
+        self.backendConfig = backendConfig
+        super.init(locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider)
     }
     
     override func logout() async throws {
@@ -45,10 +47,6 @@ class DeviceApiProvider: IDeviceApiProvider {
     
     override var deviceType: DeviceType {
         DeviceTypeIOS.shared
-    }
-    
-    override var randomUUID: String {
-        UUID().uuidString
     }
     
     override var defaultDeviceName: String {

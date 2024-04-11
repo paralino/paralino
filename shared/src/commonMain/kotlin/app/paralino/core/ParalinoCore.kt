@@ -1,5 +1,6 @@
 package app.paralino.core
 
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
@@ -7,6 +8,7 @@ import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.crypto.user.UserCryptoKeyLocalDataSource
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
@@ -40,6 +42,7 @@ import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
@@ -59,6 +62,7 @@ import app.paralino.core.notifications.LocationRequestNotificationHandler
 import app.paralino.core.notifications.PlaceActivityNotificationHandler
 import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.Logr
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.group.GroupRepository
@@ -102,10 +106,30 @@ object ParalinoCore {
             )
         }
 
-        val deviceProvider = koinApp.koin.get<IDeviceApiProvider>()
-        deviceProvider.initialize()
+        initializeApp(koinApp)
 
         return koinApp
+    }
+
+    private fun initializeApp(koinApp: KoinApplication) {
+        val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
+        val cryptoCore = koinApp.koin.get<CryptoCore>()
+        val backendConfig = koinApp.koin.get<BackendConfig>()
+
+        AppConfig.instance = deviceApiProvider.createConfig()
+        connectionStatus = deviceApiProvider.connectionStatusProvider
+
+        val logr = Logr
+        logr.setLogr(deviceApiProvider.createSystemLogr())
+        logg = logr
+
+        if(config.deviceIdSeed.isBlank()) {
+            config.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
+        }
+
+        if(backendConfig.serverUrl.isBlank() || backendConfig.projectId.isBlank()) {
+            logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
+        }
     }
 }
 
