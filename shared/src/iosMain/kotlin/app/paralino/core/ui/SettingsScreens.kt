@@ -29,6 +29,7 @@ object SettingsScreens {
         openProfileDetails: () -> Unit,
         openPersonalCodes: () -> Unit,
         openBlockList: () -> Unit,
+        openProfileRawScreen: () -> Unit,
         openLicences: () -> Unit,
         onShare: (String) -> Unit,
     ) = ComposeUIViewController {
@@ -42,6 +43,7 @@ object SettingsScreens {
                 openPersonalCodes = openPersonalCodes,
                 openBlockList = openBlockList,
                 openLicences = openLicences,
+                openProfileRawScreen = openProfileRawScreen,
                 onShareCode = onShare
             )
         }
@@ -50,7 +52,6 @@ object SettingsScreens {
     fun AccountScreenVC(
         vm: SettingsViewModel,
         onShowDialog: (MainAlertDialog?) -> Unit,
-        openProfileRawScreen: () -> Unit,
         openConvertAccount: () -> Unit,
         openEditProfile: () -> Unit,
         openChangeEmail: () -> Unit,
@@ -63,7 +64,6 @@ object SettingsScreens {
                 viewModel = vm,
                 openConvertAccount = openConvertAccount,
                 onShowDialog = onShowDialog,
-                openProfileRawScreen = openProfileRawScreen,
                 openEditProfile = openEditProfile,
                 openChangePassword = openChangePassword,
                 openChangeEmail = openChangeEmail,

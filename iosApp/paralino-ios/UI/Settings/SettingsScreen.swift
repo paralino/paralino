@@ -36,8 +36,14 @@ struct SettingsScreen: View {
                     openBlockList: {
                         path.append(.settings(.blocklist))
                     },
+                    openProfileRawScreen: {
+                        path.append(.settings(.rawData(type: .UserPresentation())))
+                    },
                     openLicences: {
                         
+                    },
+                    onShare: { data in
+                        shareText = ShareText(text: data)
                     }
                 )
             }

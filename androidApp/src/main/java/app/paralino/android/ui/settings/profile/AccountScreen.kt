@@ -28,13 +28,6 @@ fun AccountScreen(
         appState = appState,
         viewModel = viewModel,
         onShowDialog = { showDialog = it },
-        openProfileRawScreen = {
-            appState.navController.navigate(
-                AppScreen.Settings.ProfileDetails.RawDataScreen.route(
-                    RawPresentationDataType.UserPresentation
-                )
-            )
-        },
         openConvertAccount = {
             appState.navController.navigate(
                 AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature

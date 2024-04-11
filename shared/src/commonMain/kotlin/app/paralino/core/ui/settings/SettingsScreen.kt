@@ -57,6 +57,7 @@ fun SettingsScreenCore(
     openConvertAccount: () -> Unit,
     openProfileDetails: () -> Unit,
     openPersonalCodes: () -> Unit,
+    openProfileRawScreen: () -> Unit,
     openBlockList: () -> Unit,
     openLicences: () -> Unit,
     onShareCode: (String) -> Unit,
@@ -101,13 +102,6 @@ fun SettingsScreenCore(
 
         if (readyState != null) {
             SettingsActionItem(
-                name = stringResource(MR.strings.settings_section_account_title),
-                icon = CoreAppIcons.AccountCircle.asPainterResource()
-            ) {
-                openProfileDetails()
-            }
-
-            SettingsActionItem(
                 name = stringResource(MR.strings.settings_section_personal_code_title),
                 icon = CoreAppIcons.Key.asPainterResource()
             ) {
@@ -119,6 +113,13 @@ fun SettingsScreenCore(
                 icon = CoreAppIcons.Block.asPainterResource()
             ) {
                 openBlockList()
+            }
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.raw_data_screen_title),
+                icon = CoreAppIcons.Security.asPainterResource()
+            ) {
+                openProfileRawScreen()
             }
         }
 

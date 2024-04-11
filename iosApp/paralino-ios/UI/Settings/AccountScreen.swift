@@ -13,6 +13,7 @@ struct AccountScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.settingsVM)
     @State var alertDialog: AlertDialogData? = nil
+    @State var shareText: ShareText?
     
     var body: some View {
         ZStack {
@@ -22,9 +23,6 @@ struct AccountScreen: View {
                     vm: appState.vm,
                     onShowDialog: { dialog in
                         alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
-                    },
-                    openProfileRawScreen: {
-                        path.append(.settings(.rawData(type: .UserPresentation())))
                     },
                     openConvertAccount: {
                         path.append(.settings(.convertAccount))
@@ -37,6 +35,9 @@ struct AccountScreen: View {
                     },
                     openChangePassword: {
                         path.append(.settings(.changePassword))
+                    },
+                    onShare: { data in
+                        shareText = ShareText(text: data)
                     }
                 )
             }
@@ -64,6 +65,9 @@ struct AccountScreen: View {
                     }
                 }
             }
+        }
+        .sheet(item: $shareText) { shareText in
+            ActivityView(text: shareText.text)
         }
     }
 }

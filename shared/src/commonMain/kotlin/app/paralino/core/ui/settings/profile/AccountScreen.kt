@@ -75,7 +75,6 @@ fun AccountScreenCore(
     appState: CoreUiState,
     viewModel: SettingsViewModel,
     onShowDialog: (MainAlertDialog?) -> Unit,
-    openProfileRawScreen: () -> Unit,
     openConvertAccount: () -> Unit,
     openEditProfile: () -> Unit,
     openChangeEmail: () -> Unit,
@@ -107,32 +106,15 @@ fun AccountScreenCore(
 
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .verticalScroll(state = rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SettingsBigHeader(
-                name = stringResource(MR.strings.settings_section_account_title),
-                bottomPadding = if (accountState.data?.userState?.isGuestUser == true) 0.dp
-                else 20.dp
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(
-                onClick = {
-                    openProfileRawScreen()
-                }
-            ) {
-                Icon(
-                    painter = CoreAppIcons.Security.asPainterResource(),
-                    tint = AppColors.accent,
-                    contentDescription = null
-                )
-            }
-        }
+        SettingsBigHeader(
+            name = stringResource(MR.strings.settings_section_account_title),
+            bottomPadding = if (accountState.data?.userState?.isGuestUser == true) 0.dp
+            else 20.dp
+        )
 
         when (val state = accountState) {
             is Payload.Success -> {
@@ -271,12 +253,11 @@ fun AccountInfoHeader(
         Surface(
             modifier = modifier
                 .fillMaxWidth()
+                .clickable (enabled = canClickOnHeader) { onClick() }
                 .padding(top = 10.dp, bottom = 40.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colors.primary,
-            elevation = 16.dp,
-            onClick = onClick,
-            enabled = canClickOnHeader
+            elevation = 16.dp
         ) {
             Row(
                 modifier = modifier.padding(10.dp),
@@ -284,16 +265,16 @@ fun AccountInfoHeader(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     if (isGuestUser) {
-                        val backgroundColor = MaterialTheme.colors.error
-                        val contentColor = contentColorFor(backgroundColor = backgroundColor)
+                        val backgroundColor = MaterialTheme.colors.onError
+                        val contentColor = MaterialTheme.colors.onPrimary
                         Row(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(percent = 50))
+                                .clickable { onGuestAccountClick() }
                                 .background(
                                     backgroundColor,
                                     RoundedCornerShape(percent = 50)
                                 )
-                                .clickable { onGuestAccountClick() }
                                 .padding(horizontal = 8.dp, vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {

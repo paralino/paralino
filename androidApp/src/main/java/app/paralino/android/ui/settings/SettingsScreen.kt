@@ -8,6 +8,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.settings.SettingSectionInfo
 import app.paralino.core.ui.settings.SettingsScreenCore
@@ -38,6 +39,13 @@ fun SettingsScreen(
         },
         openBlockList = {
             appState.navController.navigate(AppScreen.Settings.BlockList.routeSignature)
+        },
+        openProfileRawScreen = {
+            appState.navController.navigate(
+                AppScreen.Settings.ProfileDetails.RawDataScreen.route(
+                    RawPresentationDataType.UserPresentation
+                )
+            )
         },
         openLicences = {
             appState.navController.navigate(AppScreen.Settings.Licences.routeSignature)
