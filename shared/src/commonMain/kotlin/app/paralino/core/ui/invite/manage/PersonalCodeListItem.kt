@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -113,15 +114,18 @@ fun PersonalCodeItem(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(70.dp)
-                        .padding(horizontal = 10.dp)
+                        .padding(horizontal = 4.dp, vertical = 20.dp)
                         .align(Alignment.CenterHorizontally),
                     text = code,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 46.sp,
-                    letterSpacing = 3.sp,
-                    maxLines = 1,
-                    textAlign = TextAlign.Center
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 36.sp,
+                        letterSpacing = 3.sp,
+                        lineHeight = 36.sp,
+                        textAlign = TextAlign.Center,
+                        lineBreak = LineBreak.Heading
+                    ),
+                    maxLines = 2
                 )
 
                 Spacer(modifier = Modifier.size(10.dp))
