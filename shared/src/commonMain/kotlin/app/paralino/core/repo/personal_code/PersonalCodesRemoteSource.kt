@@ -1,5 +1,6 @@
 package app.paralino.core.repo.personal_code
 
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
@@ -90,7 +91,7 @@ class PersonalCodesRemoteSource constructor(
 
     suspend fun tryCreatingCode(user: UserMe, userMeData: UserMeData?) {
 
-        val personalCode = createPersonalCodeString()
+        val personalCode = cryptoCore.randomId(length = 8, alphabet = AlphabetType.SAFE)
         val derivedCode = cryptoCore.derivePassword(personalCode)
         val myKey = userKeyRepo.latestKeyPair()
 
@@ -241,22 +242,6 @@ class PersonalCodesRemoteSource constructor(
                 keyId = keyId
             )
         }
-    }
-
-    private fun createPersonalCodeString(): String {
-        // TODO key could be in hex format - use more characters
-        // create crypto function to return random key encoded with wider character set
-        val key = cryptoCore.getNewSymmetricKey()
-        val derivedKey = cryptoCore.derivePassword(key).backupPassword
-
-        // without similar characters: 0,O,1,I
-        val code = derivedKey
-            .replace(Regex("[^a-zA-Z0-9]"), "")
-            .uppercase()
-            .replace(Regex("[O01I]"), "")
-            .take(8)
-
-        return code
     }
 
     suspend fun getMyPersonalCodes(): List<PersonalCodeRaw> {
