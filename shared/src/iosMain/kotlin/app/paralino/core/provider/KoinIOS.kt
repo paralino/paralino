@@ -114,7 +114,7 @@ object KoinIOS {
         return module {
             factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
             factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), config, get(), get()) }
-            factory { SettingsViewModel(get(), get(), get(), get(), get(), config) }
+            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), config) }
             factory { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
