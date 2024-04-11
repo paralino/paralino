@@ -154,7 +154,7 @@ val coreModule = module {
     single { ActiveSharingEngine(get(), get(), get(), get(), get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
-    factory { CreateAccountUseCase(get(), get(), get(), get()) }
+    factory { CreateAccountUseCase(get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
     factory { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
