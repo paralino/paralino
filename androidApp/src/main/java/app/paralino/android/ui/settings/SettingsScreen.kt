@@ -41,6 +41,9 @@ fun SettingsScreen(
         },
         openLicences = {
             appState.navController.navigate(AppScreen.Settings.Licences.routeSignature)
+        },
+        onShareCode = {
+            context.share(it)
         }
     )
 }

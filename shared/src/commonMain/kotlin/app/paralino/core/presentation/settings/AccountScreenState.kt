@@ -19,6 +19,7 @@ data class UserState constructor(
     val name: String,
     val image: ImageModel?,
     val email: String,
+    val personalCode: String?,
     val isGuestUser: Boolean,
     val errorItem: ConditionErrorType?,
 )

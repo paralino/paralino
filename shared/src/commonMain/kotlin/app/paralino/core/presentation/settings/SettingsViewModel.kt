@@ -12,6 +12,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -30,6 +31,7 @@ class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository,
     private val appConfigRepository: AppConfigRepository,
+    private val personalCodeRepo: PersonalCodesRepository,
     private val deviceApiProvider: IDeviceApiProvider,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val config: AppConfig
@@ -44,8 +46,9 @@ class SettingsViewModel(
     init {
         combine(
             userRepo.getAndRefreshUser(),
-            appConfigRepository.getConfig()
-        ) { userState, appConfig ->
+            appConfigRepository.getConfig(),
+            personalCodeRepo.getAndRefreshMyPersonalCodes()
+        ) { userState, appConfig, personalCodes ->
             _accountState.update {
                 when (userState) {
                     Resource.NotInitialized -> it
@@ -57,6 +60,7 @@ class SettingsViewModel(
                                         name = userState.data.name,
                                         image = userState.data.data?.userImage,
                                         email = userState.data.email,
+                                        personalCode = personalCodes.firstOrNull { it.isStillValid() }?.formattedCode,
                                         isGuestUser = userState.data.isGuestUser,
                                         errorItem = if (userState.data.needsEmailVerification)
                                             ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)

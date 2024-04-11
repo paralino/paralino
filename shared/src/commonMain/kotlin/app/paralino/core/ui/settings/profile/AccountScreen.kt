@@ -13,15 +13,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
@@ -35,8 +38,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
@@ -49,10 +56,10 @@ import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
@@ -73,6 +80,7 @@ fun AccountScreenCore(
     openEditProfile: () -> Unit,
     openChangeEmail: () -> Unit,
     openChangePassword: () -> Unit,
+    onShare: (String) -> Unit,
 ) {
 
     MessageDispatcherEffect(viewModel, appState)
@@ -132,7 +140,9 @@ fun AccountScreenCore(
                     name = state.data.userState.name,
                     email = state.data.userState.email,
                     image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
+                    personalCode = state.data.userState.personalCode,
                     isGuestUser = state.data.userState.isGuestUser,
+                    canClickOnHeader = false,
                     errorItem = state.data.userState.errorItem,
                     onGuestAccountClick = {
                         if (state.data.canUseEmail) {
@@ -148,7 +158,9 @@ fun AccountScreenCore(
                             else -> {}
                         }
                     },
-                    onCopy = { viewModel.copyToClipboard(it) }
+                    onCopy = { viewModel.copyToClipboard(it) },
+                    onShareCode = { onShare(it) },
+                    onClick = {}
                 )
 
                 SettingsActionItem(
@@ -238,86 +250,147 @@ fun AccountScreenCore(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AccountInfoHeader(
     modifier: Modifier = Modifier,
     name: String,
     email: String,
     image: ImageModel,
+    personalCode: String?,
     isGuestUser: Boolean,
+    canClickOnHeader: Boolean,
     errorItem: ConditionErrorType?,
     onErrorItemClick: (ConditionErrorType) -> Unit,
     onGuestAccountClick: () -> Unit,
-    onCopy: (String) -> Unit
+    onCopy: (String) -> Unit,
+    onClick: () -> Unit,
+    onShareCode: (String) -> Unit,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth()
-    ) {
-
-        if (isGuestUser) {
-            val backgroundColor = MaterialTheme.colors.error
-            val contentColor = contentColorFor(backgroundColor = backgroundColor)
+    Column {
+        Surface(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp, bottom = 40.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colors.primary,
+            elevation = 16.dp,
+            onClick = onClick,
+            enabled = canClickOnHeader
+        ) {
             Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(percent = 50))
-                    .background(
-                        backgroundColor,
-                        RoundedCornerShape(percent = 50)
-                    )
-                    .clickable { onGuestAccountClick() }
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                modifier = modifier.padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = CoreAppIcons.Incognito.asPainterResource(),
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = contentColor
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = stringResource(MR.strings.settings_account_guest_badge).annotatedBold(),
-                    style = MaterialTheme.typography.caption.copy(color = contentColor)
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    if (isGuestUser) {
+                        val backgroundColor = MaterialTheme.colors.error
+                        val contentColor = contentColorFor(backgroundColor = backgroundColor)
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(percent = 50))
+                                .background(
+                                    backgroundColor,
+                                    RoundedCornerShape(percent = 50)
+                                )
+                                .clickable { onGuestAccountClick() }
+                                .padding(horizontal = 8.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = CoreAppIcons.Incognito.asPainterResource(),
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = contentColor
+                            )
+                            Spacer(modifier = Modifier.size(4.dp))
+                            Text(
+                                text = stringResource(MR.strings.settings_account_guest_badge).annotatedBold(),
+                                style = MaterialTheme.typography.caption.copy(color = contentColor)
+                            )
+                        }
+                        Spacer(modifier = Modifier.size(10.dp))
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ImageModelImage(
+                            imageModel = image,
+                            modifier = Modifier.size(60.dp),
+                            useBackgroundForEmoji = false
+                        )
+                        Spacer(modifier = Modifier.size(10.dp))
+                        Text(
+                            text = name,
+                            style = MaterialTheme.typography.h6,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    if (personalCode != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                        ) {
+                            IconButton(
+                                onClick = { onShareCode(personalCode) }
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(16.dp),
+                                    painter = CoreAppIcons.Share.asPainterResource(),
+                                    contentDescription = null
+                                )
+                            }
+                            Column {
+                                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                                    Text(
+                                        modifier = Modifier.padding(start = 4.dp),
+                                        text = stringResource(MR.strings.settings_section_personal_code_title),
+                                        style = TextStyle(
+                                            fontWeight = FontWeight.Light,
+                                            fontSize = 12.sp,
+                                        )
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier.padding(start = 4.dp),
+                                    text = personalCode,
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 18.sp,
+                                        letterSpacing = 2.sp,
+                                        lineHeight = 18.sp,
+                                        textAlign = TextAlign.Start,
+                                        lineBreak = LineBreak.Heading
+                                    ),
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (canClickOnHeader) {
+                    Icon(
+                        modifier = Modifier.width(20.dp),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        tint = MaterialTheme.colors.onPrimary.copy(alpha = ContentAlpha.disabled),
+                        contentDescription = null
+                    )
+                }
             }
-            Spacer(modifier = Modifier.size(10.dp))
         }
-
-        Spacer(modifier = Modifier.size(20.dp))
-
-        ImageModelImage(
-            modifier = Modifier.size(100.dp),
-            imageModel = image
-        )
-
-        Spacer(modifier = Modifier.size(10.dp))
-
-        Text(
-            text = name,
-            style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold)
-        )
-
-        Spacer(modifier = Modifier.size(10.dp))
-
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-            if (!isGuestUser && email.isNotBlank()) {
-                Text(
-                    text = "Email: **$email**".annotatedBold(),
-                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.size(10.dp))
 
         if (errorItem != null) {
+            Spacer(modifier = Modifier.size(10.dp))
             ConditionErrorItem(
                 data = errorItem
             ) {
                 onErrorItemClick(errorItem)
             }
+            Spacer(modifier = Modifier.size(10.dp))
         }
-
-        Spacer(modifier = Modifier.size(20.dp))
     }
 }

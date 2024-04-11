@@ -58,7 +58,8 @@ fun SettingsScreenCore(
     openProfileDetails: () -> Unit,
     openPersonalCodes: () -> Unit,
     openBlockList: () -> Unit,
-    openLicences: () -> Unit
+    openLicences: () -> Unit,
+    onShareCode: (String) -> Unit,
 ) {
 
     MessageDispatcherEffect(viewModel, appState)
@@ -82,7 +83,9 @@ fun SettingsScreenCore(
                 name = readyState.userState.name,
                 email = "",
                 image = readyState.userState.image ?: ImageModel.emoji(Emojis.robot),
+                personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
+                canClickOnHeader = true,
                 errorItem = null,
                 onGuestAccountClick = {
                     if (readyState.canUseEmail) {
@@ -90,7 +93,9 @@ fun SettingsScreenCore(
                     }
                 },
                 onErrorItemClick = { },
-                onCopy = { viewModel.copyToClipboard(it) }
+                onCopy = { viewModel.copyToClipboard(it) },
+                onShareCode = onShareCode,
+                onClick = openProfileDetails
             )
         }
 
