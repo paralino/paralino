@@ -38,6 +38,7 @@ import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.presentation.settings.AccountScreenUiEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
@@ -69,7 +70,8 @@ fun SettingsScreenCore(
     Column(
         modifier = Modifier
             .verticalScroll(state = rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 20.dp)
+            .padding(horizontal = 20.dp)
+            .padding(top = 20.dp, bottom = 60.dp)
     ) {
         SettingsBigHeader(
             name = stringResource(MR.strings.title_settings),
@@ -82,7 +84,6 @@ fun SettingsScreenCore(
         if (readyState != null) {
             AccountInfoHeader(
                 name = readyState.userState.name,
-                email = "",
                 image = readyState.userState.image ?: ImageModel.emoji(Emojis.robot),
                 personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
@@ -94,7 +95,7 @@ fun SettingsScreenCore(
                     }
                 },
                 onErrorItemClick = { },
-                onCopy = { viewModel.copyToClipboard(it) },
+                onCopy = { viewModel.onEvent(AccountScreenUiEvent.Copy(it)) },
                 onShareCode = onShareCode,
                 onClick = openProfileDetails
             )
@@ -128,7 +129,7 @@ fun SettingsScreenCore(
             icon = CoreAppIcons.ShareLocation.asPainterResource(),
             type = SettingsActionItemType.Switch(accountState.data?.boostEnabled ?: false)
         ) {
-            viewModel.toggleBoost()
+            viewModel.onEvent(AccountScreenUiEvent.ToggleLocationBoost)
         }
 
         SettingSectionInfo(

@@ -19,14 +19,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +47,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.AccountScreenEvent
+import app.paralino.core.presentation.settings.AccountScreenUiEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
@@ -60,9 +59,9 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
@@ -74,7 +73,6 @@ import kotlinx.coroutines.flow.collectLatest
 fun AccountScreenCore(
     appState: CoreUiState,
     viewModel: SettingsViewModel,
-    onShowDialog: (MainAlertDialog?) -> Unit,
     openConvertAccount: () -> Unit,
     openEditProfile: () -> Unit,
     openChangeEmail: () -> Unit,
@@ -86,29 +84,14 @@ fun AccountScreenCore(
     var showDangerZoneContent by remember { mutableStateOf(false) }
     val accountState by viewModel.accountState.collectAsState(Payload.Loading)
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.events.collectLatest { event ->
-            when (event) {
-                is AccountScreenEvent.Error -> {
-                    viewModel.showSnackbar(event.error.errorString())
-                }
-
-                AccountScreenEvent.EmailVerificationSent -> {
-                    viewModel.showSnackbar(MR.strings.info_email_check_instructions.localizedString())
-                }
-
-                null -> {
-                    /* do nothing */
-                }
-            }
-        }
-    }
+    AccountScreenDialogs(dialog = accountState.data?.alertDialog, onEvent = viewModel::onEvent)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(state = rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 20.dp)
+            .padding(horizontal = 20.dp)
+            .padding(top = 20.dp, bottom = 60.dp)
     ) {
         SettingsBigHeader(
             name = stringResource(MR.strings.settings_section_account_title),
@@ -120,7 +103,6 @@ fun AccountScreenCore(
             is Payload.Success -> {
                 AccountInfoHeader(
                     name = state.data.userState.name,
-                    email = state.data.userState.email,
                     image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
                     personalCode = state.data.userState.personalCode,
                     isGuestUser = state.data.userState.isGuestUser,
@@ -134,13 +116,13 @@ fun AccountScreenCore(
                     onErrorItemClick = {
                         when (it) {
                             is ConditionErrorType.EMAIL_VERIFICATION -> {
-                                onShowDialog(MainAlertDialog.VerifyEmail(state.data.userState.email))
+                                viewModel.onEvent(AccountScreenUiEvent.SendEmailVerification)
                             }
 
                             else -> {}
                         }
                     },
-                    onCopy = { viewModel.copyToClipboard(it) },
+                    onCopy = { viewModel.onEvent(AccountScreenUiEvent.Copy(it)) },
                     onShareCode = { onShare(it) },
                     onClick = {}
                 )
@@ -180,7 +162,7 @@ fun AccountScreenCore(
                         iconTint = MaterialTheme.colors.error,
                         type = SettingsActionItemType.Action
                     ) {
-                        onShowDialog(MainAlertDialog.Logout)
+                        viewModel.onEvent(AccountScreenUiEvent.Logout)
                     }
                 }
 
@@ -193,7 +175,7 @@ fun AccountScreenCore(
                             iconTint = MaterialTheme.colors.error,
                             type = SettingsActionItemType.Action
                         ) {
-                            onShowDialog(MainAlertDialog.DeleteAccount)
+                            viewModel.onEvent(AccountScreenUiEvent.DeleteAccount)
                         }
                     }
                 }
@@ -232,12 +214,57 @@ fun AccountScreenCore(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun AccountScreenDialogs(
+    dialog: MainAlertDialog?,
+    onEvent: (AccountScreenUiEvent) -> Unit
+) {
+
+    when (val dialog = dialog) {
+        is MainAlertDialog.Logout -> {
+            MainAlertDialog.Logout.Show {
+                onEvent(AccountScreenUiEvent.HideDialog)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    onEvent(AccountScreenUiEvent.LogoutConfirm)
+                }
+            }
+        }
+
+        is MainAlertDialog.DeleteAccount -> {
+            MainAlertDialog.DeleteAccount.Show {
+                when (it) {
+                    MainAlertDialog.Buttons.buttonOk -> onEvent(AccountScreenUiEvent.DeleteAccountConfirm)
+                    else -> onEvent(AccountScreenUiEvent.HideDialog)
+                }
+            }
+        }
+
+        is MainAlertDialog.DeleteAccountConfirm -> {
+            MainAlertDialog.DeleteAccountConfirm.Show {
+                onEvent(AccountScreenUiEvent.HideDialog)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    onEvent(AccountScreenUiEvent.DeleteAccountSecondConfirm)
+                }
+            }
+        }
+
+        is MainAlertDialog.VerifyEmail -> {
+            dialog.Show {
+                onEvent(AccountScreenUiEvent.HideDialog)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    onEvent(AccountScreenUiEvent.ConfirmSendEmailVerification)
+                }
+            }
+        }
+
+        else -> {}
+    }
+}
+
 @Composable
 fun AccountInfoHeader(
     modifier: Modifier = Modifier,
     name: String,
-    email: String,
     image: ImageModel,
     personalCode: String?,
     isGuestUser: Boolean,
@@ -253,7 +280,7 @@ fun AccountInfoHeader(
         Surface(
             modifier = modifier
                 .fillMaxWidth()
-                .clickable (enabled = canClickOnHeader) { onClick() }
+                .clickable(enabled = canClickOnHeader) { onClick() }
                 .padding(top = 10.dp, bottom = 40.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colors.primary,

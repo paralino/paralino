@@ -2,6 +2,7 @@ package app.paralino.core.presentation.settings
 
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 
 data class AccountScreenState constructor(
@@ -10,6 +11,7 @@ data class AccountScreenState constructor(
     val logoutState: Payload<Unit>? = null,
     val deleteAccountState: Payload<Unit>? = null,
     val versionName: String,
+    val alertDialog: MainAlertDialog? = null,
     val boostEnabled: Boolean = false
 ) {
     val loadingAction get() = logoutState is Payload.Loading || deleteAccountState is Payload.Loading
@@ -25,6 +27,18 @@ data class UserState constructor(
 )
 
 sealed class AccountScreenEvent() {
-    data class Error(val error: Throwable): AccountScreenEvent()
     object EmailVerificationSent: AccountScreenEvent()
+}
+
+sealed class AccountScreenUiEvent() {
+    data object HideDialog: AccountScreenUiEvent()
+    data object Logout: AccountScreenUiEvent()
+    data object LogoutConfirm: AccountScreenUiEvent()
+    data object DeleteAccount: AccountScreenUiEvent()
+    data object DeleteAccountConfirm: AccountScreenUiEvent()
+    data object DeleteAccountSecondConfirm: AccountScreenUiEvent()
+    data object SendEmailVerification: AccountScreenUiEvent()
+    data object ConfirmSendEmailVerification: AccountScreenUiEvent()
+    data object ToggleLocationBoost: AccountScreenUiEvent()
+    data class Copy(val content: String): AccountScreenUiEvent()
 }

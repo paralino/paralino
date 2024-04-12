@@ -51,7 +51,6 @@ object SettingsScreens {
 
     fun AccountScreenVC(
         vm: SettingsViewModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
         openConvertAccount: () -> Unit,
         openEditProfile: () -> Unit,
         openChangeEmail: () -> Unit,
@@ -63,7 +62,6 @@ object SettingsScreens {
                 appState = it,
                 viewModel = vm,
                 openConvertAccount = openConvertAccount,
-                onShowDialog = onShowDialog,
                 openEditProfile = openEditProfile,
                 openChangePassword = openChangePassword,
                 openChangeEmail = openChangeEmail,
