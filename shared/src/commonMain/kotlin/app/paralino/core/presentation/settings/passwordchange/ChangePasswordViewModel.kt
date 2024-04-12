@@ -1,18 +1,26 @@
 package app.paralino.core.presentation.settings.passwordchange
 
+import app.paralino.core.MR
 import app.paralino.core.domain.user.ChangePasswordUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.asRemoteException
+import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 
 class ChangePasswordViewModel(
     private val changePassword: ChangePasswordUseCase,
@@ -48,9 +56,7 @@ class ChangePasswordViewModel(
                 .firstOrNull { !it.result }
 
         if (firstValidation != null) {
-            coroutineScope.launch {
-                _eventChannel.send(ChangePasswordScreenEvent.ValidationError(firstValidation))
-            }
+            showSnackbar(getFormValidationErrorText(validation = firstValidation.type))
         } else {
             changePassword.changePassword(oldPassword = passwordOld, newPassword = passwordNew)
                 .mapToPayload { it }
@@ -62,13 +68,13 @@ class ChangePasswordViewModel(
                         is Payload.Error -> {
                             _uiState.update { it.copy(actionLoading = null) }
                             if (result.exception.asRemoteException() is InvalidRequestException) {
-                                _eventChannel.send(ChangePasswordScreenEvent.CredentialsError)
+                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                             } else if (result.exception.asRemoteException() is UnauthorizedException) {
-                                _eventChannel.send(ChangePasswordScreenEvent.CredentialsError)
+                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                             } else if (result.exception is DecryptionException) {
-                                _eventChannel.send(ChangePasswordScreenEvent.CredentialsError)
+                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                             } else {
-                                _eventChannel.send(ChangePasswordScreenEvent.Error(result.exception))
+                                showSnackbar(result.exception.errorString())
                             }
                         }
                         is Payload.Success -> {
