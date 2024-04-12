@@ -48,6 +48,7 @@ struct SettingsScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.title_settings.localizedString())
         }
         .sheet(item: $shareText) { shareText in
             ActivityView(text: shareText.text)

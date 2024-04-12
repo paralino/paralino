@@ -38,6 +38,7 @@ struct AccountScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.settings_section_account_title.localizedString())
         }
         .sheet(item: $shareText) { shareText in
             ActivityView(text: shareText.text)
