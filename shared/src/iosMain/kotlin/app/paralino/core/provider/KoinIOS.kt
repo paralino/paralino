@@ -121,7 +121,7 @@ object KoinIOS {
                 SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get()) }
-            factory { PersonalCodeViewModel(get(), get()) }
+            factory { PersonalCodeViewModel(get(), get(), get()) }
             factory { (groupId: String?, code: String?) ->
                 MemberInviteViewModel(
                     groupId = groupId,
