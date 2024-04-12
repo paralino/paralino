@@ -191,9 +191,9 @@
     <string name="groups_sharing_duration_type_infinite">Always on</string>
 
     <string name="invite_create_button">CREATE PARALINO.ID</string>
-    <string name="invite_create_new_button">CREATE TEMPORARY ID</string>
+    <string name="invite_create_new_button">CREATE ALTERNATIVE ID</string>
     <string name="toast_copy_invite_code">Code copied</string>
-    <string name="invite_delete_alert_title">Are you sure you want to disable this code?</string>
+    <string name="invite_delete_alert_title">Are you sure you want to disable this code?\n\nYou will not be able to join any new groups but you can always come back and enable Paralino.ID again.</string>
     <string name="invite_manage_empty_description">You don\'t have an active **Paralino.ID**.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
     <string name="invite_manage_description">Share this code to join a group and start securely sharing your location.</string>
     <string name="invite_connect_code_placeholder">User Paralino.ID</string>

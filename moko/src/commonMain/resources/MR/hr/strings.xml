@@ -190,9 +190,9 @@
     <string name="groups_sharing_duration_type_infinite">Uvijek uključeno</string>
 
     <string name="invite_create_button">KREIRAJ PARALINO.ID</string>
-    <string name="invite_create_new_button">KREIRAJ PRIVREMENI KOD</string>
+    <string name="invite_create_new_button">KREIRAJ DODATNI KOD</string>
     <string name="toast_copy_invite_code">Kod kopiran</string>
-    <string name="invite_delete_alert_title">Jeste li sigurni da želite onemogućiti ovaj kod?</string>
+    <string name="invite_delete_alert_title">Sigurno želiš onemogućiti ovaj kod?\n\nNećeš se moći pridružiti novoj grupi ali uvijek možeš ponovno omogućiti svoj Paralino.ID.</string>
     <string name="invite_manage_empty_description">Nemate aktivan **Paralino.ID**.\nStvorite jedan kako biste se pridružili drugim grupama i sigurno dijelili svoju lokaciju s prijateljima.</string>
     <string name="invite_manage_description">Podijelite ovaj kod kako biste se pridružili grupi i sigurno dijelili svoju lokaciju.</string>
     <string name="invite_connect_code_placeholder">Korisnikov Paralino.ID</string>
