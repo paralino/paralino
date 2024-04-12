@@ -26,6 +26,7 @@ struct EditProfileScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.settings_account_edit_profile.localizedString())
         }
         .photoPickerSheet($bottomSheet) { image in
             appState.vm.onImageChange(image: image)

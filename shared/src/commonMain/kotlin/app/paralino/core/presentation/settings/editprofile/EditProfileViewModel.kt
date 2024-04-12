@@ -7,6 +7,8 @@ import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -42,9 +44,10 @@ class EditProfileViewModel constructor(
         }
 
         if (!nameValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(EditProfileScreenEvent.ValidationError(nameValidation))
-            }
+            val errorText = getFormValidationErrorText(
+                validation = nameValidation.type
+            )
+            messageDispatcher.showSnackbar(errorText)
         } else {
             val userData = UserMeData(userImage = image, userName = name)
             updateUserData.updateUserData(userData)
@@ -56,7 +59,7 @@ class EditProfileViewModel constructor(
                         }
                         is Payload.Error -> {
                             _uiState.update { it.copy(actionLoading = null) }
-                            _eventChannel.send(EditProfileScreenEvent.Error(result.exception))
+                            messageDispatcher.showSnackbar(result.exception.errorString())
                         }
                         is Payload.Success -> {
                             _uiState.update { it.copy(actionLoading = false) }
