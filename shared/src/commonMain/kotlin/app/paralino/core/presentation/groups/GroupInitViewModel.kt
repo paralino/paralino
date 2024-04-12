@@ -65,6 +65,7 @@ class GroupInitViewModel(
                     userName = it.codeData.data?.ownerName ?: "---",
                     canDisable = false,
                     isValid = true,
+                    isActionLoading = false
                 )
             }
 

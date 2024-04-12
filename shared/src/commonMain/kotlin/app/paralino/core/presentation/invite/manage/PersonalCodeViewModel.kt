@@ -11,7 +11,14 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 
 class PersonalCodeViewModel(
     private val personalCodeRepo: PersonalCodesRepository,
@@ -40,19 +47,20 @@ class PersonalCodeViewModel(
                                 ?: ImageModel.emoji(Emojis.robot),
                             userName = it.codeData.data?.ownerName ?: "---",
                             canDisable = it.isStillValid(),
-                            isValid = it.isStillValid()
+                            isValid = it.isStillValid(),
+                            isActionLoading = false
                         )
                     }
 
                 val maxAlternativeIDs = config?.maxAlternativeIDs ?: 0
+                val inactiveCodes = codeData.filter { !it.isValid }
                 Payload.Success(
                     PersonalCodeScreenState(
                         activeCode = codeData.firstOrNull { it.isValid },
-                        inactiveCodes = codeData.filter { !it.isValid },
-                        canCreateAlternativeId = maxAlternativeIDs > 0 && codeData.size > 0 && maxAlternativeIDs > codeData.size.minus(1),
+                        inactiveCodes = inactiveCodes,
+                        canCreateAlternativeId = maxAlternativeIDs > 0 && codeData.size > 0 && maxAlternativeIDs > inactiveCodes.size,
                         maxCodes = maxAlternativeIDs,
-                        createLoading = false,
-                        actionLoading = false
+                        createLoading = false
                     )
                 )
             }
@@ -92,12 +100,28 @@ class PersonalCodeViewModel(
             .onEach { result ->
                 when (result) {
                     Payload.Loading -> {
-                        _uiState.update { it.mapSuccess { it.copy(actionLoading = true) } }
+                        _uiState.update {
+                            it.mapSuccess {
+                                it.copy(
+                                    activeCode = it.activeCode?.copy(
+                                        isActionLoading = true
+                                    )
+                                )
+                            }
+                        }
                     }
 
                     is Payload.Error -> {
                         _eventChannel.send(PersonalCodeScreenEvent.Error(result.exception))
-                        _uiState.update { it.mapSuccess { it.copy(actionLoading = false) } }
+                        _uiState.update {
+                            it.mapSuccess {
+                                it.copy(
+                                    activeCode = it.activeCode?.copy(
+                                        isActionLoading = false
+                                    )
+                                )
+                            }
+                        }
                     }
 
                     is Payload.Success -> {
@@ -116,7 +140,17 @@ class PersonalCodeViewModel(
             .onEach { result ->
                 _uiState.update {
                     val loading = result is Payload.Loading
-                    it.mapSuccess { it.copy(createLoading = loading, actionLoading = loading) }
+                    it.mapSuccess {
+                        it.copy(
+                            inactiveCodes = it.inactiveCodes.map {
+                                if (it.code == code) {
+                                    it.copy(isActionLoading = loading)
+                                } else {
+                                    it
+                                }
+                            }
+                        )
+                    }
                 }
                 when (result) {
                     Payload.Loading -> {}

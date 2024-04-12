@@ -155,7 +155,6 @@ fun GroupInitScreenCore(
             if (state.personalCode != null) {
                 PersonalCodeItem(
                     state = state.personalCode!!,
-                    deleteLoading = false,
                     onCopy = {
                         vm.copyToClipboard()
                         vm.showSnackbar(MR.strings.toast_copy_invite_code.localizedString())

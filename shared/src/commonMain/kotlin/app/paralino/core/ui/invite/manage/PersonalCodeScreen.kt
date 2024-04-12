@@ -103,7 +103,6 @@ fun PersonalCodeScreenCore(
                         PersonalCodeItem(
                             modifier = Modifier.animateItemPlacement(),
                             state = state.data.activeCode!!,
-                            deleteLoading = state.data.actionLoading,
                             onCopy = {
                                 vm.copyToClipboard(state.data.activeCode!!.code)
                                 vm.showSnackbar(text = MR.strings.toast_copy_invite_code.localizedString())
@@ -133,13 +132,13 @@ fun PersonalCodeScreenCore(
                                 modifier = Modifier.alpha(ContentAlpha.medium)
                             )
                             Spacer(modifier = Modifier.size(8.dp))
-                            PlanLimitCount(count = state.data.inactiveCodes.size, limit = 0)
+                            PlanLimitCount(count = state.data.inactiveCodes.size, limit = state.data.maxCodes)
                         }
                     }
                     this.items(state.data.inactiveCodes, key = { it.id }) { code ->
                         PersonalCodeItemInactive(
                             modifier = Modifier.animateItemPlacement(),
-                            code = code.code
+                            state = code
                         ) {
                             vm.activatePersonalCode(code = it)
                         }

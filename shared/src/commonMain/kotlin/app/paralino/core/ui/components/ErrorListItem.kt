@@ -1,5 +1,6 @@
 package app.paralino.core.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Colors
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -44,6 +47,7 @@ fun ConditionErrorItem(
         endAction = if (data.endActionTextRes != null)
             stringResource(data.endActionTextRes!!)
         else null,
+        endActionLoading = false,
         onClick = onClick
     )
 }
@@ -56,6 +60,7 @@ fun ConditionErrorItem(
     icon: Painter?,
     text: String,
     endAction: String?,
+    endActionLoading: Boolean,
     onClick: () -> Unit,
 ) {
     Row(
@@ -92,17 +97,28 @@ fun ConditionErrorItem(
         )
 
         if (endAction != null) {
-            Text(
-                text = endAction,
-                color = MaterialTheme.colors.onPrimary,
-                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+            Box(
                 modifier = Modifier
                     .background(
                         color = MaterialTheme.colors.primary,
                         shape = MaterialTheme.shapes.medium
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
+                    text = endAction,
+                    color = animateColorAsState(if (endActionLoading) Color.Transparent else MaterialTheme.colors.onPrimary).value,
+                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                )
+                if (endActionLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colors.onPrimary
                     )
-                    .padding(vertical = 4.dp, horizontal = 12.dp)
-            )
+                }
+            }
         }
     }
 }

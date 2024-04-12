@@ -42,7 +42,6 @@ import dev.icerock.moko.resources.compose.stringResource
 fun PersonalCodeItem(
     modifier: Modifier = Modifier,
     state: PersonalCodeScreenCodeData,
-    deleteLoading: Boolean,
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit,
@@ -55,7 +54,7 @@ fun PersonalCodeItem(
             userImage = state.userImage,
             userName = state.userName,
             hasDelete = state.canDisable,
-            deleteLoading = deleteLoading,
+            deleteLoading = state.isActionLoading,
             onCopy = onCopy,
             onShare = onShare,
             onDelete = onDelete
@@ -63,7 +62,7 @@ fun PersonalCodeItem(
     } else {
         PersonalCodeItemInactive(
             modifier = modifier,
-            code = state.code,
+            state = state,
             onActivate = onActivate
         )
     }
@@ -72,7 +71,7 @@ fun PersonalCodeItem(
 @Composable
 fun PersonalCodeItemInactive(
     modifier: Modifier = Modifier,
-    code: String,
+    state: PersonalCodeScreenCodeData,
     onActivate: (String) -> Unit,
 ) {
     ConditionErrorItem(
@@ -80,10 +79,11 @@ fun PersonalCodeItemInactive(
         backgroundColor = MaterialTheme.colors.surface,
         contentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
         icon = null,
-        text = code,
+        text = state.code,
         endAction = stringResource(resource = MR.strings.invite_code_button_activate),
+        endActionLoading = state.isActionLoading,
         onClick = {
-            onActivate(code)
+            onActivate(state.code)
         }
     )
 }
@@ -182,7 +182,7 @@ fun PersonalCodeItem(
                                 )
                             } else {
                                 Icon(
-                                    painter = CoreAppIcons.Delete.asPainterResource(),
+                                    painter = CoreAppIcons.Block.asPainterResource(),
                                     tint = MaterialTheme.colors.onError,
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp)
