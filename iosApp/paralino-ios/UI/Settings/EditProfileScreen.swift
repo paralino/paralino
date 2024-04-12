@@ -12,6 +12,7 @@ struct EditProfileScreen: View {
     
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.editProfileVM)
     @State var bottomSheet: BottomSheetsScreen.EmojiPicker? = nil
+    @Binding var path: [NavigationGraph]
     
     var body: some View {
         ZStack {
@@ -22,7 +23,7 @@ struct EditProfileScreen: View {
                     onBottomSheetAction: { screen in
                         bottomSheet = screen as? BottomSheetsScreen.EmojiPicker
                     },
-                    onExit: { }
+                    onExit: { path.removeLast() }
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
@@ -36,7 +37,8 @@ struct EditProfileScreen: View {
 }
 
 struct EditProfileScreen_Previews: PreviewProvider {
+    @State static var path: [NavigationGraph] = [.settings(.editProfile)]
     static var previews: some View {
-        EditProfileScreen()
+        EditProfileScreen(path: $path)
     }
 }

@@ -23,13 +23,13 @@ struct MapRootScreen: View {
                             case .account: AccountScreen(path: $mapState.path)
                             case .personalCodes: PersonalCodeScreen()
                             case .settings: SettingsScreen(path: $mapState.path)
-                            case .changeEmail: ChangeEmailScreen()
-                            case .changePassword: ChangePasswordScreen()
+                            case .changeEmail: ChangeEmailScreen(path: $mapState.path)
+                            case .changePassword: ChangePasswordScreen(path: $mapState.path)
                             case .convertAccount: ConvertAccountScreen(path: $mapState.path)
                             case .blocklist: BlockListScreen(path: $mapState.path)
                             case .rawData(let type):
                                 RawDataScreen(appState: RawDataScreen.createState(type: type))
-                            case .editProfile: EditProfileScreen()
+                            case .editProfile: EditProfileScreen(path: $mapState.path)
                             }
                         case let .home(homeGraph):
                             switch homeGraph {
