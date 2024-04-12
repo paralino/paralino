@@ -200,7 +200,7 @@ class PersonalCodesRemoteSource constructor(
         userId: String,
         personalCode: String,
         integrity: String,
-        count: Int = 10
+        count: Int = 6
     ): List<PersonalCodePreKeyData> {
         val myKey = userKeyRepo.latestKeyPair()
         val derivedCode = cryptoCore.derivePassword(personalCode)
