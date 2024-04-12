@@ -44,12 +44,13 @@ class PersonalCodeViewModel(
                         )
                     }
 
+                val maxAlternativeIDs = config?.maxAlternativeIDs ?: 0
                 Payload.Success(
                     PersonalCodeScreenState(
                         activeCode = codeData.firstOrNull { it.isValid },
                         inactiveCodes = codeData.filter { !it.isValid },
-                        canCreateAlternativeId = config?.alternativeIDsEnabled == true && codeData.size < 10,
-                        maxCodes = 10,
+                        canCreateAlternativeId = maxAlternativeIDs > 0 && codeData.size > 0 && maxAlternativeIDs > codeData.size.minus(1),
+                        maxCodes = maxAlternativeIDs,
                         createLoading = false,
                         actionLoading = false
                     )
