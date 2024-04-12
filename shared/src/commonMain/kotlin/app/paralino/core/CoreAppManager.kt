@@ -36,13 +36,15 @@ class CoreAppManager(
             .launchIn(scopeProvider.defaultScope)
 
         deviceApiProvider.appLifecycleState.onEach { state ->
-            if (state.current == AppLifecycleType.ACTIVE && state.previous == AppLifecycleType.BACKGROUND) {
-                logg.tag("app_state").v("App is active but was in background, refresh groups")
-                updateGroups()
-            } else if (state.current == AppLifecycleType.ACTIVE) {
+            if (state.current == AppLifecycleType.ACTIVE) {
                 updateLocationStatus()
                 updateConnectionStatus()
                 updateConfig()
+            }
+
+            if (state.current == AppLifecycleType.ACTIVE && state.previous == AppLifecycleType.BACKGROUND) {
+                logg.tag("app_state").v("App is active but was in background, refresh groups")
+                updateGroups()
             }
         }
             .launchIn(scopeProvider.defaultScope)
