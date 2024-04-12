@@ -5,9 +5,17 @@ import app.paralino.core.models.data
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class BlocklistVideModel(
@@ -49,11 +57,11 @@ class BlocklistVideModel(
                     )
                 }
             }
-            .catch { _eventChannel.send(BlockListScreenEvent.Error(it)) }
+            .catch { messageDispatcher.showSnackbar(it.errorString()) }
             .launchIn(coroutineScope)
     }
 
-    fun removeBlock(id: String) {
+    private fun removeBlock(id: String) {
         val element = _uiState.value.items.firstOrNull { it.id == id } ?: return
         if (element.actionLoading == true) return
 
@@ -64,7 +72,7 @@ class BlocklistVideModel(
                 updateLoading(id, loading = false)
             } catch (e: Exception) {
                 updateLoading(id, loading = null)
-                _eventChannel.send(BlockListScreenEvent.Error(e))
+                messageDispatcher.showSnackbar(e.errorString())
             }
         }
     }
@@ -83,6 +91,31 @@ class BlocklistVideModel(
                     else it
                 }
             )
+        }
+    }
+
+    fun onEvent(event: BlockListScreenUiEvent) {
+        when (event) {
+            is BlockListScreenUiEvent.UnblockUserOrGroup -> {
+                _uiState.update {
+                    it.copy(
+                        confirmationDialog = MainAlertDialog.UnblockGroupOrUser(
+                            id = event.id,
+                            type = event.type
+                        )
+                    )
+                }
+            }
+
+            is BlockListScreenUiEvent.UnblockUserOrGroupConfirm -> {
+                removeBlock(event.id)
+            }
+
+            BlockListScreenUiEvent.HideDialog -> {
+                _uiState.update {
+                    it.copy(confirmationDialog = null)
+                }
+            }
         }
     }
 }

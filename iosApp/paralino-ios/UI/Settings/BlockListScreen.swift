@@ -11,30 +11,17 @@ import shared
 struct BlockListScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.blocklistVM)
-    @State var alertDialog: AlertDialogData? = nil
     
     var body: some View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
                 ScreensIOS.shared.settings.BlocklistScreenVC(
-                    vm: appState.vm,
-                    onShowDialog: { dialog in
-                        alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
-                    },
-                    onNavigateBack: { path.removeLast() }
+                    vm: appState.vm
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-        }
-        .mainAlert($alertDialog) { key in
-            if let dialogData = alertDialog?.coreDialog {
-                if let dialog = dialogData as? MainAlertDialogUnblockGroupOrUser {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.removeBlock(id: dialog.id)
-                    }
-                }
-            }
+            .navigationTitle(MR.shared.strings.blocklist_screen_title.localizedString())
         }
     }
 }

@@ -18,11 +18,8 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.settings.blocklist.BlockListScreenEvent
+import app.paralino.core.presentation.settings.blocklist.BlockListScreenUiEvent
 import app.paralino.core.presentation.settings.blocklist.BlocklistElementState
 import app.paralino.core.presentation.settings.blocklist.BlocklistScreenState
 import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
@@ -39,116 +36,96 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
-import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import dev.icerock.moko.resources.compose.stringResource
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun BlocklistScreenCore(
     appState: CoreUiState,
     vm: BlocklistVideModel,
-    onShowDialog: (MainAlertDialog?) -> Unit,
-    onNavigateBack: () -> Unit,
+    paddingValues: PaddingValues
 ) {
 
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(BlocklistScreenState())
 
-    LaunchedEffect(key1 = Unit) {
-        vm.events.collectLatest { event ->
-            when (event) {
-                is BlockListScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
+    when (val dialog = uiState.confirmationDialog) {
+        is MainAlertDialog.UnblockGroupOrUser -> {
+            MainAlertDialog(
+                data = dialog.dialogData,
+                onAction = {
+                    vm.onEvent(BlockListScreenUiEvent.HideDialog)
+                    if (it == MainAlertDialog.Buttons.buttonOk) {
+                        vm.onEvent(BlockListScreenUiEvent.UnblockUserOrGroupConfirm(dialog.id))
+                    }
                 }
-
-                null -> { /* do nothing */
-                }
-            }
+            )
         }
+
+        else -> {}
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { Text(text = stringResource(MR.strings.blocklist_screen_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
+    if (uiState.loading) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator()
+        }
+    } else if (uiState.isEmpty) {
+        DefaultEmptyState(
+            content = stringResource(MR.strings.blocklist_screen_empty_title),
+            icon = CoreAppIcons.Block.asPainterResource(),
+        )
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                start = 20.dp,
+                end = 20.dp
+            ),
+        ) {
+            if (uiState.groups.isNotEmpty()) {
+                item(key = "groups") {
+                    SettingsSectionHeader(name = stringResource(MR.strings.blocklist_screen_title_groups))
+                }
+            }
+            items(uiState.groups, key = { it.id }) {
+                BlocklistListItem(
+                    state = it,
+                    onDelete = {
+                        vm.onEvent(
+                            BlockListScreenUiEvent.UnblockUserOrGroup(
+                                id = it.id,
+                                type = it.type
+                            )
                         )
                     }
-                }
-            )
-        },
-    ) {
-        if (uiState.loading) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
+                )
             }
-        } else if (uiState.isEmpty) {
-            DefaultEmptyState(
-                content = stringResource(MR.strings.blocklist_screen_empty_title),
-                icon = CoreAppIcons.Block.asPainterResource(),
-            )
-        } else {
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 20.dp,
-                    end = 20.dp
-                ),
-            ) {
-                if (uiState.groups.isNotEmpty()) {
-                    item(key = "groups") {
-                        SettingsSectionHeader(name = stringResource(MR.strings.blocklist_screen_title_groups))
-                    }
+            if (uiState.users.isNotEmpty()) {
+                item(key = "users") {
+                    SettingsSectionHeader(name = stringResource(MR.strings.blocklist_screen_title_users))
                 }
-                items(uiState.groups, key = { it.id }) {
-                    BlocklistListItem(
-                        state = it,
-                        onDelete = {
-                            onShowDialog(
-                                MainAlertDialog.UnblockGroupOrUser(
-                                    id = it.id,
-                                    type = it.type
-                                )
+            }
+            items(uiState.users, key = { it.id }) {
+                BlocklistListItem(
+                    state = it,
+                    onDelete = {
+                        vm.onEvent(
+                            BlockListScreenUiEvent.UnblockUserOrGroup(
+                                id = it.id,
+                                type = it.type
                             )
-                        }
-                    )
-                }
-
-                if (uiState.users.isNotEmpty()) {
-                    item(key = "users") {
-                        SettingsSectionHeader(name = stringResource(MR.strings.blocklist_screen_title_users))
+                        )
                     }
-                }
-                items(uiState.users, key = { it.id }) {
-                    BlocklistListItem(
-                        state = it,
-                        onDelete = {
-                            onShowDialog(
-                                MainAlertDialog.UnblockGroupOrUser(
-                                    id = it.id,
-                                    type = it.type
-                                )
-                            )
-                        }
-                    )
-                }
+                )
             }
         }
     }

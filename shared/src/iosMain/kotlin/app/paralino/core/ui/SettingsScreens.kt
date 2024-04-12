@@ -1,5 +1,6 @@
 package app.paralino.core.ui
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
@@ -103,16 +104,13 @@ object SettingsScreens {
     }
 
     fun BlocklistScreenVC(
-        vm: BlocklistVideModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
-        onNavigateBack: () -> Unit,
+        vm: BlocklistVideModel
     ) = ComposeUIViewController {
         RootScreenIOS {
             BlocklistScreenCore(
                 appState = it,
                 vm = vm,
-                onShowDialog = onShowDialog,
-                onNavigateBack = onNavigateBack,
+                paddingValues = PaddingValues()
             )
         }
     }
