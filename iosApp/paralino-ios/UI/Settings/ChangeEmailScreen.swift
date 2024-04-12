@@ -21,6 +21,7 @@ struct ChangeEmailScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.settings_account_edit_email.localizedString())
         }
     }
 }
