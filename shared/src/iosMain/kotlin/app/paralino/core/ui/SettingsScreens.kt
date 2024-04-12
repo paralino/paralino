@@ -123,6 +123,7 @@ object SettingsScreens {
             ConvertAccountScreenCore(
                 appState = it,
                 vm = vm,
+                contentPadding = PaddingValues(),
                 onNavigateBack = onNavigateBack,
             )
         }

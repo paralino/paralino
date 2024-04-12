@@ -23,6 +23,7 @@ struct ConvertAccountScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.settings_account_guest_convert.localizedString())
         }
     }
 }

@@ -1,15 +1,27 @@
 package app.paralino.core.presentation.settings.convertaccount
 
+import app.paralino.core.MR
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
-import app.paralino.core.utils.exceptions.*
+import app.paralino.core.provider.localizedString
+import app.paralino.core.utils.exceptions.ConflictException
+import app.paralino.core.utils.exceptions.DecryptionException
+import app.paralino.core.utils.exceptions.InvalidRequestException
+import app.paralino.core.utils.exceptions.UnauthorizedException
+import app.paralino.core.utils.exceptions.asRemoteException
+import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 
 class ConvertAccountViewModel(
     private val convertAccount: ConvertAccountUseCase,
@@ -39,17 +51,11 @@ class ConvertAccountViewModel(
         }
 
         if (!emailValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(ConvertAccountScreenEvent.ValidationError(emailValidation))
-            }
+            showSnackbar(getFormValidationErrorText(validation = emailValidation.type))
         } else if (!passwordValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(ConvertAccountScreenEvent.ValidationError(passwordValidation))
-            }
+            showSnackbar(getFormValidationErrorText(validation = passwordValidation.type))
         } else if (!passwordConfirmValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(ConvertAccountScreenEvent.ValidationError(passwordConfirmValidation))
-            }
+            showSnackbar(getFormValidationErrorText(validation = passwordConfirmValidation.type))
         } else {
             convertAccount.convertAccount(
                 email = email,
@@ -64,15 +70,15 @@ class ConvertAccountViewModel(
                         is Payload.Error -> {
                             _uiState.update { it.copy(actionLoading = null) }
                             if (result.exception.asRemoteException() is InvalidRequestException) {
-                                _eventChannel.send(ConvertAccountScreenEvent.CredentialsError)
+                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                             } else if (result.exception.asRemoteException() is ConflictException) {
-                                _eventChannel.send(ConvertAccountScreenEvent.EmailError)
+                                showSnackbar(MR.strings.form_invalid_email_conflict_description.localizedString())
                             } else if (result.exception.asRemoteException() is UnauthorizedException) {
-                                _eventChannel.send(ConvertAccountScreenEvent.CredentialsError)
+                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                             } else if (result.exception is DecryptionException) {
-                                _eventChannel.send(ConvertAccountScreenEvent.CredentialsError)
+                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                             } else {
-                                _eventChannel.send(ConvertAccountScreenEvent.Error(result.exception))
+                                showSnackbar(result.exception.errorString())
                             }
                         }
                         is Payload.Success -> {
