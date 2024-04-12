@@ -3,6 +3,7 @@ package app.paralino.core.ui.settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,15 +16,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
-import app.paralino.core.presentation.rawdata.RawDataScreenEvent
 import app.paralino.core.presentation.rawdata.RawDataScreenState
 import app.paralino.core.presentation.rawdata.RawDataSectionState
 import app.paralino.core.ui.CoreUiState
@@ -46,76 +42,41 @@ import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBold
-import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RawDataScreenCore(
     appState: CoreUiState,
     vm: RawDataPresentationViewModel,
-    onNavigateBack: () -> Unit
+    paddingValues: PaddingValues
 ) {
 
     MessageDispatcherEffect(vm, appState)
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
 
-    LaunchedEffect(key1 = Unit) {
-        vm.events.collectLatest { event ->
-            when (event) {
-                is RawDataScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
-                }
-
-                null -> {
-                    /* do nothing */
-                }
+    when (val finalState = state) {
+        Payload.Loading -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
             }
         }
-    }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { Text(text = stringResource(MR.strings.raw_data_screen_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
-                }
+        is Payload.Error -> {
+            DefaultEmptyState(content = "", icon = CoreAppIcons.Warning.asPainterResource())
+        }
+
+        is Payload.Success -> {
+            RawDataScreen(
+                state = finalState.data
             )
         }
-    ) {
-        when (val finalState = state) {
-            Payload.Loading -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is Payload.Error -> {
-                DefaultEmptyState(content = "", icon = CoreAppIcons.Warning.asPainterResource())
-            }
-
-            is Payload.Success -> {
-                RawDataScreen(
-                    state = finalState.data
-                )
-            }
-        }
     }
-
 }
 
 @Composable

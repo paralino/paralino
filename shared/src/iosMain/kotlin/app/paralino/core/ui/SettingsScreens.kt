@@ -155,14 +155,13 @@ object SettingsScreens {
     }
 
     fun RawDataScreenVC(
-        vm: RawDataPresentationViewModel,
-        onNavigateBack: () -> Unit
+        vm: RawDataPresentationViewModel
     ) = ComposeUIViewController {
         RootScreenIOS {
             RawDataScreenCore(
                 appState = it,
                 vm = vm,
-                onNavigateBack = onNavigateBack,
+                paddingValues = PaddingValues()
             )
         }
     }
