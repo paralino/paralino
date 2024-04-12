@@ -12,13 +12,16 @@ struct ChangePasswordScreen: View {
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.changePasswordVM)
     
     var body: some View {
-        ComposeRepresentable {
-            ScreensIOS.shared.settings.ChangePasswordScreenVC(
-                vm: appState.vm,
-                onNavigateBack: {}
-            )
+        ZStack {
+            Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
+            ComposeRepresentable {
+                ScreensIOS.shared.settings.ChangePasswordScreenVC(
+                    vm: appState.vm,
+                    onNavigateBack: {}
+                )
+            }
+            .ignoresSafeArea(.all, edges: .bottom)
         }
-        .ignoresSafeArea(.all, edges: .bottom)
     }
 }
 
