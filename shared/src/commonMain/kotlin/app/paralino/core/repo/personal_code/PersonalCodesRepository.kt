@@ -23,9 +23,7 @@ class PersonalCodesRepository constructor(
     suspend fun createAndSavePersonalCode() {
         triggerRemoteOnly {
             createPersonalCode(null)
-            remote.getMyPersonalCodes()
-        }.also {
-            local.replacePersonalCodes(it)
+            refreshPersonalCodes()
         }
     }
 
@@ -60,9 +58,7 @@ class PersonalCodesRepository constructor(
         return mergeDataWithRemote(
             local = local.getPersonalCodes(),
             remote = {
-                remote.getMyPersonalCodes().also {
-                    local.replacePersonalCodes(it)
-                }
+                refreshPersonalCodes()
                 tryToRestockPreKeys(20.seconds.inWholeMilliseconds)
             },
             localUpdate = { }
@@ -72,8 +68,7 @@ class PersonalCodesRepository constructor(
     suspend fun refreshPersonalCodes() {
         triggerRemoteOnly {
             remote.getMyPersonalCodes()
-        }.also {
-            local.replacePersonalCodes(it)
+                .also { local.replacePersonalCodes(it) }
         }
     }
 
@@ -85,28 +80,29 @@ class PersonalCodesRepository constructor(
 
     fun revokePersonalCode(): Flow<Payload<Unit>> {
         return getDataOnce(
-            localUpdate = { local.replacePersonalCodes(it) }
-        ) {
-            remote.revokeAllCodes()
-            remote.getMyPersonalCodes()
-        }.mapToPayload()
+            remote = {
+                remote.revokeAllCodes()
+                refreshPersonalCodes()
+            }
+        ).mapToPayload()
     }
 
     fun activateUserCode(code: String): Flow<Payload<Unit>> {
         return getDataOnce(
-            localUpdate = { local.replacePersonalCodes(it) }
-        ) {
-            remote.updateCodeUserData(
-                personalCode = code.cleanCode(),
-                userId = userRepo.cachedUserId,
-                userMeData = userRepo.cachedUser!!.data!!
-            )
-            remote.getMyPersonalCodes()
-        }.mapToPayload()
+            remote = {
+                remote.updateCodeUserData(
+                    personalCode = code.cleanCode(),
+                    userId = userRepo.cachedUserId,
+                    userMeData = userRepo.cachedUser!!.data!!
+                )
+                refreshPersonalCodes()
+            }
+        ).mapToPayload()
     }
 
     suspend fun updateUserCode(userMeData: UserMeData) {
         triggerRemoteOnly {
+            refreshPersonalCodes()
             val currentCode = local.getActivePersonalCodesOnce()
             if (currentCode != null) {
                 remote.updateCodeUserData(
@@ -115,11 +111,9 @@ class PersonalCodesRepository constructor(
                     userMeData = userMeData
                 )
             } else {
-                createPersonalCode(userMeData)
+                createPersonalCode(userMeData = userMeData)
             }
-            remote.getMyPersonalCodes()
-        }.also {
-            local.replacePersonalCodes(it)
+            refreshPersonalCodes()
         }
     }
 
