@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.invite.manage
 
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 
 data class PersonalCodeScreenState(
     val activeCode: PersonalCodeScreenCodeData?,
@@ -8,6 +9,7 @@ data class PersonalCodeScreenState(
     val maxCodes: Int,
     val canCreateAlternativeId: Boolean,
     val createLoading: Boolean,
+    val alertDialog: MainAlertDialog?
 ) {
     val loading get() = createLoading || inactiveCodes.any { it.isActionLoading }
 }
@@ -23,7 +25,15 @@ data class PersonalCodeScreenCodeData(
 )
 
 sealed class PersonalCodeScreenEvent() {
-    data class Error(val error: Throwable) : PersonalCodeScreenEvent()
     object CodeCreated : PersonalCodeScreenEvent()
     object CodeDeleted : PersonalCodeScreenEvent()
+}
+
+sealed class PersonalCodeScreenUiEvent() {
+    data object HideDialog: PersonalCodeScreenUiEvent()
+    data object CreateCode: PersonalCodeScreenUiEvent()
+    data object DisableCode: PersonalCodeScreenUiEvent()
+    data object DisableCodeConfirm: PersonalCodeScreenUiEvent()
+    data class ActivateCode(val code: String): PersonalCodeScreenUiEvent()
+    data class CopyToClipboard(val content: String): PersonalCodeScreenUiEvent()
 }

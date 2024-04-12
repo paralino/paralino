@@ -8,7 +8,9 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -60,7 +62,8 @@ class PersonalCodeViewModel(
                         inactiveCodes = inactiveCodes,
                         canCreateAlternativeId = maxAlternativeIDs > 0 && codeData.size > 0 && maxAlternativeIDs > inactiveCodes.size,
                         maxCodes = maxAlternativeIDs,
-                        createLoading = false
+                        createLoading = false,
+                        alertDialog = _uiState.value.data?.alertDialog
                     )
                 )
             }
@@ -68,7 +71,7 @@ class PersonalCodeViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun createPersonalCode() {
+    private fun createPersonalCode() {
         if (_uiState.value is Payload.Loading || _uiState.value.data?.loading == true)
             return
 
@@ -81,7 +84,7 @@ class PersonalCodeViewModel(
                 when (result) {
                     Payload.Loading -> {}
                     is Payload.Error -> {
-                        _eventChannel.send(PersonalCodeScreenEvent.Error(result.exception))
+                        showSnackbar(result.exception.errorString())
                     }
 
                     is Payload.Success -> {
@@ -92,7 +95,7 @@ class PersonalCodeViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun deletePersonalCode() {
+    private fun deletePersonalCode() {
         if (_uiState.value is Payload.Loading || _uiState.value.data?.loading == true)
             return
 
@@ -112,7 +115,7 @@ class PersonalCodeViewModel(
                     }
 
                     is Payload.Error -> {
-                        _eventChannel.send(PersonalCodeScreenEvent.Error(result.exception))
+                        showSnackbar(result.exception.errorString())
                         _uiState.update {
                             it.mapSuccess {
                                 it.copy(
@@ -132,7 +135,7 @@ class PersonalCodeViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun activatePersonalCode(code: String) {
+    private fun activatePersonalCode(code: String) {
         if (_uiState.value is Payload.Loading || _uiState.value.data?.loading == true)
             return
 
@@ -155,7 +158,7 @@ class PersonalCodeViewModel(
                 when (result) {
                     Payload.Loading -> {}
                     is Payload.Error -> {
-                        _eventChannel.send(PersonalCodeScreenEvent.Error(result.exception))
+                        showSnackbar(result.exception.errorString())
                     }
 
                     is Payload.Success -> {
@@ -166,7 +169,22 @@ class PersonalCodeViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun copyToClipboard(data: String) {
-        deviceApiProvider.copyToClipboard(data)
+    fun onEvent(event: PersonalCodeScreenUiEvent) {
+        when (event) {
+            is PersonalCodeScreenUiEvent.ActivateCode -> activatePersonalCode(event.code)
+            is PersonalCodeScreenUiEvent.CopyToClipboard -> deviceApiProvider.copyToClipboard(event.content)
+            PersonalCodeScreenUiEvent.CreateCode -> createPersonalCode()
+            PersonalCodeScreenUiEvent.DisableCode -> _uiState.update {
+                it.mapSuccess {
+                    it.copy(alertDialog = it.activeCode?.code?.let { MainAlertDialog.PersonalCodeDelete(it) })
+                }
+            }
+            PersonalCodeScreenUiEvent.HideDialog -> {
+                _uiState.update {
+                    it.mapSuccess { it.copy(alertDialog = null) }
+                }
+            }
+            PersonalCodeScreenUiEvent.DisableCodeConfirm -> deletePersonalCode()
+        }
     }
 }

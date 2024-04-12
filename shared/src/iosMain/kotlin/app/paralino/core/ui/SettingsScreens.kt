@@ -11,7 +11,6 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.invite.manage.PersonalCodeScreenCore
 import app.paralino.core.ui.settings.BlocklistScreenCore
 import app.paralino.core.ui.settings.RawDataScreenCore
@@ -73,17 +72,13 @@ object SettingsScreens {
 
     fun PersonalCodeScreenVC(
         vm: PersonalCodeViewModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
         onShare: (String) -> Unit,
-        onNavigateBack: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             PersonalCodeScreenCore(
                 appState = it,
                 vm = vm,
-                onShowDialog = onShowDialog,
                 onShare = onShare,
-                onNavigateBack = onNavigateBack,
             )
         }
     }
