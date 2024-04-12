@@ -134,7 +134,7 @@ object KoinSetup {
             SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get()) }
-        viewModel { PersonalCodeViewModel(get(), get()) }
+        viewModel { PersonalCodeViewModel(get(), get(), get()) }
         viewModel { (groupId: String?, code: String?) ->
             MemberInviteViewModel(
                 groupId = groupId,

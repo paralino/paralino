@@ -6,7 +6,7 @@ data class PersonalCodeScreenState(
     val activeCode: PersonalCodeScreenCodeData?,
     val inactiveCodes: List<PersonalCodeScreenCodeData>,
     val maxCodes: Int,
-    val canCreate: Boolean,
+    val canCreateAlternativeId: Boolean,
     val createLoading: Boolean,
     val actionLoading: Boolean
 ) {
@@ -18,7 +18,7 @@ data class PersonalCodeScreenCodeData(
     val code: String,
     val userImage: ImageModel,
     val userName: String,
-    val canDelete: Boolean,
+    val canDisable: Boolean,
     val isValid: Boolean,
 )
 

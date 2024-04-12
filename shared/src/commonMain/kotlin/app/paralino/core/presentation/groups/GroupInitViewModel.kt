@@ -63,7 +63,7 @@ class GroupInitViewModel(
                     code = it.formattedCode,
                     userImage = it.codeData.data?.ownerImage ?: ImageModel.emoji(Emojis.robot),
                     userName = it.codeData.data?.ownerName ?: "---",
-                    canDelete = false,
+                    canDisable = false,
                     isValid = true,
                 )
             }

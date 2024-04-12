@@ -151,7 +151,7 @@ fun PersonalCodeScreenCore(
 
                 if (state.data.inactiveCodes.isNotEmpty() || state.data.activeCode != null) {
                     this.item(key = "button") {
-                        if (state.data.canCreate) {
+                        if (state.data.canCreateAlternativeId) {
                             FilledButton(
                                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
                                 style = ButtonStyle.BIG,
@@ -170,7 +170,7 @@ fun PersonalCodeScreenCore(
                         DefaultEmptyState(
                             icon = CoreAppIcons.AddLink.asPainterResource(),
                             content = stringResource(MR.strings.invite_manage_empty_description),
-                            buttonText = if (state.data.canCreate) stringResource(MR.strings.invite_create_button) else null,
+                            buttonText = stringResource(MR.strings.invite_create_button),
                             buttonState = if (state.data.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,
                             onClick = { vm.createPersonalCode() }
                         )

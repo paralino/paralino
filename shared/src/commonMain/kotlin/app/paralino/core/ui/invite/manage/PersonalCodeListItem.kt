@@ -54,7 +54,7 @@ fun PersonalCodeItem(
             code = state.code,
             userImage = state.userImage,
             userName = state.userName,
-            hasDelete = state.canDelete,
+            hasDelete = state.canDisable,
             deleteLoading = deleteLoading,
             onCopy = onCopy,
             onShare = onShare,

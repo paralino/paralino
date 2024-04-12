@@ -12,7 +12,8 @@ data class ConfigData(
     val minUiVersionIOS: Long,
     val newVersionIOS: Long,
     val androidAppUrl: String?,
-    val emailEnabled: Boolean
+    val emailEnabled: Boolean,
+    val alternativeIDsEnabled: Boolean
 ) {
     companion object {
         fun init(nodes: List<ConfigNode>): ConfigData {
@@ -25,6 +26,7 @@ data class ConfigData(
                 newVersionIOS = nodes.firstOrNull { it.id == "new_version_ios" }?.value?.toLongOrNull() ?: 0,
                 androidAppUrl = nodes.firstOrNull { it.id == "android_app_url" }?.value?.takeIf { it.isNotBlank() },
                 emailEnabled = nodes.firstOrNull { it.id == "email_enabled" }?.value?.toBoolean() ?: false,
+                alternativeIDsEnabled = nodes.firstOrNull { it.id == "alternative_paralinoid_enabled" }?.value?.toBoolean() ?: false,
             )
         }
     }
