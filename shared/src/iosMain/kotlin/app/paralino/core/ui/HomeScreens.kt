@@ -2,6 +2,7 @@ package app.paralino.core.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
@@ -144,7 +145,11 @@ object HomeScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             MemberInviteScreenCore(
-                appState = it, vm = vm, onPickGroup = onPickGroup, onNavigateBack = onExit
+                appState = it,
+                vm = vm,
+                contentPadding = PaddingValues(),
+                onPickGroup = onPickGroup,
+                onNavigateBack = onExit
             )
         }
     }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -61,29 +62,17 @@ import kotlinx.coroutines.launch
 fun MemberInviteScreenCore(
     appState: CoreUiState,
     vm: MemberInviteViewModel,
+    contentPadding: PaddingValues,
     onPickGroup: (BottomSheetsScreen.GroupPicker) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
-
     val state by vm.uiState.collectAsState(initial = MemberInviteScreenState.Empty())
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is MemberInviteScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
-                }
-
-                MemberInviteScreenEvent.ErrorWrongCode -> {
-                    vm.showSnackbar(MR.strings.invite_connect_alert_wrongCode.localizedString())
-                }
-
-                MemberInviteScreenEvent.ErrorMissingGroup -> {
-                    vm.showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
-                }
-
                 MemberInviteScreenEvent.MemberAdded -> {
                     onNavigateBack()
                 }
@@ -95,44 +84,25 @@ fun MemberInviteScreenCore(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { Text(text = stringResource(MR.strings.group_details_add_member_button)) },
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-        }
-    ) {
-        MemberInviteScreen(
-            modifier = Modifier.padding(it),
-            state = state,
-            onCodeChange = {
-                vm.codeChanged(it)
-            },
-            onLoadCode = {
-                vm.addOrLoadMember()
-            },
-            onAddMember = {
-                vm.addOrLoadMember()
-            },
-            onPickGroup = {
-                appState.uiScope.launch {
-                    val groups = vm.getAllGroups()
-                    onPickGroup(BottomSheetsScreen.GroupPicker(groups))
-                }
+    MemberInviteScreen(
+        modifier = Modifier.padding(contentPadding),
+        state = state,
+        onCodeChange = {
+            vm.codeChanged(it)
+        },
+        onLoadCode = {
+            vm.addOrLoadMember()
+        },
+        onAddMember = {
+            vm.addOrLoadMember()
+        },
+        onPickGroup = {
+            appState.uiScope.launch {
+                val groups = vm.getAllGroups()
+                onPickGroup(BottomSheetsScreen.GroupPicker(groups))
             }
-        )
-    }
-
+        }
+    )
 }
 
 @Composable
