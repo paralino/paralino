@@ -65,37 +65,6 @@ struct GroupDetailScreen: View {
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationBarBackButtonHidden(true)
         }
-        .mainAlert($alertDialog) { key in
-            if let dialogData = alertDialog?.coreDialog {
-                if dialogData is MainAlertDialogDeleteGroup || dialogData is MainAlertDialogLeaveGroup {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.leaveOrDeleteGroup()
-                    }
-                } else if dialogData is MainAlertDialogBlockGroup {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.blockGroup()
-                    }
-                } else if let dialogData = dialogData as? MainAlertDialogBlockUser {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.blockUser(userId: dialogData.userId)
-                    }
-                } else if let dialogData = dialogData as? MainAlertDialogUnblockGroupOrUser {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.unblockUser(userId: dialogData.id)
-                    }
-                } else if let dialogData = dialogData as? MainAlertDialogDeleteGroupMember {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.removeMember(memberUserId: dialogData.memberUserId)
-                    }
-                } else if let dialogData = dialogData as? MainAlertDialogDeleteMemberLocation {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.removeMemberLocation(memberId: dialogData.memberId, locationId: dialogData.locationId)
-                    }
-                } else if dialogData is MainAlertDialogPlanLimit {
-                    // do nothing
-                }
-            }
-        }
     }
     
     static func createState(groupId: String) -> ViewModelFactoryIOS<GroupDetailViewModel> {
