@@ -29,8 +29,7 @@ struct GroupCreateScreen: View {
                         } else {
                             path.removeLast()
                         }
-                    },
-                    onExit: { path.removeLast() }
+                    }
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)

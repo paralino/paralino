@@ -87,8 +87,7 @@ object HomeScreens {
     fun GroupCreateScreenVC(
         vm: CreateGroupViewModel,
         onBottomSheetAction: (BottomSheetsScreen) -> Unit,
-        groupUpdated: (String) -> Unit,
-        onExit: () -> Unit,
+        groupUpdated: (String) -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
             GroupCreateScreenCore(
@@ -96,7 +95,6 @@ object HomeScreens {
                 vm = vm,
                 groupUpdated = groupUpdated,
                 onBottomSheetAction = onBottomSheetAction,
-                onExit = onExit,
             )
         }
     }

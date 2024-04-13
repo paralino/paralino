@@ -19,12 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -57,7 +52,6 @@ import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -67,24 +61,20 @@ fun GroupCreateScreenCore(
     appState: CoreUiState,
     vm: CreateGroupViewModel,
     onBottomSheetAction: (BottomSheetsScreen) -> Unit,
-    groupUpdated: (String) -> Unit,
-    onExit: () -> Unit,
+    groupUpdated: (String) -> Unit
 ) {
 
     MessageDispatcherEffect(vm, appState)
-
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is CreateGroupScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
-                }
                 is CreateGroupScreenEvent.GroupUpdated -> {
                     delay(400)
                     groupUpdated(event.groupId)
                 }
+
                 null -> {
                     /* do nothing */
                 }
@@ -92,54 +82,39 @@ fun GroupCreateScreenCore(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { },
-                navigationIcon = {
-                    IconButton(onClick = { onExit() }) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
+
+    when (val finalState = state) {
+        Payload.Loading -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is Payload.Error -> {
+            DefaultEmptyState(content = stringResource(MR.strings.group_load_error))
+        }
+
+        is Payload.Success -> {
+            GroupCreateScreen(
+                state = finalState.data,
+                nameLengthLimit = vm.groupNameLengthLimit,
+                onImageClick = {
+                    onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.groupEmojis))
+                },
+                onCreateGroupClick = { image, name ->
+                    vm.createGroup(image, name)
                 }
             )
-        }
-    ) {
-        when (val finalState = state) {
-            Payload.Loading -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            is Payload.Error -> {
-                DefaultEmptyState(content = stringResource(MR.strings.group_load_error))
-            }
-            is Payload.Success -> {
-                GroupCreateScreen(
-                    state = finalState.data,
-                    nameLengthLimit = vm.groupNameLengthLimit,
-                    onImageClick = {
-                        onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.groupEmojis))
-                    },
-                    onCreateGroupClick = { image, name ->
-                        vm.createGroup(image, name)
-                    }
-                )
-            }
         }
     }
 }
 
 @Composable
-fun GroupCreateScreen(
+private fun GroupCreateScreen(
     state: CreateGroupState,
     nameLengthLimit: Int,
     onImageClick: () -> Unit,
