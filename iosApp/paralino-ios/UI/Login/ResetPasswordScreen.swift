@@ -12,12 +12,16 @@ struct ResetPasswordScreen: View {
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.resetPasswordVM)
     
     var body: some View {
-        ComposeRepresentable {
-            ScreensIOS.shared.login.ResetPasswordVC(
-                vm: appState.vm,
-                openLoginScreen: {},
-                onClose: {}
-            )
+        ZStack {
+            Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
+            ComposeRepresentable {
+                ScreensIOS.shared.login.ResetPasswordVC(
+                    vm: appState.vm,
+                    openLoginScreen: {}
+                )
+            }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+            .navigationTitle(MR.shared.strings.reset_password_screen_title.localizedString())
         }
     }
 }

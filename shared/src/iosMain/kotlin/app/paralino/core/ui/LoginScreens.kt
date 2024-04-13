@@ -70,15 +70,13 @@ object LoginScreens {
 
     fun ResetPasswordVC(
         vm: ResetPasswordViewModel,
-        openLoginScreen: () -> Unit,
-        onClose: () -> Unit
+        openLoginScreen: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
             ResetPasswordScreenCore(
                 appState = it,
                 vm = vm,
-                openLoginScreen = openLoginScreen,
-                onClose = onClose
+                openLoginScreen = openLoginScreen
             )
         }
     }
