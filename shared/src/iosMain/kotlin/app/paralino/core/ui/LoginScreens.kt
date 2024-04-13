@@ -7,7 +7,6 @@ import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.login.LoginScreenCore
 import app.paralino.core.ui.login.ProfileSetupScreenCore
 import app.paralino.core.ui.login.RecoverKeysScreenCore
@@ -29,14 +28,12 @@ object LoginScreens {
 
     fun LoginScreenVC(
         vm: LoginViewModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
         onExit: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
             LoginScreenCore(
                 appState = it,
                 vm = vm,
-                onShowDialog = onShowDialog,
                 onExit = onExit
             )
         }

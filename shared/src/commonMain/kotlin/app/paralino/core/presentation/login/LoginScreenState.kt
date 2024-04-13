@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.login
 
-import app.paralino.core.presentation.common.FormValidationResult
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 
 data class LoginScreenState constructor(
     val email: String = "",
@@ -12,8 +12,8 @@ data class LoginScreenState constructor(
     val canUseEmail: Boolean = false,
     val uiType: LoginScreenUiType,
     val actionLoading: Boolean = false,
-    val hasGuestAccount: Boolean = false,
     val stepInfo: SignUpStepInfo? = null,
+    val alertDialog: MainAlertDialog? = null
 ) {
     companion object {
         val defaultStartScreen = LoginScreenUiType.SIGNUP_GUEST
@@ -31,13 +31,17 @@ enum class LoginScreenUiType {
 }
 
 sealed class LoginScreenEvent {
-    data class Error(val exception: Throwable) : LoginScreenEvent()
-    data class LoginError(val errorType: SignUpErrorType) : LoginScreenEvent()
-    data class ValidationError(val validationResult: FormValidationResult) : LoginScreenEvent()
     object UserReady : LoginScreenEvent()
     object PasswordResetDone : LoginScreenEvent()
 }
 
+sealed class LoginScreenUiEvent {
+    data object HideDialog: LoginScreenUiEvent()
+    data object RecoverGuestAccount: LoginScreenUiEvent()
+    data object DismissGuestAccount: LoginScreenUiEvent()
+    data object LoginOrSignup: LoginScreenUiEvent()
+    data object ConfirmLoginOrSignup: LoginScreenUiEvent()
+}
 
 sealed interface SignUpStepInfo {
     enum class Info : SignUpStepInfo {
