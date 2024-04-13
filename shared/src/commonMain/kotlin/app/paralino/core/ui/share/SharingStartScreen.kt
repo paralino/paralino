@@ -259,21 +259,6 @@ fun SharingStartScreenCore(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { Text(text = stringResource(MR.strings.groups_sharing_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-        },
         bottomBar = {
             Box(
                 modifier = Modifier

@@ -44,6 +44,7 @@ struct SharingStartScreen: View {
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
+            .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())
         }
     }
     
