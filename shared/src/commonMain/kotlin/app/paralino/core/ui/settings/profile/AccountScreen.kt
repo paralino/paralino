@@ -27,7 +27,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,17 +45,14 @@ import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
-import app.paralino.core.presentation.settings.AccountScreenEvent
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
-import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
@@ -65,9 +61,7 @@ import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
-import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AccountScreenCore(
@@ -93,12 +87,6 @@ fun AccountScreenCore(
             .padding(horizontal = 20.dp)
             .padding(top = 20.dp, bottom = 60.dp)
     ) {
-        SettingsBigHeader(
-            name = stringResource(MR.strings.settings_section_account_title),
-            bottomPadding = if (accountState.data?.userState?.isGuestUser == true) 0.dp
-            else 20.dp
-        )
-
         when (val state = accountState) {
             is Payload.Success -> {
                 AccountInfoHeader(
@@ -281,7 +269,7 @@ fun AccountInfoHeader(
             modifier = modifier
                 .fillMaxWidth()
                 .clickable(enabled = canClickOnHeader) { onClick() }
-                .padding(top = 10.dp, bottom = 40.dp),
+                .padding(bottom = 40.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colors.primary,
             elevation = 16.dp

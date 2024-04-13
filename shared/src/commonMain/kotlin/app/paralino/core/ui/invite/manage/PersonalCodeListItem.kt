@@ -102,8 +102,7 @@ fun PersonalCodeItem(
 ) {
     Column {
         Surface(
-            modifier = modifier
-                .padding(horizontal = 20.dp, vertical = 4.dp),
+            modifier = modifier.padding(horizontal = 20.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colors.primary,
             elevation = 16.dp

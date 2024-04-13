@@ -86,7 +86,7 @@ fun PersonalCodeScreenCore(
                 if (state.data.activeCode != null) {
                     this.item(key = "activeCode") {
                         PersonalCodeItem(
-                            modifier = Modifier.animateItemPlacement(),
+                            modifier = Modifier.padding(bottom = 4.dp).animateItemPlacement(),
                             state = state.data.activeCode!!,
                             onCopy = {
                                 vm.onEvent(PersonalCodeScreenUiEvent.CopyToClipboard(state.data.activeCode!!.code))

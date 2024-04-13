@@ -44,7 +44,6 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
 import app.paralino.core.utils.Emojis
@@ -73,14 +72,7 @@ fun SettingsScreenCore(
             .padding(horizontal = 20.dp)
             .padding(top = 20.dp, bottom = 60.dp)
     ) {
-        SettingsBigHeader(
-            name = stringResource(MR.strings.title_settings),
-            bottomPadding = if (accountState.data?.userState?.isGuestUser == true) 0.dp
-            else 20.dp
-        )
-
         val readyState = accountState.data
-
         if (readyState != null) {
             AccountInfoHeader(
                 name = readyState.userState.name,
