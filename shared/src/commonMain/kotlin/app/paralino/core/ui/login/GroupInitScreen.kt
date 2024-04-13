@@ -10,21 +10,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.groups.GroupInitScreenEvent
 import app.paralino.core.presentation.groups.GroupInitScreenState
+import app.paralino.core.presentation.groups.GroupInitScreenUiEvent
 import app.paralino.core.presentation.groups.GroupInitViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
@@ -35,66 +31,50 @@ import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.components.dialogs.DefaultToolbar
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.invite.manage.PersonalCodeItem
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
-import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
 fun GroupInitScreenCore(
     appState: CoreUiState,
     vm: GroupInitViewModel,
-    onShowDialog: (MainAlertDialog?) -> Unit,
     openSettings: () -> Unit,
     onCreateGroup: () -> Unit,
     openPersonalCodes: () -> Unit,
     onSharePersonalCode: (String) -> Unit,
-    askNotificationPermission: () -> Unit,
-    onClose: () -> Unit,
+    askNotificationPermission: () -> Unit
 ) {
 
     MessageDispatcherEffect(vm, appState)
     val state by vm.uiState.collectAsState(GroupInitScreenState())
 
-    LaunchedEffect(key1 = Unit) {
-        vm.events.collectLatest { event ->
-            when (event) {
-                is GroupInitScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
-                }
-
-                GroupInitScreenEvent.EmailVerificationSent -> {
-                    vm.showSnackbar(MR.strings.info_email_check_instructions.localizedString())
-                }
-
-                null -> {
-                    /* do nothing */
+    when (val dialog = state.alertDialog) {
+        is MainAlertDialog.VerifyEmail -> {
+            dialog.Show {
+                vm.onEvent(GroupInitScreenUiEvent.HideDialog)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.onEvent(GroupInitScreenUiEvent.ConfirmSendEmailVerification)
                 }
             }
         }
+
+        else -> {}
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
-                },
+            DefaultToolbar(
+                title = null,
+                navigationIcon = null,
                 actions = {
                     ImageModelImage(
                         imageModel = state.userImage,
@@ -124,7 +104,7 @@ fun GroupInitScreenCore(
                 ) {
                     when (it) {
                         is ConditionErrorType.EMAIL_VERIFICATION -> {
-                            onShowDialog(MainAlertDialog.VerifyEmail(it.email))
+                            vm.onEvent(GroupInitScreenUiEvent.SendEmailVerification)
                         }
 
                         ConditionErrorType.NETWORK -> {
@@ -156,7 +136,7 @@ fun GroupInitScreenCore(
                 PersonalCodeItem(
                     state = state.personalCode!!,
                     onCopy = {
-                        vm.copyToClipboard()
+                        vm.onEvent(GroupInitScreenUiEvent.CopyPersonalCode)
                         vm.showSnackbar(MR.strings.toast_copy_invite_code.localizedString())
                     },
                     onShare = {

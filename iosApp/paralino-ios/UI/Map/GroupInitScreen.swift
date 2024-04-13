@@ -14,7 +14,6 @@ struct GroupInitScreen: View {
 
     @EnvironmentObject var appDelegate: AppDelegate
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.groupInitVM)
-    @State var alertDialog: AlertDialogData? = nil
     @State var shareText: ShareText?
     let notificationPermissionHandler = NotificationPermissionHandler()
     
@@ -24,9 +23,6 @@ struct GroupInitScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.GroupInitScreenVC(
                     vm: appState.vm,
-                    onShowDialog: { dialog in
-                        alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
-                    },
                     openSettings: { path.append(.settings(.settings)) },
                     onCreateGroup: { path.append(.home(.groupCreate(groupId: nil))) },
                     openPersonalCodes: { path.append(.settings(.personalCodes)) },
@@ -35,20 +31,10 @@ struct GroupInitScreen: View {
                     },
                     askNotificationPermission: {
                         notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
-                    },
-                    onClose: {}
+                    }
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-        }
-        .mainAlert($alertDialog) { key in
-            if let dialogData = alertDialog?.coreDialog {
-                if dialogData is MainAlertDialogVerifyEmail {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.sendEmailVerification()
-                    }
-                }
-            }
         }
         .sheet(item: $shareText) { shareText in
             ActivityView(text: shareText.text)

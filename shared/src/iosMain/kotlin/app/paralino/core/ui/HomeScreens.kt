@@ -61,25 +61,21 @@ import platform.UIKit.UIView
 object HomeScreens {
     fun GroupInitScreenVC(
         vm: GroupInitViewModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
         openSettings: () -> Unit,
         onCreateGroup: () -> Unit,
         openPersonalCodes: () -> Unit,
         onSharePersonalCode: (String) -> Unit,
         askNotificationPermission: () -> Unit,
-        onClose: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GroupInitScreenCore(
                 appState = it,
                 vm = vm,
-                onShowDialog = onShowDialog,
                 openSettings = openSettings,
                 onCreateGroup = onCreateGroup,
                 openPersonalCodes = openPersonalCodes,
                 onSharePersonalCode = onSharePersonalCode,
                 askNotificationPermission = askNotificationPermission,
-                onClose = onClose
             )
         }
     }

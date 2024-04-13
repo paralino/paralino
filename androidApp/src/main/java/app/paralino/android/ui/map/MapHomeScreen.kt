@@ -57,8 +57,7 @@ fun MapHomeScreen(
                 )
             } else {
                 GroupInitScreen(
-                    appState = appState,
-                    onClose = onClose
+                    appState = appState
                 )
             }
         }

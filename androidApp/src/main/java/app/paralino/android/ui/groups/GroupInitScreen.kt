@@ -21,39 +21,21 @@ import org.koin.androidx.compose.getViewModel
 fun GroupInitScreen(
     appState: MainAppState,
     vm: GroupInitViewModel = getViewModel(),
-    onClose: () -> Unit,
 ) {
-
-    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
         messageDispatcher = vm.messageDispatcher,
         locationStatusProvider = vm.locationStatusProvider
     )
 
-    when (val dialog = showDialog) {
-        is MainAlertDialog.VerifyEmail -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.sendEmailVerification()
-                }
-            }
-        }
-
-        else -> {}
-    }
-
     val context = LocalContext.current
     GroupInitScreenCore(
         appState = appState,
         vm = vm,
-        onShowDialog = { showDialog = it },
         openSettings = { appState.navController.navigate(AppScreen.Settings.routeSignature) },
         onCreateGroup = { appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(null)) },
         openPersonalCodes = { appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature) },
         onSharePersonalCode = { context.share(it) },
         askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
-        onClose = onClose
     )
 }

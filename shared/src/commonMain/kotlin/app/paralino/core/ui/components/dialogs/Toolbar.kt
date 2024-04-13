@@ -2,6 +2,7 @@ package app.paralino.core.ui.components.dialogs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,7 +20,8 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 @Composable
 fun DefaultToolbar(
     title: String?,
-    navigationIcon: @Composable () -> Unit
+    navigationIcon: (@Composable () -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.background,
@@ -32,7 +34,8 @@ fun DefaultToolbar(
                 )
             }
         },
-        navigationIcon = navigationIcon
+        navigationIcon = navigationIcon,
+        actions = actions
     )
 }
 
