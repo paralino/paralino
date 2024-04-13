@@ -56,14 +56,12 @@ object LoginScreens {
     }
 
     fun RecoverKeysVC(
-        vm: RecoverKeysViewModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
+        vm: RecoverKeysViewModel
     ) = ComposeUIViewController {
         RootScreenIOS {
             RecoverKeysScreenCore(
                 appState = it,
-                vm = vm,
-                onShowDialog = onShowDialog,
+                vm = vm
             )
         }
     }

@@ -21,9 +21,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,61 +36,64 @@ import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
-import app.paralino.core.presentation.login.recover.RecoverKeysScreenEvent
 import app.paralino.core.presentation.login.recover.RecoverKeysScreenState
+import app.paralino.core.presentation.login.recover.RecoverKeysScreenUiEvent
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
-import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.components.dialogs.DefaultToolbar
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
-import app.paralino.core.utils.extensions.errorString
-import app.paralino.core.utils.extensions.getFormValidationErrorText
 import dev.icerock.moko.resources.compose.stringResource
-import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
 fun RecoverKeysScreenCore(
     appState: CoreUiState,
-    vm: RecoverKeysViewModel,
-    onShowDialog: (MainAlertDialog) -> Unit,
+    vm: RecoverKeysViewModel
 ) {
 
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
 
-    LaunchedEffect(key1 = Unit) {
-        vm.events.collectLatest { event ->
-            when (event) {
-                is RecoverKeysScreenEvent.Error -> {
-                    vm.showSnackbar(event.exception.errorString())
-                }
-
-                is RecoverKeysScreenEvent.CredentialsError -> {
-                    vm.showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
-                }
-
-                is RecoverKeysScreenEvent.ValidationError -> {
-                    val errorText = getFormValidationErrorText(
-                        validation = event.validationResult.type
-                    )
-                    vm.showSnackbar(errorText)
-                }
-
-                null -> {
-                    /* do nothing */
+    when (val dialog = uiState.data?.alertDialog) {
+        is MainAlertDialog.RecoveryResetAccount -> {
+            dialog.Show {
+                vm.onEvent(RecoverKeysScreenUiEvent.HideDialog)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.onEvent(RecoverKeysScreenUiEvent.ConfirmResetAccount)
                 }
             }
         }
+
+        is MainAlertDialog.RecoveryRecoverAccount -> {
+            dialog.Show {
+                vm.onEvent(RecoverKeysScreenUiEvent.HideDialog)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.onEvent(RecoverKeysScreenUiEvent.ConfirmRecoverAccount)
+                }
+            }
+        }
+
+        is MainAlertDialog.Logout -> {
+            dialog.Show {
+                vm.onEvent(RecoverKeysScreenUiEvent.HideDialog)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.onEvent(RecoverKeysScreenUiEvent.ConfirmLogout)
+                }
+            }
+        }
+
+        else -> {}
     }
 
     when (val state = uiState) {
@@ -111,17 +112,15 @@ fun RecoverKeysScreenCore(
         }
 
         is Payload.Success -> {
-
             Scaffold(
                 topBar = {
-                    TopAppBar(
-                        backgroundColor = MaterialTheme.colors.background,
-                        elevation = 1.dp,
-                        title = { Text(text = stringResource(MR.strings.recover_account_screen_title)) },
+                    DefaultToolbar(
+                        title = stringResource(resource = MR.strings.recover_account_screen_title),
+                        navigationIcon = null,
                         actions = {
                             IconButton(
                                 onClick = {
-                                    onShowDialog(MainAlertDialog.Logout)
+                                    vm.onEvent(RecoverKeysScreenUiEvent.Logout)
                                 }
                             ) {
                                 Icon(
@@ -137,16 +136,16 @@ fun RecoverKeysScreenCore(
                     modifier = Modifier.padding(it),
                     state = state.data,
                     onPasswordChange = {
-                        vm.onOldPasswordChange(it)
+                        vm.onEvent(RecoverKeysScreenUiEvent.EditOldPassword(it))
                     },
                     onReset = {
-                        onShowDialog(MainAlertDialog.RecoveryResetAccount)
+                        vm.onEvent(RecoverKeysScreenUiEvent.ResetAccount)
                     },
                     onRecover = {
                         if (state.data.recoverState.data != null) {
-                            onShowDialog(MainAlertDialog.RecoveryRecoverAccount)
+                            vm.onEvent(RecoverKeysScreenUiEvent.RecoverAccount)
                         } else {
-                            vm.checkForKey()
+                            vm.onEvent(RecoverKeysScreenUiEvent.CheckEncryptionKey)
                         }
                     }
                 )
@@ -279,7 +278,7 @@ fun RecoverKeysScreen(
                     state = if (state.resetLoading == null)
                         AppButtonState.CONTENT
                     else
-                        AppButtonState.loadingStateWithCheck(state.resetLoading!!),
+                        AppButtonState.loadingStateWithCheck(state.resetLoading),
                     onClick = {
                         focusManager.clearFocus()
                         onReset()
