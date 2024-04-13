@@ -43,6 +43,7 @@ struct PlaceCreateScreen: View {
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationBarBackButtonHidden(false)
+            .navigationTitle(appState.screenTitle)
         }
         .photoPickerSheet($bottomSheet) { image in
             appState.vm.updateImage(image: image)
@@ -57,18 +58,21 @@ struct PlaceCreateScreen: View {
 
 class PlaceCreateState: BaseMapObservableObject {
     
-    let groupId: String
-    let placeId: String?
-    let lat: KotlinDouble?
-    let lng: KotlinDouble?
     let vm: CreatePlaceViewModel
+    @Published var isNewPlace: Bool? = nil
+    @Published var screenTitle: String = ""
     
     init(groupId: String, placeId: String?, lat: Double? = nil, lng: Double? = nil) {
-        self.groupId = groupId
-        self.placeId = placeId
-        self.lat = lat != nil ? KotlinDouble(value: lat!) : nil
-        self.lng = lng != nil ? KotlinDouble(value: lng!) : nil
-        self.vm = KoinIOS.ViewModels.shared.placeCreateVM(groupId: groupId, placeId: placeId, lat: self.lat, lng: self.lng)
+        
+        if placeId == nil {
+            screenTitle = MR.shared.strings.places_create_screen_title.localizedString()
+        } else {
+            screenTitle = MR.shared.strings.places_edit_screen_title.localizedString()
+        }
+        
+        let lat = lat != nil ? KotlinDouble(value: lat!) : nil
+        let lng = lng != nil ? KotlinDouble(value: lng!) : nil
+        self.vm = KoinIOS.ViewModels.shared.placeCreateVM(groupId: groupId, placeId: placeId, lat: lat, lng: lng)
         
         super.init()
         
@@ -80,6 +84,12 @@ class PlaceCreateState: BaseMapObservableObject {
                     }
                 }
                 self?.refocusMap(animate: true, canInteruptAnimation: true)
+                self?.isNewPlace = uiState.isNewPlace
+                if uiState.isNewPlace {
+                    self?.screenTitle = MR.shared.strings.places_create_screen_title.localizedString()
+                } else {
+                    self?.screenTitle = MR.shared.strings.places_edit_screen_title.localizedString()
+                }
             }
         }
     }
