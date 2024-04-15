@@ -80,6 +80,7 @@ fun GroupDetailScreenCore(
     appState: CoreUiState,
     vm: GroupDetailViewModel,
     groupId: String?,
+    contentPadding: PaddingValues,
     openMemberAdd: () -> Unit,
     openMap: () -> Unit,
     openPlaces: () -> Unit,
@@ -103,10 +104,6 @@ fun GroupDetailScreenCore(
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
     val onShowDialog: (MainAlertDialog?) -> Unit = { showDialog = it }
-
-    var optionMenuExpanded by remember {
-        mutableStateOf(false)
-    }
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
@@ -212,7 +209,7 @@ fun GroupDetailScreenCore(
 
         is Payload.Success -> {
             Scaffold(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(contentPadding),
                 floatingActionButton = {
                     if (state.data.sharingStatus != null) {
                         ExtendedFloatingActionButton(

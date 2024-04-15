@@ -115,6 +115,7 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 groupId = groupId,
+                contentPadding = PaddingValues(bottom = 30.dp),
                 openMemberAdd = openMemberAdd,
                 openMap = openMap,
                 openPlaces = openPlaces,

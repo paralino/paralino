@@ -1,8 +1,10 @@
 package app.paralino.android.ui.groups
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
@@ -62,6 +64,7 @@ private fun GroupDetailScreen(
             appState = appState,
             vm = getViewModel { parametersOf(groupId) },
             groupId = groupId,
+            contentPadding = remember { PaddingValues() },
             openMemberAdd = {
                 appState.navController.navigate(
                     AppScreen.MainHome.GroupMemberAdd.route(groupId = groupId)
