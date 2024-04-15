@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -73,6 +74,7 @@ fun MapGroupNameAndMemberInfo(
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .padding(vertical = 2.dp)
                 .padding(start = 16.dp, end = 8.dp),
             verticalArrangement = Arrangement.Center
@@ -143,8 +145,6 @@ fun MapGroupNameAndMemberInfo(
                 }
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         Box(
             modifier = Modifier
