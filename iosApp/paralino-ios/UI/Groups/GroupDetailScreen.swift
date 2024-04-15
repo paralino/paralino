@@ -26,9 +26,6 @@ struct GroupDetailScreen: View {
                     openMemberAdd: {
                         path.append(.home(.memberInvite(groupId: appState.vm.groupId, code: nil)))
                     },
-                    openGroupEdit: {
-                        path.append(.home(.groupCreate(groupId: appState.vm.groupId)))
-                    },
                     openMap: {
                         path.removeAll()
                         path.append(.home(.map))
@@ -36,8 +33,8 @@ struct GroupDetailScreen: View {
                     openPlaces: {
                         path.append(.home(.places(groupId: appState.vm.groupId)))
                     },
-                    openGroupRawData: {
-                        path.append(.settings(.rawData(type: RawPresentationDataType.GroupPresentation(groupId: appState.vm.groupId))))
+                    openGroupSettings: {
+                        path.append(.home(.groupSettings(groupId: appState.vm.groupId)))
                     },
                     openMemberRawData: { memberId in
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupMemberPresentation(memberId: memberId))))
@@ -63,7 +60,6 @@ struct GroupDetailScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-            .navigationBarBackButtonHidden(true)
         }
     }
     

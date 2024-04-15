@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -162,21 +161,6 @@ class GroupDetailViewModel(
             .launchIn(coroutineScope)
     }
 
-
-    fun leaveOrDeleteGroup() {
-        processGroupRemoval { data ->
-            if (data.canEdit) {
-                groupRemove.deleteGroup(groupId).mapToPayload { it }
-            } else {
-                groupRemove.leaveGroup(groupId).mapToPayload { it }
-            }
-        }
-    }
-
-    fun blockGroup() {
-        processGroupRemoval { groupRemove.blockGroup(groupId).mapToPayload { it } }
-    }
-
     fun blockUser(userId: String) {
         val member = groupData.value?.memberByUserId(userId = userId) ?: return
         groupMemberRemove.blockUser(member)
@@ -213,35 +197,6 @@ class GroupDetailViewModel(
 
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.UserBlockActionCompleted)
-                    }
-                }
-            }
-            .launchIn(coroutineScope)
-    }
-
-    private fun processGroupRemoval(
-        action: (GroupDetailScreenState) -> Flow<Payload<Unit>>
-    ) {
-        val data = _uiState.value.data
-
-        if (data == null) {
-            coroutineScope.launch {
-                _eventChannel.send(GroupDetailScreenEvent.Error(NotFoundException("Group not loaded")))
-            }
-            flowOf(Payload.Error<Unit>(NotFoundException("Group not loaded")))
-        } else {
-            action(data)
-        }
-            .onEach { result ->
-                _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }
-                when (result) {
-                    Payload.Loading -> {}
-                    is Payload.Error -> {
-                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
-                    }
-
-                    is Payload.Success -> {
-                        _eventChannel.send(GroupDetailScreenEvent.GroupDeleted)
                     }
                 }
             }
@@ -308,5 +263,4 @@ class GroupDetailViewModel(
 
         }
     }
-
 }

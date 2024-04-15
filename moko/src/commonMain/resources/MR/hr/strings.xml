@@ -202,6 +202,7 @@
     <string name="invite_connect_alert_pickGroup">Molimo odaberite grupu</string>
     <string name="invite_connect_alert_wrongCode">Molimo provjerite svoj kod ili pokušajte s drugim</string>
     <string name="invite_connect_title">Za dodavanje novog člana, unesite njihov **Paralino.ID**</string>
+    <string name="invite_connect_screen_title">Dodaj novog člana</string>
     <string name="invite_section_title_group">Grupa</string>
     <string name="invite_section_title_user">Korisnik</string>
     <string name="invite_code_button_copy">Kopiraj</string>
@@ -232,7 +233,7 @@
     <string name="group_details_remove_member_alert_button">Ukloni</string>
     <string name="group_details_block_group_alert_title">Jeste li sigurni da želite blokirati ovu grupu?\nOvo je nepovratno, izbrisat će sve podatke koje ste podijelili s grupom i nećete moći ponovno se pridružiti grupi!</string>
     <string name="group_details_block_group_alert_button">Blokiraj</string>
-    <string name="group_details_add_member_button">Dodaj novog člana</string>
+    <string name="group_details_add_member_button">Dodaj</string>
     <string name="group_details_sharing_status_time">Dijeljenje do: **%s**</string>
     <string name="group_details_sharing_status_infinite">Dijeljenje lokacije **uvijek uključeno**</string>
     <string name="group_details_sharing_action">Dijeljenje lokacije</string>

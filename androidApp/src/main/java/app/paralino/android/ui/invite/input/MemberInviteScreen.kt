@@ -25,7 +25,7 @@ fun MemberInviteScreen(
     Scaffold(
         topBar = {
             DefaultToolbar(
-                title = stringResource(resource = MR.strings.group_details_add_member_button),
+                title = stringResource(resource = MR.strings.invite_connect_screen_title),
                 navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
             )
         }

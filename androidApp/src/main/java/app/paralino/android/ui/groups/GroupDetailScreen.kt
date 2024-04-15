@@ -1,5 +1,7 @@
 package app.paralino.android.ui.groups
 
+import android.annotation.SuppressLint
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
@@ -9,6 +11,8 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.dialogs.DefaultToolbar
+import app.paralino.core.ui.components.dialogs.ToolbarButtons
 import app.paralino.core.ui.groups.GroupDetailScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.androidx.compose.getViewModel
@@ -26,8 +30,9 @@ fun GroupDetailScreen(
     }
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun GroupDetailScreen(
+private fun GroupDetailScreen(
     appState: MainAppState,
     groupId: String,
     vm: GroupDetailViewModel = getViewModel { parametersOf(groupId) },
@@ -45,52 +50,56 @@ fun GroupDetailScreen(
         locationStatusProvider = vm.locationStatusProvider
     )
 
-    GroupDetailScreenCore(
-        appState = appState,
-        vm = getViewModel { parametersOf(groupId) },
-        groupId = groupId,
-        openMemberAdd = {
-            appState.navController.navigate(
-                AppScreen.MainHome.GroupMemberAdd.route(groupId = groupId)
+    Scaffold(
+        topBar = {
+            DefaultToolbar(
+                title = null,
+                navigationIcon = { ToolbarButtons.Close { appState.navController.popBackStack() } }
             )
-        },
-        openGroupEdit = {
-            appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(groupId))
-        },
-        openMap = {
-            appState.navController.navigate(AppScreen.MainHome.MainMap.route(groupId)) {
-                popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                this.launchSingleTop = true
-            }
-        },
-        openPlaces = {
-            appState.navController.navigate(
-                AppScreen.MainHome.PlacesList.route(groupId)
-            )
-        },
-        openGroupRawData = {
-            appState.navController.navigate(
-                AppScreen.MainHome.RawDataScreen.route(
-                    RawPresentationDataType.GroupPresentation(groupId)
+        }
+    ) {
+        GroupDetailScreenCore(
+            appState = appState,
+            vm = getViewModel { parametersOf(groupId) },
+            groupId = groupId,
+            openMemberAdd = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.GroupMemberAdd.route(groupId = groupId)
                 )
-            )
-        },
-        openMemberRawData = {
-            appState.navController.navigate(
-                AppScreen.MainHome.RawDataScreen.route(
-                    RawPresentationDataType.GroupMemberPresentation(it)
+            },
+            openMap = {
+                appState.navController.navigate(AppScreen.MainHome.MainMap.route(groupId)) {
+                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
+                    this.launchSingleTop = true
+                }
+            },
+            openPlaces = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlacesList.route(groupId)
                 )
-            )
-        },
-        openSharing = {
-            appState.navController.navigate(
-                AppScreen.MainHome.SharingStart.route(groupId)
-            )
-        },
-        onNavigateBack = { appState.navController.popBackStack() },
-        askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
-        askLocationService = { locationPermissionHandler.askLocationService() },
-        askLocationPermission = { locationPermissionHandler.askLocationPermission() },
-        askBackgroundLocationPermission = { locationPermissionHandler.askBackgroundLocationPermission() }
-    )
+            },
+            openGroupSettings = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.GroupSettings.route(groupId)
+                )
+            },
+            openMemberRawData = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.RawDataScreen.route(
+                        RawPresentationDataType.GroupMemberPresentation(it)
+                    )
+                )
+            },
+            openSharing = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.SharingStart.route(groupId)
+                )
+            },
+            onNavigateBack = { appState.navController.popBackStack() },
+            askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
+            askLocationService = { locationPermissionHandler.askLocationService() },
+            askLocationPermission = { locationPermissionHandler.askLocationPermission() },
+            askBackgroundLocationPermission = { locationPermissionHandler.askBackgroundLocationPermission() }
+        )
+    }
 }

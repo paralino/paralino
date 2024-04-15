@@ -69,6 +69,7 @@ object CoreAppIcons {
     val StopCircle get() = "drawable/ic_stop_circle.xml"
     val MoreVert get() = "drawable/ic_more_vert.xml"
     val PersonAdd get() = "drawable/ic_person_add.xml"
+    val Settings get() = "drawable/ic_settings.xml"
 
     val NotListedLocation get() = "drawable/ic_not_listed_location.xml"
     val NotificationsOff get() = "drawable/ic_notifications_off.xml"
