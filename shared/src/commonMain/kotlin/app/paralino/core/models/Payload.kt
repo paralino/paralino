@@ -21,20 +21,21 @@ val <T> Payload<T>.data: T?
 val Payload<*>.exception: Throwable?
     get() = (this as? Payload.Error)?.exception
 
-fun <T> Payload<T>.getOrThrow(): T = when(this) {
+fun <T> Payload<T>.getOrThrow(): T = when (this) {
     is Payload.Error -> {
-        if(this.exception is Exception) {
+        if (this.exception is Exception) {
             throw this.exception
         } else {
             throw IllegalStateException(this.exception)
         }
     }
+
     Payload.Loading -> throw IllegalStateException("Data still loading")
     is Payload.Success -> this.data
 }
 
 inline fun <reified T, R> Payload<T>.mapSuccess(action: (T) -> R): Payload<R> {
-    return when(this){
+    return when (this) {
         is Payload.Success -> Payload.Success(action(data))
         is Payload.Error -> Payload.Error(exception)
         Payload.Loading -> Payload.Loading
@@ -52,15 +53,21 @@ sealed class Resource<out R> {
             is NotInitialized -> "NotInitialized"
         }
     }
+
+    inline fun <reified T, R> Resource<T>.mapReady(action: (T) -> R): Resource<R> {
+        return when (this) {
+            is Resource.Ready -> Resource.Ready(action(this.data))
+            Resource.NotInitialized -> Resource.NotInitialized
+        }
+    }
 }
 
-fun <T: Any> T.toResource(): Resource<T> {
+fun <T : Any> T.toResource(): Resource<T> {
     return Resource.Ready(this)
 }
 
 val <T> Resource<T>.data: T?
     get() = (this as? Resource.Ready)?.data
-
 
 
 sealed class CryptoResource<out R> {
@@ -73,6 +80,7 @@ sealed class CryptoResource<out R> {
             return "UnverifiedKeyOrData:START>>>${data}<<<END"
         }
     }
+
     data class Ready<out T>(val data: T) : CryptoResource<T>() {
         override fun toString(): String {
             return "Ready:START>>>${data}<<<END"
@@ -85,16 +93,17 @@ sealed class CryptoResource<out R> {
             is NotInitialized -> "NotInitialized"
             MissingKey -> "MissingKey"
             WrongKeyOrData -> "WrongKeyOrData"
-            is UnverifiedKeyOrData<*> -> "UnverifiedKeyOrData(${if(data == null) "OK" else "null"})"
+            is UnverifiedKeyOrData<*> -> "UnverifiedKeyOrData(${if (data == null) "OK" else "null"})"
         }
     }
 }
 
 val <T> CryptoResource<T>.data: T?
-    get() = (this as? CryptoResource.Ready)?.data ?: (this as? CryptoResource.UnverifiedKeyOrData)?.data
+    get() = (this as? CryptoResource.Ready)?.data
+        ?: (this as? CryptoResource.UnverifiedKeyOrData)?.data
 
 inline fun <reified T, R> CryptoResource<T>.mapSuccess(action: (T) -> R): CryptoResource<R> {
-    return when(this){
+    return when (this) {
         CryptoResource.MissingKey -> CryptoResource.MissingKey
         CryptoResource.NotInitialized -> CryptoResource.NotInitialized
         is CryptoResource.Ready -> CryptoResource.Ready(action(data))

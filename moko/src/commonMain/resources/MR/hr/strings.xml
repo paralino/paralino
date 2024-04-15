@@ -237,6 +237,7 @@
     <string name="group_details_sharing_status_infinite">Dijeljenje lokacije **uvijek uključeno**</string>
     <string name="group_details_sharing_action">Dijeljenje lokacije</string>
     <string name="group_details_security_action">Sigurnost</string>
+    <string name="group_edit_screen_title">Uredi grupu</string>
 
     <string name="group_create_start_title">Povežite se s obitelji</string>
     <string name="group_load_error">Nemoguće učitati vašu grupu</string>

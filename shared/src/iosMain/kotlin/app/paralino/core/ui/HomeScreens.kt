@@ -25,6 +25,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
+import app.paralino.core.presentation.groups.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenState
@@ -43,6 +44,7 @@ import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
+import app.paralino.core.ui.groups.GroupSettingsScreenCore
 import app.paralino.core.ui.invite.MemberInviteScreenCore
 import app.paralino.core.ui.login.GroupInitScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
@@ -126,6 +128,23 @@ object HomeScreens {
                 askLocationService = askLocationService,
                 askLocationPermission = askLocationPermission,
                 askBackgroundLocationPermission = askBackgroundLocationPermission
+            )
+        }
+    }
+
+    fun GroupSettingsScreenVC(
+        vm: GroupSettingsViewModel,
+        openEditGroup: () -> Unit,
+        onGroupDeleted: () -> Unit,
+        openRawDataScreen: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            GroupSettingsScreenCore(
+                appState = it,
+                vm = vm,
+                openEditGroup = openEditGroup,
+                onGroupDeleted = onGroupDeleted,
+                openRawDataScreen = openRawDataScreen
             )
         }
     }

@@ -63,5 +63,4 @@ class GroupRemoveUseCase(
         placesRepo.deleteLocallyForGroup(groupId)
         cryptoKEKRepo.deleteAllKeysForGroup(groupId)
     }
-
 }

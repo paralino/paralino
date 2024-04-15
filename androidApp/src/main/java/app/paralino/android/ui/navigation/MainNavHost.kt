@@ -10,6 +10,7 @@ import androidx.navigation.navigation
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
+import app.paralino.android.ui.groups.GroupSettingsScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen
 import app.paralino.android.ui.invite.manage.PersonalCodeScreen
 import app.paralino.android.ui.login.LoggedOutScreen
@@ -69,6 +70,10 @@ fun NavGraphBuilder.homeGraph(
             val groupId =
                 it.arguments!!.getString(AppScreen.MainHome.GroupDetails.argumentGroupId)
             GroupDetailScreen(appState = appState, groupId = groupId)
+        }
+        composable(AppScreen.MainHome.GroupSettings.routeSignature) {
+            val groupId = it.arguments!!.getString(AppScreen.MainHome.GroupSettings.argumentGroupId)
+            GroupSettingsScreen(appState = appState, groupId = groupId)
         }
         composable(AppScreen.MainHome.GroupCreate.routeSignature) {
             val groupId =

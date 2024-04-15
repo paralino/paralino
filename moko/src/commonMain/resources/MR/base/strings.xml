@@ -238,6 +238,7 @@
     <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
     <string name="group_details_sharing_action">Location sharing</string>
     <string name="group_details_security_action">Security</string>
+    <string name="group_edit_screen_title">Edit group</string>
 
     <string name="group_create_start_title">Connect with your family</string>
     <string name="group_load_error">Unable to load your group</string>

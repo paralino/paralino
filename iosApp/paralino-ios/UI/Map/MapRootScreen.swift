@@ -35,6 +35,7 @@ struct MapRootScreen: View {
                             switch homeGraph {
                             case .groupCreate(let groupId): GroupCreateScreen(path: $mapState.path, appState: GroupCreateScreen.createState(groupId: groupId))
                             case .groupDetail(let groupId): GroupDetailScreen(path: $mapState.path, appState: GroupDetailScreen.createState(groupId: groupId))
+                            case .groupSettings(let groupId): GroupSettingsScreen(path: $mapState.path, appState: GroupSettingsScreen.createState(groupId: groupId))
                             case .sharingStart(let groupId): SharingStartScreen(path: $mapState.path, appState: SharingStartScreen.createState(groupId: groupId))
                             case .map: MapHomeScreen(path: $mapState.path, mapState: mapState)
                             case .groupInit: GroupInitScreen(path: $mapState.path)

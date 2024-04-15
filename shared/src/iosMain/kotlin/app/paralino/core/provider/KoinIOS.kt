@@ -18,6 +18,7 @@ import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
+import app.paralino.core.presentation.groups.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
@@ -132,6 +133,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get()) }
             factory { MainViewModel(get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }
@@ -176,6 +178,7 @@ object KoinIOS {
         fun rawDataVM(type: RawPresentationDataType) = get<RawDataPresentationViewModel> { parametersOf(type) }
         fun groupCreateVM(groupId: String?) = get<CreateGroupViewModel> { parametersOf(groupId) }
         fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
+        fun groupSettingsVM(groupId: String) = get<GroupSettingsViewModel> { parametersOf(groupId) }
         fun memberInviteVM(groupId: String?, code: String?) = get<MemberInviteViewModel> { parametersOf(groupId, code) }
         fun sharingStartVM(groupId: String?) = get<SharingStartViewModel> { parametersOf(groupId) }
         fun placesVM(groupId: String) = get<PlacesViewModel> { parametersOf(groupId) }
