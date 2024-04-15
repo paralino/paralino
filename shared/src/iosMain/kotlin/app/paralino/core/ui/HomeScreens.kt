@@ -313,7 +313,6 @@ object HomeScreens {
         vm: PlacesViewModel,
         addNewPlace: () -> Unit,
         openPlaceDetailScreen: (place: PlaceListItemData) -> Unit,
-        onNavigateBack: () -> Unit,
         askNotificationPermission: () -> Unit,
         mapUIView: (PlacesListScreenState) -> UIView,
     ) = ComposeUIViewController {
@@ -327,10 +326,10 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 userScrollEnabled = userScroll,
+                contentPadding = PaddingValues(bottom = 30.dp),
                 askNotificationPermission = askNotificationPermission,
                 addNewPlace = addNewPlace,
                 openPlaceDetails = openPlaceDetailScreen,
-                onNavigateBack = onNavigateBack,
                 mapContent = { state ->
                     Box(
                         modifier = Modifier.fillMaxSize()

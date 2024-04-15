@@ -28,9 +28,6 @@ struct PlacesScreen: View {
                     openPlaceDetailScreen: { place in
                         path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
                     },
-                    onNavigateBack: {
-                        path.removeLast()
-                    },
                     askNotificationPermission: {
                         notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
                     },
@@ -50,6 +47,8 @@ struct PlacesScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(appState.screenTitle)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
@@ -62,10 +61,19 @@ class PlacesState: BaseMapObservableObject {
     
     let groupId: String
     let vm: PlacesViewModel
+    @Published var screenTitle: String = ""
     
     init(groupId: String) {
         self.groupId = groupId
         self.vm = KoinIOS.ViewModels.shared.placesVM(groupId: groupId)
+        
+        super.init()
+        
+        self.vm.observe(flow: vm.uiState) { [weak self] state in
+            if let uiState = PayloadSwift<PlacesListScreenState>(data: state).dataOrNil {
+                self?.screenTitle = uiState.groupName
+            }
+        }
     }
     
     func updateMarkers(state: PlacesListScreenState) {

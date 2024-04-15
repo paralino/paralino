@@ -19,12 +19,10 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,10 +60,10 @@ fun PlacesScreenCore(
     appState: CoreUiState,
     vm: PlacesViewModel,
     userScrollEnabled: Boolean,
+    contentPadding: PaddingValues,
     askNotificationPermission: () -> Unit,
     addNewPlace: () -> Unit,
     openPlaceDetails: (place: PlaceListItemData) -> Unit,
-    onNavigateBack: () -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
 
@@ -126,9 +124,7 @@ fun PlacesScreenCore(
             PlacesScreen(
                 state = state.data,
                 userScrollEnabled = userScrollEnabled,
-                onScreenClose = {
-                    onNavigateBack()
-                },
+                contentPadding = contentPadding,
                 onPlaceClick = {
                     openPlaceDetails(it)
                 },
@@ -149,29 +145,14 @@ fun PlacesScreenCore(
 private fun PlacesScreen(
     state: PlacesListScreenState,
     userScrollEnabled: Boolean,
+    contentPadding: PaddingValues,
     onPlaceClick: (PlaceListItemData) -> Unit,
     onErrorItemClick: (ConditionErrorType) -> Unit,
-    onScreenClose: () -> Unit,
     onCreatePlace: () -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { Text(state.groupName) },
-                navigationIcon = {
-                    IconButton(onClick = onScreenClose) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-        },
+        modifier = Modifier.fillMaxSize().padding(contentPadding),
         floatingActionButton = {
             if (state.places.isNotEmpty()) {
                 ExtendedFloatingActionButton(
@@ -190,7 +171,7 @@ private fun PlacesScreen(
                 )
             }
         },
-        isFloatingActionButtonDocked = true
+        isFloatingActionButtonDocked = true,
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -203,7 +184,6 @@ private fun PlacesScreen(
             userScrollEnabled = userScrollEnabled
         ) {
             if (state.places.isNotEmpty()) {
-
                 this.item(key = "main_header") {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
