@@ -461,6 +461,7 @@ sealed interface MainAlertDialog {
                     stringResource(resource = MR.strings.button_cancel)
                 ),
             ),
+            canDismiss = false
         )
     }
 

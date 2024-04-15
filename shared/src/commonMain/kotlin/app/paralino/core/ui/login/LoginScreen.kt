@@ -141,8 +141,6 @@ fun LoginScreenCore(
                     vm.onEvent(LoginScreenUiEvent.RecoverGuestAccount)
                 } else if (it == MainAlertDialog.Buttons.buttonCancel) {
                     vm.onEvent(LoginScreenUiEvent.DismissGuestAccount)
-                } else {
-                    vm.onEvent(LoginScreenUiEvent.HideDialog)
                 }
             }
         }
