@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -83,39 +83,37 @@ fun RawDataScreenCore(
 fun RawDataScreen(
     state: RawDataScreenState
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(vertical = 20.dp, horizontal = 20.dp)
-            .padding(bottom = 20.dp),
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(top = 20.dp, bottom = 60.dp, start = 20.dp, end = 20.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .shadow(elevation = 12.dp, shape = RoundedCornerShape(12.dp))
-                .background(
-                    color = MaterialTheme.colors.background,
-                    shape = RoundedCornerShape(size = 12.dp)
+        this.item(key = "header") {
+            Column(
+                modifier = Modifier
+                    .shadow(elevation = 12.dp, shape = RoundedCornerShape(12.dp))
+                    .background(
+                        color = MaterialTheme.colors.background,
+                        shape = RoundedCornerShape(size = 12.dp)
+                    )
+                    .background(
+                        color = AppColors.accentLight.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(size = 12.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 6.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(32.dp),
+                    painter = CoreAppIcons.Security.asPainterResource(),
+                    contentDescription = null
                 )
-                .background(
-                    color = AppColors.accentLight.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(size = 12.dp)
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = stringResource(MR.strings.raw_data_screen_info),
+                    style = MaterialTheme.typography.caption,
                 )
-                .padding(horizontal = 8.dp, vertical = 6.dp)
-        ) {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                painter = CoreAppIcons.Security.asPainterResource(),
-                contentDescription = null
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                text = stringResource(MR.strings.raw_data_screen_info),
-                style = MaterialTheme.typography.caption,
-            )
+            }
         }
-
-        state.sections.forEach {
+        this.items(state.sections) {
             Spacer(modifier = Modifier.size(40.dp))
             RawDataScreenSection(it)
         }
