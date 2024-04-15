@@ -43,6 +43,7 @@ class PlacesViewModel(
 
             val state = PlacesListScreenState(
                 groupId = groupId,
+                groupImage = group.image,
                 groupName = group.name,
                 placesLimit = group.planType.placesLimit,
                 places = placesState,

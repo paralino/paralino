@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,8 +13,8 @@ import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.SimplePlaceMapComposable
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.data
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
@@ -24,7 +23,7 @@ import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
-import kotlinx.coroutines.flow.map
+import dev.icerock.moko.resources.compose.stringResource
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -46,12 +45,10 @@ fun PlacesScreen(
         mutableStateOf(true)
     }
 
-    val groupName by vm.uiState.map { it.data?.groupName }.collectAsState(initial = null)
-
     Scaffold(
         topBar = {
             DefaultToolbar(
-                title = groupName,
+                title = stringResource(MR.strings.places_list_screen_title),
                 navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
             )
         }

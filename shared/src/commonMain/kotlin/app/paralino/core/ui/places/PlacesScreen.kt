@@ -16,9 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExtendedFloatingActionButton
-import androidx.compose.material.FloatingActionButtonDefaults
-import androidx.compose.material.Icon
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
@@ -32,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
@@ -44,10 +43,11 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
-import app.paralino.core.ui.components.SettingsBigHeader
+import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.utils.ConditionErrorType
@@ -152,31 +152,12 @@ private fun PlacesScreen(
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize().padding(contentPadding),
-        floatingActionButton = {
-            if (state.places.isNotEmpty()) {
-                ExtendedFloatingActionButton(
-                    text = {
-                        Text(stringResource(MR.strings.places_list_add_button))
-                    },
-                    icon = {
-                        Icon(
-                            painter = CoreAppIcons.Add.asPainterResource(),
-                            contentDescription = null
-                        )
-                    },
-                    backgroundColor = MaterialTheme.colors.primary,
-                    elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
-                    onClick = onCreatePlace
-                )
-            }
-        },
-        isFloatingActionButtonDocked = true,
+        modifier = Modifier.fillMaxSize().padding(contentPadding)
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                top = it.calculateTopPadding(),
+                top = it.calculateTopPadding() + 20.dp,
                 bottom = it.calculateBottomPadding() + 100.dp,
                 start = 20.dp,
                 end = 20.dp
@@ -185,19 +166,11 @@ private fun PlacesScreen(
         ) {
             if (state.places.isNotEmpty()) {
                 this.item(key = "main_header") {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        SettingsBigHeader(
-                            name = stringResource(MR.strings.places_list_screen_title)
-                        )
-                        Spacer(modifier = Modifier.size(8.dp))
-                        PlanLimitCount(
-                            modifier = Modifier.padding(top = 4.dp),
-                            count = state.places.size,
-                            limit = state.placesLimit
-                        )
-                    }
+                    DataInfoChip(
+                        modifier = Modifier,
+                        image = state.groupImage,
+                        text = state.groupName
+                    )
                 }
 
                 this.items(items = state.errors, key = { it.toString() }) {
@@ -231,16 +204,45 @@ private fun PlacesScreen(
                 }
             }
 
+            this.item(key = "count_header") {
+                Spacer(modifier = Modifier.size(40.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.places_list_screen_title),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.alpha(ContentAlpha.medium)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    PlanLimitCount(
+                        modifier = Modifier.padding(top = 4.dp),
+                        count = state.places.size,
+                        limit = state.placesLimit
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    SmallActionButton(
+                        modifier = Modifier,
+                        icon = CoreAppIcons.Add.asPainterResource(),
+                        text = {
+                            Text(
+                                modifier = Modifier.padding(end = 4.dp),
+                                text = stringResource(MR.strings.group_details_add_member_button)
+                            )
+                        },
+                        backgroundColor = MaterialTheme.colors.primary,
+                        contentColor = MaterialTheme.colors.onPrimary,
+                        onClick = onCreatePlace
+                    )
+                }
+                Spacer(modifier = Modifier.size(4.dp))
+            }
+
             this.itemsIndexed(
                 items = state.places,
                 key = { index, item -> item.id }
             ) { index, item ->
-
-                if (index == 0)
-                    Spacer(modifier = Modifier.size(20.dp))
-                else
-                    Spacer(modifier = Modifier.size(8.dp))
-
+                Spacer(modifier = Modifier.size(8.dp))
                 PlaceListItem(
                     modifier = Modifier.animateItemPlacement(),
                     state = item,
