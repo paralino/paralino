@@ -170,6 +170,6 @@ class LocationLocalDataSource(
     }
 
     private suspend fun getGroupOwnerId(groupId: String): String? {
-        return database.groupQueries.getGroupOwnerId(groupId).executeAsOne()
+        return database.groupQueries.getGroupOwnerId(groupId).executeAsOneOrNull()
     }
 }
