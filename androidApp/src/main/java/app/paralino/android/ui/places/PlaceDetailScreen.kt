@@ -1,7 +1,10 @@
 package app.paralino.android.ui.places
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,16 +16,19 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.PlaceDetailMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.ui.places.PlaceDetailScreenCore
-import app.paralino.core.ui.places.PlaceDetailUserListItem
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.ui.components.dialogs.DefaultToolbar
+import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.places.PlaceDetailScreenCore
+import app.paralino.core.ui.places.PlaceDetailUserListItem
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PlaceDetailScreen(
     appState: MainAppState,
@@ -35,38 +41,50 @@ fun PlaceDetailScreen(
         mutableStateOf(true)
     }
 
-    PlaceDetailScreenCore(
-        appState = appState,
-        vm = vm,
-        userScrollEnabled = userScroll,
-        onNavigateBack = {
-            appState.navController.popBackStack()
-        },
-        openPlaceRawDataScreen = {
-            appState.navController.navigate(
-                AppScreen.MainHome.RawDataScreen.route(
-                    RawPresentationDataType.GroupPlacePresentation(
+    Scaffold(
+        topBar = {
+            DefaultToolbar(
+                title = null,
+                navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
+            )
+        }
+    ) {
+        PlaceDetailScreenCore(
+            appState = appState,
+            vm = vm,
+            userScrollEnabled = userScroll,
+            contentPadding = remember {
+                PaddingValues()
+            },
+            onNavigateBack = {
+                appState.navController.popBackStack()
+            },
+            openPlaceRawDataScreen = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.RawDataScreen.route(
+                        RawPresentationDataType.GroupPlacePresentation(
+                            placeId = placeId
+                        )
+                    )
+                )
+            },
+            openPlaceEditScreen = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceCreate.route(
+                        groupId = groupId,
                         placeId = placeId
                     )
                 )
-            )
-        },
-        openPlaceEditScreen = {
-            appState.navController.navigate(
-                AppScreen.MainHome.PlaceCreate.route(
-                    groupId = groupId,
-                    placeId = placeId
+            },
+            mapContent = { state ->
+                PlaceDetailMapComposable(
+                    modifier = Modifier.fillMaxSize(),
+                    state = state,
+                    onMapInteraction = { userScroll = !it }
                 )
-            )
-        },
-        mapContent = { state ->
-            PlaceDetailMapComposable(
-                modifier = Modifier.fillMaxSize(),
-                state = state,
-                onMapInteraction = { userScroll = !it }
-            )
-        }
-    )
+            }
+        )
+    }
 }
 
 @Preview("place_detail_user_item")

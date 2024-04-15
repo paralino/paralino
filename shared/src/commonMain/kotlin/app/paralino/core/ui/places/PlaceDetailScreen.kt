@@ -20,15 +20,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
-import app.paralino.core.models.data
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenEvent
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
@@ -55,7 +47,7 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -65,6 +57,7 @@ fun PlaceDetailScreenCore(
     appState: CoreUiState,
     vm: PlaceDetailViewModel,
     userScrollEnabled: Boolean,
+    contentPadding: PaddingValues,
     onNavigateBack: () -> Unit,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
@@ -72,9 +65,7 @@ fun PlaceDetailScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-
     val state by vm.uiState.collectAsState(initial = Payload.Loading)
-    var optionMenuExpanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     LaunchedEffect(key1 = Unit) {
@@ -107,124 +98,60 @@ fun PlaceDetailScreenCore(
         else -> {}
     }
 
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = {
-                    Text(state.data?.groupName ?: "")
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onNavigateBack() }
-                    ) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            openPlaceRawDataScreen()
-                        }
-                    ) {
-                        Icon(
-                            painter = CoreAppIcons.Security.asPainterResource(),
-                            tint = AppColors.accent,
-                            contentDescription = null
-                        )
-                    }
-                    if (state.data?.canEdit == true) {
-                        IconButton(
-                            onClick = {
-                                openPlaceEditScreen()
-                            }
-                        ) {
-                            Icon(
-                                painter = CoreAppIcons.Edit.asPainterResource(),
-                                contentDescription = null
-                            )
-                        }
-                        IconButton(onClick = { optionMenuExpanded = true }) {
-                            Icon(
-                                painter = CoreAppIcons.MoreVert.asPainterResource(),
-                                contentDescription = null
-                            )
-                        }
-
-                        DropdownMenu(
-                            expanded = optionMenuExpanded,
-                            onDismissRequest = { optionMenuExpanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    optionMenuExpanded = false
-                                    showDialog = MainAlertDialog.DeletePlace
-                                }
-                            ) {
-                                Text(text = stringResource(MR.strings.place_list_menu_delete))
-                            }
-                        }
-                    }
-                }
-            )
+    when (val finalState = state) {
+        Payload.Loading -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
         }
-    ) {
 
-        when (val finalState = state) {
-            Payload.Loading -> {
-                Column(
+        is Payload.Error -> {
+            DefaultEmptyState(content = stringResource(MR.strings.error_load_data_generic))
+        }
+
+        is Payload.Success -> {
+            PlaceDetailScreen(
+                state = finalState.data,
+                paddingValues = contentPadding,
+                canEditPlace = finalState.data.canEdit,
+                userScrollEnabled = userScrollEnabled,
+                openPlaceEditScreen = openPlaceEditScreen,
+                openPlaceRawDataScreen = openPlaceRawDataScreen,
+                onPlaceDelete = {
+                    showDialog = MainAlertDialog.DeletePlace
+                },
+                onEnterChange = {
+                    vm.toggleEnterSettings(it)
+                },
+                onExitChange = {
+                    vm.toggleExitSettings(it)
+                },
+                mapContent = mapContent
+            )
+
+            AnimatedVisibility(
+                finalState.data.fullLoading,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .background(color = MaterialTheme.colors.background.copy(alpha = 0.5f))
+                        .clickable { },
+                    contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
                 }
             }
-
-            is Payload.Error -> {
-                DefaultEmptyState(content = stringResource(MR.strings.error_load_data_generic))
-            }
-
-            is Payload.Success -> {
-                PlaceDetailScreen(
-                    state = finalState.data,
-                    paddingValues = it,
-                    onEnterChange = {
-                        vm.toggleEnterSettings(it)
-                    },
-                    onExitChange = {
-                        vm.toggleExitSettings(it)
-                    },
-                    userScrollEnabled = userScrollEnabled,
-                    mapContent = mapContent
-                )
-
-                AnimatedVisibility(
-                    finalState.data.fullLoading,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = MaterialTheme.colors.background.copy(alpha = 0.5f))
-                            .clickable { },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
         }
     }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -233,9 +160,13 @@ private fun PlaceDetailScreen(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
     state: PlaceDetailScreenState,
+    canEditPlace: Boolean,
+    userScrollEnabled: Boolean,
+    openPlaceRawDataScreen: () -> Unit,
+    openPlaceEditScreen: () -> Unit,
+    onPlaceDelete: () -> Unit,
     onEnterChange: (String) -> Unit,
     onExitChange: (String) -> Unit,
-    userScrollEnabled: Boolean,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
 ) {
     LazyColumn(
@@ -293,19 +224,32 @@ private fun PlaceDetailScreen(
             }
         }
 
-        this.item(key = "spacer") {
+        this.item(key = "settings") {
             Spacer(modifier = Modifier.size(20.dp))
+            SettingsActionItem(
+                name = stringResource(MR.strings.raw_data_screen_title),
+                icon = CoreAppIcons.Security.asPainterResource(),
+            ) {
+                openPlaceRawDataScreen()
+            }
+            if (canEditPlace) {
+                SettingsActionItem(
+                    name = stringResource(MR.strings.places_edit_screen_title),
+                    icon = CoreAppIcons.Edit.asPainterResource(),
+                ) {
+                    openPlaceEditScreen()
+                }
+                SettingsActionItem(
+                    name = stringResource(MR.strings.place_list_menu_delete),
+                    icon = CoreAppIcons.Delete.asPainterResource(),
+                    iconTint = MaterialTheme.colors.error
+                ) {
+                    onPlaceDelete()
+                }
+            }
         }
 
-        if (state.settings.isEmpty()) {
-            this.item {
-                DefaultEmptyState(
-                    content = stringResource(MR.strings.places_list_screen_empty_info),
-                    icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                    buttonText = null
-                ) { }
-            }
-        } else {
+        if (state.settings.isNotEmpty()) {
             this.item(key = "notification_header") {
                 SettingsSectionHeader(name = stringResource(MR.strings.place_detail_notification_settings_title))
             }

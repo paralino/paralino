@@ -363,6 +363,7 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 userScrollEnabled = userScroll,
+                contentPadding = PaddingValues(bottom = 30.dp),
                 onNavigateBack = onNavigateBack,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceEditScreen = openPlaceEditScreen,
