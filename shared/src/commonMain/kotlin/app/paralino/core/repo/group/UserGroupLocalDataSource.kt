@@ -88,19 +88,29 @@ class UserGroupLocalDataSource constructor(
     }
 
     fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers?> {
-        return database.mapToOneOrNull { groupQueries.getGroup(groupId) }
-            .combine(memberLocal.getMembersForGroup(groupId)) { group, members ->
-                if(group != null && members.isNotEmpty()) {
-                    // TODO double check this - sometimes it crashes on logout or expired session with NoSuchElement exception
-                    // mostly likely because clearing database currently is not one transaction
-                    val verificationResult =
-                        members.first { it.member.userId == config.userId }.member.verificationResult
-                    UserGroupWithMembers(
-                        group = mapper.local2Core(group, members.size, verificationResult),
-                        members = members
-                    )
-                } else null
-            }
+        return combine(
+            database.mapToOneOrNull { groupQueries.getGroup(groupId) }.distinctUntilChanged(),
+            database.mapToList { memberQueries.getAllMembersForGroup(groupId) }.distinctFlowOfList(),
+            database.mapToList { locationQueries.getForGroup(groupId) }.distinctFlowOfList()
+        ) { group, members, locations ->
+            if(group != null && members.isNotEmpty()) {
+                // TODO double check this - sometimes it crashes on logout or expired session with NoSuchElement exception
+                // mostly likely because clearing database currently is not one transaction
+
+                val mappedMembers = members.map { member ->
+                    val memberLocations = locations.filter { it.memberId == member.id }
+                    memberMapper.local2Core(member, memberLocations, group.ownerUserId)
+                }
+                val verificationResult = mappedMembers
+                    .first { it.member.userId == config.userId }
+                    .member.verificationResult
+
+                UserGroupWithMembers(
+                    group = mapper.local2Core(group, mappedMembers.size, verificationResult),
+                    members = mappedMembers
+                )
+            } else null
+        }
     }
 
     fun getAllGroups(): Flow<List<UserGroup>> {
@@ -135,8 +145,11 @@ class UserGroupLocalDataSource constructor(
     }
 
     suspend fun deleteGroup(groupId: String) {
-        database.groupQueries.deleteGroup(groupId)
-        memberLocal.removeAllMembersForGroup(groupId)
+        database.transaction {
+            groupQueries.deleteGroup(groupId)
+            memberQueries.clearForGroup(groupId)
+            locationQueries.clearForGroup(groupId)
+        }
     }
 
     suspend fun removeMember(groupId: String, userId: String) {
@@ -154,5 +167,4 @@ class UserGroupLocalDataSource constructor(
             locationQueries.clearAll()
         }
     }
-
 }

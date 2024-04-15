@@ -1,16 +1,19 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.logg
-import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
+import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
-import app.paralino.core.utils.extensions.distinctFlowOfList
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 class LocationLocalDataSource(
     private val database: AppDatabaseHelper,
@@ -62,22 +65,6 @@ class LocationLocalDataSource(
             val ownerId = getGroupOwnerId(groupId = it.groupId)!!
             mapper.local2Core(it, emptyList(), ownerId).member
         }
-    }
-
-    fun getMembersForGroup(groupId: String): Flow<List<MemberModelWithLocations>> {
-        return combine(
-            database.mapToList { memberQueries.getAllMembersForGroup(groupId) },
-            database.mapToList { locationQueries.getForGroup(groupId) }
-        ) { members, locations ->
-            members.map { member ->
-                val ownerId = getGroupOwnerId(groupId = member.groupId)!!
-                val memberLocations = locations.filter {
-                    it.memberId == member.id
-                }
-                mapper.local2Core(member, memberLocations, ownerId)
-            }
-        }
-            .distinctFlowOfList()
     }
 
     fun getMember(groupId: String, userId: String): Flow<MemberModel> {
@@ -153,13 +140,6 @@ class LocationLocalDataSource(
 
     suspend fun clearMemberLocationData(locationId: String) {
         database.locationQueries.updateLocationData(locationData = null, id = locationId)
-    }
-
-    suspend fun removeAllMembersForGroup(groupId: String) {
-        database.transaction {
-            memberQueries.clearForGroup(groupId)
-            locationQueries.clearForGroup(groupId)
-        }
     }
 
     suspend fun removeMemberFromGroup(groupId: String, userId: String) {
