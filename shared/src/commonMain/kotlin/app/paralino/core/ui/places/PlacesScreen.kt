@@ -202,40 +202,40 @@ private fun PlacesScreen(
                         }
                     }
                 }
-            }
 
-            this.item(key = "count_header") {
-                Spacer(modifier = Modifier.size(40.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(MR.strings.places_list_screen_title),
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.alpha(ContentAlpha.medium)
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
-                    PlanLimitCount(
-                        modifier = Modifier.padding(top = 4.dp),
-                        count = state.places.size,
-                        limit = state.placesLimit
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    SmallActionButton(
-                        modifier = Modifier,
-                        icon = CoreAppIcons.Add.asPainterResource(),
-                        text = {
-                            Text(
-                                modifier = Modifier.padding(end = 4.dp),
-                                text = stringResource(MR.strings.group_details_add_member_button)
-                            )
-                        },
-                        backgroundColor = MaterialTheme.colors.primary,
-                        contentColor = MaterialTheme.colors.onPrimary,
-                        onClick = onCreatePlace
-                    )
+                this.item(key = "count_header") {
+                    Spacer(modifier = Modifier.size(40.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(MR.strings.places_list_screen_title),
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier.alpha(ContentAlpha.medium)
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        PlanLimitCount(
+                            modifier = Modifier.padding(top = 4.dp),
+                            count = state.places.size,
+                            limit = state.placesLimit
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        SmallActionButton(
+                            modifier = Modifier,
+                            icon = CoreAppIcons.Add.asPainterResource(),
+                            text = {
+                                Text(
+                                    modifier = Modifier.padding(end = 4.dp),
+                                    text = stringResource(MR.strings.group_details_add_member_button)
+                                )
+                            },
+                            backgroundColor = MaterialTheme.colors.primary,
+                            contentColor = MaterialTheme.colors.onPrimary,
+                            onClick = onCreatePlace
+                        )
+                    }
+                    Spacer(modifier = Modifier.size(4.dp))
                 }
-                Spacer(modifier = Modifier.size(4.dp))
             }
 
             this.itemsIndexed(
