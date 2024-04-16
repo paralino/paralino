@@ -209,10 +209,11 @@ fun GroupDetailScreenCore(
 
         is Payload.Success -> {
             Scaffold(
-                modifier = Modifier.fillMaxSize().padding(contentPadding),
+                modifier = Modifier.fillMaxSize(),
                 floatingActionButton = {
                     if (state.data.sharingStatus != null) {
                         ExtendedFloatingActionButton(
+                            modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
                             text = { Text(text = stringResource(MR.strings.location_banner_info_stop)) },
                             icon = {
                                 Icon(
@@ -228,6 +229,7 @@ fun GroupDetailScreenCore(
                         )
                     } else {
                         ExtendedFloatingActionButton(
+                            modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
                             text = { Text(text = stringResource(MR.strings.groups_sharing_button_start)) },
                             icon = {
                                 Icon(
@@ -250,8 +252,8 @@ fun GroupDetailScreenCore(
                     contentPadding = PaddingValues(
                         start = 20.dp,
                         end = 20.dp,
-                        top = it.calculateTopPadding() + 20.dp,
-                        bottom = it.calculateBottomPadding() + 100.dp
+                        top = contentPadding.calculateTopPadding() + 20.dp,
+                        bottom = contentPadding.calculateBottomPadding() + 100.dp
                     )
                 ) {
 

@@ -152,13 +152,13 @@ private fun PlacesScreen(
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize().padding(contentPadding)
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                top = it.calculateTopPadding() + 20.dp,
-                bottom = it.calculateBottomPadding() + 100.dp,
+                top = contentPadding.calculateTopPadding() + 20.dp,
+                bottom = contentPadding.calculateBottomPadding() + 100.dp,
                 start = 20.dp,
                 end = 20.dp
             ),
