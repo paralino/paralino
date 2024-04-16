@@ -42,8 +42,8 @@ struct PlaceCreateScreen: View {
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
-            .navigationBarBackButtonHidden(false)
             .navigationTitle(appState.screenTitle)
+            .navigationBarTitleDisplayMode(.inline)
         }
         .photoPickerSheet($bottomSheet) { image in
             appState.vm.updateImage(image: image)
