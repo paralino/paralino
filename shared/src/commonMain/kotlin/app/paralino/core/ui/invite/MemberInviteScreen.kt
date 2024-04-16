@@ -15,12 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,7 +35,6 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.invite.input.MemberInviteScreenEvent
 import app.paralino.core.presentation.invite.input.MemberInviteScreenState
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
-import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetsScreen
@@ -53,7 +48,6 @@ import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
-import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
