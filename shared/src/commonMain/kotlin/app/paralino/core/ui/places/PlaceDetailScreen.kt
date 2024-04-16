@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,8 +21,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -44,7 +48,6 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
@@ -247,11 +250,25 @@ private fun PlaceDetailScreen(
                     onPlaceDelete()
                 }
             }
+            Spacer(modifier = Modifier.size(20.dp))
         }
 
         if (state.settings.isNotEmpty()) {
-            this.item(key = "notification_header") {
-                SettingsSectionHeader(name = stringResource(MR.strings.place_detail_notification_settings_title))
+            this.stickyHeader(key = "notification_header") {
+                Row(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .background(MaterialTheme.colors.background)
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.place_detail_notification_settings_title),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.alpha(ContentAlpha.medium)
+                    )
+                }
+                Spacer(modifier = Modifier.size(4.dp))
             }
             this.itemsIndexed(
                 items = state.settings,
