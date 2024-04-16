@@ -2,6 +2,7 @@ package app.paralino.core.ui.places
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -201,11 +202,15 @@ private fun PlacesScreen(
                             mapContent(state)
                         }
                     }
+                    Spacer(modifier = Modifier.size(40.dp))
                 }
 
-                this.item(key = "count_header") {
-                    Spacer(modifier = Modifier.size(40.dp))
+                this.stickyHeader(key = "count_header") {
                     Row(
+                        modifier = Modifier
+                            .fillParentMaxWidth()
+                            .background(MaterialTheme.colors.background)
+                            .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -242,7 +247,9 @@ private fun PlacesScreen(
                 items = state.places,
                 key = { index, item -> item.id }
             ) { index, item ->
-                Spacer(modifier = Modifier.size(8.dp))
+                if (index > 0) {
+                    Spacer(modifier = Modifier.size(8.dp))
+                }
                 PlaceListItem(
                     modifier = Modifier.animateItemPlacement(),
                     state = item,
