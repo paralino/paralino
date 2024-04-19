@@ -21,7 +21,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.filterNotNull
@@ -32,6 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -90,23 +90,20 @@ class LocationUploadEngine constructor(
             try {
                 pendingLocation.filterNotNull()
                     .conflate()
-                    .catch {
-                        logg.w(
-                            tag = "location_service",
-                            message = "Error uploading new location: ${it.message}",
-                            t = it
-                        )
-                    }
                     .collectLatest {
                         logg.d(tag = "location_service", message = "Processing new location")
                         val lastUpdate = lastLocationPush.value
                         val diff = if (lastUpdate != null) nowUTC() - lastUpdate else 0.seconds
                         if (diff > Duration.ZERO && diff < maxUploadRate) {
-                            logg.d(
-                                tag = "location_service",
-                                message = "Delay location upload by ${maxUploadRate - diff}"
-                            )
-                            delay(maxUploadRate - diff)
+                            val delay = maxUploadRate - diff
+                            // no need to lock thread if potential delay is small
+                            if (delay > 100.milliseconds) {
+                                logg.d(
+                                    tag = "location_service",
+                                    message = "Delay location upload by $delay"
+                                )
+                                delay(delay)
+                            }
                         }
 
                         lastLocationPush.update { nowUTC() }
@@ -127,7 +124,7 @@ class LocationUploadEngine constructor(
             } catch (e: Exception) {
                 logg.w(
                     tag = "location_service",
-                    message = "Error uploading new location: ${e.message}",
+                    message = "Error processing pending location: ${e.message}",
                     t = e
                 )
             }
