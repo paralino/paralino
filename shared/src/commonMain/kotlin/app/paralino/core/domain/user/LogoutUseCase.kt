@@ -13,7 +13,7 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.domain.location.LocationUploadEngine
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -29,7 +29,7 @@ class LogoutUseCase(
     private val codeRepo: PersonalCodesRepository,
     private val pushManager: IPushProviderManager,
     private val deviceStatus: IDeviceApiProvider,
-    private val locationRepo: LocationRepository,
+    private val locationRepo: LocationUploadEngine,
     private val scopeProvider: ICoroutineScopeProvider,
     private val geofenceManager: IGeofenceManager,
     private val config: AppConfig

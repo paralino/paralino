@@ -6,8 +6,8 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.repo.location.LocationRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -26,8 +26,9 @@ class ActiveSharingEngine(
     private val locationSharingManager: LocationSharingManager,
     private val geofenceRegistrationMonitor: GeofenceRegistrationMonitor,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val locationRepo: LocationRepository
-) {
+    private val locationRepo: LocationUploadEngine,
+    private val locationCache: LocationCacheRepository
+): BaseRepository() {
 
     private var activePingJob: Job? = null
 
@@ -39,6 +40,7 @@ class ActiveSharingEngine(
                 .distinctUntilChanged()
         ) { deviceStatus, locationPerformance ->
             if (locationSharingManager.isSharingActive()) {
+                logg.v("location_service", "Sending location status due to device status change")
                 updateStatus()
             }
         }
@@ -50,26 +52,27 @@ class ActiveSharingEngine(
                 if (it) {
                     sendStatusPeriodically()
                 } else {
-                    logg.v("Cancel periodic location status update")
+                    logg.v("location_service", "Cancel periodic location status update")
                     activePingJob?.cancel()
                 }
             }
             .launchIn(scopeProvider.defaultIOScope)
 
         geofenceRegistrationMonitor.startGeofenceRegistration(reRegisterPeriodically = true)
+        locationRepo.startLocationUploadEngine()
     }
 
     private fun sendStatusPeriodically() {
-        logg.v("Start periodic location status update")
+        logg.v("location_service", "Start periodic location status update")
         activePingJob?.cancel()
         activePingJob = scopeProvider.userSessionIOScope.launch {
             while (isActive) {
-                delay(5.minutes.inWholeMilliseconds)
-                if (locationRepo.lastLocation.value?.isOlderThan(15.minutes) != false) {
-                    logg.v("Sending location status after inactivity")
+                delay(5.minutes)
+                if (locationCache.lastLocation?.isOlderThan(5.minutes) != false) {
+                    logg.v("location_service", "Sending location status after inactivity")
                     updateStatus()
                 } else {
-                    logg.v("Skip sending location status after inactivity")
+                    logg.v("location_service", "Skip sending location status after inactivity")
                 }
             }
         }
@@ -78,9 +81,9 @@ class ActiveSharingEngine(
     private fun updateStatus() {
         scopeProvider.userSessionIOScope.launch {
             try {
-                locationRepo.pushLocation(data = null)
+                locationRepo.updateDeviceStatusOnly()
             } catch (e: Exception) {
-                logg.w("Error updating device status", e)
+                logg.w("Error updating device status: ${e.message}")
             }
         }
     }

@@ -36,7 +36,7 @@ class LocationLocalDataSource(
     }
 
     suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw) {
-        logg.v("Save new location (${data.id})")
+        logg.v("Save new location to database (${data.id})")
         database.locationQueries.update(
             id = data.id,
             deviceId = data.deviceId,

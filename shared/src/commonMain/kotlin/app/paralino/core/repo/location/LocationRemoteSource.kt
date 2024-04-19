@@ -4,7 +4,6 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
@@ -33,8 +32,7 @@ class LocationRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKRepository,
-    private val userMemberIdUseCase: UserMemberIdUseCase,
+    private val cryptoKEKRepo: CryptoKEKRepository
 ) {
 
     suspend fun deleteLocation(memberId: String, locationId: String) {
@@ -82,7 +80,7 @@ class LocationRemoteSource constructor(
                 try {
                     saveCurrentLocation(it)
                 } catch (e: Exception) {
-                    logg.e("Error saving location for group ${it.groupId}", e)
+                    logg.e("location_service", "Error saving location for group ${it.groupId}", e)
                 }
             }
         }

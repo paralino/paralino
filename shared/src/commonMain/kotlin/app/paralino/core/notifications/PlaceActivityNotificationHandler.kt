@@ -8,7 +8,7 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.flow.first
@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class PlaceActivityNotificationHandler(
     private val groupRepo: GroupRepository,
-    private val locationRepo: LocationRepository,
+    private val locationRepo: LocationLocalDataSource,
     private val placeRepo: PlacesRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val scopeProvider: ICoroutineScopeProvider,
@@ -41,7 +41,7 @@ class PlaceActivityNotificationHandler(
             try {
                 val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
                 placeName = place?.data?.data?.name
-                userName = locationRepo.getMember(place!!.groupId, payload.memberUserId)?.name
+                userName = locationRepo.getMemberOnce(place!!.groupId, payload.memberUserId)?.name
             } catch (_: Exception) {
             }
 

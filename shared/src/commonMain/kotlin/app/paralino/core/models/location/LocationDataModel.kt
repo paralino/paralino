@@ -4,6 +4,7 @@ import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -21,9 +22,10 @@ data class LocationDataModel constructor(
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
     val isAccurate get() = accuracy < 20f
+    val timeUTCInstant: Instant? = timeUTC?.fromUTCtoInstant()
 
     fun isOlderThan(duration: Duration): Boolean {
-        val pinTime = timeUTC?.fromUTCtoInstant() ?: return false
+        val pinTime = timeUTCInstant ?: return false
         return pinTime.plus(duration) < nowUTC()
     }
 }

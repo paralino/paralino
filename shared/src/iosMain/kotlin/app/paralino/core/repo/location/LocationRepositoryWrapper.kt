@@ -1,14 +1,15 @@
 package app.paralino.core.repo.location
 
+import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.LocationDataModel
 
 class LocationRepositoryWrapper(
-    val locationRepo: LocationRepository
+    val locationRepo: LocationUploadEngine
 ) {
-    suspend fun pushLocation(data: LocationDataModel?): Payload<Unit> {
+    fun registerNewLocation(data: LocationDataModel): Payload<Unit> {
         return try {
-            locationRepo.pushLocation(data)
+            locationRepo.registerNewLocation(data)
             Payload.Success(Unit)
         } catch (e: Exception) {
             Payload.Error(e)

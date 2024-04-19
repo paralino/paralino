@@ -21,7 +21,9 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.ActiveSharingEngine
+import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.GeofenceRegistrationMonitor
+import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationPayloadProvider
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
@@ -71,7 +73,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRemoteSource
-import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.repo.location.SharingContractsLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodeLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
@@ -164,7 +166,7 @@ val dataSourceModule = module {
 
     single { UserRemoteSource(get(), get(), get(), get(), get()) }
     single { UserDevicesRemoteSource(get(), get(), get(), get()) }
-    single { LocationRemoteSource(get(), get(), get(), get(), get(), get()) }
+    single { LocationRemoteSource(get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalCodesRemoteSource(get(), get(), get(), get(), get(), get()) }
@@ -175,7 +177,7 @@ val dataSourceModule = module {
 val coreModule = module {
     single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
-    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get()) }
+    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get()) }
@@ -186,9 +188,10 @@ val coreModule = module {
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
     factory { LocationRequestUseCase(get(), get()) }
+    factory { ClearUserLocationUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
-    factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get(), config) }
 
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -207,7 +210,8 @@ val coreModule = module {
     single { PersonalCodesRepository(get(), get(), get()) }
     single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationCacheRepository(get()) }
     single { PlacesRepository(get(), get(), get(), get(), get()) }
     single { AppConfigRepository(get(), get(), get(), get(), config) }
 

@@ -15,7 +15,7 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
-import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +38,7 @@ class LocationService : Service() {
     private val notificationHandler: LocationNotificationHandler by inject()
     private val locationInitHandler: LocationInitHandler by inject()
     private val locationSharingManager: LocationSharingManager by inject()
-    private val locationRepository: LocationRepository by inject()
+    private val locationUploadEngine: LocationUploadEngine by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
 
     private var launchedInForeground: Boolean = false
@@ -121,11 +121,15 @@ class LocationService : Service() {
 
         locationInitHandler.currentLocation
             .onEach {
-                logg.v(this.hashCode().toString(), "Got location: $it")
-                it.data?.let {
-                    launchedInForeground = true
-                    updateNotification()
-                    saveLocation(it)
+                when (val location = it.data) {
+                    null -> {
+                        logg.v(this.hashCode().toString(), "Got null location")
+                    }
+                    else -> {
+                        launchedInForeground = true
+                        updateNotification()
+                        saveLocation(location)
+                    }
                 }
             }
             .launchIn(serviceDefaultScope)
@@ -138,10 +142,10 @@ class LocationService : Service() {
             .launchIn(serviceDefaultScope)
     }
 
-    private fun saveLocation(data: LocationDataModel?) {
+    private fun saveLocation(data: LocationDataModel) {
         serviceDefaultScope.launch {
             try {
-                locationRepository.pushLocation(data)
+                locationUploadEngine.registerNewLocation(data)
             } catch (e: NoValidContractsException) {
                 logg.w("Error saving saving location - sharing expired")
                 // We can stop service since all sharing contracts are expired

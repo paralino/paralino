@@ -172,7 +172,7 @@ class PlacesRepository constructor(
 
     suspend fun processLocation(data: LocationDataModel) {
         // TODO filter out frequent calls and calculations of distance between points
-
+        logg.v("place_activity", "Process new location in places")
         val places = getAllActivePlaces()
 
         val entered = mutableListOf<String>()

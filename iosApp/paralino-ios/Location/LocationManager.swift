@@ -18,9 +18,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     lazy var placeRepo: PlacesRepository = { KoinIOS.Instances.shared.placesRepo }()
     lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
     lazy var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
-
+    
     @Published var location: CLLocationCoordinate2D?
-
+    
     override init() {
         super.init()
         manager.allowsBackgroundLocationUpdates = true
@@ -105,27 +105,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             altitude: altitude
         )
         
-        Logr.v(tag: "location_Test", message: "Got location update")
+        Logr.v(tag: "location_service", message: "Got location update from system")
         
-        DispatchQueue.main.async { [weak self] in
-            Task {
-                do {
-                    let result = try await self?.locationRepo.pushLocation(data: locationModel)
-                    if let result = result {
-                        let payload = PayloadSwift(result)
-                        switch payload {
-                        case .loading:
-                            Logr.v(tag: "location_Test", message: "error pushing location: loading")
-                        case .success(data: _):
-                            Logr.v(tag: "location_Test", message: "Location pushed successfully")
-                        case .error(error: let error):
-                            Logr.v(tag: "location_Test", message: "error pushing location: \(error)")
-                        }
-                    }
-                } catch let error {
-                    Logr.v(tag: "location_Test", message: "error pushing location: \(error)")
-                }
-            }
+        let result = locationRepo.registerNewLocation(data: locationModel)
+        let payload = PayloadSwift(result)
+        switch payload {
+        case .loading:
+            Logr.v(tag: "location_Test", message: "error pushing location: loading")
+        case .success(data: _):
+            Logr.v(tag: "location_Test", message: "Location pushed successfully")
+        case .error(error: let error):
+            Logr.v(tag: "location_Test", message: "error pushing location: \(error)")
         }
     }
     
@@ -158,14 +148,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-//        notifyUser(id: "LocationResume", message: "Permission changed: \(manager.authorizationStatus)")
+        //        notifyUser(id: "LocationResume", message: "Permission changed: \(manager.authorizationStatus)")
     }
     
     private func notifyUser(id: String, message: String) {
         let content = UNMutableNotificationContent()
         content.title = "Paralino location updates"
         content.body = message
-    
+        
         let request = UNNotificationRequest(identifier: id, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { (error : Error?) in }
     }

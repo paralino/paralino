@@ -13,11 +13,21 @@ import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.repo.location.LocationRepository
-import app.paralino.core.utils.*
+import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.exceptions.TimeoutException
+import app.paralino.core.utils.poll
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
@@ -28,7 +38,7 @@ class SharingStartViewModel(
     private val connectionStatus: IConnectionStatusProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
     private val userMemberIdUseCase: UserMemberIdUseCase,
-    private val locationRepository: LocationRepository
+    private val locationRepo: LocationLocalDataSource
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -57,7 +67,7 @@ class SharingStartViewModel(
                 if(it == null)
                     flowOf(0)
                 else
-                    locationRepository.getLocationCountForMember(userMemberIdUseCase.getCurrentUserMemberIdForGroup(it.id)!!)
+                    locationRepo.getLocationCountForMember(userMemberIdUseCase.getCurrentUserMemberIdForGroup(it.id)!!)
             }
         ) { locationStatus, connection, locationCount ->
             _uiState.update {

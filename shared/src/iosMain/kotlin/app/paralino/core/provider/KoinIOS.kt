@@ -106,6 +106,7 @@ object KoinIOS {
                 single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
                 single { valueFormatter } bind IValueFormatter::class
                 single { appUpdateManager } bind IAppUpdateManager::class
+                single { LocationRepositoryWrapper(get()) }
             },
             createViewModelModule()
         )
@@ -151,7 +152,7 @@ object KoinIOS {
 
     object Instances: KoinComponent {
         val coreAppManager: CoreAppManager get() = get()
-        val locationRepo: LocationRepositoryWrapper get() = LocationRepositoryWrapper(get())
+        val locationRepo: LocationRepositoryWrapper get() = get()
         val placesRepo: PlacesRepository get() = get()
         val locationSharingManager: LocationSharingManager get() = get()
         val locationPerformanceManager: LocationPerformanceManager get() = get()

@@ -3,6 +3,7 @@ package app.paralino.core.presentation.map
 import app.paralino.core.MR
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.logg
@@ -29,7 +30,6 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.repo.location.LocationRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
@@ -69,12 +69,12 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class MapHomeViewModel constructor(
-    private val locationRepo: LocationRepository,
     private val sharingManager: LocationSharingManager,
     private val groupRepo: GroupRepository,
     private val placesRepo: PlacesRepository,
     private val groupPreRefresh: GroupPreRefreshUseCase,
     private val locationRequestUseCase: LocationRequestUseCase,
+    private val clearUserLocation: ClearUserLocationUseCase,
     private val realtimeEvents: RealtimeEventsMaker,
     private val userRepository: UserRepository,
     private val config: AppConfig,
@@ -620,7 +620,7 @@ class MapHomeViewModel constructor(
             return
         }
 
-        locationRepo.clearLocation(state.location.locationId)
+        clearUserLocation.clearLocation(state.location.locationId)
             .onStart {
                 updateReadyState { readyState ->
                     readyState.copy(
