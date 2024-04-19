@@ -168,12 +168,12 @@ fun MapHomeScreenElements(
             ) {
                 Row(
                     modifier = Modifier
+                        .clickable { onGroupDetailsClick() }
                         .background(
                             MaterialTheme.colors.surface,
                             MaterialTheme.shapes.medium
                         )
                         .clip(RoundedCornerShape(percent = 100))
-                        .clickable { onGroupDetailsClick() }
                         .padding(vertical = 4.dp)
                         .padding(start = 4.dp, end = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
