@@ -538,7 +538,7 @@ fun GroupDetailsHeader(
             )
         }
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(40.dp))
     }
 }
 
