@@ -210,6 +210,7 @@ class RealtimeEventsProcessor constructor(
     }
 
     private fun processPushNotificationEvent(response: RealtimeResponse<Map<String, Any>>) {
+        logg.tag("realtime_events").v("Got notification document event")
         pushProvider.syncPushNotifications()
     }
 }

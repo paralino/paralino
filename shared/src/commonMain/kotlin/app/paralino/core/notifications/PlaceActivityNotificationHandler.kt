@@ -61,7 +61,7 @@ class PlaceActivityNotificationHandler(
                 title = title,
                 message = null,
                 timeMillis = push.createdAt.toEpochMilliseconds(),
-                timeInfo = if (push.isOlderThan(2.minutes)) {
+                timeInfo = if (push.isOlderThan(1.minutes)) {
                     valueFormatter.formatSimpleDateTime(
                         timeUTC = push.createdAt.toLocalDateTime(TimeZone.UTC),
                         optionalYear = true,
