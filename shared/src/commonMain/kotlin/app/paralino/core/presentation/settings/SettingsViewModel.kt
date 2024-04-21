@@ -74,7 +74,8 @@ class SettingsViewModel(
                                     logoutState = null,
                                     deleteAccountState = null,
                                     versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
-                                    boostEnabled = config.trackingBoost
+                                    boostEnabled = config.trackingBoost,
+                                    placeActivityThrottleEnabled = config.placeActivityThrottle
                                 )
                             )
                         } else {
@@ -151,6 +152,17 @@ class SettingsViewModel(
         }
     }
 
+    private fun togglePlaceActivityThrottle() {
+        _accountState.update {
+            it.mapSuccess {
+                val newValue = !it.placeActivityThrottleEnabled
+                logg.v("Toggle place activity throttle: $newValue")
+                config.placeActivityThrottle = newValue
+                it.copy(placeActivityThrottleEnabled = newValue)
+            }
+        }
+    }
+
     private fun onShowDialog(dialog: MainAlertDialog?) {
         _accountState.update { it.mapSuccess { it.copy(alertDialog = dialog) } }
     }
@@ -165,6 +177,7 @@ class SettingsViewModel(
             AccountScreenUiEvent.Logout -> onShowDialog(MainAlertDialog.Logout)
             AccountScreenUiEvent.LogoutConfirm -> logout()
             AccountScreenUiEvent.ToggleLocationBoost -> toggleBoost()
+            AccountScreenUiEvent.TogglePlaceActivityThrottle -> togglePlaceActivityThrottle()
             is AccountScreenUiEvent.Copy -> copyToClipboard(event.content)
             AccountScreenUiEvent.SendEmailVerification -> {
                 _accountState.update { it.mapSuccess { it.copy(alertDialog = MainAlertDialog.VerifyEmail(it.userState.email)) } }

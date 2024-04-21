@@ -1,5 +1,6 @@
 package app.paralino.core.repo.places
 
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
@@ -35,7 +36,8 @@ class PlacesRepository constructor(
     private val userRepository: UserRepository,
     private val locationSharingManager: LocationSharingManager,
     private val geofenceManager: IGeofenceManager,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val appConfig: AppConfig
 ) : BaseRepository() {
 
     private val placeActivity = MutableStateFlow(mapOf<String, PlaceActivityState>())
@@ -276,7 +278,11 @@ class PlacesRepository constructor(
         logg.tag("place_activity").d("Schedule place notify $activityTag - $placeId")
         oldState.tryNotifyJob?.cancel()
         val updateJob = scopeProvider.userSessionIOScope.launch {
-            delay(8.seconds)
+            if (appConfig.placeActivityThrottle) {
+                delay(12.seconds)
+            } else {
+                delay(4.seconds)
+            }
             processPlaceActivity(
                 activityTag = activityTag,
                 placeId = placeId

@@ -31,6 +31,7 @@ class AppConfig(
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
         const val keyTrackingBoost = "prefs.device.trackingBoost"
+        const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
     }
 
     val isTokenValid: Boolean
@@ -130,6 +131,12 @@ class AppConfig(
         get() = provider.userSettings.getBoolean(keyTrackingBoost, false)
         set(value) {
             provider.userSettings.putBoolean(keyTrackingBoost, value)
+        }
+
+    var placeActivityThrottle: Boolean
+        get() = provider.userSettings.getBoolean(keyPlaceActivityThrottle, true)
+        set(value) {
+            provider.userSettings.putBoolean(keyPlaceActivityThrottle, value)
         }
 
     fun clear() {

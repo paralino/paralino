@@ -12,7 +12,8 @@ data class AccountScreenState constructor(
     val deleteAccountState: Payload<Unit>? = null,
     val versionName: String,
     val alertDialog: MainAlertDialog? = null,
-    val boostEnabled: Boolean = false
+    val boostEnabled: Boolean = false,
+    val placeActivityThrottleEnabled: Boolean = true,
 ) {
     val loadingAction get() = logoutState is Payload.Loading || deleteAccountState is Payload.Loading
 }
@@ -40,5 +41,6 @@ sealed class AccountScreenUiEvent() {
     data object SendEmailVerification: AccountScreenUiEvent()
     data object ConfirmSendEmailVerification: AccountScreenUiEvent()
     data object ToggleLocationBoost: AccountScreenUiEvent()
+    data object TogglePlaceActivityThrottle: AccountScreenUiEvent()
     data class Copy(val content: String): AccountScreenUiEvent()
 }
