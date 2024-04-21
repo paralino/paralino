@@ -28,7 +28,7 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
             self?.mobileNetwork = update.isExpensive ? true : false
             DispatchQueue.main.async { [weak self] in
                 Task {
-                    try? await self?.doInitAndGetStatus()
+                    try? await self?.doInitAndGetStatus(forceCheck: false)
                 }
             }
         }

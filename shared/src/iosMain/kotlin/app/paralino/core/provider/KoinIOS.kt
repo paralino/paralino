@@ -100,7 +100,7 @@ object KoinIOS {
                 single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
                 single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
                 single { FunctionsApiWrapper(functionsApi(get(), get())) } bind IFunctionsApi::class
-                single { RealtimeApiWrapperIOS(realtimeApi(get(), get())) } bind IRealtimeApi::class
+                single { RealtimeApiWrapperIOS(realtimeApi(get(), get()), get()) } bind IRealtimeApi::class
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
                 single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class

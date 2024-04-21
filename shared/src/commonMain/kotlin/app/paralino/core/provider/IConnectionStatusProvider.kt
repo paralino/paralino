@@ -13,15 +13,24 @@ import kotlinx.coroutines.withTimeoutOrNull
 abstract class IConnectionStatusProvider(
     private val backendConfig: BackendConfig
 ) {
-    val _status: MutableStateFlow<NetworkConnectionInfo> = MutableStateFlow(NetworkConnectionInfo(ConnectionStatus.CONNECTED))
+    private val _status: MutableStateFlow<NetworkConnectionInfo> = MutableStateFlow(NetworkConnectionInfo(ConnectionStatus.CONNECTED))
     val status = _status.asStateFlow()
+    val currentStatus get() = status.value
     private val checkData = InternetCheckData()
     private val mutex = Mutex()
 
-    suspend fun initAndGetStatus(): NetworkConnectionInfo {
-        val networkStatus = if(!isNetworkAvailable()) NetworkConnectionInfo(ConnectionStatus.OFFLINE)
-        else if(checkInternet(backendConfig.serverUrl)) NetworkConnectionInfo(ConnectionStatus.CONNECTED, getNetworkType())
-        else NetworkConnectionInfo(ConnectionStatus.CONNECTED_NO_INTERNET, getNetworkType())
+    suspend fun initAndGetStatus(forceCheck: Boolean = false): NetworkConnectionInfo {
+        val networkStatus = when {
+            !isNetworkAvailable() -> {
+                NetworkConnectionInfo(ConnectionStatus.OFFLINE)
+            }
+            checkInternet(url = backendConfig.serverUrl, forceCheck = forceCheck) -> {
+                NetworkConnectionInfo(ConnectionStatus.CONNECTED, getNetworkType())
+            }
+            else -> {
+                NetworkConnectionInfo(ConnectionStatus.CONNECTED_NO_INTERNET, getNetworkType())
+            }
+        }
 
         logg.v("app_state", "Network status: $networkStatus")
 
@@ -29,10 +38,10 @@ abstract class IConnectionStatusProvider(
         return networkStatus
     }
 
-    private suspend fun checkInternet(url: String): Boolean {
+    private suspend fun checkInternet(url: String, forceCheck: Boolean): Boolean {
         mutex.withLock {
             checkData.checkCount = checkData.checkCount + 1
-            if(checkData.shouldCheck || (checkData.couldCheck && !status.value.isOnline)) {
+            if(forceCheck || checkData.shouldCheck || (checkData.couldCheck && !status.value.isOnline)) {
                 return blocking {
                     return@blocking withTimeoutOrNull<Boolean>(3_000) {
                         checkData.lastCheckTime = nowUTC().toEpochMilliseconds()
