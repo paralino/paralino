@@ -63,8 +63,8 @@ class GeofenceRegistrationMonitor(
             timer
         ) { geofences, locationStatus, sharingStatus, _ ->
             logg.v(
-                "geofences",
-                "App status changed, reinit geofences (sharing: $sharingStatus, app status: $locationStatus)"
+                tag = "place_activity_geofence",
+                message = "App status changed, reinit geofences (sharing: $sharingStatus, app status: $locationStatus)"
             )
             if (locationStatus && sharingStatus) {
                 geofenceManager.registerGeofences(geofences)

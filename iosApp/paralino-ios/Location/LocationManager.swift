@@ -128,7 +128,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             Task {
                 let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
                 self?.notifyUser(id: "placeEnter_\(region.identifier)", message: "User entered place \(place?.nameOrNull ?? region.identifier)")
-                try await self?.placeRepo.placesEnter(placesIds: [region.identifier])
+                try await self?.placeRepo.placesEnter(placesIds: [region.identifier], fromGeofence: true)
             }
         }
     }
@@ -138,7 +138,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             Task {
                 let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
                 self?.notifyUser(id: "placeExit_\(region.identifier)", message: "User exited place \(place?.nameOrNull ?? region.identifier)")
-                try await self?.placeRepo.placesExit(placesIds: [region.identifier])
+                try await self?.placeRepo.placesExit(placesIds: [region.identifier], fromGeofence: true)
             }
         }
     }

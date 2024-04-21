@@ -234,21 +234,21 @@ class PlacesRemoteSource(
     }
 
 
-    suspend fun notifyPlaceEnter(placeId: String) {
+    suspend fun notifyPlaceEnter(placeId: String, groupId: String) {
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
-                locationId = userMemberId.getCurrentLocationIdForPlace(placeId),
+                locationId = userMemberId.getCurrentLocationIdForGroup(groupId),
                 enter = true
             )
         )
     }
 
-    suspend fun notifyPlaceExit(placeId: String) {
+    suspend fun notifyPlaceExit(placeId: String, groupId: String) {
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
-                locationId = userMemberId.getCurrentLocationIdForPlace(placeId),
+                locationId = userMemberId.getCurrentLocationIdForGroup(groupId),
                 enter = false
             )
         )

@@ -25,27 +25,27 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
         if(geofencingEvent == null) {
-            logg.v("geofences", "Geofence event is null")
+            logg.v("place_activity_geofence", "Geofence event is null")
             return
         }
 
         if (geofencingEvent.hasError()) {
             val errorMessage = GeofenceStatusCodes.getStatusCodeString(geofencingEvent.errorCode)
-            logg.v("geofences", "Geofence error: $errorMessage")
+            logg.v("place_activity_geofence", "Geofence error: $errorMessage")
             return
         }
 
         when (val transition = geofencingEvent.geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
-                logg.v("geofences", "User entered geofence")
+                logg.v("place_activity_geofence", "User entered geofence")
                 geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceEnter(it.map { it.requestId }) }
             }
             Geofence.GEOFENCE_TRANSITION_EXIT -> {
-                logg.v("geofences", "User exited geofence")
+                logg.v("place_activity_geofence", "User exited geofence")
                 geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceExit(it.map { it.requestId }) }
             }
             else -> {
-                logg.v("geofences", "Invalid geofence type: $transition")
+                logg.v("place_activity_geofence", "Invalid geofence type: $transition")
             }
         }
     }
@@ -57,14 +57,13 @@ class GeofenceReceiver() : KoinComponent {
 
     fun notifyPlaceEnter(placeIds: List<String>) {
         scopeProvider.userSessionIOScope.launch {
-            placesRepo.placesEnter(placeIds)
+            placesRepo.placesEnter(placeIds, fromGeofence = true)
         }
     }
 
     fun notifyPlaceExit(placeIds: List<String>) {
         scopeProvider.userSessionIOScope.launch {
-            placesRepo.placesExit(placeIds)
+            placesRepo.placesExit(placeIds, fromGeofence = true)
         }
     }
-
 }
