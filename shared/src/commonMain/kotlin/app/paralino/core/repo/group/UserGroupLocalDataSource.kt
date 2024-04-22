@@ -3,6 +3,7 @@ package app.paralino.core.repo.group
 import app.paralino.core.config
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.domain.crypto.VerificationResult
+import app.paralino.core.domain.crypto.VerificationResultError
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mappers.GroupsMapperLocal
@@ -126,7 +127,7 @@ class UserGroupLocalDataSource constructor(
                     combine(flows) {
                         it.map {
                             val verificationResult = memberLocal.getMemberOnce(it.first.id, config.userId)?.verificationResult
-                                ?: VerificationResult.GENERIC_ERROR
+                                ?: VerificationResult.Unverified(errors = listOf(VerificationResultError.MEMBER_VERIFICATION_MISSING))
                             mapper.local2Core(it.first, it.second, verificationResult)
                         }
                     }

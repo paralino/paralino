@@ -65,7 +65,7 @@ class MemberMapperCore constructor(
                             ).let {
                                 BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
                             }.let {
-                                if(verification == VerificationResult.VERIFIED) {
+                                if(verification is VerificationResult.Verified) {
                                     CryptoResource.Ready(it)
                                 } else {
                                     CryptoResource.UnverifiedKeyOrData(it)
@@ -105,7 +105,7 @@ class MemberMapperCore constructor(
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
                         }.let {
-                            if(verification == VerificationResult.VERIFIED) {
+                            if(verification is VerificationResult.Verified) {
                                 CryptoResource.Ready(it)
                             } else {
                                 CryptoResource.UnverifiedKeyOrData(it)
@@ -141,7 +141,7 @@ class MemberMapperCore constructor(
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<MemberDeviceStatus>(it)
                         }.let {
-                            if(verification == VerificationResult.VERIFIED) {
+                            if(verification is VerificationResult.Verified) {
                                 CryptoResource.Ready(it)
                             } else {
                                 CryptoResource.UnverifiedKeyOrData(it)
@@ -188,7 +188,7 @@ class MemberMapperCore constructor(
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
                 }.let {
-                    if(verification == VerificationResult.VERIFIED) {
+                    if(verification is VerificationResult.Verified) {
                         CryptoResource.Ready(it)
                     } else {
                         CryptoResource.UnverifiedKeyOrData(it)

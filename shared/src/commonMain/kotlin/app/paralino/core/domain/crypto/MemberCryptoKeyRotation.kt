@@ -64,7 +64,7 @@ class MemberCryptoKeyRotation(
             return false
         }
 
-        val shouldRotate = force || integrity == IntegrityResult.VALID_EXPIRED
+        val shouldRotate = force || integrity.shouldChange
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_member_rotation")

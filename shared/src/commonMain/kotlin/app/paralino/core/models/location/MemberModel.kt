@@ -25,7 +25,7 @@ data class MemberModel constructor(
 
     val name: String get() = memberData.data?.name ?: "---"
     val image: ImageModel? get() = memberData.data?.image ?: ImageModel.emoji(Emojis.lock)
-    val isVerified: Boolean get() = verificationResult == VerificationResult.VERIFIED
+    val isVerified: Boolean get() = verificationResult is VerificationResult.Verified
 
 }
 

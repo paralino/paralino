@@ -91,7 +91,7 @@ class MemberDeviceKeyRotation(
         }
 
         val shouldRotate =
-            force || deviceIntegrity == IntegrityResult.VALID_EXPIRED || unverifiedMembersRotation
+            force || deviceIntegrity.shouldChange || unverifiedMembersRotation
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_device_rotation")

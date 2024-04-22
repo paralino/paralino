@@ -26,7 +26,7 @@ data class UserGroup constructor(
     val verification: VerificationResult,
 ) {
 
-    val isVerified get() = verification == VerificationResult.VERIFIED
+    val isVerified get() = verification is VerificationResult.Verified
     val name: String get() = nameOrNull ?: "---"
     val nameOrNull: String? get() = data.data?.name
     val image: ImageModel get() = data.data?.image ?: ImageModel.emoji(Emojis.lock)
