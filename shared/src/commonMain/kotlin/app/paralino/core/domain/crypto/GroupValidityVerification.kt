@@ -188,10 +188,23 @@ class GroupValidityVerification(
     }
 
     suspend fun checkIntegrityForGroupKey(group: UserGroupWithMembers): IntegrityResult {
+        val ownerSettings = group
+            .takeIf { it.isCurrentUserOwner }
+            ?.members
+            ?.firstOrNull { it.member.userId == config.userId }
+            ?.member?.settings
+            ?: return IntegrityResult.CORRUPTED
+
+        if (ownerSettings.groupOwnerIntegrity.isNullOrBlank()) {
+            // allow missing integrity for now
+            logg.tag("integrity_check_member").v("VALID_CHANGED for ${group.id}")
+            return IntegrityResult.VALID_CHANGED
+        }
+
         val integrity = getIntegrity(
             groupId = group.group.id,
             serverIntegrity = group.group.serverIntegrity,
-            myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
+            myIntegrity = ownerSettings.groupOwnerIntegrity,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = true
         )

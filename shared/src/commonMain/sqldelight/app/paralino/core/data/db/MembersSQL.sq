@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS memberEntity (
 `settings_id` TEXT,
 `settings_ownerUserId` TEXT,
 `settings_groupId` TEXT,
-`settings_integrity` TEXT
+`settings_integrity` TEXT,
+`settings_groupOwnerIntegrity` TEXT
 );
 
 

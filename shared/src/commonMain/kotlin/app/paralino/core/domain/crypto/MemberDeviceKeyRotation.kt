@@ -10,7 +10,6 @@ import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
@@ -33,7 +32,6 @@ import kotlinx.serialization.encodeToString
 
 class MemberDeviceKeyRotation(
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val userRepository: UserRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
@@ -90,8 +88,7 @@ class MemberDeviceKeyRotation(
                 .w("Group ${remoteGroup.id} has unverified members with user member key, force rotation")
         }
 
-        val shouldRotate =
-            force || deviceIntegrity.shouldChange || unverifiedMembersRotation
+        val shouldRotate = force || deviceIntegrity.shouldChange || unverifiedMembersRotation
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_device_rotation")

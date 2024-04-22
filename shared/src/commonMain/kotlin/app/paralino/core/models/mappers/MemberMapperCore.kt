@@ -212,7 +212,8 @@ class MemberMapperCore constructor(
                     id = it.id,
                     groupId = it.groupId,
                     ownerUserId = it.ownerUserId,
-                    integrity = it.integrity
+                    integrity = it.integrity,
+                    groupOwnerIntegrity = it.groupOwnerIntegrity
                 )
             },
             memberData = memberData,

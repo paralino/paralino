@@ -43,7 +43,8 @@ class MemberWithLocationsMapperLocal(
                     id = id,
                     groupId = groupId,
                     ownerUserId = userId,
-                    integrity = integrity
+                    integrity = integrity,
+                    groupOwnerIntegrity = model.settings_groupOwnerIntegrity
                 )
             },
             locationIds = memberLocations.map { it.id }
@@ -96,6 +97,7 @@ class MemberWithLocationsMapperLocal(
             settings_groupId = model.settingsRaw?.groupId,
             settings_ownerUserId = model.settingsRaw?.ownerUserId,
             settings_integrity = model.settingsRaw?.integrity,
+            settings_groupOwnerIntegrity = model.settingsRaw?.groupOwnerIntegrity,
             data_ = model.data
         )
     }
