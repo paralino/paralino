@@ -193,7 +193,7 @@ class GroupValidityVerification(
             serverIntegrity = group.group.serverIntegrity,
             myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
             memberVerifications = group.members.map { it.member.verification },
-            forGroup = false
+            forGroup = true
         )
             ?: return IntegrityResult.CORRUPTED
 

@@ -18,7 +18,6 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.serialization.decodeFromString
 
 class CryptoKEKRepository(
     private val remote: CryptoKeyRemoteDataSource,
@@ -156,11 +155,6 @@ class CryptoKEKRepository(
         }
     }
 
-    suspend fun getLatestGroupKeyVersion(groupId: String): Long? {
-        return getGroupKeys().filter { it.groupId == groupId }
-            .maxByOrNull { it.groupKeyVersion }?.groupKeyVersion
-    }
-
     suspend fun getGroupKey(groupId: String, keyVersion: Long?): GroupMasterKey {
         val groupOwnerId = local.getGroupOwnerId(groupId) ?: return GroupMasterKey.Error.Missing
         return getGroupKey(groupId, groupOwnerId, keyVersion)
@@ -191,49 +185,65 @@ class CryptoKEKRepository(
                 matchingKey
             }
 
-        val ownerPublicKey =
-            when (val ownerPublicKey = getMemberPublicKey(groupId, memberUserId = groupOwnerId)) {
-                is GroupMemberMainPublicKey.Error -> {
-                    return GroupMasterKey.Error.InvalidOwnerPublicKey(ownerPublicKey)
-                }
-
-                is GroupMemberMainPublicKey.Valid -> {
-                    ownerPublicKey
-                }
-            }
-
         val groupKey = try {
             if (keyRaw != null) {
-                val myPreKey = when (val myPreKey =
-                    getMyPreKeyForGroup(groupId, version = keyRaw.memberKeyVersion)) {
-                    is UserGroupPersonalKeyPair.Error -> {
-                        return GroupMasterKey.Error.InvalidPersonalKeyPair(myPreKey)
-                    }
+                if (keyVersion == null && keyRaw.ownerUserId != groupOwnerId) {
+                    // if passed key version is null, we want the latest key
+                    // latest key should always be current group owner key
+                    return GroupMasterKey.Error.InvalidOwnerPublicKey(GroupMemberMainPublicKey.Error.WrongIdentity)
+                } else {
+                    val ownerPublicKey =
+                        when (val ownerPublicKey = getMemberPublicKey(groupId, memberUserId = keyRaw.ownerUserId)) {
+                            is GroupMemberMainPublicKey.Error -> {
+                                return GroupMasterKey.Error.InvalidOwnerPublicKey(ownerPublicKey)
+                            }
 
-                    is UserGroupPersonalKeyPair.Valid -> {
-                        myPreKey.key
+                            is GroupMemberMainPublicKey.Valid -> {
+                                ownerPublicKey
+                            }
+                        }
+
+                    val myPreKey = when (val myPreKey =
+                        getMyPreKeyForGroup(groupId, version = keyRaw.memberKeyVersion)) {
+                        is UserGroupPersonalKeyPair.Error -> {
+                            return GroupMasterKey.Error.InvalidPersonalKeyPair(myPreKey)
+                        }
+
+                        is UserGroupPersonalKeyPair.Valid -> {
+                            myPreKey.key
+                        }
                     }
+                    cryptoCore.decryptKeyWithKeyPair(
+                        key = keyRaw.encryptedGroupKey,
+                        myPrivateKey = myPreKey.privateKey,
+                        publicKey = ownerPublicKey.membershipKey
+                    ) to keyRaw.groupKeyVersion
                 }
-                cryptoCore.decryptKeyWithKeyPair(
-                    key = keyRaw.encryptedGroupKey,
-                    myPrivateKey = myPreKey.privateKey,
-                    publicKey = ownerPublicKey.membershipKey
-                ) to keyRaw.groupKeyVersion
             } else {
                 // Try to find matching key
                 allGroupKeys
                     .sortedByDescending { it.groupKeyVersion }
                     .firstNotNullOfOrNull { key ->
-                        try {
-                            val myPreKey =
-                                getMyPreKeyForGroup(groupId, version = key.memberKeyVersion).key
-                            cryptoCore.decryptKeyWithKeyPair(
-                                key = key.encryptedGroupKey,
-                                myPrivateKey = myPreKey!!.privateKey,
-                                publicKey = ownerPublicKey.membershipKey
-                            ) to key.groupKeyVersion
-                        } catch (e: Exception) {
+                        if (keyVersion == null && key.ownerUserId != groupOwnerId) {
+                            // if passed key version is null, we want the latest key
+                            // latest key should always be current group owner key
                             null
+                        } else {
+                            try {
+                                val ownerPublicKey = getMemberPublicKey(
+                                    groupId = groupId,
+                                    memberUserId = key.ownerUserId
+                                ) as GroupMemberMainPublicKey.Valid
+                                val myPreKey =
+                                    getMyPreKeyForGroup(groupId, version = key.memberKeyVersion).key
+                                cryptoCore.decryptKeyWithKeyPair(
+                                    key = key.encryptedGroupKey,
+                                    myPrivateKey = myPreKey!!.privateKey,
+                                    publicKey = ownerPublicKey.membershipKey
+                                ) to key.groupKeyVersion
+                            } catch (e: Exception) {
+                                null
+                            }
                         }
                     } ?: return GroupMasterKey.Error.Missing
             }
@@ -246,24 +256,23 @@ class CryptoKEKRepository(
     }
 
     suspend fun getAllGroupKeys(groupId: String): List<GroupMasterKey.Valid> {
-        val groupOwnerId = local.getGroupOwnerId(groupId) ?: return emptyList()
-        val ownerPublicKey =
-            getMemberPublicKey(
-                groupId,
-                memberUserId = groupOwnerId
-            ) as? GroupMemberMainPublicKey.Valid? ?: return emptyList()
         val keys = getGroupKeys().filter { it.groupId == groupId }
+        return keys.map { key ->
+            val ownerPublicKey = getMemberPublicKey(
+                groupId = groupId,
+                memberUserId = key.ownerUserId
+            ) as? GroupMemberMainPublicKey.Valid? ?: return emptyList()
 
-        return keys.map {
-            val myPreKey = getMyPreKeyForGroup(groupId, version = it.memberKeyVersion).key
+            val myPreKey = getMyPreKeyForGroup(groupId, version = key.memberKeyVersion).key
                 ?: return emptyList()
+
             val groupKey = cryptoCore.decryptKeyWithKeyPair(
-                key = it.encryptedGroupKey,
+                key = key.encryptedGroupKey,
                 myPrivateKey = myPreKey.privateKey,
                 publicKey = ownerPublicKey.membershipKey
             )
 
-            GroupMasterKey.Valid(groupKey, it.groupKeyVersion)
+            GroupMasterKey.Valid(groupKey, key.groupKeyVersion)
         }
     }
 
@@ -277,23 +286,6 @@ class CryptoKEKRepository(
 
     suspend fun hasDeviceKeyByVersion(deviceKeyVersion: Long): Boolean {
         return getGroupDeviceKeys().any { it.deviceKeyVersion == deviceKeyVersion }
-    }
-
-    suspend fun getMemberSenderKey(
-        locationId: String
-    ): GroupMemberSenderKey {
-        val currentUserId = userRepository.cachedUserId
-        val allMemberKeys = getGroupDeviceKeys()
-        val keyRaw = allMemberKeys.firstOrNull {
-            it.locationId == locationId
-                    && it.memberUserId == currentUserId
-        }
-            ?: let {
-                logg.tag("tag_crypto_key_group_member")
-                    .d("member sender key not found for location $locationId, key count: ${allMemberKeys.size}")
-                return GroupMemberSenderKey.Error.MissingKeys
-            }
-        return parseMemberSenderKey(keyRaw)
     }
 
     suspend fun getMemberSenderKey(
