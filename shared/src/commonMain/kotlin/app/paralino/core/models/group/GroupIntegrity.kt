@@ -17,7 +17,7 @@ data class GroupIntegrity(
 ) {
 
     private fun isTimeValid(duration: Duration): Boolean {
-        return timeUtc.isoWithOffsetToInstant()?.plus(duration)?.let { it > nowUTC() } ?: false
+        return timeUtc.isoWithOffsetToInstant()?.plus(duration)?.let { it > nowUTC() && it < nowUTC().plus(7.days) } ?: false
     }
 
     fun isValidForGroup(signature: String): Boolean {
