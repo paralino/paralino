@@ -19,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Resource
@@ -34,7 +33,6 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
-import app.paralino.core.ui.settings.SettingsActionItemType
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -88,19 +86,19 @@ fun GroupSettingsScreenCore(
                         openEditGroup()
                     }
 
-                    SettingsActionItem(
-                        modifier = Modifier.alpha(if (state.data.isMemberVerificationEnabled) 1f else 0.5f),
-                        name = stringResource(MR.strings.group_settings_verification_title),
-                        description = if (state.data.isMemberVerificationOn) {
-                            stringResource(MR.strings.group_settings_verification_description_on)
-                        } else {
-                            stringResource(MR.strings.group_settings_verification_description_off)
-                        },
-                        icon = CoreAppIcons.Security.asPainterResource(),
-                        type = SettingsActionItemType.Switch(checked = state.data.isMemberVerificationOn)
-                    ) {
-                        vm.onEvent(GroupSettingsUiEvent.ToggleMemberVerification)
-                    }
+//                    SettingsActionItem(
+//                        modifier = Modifier.alpha(if (state.data.isMemberVerificationEnabled) 1f else 0.5f),
+//                        name = stringResource(MR.strings.group_settings_verification_title),
+//                        description = if (state.data.isMemberVerificationOn) {
+//                            stringResource(MR.strings.group_settings_verification_description_on)
+//                        } else {
+//                            stringResource(MR.strings.group_settings_verification_description_off)
+//                        },
+//                        icon = CoreAppIcons.Security.asPainterResource(),
+//                        type = SettingsActionItemType.Switch(checked = state.data.isMemberVerificationOn)
+//                    ) {
+//                        vm.onEvent(GroupSettingsUiEvent.ToggleMemberVerification)
+//                    }
 
                     SettingsActionItem(
                         name = stringResource(MR.strings.group_details_menu_delete),
