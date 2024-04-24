@@ -12,7 +12,7 @@ data class AccountScreenState constructor(
     val deleteAccountState: Payload<Unit>? = null,
     val versionName: String,
     val alertDialog: MainAlertDialog? = null,
-    val boostEnabled: Boolean = false,
+    val boostTime: String? = null,
     val placeActivityThrottleEnabled: Boolean = true,
 ) {
     val loadingAction get() = logoutState is Payload.Loading || deleteAccountState is Payload.Loading

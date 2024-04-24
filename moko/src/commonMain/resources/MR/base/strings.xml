@@ -112,6 +112,8 @@
     <string name="setting_title_dangerZone">Danger zone</string>
 
     <string name="setting_title_locationBoost">Location boost</string>
+    <string name="setting_description_locationBoost_enabled">Maximum location performance will reset at %s. **Uses more battery!!!**</string>
+    <string name="setting_description_locationBoost_disabled">Use maximum performance for location for up to 2h. **Will use more battery!!!**</string>
     <string name="setting_title_placeActivityThrottle">Throttle place activity</string>
     <string name="setting_description_placeActivityThrottle_enabled">Your device will create place activity notification only if you spend more than 10 seconds in or out of certain place.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Your device will react to place changes faster and might create multiple place activity notifications in short time (for example: if you shortly drive by a certain place).</string>

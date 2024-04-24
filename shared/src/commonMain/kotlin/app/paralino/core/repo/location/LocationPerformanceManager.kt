@@ -26,7 +26,7 @@ class LocationPerformanceManager constructor(
 ) {
 
     private val _locationPerformanceType = MutableStateFlow(
-        LocationPerformanceModel(config.trackingBoost)
+        LocationPerformanceModel(config.trackingBoostEndTime != null)
     )
     val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
     private var performanceUpdateJob: Job? = null
@@ -56,6 +56,9 @@ class LocationPerformanceManager constructor(
             logg.tag("location_performance")
                 .v("Device in manual boost, ignore performance reset for ($performanceType)")
             performanceUpdateJob?.cancel()
+            config.trackingBoostEndTime?.let { it - nowUTC() }?.takeIf { it.isPositive() }?.let {
+                schedulePerformanceReset(type = LocationPerformanceType.BALANCED, resetDelayMillis = it.inWholeMilliseconds)
+            }
         } else if (performanceType == LocationPerformanceType.VERY_HIGH) {
             schedulePerformanceReset(LocationPerformanceType.HIGH, 60_000)
         } else if (_locationPerformanceType.value.current < LocationPerformanceType.VERY_HIGH) {
@@ -83,9 +86,12 @@ class LocationPerformanceManager constructor(
             logg.tag("location_performance")
                 .v("Schedule location performance reset from ${_locationPerformanceType.value.current} to $type in $resetDelayMillis")
             delay(resetDelayMillis)
+            val isManualBoostExpired = config.trackingBoostEndTime?.let { it < nowUTC() } ?: true
             if (_locationPerformanceType.value.current < LocationPerformanceType.MANUAL_BOOST) {
                 logg.tag("location_performance").v("Reset location performance to $type")
                 setPerformance(type = type, allowDowngrade = true)
+            } else if (isManualBoostExpired) {
+                disableManualBoost()
             }
         }
     }

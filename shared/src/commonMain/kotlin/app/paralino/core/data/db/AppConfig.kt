@@ -1,7 +1,10 @@
 package app.paralino.core.data.db
 
+import app.paralino.core.utils.extensions.fromUTCtoInstant
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
+import kotlinx.datetime.Instant
 
 expect class AppConfigProvider {
     val userSettings: Settings
@@ -50,7 +53,7 @@ class AppConfig(
         const val keyDeviceIDSeed = "prefs.device.ID.seed"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
-        const val keyTrackingBoost = "prefs.device.trackingBoost"
+        const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
         const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
     }
 
@@ -147,10 +150,14 @@ class AppConfig(
             provider.appSettings.putLong(keyDismissedAppVersionID, value)
         }
 
-    var trackingBoost: Boolean
-        get() = provider.userSettings.getBoolean(keyTrackingBoost, false)
+    var trackingBoostEndTime: Instant?
+        get() = provider.userSettings.getString(keyTrackingBoost, "").isoWithOffsetToInstant()
         set(value) {
-            provider.userSettings.putBoolean(keyTrackingBoost, value)
+            if (value != null) {
+                provider.userSettings.putString(keyTrackingBoost, value.toString())
+            } else {
+                provider.userSettings.remove(keyTrackingBoost)
+            }
         }
 
     var placeActivityThrottle: Boolean

@@ -47,6 +47,7 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -117,8 +118,12 @@ fun SettingsScreenCore(
 
             SettingsActionItem(
                 name = stringResource(MR.strings.setting_title_locationBoost),
+                description = when (readyState.boostTime != null) {
+                    true -> stringResource(MR.strings.setting_description_locationBoost_enabled, readyState.boostTime)
+                    false -> stringResource(MR.strings.setting_description_locationBoost_disabled)
+                },
                 icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                type = SettingsActionItemType.Switch(readyState.boostEnabled)
+                type = SettingsActionItemType.Switch(readyState.boostTime != null)
             ) {
                 viewModel.onEvent(AccountScreenUiEvent.ToggleLocationBoost)
             }
@@ -286,7 +291,7 @@ fun SettingsActionItem(
                     modifier = Modifier
                         .padding(top = 4.dp)
                         .padding(horizontal = 4.dp),
-                    text = description,
+                    text = description.annotatedBold(),
                     style = MaterialTheme.typography.caption,
                     textAlign = TextAlign.Start
                 )
