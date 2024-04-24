@@ -3,24 +3,36 @@ package app.paralino.core.ui.components.dialogs
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.annotatedBold
 
 @Composable
 fun LoadingDialog(
-    text: String,
+    text: String?,
     @FloatRange(0.0, 1.0) progress: Float? = null
 ) {
+    val title: (@Composable () -> Unit)? = if (text != null) {
+        @Composable {
+            Text(
+                text = text.annotatedBold(),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    } else {
+        null
+    }
+
     AppTheme {
         AlertDialog(
             properties = DialogProperties(
@@ -28,22 +40,16 @@ fun LoadingDialog(
                 dismissOnClickOutside = false
             ),
             onDismissRequest = {},
-            title = {
-                Text(
-                    text = text.annotatedBold(),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
+            title = title,
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (progress != null) {
-                        CircularProgressIndicator(progress = progress)
+                        CircularProgressIndicator(progress = progress, strokeCap = StrokeCap.Round)
                     } else {
-                        CircularProgressIndicator()
+                        LinearProgressIndicator(strokeCap = StrokeCap.Round)
                     }
                 }
             },
