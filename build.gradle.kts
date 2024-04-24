@@ -2,7 +2,7 @@ plugins {
     //trick: for the same plugin versions in all sub-modules
     id("com.android.application").version("8.3.1").apply(false)
     id("com.android.library").version("8.3.1").apply(false)
-    id("org.jetbrains.compose").version("1.6.1").apply(false)
+    id("org.jetbrains.compose").version("1.6.2").apply(false)
     id("com.mikepenz.aboutlibraries.plugin").version("10.5.1").apply(false)
     id("app.cash.sqldelight").version("2.0.1").apply(false)
     id("dev.icerock.mobile.multiplatform-resources").version("0.23.0").apply(false)
