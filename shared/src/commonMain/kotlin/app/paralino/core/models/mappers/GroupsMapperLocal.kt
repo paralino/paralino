@@ -19,7 +19,8 @@ class GroupsMapperLocal(
             groupKeyVersion = model.groupKeyVersion,
             data = model.data_,
             serverIntegrity = model.serverIntegrity,
-            planType = model.planType
+            planType = model.planType,
+            schemeVersion = model.schemeVersion
         )
     }
 
@@ -30,7 +31,8 @@ class GroupsMapperLocal(
             groupKeyVersion = model.groupKeyVersion,
             data_ = model.data,
             serverIntegrity = model.serverIntegrity,
-            planType = model.planType
+            planType = model.planType,
+            schemeVersion = model.schemeVersion
         )
     }
 }

@@ -38,6 +38,8 @@ class RawCryptoPresentation constructor(
                         if (it.first.ownerUserId == config.userId) {
                             add("GroupID: **$groupId**")
                         }
+                        add("Group encryption scheme: **${it.first.schemeVersion}**")
+                        add("Supported encryption scheme: **${AppConfig.supportedEncryptionScheme}**")
                     },
                     rawData = it.first.data,
                     decryptedData = it.second.data.mapSuccess {

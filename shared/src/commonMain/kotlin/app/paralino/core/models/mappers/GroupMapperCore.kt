@@ -50,7 +50,8 @@ class GroupMapperCore constructor(
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,
             serverIntegrity = model.serverIntegrity,
-            planType = model.planType.key
+            planType = model.planType.key,
+            schemeVersion = model.schemeVersion
         )
     }
 
@@ -88,7 +89,8 @@ class GroupMapperCore constructor(
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,
             serverIntegrity = model.serverIntegrity,
-            planType = PlanType.fromKey(model.planType) ?: PlanType.fallback
+            planType = PlanType.fromKey(model.planType) ?: PlanType.fallback,
+            schemeVersion = model.schemeVersion
         )
     }
 

@@ -22,6 +22,7 @@ data class UserGroup constructor(
     val data: CryptoResource<UserGroupData>,
     val serverIntegrity: String,
     val planType: PlanType,
+    val schemeVersion: String
 ) {
 
     val name: String get() = nameOrNull ?: "---"

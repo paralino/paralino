@@ -3,6 +3,7 @@ package app.paralino.core.repo.group
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
@@ -30,6 +31,7 @@ import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.PermissionDeniedException
+import app.paralino.core.utils.exceptions.UnsupportedGroupEncryptionSchemeException
 import app.paralino.core.utils.extensions.blocking
 
 class GroupsRemoteSource constructor(
@@ -117,7 +119,9 @@ class GroupsRemoteSource constructor(
                 collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
             ).map { it.parseMemberLocation() }
 
-            groups.map { group ->
+            groups
+                .filter { AppConfig.isEncryptionSchemeSupported(it.schemeVersion) }
+                .map { group ->
                 GroupWithMembersRaw(
                     group = group,
                     members = members
@@ -141,6 +145,10 @@ class GroupsRemoteSource constructor(
             remoteConfig.resourceIds.collectionGroupsID,
             groupId
         ).parseGroup()
+
+        if (!AppConfig.isEncryptionSchemeSupported(group.schemeVersion)) {
+            throw UnsupportedGroupEncryptionSchemeException(groupId = group.id, schemeVersion = group.schemeVersion)
+        }
 
         val members = api.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,

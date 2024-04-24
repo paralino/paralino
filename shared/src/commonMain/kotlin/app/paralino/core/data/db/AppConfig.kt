@@ -15,6 +15,26 @@ class AppConfig(
     companion object {
         lateinit var instance: AppConfig
 
+        const val supportedEncryptionScheme: String = "1.0"
+        fun shouldUpgradeEncryptionScheme(schemeVersion: String): Boolean {
+            try {
+                val supportedVersions = supportedEncryptionScheme.split(".")
+                val versions = schemeVersion.split(".")
+                return supportedVersions.first().toInt() < versions.first().toInt() || supportedVersions.get(1).toInt() < versions.get(1).toInt()
+            } catch (e: Exception) {
+                return false
+            }
+        }
+        fun isEncryptionSchemeSupported(schemeVersion: String): Boolean {
+            try {
+                val supportedVersions = supportedEncryptionScheme.split(".")
+                val versions = schemeVersion.split(".")
+                return supportedVersions.first().toInt() >= versions.first().toInt()
+            } catch (e: Exception) {
+                return false
+            }
+        }
+
         const val keyToken = "prefs.profile.token"
         const val keyUserKey = "prefs.user.masterKey"
         const val keySessionKey = "prefs.user.sessionKey"
