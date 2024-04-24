@@ -89,14 +89,14 @@ class GroupDetailViewModel(
                                 MemberActionItemState(MemberActionType.DELETE_MEMBER)
                             },
                             blockUser = takeIf { member.member.userId != config.userId }
-                                ?.takeIf { blocklist.any { it.resourceId == member.member.userId } }
+                                ?.takeIf { blocklist.none { it.resourceId == member.member.userId } }
                                 ?.let {
                                     MemberActionItemState(MemberActionType.BLOCK_USER)
                                 },
                             unblockUser = takeIf { member.member.userId != config.userId }
-                                ?.takeIf { blocklist.none { it.resourceId == member.member.userId } }
+                                ?.takeIf { blocklist.any { it.resourceId == member.member.userId } }
                                 ?.let {
-                                    MemberActionItemState(MemberActionType.BLOCK_USER)
+                                    MemberActionItemState(MemberActionType.UNBLOCK_USER)
                                 },
                             // TODO remove when on production
                             securityAction = true
