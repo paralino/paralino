@@ -134,7 +134,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            factory { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get()) }
+            factory { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get()) }
             factory { MainViewModel(get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }
@@ -144,7 +144,7 @@ object KoinIOS {
             factory { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
             factory { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
             factory { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
-            factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get(), get()) }
+            factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get()) }
             factory { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
             factory { BlocklistVideModel(get()) }
         }
