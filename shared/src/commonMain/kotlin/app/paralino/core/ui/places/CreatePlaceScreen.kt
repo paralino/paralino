@@ -1,8 +1,5 @@
 package app.paralino.core.ui.places
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,6 +50,7 @@ import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
@@ -163,20 +161,8 @@ fun CreatePlaceScreenCore(
                     mapContent = mapContent
                 )
 
-                AnimatedVisibility(
-                    finalState.data.fullLoading,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = MaterialTheme.colors.background.copy(alpha = 0.5f))
-                            .clickable { },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                if (finalState.data.fullLoading) {
+                    LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
                 }
             }
         }
