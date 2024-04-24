@@ -1,11 +1,7 @@
 package app.paralino.core.ui.groups
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,6 +61,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
+import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
@@ -413,16 +410,8 @@ fun GroupDetailScreenCore(
                 }
             }
 
-            AnimatedVisibility(state.data.loadingAction, enter = fadeIn(), exit = fadeOut()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = MaterialTheme.colors.background.copy(alpha = 0.5f))
-                        .clickable { },
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+            if (state.data.loadingAction) {
+                LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
             }
         }
     }
