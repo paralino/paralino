@@ -13,7 +13,8 @@ data class CreateGroupPayload constructor(
     val keyId: String,
     val memberVerification: String,
     val groupData: String,
-    val memberData: String
+    val memberData: String,
+    val paralinoId: String?
 )
 
 @Serializable
@@ -33,7 +34,8 @@ data class CreateGroupMemberPayload constructor(
     val groupKeys: List<GroupMemberGroupKeysData>,
     val memberSignedPublicKey: String,
     val memberIdentityKey: String,
-    val memberData: String
+    val memberData: String,
+    val paralinoId: String?
 )
 
 @Serializable
@@ -102,6 +104,7 @@ data class UpdateOwnMemberPublicKeyPayload(
     val groupId: String,
     val integrity: String,
     val memberData: String,
+    val paralinoId: String?,
     val signedPublicKey: String,
     val encryptedMemberPersonalKeys: String,
     val groupKeyVersion: Long,

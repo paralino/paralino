@@ -11,6 +11,7 @@ import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.location.MemberModelData
+import app.paralino.core.models.location.MemberModelParalinoIdData
 import app.paralino.core.models.raw.CreateGroupPayload
 import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.models.user.SimpleKeyPairData
@@ -19,6 +20,7 @@ import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
@@ -35,7 +37,8 @@ class GroupCreateUseCase(
     private val cryptoCore: CryptoCore,
     private val remote: GroupsRemoteSource,
     private val local: UserGroupLocalDataSource,
-    private val functionsApi: IFunctionsApi
+    private val functionsApi: IFunctionsApi,
+    private val personalCodesRepo: PersonalCodesRepository
 ) : LimitedExecutionRepository() {
 
     private val groupKey = "group_create"
@@ -130,6 +133,8 @@ class GroupCreateUseCase(
             )
         }
 
+        val paralinoId = personalCodesRepo.getActivePersonalCodeOnce()?.code
+
         val payload = CreateGroupPayload(
             encryptedGroupKey = encryptedGroupKey,
             signedPublicKey = signedPublicKey,
@@ -151,7 +156,15 @@ class GroupCreateUseCase(
             memberData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(myData),
                 key = groupKey
-            )
+            ),
+            paralinoId = paralinoId?.let {
+                cryptoCore.encryptDataWithKey(
+                    data = BaseRemoteModule.formatter.encodeToString(
+                        MemberModelParalinoIdData(paralinoId)
+                    ),
+                    key = groupKey
+                )
+            }
         )
 
         val response = functionsApi.runAndWait(

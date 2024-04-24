@@ -130,6 +130,12 @@ class MemberCryptoKeyRotation(
                 BaseRemoteModule.formatter.encodeToString(member.member.memberData.data),
                 groupKey.key
             ),
+            paralinoId = member.member.paralinoId.data?.let {
+                cryptoCore.encryptDataWithKey(
+                    BaseRemoteModule.formatter.encodeToString(it),
+                    groupKey.key
+                )
+            },
             signedPublicKey = cryptoCore.signData(
                 data = newExchangeKeys.publicKey,
                 myPrivateKey = myKey.privateKey

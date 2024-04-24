@@ -175,10 +175,38 @@ class RawCryptoPresentation constructor(
                                 add("Devices: **${rawPair.first.locations.size}**")
                                 add("Verification: **${rawPair.second.member.verificationResult}**")
                             },
-                            rawData = rawPair.first.member.data,
-                            decryptedData = rawPair.second.member.memberData.mapSuccess {
-                                BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
+                            rawData = buildString {
+                                append("\"data\": ")
+                                append(rawPair.first.member.data)
+                                append("\n\n")
+                                append("\"paralinoId\": ")
+                                append(rawPair.first.member.paralinoId)
                             },
+                            decryptedData = CryptoResource.Ready(
+                                buildString {
+                                    append("\"data\": ")
+                                    append(
+                                        when (val memberData = rawPair.second.member.memberData) {
+                                            is CryptoResource.Ready -> {
+                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(memberData.data)
+                                            }
+
+                                            else -> rawPair.second.member.memberData.toString()
+                                        }
+                                    )
+                                    append("\n\n")
+                                    append("\"paralinoId\": ")
+                                    append(
+                                        when (val paralinoId = rawPair.second.member.paralinoId) {
+                                            is CryptoResource.Ready -> {
+                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(paralinoId.data)
+                                            }
+
+                                            else -> rawPair.second.member.paralinoId.toString()
+                                        }
+                                    )
+                                }
+                            ),
                             type = RawPresentationDataType.GroupMemberPresentation(memberId)
                         )
                     )

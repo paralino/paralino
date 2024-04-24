@@ -6,6 +6,7 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupSettings
+import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.utils.Emojis
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -19,6 +20,8 @@ data class MemberModel constructor(
     val verification: String,
     @Contextual
     val memberData: CryptoResource<MemberModelData>,
+    @Contextual
+    val paralinoId: CryptoResource<MemberModelParalinoIdData>,
     val settings: GroupSettings?,
     val verificationResult: VerificationResult,
     val enforceMemberAuthentication: Boolean
@@ -47,3 +50,10 @@ data class MemberModelData constructor(
     val name: String,
     val image: ImageModel? = null
 )
+
+@Serializable
+data class MemberModelParalinoIdData constructor(
+    val paralinoId: String?,
+) {
+    val formattedCode: String? get() = paralinoId?.let { UserPersonalCode.formattedCode(it) }
+}

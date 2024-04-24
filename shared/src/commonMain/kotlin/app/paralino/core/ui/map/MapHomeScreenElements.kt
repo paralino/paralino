@@ -278,6 +278,7 @@ fun MapHomeScreenElements(
 
                                 is GroupMemberItemEvent.onDeleteDeviceClick -> {}
                                 is GroupMemberItemEvent.onOpenRawData -> {}
+                                is GroupMemberItemEvent.onCopyCode -> {}
                                 is GroupMemberItemEvent.onLocationRequest -> {
                                     logg.v("location_request", "pass request click")
                                     onRequestLocation(memberState)

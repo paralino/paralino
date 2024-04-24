@@ -16,6 +16,7 @@ import app.paralino.core.models.location.MemberDeviceStatus
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelData
+import app.paralino.core.models.location.MemberModelParalinoIdData
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.utils.BaseRemoteModule
@@ -207,6 +208,32 @@ class MemberMapperCore constructor(
             CryptoResource.MissingKey
         }
 
+        // data encrypted with group DEK
+        val paralinoIdData = if (groupKey is GroupMasterKey.Valid) {
+            if (model.member.paralinoId.isNullOrBlank()) {
+                CryptoResource.NotInitialized
+            } else {
+                try {
+                    cryptoCore.decryptDataWithKey(
+                        data = model.member.paralinoId,
+                        key = groupKey.key
+                    ).let {
+                        BaseRemoteModule.formatter.decodeFromString<MemberModelParalinoIdData>(it)
+                    }.let {
+                        if (verification is VerificationResult.Verified) {
+                            CryptoResource.Ready(it)
+                        } else {
+                            CryptoResource.UnverifiedKeyOrData(it)
+                        }
+                    }
+                } catch (e: Exception) {
+                    CryptoResource.WrongKeyOrData
+                }
+            }
+        } else {
+            CryptoResource.MissingKey
+        }
+
         val memberModel = MemberModel(
             id = model.member.id,
             groupId = model.member.groupId,
@@ -223,6 +250,7 @@ class MemberMapperCore constructor(
                 )
             },
             memberData = memberData,
+            paralinoId = paralinoIdData,
             verificationResult = verification,
             enforceMemberAuthentication = group.enforceMemberAuthentication
         )

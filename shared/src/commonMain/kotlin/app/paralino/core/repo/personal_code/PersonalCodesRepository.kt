@@ -65,6 +65,10 @@ class PersonalCodesRepository constructor(
         )
     }
 
+    suspend fun getActivePersonalCodeOnce(): UserPersonalCode? {
+        return local.getActivePersonalCodesOnce()
+    }
+
     suspend fun refreshPersonalCodes() {
         triggerRemoteOnly {
             remote.getMyPersonalCodes()

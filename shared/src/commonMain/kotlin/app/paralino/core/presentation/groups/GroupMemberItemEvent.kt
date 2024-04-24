@@ -7,4 +7,5 @@ sealed interface GroupMemberItemEvent {
     data class onDeleteDeviceClick(val item: GroupMemberItemLocationState): GroupMemberItemEvent
     data class onShowLocation(val item: GroupMemberItemStateWithLocations): GroupMemberItemEvent
     data class onOpenRawData(val item: GroupMemberItemState): GroupMemberItemEvent
+    data class onCopyCode(val code: String): GroupMemberItemEvent
 }

@@ -97,6 +97,7 @@ val dummyMemberState = GroupMemberState(
     userId = "",
     name = "User name",
     image = ImageModel.emoji(Emojis.robot),
+    paralinoId = null,
     isCurrentUser = true,
     isVerified = true,
     canHaveExpandButton = true

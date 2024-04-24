@@ -33,6 +33,7 @@ class MemberWithLocationsMapperLocal(
             groupId = model.groupId,
             groupKeyVersion = model.groupKeyVersion,
             data = model.data_,
+            paralinoId = model.paralinoId,
             verification = model.verification,
             settingsRaw = safeLet(
                 model.settings_id,
@@ -99,7 +100,8 @@ class MemberWithLocationsMapperLocal(
             settings_ownerUserId = model.settingsRaw?.ownerUserId,
             settings_integrity = model.settingsRaw?.integrity,
             settings_groupOwnerIntegrity = model.settingsRaw?.groupOwnerIntegrity,
-            data_ = model.data
+            data_ = model.data,
+            paralinoId = model.paralinoId,
         )
     }
 }

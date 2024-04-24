@@ -3,7 +3,6 @@ package app.paralino.core.presentation.groups
 import app.paralino.core.config
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
-import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -12,6 +11,7 @@ import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
@@ -38,10 +38,10 @@ class GroupDetailViewModel(
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
     private val connectionStatus: IConnectionStatusProvider,
-    private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupPreRefreshUseCase,
-    private val valueFormatter: IValueFormatter
+    private val valueFormatter: IValueFormatter,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
@@ -254,13 +254,15 @@ class GroupDetailViewModel(
     fun stopSharing() {
         coroutineScope.launch {
             sharingManager.stopSharing(groupId)
-
             try {
                 deviceStatusProcessor.pushDeviceStatus(groupId)
             } catch (e: Exception) {
                 logg.w("Error while updating user status", e)
             }
-
         }
+    }
+
+    fun copyToClipboard(data: String) {
+        deviceApiProvider.copyToClipboard(data)
     }
 }

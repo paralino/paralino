@@ -51,9 +51,12 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -383,7 +386,50 @@ fun GroupMemberWithLocations(
             visible = expanded
         ) {
             Column {
-                state.locations.takeIf { state.allowShowingDevices }?.let {
+
+                if (!state.memberState.paralinoId.isNullOrBlank()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clickable { onEvent?.invoke(GroupMemberItemEvent.onCopyCode(state.memberState.paralinoId)) }
+                                .padding(6.dp)
+                            ,
+                            painter = CoreAppIcons.ContentCopy.asPainterResource(),
+                            contentDescription = null
+                        )
+                        Column {
+                            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                                Text(
+                                    modifier = Modifier.padding(start = 4.dp),
+                                    text = stringResource(MR.strings.settings_section_personal_code_title),
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Light,
+                                        fontSize = 12.sp,
+                                    )
+                                )
+                            }
+                            Text(
+                                modifier = Modifier.padding(start = 4.dp),
+                                text = state.memberState.paralinoId,
+                                style = TextStyle(
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 14.sp,
+                                    letterSpacing = 2.sp,
+                                    lineHeight = 14.sp,
+                                    textAlign = TextAlign.Start,
+                                    lineBreak = LineBreak.Heading
+                                ),
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
+
+                state.locations.takeIf { state.allowShowingDevices }?.takeIf { it.isNotEmpty() }?.let {
                     Column(modifier = Modifier.padding(top = 12.dp)) {
                         Text(
                             modifier = Modifier.padding(start = 8.dp),
@@ -417,7 +463,6 @@ fun GroupMemberWithLocations(
                         }
                     )
                 }
-
             }
         }
 

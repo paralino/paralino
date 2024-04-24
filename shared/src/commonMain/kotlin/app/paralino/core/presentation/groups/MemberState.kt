@@ -28,6 +28,7 @@ data class GroupMemberState constructor(
     val userId: String,
     val name: String,
     val image: ImageModel?,
+    val paralinoId: String?,
     val isCurrentUser: Boolean,
     val isVerified: Boolean,
     val canHaveExpandButton: Boolean
@@ -42,6 +43,7 @@ data class GroupMemberState constructor(
         userId = member.userId,
         name = member.name,
         image = member.image,
+        paralinoId = member.paralinoId.data?.formattedCode,
         isCurrentUser = isCurrentUser,
         isVerified = member.isVerified,
         canHaveExpandButton = canHaveExpandButton

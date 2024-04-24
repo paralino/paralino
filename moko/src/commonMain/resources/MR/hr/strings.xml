@@ -219,7 +219,7 @@
     <string name="group_members_block_user">Blokiraj korisnika</string>
     <string name="group_members_block_user_alert_message">Ako nastavite, korisnik vas neće moći dodati u grupu, te nećete primati obavijesti o lokaciji korisnika u nijednoj zajedničkoj grupi.</string>
     <string name="group_members_remove_alert_title">Jeste li sigurni da želite ukloniti %s iz grupe?</string>
-    <string name="group_members_device_other_remove_alert_title">Jeste li sigurni da želite ukloniti uređaj korisnika %ss iz grupe?\n\nOvo neće ukloniti korisnika iz grupe.</string>
+    <string name="group_members_device_other_remove_alert_title">Jeste li sigurni da želite ukloniti uređaj korisnika %s iz grupe?\n\nOvo neće ukloniti korisnika iz grupe.</string>
     <string name="group_members_device_own_remove_alert_title">Jeste li sigurni da želite ukloniti svoj uređaj iz grupe?\n\nOvo neće ukloniti vas iz grupe.</string>
     <string name="group_members_device_name_default">Uređaj</string>
     <string name="group_details_section_members_title">Članovi</string>

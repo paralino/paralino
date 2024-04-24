@@ -400,6 +400,7 @@ fun GroupDetailScreenCore(
 
                                     is GroupMemberItemEvent.onShowLocation -> {}
                                     is GroupMemberItemEvent.onLocationRequest -> {}
+                                    is GroupMemberItemEvent.onCopyCode -> { vm.copyToClipboard(event.code) }
                                     is GroupMemberItemEvent.onOpenRawData -> {
                                         openMemberRawData(item.memberState.memberId)
                                     }
