@@ -3,8 +3,6 @@ package app.paralino.core.ui.share
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -64,6 +61,7 @@ import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.nameRes
@@ -239,6 +237,7 @@ fun SharingStartScreenCore(
                         ConditionErrorType.NETWORK -> vm.showSnackbar(
                             text = MR.strings.error_no_connection_snackbar.localizedString()
                         )
+
                         else -> {}
                     }
                 }
@@ -508,16 +507,8 @@ fun SharingStartScreenCore(
         }
     }
 
-    AnimatedVisibility(state.loadingAction, enter = fadeIn(), exit = fadeOut()) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colors.background.copy(alpha = 0.5f))
-                .clickable { },
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
+    if (state.loadingAction) {
+        LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
     }
 }
 
