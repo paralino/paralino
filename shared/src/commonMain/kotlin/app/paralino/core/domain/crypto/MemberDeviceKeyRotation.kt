@@ -178,11 +178,12 @@ class MemberDeviceKeyRotation(
         // keys will be rotated anyway when location sharing restarts
 
         val locationDataValid = when (currentDeviceLocation.locationData) {
+            // using missing key and uninitialized here because on first time sharing key nor location will be present
             CryptoResource.MissingKey,
             CryptoResource.NotInitialized,
+            is CryptoResource.UnverifiedKeyOrData,
             is CryptoResource.Ready -> true
 
-            is CryptoResource.UnverifiedKeyOrData,
             CryptoResource.WrongKeyOrData -> false
         }
 
