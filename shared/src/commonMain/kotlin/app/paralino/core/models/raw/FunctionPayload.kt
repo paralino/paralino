@@ -152,7 +152,8 @@ data class CreatePlacePayload(
 @Serializable
 data class UpdatePlacePayload constructor(
     val placeId: String,
-    val placeData: String
+    val placeData: String,
+    val groupKeyVersion: Long
 )
 
 @Serializable

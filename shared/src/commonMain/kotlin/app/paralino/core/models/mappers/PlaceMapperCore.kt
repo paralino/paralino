@@ -7,51 +7,15 @@ import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
-import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.raw.GroupPlaceRaw
-import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 
 class PlaceMapperCore constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore,
     val settingsMapper: PlaceSettingsMapperCore
 ) {
-
-    suspend fun core2Remote(model: GroupPlace): GroupPlaceRaw {
-
-        val groupKey = cryptoKEKRepo.getGroupKey(
-            groupId = model.groupId,
-            keyVersion = model.groupKeyVersion
-        )
-
-        if(groupKey !is GroupMasterKey.Valid)
-            throw MissingGroupKeyException(model.groupId, model.groupKeyVersion)
-
-        val placeData = when (model.data) {
-            is CryptoResource.Ready -> {
-                cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(model.data.data),
-                    key = groupKey.key
-                )
-            }
-            else -> throw CryptoException("Place data is missing: ${model.id}")
-        }
-
-        return GroupPlaceRaw(
-            id = model.id,
-            groupId = model.groupId,
-            ownerUserId = model.ownerUserId,
-            groupKeyVersion = model.groupKeyVersion,
-            private = model.private,
-            data = placeData
-        )
-    }
-
     suspend fun remote2Core(model: GroupPlaceRaw): GroupPlace {
 
         val groupKey = cryptoKEKRepo.getGroupKey(
@@ -88,12 +52,4 @@ class PlaceMapperCore constructor(
             data = placeData,
         )
     }
-
-    suspend fun remote2CoreWithSettings(model: GroupPlacesWithSettingsRaw): GroupPlaceWithSettings {
-        return GroupPlaceWithSettings(
-            place = remote2Core(model.place),
-            settings = model.settings?.let { settingsMapper.remote2Core(it) }
-        )
-    }
-
 }

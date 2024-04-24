@@ -7,6 +7,7 @@ import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
@@ -23,10 +24,14 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.api.runAsync
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
+import app.paralino.core.utils.exceptions.CryptoException
+import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
+import kotlinx.serialization.encodeToString
 
 class PlacesRemoteSource(
     private val api: IDocumentsApi,
@@ -152,11 +157,30 @@ class PlacesRemoteSource(
         place: GroupPlace
     ): GroupPlaceRaw {
         return blocking {
-            val mapped = mapper.core2Remote(place)
+
+            // get latest group key
+            val groupKey = cryptoKEKRepo.getGroupKey(
+                groupId = place.groupId,
+                keyVersion = null
+            )
+
+            if(groupKey !is GroupMasterKey.Valid)
+                throw MissingGroupKeyException(place.groupId, null)
+
+            val placeData = when (place.data) {
+                is CryptoResource.Ready -> {
+                    cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.formatter.encodeToString(place.data.data),
+                        key = groupKey.key
+                    )
+                }
+                else -> throw CryptoException("Place data is missing: ${place.id}")
+            }
 
             val payload = UpdatePlacePayload(
                 placeId = place.id,
-                placeData = mapped.data
+                placeData = placeData,
+                groupKeyVersion = groupKey.version
             )
 
             val response = functionsApi.runAndWait(
