@@ -198,7 +198,7 @@ fun SettingSectionInfo(
 
 @Composable
 fun SettingsActionItem(
-    modifier: Modifier = Modifier.padding(horizontal = 12.dp),
+    modifier: Modifier = Modifier,
     name: String,
     icon: Painter,
     description: String? = null,
@@ -208,6 +208,7 @@ fun SettingsActionItem(
 ) {
     Column(
         modifier = modifier
+            .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() }

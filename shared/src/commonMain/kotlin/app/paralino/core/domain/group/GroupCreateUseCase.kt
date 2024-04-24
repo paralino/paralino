@@ -6,7 +6,6 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroup
@@ -22,9 +21,7 @@ import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.Constants
 import app.paralino.core.utils.exceptions.BaseRemoteException
-import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -38,8 +35,7 @@ class GroupCreateUseCase(
     private val cryptoCore: CryptoCore,
     private val remote: GroupsRemoteSource,
     private val local: UserGroupLocalDataSource,
-    private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
+    private val functionsApi: IFunctionsApi
 ) : LimitedExecutionRepository() {
 
     private val groupKey = "group_create"
@@ -68,7 +64,9 @@ class GroupCreateUseCase(
 
         return getDataOnce(
             remote = { remote.updateGroup(userGroup) },
-            localUpdate = { local.updateGroupOnly(it) }
+            localUpdate = {
+                local.updateGroupOnly(it)
+            }
         )
             .startProcessing(groupId)
             .map { Unit }
@@ -103,7 +101,7 @@ class GroupCreateUseCase(
             publicKey = exchangeKeyPair.publicKey
         )
 
-        val groupData = UserGroupData(name, image, Constants.collectionGroupUser)
+        val groupData = UserGroupData(name, image, UserGroup.groupPrivateGroupId)
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
             data = myIdentityKeys.publicKey,
             type = HashType.SHA256

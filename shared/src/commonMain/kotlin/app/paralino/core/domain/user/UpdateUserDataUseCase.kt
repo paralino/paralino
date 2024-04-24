@@ -14,7 +14,7 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserDevicesRemoteSource
 import app.paralino.core.repo.user.UserRemoteSource
@@ -30,7 +30,7 @@ class UpdateUserDataUseCase constructor(
     private val userRepo: UserRepository,
     private val userRemoteSource: UserRemoteSource,
     private val userDevicesRemoteSource: UserDevicesRemoteSource,
-    private val locationRepo: LocationLocalDataSource,
+    private val groupLocal: UserGroupLocalDataSource,
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository,
@@ -53,7 +53,7 @@ class UpdateUserDataUseCase constructor(
     }
 
     private suspend fun updateMemberDataInGroups(data: UserMeData) {
-        val userMembers = locationRepo.getMemberModelsForUser(userRepo.cachedUserId)
+        val userMembers = groupLocal.getMemberModelsForUser(userRepo.cachedUserId)
 
         val nodes = userMembers.map { member ->
 

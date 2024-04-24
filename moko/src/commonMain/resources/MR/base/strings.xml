@@ -243,6 +243,11 @@
     <string name="group_details_sharing_action">Location sharing</string>
     <string name="group_details_security_action">Security</string>
     <string name="group_edit_screen_title">Edit group</string>
+    <string name="group_settings_verification_title">Member verification</string>
+    <string name="group_settings_verification_description_on">Each group member is cryptographically verified by you and new members can only be added by you.\nOtherwise they will appear as UNVERIFIED and will not be able to send or receive location updates.</string>
+    <string name="group_settings_verification_description_off">Group members can be added by other users now and there is no extra verification from group owner.</string>
+    <string name="group_settings_verification_dialog_message_on">Enabling verification will trigger re-verification process for all current members.\n\nMembers will be cryptographically verified and no one else will be able to add new members to this group.</string>
+    <string name="group_settings_verification_dialog_message_off">Disabling member verification will allow others to add new members to your group.</string>
 
     <string name="group_create_start_title">Connect with your family</string>
     <string name="group_load_error">Unable to load your group</string>

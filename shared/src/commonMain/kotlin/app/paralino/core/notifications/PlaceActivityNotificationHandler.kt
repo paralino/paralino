@@ -7,8 +7,7 @@ import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.flow.first
@@ -21,8 +20,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class PlaceActivityNotificationHandler(
-    private val groupRepo: GroupRepository,
-    private val locationRepo: LocationLocalDataSource,
+    private val groupRepo: UserGroupLocalDataSource,
     private val placeRepo: PlacesRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val scopeProvider: ICoroutineScopeProvider,
@@ -41,7 +39,7 @@ class PlaceActivityNotificationHandler(
             try {
                 val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
                 placeName = place?.data?.data?.name
-                userName = locationRepo.getMemberOnce(place!!.groupId, payload.memberUserId)?.name
+                userName = groupRepo.getMemberOnce(place!!.groupId, payload.memberUserId)?.name
             } catch (_: Exception) {
             }
 
@@ -89,7 +87,7 @@ class PlaceActivityNotificationHandler(
         try {
             val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
             placeName = place?.nameOrNull
-            groupName = groupRepo.getGroupWithoutMembersLocally(place!!.groupId).first().nameOrNull
+            groupName = groupRepo.getGroupWithoutMembers(place!!.groupId).first().nameOrNull
         } catch (e: Exception) {
         }
 

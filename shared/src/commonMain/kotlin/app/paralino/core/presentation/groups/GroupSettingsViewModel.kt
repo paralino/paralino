@@ -1,12 +1,14 @@
 package app.paralino.core.presentation.groups
 
 import app.paralino.core.MR
+import app.paralino.core.domain.group.GroupCreateUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -31,6 +33,7 @@ class GroupSettingsViewModel(
     private val userRepo: UserRepository,
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val groupRemove: GroupRemoveUseCase,
+    private val createGroup: GroupCreateUseCase
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroup?>(null)
@@ -51,6 +54,8 @@ class GroupSettingsViewModel(
             GroupSettingsScreenState(
                 id = groupId,
                 canEdit = group.isCurrentUserOwner,
+                isMemberVerificationEnabled = group.data.data?.enforceMemberAuthentication != null,
+                isMemberVerificationOn = group.data.data?.enforceMemberAuthentication == true,
                 loadingAction = false,
                 name = group.name,
                 image = group.image,
@@ -83,6 +88,15 @@ class GroupSettingsViewModel(
             GroupSettingsUiEvent.BlockGroup -> updateDialog(MainAlertDialog.BlockGroup)
             GroupSettingsUiEvent.DeleteGroup -> updateDialog(MainAlertDialog.DeleteGroup)
             GroupSettingsUiEvent.LeaveGroup -> updateDialog(MainAlertDialog.LeaveGroup)
+            GroupSettingsUiEvent.ToggleMemberVerification -> {
+                _uiState.value.data?.let { data ->
+                    if (data.canEdit && data.isMemberVerificationEnabled) {
+                        updateDialog(
+                            MainAlertDialog.ToggleMemberVerification(turnOn = !data.isMemberVerificationOn)
+                        )
+                    }
+                }
+            }
             is GroupSettingsUiEvent.DialogAction -> {
                 updateDialog(null)
                 when (event.action.dialog) {
@@ -104,10 +118,44 @@ class GroupSettingsViewModel(
                         }
                     }
 
+                    is MainAlertDialog.ToggleMemberVerification -> {
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            toggleMembershipVerification()
+                        }
+                    }
+
                     else -> {}
                 }
             }
         }
+    }
+
+    private fun toggleMembershipVerification() {
+        val group = groupData.value?.takeIf { group ->
+            group.isCurrentUserOwner && group.data.data != null
+        } ?: return
+
+        val newData = group.data.mapSuccess {
+            it.copy(enforceMemberAuthentication = !it.enforceMemberAuthentication)
+        }
+        val newGroup = group.copy(data = newData)
+
+        createGroup.updateGroup(newGroup)
+            .mapToPayload { it }
+            .onEach { data ->
+                _uiState.update {
+                    it.mapReady { it.copy(loadingAction = data is Payload.Loading) }
+                }
+                when (data) {
+                    is Payload.Error -> {
+                        showSnackbar(data.exception.errorString())
+                    }
+
+                    Payload.Loading -> {}
+                    is Payload.Success -> {}
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun updateDialog(dialog: MainAlertDialog?) {

@@ -239,6 +239,11 @@
     <string name="group_details_sharing_action">Dijeljenje lokacije</string>
     <string name="group_details_security_action">Sigurnost</string>
     <string name="group_edit_screen_title">Uredi grupu</string>
+    <string name="group_settings_verification_title">Verifikacija članova</string>
+    <string name="group_settings_verification_description_on">Svaki član grupe je kriptografski verificaran i samo ti možeš dodati nove članove.\U suprotnom, članovi bez verifikacije će biti označeni kao NEPOTVRĐEN te neće moći slati i primati lokaciju.</string>
+    <string name="group_settings_verification_description_off">Nema dodatne verifikacije od strane vlasnika grupe te i ostali mogu dodati nove članove u grupu.</string>
+    <string name="group_settings_verification_dialog_message_on">Svaki trenutni član grupe će biti ponovno kriptografski verificiran te nitko osim tebe neće moći dodati nove članove u grupu.</string>
+    <string name="group_settings_verification_dialog_message_off">Nepotvrđeni članovi će moći koristiti lokaciju u grupi te nove članove grupe mogu dodati i ostali.</string>
 
     <string name="group_create_start_title">Povežite se s obitelji</string>
     <string name="group_load_error">Nemoguće učitati vašu grupu</string>

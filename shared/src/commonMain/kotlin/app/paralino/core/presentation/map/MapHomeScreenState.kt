@@ -29,6 +29,7 @@ sealed class MapHomeScreenState {
 
         val sharingStatus: LocationSharingContract?,
         val sharingEndTime: String?,
+        val verified: Boolean,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
         val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }

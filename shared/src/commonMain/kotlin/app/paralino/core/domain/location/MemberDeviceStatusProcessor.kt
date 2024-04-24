@@ -6,14 +6,14 @@ import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
-import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 class MemberDeviceStatusProcessor(
-    private val local: LocationLocalDataSource,
+    private val local: UserGroupLocalDataSource,
     private val remote: LocationRemoteSource,
     private val payloadProvider: LocationPayloadProvider,
     private val sharingManager: LocationSharingManager

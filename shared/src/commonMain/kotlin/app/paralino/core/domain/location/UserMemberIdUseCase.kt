@@ -6,12 +6,14 @@ import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 
 class UserMemberIdUseCase constructor(
     private val userRepository: UserRepository,
+    private val groupLocal: UserGroupLocalDataSource,
     private val memberLocal: LocationLocalDataSource,
     private val placeLocal: PlacesLocalDataSource,
     private val deviceApiProvider: IDeviceApiProvider
@@ -27,7 +29,7 @@ class UserMemberIdUseCase constructor(
 
     suspend fun getDefaultDeviceName(groupId: String?): String {
         return groupId?.let { getCurrentLocationForGroup(it)?.deviceData?.data?.deviceName }
-            ?: memberLocal.getMemberModelsWithLocationForUser(userRepository.cachedUserId)
+            ?: groupLocal.getMemberModelsWithLocationForUser(userRepository.cachedUserId)
                 .mapNotNull { it.currentDeviceLocation?.name }
                 .takeIf { it.size == 1 }
                 ?.first()
@@ -54,31 +56,16 @@ class UserMemberIdUseCase constructor(
     }
 
     suspend fun getCurrentUserMemberForGroup(groupId: String): MemberModel? {
-        return memberLocal.getMemberOnce(
+        return groupLocal.getMemberOnce(
             groupId = groupId,
             userId = userRepository.cachedUserId
         )
     }
 
     suspend fun getCurrentUserMemberWithLocationsForGroup(groupId: String): MemberModelWithLocations? {
-        return memberLocal.getMemberWithLocationsOnce(
+        return groupLocal.getMemberWithLocationsOnce(
             groupId = groupId,
             userId = userRepository.cachedUserId
         )
     }
-
-    suspend fun getCurrentUserMemberIdForPlace(placeId: String): String? {
-        val place = placeLocal.getPlaceWithoutSettingsOnce(placeId)
-        return place?.groupId?.let {
-            getCurrentUserMemberIdForGroup(it)
-        }
-    }
-
-    suspend fun getCurrentLocationIdForPlace(placeId: String): String? {
-        val place = placeLocal.getPlaceWithoutSettingsOnce(placeId)
-        return place?.groupId?.let {
-            getCurrentLocationIdForGroup(it)
-        }
-    }
-
 }

@@ -20,12 +20,13 @@ data class MemberModel constructor(
     @Contextual
     val memberData: CryptoResource<MemberModelData>,
     val settings: GroupSettings?,
-    val verificationResult: VerificationResult
+    val verificationResult: VerificationResult,
+    val enforceMemberAuthentication: Boolean
 ) {
 
     val name: String get() = memberData.data?.name ?: "---"
     val image: ImageModel? get() = memberData.data?.image ?: ImageModel.emoji(Emojis.lock)
-    val isVerified: Boolean get() = verificationResult is VerificationResult.Verified
+    val isVerified: Boolean get() = verificationResult.isVerified(includeMemberVerification = enforceMemberAuthentication)
 
 }
 

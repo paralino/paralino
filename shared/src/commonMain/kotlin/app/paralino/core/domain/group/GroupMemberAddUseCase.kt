@@ -104,12 +104,6 @@ class GroupMemberAddUseCase constructor(
                 )
             }
 
-        val newUserOwnPublicKey = GroupMemberPublicKeyPayload(
-            userId = codeData.userData.ownerUserId,
-            signedPublicKey = codeData.keyData.signedOwnerKxPublicKey,
-            ownerIdentityKey = codeData.userData.ownerIdentityKey
-        )
-
         val keyId = cryptoCore.derivePassword(codeData.keyData.code).loginPassword
 
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
@@ -133,7 +127,7 @@ class GroupMemberAddUseCase constructor(
                 memberVerifications = group.members.map { it.member.verification } + memberVerification,
                 encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
                     groupId = groupId
-                ) + newUserOwnPublicKey.signedPublicKey
+                ) + codeData.keyData.signedOwnerKxPublicKey
             )
         ).let {
             cryptoCore.encryptDataWithKey(

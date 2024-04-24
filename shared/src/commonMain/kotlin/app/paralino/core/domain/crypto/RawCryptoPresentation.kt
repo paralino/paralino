@@ -3,7 +3,7 @@ package app.paralino.core.domain.crypto
 import app.paralino.core.MR
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.provider.localizedString
@@ -47,7 +47,7 @@ class RawCryptoPresentation constructor(
                 )
                 val myMemberId =
                     memberLocal.getUserMemberId(groupId = groupId, userId = config.userId) ?: ""
-                getGroupMemberRawPresentation(memberId = myMemberId)
+                getGroupMemberRawPresentation(group = it.second, memberId = myMemberId)
                     .map {
                         RawPresentationModel(
                             buildList {
@@ -81,8 +81,11 @@ class RawCryptoPresentation constructor(
             .map { RawPresentationModel(listOf(it)) }
     }
 
-    fun getGroupMemberRawPresentation(memberId: String): Flow<RawPresentationModel> {
-        return memberLocal.getMemberRawPresentation(memberId)
+    fun getGroupMemberRawPresentation(
+        group: UserGroup?,
+        memberId: String
+    ): Flow<RawPresentationModel> {
+        return groupLocal.getMemberRawPresentation(group, memberId)
             .map { rawPair ->
 
                 fun locationDataPrint(
@@ -109,33 +112,39 @@ class RawCryptoPresentation constructor(
                             .firstOrNull { it.id == location.id }
 
                         val decryptedLocationData = decryptedLocation?.let {
-                                CryptoResource.Ready(
-                                    locationDataPrint(
-                                        deviceData = when (it.deviceData) {
-                                            is CryptoResource.Ready -> {
-                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(it.deviceData.data)
-                                            }
-                                            else -> it.deviceData.toString()
-                                        },
-                                        locationData = when (it.locationData) {
-                                            is CryptoResource.Ready -> {
-                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(it.locationData.data)
-                                            }
-                                            else -> it.locationData.toString()
-                                        },
-                                        status = when (it.status) {
-                                            is CryptoResource.Ready -> {
-                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(it.status.data)
-                                            }
-                                            else -> it.status.toString()
+                            CryptoResource.Ready(
+                                locationDataPrint(
+                                    deviceData = when (it.deviceData) {
+                                        is CryptoResource.Ready -> {
+                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.deviceData.data)
                                         }
-                                    )
+
+                                        else -> it.deviceData.toString()
+                                    },
+                                    locationData = when (it.locationData) {
+                                        is CryptoResource.Ready -> {
+                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.locationData.data)
+                                        }
+
+                                        else -> it.locationData.toString()
+                                    },
+                                    status = when (it.status) {
+                                        is CryptoResource.Ready -> {
+                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.status.data)
+                                        }
+
+                                        else -> it.status.toString()
+                                    }
                                 )
-                            } ?: CryptoResource.NotInitialized
+                            )
+                        } ?: CryptoResource.NotInitialized
 
                         RawPresentationModelSection(
                             title = null,
-                            subtitle = decryptedLocation?.name?.let { MR.strings.group_member_device_title.localizedString().plus(": **$it**") },
+                            subtitle = decryptedLocation?.name?.let {
+                                MR.strings.group_member_device_title.localizedString()
+                                    .plus(": **$it**")
+                            },
                             contentIdInfo = buildList {
                                 if (rawPair.first.member.ownerUserId == config.userId) {
                                     add("DeviceID: **${location.deviceId}**")
@@ -154,7 +163,9 @@ class RawCryptoPresentation constructor(
                 buildList {
                     add(
                         RawPresentationModelSection(
-                            title = rawPair.second.member.name.let { MR.strings.group_member_title.localizedString().plus(": **$it**") },
+                            title = rawPair.second.member.name.let {
+                                MR.strings.group_member_title.localizedString().plus(": **$it**")
+                            },
                             subtitle = null,
                             contentIdInfo = buildList {
                                 if (rawPair.first.member.ownerUserId == config.userId) {

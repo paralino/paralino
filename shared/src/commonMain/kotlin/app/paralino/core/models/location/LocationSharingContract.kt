@@ -35,7 +35,7 @@ data class LocationSharingContract constructor(
     fun asValidContract(): LocationSharingContract? {
         if(isAlwaysOn) {
             // invalid public sharing contract
-            if(this.groupId == UserGroup.publicSharingId) return null
+            if(this.groupId == UserGroup.groupPublicSharingId) return null
             // endless sharing for other groups
             else return this
         } else {
@@ -47,7 +47,7 @@ data class LocationSharingContract constructor(
             } else {
                 // limit public sharing if needed
                 val maxPublic = now.plus(SharingDurationPreset.publicSharingMaxDurationMillis, DateTimeUnit.MILLISECOND)
-                if(this.groupId == UserGroup.publicSharingId && date > maxPublic)
+                if(this.groupId == UserGroup.groupPublicSharingId && date > maxPublic)
                     return this.copy(endTimeUTC = maxPublic.toLocalDateTime(TimeZone.UTC).toString())
 
                 return this

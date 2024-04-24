@@ -6,7 +6,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -26,7 +26,7 @@ class MemberInviteViewModel(
     val groupId: String?,
     code: String?,
     private val codeRepo: PersonalCodesRepository,
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
     private val groupMemberAdd: GroupMemberAddUseCase,
 ) : CoreViewModel() {
 
@@ -44,7 +44,7 @@ class MemberInviteViewModel(
         code?.let { loadMemberData(code = it) }
         groupId?.let {
             coroutineScope.launch {
-                groupRepo.getGroupWithoutMembersLocally(it)
+                groupRepo.getGroupWithMetadata(it)
                     .firstOrNull()
                     ?.let { GroupItemState(it) }
                     ?.let { selectGroup(it) }
@@ -164,7 +164,7 @@ class MemberInviteViewModel(
     }
 
     suspend fun getAllGroups(): List<GroupItemState> {
-        return groupRepo.getAllGroupsLocally()
+        return groupRepo.getAllGroupsWithMetadata()
             .firstOrNull()
             ?.map { GroupItemState(it) }
             ?.also { groups.value = it }

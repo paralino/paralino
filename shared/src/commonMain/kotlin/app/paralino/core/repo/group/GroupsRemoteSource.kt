@@ -8,6 +8,7 @@ import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.BlockGroupFunctionData

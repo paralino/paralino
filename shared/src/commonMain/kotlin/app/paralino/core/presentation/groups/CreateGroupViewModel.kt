@@ -9,8 +9,7 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.utils.Constants
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
@@ -26,7 +25,7 @@ import kotlinx.coroutines.launch
 
 class CreateGroupViewModel(
     val groupId: String?,
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
     private val createGroup: GroupCreateUseCase
 ) : CoreViewModel() {
 
@@ -43,7 +42,7 @@ class CreateGroupViewModel(
         coroutineScope.launch {
             val value = when {
                 isGroupCreate() -> null
-                else -> groupRepo.getGroupWithoutMembersLocally(groupId!!)
+                else -> groupRepo.getGroupWithoutMembers(groupId!!)
                     .map { Payload.Success(it) }
                     .firstOrNull()
             } ?: Payload.Error(NullPointerException("No such group"))
@@ -83,7 +82,7 @@ class CreateGroupViewModel(
                 is CryptoResource.Ready, is CryptoResource.WrongKeyOrData, is CryptoResource.NotInitialized -> {
                     CryptoResource.Ready(
                         group.data.data?.copy(name = filteredName, image = image)
-                            ?: UserGroupData(filteredName, image, Constants.collectionGroupUser)
+                            ?: UserGroupData(filteredName, image, UserGroup.groupPrivateGroupId)
                     )
                 }
 

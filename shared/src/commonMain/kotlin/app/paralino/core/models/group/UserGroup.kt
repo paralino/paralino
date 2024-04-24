@@ -22,29 +22,40 @@ data class UserGroup constructor(
     val data: CryptoResource<UserGroupData>,
     val serverIntegrity: String,
     val planType: PlanType,
-    val memberCount: Int,
-    val verification: VerificationResult,
 ) {
 
-    val isVerified get() = verification is VerificationResult.Verified
     val name: String get() = nameOrNull ?: "---"
     val nameOrNull: String? get() = data.data?.name
     val image: ImageModel get() = data.data?.image ?: ImageModel.emoji(Emojis.lock)
+    val isCurrentUserOwner: Boolean get() = ownerUserId == config.userId
+    val enforceMemberAuthentication: Boolean = data.data?.enforceMemberAuthentication != false
 
     companion object {
-        const val personalTrackingId = "personalTracking"
-        const val publicSharingId = "publicSharing"
+        const val groupPublicSharingId = "publicSharing"
+        const val groupPrivateGroupId = "privateGroup"
+        const val groupPersonalDevicesId = "personalDevices"
     }
+}
 
-    val isCurrentUserOwner: Boolean get() = ownerUserId == config.userId
-
+@Serializable
+data class UserGroupWithMetadata constructor(
+    val group: UserGroup,
+    val memberCount: Int,
+    val verification: VerificationResult,
+) {
+    val id: String get() = group.id
+    val isVerified get() = verification.isVerified(includeMemberVerification = group.enforceMemberAuthentication)
+    val name: String get() = nameOrNull ?: "---"
+    val nameOrNull: String? get() = group.nameOrNull
+    val image: ImageModel get() = group.image
 }
 
 @Serializable
 data class UserGroupData constructor(
     val name: String = "",
     val image: ImageModel = ImageModel(),
-    val type: String = ""
+    val type: String = "",
+    val enforceMemberAuthentication: Boolean = true
 )
 
 
@@ -53,7 +64,7 @@ data class UserGroupWithMembers constructor(
     val members: List<MemberModelWithLocations>
 ) {
 
-    val isGroupVerified get() = group.isVerified && memberByUserId(config.userId)!!.isVerified
+    val isGroupVerified get() = memberByUserId(config.userId)!!.isVerified
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
     val groupKeyVersion: Long get() = group.groupKeyVersion
@@ -69,8 +80,9 @@ data class UserGroupWithMembers constructor(
         return members.firstOrNull { it.member.userId == userId }?.member
     }
 
-    val currentDeviceLocation: MemberLocation? get() {
-        return members.firstOrNull { it.member.userId == config.userId }?.currentDeviceLocation
-    }
+    val currentDeviceLocation: MemberLocation?
+        get() {
+            return members.firstOrNull { it.member.userId == config.userId }?.currentDeviceLocation
+        }
 
 }

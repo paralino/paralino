@@ -10,7 +10,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.CoreViewModel
@@ -104,7 +104,7 @@ class MapHomeViewModel constructor(
         }
     }
 
-    val allGroups: StateFlow<Resource<List<UserGroup>>> = groupRepo.getAllGroupsLocally()
+    val allGroups: StateFlow<Resource<List<UserGroupWithMetadata>>> = groupRepo.getAllGroupsLocally()
         .map { Resource.Ready(it) }
         .conflate()
         .distinctUntilChanged { old, new ->
@@ -370,6 +370,7 @@ class MapHomeViewModel constructor(
                                     splitTimeToOneLine = true
                                 )
                             },
+                            verified = group.isGroupVerified,
                             isSatelliteMode = _uiState.value.isSatelliteMode
                         )
                     }

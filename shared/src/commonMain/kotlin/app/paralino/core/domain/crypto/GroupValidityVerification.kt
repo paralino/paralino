@@ -329,6 +329,24 @@ sealed interface VerificationResult {
             return "Unverified(${errors.joinToString(separator = ", ")})"
         }
     }
+
+    fun isVerified(includeMemberVerification: Boolean): Boolean {
+        when (this) {
+            is Unverified -> {
+                if (includeMemberVerification) {
+                    return false
+                } else {
+                    return errors.filter {
+                        it != VerificationResultError.MEMBER_VERIFICATION_MISSING
+                                && it != VerificationResultError.WRONG_OWNER_VERIFICATION
+                                && it != VerificationResultError.WRONG_MEMBER_VERIFICATION_SIGNATURE
+                                && it != VerificationResultError.WRONG_MEMBER_VERIFICATION_FORM
+                    }.isEmpty()
+                }
+            }
+            Verified -> return true
+        }
+    }
 }
 
 enum class VerificationResultError {
@@ -339,7 +357,6 @@ enum class VerificationResultError {
     MEMBER_WRONG_IDENTITY,
     MEMBER_MISSING_PERSONAL_KEY,
     MEMBER_INVALID_PERSONAL_KEY,
-    MEMBER_VERIFICATION_MISSING,
 
     GROUP_OWNER_INVALID_PUBLIC_KEY,
     GROUP_OWNER_MISSING_PUBLIC_KEY,
@@ -359,9 +376,11 @@ enum class VerificationResultError {
     GROUP_KEY_INVALID,
     GROUP_KEY_MISSING,
 
+    MEMBER_VERIFICATION_MISSING,
     WRONG_OWNER_VERIFICATION,
     WRONG_MEMBER_VERIFICATION_SIGNATURE,
     WRONG_MEMBER_VERIFICATION_FORM,
+
     MISSING_MEMBER_SETTINGS,
     MISSING_MEMBER_INTEGRITY,
     WRONG_MEMBER_INTEGRITY,

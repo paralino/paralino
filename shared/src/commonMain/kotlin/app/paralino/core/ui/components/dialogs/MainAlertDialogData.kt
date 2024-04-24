@@ -300,6 +300,35 @@ sealed interface MainAlertDialog {
         )
     }
 
+    data class ToggleMemberVerification(val turnOn: Boolean) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = if (turnOn) {
+                stringResource(resource = MR.strings.group_settings_verification_dialog_message_on)
+            } else {
+                stringResource(resource = MR.strings.group_settings_verification_dialog_message_off)
+            },
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.button_confirm),
+                    color = if (turnOn) {
+                        AlertDialogButtonData.positiveColor
+                    } else {
+                        AlertDialogButtonData.destructiveColor
+                    }
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
+
     object SharingBackgroundLocationMissing : MainAlertDialog {
         override val key: String = this::class.simpleName ?: "dialog"
 

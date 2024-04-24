@@ -27,7 +27,7 @@ class RawDataPresentationViewModel constructor(
     init {
         val rawFlow = when (rawPresentationType) {
             is RawPresentationDataType.GroupMemberPresentation -> {
-                rawCryptoPresentation.getGroupMemberRawPresentation(rawPresentationType.memberId)
+                rawCryptoPresentation.getGroupMemberRawPresentation(group = null, rawPresentationType.memberId)
             }
 
             is RawPresentationDataType.GroupPlacePresentation -> {

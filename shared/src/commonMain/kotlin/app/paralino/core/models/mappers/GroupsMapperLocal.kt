@@ -3,6 +3,7 @@ package app.paralino.core.models.mappers
 import app.paralino.core.data.db.GroupEntity
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.raw.GroupDocumentRaw
 
 class GroupsMapperLocal(
@@ -13,8 +14,12 @@ class GroupsMapperLocal(
         model: GroupEntity,
         memberCount: Int = 0,
         verification: VerificationResult
-    ): UserGroup {
+    ): UserGroupWithMetadata {
         return coreMapper.remote2Core(local2Remote(model), memberCount, verification)
+    }
+
+    suspend fun local2Core(model: GroupEntity): UserGroup {
+        return coreMapper.remote2Core(local2Remote(model))
     }
 
     fun local2Remote(model: GroupEntity): GroupDocumentRaw {

@@ -190,7 +190,7 @@ val coreModule = module {
     factory { LocationRequestUseCase(get(), get()) }
     factory { ClearUserLocationUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
-    factory { UserMemberIdUseCase(get(), get(), get(), get()) }
+    factory { UserMemberIdUseCase(get(), get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get(), config) }
 
@@ -204,7 +204,7 @@ val coreModule = module {
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
-    single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get()) }
@@ -229,7 +229,7 @@ val coreModule = module {
 
     single { PushNotificationHandler(get(), get(), get(), get(), config) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get()) }
-    factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get(), get(), get()) }
+    factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get(), get()) }
     factory { GroupActivityNotificationsHandler(get(), get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), config) }
 }

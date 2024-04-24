@@ -1,6 +1,5 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
@@ -11,12 +10,12 @@ import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
 class GroupMapperCore constructor(
@@ -31,7 +30,7 @@ class GroupMapperCore constructor(
             groupOwnerId = model.ownerUserId,
             keyVersion = model.groupKeyVersion
         )
-        if(groupKey !is GroupMasterKey.Valid)
+        if (groupKey !is GroupMasterKey.Valid)
             throw MissingGroupKeyException(model.id, model.groupKeyVersion)
 
         val groupData = when (model.data) {
@@ -41,6 +40,7 @@ class GroupMapperCore constructor(
                     key = groupKey.key
                 )
             }
+
             else -> throw CryptoException("Group data is missing: ${model.id}")
         }
 
@@ -54,7 +54,7 @@ class GroupMapperCore constructor(
         )
     }
 
-    suspend fun remote2Core(model: GroupDocumentRaw, memberCount: Int = 0, verification: VerificationResult): UserGroup {
+    suspend fun remote2Core(model: GroupDocumentRaw): UserGroup {
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.id,
@@ -62,7 +62,7 @@ class GroupMapperCore constructor(
             keyVersion = model.groupKeyVersion
         )
 
-        if(groupKey !is GroupMasterKey.Valid)
+        if (groupKey !is GroupMasterKey.Valid)
             logg.e(MissingGroupKeyException(model.id, model.groupKeyVersion))
 
         val groupData = if (groupKey is GroupMasterKey.Valid) {
@@ -88,22 +88,32 @@ class GroupMapperCore constructor(
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,
             serverIntegrity = model.serverIntegrity,
-            planType = PlanType.fromKey(model.planType) ?: PlanType.fallback,
+            planType = PlanType.fromKey(model.planType) ?: PlanType.fallback
+        )
+    }
+
+    suspend fun remote2Core(
+        model: GroupDocumentRaw,
+        memberCount: Int = 0,
+        verification: VerificationResult
+    ): UserGroupWithMetadata {
+        return UserGroupWithMetadata(
+            group = remote2Core(model),
             memberCount = memberCount,
             verification = verification,
         )
     }
 
     suspend fun remote2CoreWithMembers(model: GroupWithMembersRaw): UserGroupWithMembers {
+        val group = remote2Core(model.group)
         val members = model.members.map {
             memberMapperCore.remote2Core(
                 model = it,
-                groupOwnerId = model.group.ownerUserId
+                group = group
             )
         }
-        val verification = members.first { it.member.userId == config.userId }.member.verificationResult
         return UserGroupWithMembers(
-            group = remote2Core(model.group, members.size, verification),
+            group = group,
             members = members
         )
     }

@@ -5,7 +5,7 @@ import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
@@ -51,7 +51,7 @@ class SharingStartViewModel(
         )
     val uiState: Flow<SharingStartScreenState> = _uiState
 
-    private val currentGroup = MutableStateFlow<UserGroup?>(null)
+    private val currentGroup = MutableStateFlow<UserGroupWithMetadata?>(null)
 
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -95,7 +95,7 @@ class SharingStartViewModel(
         return getAllGroups().map { GroupItemState(it) }
     }
 
-    private suspend fun getAllGroups(): List<UserGroup> {
+    private suspend fun getAllGroups(): List<UserGroupWithMetadata> {
         return groupRepo.getAllGroupsLocally().firstOrNull() ?: emptyList()
     }
 
@@ -110,13 +110,13 @@ class SharingStartViewModel(
         }
     }
 
-    private fun setSelectedGroup(group: UserGroup) {
+    private fun setSelectedGroup(group: UserGroupWithMetadata) {
         val groupItem = GroupItemState(group)
         currentGroup.update { group }
         _uiState.update {
             it.copy(
                 groupState = Payload.Success(groupItem),
-                devicesLimit = group.planType.devicesLimit
+                devicesLimit = group.group.planType.devicesLimit
             )
         }
     }

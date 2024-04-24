@@ -2,6 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.data.db.MemberEntity
 import app.paralino.core.data.db.MemberLocationEntity
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
@@ -16,9 +17,9 @@ class MemberWithLocationsMapperLocal(
     suspend fun local2Core(
         member: MemberEntity,
         memberLocations: List<MemberLocationEntity>,
-        groupOwnerId: String
+        group: UserGroup
     ): MemberModelWithLocations {
-        return coreMapper.remote2Core(local2Remote(member, memberLocations), groupOwnerId)
+        return coreMapper.remote2Core(local2Remote(member, memberLocations), group)
     }
 
     fun local2Remote(
