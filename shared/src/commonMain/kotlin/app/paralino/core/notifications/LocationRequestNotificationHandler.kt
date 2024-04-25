@@ -63,10 +63,14 @@ class LocationRequestNotificationHandler(
     ) {
         logg.v("Update location status and performance for group $groupId")
         if (!sharingManager.isSharingActiveForGroup(id = groupId)) {
-            try {
-                deviceStatusProcessor.pushDeviceStatus(groupId)
-            } catch (e: Exception) {
-                logg.w("Error saving location status", e)
+            // only update not sharing status if someone requested device location
+            // TODO maybe update it only if not updated previously?
+            if (performanceType == LocationPerformanceType.VERY_HIGH) {
+                try {
+                    deviceStatusProcessor.pushDeviceStatus(groupId)
+                } catch (e: Exception) {
+                    logg.w("Error saving location status", e)
+                }
             }
             return
         }
