@@ -19,8 +19,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
     lazy var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
     
-    @Published var location: CLLocationCoordinate2D?
-    
     override init() {
         super.init()
         manager.allowsBackgroundLocationUpdates = true
@@ -93,21 +91,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         guard let location = locations.last else { return }
-        self.location = location.coordinate
-        
-        let accuracy: Float = if !location.horizontalAccuracy.isNaN && location.horizontalAccuracy > 0 { Float(location.horizontalAccuracy) } else { 0 }
-        let speed: KotlinFloat? = if !location.speed.isNaN && location.speed > 0 { KotlinFloat(floatLiteral: location.speed) } else { nil }
-        let altitude: KotlinFloat? = if !location.altitude.isNaN { KotlinFloat(floatLiteral: location.altitude) } else { nil }
-        
-        let locationModel = LocationDataModel(
-            lat: location.coordinate.latitude,
-            lng: location.coordinate.longitude,
-            accuracy: accuracy,
-            timeUTC: location.timestamp.ISO8601Format(.iso8601(timeZone: .gmt)),
-            endTimeUTC: nil,
-            speed: speed,
-            altitude: altitude
-        )
+        let systemLocation = manager.location?.toLocationModel()
+        let locationModel = location.toLocationModel().getIfBetter(newLocation: systemLocation)!
         
         Logr.v(tag: "location_service", message: "Got location update from system")
         
@@ -172,5 +157,24 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         let request = UNNotificationRequest(identifier: "app_track", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { (error : Error?) in }
+    }
+}
+
+extension CLLocation {
+    func toLocationModel() -> LocationDataModel {
+        let location = self
+        let accuracy: Float = if !location.horizontalAccuracy.isNaN && location.horizontalAccuracy > 0 { Float(location.horizontalAccuracy) } else { 0 }
+        let speed: KotlinFloat? = if !location.speed.isNaN && location.speed > 0 { KotlinFloat(floatLiteral: location.speed) } else { nil }
+        let altitude: KotlinFloat? = if !location.altitude.isNaN { KotlinFloat(floatLiteral: location.altitude) } else { nil }
+        
+        return LocationDataModel(
+            lat: location.coordinate.latitude,
+            lng: location.coordinate.longitude,
+            accuracy: accuracy,
+            timeUTC: location.timestamp.ISO8601Format(.iso8601(timeZone: .gmt)),
+            endTimeUTC: nil,
+            speed: speed,
+            altitude: altitude
+        )
     }
 }
