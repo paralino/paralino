@@ -8,6 +8,7 @@ import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.location.getIfBetter
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.localizedString
@@ -140,22 +141,7 @@ class LocationUploadEngine constructor(
         }
 
         _pendingLocation.update { current ->
-            if (current?.timeUTCInstant != null && data.timeUTCInstant != null) {
-                // if new location is older than currently pending one, discard it
-                if (current.timeUTCInstant > data.timeUTCInstant) {
-                    val difference = current.timeUTCInstant - data.timeUTCInstant
-                    if (difference < 1.seconds && data.accuracy < current.accuracy) {
-                        // if time difference is not huge but accuracy is better, use new location
-                        return@update data
-                    } else {
-                        return@update current
-                    }
-                } else {
-                    return@update data
-                }
-            } else {
-                return@update data
-            }
+            current.getIfBetter(data)
         }
     }
 

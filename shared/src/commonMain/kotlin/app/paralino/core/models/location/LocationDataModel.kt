@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @Serializable
 data class LocationDataModel constructor(
@@ -27,6 +28,29 @@ data class LocationDataModel constructor(
     fun isOlderThan(duration: Duration): Boolean {
         val pinTime = timeUTCInstant ?: return false
         return pinTime.plus(duration) < nowUTC()
+    }
+}
+
+fun LocationDataModel?.getIfBetter(newLocation: LocationDataModel?): LocationDataModel? {
+    val current = this
+
+    if (newLocation?.timeUTCInstant == null) {
+        return current
+    } else if (current?.timeUTCInstant != null) {
+        // if new location is older than currently pending one, discard it
+        if (current.timeUTCInstant > newLocation.timeUTCInstant) {
+            val difference = current.timeUTCInstant - newLocation.timeUTCInstant
+            if (difference < 1.seconds && newLocation.accuracy < current.accuracy) {
+                // if time difference is not huge but accuracy is better, use new location
+                return newLocation
+            } else {
+                return current
+            }
+        } else {
+            return newLocation
+        }
+    } else {
+        return newLocation
     }
 }
 
