@@ -726,6 +726,10 @@ class MapHomeViewModel constructor(
                 }
             }
             .onCompletion { error ->
+                val hasDeviceUnreachableError = error?.asRemoteException()?.code == 404
+                val hasDeviceSetupWrongError = error?.asRemoteException()?.type.let {
+                    it == "device_setup_invalid" || it == "push_message_failed"
+                }
                 updateReadyState { readyState ->
                     readyState.copy(
                         members = readyState.members.map {
@@ -737,10 +741,8 @@ class MapHomeViewModel constructor(
                                             isEnabled = true,
                                             isWaitingForUser = error == null,
                                             hasRequestError = error != null,
-                                            hasDeviceUnreachableError = error?.asRemoteException()?.code == 404,
-                                            hasDeviceSetupWrongError = error?.asRemoteException()?.type.let {
-                                                it == "device_setup_invalid" || it == "push_message_failed"
-                                            },
+                                            hasDeviceUnreachableError = hasDeviceUnreachableError,
+                                            hasDeviceSetupWrongError = hasDeviceSetupWrongError,
                                             lastLocationRequest = nowUTC()
                                         )
                                     )
@@ -753,7 +755,11 @@ class MapHomeViewModel constructor(
                 }
 
                 if (error != null) {
-                    messageDispatcher.showSnackbar(error.errorString())
+                    // only show snackbar for other type of errors
+                    // these are displayed on member item on map
+                    if (!hasDeviceUnreachableError && !hasDeviceSetupWrongError) {
+                        messageDispatcher.showSnackbar(error.errorString())
+                    }
                 } else {
                     scheduleDeviceResponseCheck()
                 }
