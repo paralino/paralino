@@ -1,6 +1,7 @@
 package app.paralino.core.repo.places
 
 import app.paralino.core.data.db.AppConfig
+import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
@@ -33,6 +34,7 @@ import kotlin.time.Duration.Companion.seconds
 class PlacesRepository constructor(
     private val local: PlacesLocalDataSource,
     private val remote: PlacesRemoteSource,
+    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val userRepository: UserRepository,
     private val locationSharingManager: LocationSharingManager,
     private val geofenceManager: IGeofenceManager,
@@ -285,7 +287,8 @@ class PlacesRepository constructor(
             }
             processPlaceActivity(
                 activityTag = activityTag,
-                placeId = placeId
+                placeId = placeId,
+                fromGeofence = fromGeofence
             )
         }
 
@@ -298,6 +301,7 @@ class PlacesRepository constructor(
     private suspend fun processPlaceActivity(
         activityTag: String,
         placeId: String,
+        fromGeofence: Boolean
     ) {
         val currentState = placeActivity.value.get(placeId)
 
@@ -361,12 +365,22 @@ class PlacesRepository constructor(
                 scheduledState = null
             )
         )
+
         try {
             triggerRemoteOnly {
                 if (currentState.enter) {
                     remote.notifyPlaceEnter(placeId = placeId, groupId = place.groupId)
                 } else {
                     remote.notifyPlaceExit(placeId = placeId, groupId = place.groupId)
+                }
+            }
+
+            // update device status with last location if place activity came from geofence
+            if (fromGeofence) {
+                try {
+                    deviceStatusProcessor.pushDeviceStatus(groupId = place.groupId, tryIncludeLastLocation = false)
+                } catch (e: Exception) {
+                    logg.tag("place_activity").w("Error updating member status in ${place.groupId} from $activityTag - $placeId: ${e.message}")
                 }
             }
         } catch (e: Exception) {
