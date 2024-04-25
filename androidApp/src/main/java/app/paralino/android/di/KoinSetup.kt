@@ -13,6 +13,7 @@ import app.paralino.android.notification.PlaceNotificationPresenter
 import app.paralino.android.provider.ConnectionStatusProvider
 import app.paralino.android.provider.DeviceApiProvider
 import app.paralino.android.provider.LocationStatusProvider
+import app.paralino.android.provider.OneTimeLocationProvider
 import app.paralino.android.provider.ValueFormatter
 import app.paralino.android.remote.appwrite.AppWriteRemoteModule
 import app.paralino.android.remote.appwrite.DocumentsApi
@@ -60,6 +61,7 @@ import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
@@ -90,6 +92,7 @@ object KoinSetup {
         single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get()) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
         single<IValueFormatter> { ValueFormatter() }
+        single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class
 
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
         factory { PlaceNotificationPresenter(androidContext()) } bind IPlaceActivityNotificationPresenter::class
@@ -100,6 +103,8 @@ object KoinSetup {
         single<IDocumentsApi> { DocumentsApi(get()) }
         single<IFunctionsApi> { FunctionsApi(get(), get()) }
         single<IRealtimeApi> { RealtimeApi(get()) }
+
+        single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
     }
 
     private val appSpecificModule = module {
@@ -123,8 +128,6 @@ object KoinSetup {
                 sessionMonitor = get()
             )
         }
-
-        single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
 
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), config, get(), get()) }
