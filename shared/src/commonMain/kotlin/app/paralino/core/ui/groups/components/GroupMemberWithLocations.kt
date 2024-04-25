@@ -387,7 +387,7 @@ fun GroupMemberWithLocations(
         ) {
             Column {
 
-                if (!state.memberState.paralinoId.isNullOrBlank()) {
+                if (!state.memberState.paralinoId.isNullOrBlank() && state.allowShowingDevices) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
