@@ -11,6 +11,7 @@ import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.location.getIfBetter
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
@@ -45,7 +46,8 @@ class LocationUploadEngine constructor(
     private val payloadProvider: LocationPayloadProvider,
     private val infoNotificationPresenter: IInfoMessagesNotificationPresenter,
     private val locationCacheRepo: LocationCacheRepository,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val oneTimeLocationProvider: IOneTimeLocationProvider
 ) : LimitedExecutionRepository() {
 
     private val maxUploadRate: Duration
@@ -146,7 +148,7 @@ class LocationUploadEngine constructor(
     }
 
     suspend fun updateDeviceStatusOnly() {
-        uploadLocation(data = null)
+        uploadLocation(data = oneTimeLocationProvider.getLastLocation())
     }
 
     private suspend fun uploadLocation(data: LocationDataModel?) {

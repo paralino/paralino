@@ -255,7 +255,7 @@ class GroupDetailViewModel(
         coroutineScope.launch {
             sharingManager.stopSharing(groupId)
             try {
-                deviceStatusProcessor.pushDeviceStatus(groupId)
+                deviceStatusProcessor.pushDeviceStatus(groupId = groupId, tryIncludeLastLocation = false)
             } catch (e: Exception) {
                 logg.w("Error while updating user status", e)
             }

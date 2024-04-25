@@ -67,7 +67,7 @@ class LocationRequestNotificationHandler(
             // TODO maybe update it only if not updated previously?
             if (performanceType == LocationPerformanceType.VERY_HIGH) {
                 try {
-                    deviceStatusProcessor.pushDeviceStatus(groupId)
+                    deviceStatusProcessor.pushDeviceStatus(groupId = groupId, tryIncludeLastLocation = false)
                 } catch (e: Exception) {
                     logg.w("Error saving location status", e)
                 }
@@ -83,7 +83,7 @@ class LocationRequestNotificationHandler(
         )
 
         try {
-            deviceStatusProcessor.pushDeviceStatus(groupId)
+            deviceStatusProcessor.pushDeviceStatus(groupId = groupId, tryIncludeLastLocation = true)
         } catch (e: Exception) {
             logg.w("Error saving location status", e)
         }
