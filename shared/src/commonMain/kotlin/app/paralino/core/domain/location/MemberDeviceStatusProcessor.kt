@@ -39,7 +39,7 @@ class MemberDeviceStatusProcessor(
             ).payload
 
             if (payload != null) {
-                logg.v("Update device status in group $groupId")
+                logg.v("device_status","Update device status in group $groupId with location (${payload.locationData != null})")
                 remote.saveCurrentLocation(payload)
             }
         }
