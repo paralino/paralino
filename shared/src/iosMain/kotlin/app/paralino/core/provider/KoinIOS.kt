@@ -6,6 +6,7 @@ import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
+import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
@@ -76,6 +77,10 @@ object KoinIOS {
         infoNotificationPresenter: IInfoMessagesNotificationPresenter,
         geofenceManager: IGeofenceManager,
         backendConfig: BackendConfig,
+        oneTimeLocationProvider: (
+            locationStatusProvider: ILocationStatusProvider,
+            locationCacheRepo: LocationCacheRepository
+        ) -> IOneTimeLocationProvider,
         remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
         documentsApi: (IRemoteModule, BackendConfig) -> IDocumentApiIOS,
         userApi: (IRemoteModule, BackendConfig) -> IUserApiIOS,
@@ -107,17 +112,22 @@ object KoinIOS {
                 single { valueFormatter } bind IValueFormatter::class
                 single { appUpdateManager } bind IAppUpdateManager::class
                 single { LocationRepositoryWrapper(get()) }
+                single { oneTimeLocationProvider(get(), get()) }
             },
             createViewModelModule()
         )
     }
-    
+
     private fun createViewModelModule(): Module {
         return module {
             factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
-            factory { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), config, get(), get()) }
+            factory {
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), config, get(), get())
+            }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), config) }
-            factory { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
+            factory { (startScreenType: LoginScreenUiType) ->
+                LoginViewModel(get(), get(), get(), get(), startScreenType)
+            }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
                 SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
@@ -133,24 +143,54 @@ object KoinIOS {
                     groupMemberAdd = get()
                 )
             }
-            factory { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            factory { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get()) }
+            factory { (groupID: String) ->
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get())
+            }
+            factory { (groupID: String) ->
+                GroupSettingsViewModel(groupID, get(), get(), get(), get())
+            }
             factory { MainViewModel(get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }
             factory { EditProfileViewModel(get(), get()) }
             factory { RecoverKeysViewModel(get(), get()) }
-            factory { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
+            factory { (userId: String, secret: String) ->
+                ResetPasswordViewModel(
+                    userId = userId,
+                    secret = secret,
+                    resetPassword = get()
+                )
+            }
             factory { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
-            factory { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
-            factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get()) }
-            factory { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
+            factory { (groupID: String, placeId: String) ->
+                PlaceDetailViewModel(
+                    groupId = groupID,
+                    placeId = placeId,
+                    placesRepo = get(),
+                    groupRepo = get()
+                )
+            }
+            factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) ->
+                CreatePlaceViewModel(
+                    groupId = groupID,
+                    placeId = placeId,
+                    lat = lat,
+                    lng = lng,
+                    placesRepo = get()
+                )
+            }
+            factory { (rawDataType: RawPresentationDataType) ->
+                RawDataPresentationViewModel(
+                    rawCryptoPresentation = get(),
+                    rawPresentationType = rawDataType
+                )
+            }
             factory { BlocklistVideModel(get()) }
         }
     }
 
-    object Instances: KoinComponent {
+    object Instances : KoinComponent {
         val coreAppManager: CoreAppManager get() = get()
         val locationRepo: LocationRepositoryWrapper get() = get()
         val placesRepo: PlacesRepository get() = get()
@@ -161,9 +201,11 @@ object KoinIOS {
         val refreshEverything: RefreshEverythingUseCase get() = get()
     }
 
-    object ViewModels: KoinComponent {
+    object ViewModels : KoinComponent {
         val mainVM get() = get<MainViewModel>()
-        fun loginVM(screenUiType: LoginScreenUiType) = get<LoginViewModel> { parametersOf(screenUiType) }
+        fun loginVM(screenUiType: LoginScreenUiType) =
+            get<LoginViewModel> { parametersOf(screenUiType) }
+
         val welcomeVM get() = get<LoggedOutViewModel>()
         val editProfileVM get() = get<EditProfileViewModel>()
         val groupInitVM get() = get<GroupInitViewModel>()
@@ -176,14 +218,20 @@ object KoinIOS {
         val convertAccountVM get() = get<ConvertAccountViewModel>()
         val personalCodeVM get() = get<PersonalCodeViewModel>()
         val blocklistVM get() = get<BlocklistVideModel>()
-        fun rawDataVM(type: RawPresentationDataType) = get<RawDataPresentationViewModel> { parametersOf(type) }
+        fun rawDataVM(type: RawPresentationDataType) =
+            get<RawDataPresentationViewModel> { parametersOf(type) }
+
         fun groupCreateVM(groupId: String?) = get<CreateGroupViewModel> { parametersOf(groupId) }
         fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
         fun groupSettingsVM(groupId: String) = get<GroupSettingsViewModel> { parametersOf(groupId) }
-        fun memberInviteVM(groupId: String?, code: String?) = get<MemberInviteViewModel> { parametersOf(groupId, code) }
+        fun memberInviteVM(groupId: String?, code: String?) =
+            get<MemberInviteViewModel> { parametersOf(groupId, code) }
+
         fun sharingStartVM(groupId: String?) = get<SharingStartViewModel> { parametersOf(groupId) }
         fun placesVM(groupId: String) = get<PlacesViewModel> { parametersOf(groupId) }
-        fun placeDetailVM(groupId: String, placeId: String) = get<PlaceDetailViewModel> { parametersOf(groupId, placeId) }
+        fun placeDetailVM(groupId: String, placeId: String) =
+            get<PlaceDetailViewModel> { parametersOf(groupId, placeId) }
+
         fun placeCreateVM(
             groupId: String,
             placeId: String?,

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		25008E4B2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */; };
 		2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */; };
 		2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */; };
 		25129FED2BBDE6B800D1A5AE /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 25129FEC2BBDE6B800D1A5AE /* Sentry */; };
@@ -85,6 +86,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeLocationProvider.swift; sourceTree = "<group>"; };
 		2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacesScreen.swift; sourceTree = "<group>"; };
 		2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailScreen.swift; sourceTree = "<group>"; };
 		2522C6862B322923007C4913 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
@@ -352,6 +354,7 @@
 			children = (
 				2529CAAB2B113C4D00D88042 /* LocationManager.swift */,
 				25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */,
+				25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */,
 			);
 			path = Location;
 			sourceTree = "<group>";
@@ -561,6 +564,7 @@
 				2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */,
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */,
+				25008E4B2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
 				25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */,
 				259AEFA82A3E2F960083FF4B /* MapHomeState.swift in Sources */,
