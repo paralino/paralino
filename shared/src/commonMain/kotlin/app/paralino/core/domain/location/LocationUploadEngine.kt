@@ -8,7 +8,6 @@ import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.models.location.getIfBetter
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
@@ -143,7 +142,7 @@ class LocationUploadEngine constructor(
         }
 
         _pendingLocation.update { current ->
-            current.getIfBetter(data)
+            LocationDataModel.getBetter(current, data)
         }
     }
 

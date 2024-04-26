@@ -52,7 +52,7 @@ class LocationRequestNotificationHandler(
                     stopProcessing(key = key)
                 }
             } catch (e: Exception) {
-                logg.w("Location $key already in progress", e)
+                logg.w("Location $key already in progress: ${e.message}")
             }
         }
     }

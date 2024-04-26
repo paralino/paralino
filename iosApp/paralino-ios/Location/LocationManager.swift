@@ -90,22 +90,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        guard let location = locations.last else { return }
+        guard let location = locations.last?.toLocationModel() else { return }
         let systemLocation = manager.location?.toLocationModel()
-        let locationModel = location.toLocationModel().getIfBetter(newLocation: systemLocation)!
+        let locationModel = LocationDataModel.companion.getBetter(first: location, second: systemLocation)
         
-        Logr.v(tag: "location_service", message: "Got location update from system")
+        Logr.v(tag: "location_service", message: "Got location update from system \(locationModel != nil)")
         
-        let result = locationRepo.registerNewLocation(data: locationModel)
-        let payload = PayloadSwift(result)
-        switch payload {
-        case .loading:
-            Logr.v(tag: "location_Test", message: "error pushing location: loading")
-        case .success(data: _):
-            Logr.v(tag: "location_Test", message: "Location pushed successfully")
-        case .error(error: let error):
-            Logr.v(tag: "location_Test", message: "error pushing location: \(error)")
-        }
+        let result = locationRepo.registerNewLocation(data: locationModel!)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        notifyUser(id: "LocationError", message: "Location updates got error: \(error.localizedDescription)")
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
@@ -166,12 +161,13 @@ extension CLLocation {
         let accuracy: Float = if !location.horizontalAccuracy.isNaN && location.horizontalAccuracy > 0 { Float(location.horizontalAccuracy) } else { 0 }
         let speed: KotlinFloat? = if !location.speed.isNaN && location.speed > 0 { KotlinFloat(floatLiteral: location.speed) } else { nil }
         let altitude: KotlinFloat? = if !location.altitude.isNaN { KotlinFloat(floatLiteral: location.altitude) } else { nil }
+        let timeUTC = location.timestamp.ISO8601Format(.iso8601(timeZone: .gmt))
         
         return LocationDataModel(
             lat: location.coordinate.latitude,
             lng: location.coordinate.longitude,
             accuracy: accuracy,
-            timeUTC: location.timestamp.ISO8601Format(.iso8601(timeZone: .gmt)),
+            timeUTC: timeUTC,
             endTimeUTC: nil,
             speed: speed,
             altitude: altitude

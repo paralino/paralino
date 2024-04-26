@@ -29,28 +29,37 @@ data class LocationDataModel constructor(
         val pinTime = timeUTCInstant ?: return false
         return pinTime.plus(duration) < nowUTC()
     }
-}
 
-fun LocationDataModel?.getIfBetter(newLocation: LocationDataModel?): LocationDataModel? {
-    val current = this
-
-    if (newLocation?.timeUTCInstant == null) {
-        return current
-    } else if (current?.timeUTCInstant != null) {
-        // if new location is older than currently pending one, discard it
-        if (current.timeUTCInstant > newLocation.timeUTCInstant) {
-            val difference = current.timeUTCInstant - newLocation.timeUTCInstant
-            if (difference < 1.seconds && newLocation.accuracy < current.accuracy) {
-                // if time difference is not huge but accuracy is better, use new location
-                return newLocation
+    companion object {
+        fun getBetter(first: LocationDataModel?, second: LocationDataModel?): LocationDataModel? {
+            if (second?.timeUTCInstant == null) {
+                return first
+            } else if (first?.timeUTCInstant != null) {
+                // if new location is older than currently pending one, discard it
+                if (first.timeUTCInstant > second.timeUTCInstant) {
+                    // first is newer, second is older
+                    val difference = first.timeUTCInstant - second.timeUTCInstant
+                    if (difference < 1.seconds && second.accuracy < first.accuracy) {
+                        // time difference is not huge but accuracy is better, use second location
+                        return second
+                    } else {
+                        return first
+                    }
+                } else if (second.timeUTCInstant > first.timeUTCInstant) {
+                    val difference = second.timeUTCInstant - first.timeUTCInstant
+                    if (difference < 1.seconds && first.accuracy < second.accuracy) {
+                        // time difference is not huge but accuracy is better, use first location
+                        return first
+                    } else {
+                        return second
+                    }
+                } else {
+                    return if (first.accuracy < second.accuracy) first else second
+                }
             } else {
-                return current
+                return second
             }
-        } else {
-            return newLocation
         }
-    } else {
-        return newLocation
     }
 }
 
