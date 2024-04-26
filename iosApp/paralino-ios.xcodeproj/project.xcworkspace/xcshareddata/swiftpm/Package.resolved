@@ -1,5 +1,5 @@
 {
-  "originHash" : "b67103656508eb1d8a6b929872677533f25a4fe9f22e6ea7491795e6710567b2",
+  "originHash" : "046588fc0a2212eb7fb94155c7c1bcdc91e0937540b9f0fa64376f1f7f101049",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -13,7 +13,7 @@
     {
       "identity" : "sdk-for-apple",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/appwrite/sdk-for-apple.git",
+      "location" : "https://github.com/appwrite/sdk-for-apple",
       "state" : {
         "revision" : "c39030db9af1e2dd7b36f8df45f838c5f7dfb0da",
         "version" : "5.0.0"
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "937dce13c2600cc42112c480d04f84899e08e9cc",
-        "version" : "8.23.0"
+        "revision" : "ef4fec9dfb8dd5027b09a4a5c9362feafd118e1a",
+        "version" : "8.24.0"
       }
     },
     {
@@ -133,6 +133,15 @@
       "state" : {
         "revision" : "025bcb1165deab2e20d4eaba79967ce73013f496",
         "version" : "1.2.1"
+      }
+    },
+    {
+      "identity" : "swiftlocation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/malcommac/SwiftLocation.git",
+      "state" : {
+        "revision" : "010073e62cea4daefea61042a51b8619d23cdc35",
+        "version" : "6.0.0"
       }
     }
   ],
