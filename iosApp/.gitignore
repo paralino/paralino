@@ -13,3 +13,4 @@ build/
 xcuserdata/
 
 paralino-ios.xcworkspace/*
+paralino-ios.xcodeproj/xcshareddata/xcschemes/*.xcscheme
