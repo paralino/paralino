@@ -3,7 +3,6 @@ package app.paralino.core.presentation.groups
 import app.paralino.core.config
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
-import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -12,6 +11,7 @@ import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -39,10 +38,10 @@ class GroupDetailViewModel(
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
     private val connectionStatus: IConnectionStatusProvider,
-    private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupPreRefreshUseCase,
-    private val valueFormatter: IValueFormatter
+    private val valueFormatter: IValueFormatter,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
@@ -81,23 +80,30 @@ class GroupDetailViewModel(
                                 canEdit = canEdit,
                                 currentDevice = it.deviceId == config.deviceId,
                                 showSpeedAndElevation = false,
-                                formatter = valueFormatter
+                                formatter = valueFormatter,
+                                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
                             )
                         },
-                        actionItems = buildList {
-                            if (group.isCurrentUserOwner && member.member.userId != group.ownerUserId) {
-                                add(MemberAction.DELETE_MEMBER)
-                            }
-                            if (member.member.userId != config.userId) {
-                                if (blocklist.any { it.resourceId == member.member.userId }) {
-                                    add(MemberAction.UNBLOCK_USER)
-                                } else {
-                                    add(MemberAction.BLOCK_USER)
-                                }
-                            }
-                        },
+                        actions = MemberActionsState(
+                            deleteMember = takeIf { group.isCurrentUserOwner && member.member.userId != group.ownerUserId }?.let {
+                                MemberActionItemState(MemberActionType.DELETE_MEMBER)
+                            },
+                            blockUser = takeIf { member.member.userId != config.userId }
+                                ?.takeIf { blocklist.none { it.resourceId == member.member.userId } }
+                                ?.let {
+                                    MemberActionItemState(MemberActionType.BLOCK_USER)
+                                },
+                            unblockUser = takeIf { member.member.userId != config.userId }
+                                ?.takeIf { blocklist.any { it.resourceId == member.member.userId } }
+                                ?.let {
+                                    MemberActionItemState(MemberActionType.UNBLOCK_USER)
+                                },
+                            // TODO remove when on production
+                            securityAction = true
+                        ),
                         allowShowingDevices = true,
-                        lastPing = valueFormatter.getLastPing(member)
+                        lastLocationPing = valueFormatter.getLastLocationPing(member),
+                        lastStatusPing = valueFormatter.getLastStatusPing(member)
                     )
                 }
 
@@ -125,7 +131,7 @@ class GroupDetailViewModel(
                     shareSpeed = it.shareSpeed,
                     shareElevation = it.shareElevation,
                     approximateLocation = it.approximateLocationInMeters?.let {
-                        valueFormatter.getDistanceSmall(it.toFloat())
+                        valueFormatter.getDistanceSmall(it.toDouble())
                     }
                 )
             }
@@ -153,21 +159,6 @@ class GroupDetailViewModel(
                 }
             }
             .launchIn(coroutineScope)
-    }
-
-
-    fun leaveOrDeleteGroup() {
-        processGroupRemoval { data ->
-            if (data.canEdit) {
-                groupRemove.deleteGroup(groupId).mapToPayload { it }
-            } else {
-                groupRemove.leaveGroup(groupId).mapToPayload { it }
-            }
-        }
-    }
-
-    fun blockGroup() {
-        processGroupRemoval { groupRemove.blockGroup(groupId).mapToPayload { it } }
     }
 
     fun blockUser(userId: String) {
@@ -206,35 +197,6 @@ class GroupDetailViewModel(
 
                     is Payload.Success -> {
                         _eventChannel.send(GroupDetailScreenEvent.UserBlockActionCompleted)
-                    }
-                }
-            }
-            .launchIn(coroutineScope)
-    }
-
-    private fun processGroupRemoval(
-        action: (GroupDetailScreenState) -> Flow<Payload<Unit>>
-    ) {
-        val data = _uiState.value.data
-
-        if (data == null) {
-            coroutineScope.launch {
-                _eventChannel.send(GroupDetailScreenEvent.Error(NotFoundException("Group not loaded")))
-            }
-            flowOf(Payload.Error<Unit>(NotFoundException("Group not loaded")))
-        } else {
-            action(data)
-        }
-            .onEach { result ->
-                _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }
-                when (result) {
-                    Payload.Loading -> {}
-                    is Payload.Error -> {
-                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
-                    }
-
-                    is Payload.Success -> {
-                        _eventChannel.send(GroupDetailScreenEvent.GroupDeleted)
                     }
                 }
             }
@@ -292,14 +254,15 @@ class GroupDetailViewModel(
     fun stopSharing() {
         coroutineScope.launch {
             sharingManager.stopSharing(groupId)
-
             try {
-                deviceStatusProcessor.pushDeviceStatus(groupId)
+                deviceStatusProcessor.pushDeviceStatus(groupId = groupId, tryIncludeLastLocation = false)
             } catch (e: Exception) {
                 logg.w("Error while updating user status", e)
             }
-
         }
     }
 
+    fun copyToClipboard(data: String) {
+        deviceApiProvider.copyToClipboard(data)
+    }
 }

@@ -2,23 +2,30 @@ package app.paralino.android.tracking
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Location
 import android.os.Looper
 import app.paralino.android.utils.extensions.millisToDateTimeUTC
 import app.paralino.android.utils.extensions.toLocalString
-import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.LocationDataModel
-import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.provider.LocationStatusException
+import app.paralino.core.repo.location.LocationPerformanceManager
+import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
 class LocationInitHandler constructor(
@@ -46,7 +53,6 @@ class LocationInitHandler constructor(
                 logg.tag("location_request").v("location request OK: ${performanceType.current.name}")
                 val status = LocationConditionStatus.getLocationStatus(context)
                 if (status.isOK()) {
-
                     logg.tag("location_request").v("new request: $performanceType")
                     val locationRequest = LocationPerformanceRequests.getRequest(performanceType.current)
                     fusedLocationClient.requestLocationUpdates(
@@ -57,7 +63,6 @@ class LocationInitHandler constructor(
                         logg.tag("location_request").v("request error", it)
                         currentLocation.value = Payload.Error(it)
                     }
-
                 } else {
                     logg.tag("location_request").v("status not ok: $status")
                     fusedLocationClient.removeLocationUpdates(locationCallback)
@@ -119,23 +124,47 @@ class LocationInitHandler constructor(
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
+    suspend fun getOrFetchLastLocation(): LocationDataModel? {
+        return suspendCancellableCoroutine { continuation ->
+            val cancellationTokenSource = CancellationTokenSource()
+
+            val request = CurrentLocationRequest.Builder()
+                .setDurationMillis(3.seconds.inWholeMilliseconds)
+                .setMaxUpdateAgeMillis(20.seconds.inWholeMilliseconds)
+                .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+                .build()
+
+            fusedLocationClient.getCurrentLocation(request, cancellationTokenSource.token)
+                .addOnSuccessListener {
+                    continuation.resume(it?.toLocationModel())
+                }
+                .addOnFailureListener {
+                    continuation.resumeWithException(it)
+                }
+
+            continuation.invokeOnCancellation { cancellationTokenSource.cancel() }
+        }
+    }
+
     private var locationCallback = object : LocationCallback() {
         override fun onLocationResult(location: LocationResult) {
-            logg.tag("location_request").v("got location update")
+            logg.tag("location_request").v("Got location update from system")
             location.lastLocation?.let {
-                val value = LocationDataModel(
-                    lat = it.latitude,
-                    lng = it.longitude,
-                    accuracy = it.accuracy,
-                    timeUTC = it.time.millisToDateTimeUTC().toLocalString(),
-                    speed = if (it.hasSpeed()) it.speed else null,
-                    altitude = if (it.hasAltitude()) it.altitude.toFloat() else null
-                )
-                currentLocation.value = Payload.Success(value)
+                currentLocation.value = Payload.Success(it.toLocationModel())
             }
         }
     }
 
+    private fun Location.toLocationModel(): LocationDataModel {
+        return LocationDataModel(
+            lat = this.latitude,
+            lng = this.longitude,
+            accuracy = this.accuracy,
+            timeUTC = this.time.millisToDateTimeUTC().toLocalString(),
+            speed = if (this.hasSpeed()) this.speed else null,
+            altitude = if (this.hasAltitude()) this.altitude.toFloat() else null
+        )
+    }
 }
 
 class LocationStoppedException() : Exception("Location tracking/sharing stopped")

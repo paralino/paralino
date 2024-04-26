@@ -1,18 +1,26 @@
 package app.paralino.core.presentation.settings.emailchange
 
+import app.paralino.core.MR
 import app.paralino.core.domain.user.ChangeEmailUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.asRemoteException
+import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 
 class ChangeEmailViewModel(
     private val userRepository: UserRepository,
@@ -41,13 +49,9 @@ class ChangeEmailViewModel(
         }
 
         if (!emailValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(ChangeEmailScreenEvent.ValidationError(emailValidation))
-            }
+            showSnackbar(getFormValidationErrorText(validation = emailValidation.type))
         } else if (!passwordValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(ChangeEmailScreenEvent.ValidationError(passwordValidation))
-            }
+            showSnackbar(getFormValidationErrorText(validation = passwordValidation.type))
         } else {
             changeEmail.changeEmail(email = email, password = password)
                 .mapToPayload { it }
@@ -56,16 +60,18 @@ class ChangeEmailViewModel(
                         Payload.Loading -> {
                             _uiState.update { it.copy(actionLoading = true) }
                         }
+
                         is Payload.Error -> {
                             _uiState.update { it.copy(actionLoading = null) }
                             if (result.exception.asRemoteException() is ConflictException) {
-                                _eventChannel.send(ChangeEmailScreenEvent.EmailError)
+                                showSnackbar(MR.strings.form_invalid_email_conflict_description.localizedString())
                             } else if (result.exception.asRemoteException() is UnauthorizedException) {
-                                _eventChannel.send(ChangeEmailScreenEvent.CredentialsError)
+                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                             } else {
-                                _eventChannel.send(ChangeEmailScreenEvent.Error(result.exception))
+                                showSnackbar(result.exception.errorString())
                             }
                         }
+
                         is Payload.Success -> {
                             _uiState.update { it.copy(actionLoading = false) }
                             delay(400)

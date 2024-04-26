@@ -11,7 +11,6 @@ import shared
 struct PersonalCodeScreen: View {
     
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.personalCodeVM)
-    @State var alertDialog: AlertDialogData? = nil
     @State var shareText: ShareText?
     
     var body: some View {
@@ -20,25 +19,13 @@ struct PersonalCodeScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.PersonalCodeScreenVC(
                     vm: appState.vm,
-                    onShowDialog: { dialog in
-                        alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
-                    },
                     onShare: { data in
                         shareText = ShareText(text: data)
-                    },
-                    onNavigateBack: {}
+                    }
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-        }
-        .mainAlert($alertDialog) { key in
-            if let dialogData = alertDialog?.coreDialog {
-                if dialogData is MainAlertDialogPersonalCodeDelete {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.deletePersonalCode()
-                    }
-                }
-            }
+            .navigationTitle(MR.shared.strings.settings_section_personal_code_title.localizedString())
         }
         .sheet(item: $shareText) { shareText in
             ActivityView(text: shareText.text)

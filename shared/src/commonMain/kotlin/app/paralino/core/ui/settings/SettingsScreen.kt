@@ -2,20 +2,23 @@ package app.paralino.core.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -35,15 +38,16 @@ import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.presentation.settings.AccountScreenUiEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -54,8 +58,10 @@ fun SettingsScreenCore(
     openConvertAccount: () -> Unit,
     openProfileDetails: () -> Unit,
     openPersonalCodes: () -> Unit,
+    openProfileRawScreen: () -> Unit,
     openBlockList: () -> Unit,
-    openLicences: () -> Unit
+    openLicences: () -> Unit,
+    onShareCode: (String) -> Unit,
 ) {
 
     MessageDispatcherEffect(viewModel, appState)
@@ -64,64 +70,75 @@ fun SettingsScreenCore(
     Column(
         modifier = Modifier
             .verticalScroll(state = rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 20.dp)
+            .padding(horizontal = 20.dp)
+            .padding(top = 20.dp, bottom = 60.dp)
     ) {
-
-        SettingsBigHeader(
-            name = stringResource(MR.strings.title_settings),
-            bottomPadding = if (accountState.data?.userState?.isGuestUser == true) 0.dp
-            else 20.dp
-        )
-
-        when (val state = accountState) {
-            is Payload.Success -> {
-                AccountInfoHeader(
-                    name = state.data.userState.name,
-                    email = "",
-                    userId = "",
-                    image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
-                    isGuestUser = state.data.userState.isGuestUser,
-                    errorItem = null,
-                    onGuestAccountClick = {
-                        if(state.data.canUseEmail) {
-                            openConvertAccount()
-                        }
-                    },
-                    onErrorItemClick = { },
-                    onCopy = { viewModel.copyToClipboard(it) }
-                )
-
-                SettingsActionItem(
-                    name = stringResource(MR.strings.settings_section_account_title),
-                    icon = CoreAppIcons.AccountCircle.asPainterResource()
-                ) {
-                    openProfileDetails()
-                }
-
-                SettingsActionItem(
-                    name = stringResource(MR.strings.settings_section_personal_code_title),
-                    icon = CoreAppIcons.Key.asPainterResource()
-                ) {
-                    openPersonalCodes()
-                }
-
-                SettingsActionItem(
-                    name = stringResource(MR.strings.blocklist_screen_title),
-                    icon = CoreAppIcons.Block.asPainterResource()
-                ) {
-                    openBlockList()
-                }
-            }
-            Payload.Loading -> {}
-            is Payload.Error -> {}
+        val readyState = accountState.data
+        if (readyState != null) {
+            AccountInfoHeader(
+                name = readyState.userState.name,
+                image = readyState.userState.image ?: ImageModel.emoji(Emojis.robot),
+                personalCode = readyState.userState.personalCode,
+                isGuestUser = readyState.userState.isGuestUser,
+                canClickOnHeader = true,
+                errorItem = null,
+                onGuestAccountClick = {
+                    if (readyState.canUseEmail) {
+                        openConvertAccount()
+                    }
+                },
+                onErrorItemClick = { },
+                onCopy = { viewModel.onEvent(AccountScreenUiEvent.Copy(it)) },
+                onShareCode = onShareCode,
+                onClick = openProfileDetails
+            )
         }
 
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_locationBoost),
-            icon = CoreAppIcons.ShareLocation.asPainterResource(),
-            type = SettingsActionItemType.Switch(accountState.data?.boostEnabled ?: false)
-        ) {
-            viewModel.toggleBoost()
+        if (readyState != null) {
+            SettingsActionItem(
+                name = stringResource(MR.strings.settings_section_personal_code_title),
+                icon = CoreAppIcons.Key.asPainterResource()
+            ) {
+                openPersonalCodes()
+            }
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.blocklist_screen_title),
+                icon = CoreAppIcons.Block.asPainterResource()
+            ) {
+                openBlockList()
+            }
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.raw_data_screen_title),
+                icon = CoreAppIcons.Security.asPainterResource()
+            ) {
+                openProfileRawScreen()
+            }
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.setting_title_locationBoost),
+                description = when (readyState.boostTime != null) {
+                    true -> stringResource(MR.strings.setting_description_locationBoost_enabled, readyState.boostTime)
+                    false -> stringResource(MR.strings.setting_description_locationBoost_disabled)
+                },
+                icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                type = SettingsActionItemType.Switch(readyState.boostTime != null)
+            ) {
+                viewModel.onEvent(AccountScreenUiEvent.ToggleLocationBoost)
+            }
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.setting_title_placeActivityThrottle),
+                description = when (readyState.placeActivityThrottleEnabled) {
+                    true -> stringResource(MR.strings.setting_description_placeActivityThrottle_enabled)
+                    false -> stringResource(MR.strings.setting_description_placeActivityThrottle_disabled)
+                },
+                icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
+                type = SettingsActionItemType.Switch(readyState.placeActivityThrottleEnabled)
+            ) {
+                viewModel.onEvent(AccountScreenUiEvent.TogglePlaceActivityThrottle)
+            }
         }
 
         SettingSectionInfo(
@@ -189,53 +206,94 @@ fun SettingsActionItem(
     modifier: Modifier = Modifier,
     name: String,
     icon: Painter,
+    description: String? = null,
     iconTint: Color = MaterialTheme.colors.surface,
     type: SettingsActionItemType = SettingsActionItemType.Navigation,
     onClick: () -> Unit
 ) {
-    Row(
+    Column(
         modifier = modifier
+            .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 12.dp),
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = icon,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(46.dp)
+                    .background(
+                        color = iconTint,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(12.dp)
+            )
+            Text(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp),
+                text = name,
+                style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
+                textAlign = TextAlign.Start
+            )
+            when (type) {
+                SettingsActionItemType.Action -> {}
+                SettingsActionItemType.Navigation -> {
+                    Icon(
+                        modifier = Modifier.width(20.dp),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                        contentDescription = null
+                    )
+                }
 
-        Icon(
-            painter = icon,
-            contentDescription = null,
-            modifier = Modifier
-                .size(46.dp)
-                .background(
-                    color = iconTint,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .padding(12.dp)
-        )
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 12.dp),
-            text = name,
-            style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
-            textAlign = TextAlign.Start
-        )
-        when (type) {
-            SettingsActionItemType.Action -> {}
-            SettingsActionItemType.Navigation -> {
-                Icon(
-                    modifier = Modifier.width(20.dp),
-                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                    contentDescription = null
-                )
+                is SettingsActionItemType.Switch -> {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                    ) {
+                        if (type.checked) {
+                            Icon(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        if (isSystemInDarkTheme()) MaterialTheme.colors.onPrimary else MaterialTheme.colors.primary,
+                                        shape = CircleShape
+                                    )
+                                    .padding(1.dp),
+                                painter = CoreAppIcons.CheckCircle.asPainterResource(),
+                                contentDescription = null,
+                                tint = if (isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.onPrimary,
+                            )
+                        } else {
+                            Icon(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(2.dp),
+                                painter = CoreAppIcons.RadioButtonUnchecked.asPainterResource(),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary.copy(alpha = ContentAlpha.disabled)
+                            )
+                        }
+                    }
+                }
             }
-            is SettingsActionItemType.Switch -> {
-                Switch(
-                    checked = type.enabled,
-                    onCheckedChange = { onClick() },
-                    enabled = true
+        }
+        if (description != null) {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                Text(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .padding(horizontal = 4.dp),
+                    text = description.annotatedBold(),
+                    style = MaterialTheme.typography.caption,
+                    textAlign = TextAlign.Start
                 )
             }
         }
@@ -243,7 +301,7 @@ fun SettingsActionItem(
 }
 
 sealed interface SettingsActionItemType {
-    object Navigation: SettingsActionItemType
-    object Action: SettingsActionItemType
-    data class Switch(val enabled: Boolean): SettingsActionItemType
+    object Navigation : SettingsActionItemType
+    object Action : SettingsActionItemType
+    data class Switch(val checked: Boolean) : SettingsActionItemType
 }

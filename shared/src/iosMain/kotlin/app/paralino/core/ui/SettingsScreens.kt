@@ -1,5 +1,6 @@
 package app.paralino.core.ui
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
@@ -10,7 +11,6 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
-import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.invite.manage.PersonalCodeScreenCore
 import app.paralino.core.ui.settings.BlocklistScreenCore
 import app.paralino.core.ui.settings.RawDataScreenCore
@@ -29,7 +29,9 @@ object SettingsScreens {
         openProfileDetails: () -> Unit,
         openPersonalCodes: () -> Unit,
         openBlockList: () -> Unit,
+        openProfileRawScreen: () -> Unit,
         openLicences: () -> Unit,
+        onShare: (String) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             SettingsScreenCore(
@@ -40,47 +42,43 @@ object SettingsScreens {
                 openProfileDetails = openProfileDetails,
                 openPersonalCodes = openPersonalCodes,
                 openBlockList = openBlockList,
-                openLicences = openLicences
+                openLicences = openLicences,
+                openProfileRawScreen = openProfileRawScreen,
+                onShareCode = onShare
             )
         }
     }
 
     fun AccountScreenVC(
         vm: SettingsViewModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
-        openProfileRawScreen: () -> Unit,
         openConvertAccount: () -> Unit,
         openEditProfile: () -> Unit,
         openChangeEmail: () -> Unit,
         openChangePassword: () -> Unit,
+        onShare: (String) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AccountScreenCore(
                 appState = it,
                 viewModel = vm,
                 openConvertAccount = openConvertAccount,
-                onShowDialog = onShowDialog,
-                openProfileRawScreen = openProfileRawScreen,
                 openEditProfile = openEditProfile,
                 openChangePassword = openChangePassword,
-                openChangeEmail = openChangeEmail
+                openChangeEmail = openChangeEmail,
+                onShare = onShare
             )
         }
     }
 
     fun PersonalCodeScreenVC(
         vm: PersonalCodeViewModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
         onShare: (String) -> Unit,
-        onNavigateBack: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             PersonalCodeScreenCore(
                 appState = it,
                 vm = vm,
-                onShowDialog = onShowDialog,
                 onShare = onShare,
-                onNavigateBack = onNavigateBack,
             )
         }
     }
@@ -101,16 +99,13 @@ object SettingsScreens {
     }
 
     fun BlocklistScreenVC(
-        vm: BlocklistVideModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
-        onNavigateBack: () -> Unit,
+        vm: BlocklistVideModel
     ) = ComposeUIViewController {
         RootScreenIOS {
             BlocklistScreenCore(
                 appState = it,
                 vm = vm,
-                onShowDialog = onShowDialog,
-                onNavigateBack = onNavigateBack,
+                paddingValues = PaddingValues()
             )
         }
     }
@@ -123,6 +118,7 @@ object SettingsScreens {
             ConvertAccountScreenCore(
                 appState = it,
                 vm = vm,
+                contentPadding = PaddingValues(),
                 onNavigateBack = onNavigateBack,
             )
         }
@@ -155,14 +151,13 @@ object SettingsScreens {
     }
 
     fun RawDataScreenVC(
-        vm: RawDataPresentationViewModel,
-        onNavigateBack: () -> Unit
+        vm: RawDataPresentationViewModel
     ) = ComposeUIViewController {
         RootScreenIOS {
             RawDataScreenCore(
                 appState = it,
                 vm = vm,
-                onNavigateBack = onNavigateBack,
+                paddingValues = PaddingValues()
             )
         }
     }

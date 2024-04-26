@@ -1,6 +1,7 @@
 package app.paralino.core.domain.user
 
 import app.paralino.core.config
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
@@ -11,7 +12,6 @@ import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.provider.IDeviceApiProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -22,11 +22,10 @@ class CreateAccountUseCase constructor(
     private val userRepo: UserRepository,
     private val cryptoCore: CryptoCore,
     private val userKeyRepository: CryptoUserKeyRepository,
-    private val deviceApi: IDeviceApiProvider
 ) {
 
     fun signUpAsGuest(): Flow<SignUpStep> {
-        val email = "${deviceApi.randomUUID}${UserMe.guestUserEmail}"
+        val email = "${cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)}${UserMe.guestUserEmail}"
         val password = cryptoCore.getNewSymmetricKey()
         return signUp(email, password)
             .onEach {

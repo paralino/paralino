@@ -9,11 +9,18 @@ import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.group.GroupSettings
-import app.paralino.core.models.location.*
+import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.MemberDeviceData
+import app.paralino.core.models.location.MemberDeviceStatus
+import app.paralino.core.models.location.MemberLocation
+import app.paralino.core.models.location.MemberModel
+import app.paralino.core.models.location.MemberModelData
+import app.paralino.core.models.location.MemberModelParalinoIdData
+import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
-import kotlinx.serialization.decodeFromString
 
 class MemberMapperCore constructor(
     private val cryptoKEKRepo: CryptoKEKRepository,
@@ -23,12 +30,12 @@ class MemberMapperCore constructor(
 
     suspend fun remote2Core(
         model: MemberWithLocationsRaw,
-        groupOwnerId: String
+        group: UserGroup
     ): MemberModelWithLocations {
 
         val groupKey = cryptoKEKRepo.getGroupKey(
             groupId = model.member.groupId,
-            groupOwnerId = groupOwnerId,
+            groupOwnerId = group.ownerUserId,
             keyVersion = model.member.groupKeyVersion
         )
 
@@ -37,7 +44,7 @@ class MemberMapperCore constructor(
 
         val verification = groupVerification.verifyGroupMember(
             member = model.member,
-            groupOwnerId = groupOwnerId,
+            groupOwnerId = group.ownerUserId,
             groupKey = groupKey
         )
 
@@ -52,7 +59,7 @@ class MemberMapperCore constructor(
                     } else {
                         cryptoKEKRepo.getGroupKey(
                             groupId = model.member.groupId,
-                            groupOwnerId = groupOwnerId,
+                            groupOwnerId = group.ownerUserId,
                             keyVersion = location.groupKeyVersion
                         )
                     }
@@ -65,7 +72,7 @@ class MemberMapperCore constructor(
                             ).let {
                                 BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
                             }.let {
-                                if(verification == VerificationResult.VERIFIED) {
+                                if(verification is VerificationResult.Verified) {
                                     CryptoResource.Ready(it)
                                 } else {
                                     CryptoResource.UnverifiedKeyOrData(it)
@@ -105,7 +112,7 @@ class MemberMapperCore constructor(
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
                         }.let {
-                            if(verification == VerificationResult.VERIFIED) {
+                            if(verification is VerificationResult.Verified) {
                                 CryptoResource.Ready(it)
                             } else {
                                 CryptoResource.UnverifiedKeyOrData(it)
@@ -141,7 +148,7 @@ class MemberMapperCore constructor(
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<MemberDeviceStatus>(it)
                         }.let {
-                            if(verification == VerificationResult.VERIFIED) {
+                            if(verification is VerificationResult.Verified) {
                                 CryptoResource.Ready(it)
                             } else {
                                 CryptoResource.UnverifiedKeyOrData(it)
@@ -188,7 +195,7 @@ class MemberMapperCore constructor(
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
                 }.let {
-                    if(verification == VerificationResult.VERIFIED) {
+                    if(verification is VerificationResult.Verified) {
                         CryptoResource.Ready(it)
                     } else {
                         CryptoResource.UnverifiedKeyOrData(it)
@@ -196,6 +203,32 @@ class MemberMapperCore constructor(
                 }
             } catch (e: Exception) {
                 CryptoResource.WrongKeyOrData
+            }
+        } else {
+            CryptoResource.MissingKey
+        }
+
+        // data encrypted with group DEK
+        val paralinoIdData = if (groupKey is GroupMasterKey.Valid) {
+            if (model.member.paralinoId.isNullOrBlank()) {
+                CryptoResource.NotInitialized
+            } else {
+                try {
+                    cryptoCore.decryptDataWithKey(
+                        data = model.member.paralinoId,
+                        key = groupKey.key
+                    ).let {
+                        BaseRemoteModule.formatter.decodeFromString<MemberModelParalinoIdData>(it)
+                    }.let {
+                        if (verification is VerificationResult.Verified) {
+                            CryptoResource.Ready(it)
+                        } else {
+                            CryptoResource.UnverifiedKeyOrData(it)
+                        }
+                    }
+                } catch (e: Exception) {
+                    CryptoResource.WrongKeyOrData
+                }
             }
         } else {
             CryptoResource.MissingKey
@@ -212,11 +245,14 @@ class MemberMapperCore constructor(
                     id = it.id,
                     groupId = it.groupId,
                     ownerUserId = it.ownerUserId,
-                    integrity = it.integrity
+                    integrity = it.integrity,
+                    groupOwnerIntegrity = it.groupOwnerIntegrity
                 )
             },
             memberData = memberData,
-            verificationResult = verification
+            paralinoId = paralinoIdData,
+            verificationResult = verification,
+            enforceMemberAuthentication = group.enforceMemberAuthentication
         )
 
         return MemberModelWithLocations(

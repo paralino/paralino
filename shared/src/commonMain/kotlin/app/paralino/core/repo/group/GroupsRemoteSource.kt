@@ -3,11 +3,13 @@ package app.paralino.core.repo.group
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.BlockGroupFunctionData
@@ -21,12 +23,15 @@ import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.models.raw.UpdateGroupPayload
 import app.paralino.core.models.user.BlockListModelData
+import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.PermissionDeniedException
+import app.paralino.core.utils.exceptions.UnsupportedGroupEncryptionSchemeException
 import app.paralino.core.utils.extensions.blocking
 
 class GroupsRemoteSource constructor(
@@ -53,7 +58,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (response.isSuccess) {
-                response.responseMap.parseGroup()
+                response.responseDataMap!!.parseGroup()
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
@@ -114,7 +119,9 @@ class GroupsRemoteSource constructor(
                 collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
             ).map { it.parseMemberLocation() }
 
-            groups.map { group ->
+            groups
+                .filter { AppConfig.isEncryptionSchemeSupported(it.schemeVersion) }
+                .map { group ->
                 GroupWithMembersRaw(
                     group = group,
                     members = members
@@ -133,46 +140,47 @@ class GroupsRemoteSource constructor(
     }
 
     suspend fun getGroupWithMembers(groupId: String): GroupWithMembersRaw {
-        return blocking {
+        val group = api.getDocument(
+            databaseType = BackendDatabaseType.DATA,
+            remoteConfig.resourceIds.collectionGroupsID,
+            groupId
+        ).parseGroup()
 
-            val group = api.getDocument(
-                databaseType = BackendDatabaseType.DATA,
-                remoteConfig.resourceIds.collectionGroupsID,
-                groupId
-            ).parseGroup()
-
-            val members = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
-                keyValues = listOf("groupId" to groupId)
-            ).map { it.parseGroupMember() }
-
-            val settings = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
-                keyValues = listOf("groupId" to groupId)
-            ).map { it.parseGroupSettings() }
-                .takeIf { it.size == 1 && it.first().ownerUserId == config.userId }
-                ?.firstOrNull()
-
-            val locations = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
-                keyValues = listOf("groupId" to groupId)
-            ).map { it.parseMemberLocation() }
-
-            GroupWithMembersRaw(
-                group = group,
-                members = members.map { member ->
-                    MemberWithLocationsRaw(
-                        member = member.copy(settingsRaw = settings?.takeIf { it.id == member.id }),
-                        locations = locations.filter { location ->
-                            member.locationIds.contains(location.id)
-                        }
-                    )
-                }
-            )
+        if (!AppConfig.isEncryptionSchemeSupported(group.schemeVersion)) {
+            throw UnsupportedGroupEncryptionSchemeException(groupId = group.id, schemeVersion = group.schemeVersion)
         }
+
+        val members = api.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
+            queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
+        ).map { it.parseGroupMember() }
+
+        val settings = api.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
+            queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
+        ).map { it.parseGroupSettings() }
+            .takeIf { it.size == 1 && it.first().ownerUserId == config.userId }
+            ?.firstOrNull()
+
+        val locations = api.listAllDocuments(
+            databaseType = BackendDatabaseType.DATA,
+            collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+            queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
+        ).map { it.parseMemberLocation() }
+
+        return GroupWithMembersRaw(
+            group = group,
+            members = members.map { member ->
+                MemberWithLocationsRaw(
+                    member = member.copy(settingsRaw = settings?.takeIf { it.id == member.id }),
+                    locations = locations.filter { location ->
+                        member.locationIds.contains(location.id)
+                    }
+                )
+            }
+        )
     }
 
     suspend fun deleteGroup(groupId: String) {

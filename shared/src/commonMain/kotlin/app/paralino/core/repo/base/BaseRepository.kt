@@ -39,7 +39,7 @@ abstract class BaseRepository {
             // find a better solution or maybe it will be fixed when FlowAPI reaches stable
             .debounce(10)
             .catch {
-                logg.e("BaseRepo.mergeDataWithRemote", it)
+                logg.e("BaseRepo.mergeDataWithRemote - $remotePreference", it)
                 throw it
             }
     }

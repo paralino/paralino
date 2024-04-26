@@ -7,6 +7,7 @@ import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
@@ -17,14 +18,20 @@ import app.paralino.core.models.raw.GroupPlaceSettingRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.models.raw.PlaceEventPayload
 import app.paralino.core.models.raw.UpdatePlacePayload
+import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.api.runAsync
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
+import app.paralino.core.utils.exceptions.CryptoException
+import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
-import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
+import kotlinx.serialization.encodeToString
 
 class PlacesRemoteSource(
     private val api: IDocumentsApi,
@@ -42,7 +49,8 @@ class PlacesRemoteSource(
         data: GroupPlaceData,
     ): GroupPlacesWithSettingsRaw {
         return blocking {
-            val groupKey = cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
+            val groupKey =
+                cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
 
             val encryptedData = cryptoCore.encryptModel(
                 data = data,
@@ -62,7 +70,9 @@ class PlacesRemoteSource(
             )
 
             if (response.isSuccess) {
-                getPlaceWithSettings(response.response)
+                getPlaceWithSettings(
+                    placeId = response.responseDataMap!!.get("placeId") as String
+                )
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
@@ -86,7 +96,7 @@ class PlacesRemoteSource(
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
                     collectionId = BackendResourceIDs.collectionPlacesSettingsID,
-                    keyValues = listOf("placeId" to placeId)
+                    queries = listOf(BackendQuery.Equals(key = "placeId", value = placeId))
                 ).first().parsePlaceSettings()
             } catch (e: Exception) {
                 null
@@ -104,13 +114,13 @@ class PlacesRemoteSource(
             val places = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = BackendResourceIDs.collectionPlacesID,
-                keyValues = listOf("groupId" to groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parsePlace() }
 
             val settings = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = BackendResourceIDs.collectionPlacesSettingsID,
-                keyValues = listOf("groupId" to groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parsePlaceSettings() }
 
             places.map { place ->
@@ -147,11 +157,30 @@ class PlacesRemoteSource(
         place: GroupPlace
     ): GroupPlaceRaw {
         return blocking {
-            val mapped = mapper.core2Remote(place)
+
+            // get latest group key
+            val groupKey = cryptoKEKRepo.getGroupKey(
+                groupId = place.groupId,
+                keyVersion = null
+            )
+
+            if(groupKey !is GroupMasterKey.Valid)
+                throw MissingGroupKeyException(place.groupId, null)
+
+            val placeData = when (place.data) {
+                is CryptoResource.Ready -> {
+                    cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.formatter.encodeToString(place.data.data),
+                        key = groupKey.key
+                    )
+                }
+                else -> throw CryptoException("Place data is missing: ${place.id}")
+            }
 
             val payload = UpdatePlacePayload(
                 placeId = place.id,
-                placeData = mapped.data
+                placeData = placeData,
+                groupKeyVersion = groupKey.version
             )
 
             val response = functionsApi.runAndWait(
@@ -160,10 +189,7 @@ class PlacesRemoteSource(
             )
 
             if (response.isSuccess) {
-                val response = response.response.fromJsonObjectToMapOfPrimitives()
-                    .filterValues { it != null }
-                    .mapValues { it.value!! }
-                response.parsePlace()
+                response.responseDataMap!!.parsePlace()
             } else {
                 // TODO throw better exception
                 throw BaseRemoteException.fromCode(
@@ -232,21 +258,21 @@ class PlacesRemoteSource(
     }
 
 
-    suspend fun notifyPlaceEnter(placeId: String) {
+    suspend fun notifyPlaceEnter(placeId: String, groupId: String) {
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
-                locationId = userMemberId.getCurrentLocationIdForPlace(placeId),
+                locationId = userMemberId.getCurrentLocationIdForGroup(groupId),
                 enter = true
             )
         )
     }
 
-    suspend fun notifyPlaceExit(placeId: String) {
+    suspend fun notifyPlaceExit(placeId: String, groupId: String) {
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
-                locationId = userMemberId.getCurrentLocationIdForPlace(placeId),
+                locationId = userMemberId.getCurrentLocationIdForGroup(groupId),
                 enter = false
             )
         )
@@ -254,19 +280,10 @@ class PlacesRemoteSource(
 
     private suspend fun notifyPlaceEvent(placePayload: PlaceEventPayload) {
         blocking {
-            val response = functionsApi.runAndWait(
+            functionsApi.runAsync(
                 function = ServerFunction.PLACE_NOTIFY,
                 data = placePayload
             )
-
-            if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to update location",
-                    cause = Exception(response.stderr)
-                )
-            }
         }
     }
 

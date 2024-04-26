@@ -14,7 +14,6 @@ class NotificationPermissionHandler {
     
     private var requested: Bool = false
 
-    
     func requestNotificationPermission(
         appDelegate: AppDelegate,
         messageDispather: ICoreMessageDispatcher

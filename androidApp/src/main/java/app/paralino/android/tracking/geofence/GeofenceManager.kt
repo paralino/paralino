@@ -53,13 +53,13 @@ class GeofenceManager(
         }.build()
 
         geofencingClient.removeGeofences(geofencePendingIntent).addOnCompleteListener {
-            logg.tag("geofences").v("Previous geofences removed, creating new ones")
+            logg.tag("place_activity_geofence").v("Previous geofences removed, creating new ones")
             geofencingClient.addGeofences(request, geofencePendingIntent)
                 .addOnFailureListener {
-                    logg.tag("geofences").w("Error creating geofence", it)
+                    logg.tag("place_activity_geofence").w("Error creating geofence", it)
                 }
                 .addOnSuccessListener {
-                    logg.tag("geofences").d("Successfully created geofences")
+                    logg.tag("place_activity_geofence").d("Successfully created geofences")
                 }
         }
     }
@@ -81,10 +81,22 @@ class GeofenceManager(
         data: LocationDataModel,
         geofence: GroupPlaceGeofenceData
     ): Float {
-        val result = FloatArray(1)
-        Location.distanceBetween(
-            data.lat, data.lng, geofence.lat, geofence.lng, result
+        return distanceBetweenPoints(
+            lat1 = data.lat,
+            lng1 = data.lng,
+            lat2 = geofence.lat,
+            lng2 = geofence.lng
         )
+    }
+
+    override fun distanceBetweenPoints(
+        lat1: Double,
+        lng1: Double,
+        lat2: Double,
+        lng2: Double
+    ): Float {
+        val result = FloatArray(1)
+        Location.distanceBetween(lat1, lng1, lat2, lng2, result)
         return result.first()
     }
 

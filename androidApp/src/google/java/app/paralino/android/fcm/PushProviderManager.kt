@@ -1,6 +1,7 @@
 package app.paralino.android.fcm
 
 import app.paralino.android.AppClass
+import app.paralino.android.remote.sync.PushNotificationsSyncWorker
 import app.paralino.core.logg
 import app.paralino.core.repo.user.IPushProviderManager
 import com.google.firebase.installations.FirebaseInstallations

@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.groups
 
+import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
@@ -7,10 +8,13 @@ import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +52,7 @@ class GroupInitViewModel(
                 if (!network.isOnline)
                     add(ConditionErrorType.NETWORK)
 
-                if(!locationStatus.isNotificationPermissionAllowed)
+                if (!locationStatus.isNotificationPermissionAllowed)
                     add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
 
                 user.data?.needsEmailVerification?.takeIf { it }?.let {
@@ -63,12 +67,14 @@ class GroupInitViewModel(
                     code = it.formattedCode,
                     userImage = it.codeData.data?.ownerImage ?: ImageModel.emoji(Emojis.robot),
                     userName = it.codeData.data?.ownerName ?: "---",
-                    canDelete = false,
+                    canDisable = false,
                     isValid = true,
+                    isActionLoading = false
                 )
             }
 
             GroupInitScreenState(
+                userEmail = user.data?.email,
                 userImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                 personalCode = personalCode,
                 errors = errors
@@ -78,24 +84,45 @@ class GroupInitViewModel(
                 _uiState.update { result }
             }
             .catch {
-                _eventChannel.send(GroupInitScreenEvent.Error(it))
+                showSnackbar(it.errorString())
             }
             .launchIn(coroutineScope)
     }
 
-    fun sendEmailVerification() {
+    private fun sendEmailVerification() {
         coroutineScope.launch {
             try {
                 userRepo.initEmailVerification()
-                _eventChannel.send(GroupInitScreenEvent.EmailVerificationSent)
+                showSnackbar(MR.strings.info_email_check_instructions.localizedString())
             } catch (e: Exception) {
-                _eventChannel.send(GroupInitScreenEvent.Error(e))
+                showSnackbar(e.errorString())
             }
         }
     }
 
-    fun copyToClipboard() {
+    private fun copyToClipboard() {
         deviceApiProvider.copyToClipboard(_uiState.value.personalCode?.code ?: "")
     }
 
+    fun onEvent(event: GroupInitScreenUiEvent) {
+        when (event) {
+            GroupInitScreenUiEvent.ConfirmSendEmailVerification -> {
+                sendEmailVerification()
+            }
+
+            GroupInitScreenUiEvent.CopyPersonalCode -> {
+                copyToClipboard()
+            }
+
+            GroupInitScreenUiEvent.HideDialog -> {
+                _uiState.update { it.copy(alertDialog = null) }
+            }
+
+            GroupInitScreenUiEvent.SendEmailVerification -> {
+                _uiState.update {
+                    it.copy(alertDialog = it.userEmail?.let { MainAlertDialog.VerifyEmail(it) })
+                }
+            }
+        }
+    }
 }

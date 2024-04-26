@@ -1,5 +1,6 @@
 package app.paralino.core.provider
 
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KeyPair
@@ -10,6 +11,11 @@ import app.paralino.core.models.getOrThrow
 class CryptoServiceWrapperIOS(
     private val cryptoIOS: ICryptoServiceProviderIOS
 ): ICryptoServiceProvider {
+
+    override fun createRandomId(length: Int, alphabet: AlphabetType): String {
+        return cryptoIOS.createRandomId(length, alphabet).getOrThrow()
+    }
+
     override fun createNewSymmetricKey(): String {
         return cryptoIOS.createNewSymmetricKey().getOrThrow()
     }
@@ -26,7 +32,7 @@ class CryptoServiceWrapperIOS(
         return cryptoIOS.encryptDataWithSymmetricKey(data, key).getOrThrow()
     }
 
-    override suspend fun decryptDataWithSymmetricKey(data: String, key: String): String {
+    override fun decryptDataWithSymmetricKey(data: String, key: String): String {
         return try {
             cryptoIOS.decryptDataWithSymmetricKey(data, key).getOrThrow()
         } catch (e: Exception) {
@@ -39,7 +45,7 @@ class CryptoServiceWrapperIOS(
         return cryptoIOS.encryptDataWithPassword(data, password, context).getOrThrow()
     }
 
-    override suspend fun decryptDataWithPassword(data: String, password: String, context: String): String {
+    override fun decryptDataWithPassword(data: String, password: String, context: String): String {
         return try {
             cryptoIOS.decryptDataWithPassword(data, password, context).getOrThrow()
         } catch (e: Exception) {
@@ -82,13 +88,14 @@ class CryptoServiceWrapperIOS(
 }
 
 interface ICryptoServiceProviderIOS {
+    fun createRandomId(length: Int, alphabet: AlphabetType): Payload<String>
     fun createNewSymmetricKey(): Payload<String>
     fun createNewCryptoKeyPair(): Payload<KeyPair>
     fun createNewSignatureKeyPair(): Payload<KeyPair>
     fun encryptDataWithSymmetricKey(data: String, key: String): Payload<String>
-    suspend fun decryptDataWithSymmetricKey(data: String, key: String): Payload<String>
+    fun decryptDataWithSymmetricKey(data: String, key: String): Payload<String>
     fun encryptDataWithPassword(data: String, password: String, context: String): Payload<String>
-    suspend fun decryptDataWithPassword(data: String, password: String, context: String): Payload<String>
+    fun decryptDataWithPassword(data: String, password: String, context: String): Payload<String>
 
     fun encryptDataWithKeyPair(
         data: String,

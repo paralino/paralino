@@ -1,7 +1,7 @@
 package app.paralino.android.ui.map
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,12 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import app.paralino.android.ui.MainAppState
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.logg
 import app.paralino.core.presentation.map.FocusedMarkerData
@@ -24,6 +25,7 @@ import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.map.asFocusedMarker
+import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.theme.AppColors
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
@@ -46,10 +48,10 @@ fun MainHomeMapComposable(
 ) {
     MainHomeMapComposable(
         satelliteMode = uiState.isSatelliteMode,
-        state = (uiState as? MapHomeScreenState.Ready),
+        state = uiState.asReady(),
         mapContentPadding = mapContentPadding,
         onMapLongPress = { lat, lng ->
-            val groupId = (uiState as? MapHomeScreenState.Ready)?.groupId
+            val groupId = uiState.asReady()?.groupId
             if (groupId != null) {
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceCreate.route(
@@ -81,14 +83,14 @@ fun MainHomeMapComposable(
     onMarkerClick: (MapPinData) -> Unit
 ) {
 
+    val stateData by rememberUpdatedState(newValue = state)
+
     val scope = rememberCoroutineScope()
     val cameraPositionState = rememberCameraPositionState {
-        boundsForMarkers(state?.visibleMarkers ?: emptyList())?.let {
+        boundsForMarkers(stateData?.visibleMarkers ?: emptyList())?.let {
             move(CameraUpdateFactory.newLatLngBounds(it, 40))
         }
     }
-
-    val stateData by rememberUpdatedState(newValue = state)
 
     LaunchedEffect(stateData?.visibleMarkers) {
         snapshotFlow { stateData?.mapHomeScreenFocusType }
@@ -126,7 +128,14 @@ fun MainHomeMapComposable(
     }
 
     val uiSettings by defaultMapUiSettings()
-    val properties by defaultMapProperties(isDarkMode = isSystemInDarkTheme(), satelliteMode = satelliteMode)
+    val properties by defaultMapProperties(
+        isDarkMode = isSystemInDarkTheme(),
+        satelliteMode = satelliteMode
+    )
+
+    val markerClick: (MapPinData) -> Unit = {
+        onMarkerClick(it)
+    }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -137,58 +146,72 @@ fun MainHomeMapComposable(
         onMapLongClick = { onMapLongPress(it.latitude, it.longitude) },
         onMapClick = { onMapTouch() }
     ) {
-        state?.visibleMarkers?.forEach { model ->
-            val latAnim = animateFloatAsState(
-                targetValue = model.lat.toFloat(),
-                animationSpec = tween(durationMillis = 3000, easing = LinearEasing),
-                label = "latAnim"
-            ).value.toDouble()
-            val lngAnim = animateFloatAsState(
-                targetValue = model.lng.toFloat(),
-                animationSpec = tween(durationMillis = 3000, easing = LinearEasing),
-                label = "lngAnim"
-            ).value.toDouble()
-            val accuracyAnim = animateFloatAsState(
-                targetValue = model.accuracy,
-                animationSpec = tween(durationMillis = 3000, easing = LinearEasing),
-                label = "accuracyAnim"
-            ).value.toDouble()
-
-            val markerClick: (MapPinData) -> Unit = {
-                onMarkerClick(model)
-            }
-
-            if (model.shouldShowApproximateCircle) {
-                Circle(
-                    center = LatLng(latAnim, lngAnim),
-                    clickable = true,
-                    fillColor = when (model.pinType) {
-                        MapPinType.MEMBER -> AppColors.accentDark.copy(alpha = 0.5f)
-                        MapPinType.PLACE -> Color.Blue.copy(alpha = 0.3f)
-                    },
-                    radius = accuracyAnim,
-                    strokeColor = when (model.pinType) {
-                        MapPinType.MEMBER -> Color.White
-                        MapPinType.PLACE -> Color.Blue
-                    },
-                    strokeWidth = when (model.pinType) {
-                        MapPinType.MEMBER -> 8f
-                        MapPinType.PLACE -> 0f
-                    },
-                    tag = model.markerId,
-                    onClick = {
-                        markerClick(model)
-                    }
-                )
-            }
-
-            MapMarkerComposable(
-                state = model,
-                position = LatLng(latAnim, lngAnim),
-                onClick = markerClick
-            )
+        stateData?.visibleMarkers?.forEach { model ->
+            MapMarkerComposable(model = model, onMarkerClick = markerClick)
         }
     }
+}
+
+@Composable
+private fun MapMarkerComposable(
+    model: MapPinData,
+    onMarkerClick: (MapPinData) -> Unit
+) {
+
+    val lat = remember { Animatable(0f) }
+    val lng = remember { Animatable(0f) }
+    val acc = remember { Animatable(0f) }
+    val animationSpec = remember {
+        tween<Float>(durationMillis = 3000, easing = LinearEasing)
+    }
+
+    LaunchedEffect(model.markerId) {
+        lat.snapTo(model.lat.toFloat())
+        lng.snapTo(model.lng.toFloat())
+        acc.snapTo(model.accuracy)
+    }
+
+    LaunchedEffect(model.lat) {
+        lat.animateTo(model.lat.toFloat(), animationSpec = animationSpec)
+    }
+
+    LaunchedEffect(model.lng) {
+        lng.animateTo(model.lng.toFloat(), animationSpec = animationSpec)
+    }
+
+    LaunchedEffect(model.accuracy) {
+        acc.animateTo(model.accuracy.toFloat(), animationSpec = animationSpec)
+    }
+
+    if (model.shouldShowApproximateCircle) {
+        Circle(
+            center = LatLng(lat.value.toDouble(), lng.value.toDouble()),
+            clickable = true,
+            fillColor = when (model.pinType) {
+                MapPinType.MEMBER -> AppColors.accentDark.copy(alpha = 0.5f)
+                MapPinType.PLACE -> Color.Blue.copy(alpha = 0.3f)
+            },
+            radius = acc.value.toDouble(),
+            strokeColor = when (model.pinType) {
+                MapPinType.MEMBER -> Color.White
+                MapPinType.PLACE -> Color.Blue
+            },
+            strokeWidth = when (model.pinType) {
+                MapPinType.MEMBER -> 8f
+                MapPinType.PLACE -> 0f
+            },
+            tag = model.markerId,
+            onClick = {
+                onMarkerClick(model)
+            }
+        )
+    }
+
+    MapMarkerComposable(
+        state = model,
+        position = LatLng(lat.value.toDouble(), lng.value.toDouble()),
+        onClick = onMarkerClick
+    )
 }
 
 private fun CameraPositionState.focusOnMap(
@@ -223,9 +246,11 @@ private fun CameraPositionState.focusOnMap(
         MapHomeScreenFocusType.ALL_MEMBERS -> {
             if (markers.size == 1) 200 else 100
         }
+
         MapHomeScreenFocusType.ALL_PLACES -> {
             if (markers.size == 1) 300 else 100
         }
+
         else -> 100
     }
 

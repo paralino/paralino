@@ -1,20 +1,20 @@
 package app.paralino.android.ui.groups
 
+import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.components.Show
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.components.DefaultEmptyState
-import app.paralino.core.ui.components.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.DefaultToolbar
+import app.paralino.core.ui.components.dialogs.ToolbarButtons
 import app.paralino.core.ui.groups.GroupDetailScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.androidx.compose.getViewModel
@@ -32,14 +32,13 @@ fun GroupDetailScreen(
     }
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun GroupDetailScreen(
+private fun GroupDetailScreen(
     appState: MainAppState,
     groupId: String,
     vm: GroupDetailViewModel = getViewModel { parametersOf(groupId) },
 ) {
-
-    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     val locationPermissionHandler = rememberLocationPermissionHandler(
         appState = appState,
@@ -53,129 +52,57 @@ fun GroupDetailScreen(
         locationStatusProvider = vm.locationStatusProvider
     )
 
-    when (val dialog = showDialog) {
-        is MainAlertDialog.DeleteGroup -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.leaveOrDeleteGroup()
-                }
-            }
+    Scaffold(
+        topBar = {
+            DefaultToolbar(
+                title = null,
+                navigationIcon = { ToolbarButtons.Close { appState.navController.popBackStack() } }
+            )
         }
-
-        is MainAlertDialog.LeaveGroup -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.leaveOrDeleteGroup()
+    ) {
+        GroupDetailScreenCore(
+            appState = appState,
+            vm = getViewModel { parametersOf(groupId) },
+            groupId = groupId,
+            contentPadding = remember { PaddingValues() },
+            openMemberAdd = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.GroupMemberAdd.route(groupId = groupId)
+                )
+            },
+            openMap = {
+                appState.navController.navigate(AppScreen.MainHome.MainMap.route(groupId)) {
+                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
+                    this.launchSingleTop = true
                 }
-            }
-        }
-
-        is MainAlertDialog.BlockGroup -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.blockGroup()
-                }
-            }
-        }
-
-        is MainAlertDialog.BlockUser -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.blockUser(userId = dialog.userId)
-                }
-            }
-        }
-
-        is MainAlertDialog.UnblockGroupOrUser -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.unblockUser(userId = dialog.id)
-                }
-            }
-        }
-
-        is MainAlertDialog.DeleteGroupMember -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.removeMember(dialog.memberUserId)
-                }
-            }
-        }
-
-        is MainAlertDialog.DeleteMemberLocation -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.removeMemberLocation(
-                        memberId = dialog.memberId,
-                        locationId = dialog.locationId
+            },
+            openPlaces = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlacesList.route(groupId)
+                )
+            },
+            openGroupSettings = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.GroupSettings.route(groupId)
+                )
+            },
+            openMemberRawData = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.RawDataScreen.route(
+                        RawPresentationDataType.GroupMemberPresentation(it)
                     )
-                }
-            }
-        }
-
-        is MainAlertDialog.PlanLimit -> {
-            dialog.Show {
-                showDialog = null
-            }
-        }
-
-        else -> {}
+                )
+            },
+            openSharing = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.SharingStart.route(groupId)
+                )
+            },
+            onNavigateBack = { appState.navController.popBackStack() },
+            askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
+            askLocationService = { locationPermissionHandler.askLocationService() },
+            askLocationPermission = { locationPermissionHandler.askLocationPermission() },
+            askBackgroundLocationPermission = { locationPermissionHandler.askBackgroundLocationPermission() }
+        )
     }
-
-    GroupDetailScreenCore(
-        appState = appState,
-        vm = getViewModel { parametersOf(groupId) },
-        groupId = groupId,
-        onShowDialog = { showDialog = it },
-        openMemberAdd = {
-            appState.navController.navigate(
-                AppScreen.MainHome.GroupMemberAdd.route(groupId = groupId)
-            )
-        },
-        openGroupEdit = {
-            appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(groupId))
-        },
-        openMap = {
-            appState.navController.navigate(AppScreen.MainHome.MainMap.route(groupId)) {
-                popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                this.launchSingleTop = true
-            }
-        },
-        openPlaces = {
-            appState.navController.navigate(
-                AppScreen.MainHome.PlacesList.route(groupId)
-            )
-        },
-        openGroupRawData = {
-            appState.navController.navigate(
-                AppScreen.MainHome.RawDataScreen.route(
-                    RawPresentationDataType.GroupPresentation(groupId)
-                )
-            )
-        },
-        openMemberRawData = {
-            appState.navController.navigate(
-                AppScreen.MainHome.RawDataScreen.route(
-                    RawPresentationDataType.GroupMemberPresentation(it)
-                )
-            )
-        },
-        openSharing = {
-            appState.navController.navigate(
-                AppScreen.MainHome.SharingStart.route(groupId)
-            )
-        },
-        onNavigateBack = { appState.navController.popBackStack() },
-        askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
-        askLocationService = { locationPermissionHandler.askLocationService() },
-        askLocationPermission = { locationPermissionHandler.askLocationPermission() },
-        askBackgroundLocationPermission = { locationPermissionHandler.askBackgroundLocationPermission() }
-    )
 }

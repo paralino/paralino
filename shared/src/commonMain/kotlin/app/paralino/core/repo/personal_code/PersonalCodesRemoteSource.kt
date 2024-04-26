@@ -1,5 +1,6 @@
 package app.paralino.core.repo.personal_code
 
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
@@ -24,10 +25,11 @@ import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.serialization.decodeFromString
+import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.serialization.encodeToString
 
 class PersonalCodesRemoteSource constructor(
@@ -89,14 +91,14 @@ class PersonalCodesRemoteSource constructor(
 
     suspend fun tryCreatingCode(user: UserMe, userMeData: UserMeData?) {
 
-        val personalCode = createPersonalCodeString()
+        val personalCode = cryptoCore.randomId(length = 8, alphabet = AlphabetType.SAFE)
         val derivedCode = cryptoCore.derivePassword(personalCode)
         val myKey = userKeyRepo.latestKeyPair()
 
         val codeUserData = PersonalCodeUserData(
             ownerUserId = user.id,
             ownerName = userMeData?.userName ?: user.data?.userName ?: "",
-            ownerImage =  userMeData?.userImage ?: user.data?.userImage,
+            ownerImage = userMeData?.userImage ?: user.data?.userImage,
             ownerIdentityKey = myKey.publicKey,
         )
 
@@ -154,7 +156,7 @@ class PersonalCodesRemoteSource constructor(
         ).map { it.parsePreKey() }
             .filter { !it.encryptedCodeKeyData.isNullOrBlank() }
 
-        if(currentUnusedKeys.size > 3) {
+        if (currentUnusedKeys.size > 3) {
             logg.v("Found ${currentUnusedKeys.size} unused pre keys, skip restock")
             return
         }
@@ -198,7 +200,7 @@ class PersonalCodesRemoteSource constructor(
         userId: String,
         personalCode: String,
         integrity: String,
-        count: Int = 4
+        count: Int = 6
     ): List<PersonalCodePreKeyData> {
         val myKey = userKeyRepo.latestKeyPair()
         val derivedCode = cryptoCore.derivePassword(personalCode)
@@ -242,22 +244,6 @@ class PersonalCodesRemoteSource constructor(
         }
     }
 
-    private fun createPersonalCodeString(): String {
-        // TODO key could be in hex format - use more characters
-        // create crypto function to return random key encoded with wider character set
-        val key = cryptoCore.getNewSymmetricKey()
-        val derivedKey = cryptoCore.derivePassword(key).backupPassword
-
-        // without similar characters: 0,O,1,I
-        val code = derivedKey
-            .replace(Regex("[^a-zA-Z0-9]"), "")
-            .uppercase()
-            .replace(Regex("[O01I]"), "")
-            .take(8)
-
-        return code
-    }
-
     suspend fun getMyPersonalCodes(): List<PersonalCodeRaw> {
         return docApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
@@ -280,8 +266,8 @@ class PersonalCodesRemoteSource constructor(
                 cause = Exception(response.stderr)
             )
         } else {
-            val responseContent =
-                BaseRemoteModule.formatter.decodeFromString<PersonalCodeResponse>(response.response)
+            val responseContent = response.responseDataMap
+                ?.tryParseFromJson<PersonalCodeResponse>()!!
             return personalCodeMapper.remote2CoreRead(
                 code = code,
                 encryptedUserData = responseContent.encryptedCodeUserData,

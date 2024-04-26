@@ -2,13 +2,15 @@ package app.paralino.android.remote.appwrite
 
 import app.paralino.core.models.raw.FunctionExecutionRaw
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.repo.api.BaseFunctionsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import io.appwrite.enums.ExecutionMethod
 
 class FunctionsApi constructor(
     private val remoteModule: AppWriteRemoteModule,
     deviceApiProvider: IDeviceApiProvider
-) : IFunctionsApi(deviceApiProvider) {
+) : BaseFunctionsApi(deviceApiProvider), IFunctionsApi {
 
     override suspend fun runAsync(function: ServerFunction, data: String?): String {
         return remoteModule.execute {
@@ -17,7 +19,7 @@ class FunctionsApi constructor(
                 body = data,
                 async = true,
                 path = function.path,
-                method = function.method,
+                method = ExecutionMethod.entries.first { it.value == function.method },
                 headers = mutableMapOf(clientHeader)
             ).id
         }
@@ -30,7 +32,7 @@ class FunctionsApi constructor(
                 body = data,
                 async = false,
                 path = function.path,
-                method = function.method,
+                method = ExecutionMethod.entries.first { it.value == function.method },
                 headers = mutableMapOf(clientHeader)
             )
 
@@ -40,7 +42,7 @@ class FunctionsApi constructor(
                 status = execution.status,
                 statusCode = execution.responseStatusCode.toInt(),
                 response = execution.responseBody,
-                stderr = execution.errors
+                errors = execution.errors
             )
         }
     }

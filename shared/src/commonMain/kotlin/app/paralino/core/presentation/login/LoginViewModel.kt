@@ -1,15 +1,20 @@
 package app.paralino.core.presentation.login
 
+import app.paralino.core.MR
 import app.paralino.core.config
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.UnauthorizedException
+import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.getFormValidationErrorText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +24,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase,
@@ -32,19 +36,26 @@ class LoginViewModel constructor(
     val initialUiType: LoginScreenUiType
         get() = if (appConfigRepository.configState.value?.emailEnabled == true) startScreenUiType else LoginScreenUiType.SIGNUP_GUEST
 
-    private val _uiState = MutableStateFlow(
-        LoginScreenState(
-            canUseEmail = appConfigRepository.configState.value?.emailEnabled ?: false,
-            uiType = initialUiType,
-            hasGuestAccount = hasGuestAccount()
-        )
-    )
-    val uiState: StateFlow<LoginScreenState> = _uiState
+    private val _uiState: MutableStateFlow<LoginScreenState>
+    val uiState: StateFlow<LoginScreenState>
 
     private val _eventChannel = Channel<LoginScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
     init {
+        _uiState = MutableStateFlow(
+            LoginScreenState(
+                canUseEmail = appConfigRepository.configState.value?.emailEnabled ?: false,
+                uiType = initialUiType,
+                alertDialog = if (hasGuestAccount()) {
+                    MainAlertDialog.GuestAccountRecover
+                } else {
+                    null
+                }
+            )
+        )
+        uiState = _uiState
+
         appConfigRepository.getConfig()
             .onEach { config ->
                 _uiState.update {
@@ -57,7 +68,7 @@ class LoginViewModel constructor(
             .launchIn(coroutineScope)
     }
 
-    fun proceed() {
+    private fun proceed() {
 
         if (_uiState.value.uiType != LoginScreenUiType.SIGNUP_GUEST && !_uiState.value.canUseEmail) {
             _uiState.update { it.copy(uiType = LoginScreenUiType.SIGNUP_GUEST) }
@@ -78,11 +89,11 @@ class LoginViewModel constructor(
         return emailValidation.result && passwordValidation.result
     }
 
-    fun recoverGuestAccount() {
+    private fun recoverGuestAccount() {
         _uiState.update {
             it.copy(
                 uiType = LoginScreenUiType.LOGIN,
-                hasGuestAccount = false,
+                alertDialog = null,
                 email = "***",
                 password = "***"
             )
@@ -122,13 +133,9 @@ class LoginViewModel constructor(
         }
 
         if (!emailValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(LoginScreenEvent.ValidationError(emailValidation))
-            }
+            showSnackbar(getFormValidationErrorText(emailValidation.type))
         } else if (!passwordValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(LoginScreenEvent.ValidationError(passwordValidation))
-            }
+            showSnackbar(getFormValidationErrorText(passwordValidation.type))
         } else {
             loginUseCase.login(email = email, password = password)
                 .onEach { processStep(it) }
@@ -156,17 +163,11 @@ class LoginViewModel constructor(
         }
 
         if (!emailValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(LoginScreenEvent.ValidationError(emailValidation))
-            }
+            showSnackbar(getFormValidationErrorText(emailValidation.type))
         } else if (!passwordValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(LoginScreenEvent.ValidationError(passwordValidation))
-            }
+            showSnackbar(getFormValidationErrorText(passwordValidation.type))
         } else if (!passwordConfirmValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(LoginScreenEvent.ValidationError(passwordConfirmValidation))
-            }
+            showSnackbar(getFormValidationErrorText(passwordConfirmValidation.type))
         } else {
             createAccountUseCase.signUp(
                 email = email,
@@ -209,9 +210,7 @@ class LoginViewModel constructor(
         }
 
         if (!emailValidation.result) {
-            coroutineScope.launch {
-                _eventChannel.send(LoginScreenEvent.ValidationError(emailValidation))
-            }
+            showSnackbar(getFormValidationErrorText(emailValidation.type))
         } else {
             resetPasswordUseCase.initResetPassword(email)
                 .onEach {
@@ -316,15 +315,13 @@ class LoginViewModel constructor(
             }
         }
 
-        _eventChannel.send(
-            LoginScreenEvent.LoginError(
-                errorType
-                    ?: SignUpErrorType.SOURCE(
-                        (error as? SignUpStepException)?.cause ?: error
-                    )
+        showSnackbar(
+            getLoginErrorText(
+                errorType ?: SignUpErrorType.SOURCE(
+                    error = (error as? SignUpStepException)?.cause ?: error
+                )
             )
         )
-
     }
 
     private fun resetValidationState() {
@@ -421,15 +418,46 @@ class LoginViewModel constructor(
         }
     }
 
-    fun hideGuestAccountDialog() {
-        if (_uiState.value.actionLoading) return
-        _uiState.update { it.copy(hasGuestAccount = false) }
-    }
-
-    fun dismissGuestAccount() {
+    private fun dismissGuestAccount() {
         config.guestEmail = ""
         config.guestPassword = ""
-        _uiState.update { it.copy(hasGuestAccount = false) }
+        _uiState.update { it.copy(alertDialog = null) }
     }
 
+    fun onEvent(event: LoginScreenUiEvent) {
+        when (event) {
+            LoginScreenUiEvent.HideDialog -> {
+                _uiState.update { it.copy(alertDialog = null) }
+            }
+
+            LoginScreenUiEvent.DismissGuestAccount -> {
+                dismissGuestAccount()
+            }
+
+            LoginScreenUiEvent.RecoverGuestAccount -> {
+                recoverGuestAccount()
+            }
+
+            LoginScreenUiEvent.LoginOrSignup -> {
+                if (_uiState.value.uiType == LoginScreenUiType.SIGNUP_GUEST) {
+                    _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountCreating) }
+                } else {
+                    proceed()
+                }
+            }
+            LoginScreenUiEvent.ConfirmLoginOrSignup -> proceed()
+        }
+    }
+
+    private fun getLoginErrorText(error: SignUpErrorType): String {
+        return when (error) {
+            SignUpErrorType.ACCOUNT_CONFLICT -> MR.strings.form_invalid_email_conflict_description.localizedString()
+            SignUpErrorType.CREDENTIALS -> MR.strings.form_invalid_credentials_description.localizedString()
+            SignUpErrorType.CREDENTIALS_GUEST -> MR.strings.login_step_error_recoverGuest.localizedString()
+            SignUpErrorType.LOGIN_CRYPTO -> MR.strings.login_step_error_encryption_logIn.localizedString()
+            SignUpErrorType.SIGNUP_CRYPTO -> MR.strings.login_step_error_encryption_signUp.localizedString()
+            SignUpErrorType.SIGNUP_DATA -> MR.strings.login_step_error_user_setup_signUp.localizedString()
+            is SignUpErrorType.SOURCE -> error.error.errorString()
+        }
+    }
 }

@@ -14,51 +14,78 @@ struct MapHomeScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var mapState: MapHomeState
     @State var groupPicker: BottomSheetsScreen.GroupPicker? = nil
-    @State private var region: MKCoordinateRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(
-            latitude: 0,
-            longitude: 0
-        ),
-        span: MKCoordinateSpan(latitudeDelta: 60, longitudeDelta: 60)
-    )
     
     var body: some View {
         ZStack {
             if mapState.uiState is MapHomeScreenState.Ready {
-                Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: mapState.markers) { marker in
-                    MapMarker(coordinate: marker.coordinate, tint: marker.type == MapPinType.member ? Color.themePrimary : Color.redMain)
+                ComposeRepresentable {
+                    ScreensIOS.shared.home.MapSheet(
+                        vm: mapState.vm,
+                        initialUiState: mapState.uiState,
+                        trackMarker: { data in
+                            mapState.vm.trackMarker(markerData: data)
+                        },
+                        onOpenPlacesScreen: {
+                            if let groupId = mapState.uiState.asReady()?.groupId {
+                                path.append(.home(.places(groupId: groupId)))
+                            }
+                        },
+                        onOpenCreatePlaceScreen: {
+                            if let readyState = mapState.uiState.asReady() {
+                                path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: nil, lng: nil)))
+                            }
+                        },
+                        onSheetOffsetChange: { offset in
+                            withAnimation(.linear(duration: 0.1)) {
+                                mapState.bottomSafeArea = CGFloat(offset.floatValue) - 35
+                            }
+                        },
+                        onGroupPickerClick: {
+                            groupPicker = BottomSheetsScreen.GroupPicker(groups: mapState.vm.getAllGroups())
+                        },
+                        onGroupDetailsClick: {
+                            if let groupId = mapState.uiState.asReady()?.groupId {
+                                path.append(.home(.groupDetail(groupId: groupId)))
+                            }
+                        },
+                        onSharingStartClick: {
+                            if let groupId = mapState.uiState.asReady()?.groupId {
+                                path.append(.home(.sharingStart(groupId: groupId)))
+                            }
+                        },
+                        onSettingsClick: {
+                            path.append(.settings(.settings))
+                        },
+                        onPlaceClick: { place in
+                            path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
+                        },
+                        mapUIView: { () -> UIView in
+                            SwiftUIInUIView(
+                                content: VStack {
+                                    MapComponent(
+                                        mapState: mapState,
+                                        onMapTap: { point in },
+                                        onMapLongPress: { point in
+                                            if let readyState = mapState.uiState.asReady() {
+                                                path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
+                                            }
+                                        },
+                                        onMapTouch: {
+                                            mapState.vm.onMapTouch()
+                                        }
+                                    )
+                                    .safeAreaPadding(.top, 70)
+                                }
+                            )
+                        }
+                    )
                 }
-                    .ignoresSafeArea(.all, edges: .vertical)
+                .ignoresSafeArea(.all, edges: .vertical)
             } else if mapState.uiState is MapHomeScreenState.Empty {
                 EmptyView()
             } else {
                 ProgressView().progressViewStyle(CircularProgressViewStyle())
             }
-            
-            MapHomeScreenElements(
-                state: mapState.uiState,
-                pickGroup: {
-                    groupPicker = BottomSheetsScreen.GroupPicker(groups: mapState.vm.getAllGroups())
-                },
-                openProfile: {
-                    path.append(.settings(.settings))
-                },
-                focusOnGroup: {
-                    mapState.vm.toggleFocusOnMembers()
-                    let firstUserMarker = mapState.markers.first {
-                        $0.type == MapPinType.member
-                    }
-                    if let marker = firstUserMarker {
-                        region = MKCoordinateRegion(
-                            center: CLLocationCoordinate2D(
-                                latitude: marker.coordinate.latitude,
-                                longitude: marker.coordinate.longitude
-                            ),
-                            span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
-                        )
-                    }
-                }
-            )
         }
         .groupPickerSheet(
             $groupPicker,

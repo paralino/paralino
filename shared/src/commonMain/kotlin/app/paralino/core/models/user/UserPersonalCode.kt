@@ -20,11 +20,16 @@ data class UserPersonalCode constructor(
         return codeData is CryptoResource.Ready
     }
 
-    val formattedCode: String get() = when {
-        code.length <= 5 -> code
-        else -> code.chunked(code.length / 2).joinToString(separator = "-").uppercase()
-    }
+    val formattedCode: String get() = formattedCode(code)
 
+    companion object {
+        fun formattedCode(code: String): String {
+            return when {
+                code.length <= 5 -> code
+                else -> code.chunked(code.length / 2).joinToString(separator = "-").uppercase()
+            }
+        }
+    }
 }
 
 @Serializable
@@ -49,9 +54,6 @@ data class PersonalCodeKeyData constructor(
     val keyId: String,
     val code: String
 ) {
-    val formattedCode get() = when {
-        code.length <= 5 -> code
-        else -> code.chunked(code.length / 2).joinToString(separator = "-").uppercase()
-    }
+    val formattedCode get() = UserPersonalCode.formattedCode(code)
 }
 

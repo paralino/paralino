@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import shared
 
 extension Image {
     func centerCropped() -> some View {
@@ -17,5 +18,9 @@ extension Image {
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
                 .clipped()
         }
+    }
+    
+    init(resource: shared.ImageResource) {
+        self.init(uiImage: resource.toUIImage()!)
     }
 }

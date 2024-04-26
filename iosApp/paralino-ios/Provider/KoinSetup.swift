@@ -19,8 +19,8 @@ func initKoin(locationStatusProvider: LocationStatusProvider) {
 func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_coreModule] {
     
     let backendConfig = BackendConfig(
-        serverUrl: "",
-        projectId: "",
+        serverUrl: BuildKonfig.shared.serverUrl,
+        projectId: BuildKonfig.shared.serverKey,
         debug: true,
         logToConsole: true,
         logErrorsToRemote: true
@@ -34,18 +34,26 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         connectionStatusProvider: connectionStatusProvider,
         locationStatusProvider: locationStatusProvider,
         pushSetupProvider: PushSetupProvider(),
-        placeNotificationHandler: PlaceNotificationHandler(),
-        groupActivityNotificationHandler: GroupActivityNotificationHandler(),
-        locationRequestNotificationHandler: LocationRequestNotificationHandler(),
+        placeNotificationPresenter: PlaceNotificationPresenter(),
+        groupActivityNotificationPresenter: GroupActivityNotificationPresenter(),
+        infoNotificationPresenter: InfoNotificationPresenter(),
         geofenceManager: GeofenceManager(),
         backendConfig: backendConfig,
+        oneTimeLocationProvider: { locationStatusProvider, locationCacheRepository in
+            OneTimeLocationProvider(
+                locationManager: AppDelegate.shared.locationManager,
+                locationStatusProvider: locationStatusProvider,
+                locationCacheRepo: locationCacheRepository
+            )
+        },
         remoteModule: { sessionMonitor in AppwriteRemoteModule(sessionMonitor: sessionMonitor, backendConfig: backendConfig) },
         documentsApi: { module, _ in DocumentsApi(remoteModule: module as! AppwriteRemoteModule) },
         userApi: { module, _ in UserApi(remoteModule: module as! AppwriteRemoteModule) },
         functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule, deviceApiProvider: deviceApiProvider) },
         realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) },
         cryptoServiceProvider: CryptoFrameworkProvider(),
-        valueFormatter: ValueFormatter()
+        valueFormatter: ValueFormatter(),
+        appUpdateManager: AppUpdateManager()
     )
     
     return coreIOSModules

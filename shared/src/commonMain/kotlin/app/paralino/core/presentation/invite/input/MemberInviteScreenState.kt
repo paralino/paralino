@@ -34,8 +34,5 @@ sealed class MemberInviteScreenState() {
 }
 
 sealed class MemberInviteScreenEvent() {
-    data class Error(val error: Throwable) : MemberInviteScreenEvent()
-    object ErrorWrongCode : MemberInviteScreenEvent()
-    object ErrorMissingGroup : MemberInviteScreenEvent()
     object MemberAdded : MemberInviteScreenEvent()
 }

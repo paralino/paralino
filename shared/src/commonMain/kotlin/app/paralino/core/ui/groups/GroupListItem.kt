@@ -41,6 +41,7 @@ fun GroupListItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
+            .clickable { onClick() }
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colors.surface)
             .run {
@@ -52,7 +53,6 @@ fun GroupListItem(
                     )
                 } else this
             }
-            .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -12,6 +12,7 @@ data class GroupDocumentRaw constructor(
     val data: String,
     val serverIntegrity: String,
     val planType: String,
+    val schemeVersion: String
 ) {
 
     companion object {
@@ -23,6 +24,7 @@ data class GroupDocumentRaw constructor(
                 data = map["data"] as String,
                 serverIntegrity = map["serverIntegrity"] as String,
                 planType = map["planType"] as String,
+                schemeVersion = map["schemeVersion"] as String,
             )
         }
     }

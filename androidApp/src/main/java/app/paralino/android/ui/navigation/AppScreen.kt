@@ -82,6 +82,13 @@ sealed class AppScreen {
             }
         }
 
+        object GroupSettings : AppScreen() {
+            override val routeSignature: String = "group-settings/{$argumentGroupId}"
+            fun route(groupId: String): String {
+                return "group-settings/$groupId"
+            }
+        }
+
         object GroupCreate : AppScreen() {
             override val routeSignature: String = "group-create?$argumentGroupId={$argumentGroupId}"
             fun route(groupId: String? = null): String {

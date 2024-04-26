@@ -9,18 +9,21 @@ import Foundation
 import shared
 import SwiftUI
 import CoreLocation
+import MapKit
 
-class MapHomeState : ObservableObject {
+class MapHomeState : BaseMapObservableObject {
     
     let vm: MapHomeViewModel
     
     @Published var groupState: Bool? = nil
     @Published var path: [NavigationGraph] = []
     @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(currentUserImage: ImageModel.companion.placeholder(), isSatelliteMode: false)
-    @Published var markers: [MapAnnotatedItem] = []
     
-    init() {
+    override init() {
         vm = KoinIOS.ViewModels.shared.mapHomeVM
+        
+        super.init()
+        
         vm.observe(flow: vm.allGroupsState) { [weak self] state in
             if let state = state as? Bool {
                 self?.groupState = state
@@ -40,23 +43,36 @@ class MapHomeState : ObservableObject {
         
         vm.observe(flow: vm.uiState) { [weak self] state in
             if let state = state as? MapHomeScreenState {
-                let oldState = self?.uiState as? MapHomeScreenState.Ready
                 self?.uiState = state
                 if let readyState = state as? MapHomeScreenState.Ready {
-                    self?.markers = readyState.markers.map { marker in
-                        MapAnnotatedItem(
-                            id: marker.markerId,
-                            name: marker.markerId,
-                            type: marker.pinType,
-                            coordinate: CLLocationCoordinate2D(
-                                latitude: marker.lat,
-                                longitude: marker.lng
-                            )
-                        )
+                    let markers = readyState.visibleMarkers.map { marker in
+                        MapAnnotatedItem(marker: marker)
+                    }
+                    
+                    withAnimation {
+                        self?.markers = markers
+                    }
+                    
+                    if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeALL_PLACES {
+                        self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.place }, animate: true)
+                    } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeALL_MEMBERS {
+                        self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.member }, animate: true)
+                    } else if let focus = readyState.mapHomeScreenFocusType as? shared.MapHomeScreenFocusTypeMEMBER {
+                        self?.focusToMarker(data: readyState.trackingMarker, forceZoom: focus.forceZoom)
+                    } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypePLACE {
+                        self?.focusToMarker(data: readyState.trackingMarker)
+                    } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeNONE {
+//                        do nothing
                     }
                 }
+                
+                self?.isSatelliteMode = state.isSatelliteMode
             }
         }
+    }
+    
+    override func onMarkerTap(markerData: FocusedMarkerData) {
+        vm.trackMarker(markerData: markerData)
     }
     
     deinit {

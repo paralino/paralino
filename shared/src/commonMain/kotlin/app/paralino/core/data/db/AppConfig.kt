@@ -1,7 +1,10 @@
 package app.paralino.core.data.db
 
+import app.paralino.core.utils.extensions.fromUTCtoInstant
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
+import kotlinx.datetime.Instant
 
 expect class AppConfigProvider {
     val userSettings: Settings
@@ -13,6 +16,28 @@ class AppConfig(
 ) {
 
     companion object {
+        lateinit var instance: AppConfig
+
+        const val supportedEncryptionScheme: String = "1.0"
+        fun shouldUpgradeEncryptionScheme(schemeVersion: String): Boolean {
+            try {
+                val supportedVersions = supportedEncryptionScheme.split(".")
+                val versions = schemeVersion.split(".")
+                return supportedVersions.first().toInt() < versions.first().toInt() || supportedVersions.get(1).toInt() < versions.get(1).toInt()
+            } catch (e: Exception) {
+                return false
+            }
+        }
+        fun isEncryptionSchemeSupported(schemeVersion: String): Boolean {
+            try {
+                val supportedVersions = supportedEncryptionScheme.split(".")
+                val versions = schemeVersion.split(".")
+                return supportedVersions.first().toInt() >= versions.first().toInt()
+            } catch (e: Exception) {
+                return false
+            }
+        }
+
         const val keyToken = "prefs.profile.token"
         const val keyUserKey = "prefs.user.masterKey"
         const val keySessionKey = "prefs.user.sessionKey"
@@ -28,7 +53,8 @@ class AppConfig(
         const val keyDeviceIDSeed = "prefs.device.ID.seed"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
-        const val keyTrackingBoost = "prefs.device.trackingBoost"
+        const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
+        const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
     }
 
     val isTokenValid: Boolean
@@ -124,10 +150,20 @@ class AppConfig(
             provider.appSettings.putLong(keyDismissedAppVersionID, value)
         }
 
-    var trackingBoost: Boolean
-        get() = provider.userSettings.getBoolean(keyTrackingBoost, false)
+    var trackingBoostEndTime: Instant?
+        get() = provider.userSettings.getString(keyTrackingBoost, "").isoWithOffsetToInstant()
         set(value) {
-            provider.userSettings.putBoolean(keyTrackingBoost, value)
+            if (value != null) {
+                provider.userSettings.putString(keyTrackingBoost, value.toString())
+            } else {
+                provider.userSettings.remove(keyTrackingBoost)
+            }
+        }
+
+    var placeActivityThrottle: Boolean
+        get() = provider.userSettings.getBoolean(keyPlaceActivityThrottle, true)
+        set(value) {
+            provider.userSettings.putBoolean(keyPlaceActivityThrottle, value)
         }
 
     fun clear() {

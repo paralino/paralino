@@ -1,34 +1,24 @@
 package app.paralino.android.ui.settings
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import app.paralino.android.R
-import app.paralino.android.ui.MainAppState
-import app.paralino.android.ui.theme.AppIcons
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
+import app.paralino.core.ui.components.dialogs.DefaultToolbar
+import app.paralino.core.ui.components.dialogs.ToolbarButtons
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun LicencesScreen(appState: MainAppState) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { Text(text = stringResource(id = MR.strings.setting_title_libraries.resourceId)) },
-                navigationIcon = {
-                    IconButton(onClick = { appState.navController.popBackStack() }) {
-                        Icon(
-                            painter = AppIcons.Close,
-                            contentDescription = null
-                        )
-                    }
-                }
+            DefaultToolbar(
+                title = stringResource(resource = MR.strings.setting_title_libraries),
+                navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
             )
         }
     ) {

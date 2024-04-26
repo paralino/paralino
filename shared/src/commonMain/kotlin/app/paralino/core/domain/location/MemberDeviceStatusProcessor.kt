@@ -3,24 +3,25 @@ package app.paralino.core.domain.location
 import app.paralino.core.config
 import app.paralino.core.logg
 import app.paralino.core.models.location.MemberDeviceStatusType
+import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
-import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 class MemberDeviceStatusProcessor(
-    private val local: LocationLocalDataSource,
+    private val local: UserGroupLocalDataSource,
     private val remote: LocationRemoteSource,
     private val payloadProvider: LocationPayloadProvider,
-    private val sharingManager: LocationSharingManager
+    private val sharingManager: LocationSharingManager,
+    private val oneTimeLocationProvider: IOneTimeLocationProvider
 ) : BaseRepository() {
 
-
-    suspend fun pushDeviceStatus(groupId: String) {
+    suspend fun pushDeviceStatus(groupId: String, tryIncludeLastLocation: Boolean) {
         triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "device_status",
@@ -29,12 +30,16 @@ class MemberDeviceStatusProcessor(
         ) {
             val payload = payloadProvider.getLocationPayload(
                 groupId = groupId,
-                data = null,
-                contract = null
+                data = if (tryIncludeLastLocation) {
+                    oneTimeLocationProvider.getLastLocation()
+                } else {
+                    null
+                },
+                contract = sharingManager.currentSharingContractForGroup(groupId)
             ).payload
 
             if (payload != null) {
-                logg.v("Update device status in group $groupId")
+                logg.v("device_status","Update device status in group $groupId with location (${payload.locationData != null})")
                 remote.saveCurrentLocation(payload)
             }
         }
@@ -59,7 +64,7 @@ class MemberDeviceStatusProcessor(
             logg.w("Revoking device status for ${memberModels.size} groups")
             memberModels.forEach {
                 try {
-                    pushDeviceStatus(it.groupId)
+                    pushDeviceStatus(groupId = it.groupId, tryIncludeLastLocation = false)
                 } catch (e: Exception) {
                     logg.w("Error while resetting device status", e)
                 }

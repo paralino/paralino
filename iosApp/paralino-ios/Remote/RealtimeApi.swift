@@ -10,26 +10,6 @@ import shared
 import Appwrite
 
 class RealtimeApi: IRealtimeApiIOS {
-    func subscribeWithFilter(channels: [String], filters: [String], onResult: @escaping (RealtimeResponse<NSDictionary>) -> Void) -> () -> Void {
-        
-        let subscription = remoteModule.realtime.subscribe(channels: Set(channels.map { $0 })) { response in
-            if filters.isEmpty || (response.events?.contains(where: { event in filters.contains(where: { filter in filter == event}) }) ?? false) {
-                onResult(
-                    RealtimeResponse(
-                        events: response.events ?? [],
-                        channels: response.channels ?? [],
-                        timestamp: response.timestamp ?? "",
-                        payload: NSDictionary(dictionary: response.payload ?? [:])
-                    )
-                )
-            }
-        }
-
-        return {
-            subscription.close()
-        }
-    }
-    
     
     let remoteModule: AppwriteRemoteModule
     
@@ -37,5 +17,22 @@ class RealtimeApi: IRealtimeApiIOS {
         self.remoteModule = remoteModule
     }
     
-    
+    func subscribeWithFilter(channels: [String], filters: [String], onResult: @escaping (RealtimeResponse<NSDictionary>) -> Void) async throws -> RealtimeSubscriptionCallbackIOS {
+        let subscription = await remoteModule.execute { module in
+            module.realtime.subscribe(channels: Set(channels.map { $0 })) { response in
+                if filters.isEmpty || (response.events?.contains(where: { event in filters.contains(where: { filter in filter == event}) }) ?? false) {
+                    onResult(
+                        RealtimeResponse(
+                            events: response.events ?? [],
+                            channels: response.channels ?? [],
+                            timestamp: response.timestamp ?? "",
+                            payload: NSDictionary(dictionary: response.payload ?? [:])
+                        )
+                    )
+                }
+            }
+        }
+        
+        return RealtimeSubscriptionCallbackIOS { PayloadSwift(subscription).dataOrNil?.close() }
+    }
 }

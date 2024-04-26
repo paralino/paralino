@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,7 +42,6 @@ import dev.icerock.moko.resources.compose.stringResource
 fun PersonalCodeItem(
     modifier: Modifier = Modifier,
     state: PersonalCodeScreenCodeData,
-    deleteLoading: Boolean,
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit,
@@ -53,8 +53,8 @@ fun PersonalCodeItem(
             code = state.code,
             userImage = state.userImage,
             userName = state.userName,
-            hasDelete = state.canDelete,
-            deleteLoading = deleteLoading,
+            hasDelete = state.canDisable,
+            deleteLoading = state.isActionLoading,
             onCopy = onCopy,
             onShare = onShare,
             onDelete = onDelete
@@ -62,7 +62,7 @@ fun PersonalCodeItem(
     } else {
         PersonalCodeItemInactive(
             modifier = modifier,
-            code = state.code,
+            state = state,
             onActivate = onActivate
         )
     }
@@ -71,7 +71,7 @@ fun PersonalCodeItem(
 @Composable
 fun PersonalCodeItemInactive(
     modifier: Modifier = Modifier,
-    code: String,
+    state: PersonalCodeScreenCodeData,
     onActivate: (String) -> Unit,
 ) {
     ConditionErrorItem(
@@ -79,10 +79,11 @@ fun PersonalCodeItemInactive(
         backgroundColor = MaterialTheme.colors.surface,
         contentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
         icon = null,
-        text = code,
+        text = state.code,
         endAction = stringResource(resource = MR.strings.invite_code_button_activate),
+        endActionLoading = state.isActionLoading,
         onClick = {
-            onActivate(code)
+            onActivate(state.code)
         }
     )
 }
@@ -99,32 +100,31 @@ fun PersonalCodeItem(
     onShare: () -> Unit,
     onDelete: () -> Unit,
 ) {
-
     Column {
         Surface(
-            modifier = modifier
-                .padding(horizontal = 20.dp, vertical = 4.dp),
+            modifier = modifier.padding(horizontal = 20.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colors.primary,
             elevation = 16.dp
         ) {
-
             Column(
                 modifier = modifier.padding(10.dp)
             ) {
-
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(70.dp)
-                        .padding(horizontal = 10.dp)
+                        .padding(horizontal = 4.dp, vertical = 20.dp)
                         .align(Alignment.CenterHorizontally),
                     text = code,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 46.sp,
-                    letterSpacing = 3.sp,
-                    maxLines = 1,
-                    textAlign = TextAlign.Center
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 36.sp,
+                        letterSpacing = 3.sp,
+                        lineHeight = 36.sp,
+                        textAlign = TextAlign.Center,
+                        lineBreak = LineBreak.Heading
+                    ),
+                    maxLines = 2
                 )
 
                 Spacer(modifier = Modifier.size(10.dp))
@@ -181,7 +181,7 @@ fun PersonalCodeItem(
                                 )
                             } else {
                                 Icon(
-                                    painter = CoreAppIcons.Delete.asPainterResource(),
+                                    painter = CoreAppIcons.Block.asPainterResource(),
                                     tint = MaterialTheme.colors.onError,
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp)

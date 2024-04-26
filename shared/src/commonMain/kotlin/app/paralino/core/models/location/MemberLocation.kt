@@ -34,13 +34,18 @@ data class MemberLocation constructor(
     val nameOrNull: String? get() = deviceData.data?.deviceName
 
     val canRequestLocation: Boolean get() {
-        return locationAwareStatusType != MemberDeviceStatusType.TOO_MANY_REQUESTS && status.data?.statusType != MemberDeviceStatusType.NOT_SHARING
+        val adaptedStatus = locationAwareStatusType
+        return adaptedStatus != MemberDeviceStatusType.TOO_MANY_REQUESTS
+                && adaptedStatus != MemberDeviceStatusType.ACTIVE
+                && (isOlderThan(3.minutes) || !hasLocation)
+                && status.data?.statusType != MemberDeviceStatusType.NOT_SHARING
     }
 
     val locationAwareStatusType: MemberDeviceStatusType?
         get() {
             return when {
                 isEnded -> MemberDeviceStatusType.NOT_SHARING
+                status.data?.statusType == MemberDeviceStatusType.NOT_SHARING -> MemberDeviceStatusType.NOT_SHARING
                 isExpired -> {
                     if (status.data?.statusType?.isDeviceSetupWrong == true && !isStatusOlderThan(1.hours)) {
                         status.data?.statusType ?: MemberDeviceStatusType.INACTIVE
@@ -71,7 +76,7 @@ data class MemberLocation constructor(
     val isActiveButNotFresh: Boolean
         get() {
             val activeStatus = status.data?.statusType == MemberDeviceStatusType.ACTIVE
-                    && isOlderThan(2.minutes)
+                    && isOlderThan(30.seconds)
             val idleStatus = status.data?.statusType?.isIdling == true
                     && isOlderThan(10.minutes)
             return activeStatus || idleStatus
@@ -102,7 +107,7 @@ data class MemberLocation constructor(
         return locationData.data?.isOlderThan(duration) ?: return false
     }
 
-    private fun isStatusOlderThan(duration: Duration): Boolean {
+    fun isStatusOlderThan(duration: Duration): Boolean {
         return status.data?.isOlderThan(duration) ?: return false
     }
 }

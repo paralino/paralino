@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.paralino.android.R
+import app.paralino.core.BuildKonfig
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapMarkerStyle
@@ -64,7 +65,7 @@ internal fun rememberMapViewWithLifecycle(
     val mapView = remember(context, darkMode, satellite) {
         val option = ResourceOptionsManager.getDefault(
             context,
-            app.paralino.android.BuildConfig.mapboxAccessToken
+            BuildKonfig.mapboxAccessToken
         ).resourceOptions
         MapView(
             context,

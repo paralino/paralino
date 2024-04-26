@@ -1,15 +1,20 @@
 package app.paralino.core.domain.crypto
 
+import app.paralino.core.MR
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.UserLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 
@@ -17,28 +22,57 @@ class RawCryptoPresentation constructor(
     private val placeLocal: PlacesLocalDataSource,
     private val groupLocal: UserGroupLocalDataSource,
     private val memberLocal: LocationLocalDataSource,
-    private val userLocal: UserLocalDataSource
+    private val userLocal: UserLocalDataSource,
+    private val config: AppConfig
 ) {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun getGroupRawPresentation(groupId: String): Flow<RawPresentationModel> {
         return groupLocal.getGroupRawPresentation(groupId)
-            .map {
-                RawPresentationModel(
-                    title = it.second.data.data?.name ?: "",
+            .flatMapLatest {
+                val groupModel = RawPresentationModelSection(
+                    title = it.second.name.let { "**$it**" },
+                    subtitle = null,
+                    contentIdInfo = buildList {
+                        // only allow group owner to see group id
+                        if (it.first.ownerUserId == config.userId) {
+                            add("GroupID: **$groupId**")
+                        }
+                        add("Group encryption scheme: **${it.first.schemeVersion}**")
+                        add("Supported encryption scheme: **${AppConfig.supportedEncryptionScheme}**")
+                    },
                     rawData = it.first.data,
                     decryptedData = it.second.data.mapSuccess {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
                     },
                     type = RawPresentationDataType.GroupPresentation(groupId)
                 )
+                val myMemberId =
+                    memberLocal.getUserMemberId(groupId = groupId, userId = config.userId) ?: ""
+                getGroupMemberRawPresentation(group = it.second, memberId = myMemberId)
+                    .map {
+                        RawPresentationModel(
+                            buildList {
+                                add(groupModel)
+                                addAll(it.sections)
+                            }
+                        )
+                    }
             }
     }
 
     fun getGroupPlaceRawPresentation(placeId: String): Flow<RawPresentationModel> {
         return placeLocal.getPlaceRawPresentation(placeId)
             .map {
-                RawPresentationModel(
-                    title = it.second.data.data?.name ?: "",
+                RawPresentationModelSection(
+                    title = it.second.nameOrNull?.let { "**$it**" } ?: "---",
+                    subtitle = null,
+                    contentIdInfo = buildList {
+                        if (it.first.ownerUserId == config.userId) {
+                            // only allow place owner to see place id
+                            add("PlaceID: **$placeId**")
+                        }
+                    },
                     rawData = it.first.data,
                     decryptedData = it.second.data.mapSuccess {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
@@ -46,82 +80,157 @@ class RawCryptoPresentation constructor(
                     type = RawPresentationDataType.GroupPlacePresentation(placeId)
                 )
             }
+            .map { RawPresentationModel(listOf(it)) }
     }
 
-    fun getGroupMemberRawPresentation(memberId: String): Flow<RawPresentationModel> {
-        return memberLocal.getMemberRawPresentation(memberId)
-            .map {
+    fun getGroupMemberRawPresentation(
+        group: UserGroup?,
+        memberId: String
+    ): Flow<RawPresentationModel> {
+        return groupLocal.getMemberRawPresentation(group, memberId)
+            .map { rawPair ->
 
-                val rawLocationData = it.first.locations.map { mapOf("deviceData" to it.deviceData, "locationData" to it.locationData, "status" to it.status) }.let {
-                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
-                }
-
-                val rawData = "memberData: ${it.first.member.data}\n\nlocations: $rawLocationData"
-
-                val verification = "verification: ${it.second.member.verificationResult}"
-
-                val decryptedMemberData = it.second.member.memberData.let {
-                    when (it) {
-                        is CryptoResource.Ready -> {
-                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
-                        }
-                        CryptoResource.NotInitialized -> "N/A"
-                        else -> it.toString()
+                fun locationDataPrint(
+                    deviceData: String?,
+                    locationData: String?,
+                    status: String?
+                ): String {
+                    return buildString {
+                        append("\"deviceData\": ")
+                        append(deviceData)
+                        append("\n\n")
+                        append("\"locationData\": ")
+                        append(locationData)
+                        append("\n\n")
+                        append("\"status\": ")
+                        append(status)
                     }
-                }.let {
-                    "memberData: $it"
                 }
-                val decryptedLocationData = it.second.locations.map {
-                    mapOf(
-                        "deviceData" to it.deviceData.let {
-                            when (it) {
-                                is CryptoResource.Ready -> {
-                                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
-                                }
-                                CryptoResource.NotInitialized -> "N/A"
-                                else -> it.toString()
-                            }
-                        },
-                        "locationData" to it.locationData.let {
-                            when (it) {
-                                is CryptoResource.Ready -> {
-                                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
-                                }
-                                CryptoResource.NotInitialized -> "N/A"
-                                else -> it.toString()
-                            }
-                        },
-                        "status" to it.status.let {
-                            when (it) {
-                                is CryptoResource.Ready -> {
-                                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it.data)
-                                }
-                                CryptoResource.NotInitialized -> "N/A"
-                                else -> it.toString()
-                            }
-                        }
-                    )
-                }.let {
-                    BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
-                }.let {
-                    "locations: $it"
-                }
-                val decryptedData = "${verification}\n\n${decryptedMemberData}\n\n$decryptedLocationData"
 
-                RawPresentationModel(
-                    title = it.second.member.memberData.data?.name ?: "",
-                    rawData = rawData,
-                    decryptedData = CryptoResource.Ready(decryptedData),
-                    type = RawPresentationDataType.GroupMemberPresentation(memberId)
-                )
+                val devicesSections = rawPair.first.locations
+//                    .takeIf { rawPair.first.member.ownerUserId == config.userId }
+                    ?.map { location ->
+                        val decryptedLocation = rawPair.second.locations
+                            .firstOrNull { it.id == location.id }
+
+                        val decryptedLocationData = decryptedLocation?.let {
+                            CryptoResource.Ready(
+                                locationDataPrint(
+                                    deviceData = when (it.deviceData) {
+                                        is CryptoResource.Ready -> {
+                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.deviceData.data)
+                                        }
+
+                                        else -> it.deviceData.toString()
+                                    },
+                                    locationData = when (it.locationData) {
+                                        is CryptoResource.Ready -> {
+                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.locationData.data)
+                                        }
+
+                                        else -> it.locationData.toString()
+                                    },
+                                    status = when (it.status) {
+                                        is CryptoResource.Ready -> {
+                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.status.data)
+                                        }
+
+                                        else -> it.status.toString()
+                                    }
+                                )
+                            )
+                        } ?: CryptoResource.NotInitialized
+
+                        RawPresentationModelSection(
+                            title = null,
+                            subtitle = decryptedLocation?.name?.let {
+                                MR.strings.group_member_device_title.localizedString()
+                                    .plus(": **$it**")
+                            },
+                            contentIdInfo = buildList {
+                                if (rawPair.first.member.ownerUserId == config.userId) {
+                                    add("DeviceID: **${location.deviceId}**")
+                                }
+                            },
+                            rawData = locationDataPrint(
+                                deviceData = location.deviceData,
+                                locationData = location.locationData,
+                                status = location.status
+                            ),
+                            decryptedData = decryptedLocationData,
+                            type = RawPresentationDataType.GroupMemberPresentation(memberId)
+                        )
+                    } ?: emptyList()
+
+                buildList {
+                    add(
+                        RawPresentationModelSection(
+                            title = rawPair.second.member.name.let {
+                                MR.strings.group_member_title.localizedString().plus(": **$it**")
+                            },
+                            subtitle = null,
+                            contentIdInfo = buildList {
+                                if (rawPair.first.member.ownerUserId == config.userId) {
+                                    add("UserID: **${config.userId}**")
+                                    add("MemberID: **${rawPair.first.member.id}**")
+                                }
+                                add("Devices: **${rawPair.first.locations.size}**")
+                                add("Verification: **${rawPair.second.member.verificationResult}**")
+                            },
+                            rawData = buildString {
+                                append("\"data\": ")
+                                append(rawPair.first.member.data)
+                                append("\n\n")
+                                append("\"paralinoId\": ")
+                                append(rawPair.first.member.paralinoId)
+                            },
+                            decryptedData = CryptoResource.Ready(
+                                buildString {
+                                    append("\"data\": ")
+                                    append(
+                                        when (val memberData = rawPair.second.member.memberData) {
+                                            is CryptoResource.Ready -> {
+                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(memberData.data)
+                                            }
+
+                                            else -> rawPair.second.member.memberData.toString()
+                                        }
+                                    )
+                                    append("\n\n")
+                                    append("\"paralinoId\": ")
+                                    append(
+                                        when (val paralinoId = rawPair.second.member.paralinoId) {
+                                            is CryptoResource.Ready -> {
+                                                BaseRemoteModule.prettyPrintFormatter.encodeToString(paralinoId.data)
+                                            }
+
+                                            else -> rawPair.second.member.paralinoId.toString()
+                                        }
+                                    )
+                                }
+                            ),
+                            type = RawPresentationDataType.GroupMemberPresentation(memberId)
+                        )
+                    )
+                    addAll(devicesSections)
+                }
             }
+            .map { RawPresentationModel(it) }
     }
 
     fun getUserRawPresentation(): Flow<RawPresentationModel> {
         return userLocal.getMeRawPresentation()
             .map {
-                RawPresentationModel(
-                    title = it?.second?.data?.userName ?: "",
+                RawPresentationModelSection(
+                    title = it?.second?.name?.let { "**$it**" } ?: "---",
+                    subtitle = null,
+                    contentIdInfo = buildList {
+                        if (it?.second?.isGuestUser == false) {
+                            add("Email: **${it.second.email}**")
+                        }
+                        add("UserID: **${config.userId}**")
+                        add("DeviceID: **${config.deviceId}**")
+                    },
                     rawData = it?.first?.data?.let {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
                     } ?: "",
@@ -131,13 +240,19 @@ class RawCryptoPresentation constructor(
                     type = RawPresentationDataType.UserPresentation
                 )
             }
+            .map { RawPresentationModel(listOf(it)) }
     }
-
 }
 
 data class RawPresentationModel constructor(
-    val title: String,
+    val sections: List<RawPresentationModelSection>
+)
+
+data class RawPresentationModelSection constructor(
+    val title: String?,
+    val subtitle: String?,
     val rawData: String,
+    val contentIdInfo: List<String>,
     val decryptedData: CryptoResource<String>,
     val type: RawPresentationDataType
 )

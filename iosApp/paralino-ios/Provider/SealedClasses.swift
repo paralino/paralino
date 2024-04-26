@@ -49,6 +49,14 @@ public enum PayloadSwift<T : AnyObject> {
     case success(data: T)
     case error(error: KotlinThrowable)
     
+    var dataOrNil: T? {
+        switch self {
+        case .loading: return nil
+        case .success(data: let data): return data
+        case .error(error: let error): return nil
+        }
+    }
+    
     public init(data: Any?) {
         if data == nil {
             self = .loading
@@ -57,7 +65,7 @@ public enum PayloadSwift<T : AnyObject> {
         } else if let data = data as? T {
             self = .success(data: data)
         } else {
-            self = .error(error: KotlinThrowable(message: "Invalid payload type"))
+            self = .error(error: KotlinException(message: "Invalid payload type"))
         }
     }
     

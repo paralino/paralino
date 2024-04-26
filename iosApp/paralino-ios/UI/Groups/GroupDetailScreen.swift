@@ -23,30 +23,24 @@ struct GroupDetailScreen: View {
                 ScreensIOS.shared.home.GroupDetailScreenVC(
                     vm: appState.vm,
                     groupId: appState.vm.groupId,
-                    onShowDialog: { dialog in
-                        alertDialog = dialog != nil ? AlertDialogData(coreData: dialog!) : nil
-                    },
                     openMemberAdd: {
                         path.append(.home(.memberInvite(groupId: appState.vm.groupId, code: nil)))
-                    },
-                    openGroupEdit: {
-                        path.append(.home(.groupCreate(groupId: appState.vm.groupId)))
                     },
                     openMap: {
                         path.removeAll()
                         path.append(.home(.map))
                     },
                     openPlaces: {
-                        
+                        path.append(.home(.places(groupId: appState.vm.groupId)))
                     },
-                    openGroupRawData: {
-                        path.append(.settings(.rawData(type: RawPresentationDataType.GroupPresentation(groupId: appState.vm.groupId))))
+                    openGroupSettings: {
+                        path.append(.home(.groupSettings(groupId: appState.vm.groupId)))
                     },
                     openMemberRawData: { memberId in
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupMemberPresentation(memberId: memberId))))
                     },
                     openSharing: {
-                        
+                        path.append(.home(.sharingStart(groupId: appState.vm.groupId)))
                     },
                     onNavigateBack: {
                         path.removeLast()
@@ -66,38 +60,6 @@ struct GroupDetailScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-            .navigationBarBackButtonHidden(true)
-        }
-        .mainAlert($alertDialog) { key in
-            if let dialogData = alertDialog?.coreDialog {
-                if dialogData is MainAlertDialogDeleteGroup || dialogData is MainAlertDialogLeaveGroup {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.leaveOrDeleteGroup()
-                    }
-                } else if dialogData is MainAlertDialogBlockGroup {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.blockGroup()
-                    }
-                } else if let dialogData = dialogData as? MainAlertDialogBlockUser {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.blockUser(userId: dialogData.userId)
-                    }
-                } else if let dialogData = dialogData as? MainAlertDialogUnblockGroupOrUser {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.unblockUser(userId: dialogData.id)
-                    }
-                } else if let dialogData = dialogData as? MainAlertDialogDeleteGroupMember {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.removeMember(memberUserId: dialogData.memberUserId)
-                    }
-                } else if let dialogData = dialogData as? MainAlertDialogDeleteMemberLocation {
-                    if key == MainAlertDialogButtons.shared.buttonOk {
-                        appState.vm.removeMemberLocation(memberId: dialogData.memberId, locationId: dialogData.locationId)
-                    }
-                } else if dialogData is MainAlertDialogPlanLimit {
-                    // do nothing
-                }
-            }
         }
     }
     

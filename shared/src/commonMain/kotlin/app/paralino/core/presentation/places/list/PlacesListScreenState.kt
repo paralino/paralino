@@ -10,6 +10,7 @@ import app.paralino.core.utils.Emojis
 
 data class PlacesListScreenState constructor(
     val groupId: String,
+    val groupImage: ImageModel,
     val groupName: String,
     val placesLimit: Int,
     val places: List<PlaceListItemData>,

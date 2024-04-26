@@ -3,18 +3,25 @@ package app.paralino.core.presentation.places.list
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.provider.ILocationStatusProvider
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PlacesViewModel(
     groupId: String,
     private val placesRepo: PlacesRepository,
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
     val locationStatusProvider: ILocationStatusProvider,
 ) : CoreViewModel() {
 
@@ -26,7 +33,7 @@ class PlacesViewModel(
 
     init {
         combine(
-            groupRepo.getGroupWithoutMembersLocally(groupId),
+            groupRepo.getGroupWithoutMembers(groupId),
             placesRepo.getAndRefreshPlacesForGroup(groupId),
             locationStatusProvider.status
         ) { group, places, status ->
@@ -43,6 +50,7 @@ class PlacesViewModel(
 
             val state = PlacesListScreenState(
                 groupId = groupId,
+                groupImage = group.image,
                 groupName = group.name,
                 placesLimit = group.planType.placesLimit,
                 places = placesState,

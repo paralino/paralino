@@ -36,12 +36,19 @@ struct SettingsScreen: View {
                     openBlockList: {
                         path.append(.settings(.blocklist))
                     },
+                    openProfileRawScreen: {
+                        path.append(.settings(.rawData(type: .UserPresentation())))
+                    },
                     openLicences: {
                         
+                    },
+                    onShare: { data in
+                        shareText = ShareText(text: data)
                     }
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.title_settings.localizedString())
         }
         .sheet(item: $shareText) { shareText in
             ActivityView(text: shareText.text)

@@ -1,17 +1,25 @@
 package app.paralino.core.presentation.places.create
 
-import app.paralino.core.models.*
+import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.data
+import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreatePlaceViewModel(
@@ -19,13 +27,10 @@ class CreatePlaceViewModel(
     placeId: String?,
     lat: Double? = null,
     lng: Double? = null,
-    private val placesRepo: PlacesRepository,
-    private val groupRepo: GroupRepository,
+    private val placesRepo: PlacesRepository
 ) : CoreViewModel() {
 
-
     private val placeFlow = MutableStateFlow<Payload<GroupPlace>>(Payload.Loading)
-    private val groupFlow = MutableStateFlow<Resource<UserGroup>>(Resource.NotInitialized)
     private val _uiState = MutableStateFlow<Payload<CreatePlaceScreenState>>(Payload.Loading)
     val uiState: Flow<Payload<CreatePlaceScreenState>> = _uiState
 
@@ -42,12 +47,6 @@ class CreatePlaceViewModel(
                     .map { Payload.Success(it) }
                     .firstOrNull()
             } ?: Payload.Error(NullPointerException("No such place"))
-
-            groupFlow.update {
-                Resource.Ready(
-                    groupRepo.getGroupWithoutMembersLocally(groupId).first()
-                )
-            }
 
             placeFlow.update { value }
             _uiState.update {
@@ -175,5 +174,4 @@ class CreatePlaceViewModel(
             it.mapSuccess { it.copy(radiusMeters = radiusMeters) }
         }
     }
-
 }

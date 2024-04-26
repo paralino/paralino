@@ -15,6 +15,7 @@ class GroupKeysMapper {
             id = model.id,
             groupId = model.groupId,
             memberUserId = model.memberUserId,
+            ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
             encryptedGroupKey = model.encryptedGroupKey
@@ -26,6 +27,7 @@ class GroupKeysMapper {
             id = model.id,
             groupId = model.groupId,
             memberUserId = model.memberUserId,
+            ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
             encryptedGroupKey = model.encryptedGroupKey

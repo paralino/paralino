@@ -4,23 +4,35 @@ import app.paralino.core.domain.crypto.RawPresentationModel
 import app.paralino.core.models.CryptoResource
 
 data class RawDataScreenState constructor(
-    val title: String,
-    val rawContent: String,
-    val decryptedContent: String,
-    val type: RawPresentationDataType
+    val sections: List<RawDataSectionState>
 ) {
 
     constructor(model: RawPresentationModel) : this(
-        title = model.title,
-        rawContent = model.rawData,
-        decryptedContent = when (model.decryptedData) {
-            is CryptoResource.Ready -> model.decryptedData.data
-            else -> model.decryptedData.toString()
-        },
-        type = model.type
+        model.sections.map { section ->
+            RawDataSectionState(
+                title = section.title,
+                subtitle = section.subtitle,
+                rawContent = section.rawData,
+                contentIdInfo = section.contentIdInfo,
+                decryptedContent = when (section.decryptedData) {
+                    is CryptoResource.Ready -> section.decryptedData.data
+                    else -> section.decryptedData.toString()
+                },
+                type = section.type
+            )
+        }
     )
 
 }
+
+data class RawDataSectionState(
+    val title: String?,
+    val subtitle: String?,
+    val contentIdInfo: List<String>,
+    val rawContent: String,
+    val decryptedContent: String,
+    val type: RawPresentationDataType,
+)
 
 sealed class RawPresentationDataType() {
     val key

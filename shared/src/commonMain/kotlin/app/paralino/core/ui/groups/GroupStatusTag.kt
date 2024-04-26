@@ -83,8 +83,8 @@ fun GroupStatusTag(
             GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> stringResource(resource = MR.strings.group_members_status_active)
 
             GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
-            GroupStatusTagType.INACTIVE,
-            GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_inactive)
+            GroupStatusTagType.INACTIVE -> stringResource(resource = MR.strings.group_members_status_inactive)
+            GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_not_sharing)
 
             GroupStatusTagType.GPS_OFF -> stringResource(resource = MR.strings.group_members_status_gps_off)
             GroupStatusTagType.MISSING_PERMISSION -> stringResource(resource = MR.strings.group_members_status_missing_permissions)
@@ -102,8 +102,7 @@ fun GroupStatusTag(
 
             GroupStatusTagType.GPS_OFF,
             GroupStatusTagType.MISSING_PERMISSION,
-            GroupStatusTagType.TOO_MANY_REQUESTS,
-            -> CoreAppIcons.LocationOff.asPainterResource()
+            GroupStatusTagType.TOO_MANY_REQUESTS -> CoreAppIcons.LocationOff.asPainterResource()
 
             GroupStatusTagType.UNVERIFIED -> CoreAppIcons.Warning.asPainterResource()
             GroupStatusTagType.BATTERY_SAVING -> CoreAppIcons.BatteryChargingFull.asPainterResource()
@@ -128,8 +127,8 @@ fun GroupStatusTag(
                 Spacer(Modifier.size(4.dp))
             }
 
-            when (status) {
-                GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> {
+            when {
+                status == GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> {
                     CircularProgressIndicator(
                         modifier = Modifier.size(16.dp),
                         strokeWidth = 2.dp,
@@ -137,7 +136,7 @@ fun GroupStatusTag(
                     )
                 }
 
-                else -> {
+                tagText.isNotBlank() -> {
                     Text(
                         text = tagText,
                         style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),

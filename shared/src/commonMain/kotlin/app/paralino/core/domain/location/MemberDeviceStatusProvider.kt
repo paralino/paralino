@@ -11,18 +11,24 @@ import app.paralino.core.repo.location.LocationPerformanceManager
 
 class MemberDeviceStatusProvider(
     private val locationSharingManager: LocationSharingManager,
-    private val deviceStatus: IDeviceApiProvider,
+    private val deviceApiProvider: IDeviceApiProvider,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val valueFormatter: IValueFormatter
 ) {
 
     private fun getStatusType(groupId: String, contract: LocationSharingContract?): MemberDeviceStatusType {
-        val locationStatus = deviceStatus.locationStatusProvider.currentStatus
+        val locationStatus = deviceApiProvider.locationStatusProvider.currentStatus
         val isSharingActive = contract?.asValidContract()?.groupId == groupId || locationSharingManager.isSharingActiveForGroup(groupId)
+
+        // if app was not launched from foreground and we are missing background location permission
+        val missingBackgroundPermission = !locationStatus.isBackgroundPermissionAllowed
+                && !deviceApiProvider.appLifecycleState.value.current.activeOrInactive
+                && !deviceApiProvider.appLifecycleState.value.wasEverActive
 
         return when {
             !isSharingActive -> MemberDeviceStatusType.NOT_SHARING
             !locationStatus.isPermissionAllowed -> MemberDeviceStatusType.MISSING_PERMISSIONS
+            missingBackgroundPermission -> MemberDeviceStatusType.MISSING_PERMISSIONS
             !locationStatus.isGpsOn -> MemberDeviceStatusType.GPS_OFF
             locationPerformanceManager.locationPerformanceType.value.isThrottlingLocationRequest -> MemberDeviceStatusType.TOO_MANY_REQUESTS
             locationPerformanceManager.locationPerformanceType.value.current == LocationPerformanceType.BATTERY_SAVER -> MemberDeviceStatusType.BATTERY_SAVER_ON
@@ -41,10 +47,10 @@ class MemberDeviceStatusProvider(
         val sharingNetwork = sharingContract?.shareNetwork == true
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
-            batteryLevel = if(sharingBattery) deviceStatus.batteryLevel else null,
-            isCharging = if(sharingBattery) deviceStatus.isCharging.takeIf { sharingBattery } else null,
-            network = if(sharingNetwork) deviceStatus.connectionStatusProvider.initAndGetStatus().networkType?.key else null,
-            signal = if(sharingNetwork) deviceStatus.connectionStatusProvider.getSignalStrength() else null,
+            batteryLevel = if(sharingBattery) deviceApiProvider.batteryLevel else null,
+            isCharging = if(sharingBattery) deviceApiProvider.isCharging.takeIf { sharingBattery } else null,
+            network = if(sharingNetwork) deviceApiProvider.connectionStatusProvider.initAndGetStatus().networkType?.key else null,
+            signal = if(sharingNetwork) deviceApiProvider.connectionStatusProvider.getSignalStrength() else null,
             status = getStatusType(groupId, sharingContract).key
         )
     }

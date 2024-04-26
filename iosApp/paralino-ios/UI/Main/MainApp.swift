@@ -10,33 +10,57 @@ import shared
 
 @main
 struct MainApp: App {
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var appState = MainAppObject()
     @Environment(\.scenePhase) var scenePhase
+    @State var isOrWasActive = false
     
+    init() {
+        AppDelegate.shared = appDelegate
+    }
     
     var body: some Scene {
         WindowGroup {
             ZStack {
-                switch appState.uiState {
-                case .notInitialized: VStack {
-                    ProgressView().progressViewStyle(CircularProgressViewStyle())
-                }
-                case .ready(let data): AppReadyScreen(userState: data)
+                if isOrWasActive {
+                    switch appState.uiState {
+                    case .notInitialized: VStack {
+                        ProgressView().progressViewStyle(CircularProgressViewStyle())
+                    }
+                    case .ready(let data): AppReadyScreen(userState: data)
+                    }
                 }
             }
-            .onChange(of: scenePhase) { newScenePhase in
-                switch newScenePhase {
+            .onChange(of: scenePhase, initial: true) { oldScene, newScene in
+                Logr.i(tag:"delegate", message: "App scene switch (old: \(oldScene)) - (new: \(newScene))")
+                
+                switch newScene {
                 case .active:
+                    isOrWasActive = true
                     appDelegate.appInForeground()
-                case .inactive: break
+                case .inactive:
+                    appDelegate.appInactive()
                 case .background:
                     appDelegate.appInBackground()
                 @unknown default:
                     Logr.i(tag:"delegate", message: "App scene unknown")
+                    notifyScene(message: "\(oldScene) -> Unknown")
                 }
-            }.environmentObject(appDelegate)
+            }
+            .environmentObject(appDelegate)
+            .environmentObject(appDelegate.locationManager)
         }
+    }
+    
+    // TODO remove
+    private func notifyScene(id: String = "scene", message: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Paralino scene switch"
+        content.body = message
+    
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request) { (error : Error?) in }
     }
 }
 

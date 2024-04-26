@@ -11,12 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,8 +28,6 @@ import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
@@ -46,13 +39,11 @@ import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
-
 @Composable
 fun ResetPasswordScreenCore(
     appState: CoreUiState,
     vm: ResetPasswordViewModel,
-    openLoginScreen: () -> Unit,
-    onClose: () -> Unit
+    openLoginScreen: () -> Unit
 ) {
 
     MessageDispatcherEffect(vm, appState)
@@ -94,86 +85,67 @@ fun ResetPasswordScreenCore(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { Text(text = stringResource(MR.strings.reset_password_screen_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onClose() }) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-        }
+    Column(
+        Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                focusManager.clearFocus()
+            }
+            .padding(20.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center
     ) {
+
+        Spacer(modifier = Modifier.size(30.dp))
+
         Column(
             Modifier
-                .fillMaxSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    focusManager.clearFocus()
-                }
-                .padding(20.dp)
-                .verticalScroll(rememberScrollState()),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.Center
         ) {
 
-            Spacer(modifier = Modifier.size(30.dp))
+            PasswordInputField(
+                password = uiState.newPassword,
+                hint = stringResource(MR.strings.settings_account_edit_password_placeholder_password_new),
+                hasError = uiState.hasNewPasswordError,
+                imeAction = ImeAction.Next,
+                focusManager = focusManager,
+                onInputChange = { vm.onNewPasswordChange(it) }
+            )
 
-            Column(
-                Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center
-            ) {
+            Spacer(modifier = Modifier.size(8.dp))
 
-                PasswordInputField(
-                    password = uiState.newPassword,
-                    hint = stringResource(MR.strings.settings_account_edit_password_placeholder_password_new),
-                    hasError = uiState.hasNewPasswordError,
-                    imeAction = ImeAction.Next,
-                    focusManager = focusManager,
-                    onInputChange = { vm.onNewPasswordChange(it) }
-                )
+            PasswordInputField(
+                password = uiState.confirmPassword,
+                hint = stringResource(MR.strings.settings_account_edit_password_placeholder_password_confirm),
+                hasError = uiState.hasConfirmPasswordError,
+                focusManager = focusManager,
+                onInputChange = { vm.onConfirmPasswordChange(it) }
+            )
 
-                Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(80.dp))
 
-                PasswordInputField(
-                    password = uiState.confirmPassword,
-                    hint = stringResource(MR.strings.settings_account_edit_password_placeholder_password_confirm),
-                    hasError = uiState.hasConfirmPasswordError,
-                    focusManager = focusManager,
-                    onInputChange = { vm.onConfirmPasswordChange(it) }
-                )
-
-                Spacer(modifier = Modifier.size(80.dp))
-
-                Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBold())
-                Spacer(modifier = Modifier.size(10.dp))
-                FilledButton(
-                    style = ButtonStyle.BIG,
-                    state = if (uiState.actionLoading == null)
-                        AppButtonState.CONTENT
-                    else
-                        AppButtonState.loadingStateWithCheck(uiState.actionLoading!!),
-                    onClick = {
-                        focusManager.clearFocus()
-                        vm.proceed()
-                    }
-                ) {
-                    Text(text = stringResource(MR.strings.settings_account_edit_password_button))
+            Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBold())
+            Spacer(modifier = Modifier.size(10.dp))
+            FilledButton(
+                style = ButtonStyle.BIG,
+                state = if (uiState.actionLoading == null)
+                    AppButtonState.CONTENT
+                else
+                    AppButtonState.loadingStateWithCheck(uiState.actionLoading!!),
+                onClick = {
+                    focusManager.clearFocus()
+                    vm.proceed()
                 }
-
+            ) {
+                Text(text = stringResource(MR.strings.settings_account_edit_password_button))
             }
 
-            Spacer(modifier = Modifier.weight(1f))
         }
-    }
 
+        Spacer(modifier = Modifier.weight(1f))
+    }
 }

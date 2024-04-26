@@ -15,12 +15,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
-import app.paralino.android.ui.MainActivity
+import app.paralino.android.ui.main.MainActivity
 import app.paralino.android.utils.extensions.attributedBold
 import app.paralino.core.MR
 import app.paralino.core.ui.components.nameRes
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
+import dev.icerock.moko.resources.format
 
 class LocationNotificationHandler(
     private val context: Context
@@ -52,9 +53,9 @@ class LocationNotificationHandler(
         }
 
         val content = if (errors.isEmpty()) {
-            context.resources.getQuantityString(
-                R.plurals.notifications_sharing_active_message, groupCount, groupCount
-            )
+            MR.plurals.notifications_sharing_active_message
+                .format(groupCount, groupCount)
+                .toString(context)
         } else {
             val errorContent = errors.map {
                 context.getString(it.nameRes.resourceId)

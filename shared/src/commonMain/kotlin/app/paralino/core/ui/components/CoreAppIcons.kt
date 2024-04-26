@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import app.paralino.core.MR
 import dev.icerock.moko.resources.ImageResource
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -63,10 +64,17 @@ object CoreAppIcons {
     val BatteryChargingFull get() = "drawable/ic_battery_charging_full.xml"
     val MapsHomeWork get() = "drawable/ic_home_work.xml"
     val Map get() = "drawable/ic_map.xml"
+    val Home get() = "drawable/ic_home.xml"
     val ShareLocation get() = "drawable/ic_share_location.xml"
     val StopCircle get() = "drawable/ic_stop_circle.xml"
     val MoreVert get() = "drawable/ic_more_vert.xml"
     val PersonAdd get() = "drawable/ic_person_add.xml"
+    val Settings get() = "drawable/ic_settings.xml"
+
+    val NotListedLocation get() = "drawable/ic_not_listed_location.xml"
+    val NotificationsOff get() = "drawable/ic_notifications_off.xml"
+    val Adjust get() = "drawable/ic_adjust.xml"
+    val Groups get() = "drawable/ic_groups.xml"
 
     val SignalWifi3 get() = "drawable/ic_wifi_3.xml"
     val SignalWifi2 get() = "drawable/ic_wifi_2.xml"
@@ -76,14 +84,14 @@ object CoreAppIcons {
     val SignalCell1 get() = "drawable/ic_signal_cell_1.xml"
 
     val CircleFull get() = MR.images.ic_circle_full
-    val CircleWithOutline get() = MR.images.ic_circle_with_outline
-    val MapModeSatellite get() = "drawable-nodpi/image_map_type_satellite.jpg"
-    val MapModeDefaultLight get() = "drawable-nodpi/image_map_type_default_light.png"
-    val MapModeDefaultDark get() = "drawable-nodpi/image_map_type_default_dark.png"
+    val CircleWithOutline get() = "drawable/ic_circle_with_outline.xml"
+    val MapModeSatellite get() = "drawable/image_map_type_satellite.jpg"
+    val MapModeDefaultLight get() = "drawable/image_map_type_default_light.png"
+    val MapModeDefaultDark get() = "drawable/image_map_type_default_dark.png"
 
     @Composable
     fun String.asPainterResource(): Painter {
-        return painterResource(res = this)
+        return painterResource(resource = DrawableResource(path = this))
     }
 
     @Composable

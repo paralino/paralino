@@ -3,11 +3,9 @@ package app.paralino.android.remote.appwrite
 import android.app.Application
 import app.paralino.android.remote.RemoteClient
 import app.paralino.core.domain.user.UserSessionMonitor
-import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
-import app.paralino.core.utils.exceptions.UnauthorizedException
 import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
@@ -30,7 +28,7 @@ class AppWriteRemoteModule(
     private val client: Client by lazy {
         Client(
             context = app,
-            endPoint = backendConfig.endpoint,
+            endpoint = backendConfig.endpoint,
             selfSigned = false
         )
             .setEndpoint(backendConfig.endpoint)

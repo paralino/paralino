@@ -24,7 +24,12 @@ enum HomeGraph: Hashable {
     case groupInit
     case groupCreate(groupId: String?)
     case groupDetail(groupId: String)
+    case groupSettings(groupId: String)
+    case sharingStart(groupId: String?)
     case memberInvite(groupId: String?, code: String?)
+    case places(groupId: String)
+    case placeDetail(groupId: String, placeId: String)
+    case placeCreate(groupId: String, placeId: String?, lat: Double? = nil, lng: Double? = nil)
 }
 
 enum SettingsGraph: Hashable {

@@ -10,6 +10,8 @@ import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filterNotNull
 
 class GroupPreRefreshUseCase constructor(
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
@@ -80,7 +82,9 @@ class GroupPreRefreshUseCase constructor(
 
     fun getAndRefreshGroupWithMembers(groupId: String): Flow<UserGroupWithMembers> {
         return mergeDataWithRemote(
-            local = local.getGroupWithMembers(groupId = groupId),
+            local = local.getGroupWithMembers(groupId = groupId)
+                .catch { emit(null) }
+                .filterNotNull(),
             remote = { refreshGroupWithMembers(groupId = groupId, cacheTimeMillis = 6000) },
             localUpdate = { },
             remotePreference = RemotePreference.CACHE(key = "get_group_refresh_$groupId", timeMillis = 8000)

@@ -11,6 +11,10 @@ class CryptoCore(
 ) {
     val hashProvider: ICryptoHashProvider = serviceProvider
 
+    fun randomId(length: Int, alphabet: AlphabetType): String {
+        return serviceProvider.createRandomId(length, alphabet)
+    }
+
     fun getNewSymmetricKey(): String {
         return serviceProvider.createNewSymmetricKey()
     }

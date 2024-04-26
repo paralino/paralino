@@ -5,15 +5,16 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.Payload
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.UpdateMemberData
 import app.paralino.core.models.raw.UpdateMemberFunctionPayload
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.repo.location.LocationRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserDevicesRemoteSource
 import app.paralino.core.repo.user.UserRemoteSource
@@ -29,9 +30,8 @@ class UpdateUserDataUseCase constructor(
     private val userRepo: UserRepository,
     private val userRemoteSource: UserRemoteSource,
     private val userDevicesRemoteSource: UserDevicesRemoteSource,
-    private val locationRepo: LocationRepository,
+    private val groupLocal: UserGroupLocalDataSource,
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val personalCodes: PersonalCodesRepository,
@@ -53,7 +53,7 @@ class UpdateUserDataUseCase constructor(
     }
 
     private suspend fun updateMemberDataInGroups(data: UserMeData) {
-        val userMembers = locationRepo.getMembersByUserId(userRepo.cachedUserId)
+        val userMembers = groupLocal.getMemberModelsForUser(userRepo.cachedUserId)
 
         val nodes = userMembers.map { member ->
 
@@ -101,27 +101,32 @@ class UpdateUserDataUseCase constructor(
         }
     }
 
-    suspend fun registerPushTokenIfNeeded() {
-        userRepo.cachedUser?.data ?: let {
-            logg.tag("push_notifications").v("User not present, ignoring...")
-            return
-        }
-
-        val newPushToken = config.pushTokenUnsynced
-            .takeIf { it.isNotBlank() && it != config.pushTokenSynced }
-            ?: let {
-                config.pushTokenUnsynced = ""
-                logg.tag("push_notifications").v("No new push token to register")
-                return
+    suspend fun registerPushTokenIfNeeded(): Payload<Unit>? {
+        try {
+            userRepo.cachedUser?.data ?: let {
+                logg.tag("push_notifications").v("User not present, ignoring...")
+                return null
             }
 
-        logg.tag("push_notifications").v("Found unsynced push token, syncing...")
+            val newPushToken = config.pushTokenUnsynced
+                .takeIf { it.isNotBlank() && it != config.pushTokenSynced }
+                ?: let {
+                    config.pushTokenUnsynced = ""
+                    logg.tag("push_notifications").v("No new push token to register")
+                    return null
+                }
 
-        userDevicesRemoteSource.updateDeviceData(newPushToken)
-        config.pushTokenUnsynced = ""
-        config.pushTokenSynced = newPushToken
+            logg.tag("push_notifications").v("Found unsynced push token, syncing...")
 
-        logg.tag("push_notifications").v("Push token registered")
+            userDevicesRemoteSource.updateDeviceData(newPushToken)
+            config.pushTokenUnsynced = ""
+            config.pushTokenSynced = newPushToken
+
+            logg.tag("push_notifications").v("Push token registered")
+            return Payload.Success(Unit)
+        } catch (e: Exception) {
+            return Payload.Error(e)
+        }
     }
 
 }

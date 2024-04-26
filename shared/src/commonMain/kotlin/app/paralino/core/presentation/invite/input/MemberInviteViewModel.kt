@@ -1,23 +1,32 @@
 package app.paralino.core.presentation.invite.input
 
+import app.paralino.core.MR
 import app.paralino.core.domain.group.GroupMemberAddUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
-import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MemberInviteViewModel(
     val groupId: String?,
     code: String?,
     private val codeRepo: PersonalCodesRepository,
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
     private val groupMemberAdd: GroupMemberAddUseCase,
 ) : CoreViewModel() {
 
@@ -35,7 +44,7 @@ class MemberInviteViewModel(
         code?.let { loadMemberData(code = it) }
         groupId?.let {
             coroutineScope.launch {
-                groupRepo.getGroupWithoutMembersLocally(it)
+                groupRepo.getGroupWithMetadata(it)
                     .firstOrNull()
                     ?.let { GroupItemState(it) }
                     ?.let { selectGroup(it) }
@@ -54,13 +63,12 @@ class MemberInviteViewModel(
                             actionLoading = false
                         )
                     }
-                    coroutineScope.launch {
-                        _eventChannel.send(MemberInviteScreenEvent.ErrorWrongCode)
-                    }
+                    showSnackbar(MR.strings.invite_connect_alert_wrongCode.localizedString())
                 } else {
                     loadMemberData(currentState.code)
                 }
             }
+
             is MemberInviteScreenState.Loaded -> {
                 // add member
                 val groupId = currentGroup.value?.id
@@ -75,9 +83,7 @@ class MemberInviteViewModel(
                     _uiState.update {
                         currentState.copy(canChangeGroup = true)
                     }
-                    coroutineScope.launch {
-                        _eventChannel.send(MemberInviteScreenEvent.ErrorMissingGroup)
-                    }
+                    showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
                 } else {
                     addMemberToGroup(groupId, currentState)
                 }
@@ -98,6 +104,7 @@ class MemberInviteViewModel(
                             )
                         }
                     }
+
                     is Payload.Error -> {
                         _uiState.update {
                             MemberInviteScreenState.Empty(
@@ -106,10 +113,13 @@ class MemberInviteViewModel(
                                 hasInputError = false
                             )
                         }
-                        if(result.exception.asRemoteException() is NotFoundException)
-                            _eventChannel.send(MemberInviteScreenEvent.ErrorWrongCode)
-                        else _eventChannel.send(MemberInviteScreenEvent.Error(result.exception))
+                        if (result.exception.asRemoteException() is NotFoundException) {
+                            showSnackbar(MR.strings.invite_connect_alert_wrongCode.localizedString())
+                        } else {
+                            showSnackbar(result.exception.errorString())
+                        }
                     }
+
                     is Payload.Success -> {
                         _uiState.update {
                             MemberInviteScreenState.Loaded(
@@ -136,12 +146,14 @@ class MemberInviteViewModel(
                             state.copy(actionLoading = true)
                         }
                     }
+
                     is Payload.Error -> {
                         _uiState.update {
                             state.copy(actionLoading = false)
                         }
-                        _eventChannel.send(MemberInviteScreenEvent.Error(result.exception))
+                        showSnackbar(result.exception.errorString())
                     }
+
                     is Payload.Success -> {
                         _uiState.update { state.copy(actionLoading = false) }
                         _eventChannel.send(MemberInviteScreenEvent.MemberAdded)
@@ -152,7 +164,7 @@ class MemberInviteViewModel(
     }
 
     suspend fun getAllGroups(): List<GroupItemState> {
-        return groupRepo.getAllGroupsLocally()
+        return groupRepo.getAllGroupsWithMetadata()
             .firstOrNull()
             ?.map { GroupItemState(it) }
             ?.also { groups.value = it }
@@ -176,5 +188,4 @@ class MemberInviteViewModel(
             )
         }
     }
-
 }

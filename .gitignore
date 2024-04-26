@@ -13,6 +13,7 @@ local_resources/
 appwrite-android/
 
 androidApp/src/devGoogle/res/values/fcm_config.xml
+androidApp/src/directGoogle/res/values/fcm_config.xml
 androidApp/src/playStore/res/values/fcm_config.xml
 
 androidApp/proguard-merged-config.txt

@@ -16,6 +16,7 @@ import app.paralino.core.models.raw.UpdateOwnMemberPublicKeyPayload
 import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
@@ -63,7 +64,7 @@ class MemberCryptoKeyRotation(
             return false
         }
 
-        val shouldRotate = force || integrity == IntegrityResult.VALID_EXPIRED
+        val shouldRotate = force || integrity.shouldChange
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_member_rotation")
@@ -88,13 +89,8 @@ class MemberCryptoKeyRotation(
         group: UserGroupWithMembers
     ) {
         val myKey = userKeyRepo.latestKeyPair()
-        val currentExchangeKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = null)
         val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
-        val groupKey =
-            cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId, keyVersion = null)
-
-        if (currentExchangeKeys !is UserGroupPersonalKeyPair.Valid)
-            throw MissingMemberKeyException(group.id, config.userId)
+        val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId, keyVersion = null)
 
         if (myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
             throw MissingMemberKeyException(group.id, config.userId)
@@ -134,6 +130,12 @@ class MemberCryptoKeyRotation(
                 BaseRemoteModule.formatter.encodeToString(member.member.memberData.data),
                 groupKey.key
             ),
+            paralinoId = member.member.paralinoId.data?.let {
+                cryptoCore.encryptDataWithKey(
+                    BaseRemoteModule.formatter.encodeToString(it),
+                    groupKey.key
+                )
+            },
             signedPublicKey = cryptoCore.signData(
                 data = newExchangeKeys.publicKey,
                 myPrivateKey = myKey.privateKey
@@ -145,7 +147,6 @@ class MemberCryptoKeyRotation(
                 ),
                 key = userKeyRepo.personalKey()
             ),
-            memberKeyVersion = currentExchangeKeys.version.plus(1),
             groupKeyVersion = groupKey.version,
             memberKeyVersionsToKeep = memberKeyVersionsToKeep
         )
@@ -156,10 +157,9 @@ class MemberCryptoKeyRotation(
         )
 
         if (!response.isSuccess) {
-            throw BaseRemoteException.fromCode(
+            throw BaseRemoteException.fromRemote(
                 code = response.statusCode,
-                message = "Unable to update group member keys",
-                cause = Exception(response.stderr)
+                error = response.errorResponse
             )
         }
     }

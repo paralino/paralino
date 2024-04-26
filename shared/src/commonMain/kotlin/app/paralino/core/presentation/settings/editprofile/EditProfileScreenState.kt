@@ -2,7 +2,6 @@ package app.paralino.core.presentation.settings.editprofile
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.user.UserMeData
-import app.paralino.core.presentation.common.FormValidationResult
 import app.paralino.core.utils.Emojis
 
 data class EditProfileScreenState constructor(
@@ -22,9 +21,5 @@ data class EditProfileScreenState constructor(
 }
 
 sealed class EditProfileScreenEvent() {
-    data class Error(val error: Throwable) : EditProfileScreenEvent()
-    data class ValidationError(val validationResult: FormValidationResult) :
-        EditProfileScreenEvent()
-
     object ProfileUpdated : EditProfileScreenEvent()
 }

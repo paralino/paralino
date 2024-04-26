@@ -27,6 +27,7 @@ struct MemberInviteScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.invite_connect_screen_title.localizedString())
         }
     }
     

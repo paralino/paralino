@@ -37,6 +37,10 @@
     <string name="error_location_background_permission_missing_sheet_message_android11">Molimo omogućite pristup lokaciji **%s** kako biste **pouzdano i uvijek** pratili i dijelili svoju lokaciju s drugima.</string>
     <string name="error_location_service_missing_sheet_message">Molimo omogućite **lokaciju uređaja** kako biste pronašli svoj uređaj.</string>
     <string name="error_notification_permission_missing_sheet_message">Molimo omogućite **obavijesti** kako biste primili **važna** obavijest za vaša mjesta.</string>
+    <string name="error_location_background_permission_missing_notification_message">Nemoguće pokrenuti dijeljenje lokacije jer nedostaje dozvola za stalnu lokaciju!\nPonovno pokrenite aplikaciju da bi nastavili dijeliti lokaciju!</string>
+    <string name="error_location_sharing_start_notification_message">Nemoguće pokrenuti dijeljenje lokacije!\nPonovno pokrenite aplikaciju!</string>
+    <string name="error_device_registration_notification_message">Tvoj uređaj nije registriran!\nMolimo ponovno započni dijeljenje lokacije!</string>
+    <string name="error_unverified_member_notification_message">Tvoje članstvo u grupi nije potvrđeno.\nPonovno osvježi podatke ili kontaktiraj vlasnika grupe.</string>
 
     <string name="error_crypto_key_missing">Podaci za šifriranje su nepotpuni (%s), molimo pokušajte osvježiti.</string>
     <string name="error_crypto_key_missing_user">Vaši kriptografski ključevi nisu pravilno konfigurirani.</string>
@@ -50,6 +54,8 @@
     <string name="notifications_channel_place_alert">Obavijesti o mjestima</string>
     <string name="notifications_channel_group_activity">Aktivnosti grupe</string>
     <string name="notifications_channel_push_sync">Sinkronizacija obavijesti</string>
+    <string name="notifications_channel_data_sync">Sinkronizacija podataka</string>
+    <string name="notifications_channel_info_message">Informacije sistema</string>
 
     <string name="location_banner_info_stop">Zaustavi dijeljenje</string>
     <string name="location_banner_fix">Ispravi</string>
@@ -66,7 +72,7 @@
     <string name="location_banner_error_offline">Uređaj je izvan mreže</string>
 
     <string name="settings_section_account_title">Račun</string>
-    <string name="settings_section_personal_code_title">Osobni kod</string>
+    <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Neaktivni kodovi</string>
     <string name="settings_account_edit_profile">Uredi profil</string>
     <string name="settings_account_edit_email">Promijeni e-mail</string>
@@ -105,6 +111,13 @@
     <string name="setting_title_logout">Odjava</string>
     <string name="setting_title_delete_account">Izbriši račun</string>
     <string name="setting_title_dangerZone">Zona opasnosti</string>
+
+    <string name="setting_title_locationBoost">Maksimalna lokacija</string>
+    <string name="setting_description_locationBoost_enabled">Maksimalne performanse lokacije će se resetirati u %s. **Koristi više baterije!!!**</string>
+    <string name="setting_description_locationBoost_disabled">Koristi maksimalne performanse za lokaciju do 2 sata. **Koristi više baterije!!!**</string>
+    <string name="setting_title_placeActivityThrottle">Filter aktivnosti mjesta</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Tvoj uređaj će kreirati notifikaciju o mjestu ako provedeš najmanje 10 sekundi na ili izvan određenog mjesta.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Tvoj uređaj će brže reagirati na promjene mjesta te je moguće da će kreirati više notifikacija o mjestu (npr: ako u kratko vrijeme prođeš kraj mjesta).</string>
 
     <string name="login_placeholder_user_name">Ime*</string>
     <string name="login_placeholder_email">E-mail*</string>
@@ -169,35 +182,38 @@
     <string name="groups_sharing_setting_speed_share">Brzina</string>
     <string name="groups_sharing_setting_elevation_share">Visina</string>
     <string name="groups_sharing_setting_network_share">Stanje mreže</string>
+    <string name="groups_sharing_setting_notifyOthers_title">Obavijesti članove</string>
+    <string name="groups_sharing_setting_notifyOthers_description">Ukoliko je opcija uključena, članovi grupe ce biti obaviješteni da dijeliš svoju lokaciju.</string>
     <string name="groups_sharing_button_start">Započni dijeljenje</string>
     <string name="groups_sharing_title">Podijeli lokaciju</string>
     <string name="groups_sharing_device_name_placeholder">Naziv uređaja (opcionalno)</string>
     <string name="groups_sharing_devices">Uređaji</string>
     <string name="groups_sharing_potential_error_title">Upozorenje</string>
     <string name="groups_sharing_potential_error_message">Za dijeljenje lokacije riješite sve greške:\n\n%s\n</string>
-    <string name="groups_sharing_potential_error_background_location_message">Vašu lokaciju nije moguće dijeliti ako ponovno pokrenete telefon!\n\nMolimo omogućite pristup lokaciji **uvijek** za pouzdano dijeljenje.</string>
+    <string name="groups_sharing_potential_error_background_location_message">Tvoju lokaciju nije moguće dijeliti ako ponovno pokreneš telefon!\n\nMolim omogući pristup lokaciji **uvijek** za pouzdano dijeljenje.</string>
     <string name="groups_sharing_error_unverified_group_title">Nepotvrđena grupa ili član</string>
     <string name="groups_sharing_error_unverified_group_message">Nemoguće je dijeliti lokaciju s nepotvrđenom grupom ili članom.\nPokušajte osvježiti podatke grupe.</string>
 
     <string name="groups_sharing_duration_type_infinite">Uvijek uključeno</string>
 
-    <string name="invite_create_button">STVORI OSOBNI KOD</string>
-    <string name="invite_create_new_button">STVORI NOVI KOD</string>
+    <string name="invite_create_button">KREIRAJ PARALINO.ID</string>
+    <string name="invite_create_new_button">KREIRAJ DODATNI KOD</string>
     <string name="toast_copy_invite_code">Kod kopiran</string>
-    <string name="invite_delete_alert_title">Jeste li sigurni da želite onemogućiti ovaj kod?</string>
-    <string name="invite_manage_empty_description">Nemate aktivan **osobni kod**.\nStvorite jedan kako biste se pridružili drugim grupama i sigurno dijelili svoju lokaciju s prijateljima.</string>
+    <string name="invite_delete_alert_title">Sigurno želiš onemogućiti ovaj kod?\n\nNećeš se moći pridružiti novoj grupi ali uvijek možeš ponovno omogućiti svoj Paralino.ID.</string>
+    <string name="invite_manage_empty_description">Nemate aktivan **Paralino.ID**.\nStvorite jedan kako biste se pridružili drugim grupama i sigurno dijelili svoju lokaciju s prijateljima.</string>
     <string name="invite_manage_description">Podijelite ovaj kod kako biste se pridružili grupi i sigurno dijelili svoju lokaciju.</string>
-    <string name="invite_connect_code_placeholder">Osobni kod korisnika</string>
+    <string name="invite_connect_code_placeholder">Korisnikov Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">Dodajete **%1$s** u grupu **%2$s**.\nNakon toga možete sigurno dijeliti svoju lokaciju.</string>
     <string name="invite_connect_button_addToGroup">DODAJ U GRUPU</string>
     <string name="invite_connect_button_pickGroup">Odaberite grupu</string>
     <string name="invite_connect_alert_pickGroup">Molimo odaberite grupu</string>
     <string name="invite_connect_alert_wrongCode">Molimo provjerite svoj kod ili pokušajte s drugim</string>
-    <string name="invite_connect_title">Za dodavanje novog člana, unesite njihov **osobni kod**</string>
+    <string name="invite_connect_title">Za dodavanje novog člana, unesite njihov **Paralino.ID**</string>
+    <string name="invite_connect_screen_title">Dodaj novog člana</string>
     <string name="invite_section_title_group">Grupa</string>
     <string name="invite_section_title_user">Korisnik</string>
     <string name="invite_code_button_copy">Kopiraj</string>
-    <string name="invite_code_button_share">Podijeli kod</string>
+    <string name="invite_code_button_share">Podijeli</string>
     <string name="invite_code_button_activate">Aktiviraj</string>
 
     <string name="group_members_item_remove_button">UKLONI</string>
@@ -210,7 +226,7 @@
     <string name="group_members_block_user">Blokiraj korisnika</string>
     <string name="group_members_block_user_alert_message">Ako nastavite, korisnik vas neće moći dodati u grupu, te nećete primati obavijesti o lokaciji korisnika u nijednoj zajedničkoj grupi.</string>
     <string name="group_members_remove_alert_title">Jeste li sigurni da želite ukloniti %s iz grupe?</string>
-    <string name="group_members_device_other_remove_alert_title">Jeste li sigurni da želite ukloniti uređaj korisnika %ss iz grupe?\n\nOvo neće ukloniti korisnika iz grupe.</string>
+    <string name="group_members_device_other_remove_alert_title">Jeste li sigurni da želite ukloniti uređaj korisnika %s iz grupe?\n\nOvo neće ukloniti korisnika iz grupe.</string>
     <string name="group_members_device_own_remove_alert_title">Jeste li sigurni da želite ukloniti svoj uređaj iz grupe?\n\nOvo neće ukloniti vas iz grupe.</string>
     <string name="group_members_device_name_default">Uređaj</string>
     <string name="group_details_section_members_title">Članovi</string>
@@ -224,11 +240,17 @@
     <string name="group_details_remove_member_alert_button">Ukloni</string>
     <string name="group_details_block_group_alert_title">Jeste li sigurni da želite blokirati ovu grupu?\nOvo je nepovratno, izbrisat će sve podatke koje ste podijelili s grupom i nećete moći ponovno se pridružiti grupi!</string>
     <string name="group_details_block_group_alert_button">Blokiraj</string>
-    <string name="group_details_add_member_button">Dodaj novog člana</string>
+    <string name="group_details_add_member_button">Dodaj</string>
     <string name="group_details_sharing_status_time">Dijeljenje do: **%s**</string>
     <string name="group_details_sharing_status_infinite">Dijeljenje lokacije **uvijek uključeno**</string>
     <string name="group_details_sharing_action">Dijeljenje lokacije</string>
     <string name="group_details_security_action">Sigurnost</string>
+    <string name="group_edit_screen_title">Uredi grupu</string>
+    <string name="group_settings_verification_title">Verifikacija članova</string>
+    <string name="group_settings_verification_description_on">Svaki član grupe je kriptografski verificaran i samo ti možeš dodati nove članove.\U suprotnom, članovi bez verifikacije će biti označeni kao NEPOTVRĐEN te neće moći slati i primati lokaciju.</string>
+    <string name="group_settings_verification_description_off">Nema dodatne verifikacije od strane vlasnika grupe te i ostali mogu dodati nove članove u grupu.</string>
+    <string name="group_settings_verification_dialog_message_on">Svaki trenutni član grupe će biti ponovno kriptografski verificiran te nitko osim tebe neće moći dodati nove članove u grupu.</string>
+    <string name="group_settings_verification_dialog_message_off">Nepotvrđeni članovi će moći koristiti lokaciju u grupi te nove članove grupe mogu dodati i ostali.</string>
 
     <string name="group_create_start_title">Povežite se s obitelji</string>
     <string name="group_load_error">Nemoguće učitati vašu grupu</string>
@@ -238,16 +260,25 @@
     <string name="group_picker_button_join">Pridruži se</string>
     <string name="group_member_no_location_info_message">Lokacija trenutno nije dostupna za ovaj uređaj.</string>
     <string name="group_member_devices_section_title">Uređaji</string>
+    <string name="group_member_device_not_responding_message">**Uređaj trenutno nije dostupan ili nije na mreži.**\n\nUkoliko uređaj ne odgovori u roku od par minuta, probaj osvježiti lokaciju ponovno.</string>
+    <string name="group_member_device_waiting">Čekanje na uređaj...</string>
+    <string name="group_member_device_requesting">Zahtjev za lokaciju u tijeku...</string>
+    <string name="group_member_device_unreachable">Uređaj nije u potpunosti podržan te je nedostupan</string>
+    <string name="group_member_device_setup_invalid">Uređaj nije dostupan!</string>
+    <string name="group_member_device_request_failed">Zahtjev nije uspio, pokušaj ponovno</string>
+    <string name="group_member_device_request_disabled">Moraš sačekati nekoliko trenutaka prije nego što ponovno osvježiš lokaciju 🙏</string>
 
     <string name="group_members_last_active_status_now">Upravo sada</string>
     <string name="group_members_last_active_status_recently_1">Prije 1 minute</string>
     <string name="group_members_last_active_status_recently_2">Prije 2 minute</string>
+    <string name="group_members_last_status_update">**Zadnje ažuriranje:**</string>
     <string name="group_members_status_inactive">Nema aktivnosti</string>
+    <string name="group_members_status_not_sharing">Ne dijeli lokaciju</string>
     <string name="group_members_status_offline">Uređaj je izvan mreže</string>
     <string name="group_members_status_gps_off">GPS je isključen</string>
-    <string name="group_members_status_battery_saver">Energetska ušteda</string>
-    <string name="group_members_status_active">Aktivno</string>
-    <string name="group_members_status_throttle">U mirovanju</string>
+    <string name="group_members_status_battery_saver">Štednja baterije</string>
+    <string name="group_members_status_active">Uživo</string>
+    <string name="group_members_status_throttle">Bez promjene</string>
     <string name="group_members_status_too_many_requests">Previše zahtjeva</string>
     <string name="group_members_status_missing_permissions">Nedostaju dozvole</string>
 
@@ -264,14 +295,20 @@
     <string name="place_list_delete_place_alert_title">Jeste li sigurni da želite izbrisati ovo mjesto?</string>
     <string name="place_detail_setting_button_notify_enter">Dolazak</string>
     <string name="place_detail_setting_button_notify_exit">Odlazak</string>
+    <string name="place_detail_notification_settings_title">Postavke obavijesti</string>
 
     <string name="place_notification_enter">%s je stigao/la u %s</string>
     <string name="place_notification_exit">%s je napustio/la %s</string>
     <string name="place_notification_default">Vaše mjesto ima aktivnost</string>
+    <string name="place_created_notification">Grupa %1$s ima novo mjesto: %2$s</string>
+    <string name="place_created_notification_default">Novo mjesto je kreirano u vašoj grupi</string>
     <string name="group_member_current_add_notification">🙌 Upravo ste se pridružili grupi %s</string>
     <string name="group_member_current_add_notification_default">🙌 Upravo ste se pridružili novoj grupi</string>
     <string name="group_member_add_notification">%1$s se upravo pridružio/la grupi %2$s</string>
     <string name="group_member_add_notification_default">🙌 Novi član se upravo pridružio vašoj grupi</string>
+    <string name="group_member_sharing_started_notification_default">Tvoj prijatelj upravo dijeli svoju lokaciju</string>
+    <string name="group_member_sharing_started_notification">%s upravo dijeli svoju lokaciju</string>
+    <string name="group_member_current_sharing_started_notification">Tvoj uređaj je započeo dijeljenje lokacije</string>
 
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
@@ -304,6 +341,7 @@
     <string name="reset_password_success_message">Molimo prijavite se ponovno!</string>
     <string name="reset_password_error_token_message">Vaša veza za ponovno postavljanje lozinke je istekla, zatražite novu.</string>
     <string name="raw_data_screen_info">Ovdje možete pregledati svoje podatke onako kako su pohranjeni na poslužitelju.\nSamo vaš uređaj može otključati (dekriptirati) i vidjeti ove informacije.</string>
+    <string name="raw_data_screen_title">Enkripcija</string>
     <string name="raw_data_section_encrypted">Kriptirani podaci na poslužitelju</string>
     <string name="raw_data_section_decrypted">Dekriptirani podaci na uređaju</string>
 

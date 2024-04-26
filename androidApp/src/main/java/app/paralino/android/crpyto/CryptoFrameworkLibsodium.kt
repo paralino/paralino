@@ -1,5 +1,6 @@
 package app.paralino.android.crpyto
 
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KeyPair
@@ -11,11 +12,19 @@ import com.goterl.lazysodium.interfaces.PwHash
 import com.goterl.lazysodium.interfaces.SecretBox
 import com.goterl.lazysodium.utils.HexMessageEncoder
 import com.goterl.lazysodium.utils.Key
+import io.viascom.nanoid.NanoId
 import java.nio.charset.StandardCharsets
 
 class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
     private val lazySodium = LazySodiumAndroid(SodiumAndroid(), StandardCharsets.UTF_8, HexMessageEncoder())
+
+    override fun createRandomId(length: Int, alphabet: AlphabetType): String {
+        return NanoId.generate(
+            size = length,
+            alphabet = alphabet.alphabet
+        )
+    }
 
     override fun createNewSymmetricKey(): String {
         return lazySodium.cryptoSecretBoxKeygen().asHexString
@@ -46,7 +55,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         ).let { lazySodium.encodeToString(nonce).plus(it) }
     }
 
-    override suspend fun decryptDataWithSymmetricKey(data: String, key: String): String {
+    override fun decryptDataWithSymmetricKey(data: String, key: String): String {
 
         val source = lazySodium.decodeFromString(data)
         val nonce = source.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
@@ -89,7 +98,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         return encryptDataWithSymmetricKey(data, key)
     }
 
-    override suspend fun decryptDataWithPassword(
+    override fun decryptDataWithPassword(
         data: String,
         password: String,
         context: String

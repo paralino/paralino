@@ -9,16 +9,18 @@ import app.paralino.core.repo.location.SharingContractsLocalDataSource
 import kotlinx.coroutines.flow.*
 
 class LocationSharingManager(
-    scopeProvider: ICoroutineScopeProvider,
+    private val scopeProvider: ICoroutineScopeProvider,
     private val contractsDataSource: SharingContractsLocalDataSource
 ) {
 
+    // TODO check - if not subscribed to, value will be invalid
+    // currently does not work on iOS since subscription is only active in android app class
     val allContractsFlow: StateFlow<Resource<List<LocationSharingContract>>> =
         contractsDataSource.getAllContracts()
             .map { it.mapNotNull { it.asValidContract() }.toResource() }
             .stateIn(
                 scopeProvider.defaultIOScope,
-                SharingStarted.Lazily,
+                SharingStarted.Eagerly,
                 Resource.NotInitialized
             )
 
@@ -30,7 +32,7 @@ class LocationSharingManager(
     }
         .stateIn(
             scopeProvider.defaultIOScope,
-            SharingStarted.Lazily,
+            SharingStarted.Eagerly,
             Resource.NotInitialized
         )
 
@@ -38,6 +40,10 @@ class LocationSharingManager(
         return allContractsFlow.map {
             it.data?.any { it.groupId == id } ?: false
         }.distinctUntilChanged()
+    }
+
+    fun locationSharingStatus(onChange: (Resource<Boolean>) -> Unit) {
+        sharingStatus.onEach { onChange(it) }.launchIn(scopeProvider.defaultIOScope)
     }
 
     fun sharingContractForGroup(id: String): Flow<LocationSharingContract?> {

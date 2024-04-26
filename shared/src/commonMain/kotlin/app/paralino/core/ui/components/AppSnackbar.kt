@@ -92,10 +92,10 @@ fun AppSnackbar(
 
             Snackbar(
                 modifier = Modifier
-                    .padding(20.dp)
                     .padding(bottom = 20.dp)
                     .alpha(((width - offset.value).absoluteValue / width))
-                    .offset(x = offset),
+                    .offset(x = offset)
+                    .padding(20.dp),
                 content = {
                     Text(
                         modifier = Modifier

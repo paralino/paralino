@@ -1,11 +1,7 @@
 package app.paralino.core.ui.groups
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,16 +18,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,8 +46,9 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.GroupDetailViewModel
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.LocationSharingState
-import app.paralino.core.presentation.groups.MemberAction
+import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
@@ -63,29 +58,30 @@ import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
-import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.components.SmallActionButton
+import app.paralino.core.ui.components.dialogs.LoadingDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun GroupDetailScreenCore(
     appState: CoreUiState,
     vm: GroupDetailViewModel,
     groupId: String?,
-    onShowDialog: (MainAlertDialog?) -> Unit,
+    contentPadding: PaddingValues,
     openMemberAdd: () -> Unit,
-    openGroupEdit: () -> Unit,
     openMap: () -> Unit,
     openPlaces: () -> Unit,
-    openGroupRawData: () -> Unit,
+    openGroupSettings: () -> Unit,
     openMemberRawData: (String) -> Unit,
     openSharing: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -103,10 +99,8 @@ fun GroupDetailScreenCore(
     }
 
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
-
-    var optionMenuExpanded by remember {
-        mutableStateOf(false)
-    }
+    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
+    val onShowDialog: (MainAlertDialog?) -> Unit = { showDialog = it }
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
@@ -146,6 +140,55 @@ fun GroupDetailScreenCore(
         }
     }
 
+    when (val dialog = showDialog) {
+        is MainAlertDialog.BlockUser -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.blockUser(userId = dialog.userId)
+                }
+            }
+        }
+
+        is MainAlertDialog.UnblockGroupOrUser -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.unblockUser(userId = dialog.id)
+                }
+            }
+        }
+
+        is MainAlertDialog.DeleteGroupMember -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.removeMember(dialog.memberUserId)
+                }
+            }
+        }
+
+        is MainAlertDialog.DeleteMemberLocation -> {
+            dialog.Show {
+                showDialog = null
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.removeMemberLocation(
+                        memberId = dialog.memberId,
+                        locationId = dialog.locationId
+                    )
+                }
+            }
+        }
+
+        is MainAlertDialog.PlanLimit -> {
+            dialog.Show {
+                showDialog = null
+            }
+        }
+
+        else -> {}
+    }
+
     when (val state = uiState) {
         Payload.Loading -> {
             Column(
@@ -164,136 +207,40 @@ fun GroupDetailScreenCore(
         is Payload.Success -> {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
-                topBar = {
-                    TopAppBar(
-                        backgroundColor = MaterialTheme.colors.background,
-                        elevation = 1.dp,
-                        title = { },
-                        navigationIcon = {
-                            IconButton(onClick = onNavigateBack) {
-                                Icon(
-                                    painter = CoreAppIcons.Close.asPainterResource(),
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        actions = {
-
-                            if (state.data.canEdit) {
-                                IconButton(onClick = { vm.tryAddMember() }) {
-                                    Icon(
-                                        painter = CoreAppIcons.PersonAdd.asPainterResource(),
-                                        contentDescription = null
-                                    )
-                                }
-                                IconButton(onClick = { openGroupEdit() }) {
-                                    Icon(
-                                        painter = CoreAppIcons.Edit.asPainterResource(),
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-
-                            IconButton(onClick = {
-                                optionMenuExpanded = true
-                            }) {
-                                Icon(
-                                    painter = CoreAppIcons.MoreVert.asPainterResource(),
-                                    contentDescription = null
-                                )
-                            }
-
-                            DropdownMenu(
-                                expanded = optionMenuExpanded,
-                                onDismissRequest = { optionMenuExpanded = false }
-                            ) {
-                                if (state.data.canEdit) {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            optionMenuExpanded = false
-                                            onShowDialog(MainAlertDialog.DeleteGroup)
-                                        }
-                                    ) {
-                                        Icon(
-                                            painter = CoreAppIcons.Delete.asPainterResource(),
-                                            tint = MaterialTheme.colors.onError,
-                                            contentDescription = null
-                                        )
-                                        Spacer(modifier = Modifier.size(8.dp))
-                                        Text(
-                                            text = stringResource(MR.strings.group_details_menu_delete)
-                                        )
-                                    }
-                                } else {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            optionMenuExpanded = false
-                                            onShowDialog(MainAlertDialog.BlockGroup)
-                                        }
-                                    ) {
-                                        Icon(
-                                            painter = CoreAppIcons.Block.asPainterResource(),
-                                            tint = MaterialTheme.colors.onError,
-                                            contentDescription = null
-                                        )
-                                        Spacer(modifier = Modifier.size(8.dp))
-                                        Text(
-                                            text = stringResource(MR.strings.group_details_menu_block)
-                                        )
-                                    }
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            optionMenuExpanded = false
-                                            onShowDialog(MainAlertDialog.LeaveGroup)
-                                        }
-                                    ) {
-                                        Icon(
-                                            painter = CoreAppIcons.Logout.asPainterResource(),
-                                            tint = MaterialTheme.colors.onError,
-                                            contentDescription = null
-                                        )
-                                        Spacer(modifier = Modifier.size(8.dp))
-                                        Text(
-                                            text = stringResource(MR.strings.group_details_menu_leave)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    )
-                },
                 floatingActionButton = {
-                    ExtendedFloatingActionButton(
-                        text = {
-                            if (state.data.sharingStatus != null) {
-                                Text(text = stringResource(MR.strings.location_banner_info_stop))
-                            } else {
-                                Text(text = stringResource(MR.strings.groups_sharing_button_start))
-                            }
-                        },
-                        icon = {
-                            if (state.data.sharingStatus != null) {
+                    if (state.data.sharingStatus != null) {
+                        ExtendedFloatingActionButton(
+                            modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
+                            text = { Text(text = stringResource(MR.strings.location_banner_info_stop)) },
+                            icon = {
                                 Icon(
                                     painter = CoreAppIcons.StopCircle.asPainterResource(),
                                     contentDescription = null
                                 )
-                            } else {
+                            },
+                            backgroundColor = MaterialTheme.colors.primary,
+                            elevation = FloatingActionButtonDefaults.elevation(
+                                2.dp, 4.dp, 3.dp, 3.dp
+                            ),
+                            onClick = { vm.stopSharing() }
+                        )
+                    } else {
+                        ExtendedFloatingActionButton(
+                            modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
+                            text = { Text(text = stringResource(MR.strings.groups_sharing_button_start)) },
+                            icon = {
                                 Icon(
                                     painter = CoreAppIcons.ShareLocation.asPainterResource(),
                                     contentDescription = null
                                 )
-                            }
-                        },
-                        backgroundColor = MaterialTheme.colors.primary,
-                        elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
-                        onClick = {
-                            if (state.data.sharingStatus != null) {
-                                vm.stopSharing()
-                            } else {
-                                openSharing()
-                            }
-                        }
-                    )
+                            },
+                            backgroundColor = MaterialTheme.colors.primary,
+                            elevation = FloatingActionButtonDefaults.elevation(
+                                2.dp, 4.dp, 3.dp, 3.dp
+                            ),
+                            onClick = { openSharing() }
+                        )
+                    }
                 },
                 isFloatingActionButtonDocked = true
             ) {
@@ -302,8 +249,8 @@ fun GroupDetailScreenCore(
                     contentPadding = PaddingValues(
                         start = 20.dp,
                         end = 20.dp,
-                        top = it.calculateTopPadding() + 20.dp,
-                        bottom = it.calculateBottomPadding() + 100.dp
+                        top = contentPadding.calculateTopPadding() + 20.dp,
+                        bottom = contentPadding.calculateBottomPadding() + 100.dp
                     )
                 ) {
 
@@ -346,14 +293,17 @@ fun GroupDetailScreenCore(
                             groupImage = state.data.image,
                             onMapClick = { openMap() },
                             onPlacesClick = { openPlaces() },
-                            onSecurityClick = { openGroupRawData() },
+                            onSettingsClick = openGroupSettings,
                             onSharingClick = { openSharing() }
                         )
                     }
 
                     this.stickyHeader(key = "member_list_header") {
                         Row(
-                            modifier = Modifier.padding(vertical = 8.dp),
+                            modifier = Modifier
+                                .fillParentMaxWidth()
+                                .background(MaterialTheme.colors.background)
+                                .padding(vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -366,6 +316,22 @@ fun GroupDetailScreenCore(
                                 count = state.data.members.size,
                                 limit = state.data.memberLimit
                             )
+                            Spacer(modifier = Modifier.weight(1f))
+                            if (state.data.canEdit) {
+                                SmallActionButton(
+                                    modifier = Modifier,
+                                    icon = CoreAppIcons.Add.asPainterResource(),
+                                    text = {
+                                        Text(
+                                            modifier = Modifier.padding(end = 4.dp),
+                                            text = stringResource(MR.strings.group_details_add_member_button)
+                                        )
+                                    },
+                                    backgroundColor = MaterialTheme.colors.primary,
+                                    contentColor = MaterialTheme.colors.onPrimary,
+                                    onClick = { vm.tryAddMember() }
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.size(4.dp))
                     }
@@ -378,7 +344,7 @@ fun GroupDetailScreenCore(
                         if (index > 0)
                             Spacer(modifier = Modifier.size(8.dp))
 
-                        var expanded by remember {
+                        var expanded by rememberSaveable() {
                             mutableStateOf(false)
                         }
 
@@ -387,55 +353,57 @@ fun GroupDetailScreenCore(
                             state = item,
                             forceExpandAction = expanded,
                             collapseOnActionClick = false,
-                            onClick = { expanded = !expanded },
-                            onActionClick = {
-                                when (it) {
-                                    MemberAction.DELETE_MEMBER -> {
+                            onEvent = { event ->
+                                when (event) {
+                                    is GroupMemberItemEvent.onActionClick -> {
+                                        when (event.action.type) {
+                                            MemberActionType.DELETE_MEMBER -> {
+                                                onShowDialog(
+                                                    MainAlertDialog.DeleteGroupMember(
+                                                        item.memberState.userId,
+                                                        item.memberState.name
+                                                    )
+                                                )
+                                            }
+
+                                            MemberActionType.BLOCK_USER -> {
+                                                onShowDialog(MainAlertDialog.BlockUser(userId = item.memberState.userId))
+                                            }
+
+                                            MemberActionType.UNBLOCK_USER -> {
+                                                onShowDialog(
+                                                    MainAlertDialog.UnblockGroupOrUser(
+                                                        id = item.memberState.userId,
+                                                        type = BlocklistType.USER
+                                                    )
+                                                )
+                                            }
+
+                                            MemberActionType.DELETE_LOCATION -> {}
+                                        }
+                                    }
+
+                                    is GroupMemberItemEvent.onDeleteDeviceClick -> {
                                         onShowDialog(
-                                            MainAlertDialog.DeleteGroupMember(
-                                                item.memberState.userId,
-                                                item.memberState.name
+                                            MainAlertDialog.DeleteMemberLocation(
+                                                memberId = item.memberState.memberId,
+                                                locationId = event.item.locationId,
+                                                isUserOwnDevice = item.memberState.isCurrentUser,
+                                                memberName = item.memberState.name
                                             )
                                         )
                                     }
 
-                                    MemberAction.BLOCK_USER -> {
-                                        onShowDialog(MainAlertDialog.BlockUser(userId = item.memberState.userId))
+                                    is GroupMemberItemEvent.onItemClick -> {
+                                        expanded = !expanded
                                     }
 
-                                    MemberAction.UNBLOCK_USER -> {
-                                        onShowDialog(
-                                            MainAlertDialog.UnblockGroupOrUser(
-                                                id = item.memberState.userId,
-                                                type = BlocklistType.USER
-                                            )
-                                        )
-                                    }
-
-                                    MemberAction.DELETE_LOCATION, MemberAction.REQUEST_LOCATION -> {}
-                                }
-                            },
-                            onDeleteDeviceClick = {
-                                onShowDialog(
-                                    MainAlertDialog.DeleteMemberLocation(
-                                        memberId = item.memberState.memberId,
-                                        locationId = it.locationId,
-                                        isUserOwnDevice = item.memberState.isCurrentUser,
-                                        memberName = item.memberState.name
-                                    )
-                                )
-                            },
-                            extraActions = {
-                                IconButton(
-                                    onClick = {
+                                    is GroupMemberItemEvent.onShowLocation -> {}
+                                    is GroupMemberItemEvent.onLocationRequest -> {}
+                                    is GroupMemberItemEvent.onCopyCode -> { vm.copyToClipboard(event.code) }
+                                    is GroupMemberItemEvent.onOpenRawData -> {
                                         openMemberRawData(item.memberState.memberId)
                                     }
-                                ) {
-                                    Icon(
-                                        painter = CoreAppIcons.Security.asPainterResource(),
-                                        tint = AppColors.accent,
-                                        contentDescription = null
-                                    )
                                 }
                             }
                         )
@@ -443,16 +411,8 @@ fun GroupDetailScreenCore(
                 }
             }
 
-            AnimatedVisibility(state.data.loadingAction, enter = fadeIn(), exit = fadeOut()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = MaterialTheme.colors.background.copy(alpha = 0.5f))
-                        .clickable { },
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+            if (state.data.loadingAction) {
+                LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
             }
         }
     }
@@ -465,7 +425,7 @@ fun GroupDetailsHeader(
     groupImage: ImageModel,
     onMapClick: () -> Unit,
     onPlacesClick: () -> Unit,
-    onSecurityClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onSharingClick: () -> Unit,
 ) {
     Column(
@@ -536,8 +496,8 @@ fun GroupDetailsHeader(
                 modifier = Modifier
                     .padding(end = 10.dp)
                     .fillMaxWidth(0.5f),
-                icon = CoreAppIcons.Security.asPainterResource(),
-                title = stringResource(MR.strings.group_details_security_action),
+                icon = CoreAppIcons.Settings.asPainterResource(),
+                title = stringResource(MR.strings.title_settings),
                 description = null,
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
@@ -547,7 +507,7 @@ fun GroupDetailsHeader(
                     seekbarState = null
                 ),
                 onStateChange = {
-                    onSecurityClick()
+                    onSettingsClick()
                 }
             )
             LargeSeekbarSwitch(
@@ -568,7 +528,7 @@ fun GroupDetailsHeader(
             )
         }
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(40.dp))
     }
 }
 

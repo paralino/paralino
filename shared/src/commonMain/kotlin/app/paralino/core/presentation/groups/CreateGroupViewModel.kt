@@ -9,19 +9,25 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.utils.Constants
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreateGroupViewModel(
     val groupId: String?,
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
     private val createGroup: GroupCreateUseCase
 ) : CoreViewModel() {
-
 
     private val groupFlow = MutableStateFlow<Payload<UserGroup>>(Payload.Loading)
     private val _uiState = MutableStateFlow<Payload<CreateGroupState>>(Payload.Loading)
@@ -36,7 +42,7 @@ class CreateGroupViewModel(
         coroutineScope.launch {
             val value = when {
                 isGroupCreate() -> null
-                else -> groupRepo.getGroupWithoutMembersLocally(groupId!!)
+                else -> groupRepo.getGroupWithoutMembers(groupId!!)
                     .map { Payload.Success(it) }
                     .firstOrNull()
             } ?: Payload.Error(NullPointerException("No such group"))
@@ -72,10 +78,14 @@ class CreateGroupViewModel(
 
         val group = groupFlow.value.data
         val groupUpdateFlow = if (group != null) {
-            val newData = when(group.data) {
+            val newData = when (group.data) {
                 is CryptoResource.Ready, is CryptoResource.WrongKeyOrData, is CryptoResource.NotInitialized -> {
-                    CryptoResource.Ready(group.data.data?.copy(name = filteredName, image = image) ?: UserGroupData(filteredName, image, Constants.collectionGroupUser))
+                    CryptoResource.Ready(
+                        group.data.data?.copy(name = filteredName, image = image)
+                            ?: UserGroupData(filteredName, image, UserGroup.groupPrivateGroupId)
+                    )
                 }
+
                 else -> group.data
             }
             val newGroup = group.copy(data = newData)
@@ -94,8 +104,9 @@ class CreateGroupViewModel(
                 }
                 when (data) {
                     is Payload.Error -> {
-                        _eventChannel.send(CreateGroupScreenEvent.Error(data.exception))
+                        showSnackbar(data.exception.errorString())
                     }
+
                     Payload.Loading -> {}
                     is Payload.Success -> {
                         _eventChannel.send(CreateGroupScreenEvent.GroupUpdated(data.data))

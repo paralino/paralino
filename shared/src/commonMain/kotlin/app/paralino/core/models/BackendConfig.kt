@@ -26,8 +26,8 @@ object BackendResourceIDs {
     const val sourceCodeUrl = "https://github.com/paralino"
     const val privacyPolicyUrl = "https://paralino.app/privacy"
     const val termsOfUseUrl = "https://paralino.app/terms"
+    const val storeUrlGooglePlay = "https://play.google.com/store/apps/details?id=app.paralino.android"
 
-    const val databaseIdMaxLength = 36
     const val uniqueIdPlaceholder = "unique()"
 
     const val databaseKeysID = "data_keys"
@@ -53,25 +53,4 @@ object BackendResourceIDs {
     const val collectionPushNotificationID: String = "push_notifications"
     const val collectionConfigID: String = "config"
     const val collectionBlockedID: String = "blocked"
-
-    const val functionPersonalCodeReadID: String = "personal_code_read"
-    const val functionPersonalCodeCreateID: String = "personal_code_create"
-    const val functionCreateGroupID: String = "group_create"
-    const val functionDeleteGroupID: String = "group_delete"
-    const val functionUpdateGroupID: String = "group_update"
-    const val functionCreateGroupMemberID: String = "group_member_create"
-    const val functionDeleteGroupMemberID: String = "group_member_delete"
-    const val functionUpdateGroupKeysID: String = "group_keys_update"
-    const val functionUpdateGroupMemberKeysID: String = "group_member_keys_update"
-    const val functionGroupMemberUpdateID: String = "group_member_update"
-    const val functionDeleteAccountAndData: String = "user_account_delete"
-    const val functionResetAccount: String = "user_account_reset"
-    const val functionUserKeysUpdate: String = "user_keys_update"
-    const val functionUserDeviceUpdate: String = "user_device_update"
-    const val functionUserEvent: String = "user_event"
-    const val functionPlaceCreate: String = "place_create"
-    const val functionPlaceDelete: String = "place_delete"
-    const val functionPlaceUpdate: String = "place_update"
-    const val functionLocationCreate: String = "location_create"
-    const val functionLocationDelete: String = "location_delete"
 }

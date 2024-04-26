@@ -1,26 +1,33 @@
 package app.paralino.core.crypto
 
 interface ICryptoServiceProvider: ICryptoHashProvider {
+
+    fun createRandomId(length: Int, alphabet: AlphabetType): String
+
     fun createNewSymmetricKey(): String
     fun createNewCryptoKeyPair(): KeyPair
     fun createNewSignatureKeyPair(): KeyPair
 
     fun encryptDataWithSymmetricKey(data: String, key: String): String
-    suspend fun decryptDataWithSymmetricKey(data: String, key: String): String
+    fun decryptDataWithSymmetricKey(data: String, key: String): String
 
     fun encryptDataWithPassword(data: String, password: String, context: String): String
-    suspend fun decryptDataWithPassword(data: String, password: String, context: String): String
+    fun decryptDataWithPassword(data: String, password: String, context: String): String
 
     fun encryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String
     fun decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String
 
     fun signData(data: String, myPrivateKey: String): String
     fun verifySignature(data: String, publicKey: String): String?
-
 }
 
 interface ICryptoHashProvider {
     fun computeHash(data: String, type: HashType): String
+}
+
+enum class AlphabetType(val alphabet: String) {
+    SAFE(alphabet = "3456789ABCDEFGHJKLMNPQRTUWYZ"),
+    EXTENDED(alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 }
 
 enum class HashType {

@@ -25,8 +25,11 @@ sealed class MapHomeScreenState {
         val markers: List<MapPinData>,
         val trackingMarker: FocusedMarkerData?,
         val mapHomeScreenFocusType: MapHomeScreenFocusType,
+        val mapSheetSelectedContentType: MapSheetSelectedContentType,
 
         val sharingStatus: LocationSharingContract?,
+        val sharingEndTime: String?,
+        val verified: Boolean,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
         val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
@@ -55,14 +58,26 @@ sealed class MapHomeScreenState {
     ) : MapHomeScreenState()
 }
 
+fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeScreenState.Ready?
+
 sealed class MapHomeScreenEvent {
 
+}
+
+enum class MapSheetSelectedContentType {
+    PLACES, MEMBERS
 }
 
 sealed interface MapHomeScreenFocusType {
     data object NONE : MapHomeScreenFocusType
     data class PLACE(val placeId: String) : MapHomeScreenFocusType
-    data class MEMBER(val memberKeyId: String, val forceZoom: Boolean) : MapHomeScreenFocusType
+    data class MEMBER(
+        val memberId: String,
+        val memberUserId: String,
+        val memberLocationId: String?,
+        val memberKeyId: String,
+        val forceZoom: Boolean
+    ) : MapHomeScreenFocusType
     data object ALL_PLACES : MapHomeScreenFocusType
     data object ALL_MEMBERS : MapHomeScreenFocusType
 

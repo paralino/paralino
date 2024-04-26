@@ -1,5 +1,6 @@
 package app.paralino.android.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -7,28 +8,29 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
-import app.paralino.android.ui.MainAppState
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
+import app.paralino.android.ui.groups.GroupSettingsScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen
 import app.paralino.android.ui.invite.manage.PersonalCodeScreen
 import app.paralino.android.ui.login.LoggedOutScreen
 import app.paralino.android.ui.login.LoginScreen
 import app.paralino.android.ui.login.ProfileSetupScreen
-import app.paralino.android.ui.login.ResetPasswordScreen
 import app.paralino.android.ui.login.RecoverKeysScreen
+import app.paralino.android.ui.login.ResetPasswordScreen
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.MapHomeScreen
-import app.paralino.android.ui.places.create.CreatePlaceScreen
-import app.paralino.android.ui.places.detail.PlaceDetailScreen
-import app.paralino.android.ui.places.list.PlacesScreen
-import app.paralino.android.ui.settings.RawDataScreen
-import app.paralino.android.ui.settings.profile.AccountScreen
+import app.paralino.android.ui.places.CreatePlaceScreen
+import app.paralino.android.ui.places.PlaceDetailScreen
+import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.LicencesScreen
+import app.paralino.android.ui.settings.RawDataScreen
 import app.paralino.android.ui.settings.SettingsScreen
-import app.paralino.android.ui.settings.profile.ConvertAccountScreen
+import app.paralino.android.ui.settings.profile.AccountScreen
 import app.paralino.android.ui.settings.profile.ChangeEmailScreen
 import app.paralino.android.ui.settings.profile.ChangePasswordScreen
+import app.paralino.android.ui.settings.profile.ConvertAccountScreen
 import app.paralino.android.ui.settings.profile.EditProfileScreen
 import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
@@ -43,9 +45,13 @@ fun MainNavHost(
     onAppClose: () -> Unit
 ) {
     NavHost(
+        modifier = modifier,
         navController = appState.navController,
         startDestination = AppScreen.MainHome.routeSignature,
-        modifier = modifier
+        enterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
+        exitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, targetOffset = { it / 4 }) },
+        popEnterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) },
+        popExitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
     ) {
         homeGraph(appState = appState, onAppClose = onAppClose)
         settingsGraph(appState)
@@ -69,6 +75,10 @@ fun NavGraphBuilder.homeGraph(
             val groupId =
                 it.arguments!!.getString(AppScreen.MainHome.GroupDetails.argumentGroupId)
             GroupDetailScreen(appState = appState, groupId = groupId)
+        }
+        composable(AppScreen.MainHome.GroupSettings.routeSignature) {
+            val groupId = it.arguments!!.getString(AppScreen.MainHome.GroupSettings.argumentGroupId)
+            GroupSettingsScreen(appState = appState, groupId = groupId)
         }
         composable(AppScreen.MainHome.GroupCreate.routeSignature) {
             val groupId =

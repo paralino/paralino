@@ -24,6 +24,5 @@ data class CreateGroupState(
 }
 
 sealed class CreateGroupScreenEvent() {
-    data class Error(val error: Throwable): CreateGroupScreenEvent()
     data class GroupUpdated(val groupId: String): CreateGroupScreenEvent()
 }

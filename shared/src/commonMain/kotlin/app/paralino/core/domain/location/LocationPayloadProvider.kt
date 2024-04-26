@@ -20,6 +20,9 @@ class LocationPayloadProvider(
     suspend fun getLocationPayload(
         groupId: String,
         data: LocationDataModel?,
+        /**
+         * if there is no contract, location data is ignored
+         */
         contract: LocationSharingContract?
     ): LocationPayloadStatus {
         return triggerRemoteOnly {

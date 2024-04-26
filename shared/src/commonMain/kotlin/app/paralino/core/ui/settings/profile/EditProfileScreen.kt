@@ -2,11 +2,22 @@ package app.paralino.core.ui.settings.profile
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -15,7 +26,6 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenEvent
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenState
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
@@ -30,12 +40,8 @@ import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.errorString
-import app.paralino.core.utils.extensions.getFormValidationErrorText
-import app.paralino.core.utils.extensions.safeCast
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @Composable
 fun EditProfileScreen(
@@ -51,15 +57,6 @@ fun EditProfileScreen(
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is EditProfileScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
-                }
-                is EditProfileScreenEvent.ValidationError -> {
-                    val errorText = getFormValidationErrorText(
-                        validation = event.validationResult.type
-                    )
-                    vm.showSnackbar(errorText)
-                }
                 EditProfileScreenEvent.ProfileUpdated -> {
                     onExit()
                 }
@@ -70,32 +67,14 @@ fun EditProfileScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { Text(text = stringResource(MR.strings.settings_account_edit_profile)) },
-                navigationIcon = {
-                    IconButton(onClick = onExit) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-        }
-    ) {
-        EditProfileScreen(
-            state = uiState,
-            onImageClick = {
-                onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.userEmojis))
-            },
-            onNameChange = { vm.onNameChange(it) },
-            onCreateGroupClick = { vm.proceed() }
-        )
-    }
+    EditProfileScreen(
+        state = uiState,
+        onImageClick = {
+            onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.userEmojis))
+        },
+        onNameChange = { vm.onNameChange(it) },
+        onCreateGroupClick = { vm.proceed() }
+    )
 }
 
 @Composable

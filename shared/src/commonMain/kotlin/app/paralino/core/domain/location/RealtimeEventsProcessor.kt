@@ -7,6 +7,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.base.RealtimeResponse
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
@@ -18,6 +19,7 @@ import app.paralino.core.repo.user.IPushProviderManager
 
 class RealtimeEventsProcessor constructor(
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
+    private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
     private val placesRepo: PlacesRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val memberLocal: LocationLocalDataSource,
@@ -36,6 +38,8 @@ class RealtimeEventsProcessor constructor(
         "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionMemberLocationsID}.documents"
     val pushNotificationsChannel =
         "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionPushNotificationID}.documents"
+
+    private fun isPaused(groupId: String): Boolean = registerDeviceForSharing.isProcessing(key = groupId)
 
     suspend fun processEvent(response: RealtimeResponse<Map<String, Any>>) {
         when {
@@ -64,8 +68,16 @@ class RealtimeEventsProcessor constructor(
     private suspend fun processLocationFocusChannelEvent(response: RealtimeResponse<Map<String, Any>>) {
         logg.tag("realtime_events").v("Got location focus create/update event")
         val groupId = response.payload["groupId"] as String
+
+        if (isPaused(groupId)) return
+
         if (locationSharingManager.isSharingActiveForGroup(groupId)) {
-            locationPerformanceManager.locationBoostRequested(groupId)
+            logg.tag("location_performance").v("Boosting location from location focus realtime event")
+            locationPerformanceManager.locationBoostRequested(
+                performanceType = LocationPerformanceType.MEDIUM_HIGH,
+                groupId = groupId,
+                from = "realtime location focus event"
+            )
         }
     }
 
@@ -79,6 +91,9 @@ class RealtimeEventsProcessor constructor(
             // place will be updated after everything is finished
             // key rotation is still in progress at this point so ignore this data
             val place = GroupPlaceRaw.from(response.payload)
+
+            if (isPaused(place.groupId)) return
+
             if (!groupPreRefreshUseCase.isProcessing(place.groupId))
                 placesRepo.updatePlaceLocally(place)
         }
@@ -95,6 +110,9 @@ class RealtimeEventsProcessor constructor(
 
         try {
             if (member != null) {
+
+                if (isPaused(member.groupId)) return
+
                 if (groupPreRefreshUseCase.isProcessing(member.groupId)) {
                     logg.tag("realtime_events")
                         .v("Update in progress - Ignore member (${member.id}) update event in group ${member.groupId}")
@@ -121,6 +139,9 @@ class RealtimeEventsProcessor constructor(
                 }
             } else {
                 val groupId = response.payload["groupId"] as String
+
+                if (isPaused(groupId)) return
+
                 if (groupPreRefreshUseCase.isProcessing(groupId)) {
                     logg.tag("realtime_events")
                         .v("Update in progress - Ignore member delete event in group $groupId")
@@ -145,6 +166,9 @@ class RealtimeEventsProcessor constructor(
 
         if (location != null) {
             val groupId = response.payload["groupId"] as String
+
+            if (isPaused(groupId)) return
+
             if (groupPreRefreshUseCase.isProcessing(groupId)) {
                 logg.tag("realtime_events")
                     .v("Update in progress - ignore location event in group $groupId")
@@ -172,6 +196,9 @@ class RealtimeEventsProcessor constructor(
 
         } else {
             val groupId = response.payload["groupId"] as String
+
+            if (isPaused(groupId)) return
+
             if (groupPreRefreshUseCase.isProcessing(groupId)) {
                 logg.tag("realtime_events")
                     .v("Update in progress - ignore location delete in group $groupId")
@@ -183,6 +210,7 @@ class RealtimeEventsProcessor constructor(
     }
 
     private fun processPushNotificationEvent(response: RealtimeResponse<Map<String, Any>>) {
+        logg.tag("realtime_events").v("Got notification document event")
         pushProvider.syncPushNotifications()
     }
 }

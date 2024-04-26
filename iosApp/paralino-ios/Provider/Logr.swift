@@ -17,8 +17,9 @@ class DebbugLogr: SystemLogr {
     
     override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {
         
+        let time = Date.now.ISO8601Format(.iso8601(timeZone: TimeZone.current, includingFractionalSeconds: true))
         let tagElement = tag != nil && !tag!.isEmpty ? "[\(tag!)] - " : ""
-        let output = "\(tagElement)\(message)"
+        let output = "\(time) | \(tagElement)\(message)"
         
         switch priority {
         case .info:
@@ -35,5 +36,4 @@ class DebbugLogr: SystemLogr {
             logger.notice("⚪️ \(output)")
         }
     }
-    
 }

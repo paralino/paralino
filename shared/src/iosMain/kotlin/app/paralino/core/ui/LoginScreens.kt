@@ -2,13 +2,11 @@ package app.paralino.core.ui
 
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.login.LoggedOutViewModel
-import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
-import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.login.LoginScreenCore
 import app.paralino.core.ui.login.ProfileSetupScreenCore
 import app.paralino.core.ui.login.RecoverKeysScreenCore
@@ -30,14 +28,12 @@ object LoginScreens {
 
     fun LoginScreenVC(
         vm: LoginViewModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
         onExit: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
             LoginScreenCore(
                 appState = it,
                 vm = vm,
-                onShowDialog = onShowDialog,
                 onExit = onExit
             )
         }
@@ -57,29 +53,25 @@ object LoginScreens {
     }
 
     fun RecoverKeysVC(
-        vm: RecoverKeysViewModel,
-        onShowDialog: (MainAlertDialog?) -> Unit,
+        vm: RecoverKeysViewModel
     ) = ComposeUIViewController {
         RootScreenIOS {
             RecoverKeysScreenCore(
                 appState = it,
-                vm = vm,
-                onShowDialog = onShowDialog,
+                vm = vm
             )
         }
     }
 
     fun ResetPasswordVC(
         vm: ResetPasswordViewModel,
-        openLoginScreen: () -> Unit,
-        onClose: () -> Unit
+        openLoginScreen: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
             ResetPasswordScreenCore(
                 appState = it,
                 vm = vm,
-                openLoginScreen = openLoginScreen,
-                onClose = onClose
+                openLoginScreen = openLoginScreen
             )
         }
     }

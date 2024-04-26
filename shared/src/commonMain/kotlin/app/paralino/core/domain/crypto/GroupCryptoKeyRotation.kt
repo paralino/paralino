@@ -18,6 +18,7 @@ import app.paralino.core.models.raw.GroupPlaceDataUpdatePayload
 import app.paralino.core.models.raw.UpdateGroupKeysPayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
@@ -109,11 +110,8 @@ class GroupCryptoKeyRotation constructor(
     private suspend fun rotateGroupAndMemberKeys(
         remoteGroup: UserGroupWithMembers
     ) {
-
-        val places = placesRepo.getPlacesForGroupLocally(remoteGroup.id).first()
-
         // 1. rotate group key
-        rotateGroupKeys(group = remoteGroup, places = places)
+        rotateGroupKeys(group = remoteGroup)
         // new group key is required first since we are re-encrypting user data with it
         cryptoKEKRepository.refreshGroupKeysForGroup(groupId = remoteGroup.id)
 
@@ -130,8 +128,7 @@ class GroupCryptoKeyRotation constructor(
     }
 
     private suspend fun rotateGroupKeys(
-        group: UserGroupWithMembers,
-        places: List<GroupPlace>
+        group: UserGroupWithMembers
     ) {
         blocking {
 
@@ -149,17 +146,19 @@ class GroupCryptoKeyRotation constructor(
                 )
             } ?: ""
 
-            val placesData = places.mapNotNull { place ->
-                place.data.data?.let {
-                    GroupPlaceDataUpdatePayload(
-                        placeId = place.id,
-                        placeData = cryptoCore.encryptDataWithKey(
-                            data = BaseRemoteModule.formatter.encodeToString(place.data.data),
-                            key = newGroupKey
-                        )
-                    )
-                }
-            }
+            val places = placesRepo.getPlacesForGroupLocally(group.id).first()
+            val placesData = emptyList<GroupPlaceDataUpdatePayload>()
+//            val placesData = places.mapNotNull { place ->
+//                place.data.data?.let {
+//                    GroupPlaceDataUpdatePayload(
+//                        placeId = place.id,
+//                        placeData = cryptoCore.encryptDataWithKey(
+//                            data = BaseRemoteModule.formatter.encodeToString(place.data.data),
+//                            key = newGroupKey
+//                        )
+//                    )
+//                }
+//            }
 
             val usedKeys = group.members.map { it.member.groupKeyVersion } +
                     group.members.flatMap { it.locations.map { it.groupKeyVersion } } +
@@ -212,7 +211,6 @@ class GroupCryptoKeyRotation constructor(
                 integrity = groupIntegrity,
                 keyVersionsToKeep = usedKeys.distinct(),
                 encryptedGroupKeys = keys,
-                groupKeyVersion = usedKeys.max().plus(1),
                 groupData = groupData,
                 places = placesData
             )
@@ -223,10 +221,9 @@ class GroupCryptoKeyRotation constructor(
             )
 
             if (!response.isSuccess) {
-                throw BaseRemoteException.fromCode(
+                throw BaseRemoteException.fromRemote(
                     code = response.statusCode,
-                    message = "Unable to update group keys",
-                    cause = Exception(response.stderr)
+                    error = response.errorResponse
                 )
             }
         }

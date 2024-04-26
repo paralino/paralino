@@ -19,30 +19,25 @@ import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.SystemLogr
 import app.paralino.core.utils.exceptions.InternalConnectionException
-import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.sentry.Sentry
 import java.net.ConnectException
 import java.net.SocketTimeoutException
-import java.util.UUID
 
 class DeviceApiProvider constructor(
     private val appClass: AppClass,
-    backendConfig: BackendConfig,
+    private val backendConfig: BackendConfig,
     locationStatusProvider: ILocationStatusProvider,
-    connectionStatusProvider: IConnectionStatusProvider
-) : IDeviceApiProvider(backendConfig, locationStatusProvider, connectionStatusProvider) {
+    connectionStatusProvider: IConnectionStatusProvider,
+) : IDeviceApiProvider(locationStatusProvider, connectionStatusProvider) {
 
     override val deviceType: DeviceType
         get() = DeviceType.Android
 
-    override val batteryLevel: Int
+    override val _batteryLevel: Int
         get() = appClass.batterLevel
 
     override val isCharging: Boolean
         get() = appClass.isBatteryCharging
-
-    override val randomUUID: String
-        get() = UUID.randomUUID().toString()
 
     override val appVersionCode: Long
         get() = BuildConfig.VERSION_CODE.toLong()

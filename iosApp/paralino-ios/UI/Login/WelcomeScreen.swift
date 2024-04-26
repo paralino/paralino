@@ -29,15 +29,11 @@ struct WelcomeScreen: View {
                 switch route {
                 case .welcome: WelcomeScreen()
                 case .login:
-                    let loginAppState = ViewModelFactoryIOS(
-                        vm: KoinIOS.ViewModels.shared.loginVM(screenUiType: LoginScreenUiType.login)
-                    )
-                    LoginScreen(appState: loginAppState)
+                    let loginAppState = LoginScreen.createState(screenUiType: LoginScreenUiType.login)
+                    LoginScreen(appState: loginAppState, path: $path)
                 case .signup:
-                    let loginAppState = ViewModelFactoryIOS(
-                        vm: KoinIOS.ViewModels.shared.loginVM(screenUiType: LoginScreenUiType.signup)
-                    )
-                    LoginScreen(appState: loginAppState)
+                    let loginAppState = LoginScreen.createState(screenUiType: LoginScreenUiType.signup)
+                    LoginScreen(appState: loginAppState, path: $path)
                 }
             }
         }

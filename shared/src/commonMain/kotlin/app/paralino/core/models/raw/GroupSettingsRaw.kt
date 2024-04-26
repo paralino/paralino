@@ -10,6 +10,7 @@ data class GroupSettingsRaw(
     val ownerUserId: String,
     val groupId: String,
     val integrity: String,
+    val groupOwnerIntegrity: String?,
 ) {
 
     companion object {
@@ -19,6 +20,7 @@ data class GroupSettingsRaw(
                 ownerUserId = map["ownerUserId"] as String,
                 groupId = map["groupId"] as String,
                 integrity = map["integrity"] as String,
+                groupOwnerIntegrity = map["groupOwnerIntegrity"] as? String?,
             )
         }
     }

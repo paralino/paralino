@@ -48,9 +48,9 @@ import app.paralino.core.MR
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.presentation.login.LoginScreenEvent
 import app.paralino.core.presentation.login.LoginScreenState
+import app.paralino.core.presentation.login.LoginScreenUiEvent
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
-import app.paralino.core.presentation.login.SignUpErrorType
 import app.paralino.core.presentation.login.SignUpStepInfo
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
@@ -60,19 +60,19 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
-import app.paralino.core.ui.components.MainAlertDialog
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
-import app.paralino.core.utils.extensions.errorString
-import app.paralino.core.utils.extensions.getFormValidationErrorText
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -81,7 +81,6 @@ import org.jetbrains.compose.resources.painterResource
 fun LoginScreenCore(
     appState: CoreUiState,
     vm: LoginViewModel,
-    onShowDialog: (MainAlertDialog?) -> Unit,
     onExit: () -> Unit
 ) {
 
@@ -89,10 +88,6 @@ fun LoginScreenCore(
 
     val uiState by vm.uiState.collectAsState(initial = LoginScreenState(uiType = vm.initialUiType))
     val focusManager = LocalFocusManager.current
-
-    LaunchedEffect(key1 = Unit) {
-        onShowDialog(if (uiState.hasGuestAccount) MainAlertDialog.GuestAccountRecover else null)
-    }
 
     val signUpRegularSwitchState by rememberSeekbarState(
         key = uiState.uiType,
@@ -113,32 +108,44 @@ fun LoginScreenCore(
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is LoginScreenEvent.Error -> {
-                    vm.showSnackbar(event.exception.errorString())
-                }
-                is LoginScreenEvent.LoginError -> {
-                    val errorText = getErrorText(event.errorType)
-                    vm.showSnackbar(errorText)
-                }
-                is LoginScreenEvent.ValidationError -> {
-                    val errorText = getFormValidationErrorText(
-                        validation = event.validationResult.type
-                    )
-                    vm.showSnackbar(errorText)
-                }
                 LoginScreenEvent.UserReady -> {
 //                    appState.navController.navigate(AppScreen.DashboardRoot.routeSignature)
                 }
+
                 LoginScreenEvent.PasswordResetDone -> {
                     vm.showSnackbar(MR.strings.login_info_password_reset_done.localizedString())
                     delay(500)
                     onExit()
                 }
+
                 null -> {
                     /* do nothing */
                 }
             }
         }
+    }
+
+    when (val dialog = uiState.alertDialog) {
+        is MainAlertDialog.GuestAccountCreating -> {
+            dialog.Show {
+                vm.onEvent(LoginScreenUiEvent.HideDialog)
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.onEvent(LoginScreenUiEvent.ConfirmLoginOrSignup)
+                }
+            }
+        }
+
+        is MainAlertDialog.GuestAccountRecover -> {
+            dialog.Show {
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.onEvent(LoginScreenUiEvent.RecoverGuestAccount)
+                } else if (it == MainAlertDialog.Buttons.buttonCancel) {
+                    vm.onEvent(LoginScreenUiEvent.DismissGuestAccount)
+                }
+            }
+        }
+
+        else -> {}
     }
 
     Column(
@@ -159,7 +166,7 @@ fun LoginScreenCore(
         Spacer(modifier = Modifier.weight(0.2f))
 
         Image(
-            painter = painterResource(res = "drawable/ic_launcher_foreground.xml"),
+            painter = painterResource(resource = DrawableResource("drawable/ic_launcher_foreground.xml")),
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
@@ -189,7 +196,7 @@ fun LoginScreenCore(
                 ) {
                     LargeSeekbarSwitch(
                         modifier = Modifier
-                            .alpha(if(uiState.canUseEmail) 1f else 0.4f)
+                            .alpha(if (uiState.canUseEmail) 1f else 0.4f)
                             .padding(end = 10.dp)
                             .fillMaxWidth(0.5f),
                         icon = CoreAppIcons.Person.asPainterResource(),
@@ -314,11 +321,7 @@ fun LoginScreenCore(
                 state = AppButtonState.loadingState(uiState.actionLoading),
                 onClick = {
                     focusManager.clearFocus()
-                    if (uiState.uiType == LoginScreenUiType.SIGNUP_GUEST) {
-                        onShowDialog(MainAlertDialog.GuestAccountCreating)
-                    } else {
-                        vm.proceed()
-                    }
+                    vm.onEvent(LoginScreenUiEvent.LoginOrSignup)
                 }
             ) {
                 val text = when (uiState.uiType) {
@@ -335,7 +338,7 @@ fun LoginScreenCore(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        if(uiState.canUseEmail) {
+        if (uiState.canUseEmail) {
             val switchText = when (uiState.uiType) {
                 LoginScreenUiType.LOGIN -> stringResource(resource = MR.strings.login_signup_switch_button_signup)
                 LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> stringResource(resource = MR.strings.login_signup_switch_button_login)
@@ -429,17 +432,5 @@ fun getStepText(stepInfo: SignUpStepInfo?): String {
         SignUpStepInfo.Error.USER_DATA -> stringResource(resource = MR.strings.login_step_error_user_setup)
         SignUpStepInfo.Error.RECOVER_GUEST -> stringResource(resource = MR.strings.login_step_error_recoverGuest)
         null -> ""
-    }
-}
-
-fun getErrorText(error: SignUpErrorType): String {
-    return when (error) {
-        SignUpErrorType.ACCOUNT_CONFLICT -> MR.strings.form_invalid_email_conflict_description.localizedString()
-        SignUpErrorType.CREDENTIALS -> MR.strings.form_invalid_credentials_description.localizedString()
-        SignUpErrorType.CREDENTIALS_GUEST -> MR.strings.login_step_error_recoverGuest.localizedString()
-        SignUpErrorType.LOGIN_CRYPTO -> MR.strings.login_step_error_encryption_logIn.localizedString()
-        SignUpErrorType.SIGNUP_CRYPTO -> MR.strings.login_step_error_encryption_signUp.localizedString()
-        SignUpErrorType.SIGNUP_DATA -> MR.strings.login_step_error_user_setup_signUp.localizedString()
-        is SignUpErrorType.SOURCE -> error.error.errorString()
     }
 }

@@ -17,11 +17,11 @@ struct RawDataScreen: View {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
                 ScreensIOS.shared.settings.RawDataScreenVC(
-                    vm: appState.vm,
-                    onNavigateBack: {}
+                    vm: appState.vm
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.raw_data_screen_title.localizedString())
         }
     }
     

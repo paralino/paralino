@@ -12,35 +12,13 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 
 object AppIcons {
-    val NotListedLocation @Composable get() = R.drawable.ic_not_listed_location.asPainterResource()
-    val NotificationsOff @Composable get() = R.drawable.ic_notifications_off.asPainterResource()
-    val Home @Composable get() = R.drawable.ic_home.asPainterResource()
-    val Adjust @Composable get() = R.drawable.ic_adjust.asPainterResource()
-    val CenterFocusStrong @Composable get() = R.drawable.ic_center_focus_strong.asPainterResource()
-    val Groups @Composable get() = R.drawable.ic_groups.asPainterResource()
-    val Logout @Composable get() = CoreAppIcons.Logout.asPainterResource()
+    val Adjust @Composable get() = CoreAppIcons.Adjust.asPainterResource()
     val Warning @Composable get() = CoreAppIcons.Warning.asPainterResource()
     val Group @Composable get() = CoreAppIcons.Group.asPainterResource()
     val ExpandMore @Composable get() = CoreAppIcons.ExpandMore.asPainterResource()
-    val StackedLineChart @Composable get() = CoreAppIcons.StackedLineChart.asPainterResource()
-    val Timer @Composable get() = CoreAppIcons.Timer.asPainterResource()
-    val Speed @Composable get() = CoreAppIcons.Speed.asPainterResource()
-    val AccessTime @Composable get() = CoreAppIcons.AccessTime.asPainterResource()
-    val Delete @Composable get() = CoreAppIcons.Delete.asPainterResource()
-    val BatteryChargingFull @Composable get() = CoreAppIcons.BatteryChargingFull.asPainterResource()
-    val MapsHomeWork @Composable get() = CoreAppIcons.MapsHomeWork.asPainterResource()
-    val Map @Composable get() = CoreAppIcons.Map.asPainterResource()
-    val ShareLocation @Composable get() = CoreAppIcons.ShareLocation.asPainterResource()
-    val StopCircle @Composable get() = CoreAppIcons.StopCircle.asPainterResource()
-    val MoreVert @Composable get() = CoreAppIcons.MoreVert.asPainterResource()
-    val PersonAdd @Composable get() = CoreAppIcons.PersonAdd.asPainterResource()
-    val Edit @Composable get() = CoreAppIcons.Edit.asPainterResource()
-    val Security @Composable get() = CoreAppIcons.Security.asPainterResource()
     val Save @Composable get() = CoreAppIcons.Save.asPainterResource()
     val Close @Composable get() = CoreAppIcons.Close.asPainterResource()
 
-    val Add @Composable get() = CoreAppIcons.Add.asPainterResource()
-    val Block @Composable get() = CoreAppIcons.Block.asPainterResource()
     val List @Composable get() = Icons.Rounded.FormatListBulleted
 
     @Composable

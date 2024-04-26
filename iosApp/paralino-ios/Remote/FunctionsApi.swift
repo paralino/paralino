@@ -8,8 +8,9 @@
 import Foundation
 import shared
 import Appwrite
+import AppwriteEnums
 
-class FunctionsApi: IFunctionsApi {
+class FunctionsApi: IFunctionsApiIOS {
     
     let remoteModule: AppwriteRemoteModule
     
@@ -18,27 +19,28 @@ class FunctionsApi: IFunctionsApi {
         super.init(deviceApiProvider: deviceApiProvider)
     }
     
-    override func runAsync(function: ServerFunction, data: String?) async throws -> String {
+    override func runAsync(function: ServerFunction, data: String?) async throws -> Payload<NSString> {
         return await remoteModule.execute { module in
-            try! await module.functions.createExecution(
+            let result = try await module.functions.createExecution(
                 functionId: function.functionId,
                 body: data,
                 async: true,
                 path: function.path,
-                method: function.method,
+                method: AppwriteEnums.ExecutionMethod(rawValue: function.method),
                 headers: [clientHeader.first : clientHeader.second]
             ).id
+            return NSString(string: result)
         }
     }
     
-    override func runAndWait(function: ServerFunction, data: String?) async throws -> FunctionExecutionRaw {
+    override func runAndWait(function: ServerFunction, data: String?) async throws -> Payload<FunctionExecutionRaw> {
         return await remoteModule.execute { module in
-            let result = try! await module.functions.createExecution(
+            let result = try await module.functions.createExecution(
                 functionId: function.functionId,
                 body: data,
                 async: false,
                 path: function.path,
-                method: function.method,
+                method: AppwriteEnums.ExecutionMethod(rawValue: function.method),
                 headers: [clientHeader.first : clientHeader.second]
             )
             return FunctionExecutionRaw(
@@ -47,7 +49,7 @@ class FunctionsApi: IFunctionsApi {
                 status: result.status,
                 statusCode: Int32(result.responseStatusCode),
                 response: result.responseBody,
-                stderr: result.errors
+                errors: result.errors
             )
         }
     }

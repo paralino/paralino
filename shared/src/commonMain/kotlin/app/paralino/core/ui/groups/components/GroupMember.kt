@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -16,11 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
-import app.paralino.core.presentation.groups.MemberAction
 
 @Composable
 fun GroupMember(
@@ -30,19 +28,14 @@ fun GroupMember(
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
-    onActionClick: ((MemberAction) -> Unit)? = null,
-    onDeleteDeviceClick: ((GroupMemberItemLocationState) -> Unit)? = null,
-    onToggleLocation: ((GroupMemberItemStateWithLocations) -> Unit)? = null,
-    extraActions: (@Composable RowScope.() -> Unit)? = null,
-    onClick: () -> Unit,
+    onEvent: (GroupMemberItemEvent) -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { onEvent(GroupMemberItemEvent.onItemClick(state)) }
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
-            .clickable { onClick() }
-            .padding(horizontal = 10.dp, vertical = 10.dp)
             .animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioLowBouncy,
@@ -56,17 +49,15 @@ fun GroupMember(
                     state = GroupMemberItemStateWithLocations(
                         memberState = state.memberState,
                         locations = listOfNotNull(state.location),
-                        actionItems = state.actionItems,
+                        actions = state.actions,
                         allowShowingDevices = false,
-                        lastPing = state.lastPing
+                        lastLocationPing = state.lastLocationPing,
+                        lastStatusPing = state.lastStatusPing
                     ),
                     canShowOldLocation = canShowOldLocation,
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
-                    onActionClick = onActionClick,
-                    onDeleteDeviceClick = onDeleteDeviceClick,
-                    onToggleLocation = onToggleLocation,
-                    extraActions = extraActions
+                    onEvent = onEvent
                 )
             }
 
@@ -76,10 +67,7 @@ fun GroupMember(
                     forceExpandAction = forceExpandAction,
                     collapseOnActionClick = collapseOnActionClick,
                     canShowOldLocation = canShowOldLocation,
-                    onActionClick = onActionClick,
-                    onDeleteDeviceClick = onDeleteDeviceClick,
-                    onToggleLocation = onToggleLocation,
-                    extraActions = extraActions
+                    onEvent = onEvent
                 )
             }
         }

@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS groupEntity (
 `groupKeyVersion` INTEGER NOT NULL,
 `data` TEXT NOT NULL,
 `serverIntegrity` TEXT NOT NULL,
-`planType` TEXT NOT NULL
+`planType` TEXT NOT NULL,
+`schemeVersion` TEXT NOT NULL
 );
 
 createGroup:

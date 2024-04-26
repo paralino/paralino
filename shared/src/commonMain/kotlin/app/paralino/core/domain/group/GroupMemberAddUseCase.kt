@@ -8,16 +8,16 @@ import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecutionRepository
-import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.MemberModelData
+import app.paralino.core.models.location.MemberModelParalinoIdData
 import app.paralino.core.models.raw.CreateGroupMemberPayload
 import app.paralino.core.models.raw.GroupMemberGroupKeysData
-import app.paralino.core.models.raw.GroupMemberPublicKeyPayload
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
@@ -26,7 +26,7 @@ import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 
@@ -34,7 +34,6 @@ class GroupMemberAddUseCase constructor(
     private val local: UserGroupLocalDataSource,
     private val groupRefreshUseCase: GroupRefreshUseCase,
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
@@ -46,10 +45,12 @@ class GroupMemberAddUseCase constructor(
     ): Flow<Unit> {
         return getDataOnce(
             remote = {
-                val group = local.getGroupWithMembers(groupId).first()
+                val group = local.getGroupWithMembers(groupId).firstOrNull()
+                    ?: throw IllegalStateException("Group does not exist: $groupId")
+
                 addUserToGroup(
-                    group,
-                    code
+                    group = group,
+                    codeData = code
                 )
                 groupRefreshUseCase.refreshRemoteGroupWithMembersAndPlaces(groupId)
             }
@@ -100,12 +101,6 @@ class GroupMemberAddUseCase constructor(
                 )
             }
 
-        val newUserOwnPublicKey = GroupMemberPublicKeyPayload(
-            userId = codeData.userData.ownerUserId,
-            signedPublicKey = codeData.keyData.signedOwnerKxPublicKey,
-            ownerIdentityKey = codeData.userData.ownerIdentityKey
-        )
-
         val keyId = cryptoCore.derivePassword(codeData.keyData.code).loginPassword
 
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
@@ -129,7 +124,7 @@ class GroupMemberAddUseCase constructor(
                 memberVerifications = group.members.map { it.member.verification } + memberVerification,
                 encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
                     groupId = groupId
-                ) + newUserOwnPublicKey.signedPublicKey
+                ) + codeData.keyData.signedOwnerKxPublicKey
             )
         ).let {
             cryptoCore.encryptDataWithKey(
@@ -153,6 +148,12 @@ class GroupMemberAddUseCase constructor(
                     MemberModelData(codeData.userData.ownerName, codeData.userData.ownerImage)
                 ),
                 key = groupKey.key
+            ),
+            paralinoId = cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(
+                    MemberModelParalinoIdData(codeData.keyData.code)
+                ),
+                key = groupKey.key
             )
         )
 
@@ -165,7 +166,7 @@ class GroupMemberAddUseCase constructor(
             // TODO throw better exception
             throw BaseRemoteException.fromCode(
                 code = response.statusCode,
-                message = "Unable to create group",
+                message = "Unable to add user to a group",
                 cause = Exception(response.stderr)
             )
         }

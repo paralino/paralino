@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.groups
 
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMetadata
 
 data class GroupItemState constructor(
     val id: String,
@@ -15,13 +15,13 @@ data class GroupItemState constructor(
 ) {
 
     constructor(
-        group: UserGroup,
+        group: UserGroupWithMetadata,
         uiType: GroupUiType? = null,
         canEdit: Boolean = false,
         isSelected: Boolean = false,
         isLarge: Boolean = true
     ) : this(
-        id = group.id,
+        id = group.group.id,
         name = group.name,
         image = group.image,
         userCount = group.memberCount,

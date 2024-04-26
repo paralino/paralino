@@ -2,6 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.data.db.MemberEntity
 import app.paralino.core.data.db.MemberLocationEntity
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
@@ -16,9 +17,9 @@ class MemberWithLocationsMapperLocal(
     suspend fun local2Core(
         member: MemberEntity,
         memberLocations: List<MemberLocationEntity>,
-        groupOwnerId: String
+        group: UserGroup
     ): MemberModelWithLocations {
-        return coreMapper.remote2Core(local2Remote(member, memberLocations), groupOwnerId)
+        return coreMapper.remote2Core(local2Remote(member, memberLocations), group)
     }
 
     fun local2Remote(
@@ -32,6 +33,7 @@ class MemberWithLocationsMapperLocal(
             groupId = model.groupId,
             groupKeyVersion = model.groupKeyVersion,
             data = model.data_,
+            paralinoId = model.paralinoId,
             verification = model.verification,
             settingsRaw = safeLet(
                 model.settings_id,
@@ -43,7 +45,8 @@ class MemberWithLocationsMapperLocal(
                     id = id,
                     groupId = groupId,
                     ownerUserId = userId,
-                    integrity = integrity
+                    integrity = integrity,
+                    groupOwnerIntegrity = model.settings_groupOwnerIntegrity
                 )
             },
             locationIds = memberLocations.map { it.id }
@@ -96,7 +99,9 @@ class MemberWithLocationsMapperLocal(
             settings_groupId = model.settingsRaw?.groupId,
             settings_ownerUserId = model.settingsRaw?.ownerUserId,
             settings_integrity = model.settingsRaw?.integrity,
-            data_ = model.data
+            settings_groupOwnerIntegrity = model.settingsRaw?.groupOwnerIntegrity,
+            data_ = model.data,
+            paralinoId = model.paralinoId,
         )
     }
 }

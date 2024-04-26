@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,12 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,7 +35,6 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.invite.input.MemberInviteScreenEvent
 import app.paralino.core.presentation.invite.input.MemberInviteScreenState
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
-import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetsScreen
@@ -52,7 +48,6 @@ import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
-import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -61,29 +56,17 @@ import kotlinx.coroutines.launch
 fun MemberInviteScreenCore(
     appState: CoreUiState,
     vm: MemberInviteViewModel,
+    contentPadding: PaddingValues,
     onPickGroup: (BottomSheetsScreen.GroupPicker) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
-
     val state by vm.uiState.collectAsState(initial = MemberInviteScreenState.Empty())
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is MemberInviteScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
-                }
-
-                MemberInviteScreenEvent.ErrorWrongCode -> {
-                    vm.showSnackbar(MR.strings.invite_connect_alert_wrongCode.localizedString())
-                }
-
-                MemberInviteScreenEvent.ErrorMissingGroup -> {
-                    vm.showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
-                }
-
                 MemberInviteScreenEvent.MemberAdded -> {
                     onNavigateBack()
                 }
@@ -95,44 +78,25 @@ fun MemberInviteScreenCore(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 1.dp,
-                title = { Text(text = stringResource(MR.strings.group_details_add_member_button)) },
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-        }
-    ) {
-        MemberInviteScreen(
-            modifier = Modifier.padding(it),
-            state = state,
-            onCodeChange = {
-                vm.codeChanged(it)
-            },
-            onLoadCode = {
-                vm.addOrLoadMember()
-            },
-            onAddMember = {
-                vm.addOrLoadMember()
-            },
-            onPickGroup = {
-                appState.uiScope.launch {
-                    val groups = vm.getAllGroups()
-                    onPickGroup(BottomSheetsScreen.GroupPicker(groups))
-                }
+    MemberInviteScreen(
+        modifier = Modifier.padding(contentPadding),
+        state = state,
+        onCodeChange = {
+            vm.codeChanged(it)
+        },
+        onLoadCode = {
+            vm.addOrLoadMember()
+        },
+        onAddMember = {
+            vm.addOrLoadMember()
+        },
+        onPickGroup = {
+            appState.uiScope.launch {
+                val groups = vm.getAllGroups()
+                onPickGroup(BottomSheetsScreen.GroupPicker(groups))
             }
-        )
-    }
-
+        }
+    )
 }
 
 @Composable

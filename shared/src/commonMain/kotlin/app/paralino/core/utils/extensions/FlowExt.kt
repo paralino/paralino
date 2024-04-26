@@ -3,6 +3,7 @@ package app.paralino.core.utils.extensions
 import app.paralino.core.models.Payload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 
@@ -11,7 +12,7 @@ fun <T> MutableStateFlow<T>.replace(action: T.() -> T) {
 }
 
 suspend inline fun <T> blocking(noinline action: suspend CoroutineScope.() -> T): T {
-    return withContext(Dispatchers.Default, action)
+    return withContext(Dispatchers.IO, action)
 }
 
 inline fun <reified T, R> Flow<T>.mapToPayload(

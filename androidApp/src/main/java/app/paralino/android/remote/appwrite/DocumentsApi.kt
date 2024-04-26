@@ -1,6 +1,7 @@
 package app.paralino.android.remote.appwrite
 
 import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import io.appwrite.Query
 import io.appwrite.models.Document
@@ -8,7 +9,7 @@ import io.appwrite.models.DocumentList
 
 class DocumentsApi constructor(
     private val remoteModule: AppWriteRemoteModule
-) : IDocumentsApi() {
+) : IDocumentsApi {
 
     override suspend fun createDocument(
         databaseType: BackendDatabaseType,
@@ -59,7 +60,7 @@ class DocumentsApi constructor(
     override suspend fun listDocuments(
         databaseType: BackendDatabaseType,
         collectionId: String,
-        keyValues: List<Pair<String, Any>>,
+        queries: List<BackendQuery>,
         limit: Int,
         onNewValues: (List<Map<String, Any>>) -> Boolean,
     ) {
@@ -70,7 +71,7 @@ class DocumentsApi constructor(
                     databaseId = databaseType.id,
                     collectionId = collectionId,
                     queries = buildList {
-                        addAll(keyValues.map { Query.equal(attribute = it.first, value = it.second) })
+                        addAll(buildQuery(queries))
                         add(Query.limit(limit))
                         if(cursor.isNotBlank())
                             add(Query.cursorAfter(cursor))
@@ -109,5 +110,19 @@ class DocumentsApi constructor(
         return this.documents.map { it.parseDocument() }
     }
 
+    private fun buildQuery(queries: List<BackendQuery>): List<String> {
+        return queries.map { query ->
+            when (query) {
+                is BackendQuery.OR -> {
+                    Query.or(buildQuery(query.queries))
+                }
+                is BackendQuery.Equals -> {
+                    Query.equal(attribute = query.key, value = query.value)
+                }
+
+                is BackendQuery.IsNull -> Query.isNull(attribute = query.key)
+            }
+        }
+    }
 }
 

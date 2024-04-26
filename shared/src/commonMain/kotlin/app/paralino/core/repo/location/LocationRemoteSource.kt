@@ -4,7 +4,6 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
@@ -14,9 +13,11 @@ import app.paralino.core.models.raw.LocationDeletePayload
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
+import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.CryptoException
@@ -31,8 +32,7 @@ class LocationRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKRepository,
-    private val userMemberIdUseCase: UserMemberIdUseCase,
+    private val cryptoKEKRepo: CryptoKEKRepository
 ) {
 
     suspend fun deleteLocation(memberId: String, locationId: String) {
@@ -80,7 +80,7 @@ class LocationRemoteSource constructor(
                 try {
                     saveCurrentLocation(it)
                 } catch (e: Exception) {
-                    logg.e("Error saving location for group ${it.groupId}", e)
+                    logg.e("location_service", "Error saving location for group ${it.groupId}", e)
                 }
             }
         }
@@ -146,7 +146,7 @@ class LocationRemoteSource constructor(
             val locations = documentApi.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
-                keyValues = listOf("groupId" to member.groupId)
+                queries = listOf(BackendQuery.Equals(key = "groupId", value = member.groupId))
             ).map { MemberLocationRaw.from(it) }
 
             MemberWithLocationsRaw(

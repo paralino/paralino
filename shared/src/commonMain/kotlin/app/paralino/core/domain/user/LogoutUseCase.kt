@@ -9,8 +9,12 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.data.db.AppConfig
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.location.IGeofenceManager
+import app.paralino.core.domain.location.LocationUploadEngine
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onEach
@@ -25,6 +29,9 @@ class LogoutUseCase(
     private val codeRepo: PersonalCodesRepository,
     private val pushManager: IPushProviderManager,
     private val deviceStatus: IDeviceApiProvider,
+    private val locationRepo: LocationUploadEngine,
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val geofenceManager: IGeofenceManager,
     private val config: AppConfig
 ) {
 
@@ -62,6 +69,7 @@ class LogoutUseCase(
 
     suspend fun logoutLocally() {
         config.clear()
+        scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
         clearResources()
         userRepo.logoutLocally()
     }
@@ -71,10 +79,11 @@ class LogoutUseCase(
         cryptoKEKRepo.clearKeys()
         pushManager.logout()
         deviceStatus.logout()
+        locationRepo.logout()
         groupsRepo.clear()
         placesRepo.clear()
         codeRepo.clearLocally()
         sharingManager.stopAllSharing()
+        geofenceManager.deleteAllGeofences()
     }
-
 }

@@ -10,6 +10,7 @@ import shared
 
 struct ChangeEmailScreen: View {
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.changeEmailVM)
+    @Binding var path: [NavigationGraph]
     
     var body: some View {
         ZStack {
@@ -17,16 +18,18 @@ struct ChangeEmailScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.ChangeEmailScreenVC(
                     vm: appState.vm,
-                    onNavigateBack: {}
+                    onNavigateBack: { path.removeLast() }
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.settings_account_edit_email.localizedString())
         }
     }
 }
 
 struct ChangeEmailScreen_Previews: PreviewProvider {
+    @State static var path: [NavigationGraph] = [.settings(.changeEmail)]
     static var previews: some View {
-        ChangeEmailScreen()
+        ChangeEmailScreen(path: $path)
     }
 }

@@ -1,15 +1,16 @@
 package app.paralino.core
 
+import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
-import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
-import app.paralino.core.repo.user.UserRepository
-import kotlinx.coroutines.cancelChildren
+import app.paralino.core.repo.base.AppUpdateType
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -17,49 +18,59 @@ import kotlinx.coroutines.launch
 class CoreAppManager(
     private val scopeProvider: ICoroutineScopeProvider,
     private val configRepo: AppConfigRepository,
-    private val userRepo: UserRepository,
     private val refreshManager: RefreshEverythingUseCase,
     private val sessionMonitor: UserSessionMonitor,
     private val logoutUseCase: LogoutUseCase,
     private val connectionStatusProvider: IConnectionStatusProvider,
-    val locationSharing: LocationSharingManager,
-    private val locationStatus: ILocationStatusProvider
+    private val locationStatus: ILocationStatusProvider,
+    private val activeSharingEngine: ActiveSharingEngine,
+    private val deviceApiProvider: IDeviceApiProvider
 ) {
 
-    private var wasInBackground: Boolean = false
-
     fun onAppStart() {
-
         sessionMonitor.listenForSessionExpired()
             .onEach {
                 logg.tag("account_session").v("Got session expired event - logout")
-                scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
                 logoutUseCase.logoutLocally()
             }
             .launchIn(scopeProvider.defaultScope)
 
-        userRepo.localUser
-            .onEach { }
+        deviceApiProvider.appLifecycleState.onEach { state ->
+            if (state.current == AppLifecycleType.ACTIVE) {
+                updateLocationStatus()
+                updateConnectionStatus()
+                updateConfig()
+            }
+
+            if (state.current == AppLifecycleType.ACTIVE && state.previous == AppLifecycleType.BACKGROUND) {
+                logg.tag("app_state").v("App is active but was in background, refresh groups")
+                updateGroups()
+            }
+        }
             .launchIn(scopeProvider.defaultScope)
+
+        configRepo.getUpdateType()
+            .onEach { updateType ->
+                if (updateType is AppUpdateType.FORCE_AND_CANCEL) {
+                    logoutUseCase.logoutLocally()
+                }
+            }
+            .launchIn(scopeProvider.defaultIOScope)
+
+        activeSharingEngine.startMonitoring()
     }
 
     fun onAppActive() {
-        logg.tag("app_state").v("App is in foreground")
-        updateLocationStatus()
-        updateConnectionStatus()
-        updateConfig()
-
-        if (wasInBackground) {
-            wasInBackground = false
-            updateGroups()
-        }
+        deviceApiProvider.onAppActive()
     }
 
     fun onAppInactive() {
-        logg.tag("app_state").v("App is in background")
-        wasInBackground = true
+        deviceApiProvider.onAppInactive()
     }
 
+    fun onAppBackground() {
+        deviceApiProvider.onAppBackground()
+    }
 
     fun updateLocationStatus() {
         locationStatus.refreshLocationStatus()
@@ -88,5 +99,4 @@ class CoreAppManager(
             }
         }
     }
-
 }

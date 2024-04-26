@@ -10,7 +10,6 @@ import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
@@ -21,6 +20,7 @@ import app.paralino.core.models.raw.MemberLocationDataPayload
 import app.paralino.core.models.raw.UpdateGroupMemberSenderKeysPayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
@@ -32,7 +32,6 @@ import kotlinx.serialization.encodeToString
 
 class MemberDeviceKeyRotation(
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val userRepository: UserRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
@@ -89,8 +88,7 @@ class MemberDeviceKeyRotation(
                 .w("Group ${remoteGroup.id} has unverified members with user member key, force rotation")
         }
 
-        val shouldRotate =
-            force || deviceIntegrity == IntegrityResult.VALID_EXPIRED || unverifiedMembersRotation
+        val shouldRotate = force || deviceIntegrity.shouldChange || unverifiedMembersRotation
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_device_rotation")
@@ -141,10 +139,9 @@ class MemberDeviceKeyRotation(
         )
 
         if (!response.isSuccess) {
-            throw BaseRemoteException.fromCode(
+            throw BaseRemoteException.fromRemote(
                 code = response.statusCode,
-                message = "Unable to rotate device keys",
-                cause = Exception(response.stderr)
+                error = response.errorResponse
             )
         } else {
             val groupDeviceIntegrity = GroupIntegrity(
@@ -181,11 +178,12 @@ class MemberDeviceKeyRotation(
         // keys will be rotated anyway when location sharing restarts
 
         val locationDataValid = when (currentDeviceLocation.locationData) {
+            // using missing key and uninitialized here because on first time sharing key nor location will be present
             CryptoResource.MissingKey,
             CryptoResource.NotInitialized,
+            is CryptoResource.UnverifiedKeyOrData,
             is CryptoResource.Ready -> true
 
-            is CryptoResource.UnverifiedKeyOrData,
             CryptoResource.WrongKeyOrData -> false
         }
 

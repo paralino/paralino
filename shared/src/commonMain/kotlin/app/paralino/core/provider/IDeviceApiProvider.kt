@@ -1,18 +1,20 @@
 package app.paralino.core.provider
 
-import app.paralino.core.config
-import app.paralino.core.connectionStatus
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.base.DeviceType
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 
 abstract class IDeviceApiProvider(
-    protected val backendConfig: BackendConfig,
     val locationStatusProvider: ILocationStatusProvider,
     val connectionStatusProvider: IConnectionStatusProvider
 ) {
+
+    private var _appLifecycleState = MutableStateFlow(AppLifecycleState())
+    val appLifecycleState = _appLifecycleState.asStateFlow()
 
     val deviceStatus = combine(
         locationStatusProvider.status,
@@ -21,26 +23,41 @@ abstract class IDeviceApiProvider(
         DeviceStatusData(locationStatus, connectionStatus)
     }
 
-    fun initialize() {
-        config = createConfig()
-
-        val logr = Logr
-        logr.setLogr(createSystemLogr())
-        logg = logr
-
-        if(backendConfig.serverUrl.isBlank() || backendConfig.projectId.isBlank()) {
-            logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
+    fun onAppActive() {
+        logg.tag("app_state").v("App is in foreground")
+        _appLifecycleState.update {
+            it.copy(
+                previous = it.current,
+                current = AppLifecycleType.ACTIVE,
+                wasEverActive = true
+            )
         }
-
-        if(config.deviceIdSeed.isBlank())
-            config.deviceIdSeed = randomUUID
-
-        connectionStatus = connectionStatusProvider
     }
 
-    abstract val batteryLevel: Int
+    fun onAppInactive() {
+        logg.tag("app_state").v("App is inactive")
+        _appLifecycleState.update {
+            it.copy(
+                previous = it.current,
+                current = AppLifecycleType.INACTIVE
+            )
+        }
+    }
+
+    fun onAppBackground() {
+        logg.tag("app_state").v("App is in background")
+        _appLifecycleState.update {
+            it.copy(
+                previous = it.current,
+                current = AppLifecycleType.BACKGROUND
+            )
+        }
+    }
+
+    val batteryLevel: Int? get() = if (_batteryLevel in 0..100) _batteryLevel else null
+
+    protected abstract val _batteryLevel: Int
     abstract val isCharging: Boolean
-    abstract val randomUUID: String
     abstract val deviceType: DeviceType
     abstract val appVersionCode: Long
     abstract val appVersion: String
@@ -55,3 +72,15 @@ data class DeviceStatusData(
     val locationStatus: LocationConditionStatus,
     val networkStatus: NetworkConnectionInfo
 )
+
+data class AppLifecycleState(
+    val previous: AppLifecycleType = AppLifecycleType.DESTROYED,
+    val current: AppLifecycleType = AppLifecycleType.DESTROYED,
+    val wasEverActive: Boolean = false
+)
+
+enum class AppLifecycleType {
+    ACTIVE, INACTIVE, BACKGROUND, DESTROYED;
+
+    val activeOrInactive: Boolean get() = this == ACTIVE || this == INACTIVE
+}

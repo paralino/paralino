@@ -36,6 +36,10 @@
     <string name="error_location_background_permission_missing_sheet_message_android11">Please grant **%s** location permission in order to **reliably and always** track and share your location with others.</string>
     <string name="error_location_service_missing_sheet_message">Please enable **device location** in order to locate your device.</string>
     <string name="error_notification_permission_missing_sheet_message">Please enable **notifications** in order to receive **important** alerts for your places.</string>
+    <string name="error_location_background_permission_missing_notification_message">Location sharing can\'t start because you are missing all time location permission!\nPlease open the app to restart location sharing!</string>
+    <string name="error_location_sharing_start_notification_message">Location sharing can\'t start!\nPlease open the app again!</string>
+    <string name="error_device_registration_notification_message">Your device can not be registered!\nPlease restart location sharing!</string>
+    <string name="error_unverified_member_notification_message">Your membership could not be verified. Please try refreshing data or contact group admin.</string>
 
     <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
     <string name="error_crypto_key_missing_user">Your cryptographic keys are not properly configured.</string>
@@ -49,6 +53,8 @@
     <string name="notifications_channel_place_alert">Place alerts</string>
     <string name="notifications_channel_group_activity">Group activity</string>
     <string name="notifications_channel_push_sync">Notification sync</string>
+    <string name="notifications_channel_data_sync">Data sync</string>
+    <string name="notifications_channel_info_message">System information</string>
 
     <string name="location_banner_info_stop">Stop sharing</string>
     <string name="location_banner_fix">Fix</string>
@@ -65,7 +71,7 @@
     <string name="location_banner_error_offline">Device is offline</string>
 
     <string name="settings_section_account_title">Account</string>
-    <string name="settings_section_personal_code_title">Personal code</string>
+    <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inactive codes</string>
     <string name="settings_account_edit_profile">Edit profile</string>
     <string name="settings_account_edit_email">Change email</string>
@@ -106,6 +112,11 @@
     <string name="setting_title_dangerZone">Danger zone</string>
 
     <string name="setting_title_locationBoost">Location boost</string>
+    <string name="setting_description_locationBoost_enabled">Maximum location performance will reset at %s. **Uses more battery!!!**</string>
+    <string name="setting_description_locationBoost_disabled">Use maximum performance for location for up to 2h. **Will use more battery!!!**</string>
+    <string name="setting_title_placeActivityThrottle">Throttle place activity</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Your device will create place activity notification only if you spend more than 10 seconds in or out of certain place.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Your device will react to place changes faster and might create multiple place activity notifications in short time (for example: if you shortly drive by a certain place).</string>
 
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>
@@ -170,6 +181,8 @@
     <string name="groups_sharing_setting_speed_share">Speed</string>
     <string name="groups_sharing_setting_elevation_share">Elevation</string>
     <string name="groups_sharing_setting_network_share">Network state</string>
+    <string name="groups_sharing_setting_notifyOthers_title">Notify members</string>
+    <string name="groups_sharing_setting_notifyOthers_description">If enabled, group members will receive notification that you started sharing your location.</string>
     <string name="groups_sharing_button_start">Start sharing</string>
     <string name="groups_sharing_title">Share location</string>
     <string name="groups_sharing_device_name_placeholder">Device name (optional)</string>
@@ -182,19 +195,20 @@
 
     <string name="groups_sharing_duration_type_infinite">Always on</string>
 
-    <string name="invite_create_button">CREATE PERSONAL CODE</string>
-    <string name="invite_create_new_button">CREATE NEW CODE</string>
+    <string name="invite_create_button">CREATE PARALINO.ID</string>
+    <string name="invite_create_new_button">CREATE ALTERNATIVE ID</string>
     <string name="toast_copy_invite_code">Code copied</string>
-    <string name="invite_delete_alert_title">Are you sure you want to disable this code?</string>
-    <string name="invite_manage_empty_description">You don\'t have an active **personal code**.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
+    <string name="invite_delete_alert_title">Are you sure you want to disable this code?\n\nYou will not be able to join any new groups but you can always come back and enable Paralino.ID again.</string>
+    <string name="invite_manage_empty_description">You don\'t have an active **Paralino.ID**.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
     <string name="invite_manage_description">Share this code to join a group and start securely sharing your location.</string>
-    <string name="invite_connect_code_placeholder">User personal code</string>
+    <string name="invite_connect_code_placeholder">User Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">You are about to add **%1$s** to **%2$s** group.\nAfter that you can start securely sharing your location.</string>
     <string name="invite_connect_button_addToGroup">ADD TO GROUP</string>
     <string name="invite_connect_button_pickGroup">Choose a group</string>
     <string name="invite_connect_alert_pickGroup">Please choose a group</string>
     <string name="invite_connect_alert_wrongCode">Please check your code or try another one</string>
-    <string name="invite_connect_title">To add new member, enter their **personal code**</string>
+    <string name="invite_connect_title">To add new member, enter their **Paralino.ID**</string>
+    <string name="invite_connect_screen_title">Add new member</string>
     <string name="invite_section_title_group">Group</string>
     <string name="invite_section_title_user">User</string>
     <string name="invite_code_button_copy">Copy</string>
@@ -211,7 +225,7 @@
     <string name="group_members_block_user">Block user</string>
     <string name="group_members_block_user_alert_message">If you proceed, user will not be able to add you to a group and you will not receive users\' location notification in any shared groups.</string>
     <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>
-    <string name="group_members_device_other_remove_alert_title">Are you sure you want remove %ss\' device from group?\n\nThis will not remove user from a group.</string>
+    <string name="group_members_device_other_remove_alert_title">Are you sure you want remove device from %s from group?\n\nThis will not remove user from a group.</string>
     <string name="group_members_device_own_remove_alert_title">Are you sure you want remove your device from group?\n\nThis will not remove you from a group.</string>
     <string name="group_members_device_name_default">Device</string>
     <string name="group_details_section_members_title">Members</string>
@@ -225,11 +239,17 @@
     <string name="group_details_remove_member_alert_button">Remove</string>
     <string name="group_details_block_group_alert_title">Are you sure you want to block this group?\nThis is irreversible, will delete all data you shared to group and you will not be able to rejoin the group!</string>
     <string name="group_details_block_group_alert_button">Block</string>
-    <string name="group_details_add_member_button">Add new member</string>
+    <string name="group_details_add_member_button">Add</string>
     <string name="group_details_sharing_status_time">Sharing until: **%s**</string>
     <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
     <string name="group_details_sharing_action">Location sharing</string>
     <string name="group_details_security_action">Security</string>
+    <string name="group_edit_screen_title">Edit group</string>
+    <string name="group_settings_verification_title">Member verification</string>
+    <string name="group_settings_verification_description_on">Each group member is cryptographically verified by you and new members can only be added by you.\nOtherwise they will appear as UNVERIFIED and will not be able to send or receive location updates.</string>
+    <string name="group_settings_verification_description_off">Group members can be added by other users now and there is no extra verification from group owner.</string>
+    <string name="group_settings_verification_dialog_message_on">Enabling verification will trigger re-verification process for all current members.\n\nMembers will be cryptographically verified and no one else will be able to add new members to this group.</string>
+    <string name="group_settings_verification_dialog_message_off">Disabling member verification will allow others to add new members to your group.</string>
 
     <string name="group_create_start_title">Connect with your family</string>
     <string name="group_load_error">Unable to load your group</string>
@@ -239,11 +259,20 @@
     <string name="group_picker_button_join">Join</string>
     <string name="group_member_no_location_info_message">This device does not have a location yet.</string>
     <string name="group_member_devices_section_title">Devices</string>
+    <string name="group_member_device_not_responding_message">**Device is not responding or is offline.**\n\nCheck again shortly, it might take few minutes to respond if device is online.</string>
+    <string name="group_member_device_waiting">Waiting for device to respond...</string>
+    <string name="group_member_device_requesting">Requesting location...</string>
+    <string name="group_member_device_unreachable">Device can not be reached</string>
+    <string name="group_member_device_setup_invalid">Device is not fully compatible and can not be reached</string>
+    <string name="group_member_device_request_failed">Request failed, please try again</string>
+    <string name="group_member_device_request_disabled">Please wait a few moments before requesting location again 🙏</string>
 
     <string name="group_members_last_active_status_now">Just now</string>
     <string name="group_members_last_active_status_recently_1">1 minute ago</string>
     <string name="group_members_last_active_status_recently_2">2 minutes ago</string>
-    <string name="group_members_status_inactive">INACTIVE</string>
+    <string name="group_members_last_status_update">**Last update:**</string>
+    <string name="group_members_status_inactive">Inactive</string>
+    <string name="group_members_status_not_sharing">Not sharing</string>
     <string name="group_members_status_offline">Device is offline</string>
     <string name="group_members_status_gps_off">GPS is off</string>
     <string name="group_members_status_battery_saver">Battery saving is on</string>
@@ -265,14 +294,20 @@
     <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>
     <string name="place_detail_setting_button_notify_exit">Exit</string>
+    <string name="place_detail_notification_settings_title">Notification settings</string>
 
     <string name="place_notification_enter">%s arrived at %s</string>
     <string name="place_notification_exit">%s left %s</string>
     <string name="place_notification_default">Your place have activity</string>
+    <string name="place_created_notification">Group %1$s just got a new place: %2$s</string>
+    <string name="place_created_notification_default">New place is created in your group</string>
     <string name="group_member_current_add_notification">🙌 You just joined %s</string>
     <string name="group_member_current_add_notification_default">🙌 You just joined a new group</string>
     <string name="group_member_add_notification">%1$s just joined %2$s</string>
     <string name="group_member_add_notification_default">🙌 New member just joined your group</string>
+    <string name="group_member_sharing_started_notification_default">Your friend started sharing their location</string>
+    <string name="group_member_sharing_started_notification">%s started location sharing</string>
+    <string name="group_member_current_sharing_started_notification">Your device started location sharing</string>
 
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
@@ -305,6 +340,7 @@
     <string name="reset_password_success_message">Please login again!</string>
     <string name="reset_password_error_token_message">Your password reset link expired, please request a new one.</string>
     <string name="raw_data_screen_info">Here you can preview your data as it is stored on the server.\nOnly your device can unlock (decrypt) and see this information.</string>
+    <string name="raw_data_screen_title">Encryption</string>
     <string name="raw_data_section_encrypted">Encrypted data on server</string>
     <string name="raw_data_section_decrypted">Decrypted data on device</string>
 
