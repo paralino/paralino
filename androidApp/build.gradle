@@ -103,8 +103,8 @@ android {
         }
         direct {
             dimension "version"
-            versionCode 14
-            versionName "0.5.1"
+            versionCode 15
+            versionName "0.6.0"
             versionNameSuffix "-int"
             applicationIdSuffix ".int"
             buildConfigField("boolean", "forceLogToSystem", "true")
@@ -112,8 +112,8 @@ android {
         }
         dev {
             dimension "version"
-            versionCode 14
-            versionName "0.5.1"
+            versionCode 15
+            versionName "0.6.0"
             versionNameSuffix "-dev"
             applicationIdSuffix ".dev"
 
