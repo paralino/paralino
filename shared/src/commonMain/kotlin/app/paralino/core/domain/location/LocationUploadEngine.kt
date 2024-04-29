@@ -55,7 +55,7 @@ class LocationUploadEngine constructor(
                 LocationPerformanceType.BATTERY_SAVER -> 10.seconds
 
                 LocationPerformanceType.BALANCED,
-                LocationPerformanceType.MEDIUM_HIGH -> 5.seconds
+                LocationPerformanceType.MEDIUM_HIGH -> 4.seconds
 
                 LocationPerformanceType.HIGH,
                 LocationPerformanceType.VERY_HIGH,
@@ -147,7 +147,14 @@ class LocationUploadEngine constructor(
     }
 
     suspend fun updateDeviceStatusOnly() {
-        uploadLocation(data = oneTimeLocationProvider.getLastLocation())
+        uploadLocation(
+            data = oneTimeLocationProvider.getLastLocation(
+                requestType = IOneTimeLocationProvider.RequestType.Fetch(
+                    timeoutMillis = 3.seconds.inWholeMilliseconds,
+                    type = LocationPerformanceType.BATTERY_SAVER
+                )
+            )
+        )
     }
 
     private suspend fun uploadLocation(data: LocationDataModel?) {

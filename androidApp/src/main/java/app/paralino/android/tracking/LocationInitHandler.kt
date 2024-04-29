@@ -9,6 +9,7 @@ import app.paralino.android.utils.extensions.toLocalString
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.provider.LocationStatusException
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
@@ -124,14 +126,15 @@ class LocationInitHandler constructor(
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    suspend fun getOrFetchLastLocation(): LocationDataModel? {
+    suspend fun getOrFetchLastLocation(timeout: Duration, performanceType: LocationPerformanceType): LocationDataModel? {
         return suspendCancellableCoroutine { continuation ->
             val cancellationTokenSource = CancellationTokenSource()
 
+            val priority = LocationPerformanceRequests.getRequest(performanceType).priority
             val request = CurrentLocationRequest.Builder()
-                .setDurationMillis(3.seconds.inWholeMilliseconds)
+                .setDurationMillis(timeout.inWholeMilliseconds)
                 .setMaxUpdateAgeMillis(20.seconds.inWholeMilliseconds)
-                .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setPriority(priority)
                 .build()
 
             fusedLocationClient.getCurrentLocation(request, cancellationTokenSource.token)

@@ -378,7 +378,7 @@ class PlacesRepository constructor(
             // update device status with last location if place activity came from geofence
             if (fromGeofence) {
                 try {
-                    deviceStatusProcessor.pushDeviceStatus(groupId = place.groupId, tryIncludeLastLocation = true)
+                    deviceStatusProcessor.pushDeviceStatus(groupId = place.groupId)
                 } catch (e: Exception) {
                     logg.tag("place_activity").w("Error updating member status in ${place.groupId} from $activityTag - $placeId: ${e.message}")
                 }
