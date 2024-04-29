@@ -6,6 +6,7 @@ import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
+import app.paralino.core.domain.location.GeofenceEventProcessor
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
@@ -194,6 +195,7 @@ object KoinIOS {
         val coreAppManager: CoreAppManager get() = get()
         val locationRepo: LocationRepositoryWrapper get() = get()
         val placesRepo: PlacesRepository get() = get()
+        val geofenceEventProcessor: GeofenceEventProcessor get() = get()
         val locationSharingManager: LocationSharingManager get() = get()
         val locationPerformanceManager: LocationPerformanceManager get() = get()
         val pushNotificationsHandler: PushNotificationHandler get() = get()

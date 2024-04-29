@@ -226,7 +226,7 @@ class PlacesRepository constructor(
         placesExit(exited, fromGeofence = false)
     }
 
-    suspend fun placesEnter(placesIds: List<String>, fromGeofence: Boolean) {
+    fun placesEnter(placesIds: List<String>, fromGeofence: Boolean) {
         placesIds.forEach {
             try {
                 schedulePlaceNotify(it, enter = true, fromGeofence = fromGeofence)
@@ -236,7 +236,7 @@ class PlacesRepository constructor(
         }
     }
 
-    suspend fun placesExit(placesIds: List<String>, fromGeofence: Boolean) {
+    fun placesExit(placesIds: List<String>, fromGeofence: Boolean) {
         placesIds.forEach {
             try {
                 schedulePlaceNotify(it, enter = false, fromGeofence = fromGeofence)
@@ -246,7 +246,7 @@ class PlacesRepository constructor(
         }
     }
 
-    private suspend fun schedulePlaceNotify(
+    private fun schedulePlaceNotify(
         placeId: String,
         enter: Boolean,
         fromGeofence: Boolean

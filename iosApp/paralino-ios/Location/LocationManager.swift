@@ -16,6 +16,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
     lazy var placeRepo: PlacesRepository = { KoinIOS.Instances.shared.placesRepo }()
+    lazy var geofenceEvents: GeofenceEventProcessor = { KoinIOS.Instances.shared.geofenceEventProcessor }()
     lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
     lazy var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
     
@@ -108,9 +109,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             Task {
                 let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
                 self?.notifyUser(id: "placeEnter_\(region.identifier)", message: "User entered place \(place?.nameOrNull ?? region.identifier)")
-                try await self?.placeRepo.placesEnter(placesIds: [region.identifier], fromGeofence: true)
             }
         }
+        geofenceEvents.placesEnter(placesIds: [region.identifier])
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
@@ -118,9 +119,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             Task {
                 let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
                 self?.notifyUser(id: "placeExit_\(region.identifier)", message: "User exited place \(place?.nameOrNull ?? region.identifier)")
-                try await self?.placeRepo.placesExit(placesIds: [region.identifier], fromGeofence: true)
             }
         }
+        geofenceEvents.placesExit(placesIds: [region.identifier])
     }
     
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
