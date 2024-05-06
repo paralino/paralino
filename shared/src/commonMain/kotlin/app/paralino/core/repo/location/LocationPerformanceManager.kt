@@ -26,7 +26,7 @@ class LocationPerformanceManager constructor(
 ) {
 
     private val _locationPerformanceType = MutableStateFlow(
-        LocationPerformanceModel(config.trackingBoostEndTime != null)
+        LocationPerformanceModel(isBoostedManually = config.trackingBoostEndTime?.let { it > nowUTC() } == true)
     )
     val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
     private var performanceUpdateJob: Job? = null
