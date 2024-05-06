@@ -116,7 +116,7 @@
     <string name="setting_description_locationBoost_enabled">Maksimalne performanse lokacije će se resetirati u %s. **Koristi više baterije!!!**</string>
     <string name="setting_description_locationBoost_disabled">Koristi maksimalne performanse za lokaciju do 2 sata. **Koristi više baterije!!!**</string>
     <string name="setting_title_placeActivityThrottle">Filter aktivnosti mjesta</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Tvoj uređaj će kreirati notifikaciju o mjestu ako provedeš najmanje 10 sekundi na ili izvan određenog mjesta.</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Tvoj uređaj će kreirati notifikaciju o mjestu ako se zadržiš na ili izvan određenog mjesta.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Tvoj uređaj će brže reagirati na promjene mjesta te je moguće da će kreirati više notifikacija o mjestu (npr: ako u kratko vrijeme prođeš kraj mjesta).</string>
 
     <string name="login_placeholder_user_name">Ime*</string>
