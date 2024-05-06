@@ -28,7 +28,7 @@ class OneTimeLocationProvider: IOneTimeLocationProvider, CLLocationManagerDelega
         let manager = CLLocationManager()
         manager.allowsBackgroundLocationUpdates = true
         manager.showsBackgroundLocationIndicator = true
-        manager.pausesLocationUpdatesAutomatically = true
+        manager.pausesLocationUpdatesAutomatically = false
         manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         manager.distanceFilter = kCLDistanceFilterNone
         
