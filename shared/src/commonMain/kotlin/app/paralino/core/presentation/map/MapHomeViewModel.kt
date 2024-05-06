@@ -244,7 +244,7 @@ class MapHomeViewModel constructor(
                                             },
                                             locationRequest = takeIf { location.canRequestLocation }?.let {
                                                 val isRequestInProgress = previousState?.actions?.locationRequest?.run { isLoading && !isWaitingForUser } ?: false
-                                                val hasUserResponded = (previousState?.actions?.locationRequest?.lastLocationRequest?.toEpochMilliseconds() ?: 0) < (location.status.data?.timeUTC?.fromUTCtoInstant()?.toEpochMilliseconds() ?: 0)
+                                                val hasUserResponded = (previousState?.actions?.locationRequest?.lastLocationRequest?.toEpochMilliseconds() ?: 0) < (location.status.data?.timeUTC?.fromUTCtoInstant()?.plus(2.seconds)?.toEpochMilliseconds() ?: 0)
                                                 val isRequestExpired = previousState?.actions?.locationRequest?.lastLocationRequest?.plus(locationRequestDuration)?.let { it < nowUTC() } ?: true
                                                 val canRequestLocationAgain = previousState?.actions?.locationRequest?.lastLocationRequest?.plus(locationRequestDelay)?.let { it < nowUTC() } ?: true
 
