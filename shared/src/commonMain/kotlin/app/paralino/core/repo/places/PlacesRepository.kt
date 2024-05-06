@@ -445,9 +445,9 @@ class PlacesRepository constructor(
 
     suspend fun placeActivityDelay() {
         if (appConfig.placeActivityThrottle) {
-            delay(12.seconds)
+            delay(20.seconds)
         } else {
-            delay(4.seconds)
+            delay(5.seconds)
         }
     }
 
