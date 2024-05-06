@@ -88,7 +88,7 @@ class LocationPerformanceManager constructor(
             delay(resetDelayMillis)
             val isManualBoostExpired = config.trackingBoostEndTime?.let { it < nowUTC() } ?: true
             if (_locationPerformanceType.value.current < LocationPerformanceType.MANUAL_BOOST) {
-                logg.tag("location_performance").v("Reset location performance to $type")
+                logg.tag("location_performance").v("Reset location performance from ${_locationPerformanceType.value.current} to $type")
                 setPerformance(type = type, allowDowngrade = true)
             } else if (isManualBoostExpired) {
                 disableManualBoost()
@@ -107,9 +107,6 @@ class LocationPerformanceManager constructor(
                 .v("Skip performance update to $type, allowDowngrade ($allowDowngrade)")
             return
         }
-
-        logg.tag("location_performance")
-            .v("Try to adjust performance update from ${_locationPerformanceType.value.current} -> to $type")
 
         val now = nowUTC().epochSeconds
         val last20min = nowUTC().minus(20, DateTimeUnit.MINUTE).epochSeconds
@@ -167,7 +164,7 @@ class LocationPerformanceManager constructor(
 
         logg.tag("location_performance")
             .v(
-                "Performance - requested: $type, new: $newType, old: ${_locationPerformanceType.value} - for: " +
+                "Performance - requested: $type, new: $newType, old: ${_locationPerformanceType.value.current} [${_locationPerformanceType.value}] - for: " +
                         "BAT: ${deviceStatus.batteryLevel}%, " +
                         "VERY_HIGH: $lastVeryHighBoostDiff, " +
                         "HIGH: $lastHighBoostDiff, " +

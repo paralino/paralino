@@ -18,7 +18,6 @@ import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -56,7 +55,7 @@ class LocationInitHandler constructor(
                 val status = LocationConditionStatus.getLocationStatus(context)
                 if (status.isOK()) {
                     logg.tag("location_request").v("new request: $performanceType")
-                    val locationRequest = LocationPerformanceRequests.getRequest(performanceType.current)
+                    val locationRequest = LocationRequestModels.getRequest(performanceType.current)
                     fusedLocationClient.requestLocationUpdates(
                         locationRequest,
                         locationCallback,
@@ -130,7 +129,7 @@ class LocationInitHandler constructor(
         return suspendCancellableCoroutine { continuation ->
             val cancellationTokenSource = CancellationTokenSource()
 
-            val priority = LocationPerformanceRequests.getRequest(performanceType).priority
+            val priority = LocationRequestModels.getRequest(performanceType).priority
             val request = CurrentLocationRequest.Builder()
                 .setDurationMillis(timeout.inWholeMilliseconds)
                 .setMaxUpdateAgeMillis(20.seconds.inWholeMilliseconds)

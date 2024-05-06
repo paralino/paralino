@@ -4,7 +4,7 @@ import app.paralino.core.models.location.LocationPerformanceType
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.Priority
 
-object LocationPerformanceRequests {
+object LocationRequestModels {
 
     fun getRequest(type: LocationPerformanceType): LocationRequest {
         return when (type) {
