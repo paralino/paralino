@@ -16,7 +16,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
     lazy var placeRepo: PlacesRepository = { KoinIOS.Instances.shared.placesRepo }()
-    lazy var geofenceEvents: GeofenceEventProcessor = { KoinIOS.Instances.shared.geofenceEventProcessor }()
     lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
     lazy var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
     
@@ -111,7 +110,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self?.notifyUser(id: "placeEnter_\(region.identifier)", message: "User entered place \(place?.nameOrNull ?? region.identifier)")
             }
         }
-        geofenceEvents.placesEnter(placesIds: [region.identifier])
+        placeRepo.placesEnter(placesIds: [region.identifier], fromGeofence: true)
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
@@ -121,7 +120,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self?.notifyUser(id: "placeExit_\(region.identifier)", message: "User exited place \(place?.nameOrNull ?? region.identifier)")
             }
         }
-        geofenceEvents.placesExit(placesIds: [region.identifier])
+        placeRepo.placesExit(placesIds: [region.identifier], fromGeofence: true)
     }
     
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {

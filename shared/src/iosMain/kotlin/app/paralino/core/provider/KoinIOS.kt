@@ -6,7 +6,6 @@ import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
-import app.paralino.core.domain.location.GeofenceEventProcessor
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
@@ -16,7 +15,6 @@ import app.paralino.core.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.notifications.PushNotificationHandler
-import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
@@ -28,6 +26,7 @@ import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
+import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
@@ -195,7 +194,6 @@ object KoinIOS {
         val coreAppManager: CoreAppManager get() = get()
         val locationRepo: LocationRepositoryWrapper get() = get()
         val placesRepo: PlacesRepository get() = get()
-        val geofenceEventProcessor: GeofenceEventProcessor get() = get()
         val locationSharingManager: LocationSharingManager get() = get()
         val locationPerformanceManager: LocationPerformanceManager get() = get()
         val pushNotificationsHandler: PushNotificationHandler get() = get()

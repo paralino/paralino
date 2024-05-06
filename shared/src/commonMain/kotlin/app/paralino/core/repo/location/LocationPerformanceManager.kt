@@ -41,17 +41,6 @@ class LocationPerformanceManager constructor(
     }
 
     fun locationBoostRequested(
-        request: LocationPerformanceRequest,
-        groupId: String?,
-        from: String?,
-    ) {
-        logg.tag("location_performance")
-            .v("Location boost (${request.type}) requested for $groupId from $from")
-        setPerformance(type = request.type, allowDowngrade = false)
-        preparePerformanceReset(request = request)
-    }
-
-    fun locationBoostRequested(
         performanceType: LocationPerformanceType,
         groupId: String?,
         from: String?,
@@ -64,6 +53,17 @@ class LocationPerformanceManager constructor(
             groupId = groupId,
             from = from
         )
+    }
+
+    fun locationBoostRequested(
+        request: LocationPerformanceRequest,
+        groupId: String?,
+        from: String?,
+    ) {
+        logg.tag("location_performance")
+            .v("Location boost (${request.type}) requested for $groupId from $from")
+        setPerformance(type = request.type, allowDowngrade = false)
+        preparePerformanceReset(request = request)
     }
 
     fun disableManualBoost() {

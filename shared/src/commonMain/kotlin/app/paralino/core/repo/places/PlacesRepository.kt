@@ -5,6 +5,8 @@ import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationPerformanceRequest
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceGeofenceData
@@ -18,6 +20,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.IGeofenceManager
+import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
@@ -37,6 +40,7 @@ class PlacesRepository constructor(
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val userRepository: UserRepository,
     private val locationSharingManager: LocationSharingManager,
+    private val locationPerformanceManager: LocationPerformanceManager,
     private val geofenceManager: IGeofenceManager,
     private val scopeProvider: ICoroutineScopeProvider,
     private val appConfig: AppConfig
@@ -210,6 +214,7 @@ class PlacesRepository constructor(
                         // allow not so accurate location only if it has decent overlap
                         distance < data.accuracy - placeData.radiusMeters
                     }
+
                     else -> false
                 }
                 val isEnter = (distance + accuracyThreshold) < placeData.radiusMeters && radiusMatch
@@ -218,19 +223,23 @@ class PlacesRepository constructor(
                 // this is used to help filter location jumping when user stays in one closed place (like house)
                 // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
                 // also adding few meters of buffer to improve filter
-                val isExit = distance > (placeData.radiusMeters + data.accuracy + if (appConfig.placeActivityThrottle) 5 else 0)
+                val isExit =
+                    distance > (placeData.radiusMeters + data.accuracy + if (appConfig.placeActivityThrottle) 5 else 0)
                 val previousState = placeActivity.value.get(place.id)
 
 //                logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
 
-                if (isEnter) entered.add(place.id)
-                else if (isExit) exited.add(place.id)
-                else {
+                if (isEnter) {
+                    entered.add(place.id)
+                } else if (isExit) {
+                    exited.add(place.id)
+                } else {
                     // else -> there is no certain change to place activity, or it is the same as previous one
-                    if (previousState?.enter == true)
+                    if (previousState?.enter == true) {
                         entered.add(place.id)
-                    else if (previousState?.enter == false)
+                    } else if (previousState?.enter == false) {
                         exited.add(place.id)
+                    }
                 }
             }
         }
@@ -293,11 +302,7 @@ class PlacesRepository constructor(
         logg.tag("place_activity").d("Schedule place notify $activityTag - $placeId")
         oldState.tryNotifyJob?.cancel()
         val updateJob = scopeProvider.userSessionIOScope.launch {
-            if (appConfig.placeActivityThrottle) {
-                delay(12.seconds)
-            } else {
-                delay(4.seconds)
-            }
+            placeActivityDelay()
             processPlaceActivity(
                 activityTag = activityTag,
                 placeId = placeId,
@@ -390,11 +395,10 @@ class PlacesRepository constructor(
 
             // update device status with last location if place activity came from geofence
             if (fromGeofence) {
-                try {
-                    deviceStatusProcessor.pushDeviceStatus(groupId = place.groupId)
-                } catch (e: Exception) {
-                    logg.tag("place_activity").w("Error updating member status in ${place.groupId} from $activityTag - $placeId: ${e.message}")
-                }
+                updateDeviceStatusAndLocation(
+                    activityTag = activityTag,
+                    place = place
+                )
             }
         } catch (e: Exception) {
             updatePlaceActivity(placeId, null)
@@ -413,6 +417,37 @@ class PlacesRepository constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun updateDeviceStatusAndLocation(
+        activityTag: String,
+        place: GroupPlace
+    ) {
+        scopeProvider.userSessionIOScope.launch {
+            // update device status with last location if place activity came from geofence
+            try {
+                deviceStatusProcessor.pushDeviceStatus(groupId = place.groupId)
+            } catch (e: Exception) {
+                logg.tag("place_activity")
+                    .w("Error updating member status in ${place.groupId} from $activityTag - ${place.id}: ${e.message}")
+            }
+        }
+        locationPerformanceManager.locationBoostRequested(
+            request = LocationPerformanceRequest(
+                type = LocationPerformanceType.HIGH,
+                durationMillis = 12.seconds.inWholeMilliseconds
+            ),
+            groupId = place.groupId,
+            from = "place $activityTag"
+        )
+    }
+
+    suspend fun placeActivityDelay() {
+        if (appConfig.placeActivityThrottle) {
+            delay(12.seconds)
+        } else {
+            delay(4.seconds)
         }
     }
 

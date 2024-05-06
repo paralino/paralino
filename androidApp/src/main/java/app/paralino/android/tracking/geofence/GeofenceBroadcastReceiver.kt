@@ -3,8 +3,8 @@ package app.paralino.android.tracking.geofence
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import app.paralino.core.domain.location.GeofenceEventProcessor
 import app.paralino.core.logg
+import app.paralino.core.repo.places.PlacesRepository
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
@@ -52,13 +52,13 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 }
 
 class GeofenceReceiver() : KoinComponent {
-    private val geofenceProcessor: GeofenceEventProcessor by inject()
+    private val geofenceProcessor: PlacesRepository by inject()
 
     fun notifyPlaceEnter(placeIds: List<String>) {
-        geofenceProcessor.placesEnter(placeIds)
+        geofenceProcessor.placesEnter(placesIds = placeIds, fromGeofence = true)
     }
 
     fun notifyPlaceExit(placeIds: List<String>) {
-        geofenceProcessor.placesExit(placeIds)
+        geofenceProcessor.placesExit(placesIds = placeIds, fromGeofence = true)
     }
 }

@@ -22,7 +22,6 @@ import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.location.ClearUserLocationUseCase
-import app.paralino.core.domain.location.GeofenceEventProcessor
 import app.paralino.core.domain.location.GeofenceRegistrationMonitor
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationPayloadProvider
@@ -178,7 +177,6 @@ val dataSourceModule = module {
 val coreModule = module {
     single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
-    single { GeofenceEventProcessor(get(), get(), get(), get(), config) }
     single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
@@ -214,7 +212,7 @@ val coreModule = module {
     single { UserRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
-    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), config) }
+    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), config) }
     single { AppConfigRepository(get(), get(), get(), get(), config) }
 
     single { GroupValidityVerification(get(), get(), get(), config) }
