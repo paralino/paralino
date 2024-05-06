@@ -24,7 +24,7 @@ class PlaceMapperCore constructor(
         )
 
         if(groupKey !is GroupMasterKey.Valid)
-            logg.e(MissingGroupKeyException(model.id, model.groupKeyVersion))
+            logg.e(MissingGroupKeyException(model.groupId, model.groupKeyVersion))
 
         val placeData = if (groupKey is GroupMasterKey.Valid) {
             try {
