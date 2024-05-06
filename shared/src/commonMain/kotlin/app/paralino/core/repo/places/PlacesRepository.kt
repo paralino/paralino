@@ -200,12 +200,25 @@ class PlacesRepository constructor(
                 )
 
                 // user entered place only if location (lat, lng) fully entered place circle
-                val isEnter = distance < placeData.radiusMeters
+                // if user accuracy is not great, accept place enter only if user center is closer to place center
+                val accuracyThreshold = if (data.accuracy > 50) data.accuracy * 0.1f else 0f
+                val radiusMatch = when {
+                    // full user location fits inside place
+                    placeData.radiusMeters > data.accuracy -> true
+                    // > 80% of area can overlap (place circle is at least 80% of user radius)
+                    placeData.radiusMeters / data.accuracy > 0.8 -> {
+                        // allow not so accurate location only if it has decent overlap
+                        distance < data.accuracy - placeData.radiusMeters
+                    }
+                    else -> false
+                }
+                val isEnter = (distance + accuracyThreshold) < placeData.radiusMeters && radiusMatch
 
                 // user exited place if user's accuracy circle is not overlapping place circle
                 // this is used to help filter location jumping when user stays in one closed place (like house)
                 // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
-                val isExit = distance > placeData.radiusMeters + data.accuracy
+                // also adding few meters of buffer to improve filter
+                val isExit = distance > (placeData.radiusMeters + data.accuracy + if (appConfig.placeActivityThrottle) 5 else 0)
                 val previousState = placeActivity.value.get(place.id)
 
 //                logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
