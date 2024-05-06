@@ -331,7 +331,7 @@ class PlacesRepository constructor(
 
         if (currentState.enter != currentState.scheduledState) {
             logg.tag("place_activity")
-                .d("Cancel place $activityTag notify - state does not match - $placeId")
+                .d("Cancel place $activityTag notify - state does not match - $placeId (state: ${currentState.enter}, scheduled: ${currentState.scheduledState})")
             updatePlaceActivity(
                 placeId = placeId,
                 state = currentState.copy(scheduledState = null)

@@ -96,7 +96,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         Logr.v(tag: "location_service", message: "Got location update from system \(locationModel != nil)")
         
-        let result = locationRepo.registerNewLocation(data: locationModel!)
+        locationRepo.registerNewLocation(data: locationModel!)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
@@ -110,6 +110,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self?.notifyUser(id: "placeEnter_\(region.identifier)", message: "User entered place \(place?.nameOrNull ?? region.identifier)")
             }
         }
+        Logr.v(tag: "place_activity_geofence", message: "User entered geofence: \(region.identifier)")
         placeRepo.placesEnter(placesIds: [region.identifier], fromGeofence: true)
     }
     
@@ -120,6 +121,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self?.notifyUser(id: "placeExit_\(region.identifier)", message: "User exited place \(place?.nameOrNull ?? region.identifier)")
             }
         }
+        Logr.v(tag: "place_activity_geofence", message: "User exited geofence: \(region.identifier)")
         placeRepo.placesExit(placesIds: [region.identifier], fromGeofence: true)
     }
     
