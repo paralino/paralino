@@ -31,6 +31,7 @@ import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.encodeToString
 
 class PlacesRemoteSource(
@@ -258,22 +259,32 @@ class PlacesRemoteSource(
     }
 
 
-    suspend fun notifyPlaceEnter(placeId: String, groupId: String) {
+    suspend fun notifyPlaceEnter(
+        placeId: String,
+        groupId: String,
+        timeMillis: Long
+    ) {
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
                 locationId = userMemberId.getCurrentLocationIdForGroup(groupId),
-                enter = true
+                enter = true,
+                timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis
             )
         )
     }
 
-    suspend fun notifyPlaceExit(placeId: String, groupId: String) {
+    suspend fun notifyPlaceExit(
+        placeId: String,
+        groupId: String,
+        timeMillis: Long
+    ) {
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = placeId,
                 locationId = userMemberId.getCurrentLocationIdForGroup(groupId),
-                enter = false
+                enter = false,
+                timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis
             )
         )
     }

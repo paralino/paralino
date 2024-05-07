@@ -1,10 +1,11 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.utils.extensions.isInPast
+import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
 @Serializable
@@ -21,17 +22,18 @@ data class PushNotificationRaw constructor(
     val content: String?,
 ) {
 
-    val isExpired: Boolean get() {
-        return if (expiresAt != null) {
-            expiresAt < nowUTC()
-        } else {
-            isOlderThan(1.days)
+    val isExpired: Boolean
+        get() {
+            return if (expiresAt != null) {
+                expiresAt.isInPast()
+            } else {
+                createdAt.isOlderThan(1.days)
+            }
         }
-    }
-    fun isOlderThan(duration: Duration): Boolean = createdAt.plus(duration) < nowUTC()
 
     val pushType: PushNotificationType? = PushNotificationType.fromKey(key = type)
-    val pushImportance: PushNotificationImportance? = PushNotificationImportance.fromKey(key = importance)
+    val pushImportance: PushNotificationImportance? =
+        PushNotificationImportance.fromKey(key = importance)
 
     companion object {
         @Suppress("UNCHECKED_CAST")

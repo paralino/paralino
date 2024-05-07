@@ -4,15 +4,15 @@ import app.paralino.core.MR
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
-import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.utils.extensions.isOlderThan
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
@@ -23,7 +23,6 @@ class PlaceActivityNotificationHandler(
     private val groupRepo: UserGroupLocalDataSource,
     private val placeRepo: PlacesRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
-    private val scopeProvider: ICoroutineScopeProvider,
     private val presenter: IPlaceActivityNotificationPresenter,
     private val valueFormatter: IValueFormatter
 ) {
@@ -31,45 +30,44 @@ class PlaceActivityNotificationHandler(
 
         val payload = push.content?.tryParseFromJson<PlaceActivityNotificationPayload>() ?: return
 
-        scopeProvider.userSessionIOScope.launch {
+        var placeName: String? = null
+        var userName: String? = null
 
-            var placeName: String? = null
-            var userName: String? = null
-
-            try {
-                val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
-                placeName = place?.data?.data?.name
-                userName = groupRepo.getMemberOnce(place!!.groupId, payload.memberUserId)?.name
-            } catch (_: Exception) {
-            }
-
-            val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
-                MR.strings.place_notification_default.localizedString()
-            } else {
-                if (payload.enter) {
-                    MR.strings.place_notification_enter.localizedString(userName, placeName)
-                } else {
-                    MR.strings.place_notification_exit.localizedString(userName, placeName)
-                }
-            }
-
-            val notificationId = "place_activity_${payload}_${push.createdAt}".hashCode()
-            presenter.notify(
-                notificationId = notificationId,
-                title = title,
-                message = null,
-                timeMillis = push.createdAt.toEpochMilliseconds(),
-                timeInfo = if (push.isOlderThan(1.minutes)) {
-                    valueFormatter.formatSimpleDateTime(
-                        timeUTC = push.createdAt.toLocalDateTime(TimeZone.UTC),
-                        optionalYear = true,
-                        optionalMonth = true
-                    )
-                } else {
-                    null
-                }
-            )
+        try {
+            val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
+            placeName = place?.data?.data?.name
+            userName = groupRepo.getMemberOnce(place!!.groupId, payload.memberUserId)?.name
+        } catch (_: Exception) {
         }
+
+        val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
+            MR.strings.place_notification_default.localizedString()
+        } else {
+            if (payload.enter) {
+                MR.strings.place_notification_enter.localizedString(userName, placeName)
+            } else {
+                MR.strings.place_notification_exit.localizedString(userName, placeName)
+            }
+        }
+
+        val triggerTime = payload.triggerAt?.isoWithOffsetToInstant() ?: push.createdAt
+        val notificationId = "place_activity_${payload}_${triggerTime}".hashCode()
+        presenter.notify(
+            notificationId = notificationId,
+            title = title,
+            message = null,
+            timeMillis = triggerTime.toEpochMilliseconds(),
+            timeInfo = if (triggerTime.isOlderThan(1.minutes)) {
+                valueFormatter.formatSimpleDateTime(
+                    timeUTC = triggerTime.toLocalDateTime(TimeZone.UTC),
+                    optionalYear = true,
+                    optionalMonth = true,
+                    showTodayInfo = true
+                )
+            } else {
+                null
+            }
+        )
     }
 
     suspend fun processPlaceCreated(push: PushNotificationRaw) {
@@ -132,7 +130,8 @@ data class PlaceActivityNotificationPayload constructor(
     val memberUserId: String,
     val locationId: String,
     val placeId: String,
-    val enter: Boolean
+    val enter: Boolean,
+    val triggerAt: String? = null
 )
 
 @Serializable

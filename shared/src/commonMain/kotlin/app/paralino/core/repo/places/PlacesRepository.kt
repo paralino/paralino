@@ -24,12 +24,14 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
@@ -310,7 +312,11 @@ class PlacesRepository constructor(
             oldState.copy(
                 isEnter = enter,
                 stateChangeTrigger = trigger,
-                stateChangeTimeMillis = nowUTC().toEpochMilliseconds()
+                stateChangeTimeMillis = if (oldState.isEnter == enter) {
+                    oldState.stateChangeTimeMillis
+                } else {
+                    nowUTC().toEpochMilliseconds()
+                }
             )
         } else {
             PlaceActivityState(
@@ -332,12 +338,23 @@ class PlacesRepository constructor(
                 .d("Cancel place $activityTag notify - state did not change - $placeId")
             if (oldState.tryNotifyJob == null && oldState.isScheduledStateEnter != null) {
                 logg.tag("place_activity").d("Could reschedule $activityTag notify - $placeId")
+
+                // replace state change time with old value so we can send time difference to server
+                // this will then show more accurate place change time in notification
+                val newTime = if (Instant.fromEpochMilliseconds(oldState.stateChangeTimeMillis)
+                        .isOlderThan(12.hours)
+                ) {
+                    // ignore old time if it is too old
+                    newState.stateChangeTimeMillis
+                } else {
+                    oldState.stateChangeTimeMillis
+                }
                 schedulePlaceNotify(
                     activityTag = activityTag,
                     placeId = placeId,
                     enter = enter,
                     oldState = oldState,
-                    newState = newState,
+                    newState = newState.copy(stateChangeTimeMillis = newTime),
                     trigger = trigger
                 )
             }
@@ -478,11 +495,18 @@ class PlacesRepository constructor(
 
         try {
             triggerRemoteOnly {
-                // TODO pass state change time so we have correct time displayed in notifications
                 if (currentState.isEnter) {
-                    remote.notifyPlaceEnter(placeId = placeId, groupId = place.groupId)
+                    remote.notifyPlaceEnter(
+                        placeId = placeId,
+                        groupId = place.groupId,
+                        timeMillis = currentState.stateChangeTimeMillis
+                    )
                 } else {
-                    remote.notifyPlaceExit(placeId = placeId, groupId = place.groupId)
+                    remote.notifyPlaceExit(
+                        placeId = placeId,
+                        groupId = place.groupId,
+                        timeMillis = currentState.stateChangeTimeMillis
+                    )
                 }
             }
 

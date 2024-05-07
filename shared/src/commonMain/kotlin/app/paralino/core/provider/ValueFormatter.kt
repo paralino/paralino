@@ -126,6 +126,7 @@ abstract class IValueFormatter {
         timeUTC: LocalDateTime?,
         optionalYear: Boolean = true,
         optionalMonth: Boolean = true,
+        showTodayInfo: Boolean = true
     ): String? {
         val local = timeUTC?.fromUTCtoLocal() ?: return null
         val nowTime = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -135,7 +136,11 @@ abstract class IValueFormatter {
 
         return when {
             sameDay && optionalMonth -> {
-                formattedTime
+                if (showTodayInfo) {
+                    "${MR.strings.date_name_today.localizedString()}, $formattedTime"
+                } else {
+                    formattedTime
+                }
             }
 
             optionalYear && sameYear -> {

@@ -231,7 +231,7 @@ val coreModule = module {
 
     single { PushNotificationHandler(get(), get(), get(), get(), config) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get()) }
-    factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get(), get()) }
+    factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get()) }
     factory { GroupActivityNotificationsHandler(get(), get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), config) }
 }

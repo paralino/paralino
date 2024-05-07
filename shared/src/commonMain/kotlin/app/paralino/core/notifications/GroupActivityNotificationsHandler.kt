@@ -5,10 +5,10 @@ import app.paralino.core.config
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
-import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.TimeZone
@@ -105,11 +105,12 @@ class GroupActivityNotificationsHandler(
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),
-            timeInfo = if (push.isOlderThan(10.minutes)) {
+            timeInfo = if (push.createdAt.isOlderThan(10.minutes)) {
                 valueFormatter.formatSimpleDateTime(
                     timeUTC = push.createdAt.toLocalDateTime(TimeZone.UTC),
                     optionalYear = true,
-                    optionalMonth = true
+                    optionalMonth = true,
+                    showTodayInfo = true
                 )
             } else {
                 null
