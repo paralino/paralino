@@ -32,6 +32,8 @@ class PushNotificationHandler constructor(
             return Result.failure(e)
         }
 
+        delay(2.seconds)
+
         try {
             triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(

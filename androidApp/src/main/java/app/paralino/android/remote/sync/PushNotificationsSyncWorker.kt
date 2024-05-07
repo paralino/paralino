@@ -14,10 +14,8 @@ import androidx.work.WorkerParameters
 import app.paralino.android.notification.SyncNotificationProvider
 import app.paralino.core.logg
 import app.paralino.core.notifications.PushNotificationHandler
-import kotlinx.coroutines.delay
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.time.Duration.Companion.seconds
 
 class PushNotificationsSyncWorker(
     appContext: Context,
@@ -29,7 +27,6 @@ class PushNotificationsSyncWorker(
     override suspend fun doWork(): Result {
         try {
             logg.tag("push_notifications").v("Try to get push notifications from server")
-            delay(3.seconds)
             pushHandler.pushHandler.checkForPushNotifications()
                 .onFailure {
                     if (runAttemptCount < 3) Result.retry() else Result.failure()
@@ -63,7 +60,11 @@ class PushNotificationsSyncWorker(
                 .build()
 
             logg.tag("push_notifications").v("Create push notifications sync request")
-            workManager.enqueueUniqueWork("push_notifications_sync_work", ExistingWorkPolicy.KEEP, request)
+            workManager.enqueueUniqueWork(
+                "push_notifications_sync_work",
+                ExistingWorkPolicy.KEEP,
+                request
+            )
         }
     }
 }
