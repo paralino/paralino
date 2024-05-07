@@ -26,6 +26,7 @@ class AppDatabaseHelper(
     val groupDeviceIntegrityQueries = database.groupDeviceIntegritySQLQueries
     val placesQueries = database.placesSQLQueries
     val placeSettingsQueries = database.placeSettingsSQLQueries
+    val placeActivityQueries = database.placeActivitySQLQueries
     val memberQueries = database.membersSQLQueries
     val locationQueries = database.membersLocationsSQLQueries
     val configQueries = database.configDataSQLQueries
@@ -39,16 +40,22 @@ class AppDatabaseHelper(
             userQueries.clear()
         }
     }
+
     suspend fun transaction(query: AppDatabaseHelper.() -> Unit) =
         withContext(defaultContext) { database.transaction { query() } }
-    suspend fun <T: Any> transactionWithResult(query: AppDatabaseHelper.() -> T?): T? =
+
+    suspend fun <T : Any> transactionWithResult(query: AppDatabaseHelper.() -> T?): T? =
         withContext(defaultContext) { database.transactionWithResult { query() } }
 
-    suspend fun <T : Any> execute(query: AppDatabaseHelper.() -> Query<T>): T? =
-        withContext(defaultContext) {
-            query().executeAsOneOrNull()
-        }
+    suspend fun execute(query: AppDatabaseHelper.() -> Unit) =
+        withContext(defaultContext) { query() }
 
-    fun <T : Any> mapToOneOrNull(query: AppDatabaseHelper.() -> Query<T>): Flow<T?> = query().asFlow().mapToOneOrNull(defaultContext)
-    fun <T : Any> mapToList(query: AppDatabaseHelper.() -> Query<T>): Flow<List<T>> = query().asFlow().mapToList(defaultContext)
+    suspend fun <T : Any> executeWithResult(query: AppDatabaseHelper.() -> T?): T? =
+        withContext(defaultContext) { query() }
+
+    fun <T : Any> mapToOneOrNull(query: AppDatabaseHelper.() -> Query<T>): Flow<T?> =
+        query().asFlow().mapToOneOrNull(defaultContext)
+
+    fun <T : Any> mapToList(query: AppDatabaseHelper.() -> Query<T>): Flow<List<T>> =
+        query().asFlow().mapToList(defaultContext)
 }

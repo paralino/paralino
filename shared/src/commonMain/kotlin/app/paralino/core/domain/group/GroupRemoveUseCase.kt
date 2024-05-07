@@ -5,6 +5,7 @@ import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.first
 class GroupRemoveUseCase(
     private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
-    private val placesRepo: PlacesRepository,
+    private val placeActivityRepo: PlaceActivityDataSource,
     private val userRepository: UserRepository,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val locationSharingManager: LocationSharingManager,
@@ -60,7 +61,7 @@ class GroupRemoveUseCase(
     suspend fun clearGroupLocally(groupId: String) {
         locationSharingManager.stopSharing(groupId)
         local.deleteGroup(groupId)
-        placesRepo.deleteLocallyForGroup(groupId)
+        placeActivityRepo.clearForGroup(groupId)
         cryptoKEKRepo.deleteAllKeysForGroup(groupId)
     }
 }

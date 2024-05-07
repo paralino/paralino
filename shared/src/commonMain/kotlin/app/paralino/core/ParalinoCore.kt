@@ -78,6 +78,7 @@ import app.paralino.core.repo.location.SharingContractsLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodeLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.places.PlacesRepository
@@ -172,6 +173,7 @@ val dataSourceModule = module {
     single { PersonalCodesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get(), get()) }
+    single { PlaceActivityDataSource(get()) }
 }
 
 val coreModule = module {
@@ -212,7 +214,7 @@ val coreModule = module {
     single { UserRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
-    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), config) }
+    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     single { AppConfigRepository(get(), get(), get(), get(), config) }
 
     single { GroupValidityVerification(get(), get(), get(), config) }

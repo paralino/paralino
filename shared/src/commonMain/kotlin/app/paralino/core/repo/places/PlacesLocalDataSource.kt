@@ -1,15 +1,19 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.models.data
+import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlaceSettingRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.utils.extensions.distinctFlowOfList
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 
 class PlacesLocalDataSource(
     private val database: AppDatabaseHelper,
@@ -32,7 +36,7 @@ class PlacesLocalDataSource(
     suspend fun updateOrCreatePlace(place: GroupPlacesWithSettingsRaw) {
         database.transaction {
             placesQueries.createPlace(mapper.remote2Local(place.place))
-            if(place.settings == null)
+            if (place.settings == null)
                 placeSettingsQueries.deleteForPlace(placeId = place.place.id)
             else
                 placeSettingsQueries.createPlaceSettings(mapper.remote2Local(place.settings!!))
@@ -82,7 +86,7 @@ class PlacesLocalDataSource(
             database.mapToOneOrNull { placesQueries.getPlace(placeId) },
             database.mapToOneOrNull { placeSettingsQueries.getSettingsForPlace(placeId) }
         ) { place, settings ->
-            if(place != null) {
+            if (place != null) {
                 GroupPlaceWithSettings(
                     place = mapper.local2Core(place),
                     settings = settings?.let { mapper.local2Core(it) }
@@ -123,27 +127,13 @@ class PlacesLocalDataSource(
     }
 
     suspend fun getPlaceWithoutSettingsOnce(placeId: String): GroupPlace? {
-        return database.placesQueries.getPlace(placeId).executeAsOneOrNull()?.let { mapper.local2Core(it) }
+        return database.placesQueries.getPlace(placeId).executeAsOneOrNull()
+            ?.let { mapper.local2Core(it) }
     }
 
-    suspend fun deletePlace(placeId: String) {
-        database.transaction {
-            placesQueries.deletePlace(placeId)
-            placeSettingsQueries.deleteForPlace(placeId)
-        }
-    }
-
-    suspend fun deletePlaceForGroup(groupId: String) {
-        database.transaction {
-            placesQueries.deleteForGroup(groupId)
-            placeSettingsQueries.deleteForGroup(groupId)
-        }
-    }
-
-    suspend fun clearAll() {
-        database.transaction {
-            placesQueries.clearAll()
-            placeSettingsQueries.clearAll()
+    suspend fun getGroupId(placeId: String): String? {
+        return database.executeWithResult {
+            placesQueries.getGroupIdForPlaceId(placeId = placeId).executeAsOneOrNull()
         }
     }
 }

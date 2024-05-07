@@ -13,30 +13,32 @@ import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.models.places.GroupPlaceSettings
 import app.paralino.core.models.places.GroupPlaceSettingsData
 import app.paralino.core.models.places.GroupPlaceWithSettings
+import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
 class PlacesRepository constructor(
     private val local: PlacesLocalDataSource,
     private val remote: PlacesRemoteSource,
+    private val groupLocal: UserGroupLocalDataSource,
+    private val placeActivityRepo: PlaceActivityDataSource,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val userRepository: UserRepository,
     private val locationSharingManager: LocationSharingManager,
@@ -45,12 +47,6 @@ class PlacesRepository constructor(
     private val scopeProvider: ICoroutineScopeProvider,
     private val appConfig: AppConfig
 ) : BaseRepository() {
-
-    private val placeActivity = MutableStateFlow(mapOf<String, PlaceActivityState>())
-
-    fun hasAnyPlace(): Flow<Boolean> {
-        return local.getNumberOfPlaces().map { it > 0 }
-    }
 
     fun subscribeToAllActivePlaces(): Flow<List<GroupPlace>> {
         return local.getAllPlaces().map {
@@ -93,25 +89,26 @@ class PlacesRepository constructor(
             remote = {
                 remote.getPlacesForGroup(groupId)
             },
-            localUpdate = { local.recreatePlacesForGroup(groupId, it) }
+            localUpdate = {
+                local.recreatePlacesForGroup(groupId, it)
+                placeActivityRepo.recreatePlacesForGroup(groupId, it)
+            }
         )
     }
 
     suspend fun refreshPlacesForGroup(groupId: String): List<GroupPlacesWithSettingsRaw> {
         return triggerRemoteOnly {
             remote.getPlacesForGroup(groupId)
-        }.also { local.recreatePlacesForGroup(groupId, it) }
+        }.also {
+            local.recreatePlacesForGroup(groupId, it)
+            placeActivityRepo.recreatePlacesForGroup(groupId, it)
+        }
     }
 
     suspend fun refreshAllPlaces(): List<GroupPlacesWithSettingsRaw> {
         return triggerRemoteOnly { remote.getAllPlaces() }.also {
             local.recreatePlaces(it)
-        }
-    }
-
-    suspend fun refreshPlace(placeId: String): GroupPlacesWithSettingsRaw {
-        return triggerRemoteOnly { remote.getPlaceWithSettings(placeId) }.also {
-            local.updateOrCreatePlace(it)
+            placeActivityRepo.recreatePlaces(it)
         }
     }
 
@@ -133,7 +130,7 @@ class PlacesRepository constructor(
             remote = { remote.updatePlace(place) },
             localUpdate = { remotePlace ->
                 local.updatePlaceOnly(remotePlace)
-                updatePlaceActivity(placeId = remotePlace.id, state = null)
+                placeActivityRepo.updatePlaceActivity(placeId = remotePlace.id, state = null)
             }
         ).map { Unit }
     }
@@ -187,9 +184,6 @@ class PlacesRepository constructor(
         logg.v("place_activity", "Process new location in places")
         val places = getAllActivePlaces()
 
-        val entered = mutableListOf<String>()
-        val exited = mutableListOf<String>()
-
         places.forEach { place ->
             place.data.data?.let { placeData ->
                 val distance = geofenceManager.distanceBetweenPoints(
@@ -225,103 +219,193 @@ class PlacesRepository constructor(
                 // also adding few meters of buffer to improve filter
                 val isExit =
                     distance > (placeData.radiusMeters + data.accuracy + if (appConfig.placeActivityThrottle) 5 else 0)
-                val previousState = placeActivity.value.get(place.id)
+                val previousState = placeActivityRepo.getPlaceActivity(placeId = place.id)
 
 //                logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
 
                 if (isEnter) {
-                    entered.add(place.id)
+                    startPlaceNotifySchedule(
+                        placeId = place.id,
+                        groupId = place.groupId,
+                        enter = true,
+                        trigger = PlaceActivityTriggerType.LOCATION
+                    )
                 } else if (isExit) {
-                    exited.add(place.id)
+                    startPlaceNotifySchedule(
+                        placeId = place.id,
+                        groupId = place.groupId,
+                        enter = false,
+                        trigger = PlaceActivityTriggerType.LOCATION
+                    )
                 } else {
                     // else -> there is no certain change to place activity, or it is the same as previous one
-                    if (previousState?.enter == true) {
-                        entered.add(place.id)
-                    } else if (previousState?.enter == false) {
-                        exited.add(place.id)
+                    if (previousState?.isEnter == true) {
+                        startPlaceNotifySchedule(
+                            placeId = place.id,
+                            groupId = place.groupId,
+                            enter = true,
+                            trigger = PlaceActivityTriggerType.LOCATION
+                        )
+                    } else if (previousState?.isEnter == false) {
+                        startPlaceNotifySchedule(
+                            placeId = place.id,
+                            groupId = place.groupId,
+                            enter = false,
+                            trigger = PlaceActivityTriggerType.LOCATION
+                        )
                     }
                 }
             }
         }
-
-        placesEnter(entered, fromGeofence = false)
-        placesExit(exited, fromGeofence = false)
     }
 
-    fun placesEnter(placesIds: List<String>, fromGeofence: Boolean) {
-        placesIds.forEach {
-            try {
-                schedulePlaceNotify(it, enter = true, fromGeofence = fromGeofence)
-            } catch (e: Exception) {
-                logg.e("place_activity", "Error notifying place enter", e)
+    fun placesEnter(placesIds: List<String>, trigger: PlaceActivityTriggerType) {
+        scopeProvider.userSessionIOScope.launch {
+            placesIds.forEach { placeId ->
+                try {
+                    val groupId = local.getGroupId(placeId = placeId)!!
+                    startPlaceNotifySchedule(
+                        placeId = placeId,
+                        groupId = groupId,
+                        enter = true,
+                        trigger = trigger
+                    )
+                } catch (e: Exception) {
+                    logg.w("place_activity", "Error notifying place enter: ${e.message}")
+                }
             }
         }
     }
 
-    fun placesExit(placesIds: List<String>, fromGeofence: Boolean) {
-        placesIds.forEach {
-            try {
-                schedulePlaceNotify(it, enter = false, fromGeofence = fromGeofence)
-            } catch (e: Exception) {
-                logg.e("place_activity", "Error notifying place exit", e)
+    fun placesExit(placesIds: List<String>, trigger: PlaceActivityTriggerType) {
+        scopeProvider.userSessionIOScope.launch {
+            placesIds.forEach { placeId ->
+                try {
+                    val groupId = local.getGroupId(placeId = placeId)!!
+                    startPlaceNotifySchedule(
+                        placeId = placeId,
+                        groupId = groupId,
+                        enter = false,
+                        trigger = trigger
+                    )
+                } catch (e: Exception) {
+                    logg.w("place_activity", "Error notifying place exit: ${e.message}")
+                }
             }
         }
     }
 
-    private fun schedulePlaceNotify(
+    private suspend fun startPlaceNotifySchedule(
         placeId: String,
+        groupId: String,
         enter: Boolean,
-        fromGeofence: Boolean
+        trigger: PlaceActivityTriggerType
     ) {
 
-        val sourceTag = if (fromGeofence) "geofence" else "location"
+        val sourceTag = trigger.key
         val activityTag = if (enter) "${sourceTag}_enter" else "${sourceTag}_exit"
 
-        val oldState = placeActivity.value.get(placeId)
-        val newState = (oldState ?: PlaceActivityState(enter = enter)).copy(enter = enter)
-        updatePlaceActivity(
+        val oldState = placeActivityRepo.getPlaceActivity(placeId)
+        val newState = if (oldState != null) {
+            oldState.copy(
+                isEnter = enter,
+                stateChangeTrigger = trigger,
+                stateChangeTimeMillis = nowUTC().toEpochMilliseconds()
+            )
+        } else {
+            PlaceActivityState(
+                placeId = placeId,
+                groupId = groupId,
+                isEnter = enter,
+                stateChangeTrigger = trigger,
+                stateChangeTimeMillis = nowUTC().toEpochMilliseconds()
+            )
+        }
+
+        placeActivityRepo.updatePlaceActivity(
             placeId = placeId,
             state = newState
         )
 
-        if (newState.enter == oldState?.scheduledState || newState.enter == oldState?.enter) {
-//            logg.tag("place_activity").d("Cancel place $activityTag notify - state did not change - $placeId")
+        if (newState.isEnter == oldState?.isScheduledStateEnter || newState.isEnter == oldState?.isEnter) {
+            logg.tag("place_activity")
+                .d("Cancel place $activityTag notify - state did not change - $placeId")
+            if (oldState.tryNotifyJob == null && oldState.isScheduledStateEnter != null) {
+                logg.tag("place_activity").d("Could reschedule $activityTag notify - $placeId")
+                schedulePlaceNotify(
+                    activityTag = activityTag,
+                    placeId = placeId,
+                    enter = enter,
+                    oldState = oldState,
+                    newState = newState,
+                    trigger = trigger
+                )
+            }
             return
         }
 
         if (oldState?.tryNotifyJob?.isActive == true) {
-//            logg.tag("place_activity").d("Place notify already scheduled $activityTag - $placeId")
+            logg.tag("place_activity").d("Place notify already scheduled $activityTag - $placeId")
             return
         }
 
-        if (oldState == null || (oldState.enter == enter && oldState.lastNotifyState != !enter)) {
-//            logg.tag("place_activity").d("Cancel place $activityTag notify (state: ${oldState?.enter}) - $placeId")
+        if (oldState == null || (oldState.isEnter == enter && oldState.isLastNotifyStateEnter != !enter)) {
+            logg.tag("place_activity")
+                .d("Cancel place $activityTag notify (state: ${oldState?.isEnter}) - $placeId")
             return
         }
 
+        if (oldState.isLastNotifyStateEnter == enter && nowUTC().toEpochMilliseconds()
+                .minus(oldState.notifyTimeMillis ?: 0) < 1.hours.inWholeMilliseconds
+        ) {
+            logg.tag("place_activity")
+                .d("Cancel place $activityTag notify (already notified) - $placeId")
+            return
+        }
+
+        schedulePlaceNotify(
+            activityTag = activityTag,
+            placeId = placeId,
+            enter = enter,
+            oldState = oldState,
+            newState = newState,
+            trigger = trigger
+        )
+    }
+
+    private suspend fun schedulePlaceNotify(
+        activityTag: String,
+        placeId: String,
+        enter: Boolean,
+        oldState: PlaceActivityState,
+        newState: PlaceActivityState,
+        trigger: PlaceActivityTriggerType
+    ) {
         logg.tag("place_activity").d("Schedule place notify $activityTag - $placeId")
         oldState.tryNotifyJob?.cancel()
         val updateJob = scopeProvider.userSessionIOScope.launch {
             placeActivityDelay()
             processPlaceActivity(
                 activityTag = activityTag,
-                placeId = placeId,
-                fromGeofence = fromGeofence
+                placeId = placeId
             )
         }
 
-        updatePlaceActivity(
+        placeActivityRepo.updatePlaceActivity(
             placeId = placeId,
-            state = newState.copy(scheduledState = enter, tryNotifyJob = updateJob)
+            state = newState.copy(
+                isScheduledStateEnter = enter,
+                scheduleTrigger = trigger,
+                tryNotifyJob = updateJob
+            )
         )
     }
 
     private suspend fun processPlaceActivity(
         activityTag: String,
-        placeId: String,
-        fromGeofence: Boolean
+        placeId: String
     ) {
-        val currentState = placeActivity.value.get(placeId)
+        val currentState = placeActivityRepo.getPlaceActivity(placeId = placeId)
 
         if (currentState == null) {
             logg.tag("place_activity")
@@ -329,27 +413,33 @@ class PlacesRepository constructor(
             return
         }
 
-        if (currentState.enter != currentState.scheduledState) {
+        if (currentState.isEnter != currentState.isScheduledStateEnter) {
             logg.tag("place_activity")
-                .d("Cancel place $activityTag notify - state does not match - $placeId (state: ${currentState.enter}, scheduled: ${currentState.scheduledState})")
-            updatePlaceActivity(
+                .d("Cancel place $activityTag notify - state does not match - $placeId (state: ${currentState.isEnter}, scheduled: ${currentState.isScheduledStateEnter})")
+            placeActivityRepo.updatePlaceActivity(
                 placeId = placeId,
-                state = currentState.copy(scheduledState = null)
+                state = currentState.copy(
+                    isScheduledStateEnter = null,
+                    scheduleTrigger = null
+                )
             )
             return
         }
 
-        val notifyTimeDiff =
-            currentState.notifyTimeMillis.minus(nowUTC().toEpochMilliseconds()).absoluteValue
+        val notifyTimeDiff = (currentState.notifyTimeMillis ?: 0)
+            .minus(nowUTC().toEpochMilliseconds()).absoluteValue
 
         // already notified this place in last period - this will filter frequent updates
         // but if user stays more than certain period inside the space, it will trigger notification
         if (notifyTimeDiff < 10.seconds.inWholeMilliseconds) {
             logg.tag("place_activity")
                 .d("Cancel place $activityTag notify (notify diff) - $placeId")
-            updatePlaceActivity(
+            placeActivityRepo.updatePlaceActivity(
                 placeId = placeId,
-                state = currentState.copy(scheduledState = null)
+                state = currentState.copy(
+                    isScheduledStateEnter = null,
+                    scheduleTrigger = null
+                )
             )
             return
         }
@@ -359,7 +449,7 @@ class PlacesRepository constructor(
         if (place == null) {
             logg.tag("place_activity")
                 .d("Cancel place $activityTag notify (place null) - $placeId")
-            updatePlaceActivity(
+            placeActivityRepo.updatePlaceActivity(
                 placeId = placeId,
                 state = null
             )
@@ -368,25 +458,28 @@ class PlacesRepository constructor(
 
         if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) {
             // reset place activity if sharing stops
-            updatePlaceActivity(placeId, null)
+            placeActivityRepo.updatePlaceActivity(placeId, null)
             logg.tag("place_activity")
                 .d("Cancel place $activityTag notify (sharing off) - $placeId")
             return
         }
 
         logg.tag("place_activity").d("Trigger notify place $activityTag - $placeId")
-        updatePlaceActivity(
+        placeActivityRepo.updatePlaceActivity(
             placeId = placeId,
             state = currentState.copy(
-                lastNotifyState = currentState.enter,
+                isLastNotifyStateEnter = currentState.isEnter,
                 notifyTimeMillis = nowUTC().toEpochMilliseconds(),
-                scheduledState = null
+                notifyTrigger = currentState.stateChangeTrigger,
+                isScheduledStateEnter = null,
+                scheduleTrigger = null
             )
         )
 
         try {
             triggerRemoteOnly {
-                if (currentState.enter) {
+                // TODO pass state change time so we have correct time displayed in notifications
+                if (currentState.isEnter) {
                     remote.notifyPlaceEnter(placeId = placeId, groupId = place.groupId)
                 } else {
                     remote.notifyPlaceExit(placeId = placeId, groupId = place.groupId)
@@ -394,29 +487,15 @@ class PlacesRepository constructor(
             }
 
             // update device status with last location if place activity came from geofence
-            if (fromGeofence) {
+            if (currentState.scheduleTrigger == PlaceActivityTriggerType.GOEFENCE) {
                 updateDeviceStatusAndLocation(
                     activityTag = activityTag,
                     place = place
                 )
             }
         } catch (e: Exception) {
-            updatePlaceActivity(placeId, null)
+            placeActivityRepo.updatePlaceActivity(placeId, null)
             throw e
-        }
-    }
-
-    private fun updatePlaceActivity(placeId: String, state: PlaceActivityState?) {
-        placeActivity.update {
-            it.toMutableMap().apply {
-                if (state != null) {
-                    set(placeId, state)
-                } else {
-                    remove(placeId).also {
-                        it?.tryNotifyJob?.cancel()
-                    }
-                }
-            }
         }
     }
 
@@ -455,29 +534,25 @@ class PlacesRepository constructor(
         return getDataOnce(
             remote = { remote.deletePlace(id) },
             localUpdate = {
-                local.deletePlace(id)
-                updatePlaceActivity(id, state = null)
+                groupLocal.deletePlace(id)
+                placeActivityRepo.updatePlaceActivity(id, state = null)
             }
         )
     }
 
     suspend fun clear() {
-        local.clearAll()
-        placeActivity.update {
-            it.forEach { it.value.tryNotifyJob?.cancel() }
-            emptyMap()
-        }
-    }
-
-    suspend fun deleteLocallyForGroup(groupId: String) {
-        local.deletePlaceForGroup(groupId)
+        placeActivityRepo.clearAll()
     }
 }
 
-data class PlaceActivityState(
-    val enter: Boolean,
-    val scheduledState: Boolean? = null,
-    val lastNotifyState: Boolean? = null,
-    val notifyTimeMillis: Long = 0L,
-    val tryNotifyJob: Job? = null,
-)
+enum class PlaceActivityTriggerType constructor(val key: String) {
+    GOEFENCE(key = "geofence"),
+    LOCATION(key = "location"),
+    GENERIC(key = "generic");
+
+    companion object {
+        fun fromKey(key: String): PlaceActivityTriggerType {
+            return entries.firstOrNull { it.key == key } ?: GENERIC
+        }
+    }
+}

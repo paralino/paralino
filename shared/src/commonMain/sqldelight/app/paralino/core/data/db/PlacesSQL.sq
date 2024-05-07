@@ -22,6 +22,10 @@ getAllForGroup:
 SELECT * FROM placeEntity
 WHERE groupId = :groupId;
 
+getGroupIdForPlaceId:
+SELECT groupId FROM placeEntity
+WHERE id = :placeId;
+
 getPlacesCount:
 SELECT COUNT(id) FROM placeEntity;
 

@@ -111,7 +111,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
         }
         Logr.v(tag: "place_activity_geofence", message: "User entered geofence: \(region.identifier)")
-        placeRepo.placesEnter(placesIds: [region.identifier], fromGeofence: true)
+        placeRepo.placesEnter(placesIds: [region.identifier], trigger: PlaceActivityTriggerType.goefence)
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
@@ -122,7 +122,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
         }
         Logr.v(tag: "place_activity_geofence", message: "User exited geofence: \(region.identifier)")
-        placeRepo.placesExit(placesIds: [region.identifier], fromGeofence: true)
+        placeRepo.placesExit(placesIds: [region.identifier], trigger: PlaceActivityTriggerType.goefence)
     }
     
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {

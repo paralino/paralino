@@ -232,6 +232,8 @@ class UserGroupLocalDataSource constructor(
             groupQueries.deleteGroup(groupId)
             memberQueries.clearForGroup(groupId)
             locationQueries.clearForGroup(groupId)
+            placesQueries.deleteForGroup(groupId)
+            placeSettingsQueries.deleteForGroup(groupId)
         }
     }
 
@@ -239,6 +241,13 @@ class UserGroupLocalDataSource constructor(
         database.transaction {
             memberQueries.deleteMember(groupId = groupId, userId = userId)
             locationQueries.clearForUserInGroup(groupId = groupId, userId = userId)
+        }
+    }
+
+    suspend fun deletePlace(placeId: String) {
+        database.transaction {
+            placesQueries.deletePlace(placeId = placeId)
+            placeSettingsQueries.deleteForPlace(placeId = placeId)
         }
     }
 
@@ -256,6 +265,8 @@ class UserGroupLocalDataSource constructor(
             groupQueries.clearAll()
             memberQueries.clearAll()
             locationQueries.clearAll()
+            placesQueries.clearAll()
+            placeSettingsQueries.clearAll()
         }
     }
 }
