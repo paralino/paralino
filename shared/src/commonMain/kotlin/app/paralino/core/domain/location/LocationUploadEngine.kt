@@ -16,6 +16,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRemoteSource
+import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
@@ -46,7 +47,8 @@ class LocationUploadEngine constructor(
     private val infoNotificationPresenter: IInfoMessagesNotificationPresenter,
     private val locationCacheRepo: LocationCacheRepository,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val oneTimeLocationProvider: IOneTimeLocationProvider
+    private val oneTimeLocationProvider: IOneTimeLocationProvider,
+    private val placeActivityRepo: PlaceActivityDataSource
 ) : LimitedExecutionRepository() {
 
     private val maxUploadRate: Duration
@@ -212,6 +214,7 @@ class LocationUploadEngine constructor(
                     "Location device can not be established for current device, abort sharing"
                 )
                 locationSharingManager.stopSharing(groupId)
+                placeActivityRepo.clearForGroup(groupId = groupId)
                 null
             }
 
