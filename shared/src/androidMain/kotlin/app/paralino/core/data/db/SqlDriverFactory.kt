@@ -4,15 +4,14 @@ import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import app.paralino.core.data.db.AppDatabase
 
 actual class SqlDriverFactory(private val context: Context) {
-    actual fun createDriver(): SqlDriver {
+    actual fun createMainDatabaseDriver(): SqlDriver {
         return AndroidSqliteDriver(
-            schema = AppDatabase.Schema,
+            schema = MainAppDatabase.Schema,
             context = context,
             name = "paralino_main.db",
-            callback = object : AndroidSqliteDriver.Callback(AppDatabase.Schema) {
+            callback = object : AndroidSqliteDriver.Callback(MainAppDatabase.Schema) {
                 override fun onConfigure(db: SupportSQLiteDatabase) {
                     super.onConfigure(db)
                     setPragma(db, "JOURNAL_MODE = WAL")

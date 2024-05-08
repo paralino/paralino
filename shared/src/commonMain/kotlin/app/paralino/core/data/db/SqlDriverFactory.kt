@@ -3,5 +3,5 @@ package app.paralino.core.data.db
 import app.cash.sqldelight.db.SqlDriver
 
 expect class SqlDriverFactory {
-    fun createDriver(): SqlDriver
+    fun createMainDatabaseDriver(): SqlDriver
 }

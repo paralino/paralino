@@ -110,7 +110,7 @@ android {
 
 sqldelight {
     databases {
-        create("AppDatabase") {
+        create("MainAppDatabase") {
             packageName.set("app.paralino.core.data.db")
             srcDirs.setFrom("src/commonMain/db/main")
         }

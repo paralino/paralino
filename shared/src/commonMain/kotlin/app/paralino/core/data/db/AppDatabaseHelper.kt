@@ -13,7 +13,7 @@ class AppDatabaseHelper(
     val scopeProvider: ICoroutineScopeProvider
 ) {
     private val defaultContext get() = scopeProvider.ioDispatcher
-    private val database = AppDatabase(driverFactory.createDriver())
+    private val database = MainAppDatabase(driverFactory.createMainDatabaseDriver())
 
     val userQueries = database.userMeSQLQueries
     val subscriptionPlanQueries = database.plansSQLQueries
