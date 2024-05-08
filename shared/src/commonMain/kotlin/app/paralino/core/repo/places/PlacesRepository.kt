@@ -335,10 +335,10 @@ class PlacesRepository constructor(
         )
 
         if (newState.isEnter == oldState?.isScheduledStateEnter || newState.isEnter == oldState?.isEnter) {
-            logg.tag("place_activity")
-                .d("Cancel place $activityTag notify - state did not change - $placeId")
+//            logg.tag("place_activity")
+//                .d("Cancel place $activityTag notify - state did not change - $placeId")
             if (oldState.tryNotifyJob == null && oldState.isScheduledStateEnter != null) {
-                logg.tag("place_activity").d("Could reschedule $activityTag notify - $placeId")
+//                logg.tag("place_activity").d("Could reschedule $activityTag notify - $placeId")
 
                 // replace state change time with old value so we can send time difference to server
                 // this will then show more accurate place change time in notification
@@ -363,21 +363,21 @@ class PlacesRepository constructor(
         }
 
         if (oldState?.tryNotifyJob?.isActive == true) {
-            logg.tag("place_activity").d("Place notify already scheduled $activityTag - $placeId")
+//            logg.tag("place_activity").d("Place notify already scheduled $activityTag - $placeId")
             return
         }
 
         if (oldState == null || (oldState.isEnter == enter && oldState.isLastNotifyStateEnter != !enter)) {
-            logg.tag("place_activity")
-                .d("Cancel place $activityTag notify (state: ${oldState?.isEnter}) - $placeId")
+//            logg.tag("place_activity")
+//                .d("Cancel place $activityTag notify (state: ${oldState?.isEnter}) - $placeId")
             return
         }
 
         if (oldState.isLastNotifyStateEnter == enter && nowUTC().toEpochMilliseconds()
                 .minus(oldState.notifyTimeMillis ?: 0) < 1.hours.inWholeMilliseconds
         ) {
-            logg.tag("place_activity")
-                .d("Cancel place $activityTag notify (already notified) - $placeId")
+//            logg.tag("place_activity")
+//                .d("Cancel place $activityTag notify (already notified) - $placeId")
             return
         }
 

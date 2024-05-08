@@ -119,16 +119,17 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
                 IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION).apply { addAction(Intent.ACTION_PROVIDER_CHANGED) }
             )
         }
-        getSystemService<ConnectivityManager>()?.registerDefaultNetworkCallback(object :
-            NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                coreAppManager.updateConnectionStatus()
-            }
+        getSystemService<ConnectivityManager>()?.registerDefaultNetworkCallback(
+            object : NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    coreAppManager.updateConnectionStatus()
+                }
 
-            override fun onLost(network: Network) {
-                coreAppManager.updateConnectionStatus()
+                override fun onLost(network: Network) {
+                    coreAppManager.updateConnectionStatus()
+                }
             }
-        })
+        )
     }
 
     private fun initCrashReporting() {
