@@ -5,6 +5,7 @@ import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.LogsDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -108,6 +109,7 @@ object KoinIOS {
                 single { RealtimeApiWrapperIOS(realtimeApi(get(), get()), get()) } bind IRealtimeApi::class
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
+                single { LogsDatabaseHelper(SqlDriverFactory(), get()) }
                 single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
                 single { valueFormatter } bind IValueFormatter::class
                 single { appUpdateManager } bind IAppUpdateManager::class

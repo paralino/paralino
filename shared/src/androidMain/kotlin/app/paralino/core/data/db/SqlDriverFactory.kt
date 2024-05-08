@@ -23,6 +23,28 @@ actual class SqlDriverFactory(private val context: Context) {
                     cursor.moveToFirst()
                     cursor.close()
                 }
-            })
+            }
+        )
+    }
+
+    actual fun createLogsDatabaseDriver(): SqlDriver {
+        return AndroidSqliteDriver(
+            schema = LogsDatabase.Schema,
+            context = context,
+            name = "paralino_logs.db",
+            callback = object : AndroidSqliteDriver.Callback(LogsDatabase.Schema) {
+                override fun onConfigure(db: SupportSQLiteDatabase) {
+                    super.onConfigure(db)
+                    setPragma(db, "JOURNAL_MODE = WAL")
+                    setPragma(db, "SYNCHRONOUS = 2")
+                }
+
+                private fun setPragma(db: SupportSQLiteDatabase, pragma: String) {
+                    val cursor = db.query("PRAGMA $pragma")
+                    cursor.moveToFirst()
+                    cursor.close()
+                }
+            }
+        )
     }
 }

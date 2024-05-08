@@ -15,6 +15,16 @@ abstract class ParalinoDatabaseHelper<T : Transacter> {
     protected abstract val database: T
 }
 
+class LogsDatabaseHelper(
+    private val driverFactory: SqlDriverFactory,
+    val scopeProvider: ICoroutineScopeProvider
+) : ParalinoDatabaseHelper<LogsDatabase>() {
+    override val defaultContext: CoroutineContext get() = scopeProvider.ioDispatcher
+    override val database = LogsDatabase(driverFactory.createLogsDatabaseDriver())
+
+    val debugLogsQueries = database.debugLogsSQLQueries
+}
+
 class AppDatabaseHelper(
     private val driverFactory: SqlDriverFactory,
     val scopeProvider: ICoroutineScopeProvider

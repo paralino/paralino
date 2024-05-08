@@ -1,0 +1,43 @@
+CREATE TABLE IF NOT EXISTS debugLogsEntity (
+`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+`timeUTC` TEXT NOT NULL,
+`type` TEXT NOT NULL,
+`priority` TEXT NOT NULL,
+`tag` TEXT NOT NULL,
+`title` TEXT NOT NULL,
+`info` TEXT DEFAULT NULL
+);
+
+insertEntry:
+INSERT INTO debugLogsEntity (timeUTC, type, priority, tag, title, info)
+VALUES (?, ?, ?, ?, ?, ?);
+
+getForId:
+SELECT * FROM debugLogsEntity
+WHERE id = :id;
+
+getForType:
+SELECT * FROM debugLogsEntity
+WHERE type = :type;
+
+getForPriority:
+SELECT * FROM debugLogsEntity
+WHERE priority = :priority;
+
+getForTag:
+SELECT * FROM debugLogsEntity
+WHERE tag = :tag;
+
+getAll:
+SELECT * FROM debugLogsEntity;
+
+remove:
+DELETE FROM debugLogsEntity
+WHERE id = :id;
+
+removeOlderThan:
+DELETE FROM debugLogsEntity
+WHERE timeUTC < :maxValidTimeUTC;
+
+clearAll:
+DELETE FROM debugLogsEntity;

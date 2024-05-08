@@ -27,6 +27,7 @@ import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.LogsDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
@@ -81,6 +82,7 @@ object KoinSetup {
 
     private val coreDependencyModule = module {
         single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
+        single { LogsDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
 
 //        single { CryptoFrameworkProvider() } bind ICryptoServiceProvider::class
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
