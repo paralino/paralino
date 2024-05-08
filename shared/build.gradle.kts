@@ -112,6 +112,7 @@ sqldelight {
     databases {
         create("AppDatabase") {
             packageName.set("app.paralino.core.data.db")
+            srcDirs.setFrom("src/commonMain/db/main")
         }
     }
 }
