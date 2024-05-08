@@ -41,6 +41,7 @@ class PlacesRepository constructor(
     private val remote: PlacesRemoteSource,
     private val groupLocal: UserGroupLocalDataSource,
     private val placeActivityRepo: PlaceActivityDataSource,
+    private val placeActivityUploadEngine: PlaceActivityUploadEngine,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val userRepository: UserRepository,
     private val locationSharingManager: LocationSharingManager,
@@ -402,10 +403,14 @@ class PlacesRepository constructor(
         oldState.tryNotifyJob?.cancel()
         val updateJob = scopeProvider.userSessionIOScope.launch {
             placeActivityDelay()
-            processPlaceActivity(
-                activityTag = activityTag,
-                placeId = placeId
-            )
+            try {
+                processPlaceActivity(
+                    activityTag = activityTag,
+                    placeId = placeId
+                )
+            } catch (e: Exception) {
+                logg.w("place_activity", "Error notifying place exit: ${e.message}")
+            }
         }
 
         placeActivityRepo.updatePlaceActivity(
@@ -494,21 +499,12 @@ class PlacesRepository constructor(
         )
 
         try {
-            triggerRemoteOnly {
-                if (currentState.isEnter) {
-                    remote.notifyPlaceEnter(
-                        placeId = placeId,
-                        groupId = place.groupId,
-                        timeMillis = currentState.stateChangeTimeMillis
-                    )
-                } else {
-                    remote.notifyPlaceExit(
-                        placeId = placeId,
-                        groupId = place.groupId,
-                        timeMillis = currentState.stateChangeTimeMillis
-                    )
-                }
-            }
+            placeActivityUploadEngine.notifyPlaceEvent(
+                placeId = placeId,
+                groupId = place.groupId,
+                isEnter = currentState.isEnter,
+                timeMillis = currentState.stateChangeTimeMillis
+            )
 
             // update device status with last location if place activity came from geofence
             if (currentState.scheduleTrigger == PlaceActivityTriggerType.GOEFENCE) {

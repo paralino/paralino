@@ -234,6 +234,7 @@ class UserGroupLocalDataSource constructor(
             locationQueries.clearForGroup(groupId)
             placesQueries.deleteForGroup(groupId)
             placeSettingsQueries.deleteForGroup(groupId)
+            pendingPlaceEventsQueries.deleteForGroup(groupId)
         }
     }
 
@@ -248,6 +249,7 @@ class UserGroupLocalDataSource constructor(
         database.transaction {
             placesQueries.deletePlace(placeId = placeId)
             placeSettingsQueries.deleteForPlace(placeId = placeId)
+            pendingPlaceEventsQueries.deleteForPlace(placeId = placeId)
         }
     }
 
@@ -267,6 +269,7 @@ class UserGroupLocalDataSource constructor(
             locationQueries.clearAll()
             placesQueries.clearAll()
             placeSettingsQueries.clearAll()
+            pendingPlaceEventsQueries.clearAll()
         }
     }
 }

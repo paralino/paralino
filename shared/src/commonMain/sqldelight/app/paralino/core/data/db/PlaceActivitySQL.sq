@@ -30,10 +30,6 @@ deletePlaceActivity:
 DELETE FROM placeActivityEntity
 WHERE placeId = :placeId;
 
-deleteForPlace:
-DELETE FROM placeActivityEntity
-WHERE placeId = :placeId;
-
 deleteForGroup:
 DELETE FROM placeActivityEntity
 WHERE groupId = :groupId;

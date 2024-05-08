@@ -10,6 +10,7 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import kotlin.time.Duration.Companion.minutes
@@ -23,7 +24,8 @@ class RefreshEverythingUseCase(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupRefreshUseCase: GroupRefreshUseCase,
     private val configRepo: AppConfigRepository,
-    private val deviceStatusProcessor: MemberDeviceStatusProcessor
+    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
+    private val placeActivityUploadEngine: PlaceActivityUploadEngine
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "full_refresh"
@@ -114,6 +116,9 @@ class RefreshEverythingUseCase(
             .also {
                 logg.tag("full_refresh").d("group and keys ready, updating groups")
                 local.recreateGroups(it)
+            }
+            .also {
+                placeActivityUploadEngine.syncPendingEvents()
             }
     }
 

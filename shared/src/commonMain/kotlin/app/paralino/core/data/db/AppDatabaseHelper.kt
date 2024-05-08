@@ -27,6 +27,7 @@ class AppDatabaseHelper(
     val placesQueries = database.placesSQLQueries
     val placeSettingsQueries = database.placeSettingsSQLQueries
     val placeActivityQueries = database.placeActivitySQLQueries
+    val pendingPlaceEventsQueries = database.pendingPlaceEventsQueries
     val memberQueries = database.membersSQLQueries
     val locationQueries = database.membersLocationsSQLQueries
     val configQueries = database.configDataSQLQueries

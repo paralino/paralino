@@ -75,7 +75,7 @@ class PlaceActivityDataSource(
             )
         } else {
             database.execute {
-                placeActivityQueries.deleteForPlace(placeId = placeId)
+                placeActivityQueries.deletePlaceActivity(placeId = placeId)
             }
         }
     }
