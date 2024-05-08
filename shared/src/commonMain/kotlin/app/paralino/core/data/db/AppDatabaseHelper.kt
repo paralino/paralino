@@ -1,19 +1,26 @@
 package app.paralino.core.data.db
 
 import app.cash.sqldelight.Query
+import app.cash.sqldelight.Transacter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.paralino.core.provider.ICoroutineScopeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
+
+abstract class ParalinoDatabaseHelper<T : Transacter> {
+    abstract val defaultContext: CoroutineContext
+    protected abstract val database: T
+}
 
 class AppDatabaseHelper(
     private val driverFactory: SqlDriverFactory,
     val scopeProvider: ICoroutineScopeProvider
-) {
-    private val defaultContext get() = scopeProvider.ioDispatcher
-    private val database = MainAppDatabase(driverFactory.createMainDatabaseDriver())
+) : ParalinoDatabaseHelper<MainAppDatabase>() {
+    override val defaultContext: CoroutineContext get() = scopeProvider.ioDispatcher
+    override val database = MainAppDatabase(driverFactory.createMainDatabaseDriver())
 
     val userQueries = database.userMeSQLQueries
     val subscriptionPlanQueries = database.plansSQLQueries
@@ -35,28 +42,21 @@ class AppDatabaseHelper(
     val userKeysQueries = database.userKeysSQLQueries
     val personalGroupKeysQueries = database.personalGroupKeySQLQueries
 
-
-    internal fun clearDatabase() {
-        database.transaction {
-            userQueries.clear()
-        }
-    }
-
     suspend fun transaction(query: AppDatabaseHelper.() -> Unit) =
         withContext(defaultContext) { database.transaction { query() } }
 
     suspend fun <T : Any> transactionWithResult(query: AppDatabaseHelper.() -> T?): T? =
         withContext(defaultContext) { database.transactionWithResult { query() } }
-
-    suspend fun execute(query: AppDatabaseHelper.() -> Unit) =
-        withContext(defaultContext) { query() }
-
-    suspend fun <T : Any> executeWithResult(query: AppDatabaseHelper.() -> T?): T? =
-        withContext(defaultContext) { query() }
-
-    fun <T : Any> mapToOneOrNull(query: AppDatabaseHelper.() -> Query<T>): Flow<T?> =
-        query().asFlow().mapToOneOrNull(defaultContext)
-
-    fun <T : Any> mapToList(query: AppDatabaseHelper.() -> Query<T>): Flow<List<T>> =
-        query().asFlow().mapToList(defaultContext)
 }
+
+fun <T : Any, D: Transacter, R: ParalinoDatabaseHelper<D>> R.mapToList(query: R.() -> Query<T>): Flow<List<T>> =
+    query().asFlow().mapToList(defaultContext)
+
+suspend fun <D: Transacter, R: ParalinoDatabaseHelper<D>> R.execute(query: R.() -> Unit) =
+    withContext(defaultContext) { query() }
+
+suspend fun <T: Any, D: Transacter, R: ParalinoDatabaseHelper<D>> R.executeWithResult(query: R.() -> T?): T? =
+    withContext(defaultContext) { query() }
+
+fun <T : Any, D: Transacter, R: ParalinoDatabaseHelper<D>> R.mapToOneOrNull(query: R.() -> Query<T>): Flow<T?> =
+    query().asFlow().mapToOneOrNull(defaultContext)

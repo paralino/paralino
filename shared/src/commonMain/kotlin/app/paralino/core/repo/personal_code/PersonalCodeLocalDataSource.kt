@@ -5,6 +5,7 @@ import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import app.paralino.core.models.mappers.PersonalCodeMapperLocal
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.mapToList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
