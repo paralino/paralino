@@ -7,15 +7,17 @@ abstract class SystemLogr {
 object Logr : LogrImpl()
 
 abstract class LogrImpl : ILogr {
-    var systemLogr: SystemLogr? = null
+    var logrs: List<SystemLogr>? = null
         private set
 
-    fun setLogr(logr: SystemLogr) {
-        this.systemLogr = logr
+    fun init(logrs: List<SystemLogr>) {
+        this.logrs = logrs
     }
 
     override fun log(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
-        systemLogr ?: return
+        if (logrs.isNullOrEmpty()) {
+            return
+        }
 
         val output = if (t != null) {
             message.takeIf { it.isNotEmpty() }
@@ -27,7 +29,9 @@ abstract class LogrImpl : ILogr {
             message.takeIf { it.isNotEmpty() } ?: return
         }
 
-        systemLogr?.systemLog(priority, tag, output, t)
+        logrs?.forEach {
+            it.systemLog(priority, tag, output, t)
+        }
     }
 }
 
@@ -138,6 +142,6 @@ class ILogrWithTag(val tag: String, val logr: ILogr) : ILogr {
     }
 }
 
-enum class LogPriority {
-    VERBOSE, DEBUG, INFO, WARN, ERROR
+enum class LogPriority constructor(val key: Long) {
+    VERBOSE(1), DEBUG(200), INFO(300), WARN(400), ERROR(500)
 }

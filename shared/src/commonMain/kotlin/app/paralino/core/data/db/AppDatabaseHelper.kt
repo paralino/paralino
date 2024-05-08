@@ -23,6 +23,12 @@ class LogsDatabaseHelper(
     override val database = LogsDatabase(driverFactory.createLogsDatabaseDriver())
 
     val debugLogsQueries = database.debugLogsSQLQueries
+
+    suspend fun transaction(query: LogsDatabaseHelper.() -> Unit) =
+        withContext(defaultContext) { database.transaction { query() } }
+
+    suspend fun <T : Any> transactionWithResult(query: LogsDatabaseHelper.() -> T?): T? =
+        withContext(defaultContext) { database.transactionWithResult { query() } }
 }
 
 class AppDatabaseHelper(

@@ -65,6 +65,7 @@ import app.paralino.core.notifications.LocationRequestNotificationHandler
 import app.paralino.core.notifications.PlaceActivityNotificationHandler
 import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
@@ -116,16 +117,24 @@ object ParalinoCore {
     }
 
     private fun initializeApp(koinApp: KoinApplication) {
+
+        val logr = Logr
+        logg = logr
+
         val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
         val cryptoCore = koinApp.koin.get<CryptoCore>()
         val backendConfig = koinApp.koin.get<BackendConfig>()
+        val inAppLogger = koinApp.koin.get<InAppLogger>()
 
         AppConfig.instance = deviceApiProvider.createConfig()
         connectionStatus = deviceApiProvider.connectionStatusProvider
 
-        val logr = Logr
-        logr.setLogr(deviceApiProvider.createSystemLogr())
-        logg = logr
+        logr.init(
+            logrs = listOf(
+                deviceApiProvider.createSystemLogr(),
+                inAppLogger
+            )
+        )
 
         if(config.deviceIdSeed.isBlank()) {
             config.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
@@ -236,4 +245,6 @@ val coreModule = module {
     factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get()) }
     factory { GroupActivityNotificationsHandler(get(), get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), config) }
+
+    single { InAppLogger(get(), get()) }
 }

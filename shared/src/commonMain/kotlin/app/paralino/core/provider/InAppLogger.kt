@@ -1,0 +1,125 @@
+package app.paralino.core.provider
+
+import app.paralino.core.data.db.DebugLogsEntity
+import app.paralino.core.data.db.LogsDatabaseHelper
+import app.paralino.core.data.db.execute
+import app.paralino.core.data.db.mapToList
+import app.paralino.core.logg
+import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+
+class InAppLogger(
+    private val database: LogsDatabaseHelper,
+    private val scopeProvider: ICoroutineScopeProvider,
+) : SystemLogr() {
+
+    private val _pendingLogsFlow = MutableStateFlow<List<DebugLogsEntity>>(emptyList())
+
+    private val maxFlushRate = 2.seconds
+    private var lastFlushTime: Instant? = null
+
+    init {
+        scopeProvider.defaultIOScope.launch {
+            logg.d(tag = "app_logger", message = "Start in-app logger")
+            try {
+                _pendingLogsFlow
+                    .filter { it.isNotEmpty() }
+                    .conflate()
+                    .collectLatest { logs ->
+                        val lastUpdate = lastFlushTime
+                        val diff = if (lastUpdate != null) nowUTC() - lastUpdate else 0.seconds
+                        if (diff > Duration.ZERO && diff < maxFlushRate) {
+                            val delay = maxFlushRate - diff
+                            delay(delay)
+                        }
+
+                        lastFlushTime = nowUTC()
+                        scopeProvider.userSessionIOScope.launch {
+                            try {
+                                database.transaction {
+                                    logs.forEach {
+                                        database.debugLogsQueries.insertEntry(
+                                            timeUTC = it.timeUTC,
+                                            type = it.type,
+                                            priority = it.priority,
+                                            tag = it.tag,
+                                            title = it.title,
+                                            info = it.info
+                                        )
+                                    }
+                                }
+                                _pendingLogsFlow.update { emptyList() }
+                            } catch (e: Exception) {
+                                lastFlushTime = null
+                                logg.w(
+                                    tag = "app_logger",
+                                    message = "Error writing new logs: ${e.message}"
+                                )
+                            }
+                        }
+                    }
+            } catch (e: Exception) {
+                logg.w(
+                    tag = "app_logger",
+                    message = "Error processing new logs: ${e.message}"
+                )
+            }
+        }
+    }
+
+    override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
+
+        if (tag == "app_logger") {
+            return
+        }
+
+        val entry = DebugLogsEntity(
+            id = 0,
+            timeUTC = nowUTC().toString(),
+            type = "console_log",
+            priority = priority.key,
+            tag = tag ?: "default",
+            title = message,
+            info = t?.message
+        )
+
+        _pendingLogsFlow.update { it + entry }
+    }
+
+    fun logForTag(tag: String): Flow<String> {
+        return database.mapToList { debugLogsQueries.getForTag(tag = tag) }
+            .map { mapLogsToString(it) }
+    }
+
+    fun fullLog(): Flow<String> {
+        return database.mapToList { debugLogsQueries.getForOrHigherPriority(LogPriority.WARN.key) }
+            .map { mapLogsToString(it) }
+    }
+
+    private fun mapLogsToString(logs: List<DebugLogsEntity>): String {
+        return logs.joinToString(separator = "\n") {
+            "${
+                it.timeUTC.isoToLocalDateTime()?.format(format = LocalDateTime.Formats.ISO)
+            } [${it.type}] [${it.tag}] [${it.priority}] ${it.title} | ${it.info}"
+        }
+    }
+
+    suspend fun clearLogs() {
+        _pendingLogsFlow.update { listOf() }
+        database.execute { debugLogsQueries.clearAll() }
+    }
+}
