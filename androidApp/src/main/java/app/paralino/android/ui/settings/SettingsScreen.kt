@@ -65,6 +65,9 @@ fun SettingsScreen(
             openLicences = {
                 appState.navController.navigate(AppScreen.Settings.Licences.routeSignature)
             },
+            openAppStatus = {
+                appState.navController.navigate(AppScreen.Settings.AppStatusDebug.routeSignature)
+            },
             onShareCode = {
                 context.share(it)
             }
@@ -81,6 +84,7 @@ fun MainPreview() {
             SettingSectionInfo(
                 appVersion = "v1.2.3 (43)",
                 onLicencesClick = {},
+                onAppStatusClick = {},
                 onShareApp = {}
             )
         }

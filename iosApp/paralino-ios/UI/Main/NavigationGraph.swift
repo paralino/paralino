@@ -41,5 +41,6 @@ enum SettingsGraph: Hashable {
     case changePassword
     case convertAccount
     case blocklist
+    case appStatusDebug
     case rawData(type: RawPresentationDataType)
 }

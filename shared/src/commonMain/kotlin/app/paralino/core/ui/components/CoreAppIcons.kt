@@ -10,7 +10,6 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalResourceApi::class)
 object CoreAppIcons {
-    val List get() = "drawable/ic_login.xml"
     val Check get() = "drawable/ic_check.xml"
     val PhonelinkSetup get() = "drawable/ic_phonelink_setup.xml"
     val NotificationsActive get() = "drawable/ic_notifications_active.xml"

@@ -61,6 +61,7 @@ fun SettingsScreenCore(
     openProfileRawScreen: () -> Unit,
     openBlockList: () -> Unit,
     openLicences: () -> Unit,
+    openAppStatus: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
@@ -144,6 +145,7 @@ fun SettingsScreenCore(
         SettingSectionInfo(
             appVersion = accountState.data?.versionName ?: "",
             onLicencesClick = { openLicences() },
+            onAppStatusClick = { openAppStatus() },
             onShareApp = onShareApp
         )
     }
@@ -153,11 +155,19 @@ fun SettingsScreenCore(
 fun SettingSectionInfo(
     appVersion: String,
     onLicencesClick: () -> Unit,
+    onAppStatusClick: () -> Unit,
     onShareApp: (String) -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
     Column {
         SettingsSectionHeader(name = stringResource(MR.strings.settings_section_general_title))
+
+        SettingsActionItem(
+            name = "App status",
+            icon = CoreAppIcons.Settings.asPainterResource()
+        ) {
+            onAppStatusClick()
+        }
 
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_share),

@@ -5,6 +5,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
+import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
@@ -12,6 +13,7 @@ import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.invite.manage.PersonalCodeScreenCore
+import app.paralino.core.ui.settings.AppStatusDebugScreenCore
 import app.paralino.core.ui.settings.BlocklistScreenCore
 import app.paralino.core.ui.settings.RawDataScreenCore
 import app.paralino.core.ui.settings.SettingsScreenCore
@@ -31,6 +33,7 @@ object SettingsScreens {
         openBlockList: () -> Unit,
         openProfileRawScreen: () -> Unit,
         openLicences: () -> Unit,
+        openAppStatus: () -> Unit,
         onShare: (String) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -43,6 +46,7 @@ object SettingsScreens {
                 openPersonalCodes = openPersonalCodes,
                 openBlockList = openBlockList,
                 openLicences = openLicences,
+                openAppStatus = openAppStatus,
                 openProfileRawScreen = openProfileRawScreen,
                 onShareCode = onShare
             )
@@ -155,6 +159,18 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             RawDataScreenCore(
+                appState = it,
+                vm = vm,
+                paddingValues = PaddingValues()
+            )
+        }
+    }
+
+    fun AppStatusDebugScreenVC(
+        vm: AppStatusDebugViewModel
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            AppStatusDebugScreenCore(
                 appState = it,
                 vm = vm,
                 paddingValues = PaddingValues()

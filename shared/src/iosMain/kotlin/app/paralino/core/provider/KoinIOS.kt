@@ -35,6 +35,7 @@ import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
+import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
@@ -189,6 +190,7 @@ object KoinIOS {
                 )
             }
             factory { BlocklistVideModel(get()) }
+            factory { AppStatusDebugViewModel(get(), get(), get(), get()) }
         }
     }
 
@@ -240,6 +242,7 @@ object KoinIOS {
             lat: Double? = null,
             lng: Double? = null
         ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, lat, lng) }
+        val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
     }
 
 }

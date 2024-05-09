@@ -42,6 +42,9 @@ struct SettingsScreen: View {
                     openLicences: {
                         
                     },
+                    openAppStatus: {
+                        path.append(.settings(.appStatusDebug))
+                    },
                     onShare: { data in
                         shareText = ShareText(text: data)
                     }

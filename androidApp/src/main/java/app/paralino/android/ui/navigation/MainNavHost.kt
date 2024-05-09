@@ -23,6 +23,7 @@ import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
+import app.paralino.android.ui.settings.AppStatusDebugScreen
 import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.RawDataScreen
@@ -166,6 +167,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.Settings.Licences.routeSignature) {
             LicencesScreen(appState)
+        }
+        composable(AppScreen.Settings.AppStatusDebug.routeSignature) {
+            AppStatusDebugScreen(appState)
         }
         composable(AppScreen.Settings.ProfileDetails.RawDataScreen.routeSignature) {
             val type =
