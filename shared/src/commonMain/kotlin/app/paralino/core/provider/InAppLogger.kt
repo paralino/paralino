@@ -100,7 +100,7 @@ class InAppLogger(
         val entry = DebugLogsEntity(
             id = 0,
             timeUTC = nowUTC().toString(),
-            type = "console_log",
+            type = InAppLoggerLogType.CONSOLE.key,
             priority = priority.key,
             tag = tag ?: "default",
             title = message,
@@ -110,16 +110,27 @@ class InAppLogger(
         _pendingLogsFlow.update { it + entry }
     }
 
-    fun logForTag(tag: String): Flow<List<DebugLogsEntity>> {
-        return database.mapToList { debugLogsQueries.getForTag(tag = tag) }
+    fun filteredLog(
+        priorities: List<LogPriority>,
+        types: List<InAppLoggerLogType>,
+        tags: List<String>,
+        text: String?
+    ): Flow<List<DebugLogsEntity>> {
+        return database.mapToList {
+            debugLogsQueries.getFiltered(
+                types = types.map { it.key },
+                tags = tags,
+                priorities = priorities.map { it.key },
+                typesNullIfEmpty = if (types.isEmpty()) 1 else 0,
+                tagsNullIfEmpty = if (tags.isEmpty()) 1 else 0,
+                priorityNullIfEmpty = if (priorities.isEmpty()) 1 else 0,
+                text = text ?: ""
+            )
+        }
     }
 
     fun fullLog(): Flow<List<DebugLogsEntity>> {
         return database.mapToList { debugLogsQueries.getForOrHigherPriority(LogPriority.VERBOSE.key) }
-    }
-
-    fun mapLogsToString(logs: List<DebugLogsEntity>): List<String> {
-        return logs.map { it.print() }
     }
 
     suspend fun clearLogs() {
@@ -133,4 +144,16 @@ fun DebugLogsEntity.print(): String {
         this.timeUTC.isoWithOffsetToInstant()?.toLocalDateTime(TimeZone.currentSystemDefault())
             ?.format(format = LocalDateTime.Formats.ISO)?.replace("T", " ")
     } [${this.type}] [${LogPriority.fromKeyOrFloor(this.priority)}]\n[${this.tag}]\n${this.title}${this.info?.let { " | $this" } ?: ""}\n"
+}
+
+enum class InAppLoggerLogType constructor(val key: String) {
+    CONSOLE("console_log"),
+    NOTIFICATIONS("notifications"),
+    GENERIC("generic");
+
+    companion object {
+        fun fromKey(key: String): InAppLoggerLogType {
+            return entries.firstOrNull { it.key == key } ?: GENERIC
+        }
+    }
 }

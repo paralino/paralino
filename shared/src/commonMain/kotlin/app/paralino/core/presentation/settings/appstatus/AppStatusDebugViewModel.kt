@@ -4,6 +4,7 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
+import app.paralino.core.provider.InAppLoggerLogType
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.print
 import app.paralino.core.repo.LocationSharingManager
@@ -14,8 +15,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -30,9 +33,28 @@ class AppStatusDebugViewModel(
     private val _uiState = MutableStateFlow(AppStatusDebugScreenState())
     val uiState: Flow<AppStatusDebugScreenState> = _uiState
 
-    private val searchEntry = MutableStateFlow("")
+    private val searchEntryFlow = MutableStateFlow("")
+    private val filtersFlow = MutableStateFlow(AppStatusFilterState())
 
     init {
+
+        filtersFlow.update {
+            it.copy(
+                logTypeFilters = InAppLoggerLogType.entries.map {
+                    LogTypeFilterItemState(
+                        type = it,
+                        isOn = false
+                    )
+                },
+                logPriorityFilters = LogPriority.entries.map {
+                    LogPriorityFilterItemState(
+                        logPriority = it,
+                        isOn = false
+                    )
+                }
+            )
+        }
+
         combine(
             deviceApi.deviceStatus,
             locationSharingManager.allContractsFlow,
@@ -102,27 +124,44 @@ class AppStatusDebugViewModel(
             .launchIn(coroutineScope)
 
         combine(
-            inAppLogger.fullLog(),
-            searchEntry.debounce(500.milliseconds),
-        ) { logs, searchEntry ->
-            _uiState.update {
-                it.copy(
-                    logs = logs
-                        .filter {
-                            it.tag.contains(searchEntry, ignoreCase = true) ||
-                                    it.title.contains(searchEntry, ignoreCase = true) ||
-                                    it.info?.contains(searchEntry, ignoreCase = true) ?: false ||
-                                    it.type.contains(searchEntry, ignoreCase = true) ||
-                                    LogPriority.fromKeyOrFloor(it.priority).name.contains(searchEntry, ignoreCase = true)
-                        }
-                        .map {
+            searchEntryFlow.debounce(500.milliseconds),
+            filtersFlow
+        ) { searchEntry, filters ->
+            searchEntry to filters
+        }.flatMapLatest {
+            inAppLogger.filteredLog(
+                priorities = it.second.logPriorityFilters
+                    .filter { it.isOn }
+                    .map { it.logPriority },
+                types = it.second.logTypeFilters
+                    .filter { it.isOn }
+                    .map { it.type },
+                tags = emptyList(),
+                text = it.first
+            )
+        }
+            .onEach { logs ->
+                _uiState.update {
+                    it.copy(
+                        logs = logs.map {
                             AppStatusItemLogState(
                                 key = it.id.toString(),
                                 text = it.print(),
                                 priority = LogPriority.fromKeyOrFloor(it.priority)
                             )
                         }
-                )
+                    )
+                }
+            }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        combine(
+            searchEntryFlow,
+            filtersFlow
+        ) { searchQuery, filters ->
+            _uiState.update {
+                it.copy(query = searchQuery, filters = filters)
             }
         }
             .flowOn(Dispatchers.IO)
@@ -136,8 +175,35 @@ class AppStatusDebugViewModel(
             }
 
             is AppStatusDebugScreenUiEvent.SearchLogs -> {
-                searchEntry.update { event.query }
-                _uiState.update { it.copy(query = event.query) }
+                searchEntryFlow.update { event.query }
+            }
+
+            is AppStatusDebugScreenUiEvent.ToggleLogPriorityFilter -> {
+                filtersFlow.update {
+                    it.copy(
+                        logPriorityFilters = it.logPriorityFilters.map {
+                            if (it.key == event.filter.key) {
+                                it.copy(isOn = !it.isOn)
+                            } else {
+                                it
+                            }
+                        }
+                    )
+                }
+            }
+
+            is AppStatusDebugScreenUiEvent.ToggleLogTypeFilter -> {
+                filtersFlow.update {
+                    it.copy(
+                        logTypeFilters = it.logTypeFilters.map {
+                            if (it.key == event.filter.key) {
+                                it.copy(isOn = !it.isOn)
+                            } else {
+                                it
+                            }
+                        }
+                    )
+                }
             }
         }
     }

@@ -63,6 +63,8 @@ fun DataInfoChip(
                 clipShape = RoundedCornerShape(6.dp)
             )
             Spacer(modifier = Modifier.size(8.dp))
+        } else {
+            Spacer(modifier = Modifier.size(3.dp))
         }
         Text(
             text = text,

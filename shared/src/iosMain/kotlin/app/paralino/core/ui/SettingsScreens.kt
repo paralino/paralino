@@ -1,6 +1,7 @@
 package app.paralino.core.ui
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
@@ -173,7 +174,7 @@ object SettingsScreens {
             AppStatusDebugScreenCore(
                 appState = it,
                 vm = vm,
-                paddingValues = PaddingValues()
+                paddingValues = PaddingValues(bottom = 30.dp)
             )
         }
     }

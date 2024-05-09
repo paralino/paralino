@@ -12,28 +12,23 @@ insertEntry:
 INSERT INTO debugLogsEntity (timeUTC, type, priority, tag, title, info)
 VALUES (?, ?, ?, ?, ?, ?);
 
-getForId:
+getFiltered:
 SELECT * FROM debugLogsEntity
-WHERE id = :id;
-
-getForType:
-SELECT * FROM debugLogsEntity
-WHERE type = :type
-ORDER BY id DESC;
-
-getForPriority:
-SELECT * FROM debugLogsEntity
-WHERE priority = :priority
+WHERE
+    (:typesNullIfEmpty IS 1 OR type IN :types) AND
+    (:tagsNullIfEmpty IS 1 OR tag IN :tags) AND
+    (:priorityNullIfEmpty IS 1 OR priority IN :priorities) AND
+--     CASE WHEN :priority != NULL THEN priority >= :priority ELSE 1 END AND
+    (
+        title LIKE ('%' || :text || '%') OR
+        info LIKE ('%' || :text || '%') OR
+        tag LIKE ('%' || :text || '%')
+    )
 ORDER BY id DESC;
 
 getForOrHigherPriority:
 SELECT * FROM debugLogsEntity
 WHERE priority >= :priority
-ORDER BY id DESC;
-
-getForTag:
-SELECT * FROM debugLogsEntity
-WHERE tag = :tag
 ORDER BY id DESC;
 
 getAll:
