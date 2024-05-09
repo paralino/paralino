@@ -399,7 +399,7 @@ class PlacesRepository constructor(
         newState: PlaceActivityState,
         trigger: PlaceActivityTriggerType
     ) {
-        logg.tag("place_activity").d("Schedule place notify $activityTag - $placeId")
+        logg.tag("place_activity").i("Schedule place notify $activityTag - $placeId")
         oldState.tryNotifyJob?.cancel()
         val updateJob = scopeProvider.userSessionIOScope.launch {
             placeActivityDelay()
@@ -486,7 +486,7 @@ class PlacesRepository constructor(
             return
         }
 
-        logg.tag("place_activity").d("Trigger notify place $activityTag - $placeId")
+        logg.tag("place_activity").i("Trigger notify place $activityTag - $placeId")
         placeActivityRepo.updatePlaceActivity(
             placeId = placeId,
             state = currentState.copy(

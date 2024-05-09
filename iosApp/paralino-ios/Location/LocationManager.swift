@@ -42,8 +42,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
         
         locationPerformanceManager.locationPerformanceStatus { [weak self] model in
-            Logr.v(tag: "location_Test", message: "Location performance changed: \(model)")
-            self?.notifyPerformance(performance: "\(model.current)")
+            Logr.i(tag: "location_Test", message: "Location performance changed: \(model)")
             switch model.current {
             case .batterySaver:
                 self?.manager.pausesLocationUpdatesAutomatically = true
@@ -100,17 +99,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-        notifyUser(id: "LocationError", message: "Location updates got error: \(error.localizedDescription)")
+        Logr.w(tag: "location_service", message: "Location updates got error: \(error.localizedDescription)")
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         DispatchQueue.main.async { [weak self] in
             Task {
                 let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
-                self?.notifyUser(id: "placeEnter_\(region.identifier)", message: "User entered place \(place?.nameOrNull ?? region.identifier)")
+                Logr.i(tag: "place_activity_geofence", message: "User entered geofence: \(region.identifier) (\(place?.nameOrNull ?? "nil"))")
             }
         }
-        Logr.v(tag: "place_activity_geofence", message: "User entered geofence: \(region.identifier)")
+        Logr.i(tag: "place_activity_geofence", message: "User entered geofence: \(region.identifier)")
         placeRepo.placesEnter(placesIds: [region.identifier], trigger: PlaceActivityTriggerType.goefence)
     }
     
@@ -118,42 +117,22 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         DispatchQueue.main.async { [weak self] in
             Task {
                 let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
-                self?.notifyUser(id: "placeExit_\(region.identifier)", message: "User exited place \(place?.nameOrNull ?? region.identifier)")
+                Logr.i(tag: "place_activity_geofence", message: "User exited geofence: \(region.identifier) (\(place?.nameOrNull ?? "nil"))")
             }
         }
-        Logr.v(tag: "place_activity_geofence", message: "User exited geofence: \(region.identifier)")
         placeRepo.placesExit(placesIds: [region.identifier], trigger: PlaceActivityTriggerType.goefence)
     }
     
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
-        notifyUser(id: "LocationResume", message: "Location updates are paused")
+        Logr.w(tag: "location_service", message: "Location updates are paused")
     }
     
     func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
-        notifyUser(id: "LocationResume", message: "Location updates are resumed")
+        Logr.w(tag: "location_service", message: "Location updates are resumed")
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         //        notifyUser(id: "LocationResume", message: "Permission changed: \(manager.authorizationStatus)")
-    }
-    
-    private func notifyUser(id: String, message: String) {
-        let content = UNMutableNotificationContent()
-        content.title = "Paralino location updates"
-        content.body = message
-        
-        let request = UNNotificationRequest(identifier: id, content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request) { (error : Error?) in }
-    }
-    
-    func notifyPerformance(performance: String) {
-        let content = UNMutableNotificationContent()
-        content.title = "Paralino tracking"
-        content.body = performance
-        content.interruptionLevel = .passive
-        
-        let request = UNNotificationRequest(identifier: "app_track", content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request) { (error : Error?) in }
     }
 }
 

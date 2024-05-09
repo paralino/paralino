@@ -36,14 +36,6 @@ class BackgroundRefresh {
                     try? await self.refreshEverything.refreshEverything(forceGroupRefresh: false, minimumDelayMillis: 4 * 60 * 60 * 1000)
                     Logr.i(tag:"delegate", message: "App refresh task done")
                     
-                    let content = UNMutableNotificationContent()
-                    content.title = "Paralino refresh"
-                    content.body = "Refreshed"
-                    content.interruptionLevel = .passive
-                    
-                    let request = UNNotificationRequest(identifier: "app_refresh", content: content, trigger: nil)
-                    try? await UNUserNotificationCenter.current().add(request)
-                    
                     task.setTaskCompleted(success: true)
                 }
             }

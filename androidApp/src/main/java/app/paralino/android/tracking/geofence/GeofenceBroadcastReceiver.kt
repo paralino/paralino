@@ -30,23 +30,23 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
         if (geofencingEvent.hasError()) {
             val errorMessage = GeofenceStatusCodes.getStatusCodeString(geofencingEvent.errorCode)
-            logg.v("place_activity_geofence", "Geofence error: $errorMessage")
+            logg.i("place_activity_geofence", "Geofence error: $errorMessage")
             return
         }
 
         when (val transition = geofencingEvent.geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
-                logg.v("place_activity_geofence", "User entered geofence")
+                logg.i("place_activity_geofence", "User entered geofence")
                 geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceEnter(it.map { it.requestId }) }
             }
 
             Geofence.GEOFENCE_TRANSITION_EXIT -> {
-                logg.v("place_activity_geofence", "User exited geofence")
+                logg.i("place_activity_geofence", "User exited geofence")
                 geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceExit(it.map { it.requestId }) }
             }
 
             else -> {
-                logg.v("place_activity_geofence", "Invalid geofence type: $transition")
+                logg.i("place_activity_geofence", "Invalid geofence type: $transition")
             }
         }
     }
@@ -56,10 +56,16 @@ class GeofenceReceiver() : KoinComponent {
     private val geofenceProcessor: PlacesRepository by inject()
 
     fun notifyPlaceEnter(placeIds: List<String>) {
-        geofenceProcessor.placesEnter(placesIds = placeIds, trigger = PlaceActivityTriggerType.GOEFENCE)
+        geofenceProcessor.placesEnter(
+            placesIds = placeIds,
+            trigger = PlaceActivityTriggerType.GOEFENCE
+        )
     }
 
     fun notifyPlaceExit(placeIds: List<String>) {
-        geofenceProcessor.placesExit(placesIds = placeIds, trigger = PlaceActivityTriggerType.GOEFENCE)
+        geofenceProcessor.placesExit(
+            placesIds = placeIds,
+            trigger = PlaceActivityTriggerType.GOEFENCE
+        )
     }
 }

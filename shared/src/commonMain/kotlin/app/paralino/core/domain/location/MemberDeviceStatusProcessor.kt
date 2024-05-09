@@ -57,7 +57,7 @@ class MemberDeviceStatusProcessor(
                     !sharingActive && statusActive
                 }
 
-            logg.w("Revoking device status for ${memberModels.size} groups")
+            logg.d("Revoking device status for ${memberModels.size} groups")
             memberModels.forEach {
                 try {
                     pushDeviceStatus(groupId = it.groupId)
@@ -84,7 +84,7 @@ class MemberDeviceStatusProcessor(
                     !sharingActive && canClear
                 }
 
-            logg.w("Clearing old locations for ${memberModels.size} groups")
+            logg.d("Clearing old locations for ${memberModels.size} groups")
             memberModels.forEach {
                 try {
                     remote.clearLocation(it.id)

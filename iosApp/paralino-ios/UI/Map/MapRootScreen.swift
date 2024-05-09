@@ -50,7 +50,7 @@ struct MapRootScreen: View {
                             }
                         }
                     }.onAppear {
-                        Logr.i(message: "Route: \(route)")
+                        Logr.d(message: "Route: \(route)")
                     }
                 }
         }

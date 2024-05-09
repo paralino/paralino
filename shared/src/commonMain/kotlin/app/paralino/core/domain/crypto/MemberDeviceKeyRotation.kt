@@ -48,7 +48,7 @@ class MemberDeviceKeyRotation(
         // if group is not verified (current member is not verified) skip key generation
         if (!remoteGroup.isGroupVerified) {
             logg.tag("tag_crypto_key_group_device_rotation")
-                .v("Group ${remoteGroup.id} not verified")
+                .w("Group ${remoteGroup.id} not verified")
             return false
         }
 
@@ -92,13 +92,13 @@ class MemberDeviceKeyRotation(
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_device_rotation")
-                .w("not rotating device keys for group ${remoteGroup.id}")
+                .d("not rotating device keys for group ${remoteGroup.id}")
             stopProcessing(remoteGroup.id)
             return false
         }
 
         logg.tag("tag_crypto_key_group_device_rotation")
-            .w("member device key is deprecated - rotating: ${remoteGroup.id}")
+            .i("member device key is deprecated - rotating: ${remoteGroup.id}")
 
         try {
             rotateDeviceKeysImpl(remoteGroup)

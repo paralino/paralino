@@ -33,7 +33,7 @@ struct MainApp: App {
                 }
             }
             .onChange(of: scenePhase, initial: true) { oldScene, newScene in
-                Logr.i(tag:"delegate", message: "App scene switch (old: \(oldScene)) - (new: \(newScene))")
+                Logr.d(tag:"delegate", message: "App scene switch (old: \(oldScene)) - (new: \(newScene))")
                 
                 switch newScene {
                 case .active:

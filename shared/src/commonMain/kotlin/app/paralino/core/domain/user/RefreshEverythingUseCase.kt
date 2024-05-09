@@ -108,7 +108,7 @@ class RefreshEverythingUseCase(
 
     private suspend fun refreshAllGroups() {
         triggerRemoteOnly {
-            logg.tag("full_refresh").w("refreshing all groups")
+            logg.tag("full_refresh").d("refreshing all groups")
             remote.getAllGroups()
                 .also { cryptoKEKRepo.refreshAllKeys() }
                 .let { it.map { groupRefreshUseCase.handleGroupKeysUpdate(it) } }

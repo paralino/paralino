@@ -50,21 +50,21 @@ class GroupRefreshUseCase constructor(
     suspend fun handleGroupKeysUpdate(group: GroupWithMembersRaw, retry: Int = 1): GroupWithMembersRaw {
 
         if(retry > 2) {
-            logg.tag("tag_crypto_key_group").w("Too many retries ($retry) in group refresh / key rotation")
+            logg.tag("tag_crypto_key_group").w("Too many retries ($retry) in group refresh / key rotation for ${group.group.id}")
             return group
         }
 
-        logg.tag("tag_crypto_key_group").w("got new group from remote, handle key rotation | retry #$retry")
+        logg.tag("tag_crypto_key_group").d("got new group from remote, handle key rotation | retry #$retry")
         val remoteGroup = groupMapperCore.remote2CoreWithMembers(group)
 
         if(!remoteGroup.isGroupVerified)
             logg.tag("tag_crypto_key_group").e("Current member is unverified in group ${group.group.id}")
 
         if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = false)) {
-            logg.tag("tag_crypto_key_group").w("Key rotation finished, refresh group and keys")
+            logg.tag("tag_crypto_key_group").d("Key rotation finished, refresh group and keys")
             return getRemoteGroupWithMembers(remoteGroup.id, retry + 1)
         } else {
-            logg.tag("tag_crypto_key_group").w("No key rotation, use current group")
+            logg.tag("tag_crypto_key_group").d("No key rotation, use current group")
             return group
         }
     }

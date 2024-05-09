@@ -54,7 +54,7 @@ interface ILimitedExecution {
         mutex.withLock {
 
             if (isProcessing(key)) {
-                logg.w(
+                logg.d(
                     "execution",
                     "Execution ${this::class.simpleName} ($key) is already processing"
                 )
