@@ -143,5 +143,11 @@ class ILogrWithTag(val tag: String, val logr: ILogr) : ILogr {
 }
 
 enum class LogPriority constructor(val key: Long) {
-    VERBOSE(1), DEBUG(200), INFO(300), WARN(400), ERROR(500)
+    VERBOSE(1), DEBUG(200), INFO(300), WARN(400), ERROR(500);
+
+    companion object {
+        fun fromKeyOrFloor(key: Long): LogPriority {
+            return entries.lastOrNull { it.key <= key } ?: VERBOSE
+        }
+    }
 }

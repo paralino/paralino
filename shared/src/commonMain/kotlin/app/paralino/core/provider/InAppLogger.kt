@@ -5,7 +5,7 @@ import app.paralino.core.data.db.LogsDatabaseHelper
 import app.paralino.core.data.db.execute
 import app.paralino.core.data.db.mapToList
 import app.paralino.core.logg
-import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -13,18 +13,21 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 class InAppLogger(
     private val database: LogsDatabaseHelper,
     private val scopeProvider: ICoroutineScopeProvider,
+    private val valueFormatter: IValueFormatter
 ) : SystemLogr() {
 
     private val _pendingLogsFlow = MutableStateFlow<List<DebugLogsEntity>>(emptyList())
@@ -60,6 +63,9 @@ class InAppLogger(
                                             title = it.title,
                                             info = it.info
                                         )
+                                        database.debugLogsQueries.removeOlderThan(
+                                            nowUTC().minus(2.days).toString()
+                                        )
                                     }
                                 }
                                 _pendingLogsFlow.update { emptyList() }
@@ -87,6 +93,10 @@ class InAppLogger(
             return
         }
 
+        if (priority < LogPriority.INFO) {
+            return
+        }
+
         val entry = DebugLogsEntity(
             id = 0,
             timeUTC = nowUTC().toString(),
@@ -100,26 +110,27 @@ class InAppLogger(
         _pendingLogsFlow.update { it + entry }
     }
 
-    fun logForTag(tag: String): Flow<String> {
+    fun logForTag(tag: String): Flow<List<DebugLogsEntity>> {
         return database.mapToList { debugLogsQueries.getForTag(tag = tag) }
-            .map { mapLogsToString(it) }
     }
 
-    fun fullLog(): Flow<String> {
-        return database.mapToList { debugLogsQueries.getForOrHigherPriority(LogPriority.WARN.key) }
-            .map { mapLogsToString(it) }
+    fun fullLog(): Flow<List<DebugLogsEntity>> {
+        return database.mapToList { debugLogsQueries.getForOrHigherPriority(LogPriority.VERBOSE.key) }
     }
 
-    private fun mapLogsToString(logs: List<DebugLogsEntity>): String {
-        return logs.joinToString(separator = "\n") {
-            "${
-                it.timeUTC.isoToLocalDateTime()?.format(format = LocalDateTime.Formats.ISO)
-            } [${it.type}] [${it.tag}] [${it.priority}] ${it.title} | ${it.info}"
-        }
+    fun mapLogsToString(logs: List<DebugLogsEntity>): List<String> {
+        return logs.map { it.print() }
     }
 
     suspend fun clearLogs() {
         _pendingLogsFlow.update { listOf() }
         database.execute { debugLogsQueries.clearAll() }
     }
+}
+
+fun DebugLogsEntity.print(): String {
+    return "${
+        this.timeUTC.isoWithOffsetToInstant()?.toLocalDateTime(TimeZone.currentSystemDefault())
+            ?.format(format = LocalDateTime.Formats.ISO)?.replace("T", " ")
+    } [${this.type}] [${LogPriority.fromKeyOrFloor(this.priority)}]\n[${this.tag}]\n${this.title}${this.info?.let { " | $this" } ?: ""}\n"
 }

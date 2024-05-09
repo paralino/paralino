@@ -18,22 +18,27 @@ WHERE id = :id;
 
 getForType:
 SELECT * FROM debugLogsEntity
-WHERE type = :type;
+WHERE type = :type
+ORDER BY id DESC;
 
 getForPriority:
 SELECT * FROM debugLogsEntity
-WHERE priority = :priority;
+WHERE priority = :priority
+ORDER BY id DESC;
 
 getForOrHigherPriority:
 SELECT * FROM debugLogsEntity
-WHERE priority >= :priority;
+WHERE priority >= :priority
+ORDER BY id DESC;
 
 getForTag:
 SELECT * FROM debugLogsEntity
-WHERE tag = :tag;
+WHERE tag = :tag
+ORDER BY id DESC;
 
 getAll:
-SELECT * FROM debugLogsEntity;
+SELECT * FROM debugLogsEntity
+ORDER BY id DESC;
 
 remove:
 DELETE FROM debugLogsEntity

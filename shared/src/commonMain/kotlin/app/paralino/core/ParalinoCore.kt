@@ -246,5 +246,5 @@ val coreModule = module {
     factory { GroupActivityNotificationsHandler(get(), get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), config) }
 
-    single { InAppLogger(get(), get()) }
+    single { InAppLogger(get(), get(), get()) }
 }
