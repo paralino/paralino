@@ -12,6 +12,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import kotlin.time.Duration.Companion.minutes
 
@@ -25,7 +26,8 @@ class RefreshEverythingUseCase(
     private val groupRefreshUseCase: GroupRefreshUseCase,
     private val configRepo: AppConfigRepository,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
-    private val placeActivityUploadEngine: PlaceActivityUploadEngine
+    private val placeActivityUploadEngine: PlaceActivityUploadEngine,
+    private val pushProviderManager: IPushProviderManager
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "full_refresh"
@@ -63,6 +65,7 @@ class RefreshEverythingUseCase(
                         key = executionKey,
                         time = if (forceGroupRefresh) 0 else 60_000
                     )
+                    pushProviderManager.syncPushNotifications()
                     personalCodesRepo.tryToRestockPreKeys(5.minutes.inWholeMilliseconds)
                     deviceStatusProcessor.revokeActiveStatus()
                     deviceStatusProcessor.deleteOldLocations()

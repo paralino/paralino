@@ -218,7 +218,7 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get()) }
     single { GroupRepository(get()) }
