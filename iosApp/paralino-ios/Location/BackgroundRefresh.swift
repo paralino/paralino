@@ -33,7 +33,7 @@ class BackgroundRefresh {
             DispatchQueue.main.async {
                 let runTaks = Task {
                     Logr.i(tag:"delegate", message: "App refresh async task start")
-                    try? await self.refreshEverything.refreshEverything(forceGroupRefresh: false, minimumDelayMillis: 4 * 60 * 60)
+                    try? await self.refreshEverything.refreshEverything(forceGroupRefresh: false, minimumDelayMillis: 4 * 60 * 60 * 1000)
                     Logr.i(tag:"delegate", message: "App refresh task done")
                     
                     let content = UNMutableNotificationContent()
