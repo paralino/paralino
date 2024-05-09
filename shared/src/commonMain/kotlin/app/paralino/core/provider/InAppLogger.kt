@@ -97,20 +97,36 @@ class InAppLogger(
             return
         }
 
-        val entry = DebugLogsEntity(
-            id = 0,
-            timeUTC = nowUTC().toString(),
-            type = InAppLoggerLogType.CONSOLE.key,
-            priority = priority.key,
+        log(
+            type = InAppLoggerLogType.CONSOLE,
+            priority = priority,
             tag = tag ?: "default",
             title = message,
             info = t?.message
+        )
+    }
+
+    fun log(
+        type: InAppLoggerLogType,
+        priority: LogPriority,
+        tag: String?,
+        title: String,
+        info: String? = null
+    ) {
+        val entry = DebugLogsEntity(
+            id = 0,
+            timeUTC = nowUTC().toString(),
+            type = type.key,
+            priority = priority.key,
+            tag = tag ?: "default",
+            title = title,
+            info = info
         )
 
         _pendingLogsFlow.update { it + entry }
     }
 
-    fun filteredLog(
+    fun getFilteredLog(
         priorities: List<LogPriority>,
         types: List<InAppLoggerLogType>,
         tags: List<String>,
@@ -129,10 +145,6 @@ class InAppLogger(
         }
     }
 
-    fun fullLog(): Flow<List<DebugLogsEntity>> {
-        return database.mapToList { debugLogsQueries.getForOrHigherPriority(LogPriority.VERBOSE.key) }
-    }
-
     suspend fun clearLogs() {
         _pendingLogsFlow.update { listOf() }
         database.execute { debugLogsQueries.clearAll() }
@@ -143,7 +155,7 @@ fun DebugLogsEntity.print(): String {
     return "${
         this.timeUTC.isoWithOffsetToInstant()?.toLocalDateTime(TimeZone.currentSystemDefault())
             ?.format(format = LocalDateTime.Formats.ISO)?.replace("T", " ")
-    } [${this.type}] [${LogPriority.fromKeyOrFloor(this.priority)}]\n[${this.tag}]\n${this.title}${this.info?.let { " | $this" } ?: ""}\n"
+    } [${this.type}] [${LogPriority.fromKeyOrFloor(this.priority)}]\n[${this.tag}]\n${this.title}${this.info?.let { " | ${this.info}" } ?: ""}\n"
 }
 
 enum class InAppLoggerLogType constructor(val key: String) {

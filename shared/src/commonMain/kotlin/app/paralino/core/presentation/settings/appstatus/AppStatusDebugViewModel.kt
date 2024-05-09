@@ -129,7 +129,7 @@ class AppStatusDebugViewModel(
         ) { searchEntry, filters ->
             searchEntry to filters
         }.flatMapLatest {
-            inAppLogger.filteredLog(
+            inAppLogger.getFilteredLog(
                 priorities = it.second.logPriorityFilters
                     .filter { it.isOn }
                     .map { it.logPriority },

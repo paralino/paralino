@@ -6,6 +6,9 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.InAppLogger
+import app.paralino.core.provider.InAppLoggerLogType
+import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.utils.extensions.isOlderThan
@@ -21,6 +24,7 @@ class GroupActivityNotificationsHandler(
     private val groupRepo: GroupRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val presenter: IGroupActivityNotificationPresenter,
+    private val inAppLogger: InAppLogger,
     private val valueFormatter: IValueFormatter
 ) {
     suspend fun processMemberAdded(push: PushNotificationRaw) {
@@ -66,6 +70,14 @@ class GroupActivityNotificationsHandler(
             timeMillis = push.createdAt.toEpochMilliseconds(),
             timeInfo = null
         )
+
+        inAppLogger.log(
+            type = InAppLoggerLogType.NOTIFICATIONS,
+            priority = LogPriority.INFO,
+            tag = "group_activity_notification",
+            title = title,
+            info = null
+        )
     }
 
     suspend fun processMemberDeleted(push: PushNotificationRaw) {
@@ -100,21 +112,30 @@ class GroupActivityNotificationsHandler(
         }
 
         val notificationId = "sharing_start_${payload}".hashCode()
+        val timeInfo = if (push.createdAt.isOlderThan(10.minutes)) {
+            valueFormatter.formatSimpleDateTime(
+                timeUTC = push.createdAt.toLocalDateTime(TimeZone.UTC),
+                optionalYear = true,
+                optionalMonth = true,
+                showTodayInfo = true
+            )
+        } else {
+            null
+        }
         presenter.notify(
             notificationId = notificationId,
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),
-            timeInfo = if (push.createdAt.isOlderThan(10.minutes)) {
-                valueFormatter.formatSimpleDateTime(
-                    timeUTC = push.createdAt.toLocalDateTime(TimeZone.UTC),
-                    optionalYear = true,
-                    optionalMonth = true,
-                    showTodayInfo = true
-                )
-            } else {
-                null
-            }
+            timeInfo = timeInfo
+        )
+
+        inAppLogger.log(
+            type = InAppLoggerLogType.NOTIFICATIONS,
+            priority = LogPriority.INFO,
+            tag = "group_activity_notification",
+            title = title,
+            info = timeInfo
         )
     }
 }

@@ -5,6 +5,9 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.InAppLogger
+import app.paralino.core.provider.InAppLoggerLogType
+import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
@@ -24,6 +27,7 @@ class PlaceActivityNotificationHandler(
     private val placeRepo: PlacesRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val presenter: IPlaceActivityNotificationPresenter,
+    private val inAppLogger: InAppLogger,
     private val valueFormatter: IValueFormatter
 ) {
     suspend fun processPlaceActivity(push: PushNotificationRaw) {
@@ -52,21 +56,30 @@ class PlaceActivityNotificationHandler(
 
         val triggerTime = payload.triggerAt?.isoWithOffsetToInstant() ?: push.createdAt
         val notificationId = "place_activity_${payload}_${triggerTime}".hashCode()
+        val timeInfo = if (triggerTime.isOlderThan(1.minutes)) {
+            valueFormatter.formatSimpleDateTime(
+                timeUTC = triggerTime.toLocalDateTime(TimeZone.UTC),
+                optionalYear = true,
+                optionalMonth = true,
+                showTodayInfo = true
+            )
+        } else {
+            null
+        }
         presenter.notify(
             notificationId = notificationId,
             title = title,
             message = null,
             timeMillis = triggerTime.toEpochMilliseconds(),
-            timeInfo = if (triggerTime.isOlderThan(1.minutes)) {
-                valueFormatter.formatSimpleDateTime(
-                    timeUTC = triggerTime.toLocalDateTime(TimeZone.UTC),
-                    optionalYear = true,
-                    optionalMonth = true,
-                    showTodayInfo = true
-                )
-            } else {
-                null
-            }
+            timeInfo = timeInfo
+        )
+
+        inAppLogger.log(
+            type = InAppLoggerLogType.NOTIFICATIONS,
+            priority = LogPriority.INFO,
+            tag = "place_notification",
+            title = title,
+            info = timeInfo
         )
     }
 
@@ -103,6 +116,14 @@ class PlaceActivityNotificationHandler(
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),
             timeInfo = null
+        )
+
+        inAppLogger.log(
+            type = InAppLoggerLogType.NOTIFICATIONS,
+            priority = LogPriority.INFO,
+            tag = "place_notification",
+            title = title,
+            info = null
         )
     }
 
