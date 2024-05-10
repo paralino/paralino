@@ -25,7 +25,6 @@ import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.api.runAsync
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.NotFoundException
@@ -75,12 +74,7 @@ class PlacesRemoteSource(
                     placeId = response.responseDataMap!!.get("placeId") as String
                 )
             } else {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to create place",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }
@@ -165,7 +159,7 @@ class PlacesRemoteSource(
                 keyVersion = null
             )
 
-            if(groupKey !is GroupMasterKey.Valid)
+            if (groupKey !is GroupMasterKey.Valid)
                 throw MissingGroupKeyException(place.groupId, null)
 
             val placeData = when (place.data) {
@@ -175,6 +169,7 @@ class PlacesRemoteSource(
                         key = groupKey.key
                     )
                 }
+
                 else -> throw CryptoException("Place data is missing: ${place.id}")
             }
 
@@ -192,12 +187,7 @@ class PlacesRemoteSource(
             if (response.isSuccess) {
                 response.responseDataMap!!.parsePlace()
             } else {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to update group",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }
@@ -248,12 +238,7 @@ class PlacesRemoteSource(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to delete place",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }

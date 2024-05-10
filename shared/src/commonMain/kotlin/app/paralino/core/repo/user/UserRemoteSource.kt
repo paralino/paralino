@@ -14,7 +14,6 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
 
 class UserRemoteSource constructor(
@@ -107,12 +106,7 @@ class UserRemoteSource constructor(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to delete user",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }
@@ -134,12 +128,7 @@ class UserRemoteSource constructor(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to reset user",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }

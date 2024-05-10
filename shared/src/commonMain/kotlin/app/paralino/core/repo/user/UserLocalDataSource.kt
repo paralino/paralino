@@ -53,9 +53,11 @@ class UserLocalDataSource(
     }
 
     suspend fun update(data: UserMeRaw) {
-        // TODO handle possible multiple user objects
         // always keep only one user
-        database.userQueries.createUser(mapper.remote2Local(data))
+        database.userQueries.transaction {
+            database.userQueries.clear()
+            database.userQueries.createUser(mapper.remote2Local(data))
+        }
     }
 
     suspend fun clear() {
@@ -64,5 +66,4 @@ class UserLocalDataSource(
             blocklistQueries.clearAll()
         }
     }
-
 }

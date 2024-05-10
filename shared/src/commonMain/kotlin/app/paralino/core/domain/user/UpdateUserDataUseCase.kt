@@ -20,7 +20,6 @@ import app.paralino.core.repo.user.UserDevicesRemoteSource
 import app.paralino.core.repo.user.UserRemoteSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -62,7 +61,7 @@ class UpdateUserDataUseCase constructor(
                 keyVersion = member.groupKeyVersion
             )
 
-            if(groupKey !is GroupMasterKey.Valid)
+            if (groupKey !is GroupMasterKey.Valid)
                 throw MissingGroupKeyException(member.groupId, member.groupKeyVersion)
 
             val memberData = cryptoCore.encryptDataWithKey(
@@ -92,12 +91,7 @@ class UpdateUserDataUseCase constructor(
         )
 
         if (!response.isSuccess) {
-            // TODO throw better exception
-            throw BaseRemoteException.fromCode(
-                code = response.statusCode,
-                message = "Unable to update location",
-                cause = Exception(response.stderr)
-            )
+            throw response.remoteException
         }
     }
 

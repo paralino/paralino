@@ -36,7 +36,6 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
         monitor?.start(queue: DispatchQueue(label: "ConnectionMonitor"))
     }
     
-    // TODO adjust
     override func isNetworkAvailable() async throws -> KotlinBoolean {
         return KotlinBoolean(bool: connectionActive)
     }
@@ -74,7 +73,6 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
         }
     }
     
-    // TODO adjust
     override func getNetworkType() async throws -> NetworkType? {
         if connectionActive {
             if mobileNetwork {
@@ -103,7 +101,7 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
         }
     }
     
-    // TODO adjust
+    // can't have this on iOS
     override func getSignalStrength() async throws -> KotlinInt? {
         return nil
     }

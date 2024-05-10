@@ -12,38 +12,6 @@ class RealtimeEventsMaker constructor(
     private val realtimeApi: IRealtimeApi,
     private val realtimeEventsProcessor: RealtimeEventsProcessor
 ) {
-
-    // TODO remove location focus subscription
-    fun listenForEventsWhileSharing(): Flow<Unit> {
-        return realtimeApi.subscribeWithFilter(
-            channels = listOf(
-                realtimeEventsProcessor.membersChannel,
-                realtimeEventsProcessor.locationsChannel,
-                realtimeEventsProcessor.placesChannel,
-                realtimeEventsProcessor.pushNotificationsChannel,
-                realtimeEventsProcessor.locationFocusChannel,
-            ),
-            filters = listOf(
-                "${realtimeEventsProcessor.membersChannel}.*",
-                "${realtimeEventsProcessor.locationsChannel}.*",
-                "${realtimeEventsProcessor.placesChannel}.*.create",
-                "${realtimeEventsProcessor.placesChannel}.*.update",
-                "${realtimeEventsProcessor.pushNotificationsChannel}.*.create",
-                "${realtimeEventsProcessor.locationFocusChannel}.*.create",
-                "${realtimeEventsProcessor.locationFocusChannel}.*.update",
-            )
-        )
-            .onEach {
-                realtimeEventsProcessor.processEvent(it)
-            }
-            .catch {
-                logg.tag("realtime_events_sharing")
-                    .e("Error with realtime events while sharing", it)
-            }
-            .distinctUntilChanged()
-            .map { }
-    }
-
     fun listenForEventsWhileActive(): Flow<Unit> {
         logg.tag("realtime_events").v("Start realtime subscription for map")
         return realtimeApi.subscribeWithFilter(

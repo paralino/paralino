@@ -23,7 +23,6 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -177,12 +176,7 @@ class GroupCreateUseCase(
                 groupId = response.responseDataMap!!.get("groupId") as String
             )
         } else {
-            // TODO throw better exception
-            throw BaseRemoteException.fromCode(
-                code = response.statusCode,
-                message = "Unable to create group",
-                cause = Exception(response.stderr)
-            )
+            throw response.remoteException
         }
     }
 }

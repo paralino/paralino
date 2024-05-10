@@ -18,7 +18,6 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
@@ -157,10 +156,7 @@ class MemberCryptoKeyRotation(
         )
 
         if (!response.isSuccess) {
-            throw BaseRemoteException.fromRemote(
-                code = response.statusCode,
-                error = response.errorResponse
-            )
+            throw response.remoteException
         }
     }
 }

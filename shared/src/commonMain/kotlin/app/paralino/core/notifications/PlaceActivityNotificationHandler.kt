@@ -27,6 +27,7 @@ class PlaceActivityNotificationHandler(
     private val placeRepo: PlacesRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val presenter: IPlaceActivityNotificationPresenter,
+    private val groupPresenter: IGroupActivityNotificationPresenter,
     private val inAppLogger: InAppLogger,
     private val valueFormatter: IValueFormatter
 ) {
@@ -108,9 +109,8 @@ class PlaceActivityNotificationHandler(
             MR.strings.place_created_notification.localizedString(groupName, placeName)
         }
 
-        // TODO use different presenter or channel
         val notificationId = payload.hashCode()
-        presenter.notify(
+        groupPresenter.notify(
             notificationId = notificationId,
             title = title,
             message = null,
