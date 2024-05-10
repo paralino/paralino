@@ -147,7 +147,11 @@ fun MainHomeMapComposable(
         onMapClick = { onMapTouch() }
     ) {
         stateData?.visibleMarkers?.forEach { model ->
-            MapMarkerComposable(model = model, onMarkerClick = markerClick)
+            MapMarkerComposable(
+                model = model,
+                satelliteMode = satelliteMode,
+                onMarkerClick = markerClick
+            )
         }
     }
 }
@@ -155,6 +159,7 @@ fun MainHomeMapComposable(
 @Composable
 private fun MapMarkerComposable(
     model: MapPinData,
+    satelliteMode: Boolean,
     onMarkerClick: (MapPinData) -> Unit
 ) {
 
@@ -189,7 +194,17 @@ private fun MapMarkerComposable(
             clickable = true,
             fillColor = when (model.pinType) {
                 MapPinType.MEMBER -> AppColors.accentDark.copy(alpha = 0.5f)
-                MapPinType.PLACE -> Color.Blue.copy(alpha = 0.3f)
+                MapPinType.PLACE -> {
+                    if (satelliteMode) {
+                        Color.Blue.copy(alpha = 0.2f)
+                    } else {
+                        if (isSystemInDarkTheme()) {
+                            AppColors.accent.copy(alpha = 0.15f)
+                        } else {
+                            Color.Blue.copy(alpha = 0.15f)
+                        }
+                    }
+                }
             },
             radius = acc.value.toDouble(),
             strokeColor = when (model.pinType) {
