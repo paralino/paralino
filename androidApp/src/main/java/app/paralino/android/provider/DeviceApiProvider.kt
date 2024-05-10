@@ -49,38 +49,27 @@ class DeviceApiProvider constructor(
         get() = Build.MANUFACTURER
 
     override fun createSystemLogr(): SystemLogr {
-        return if (backendConfig.logToConsole) {
-            object : DebugLogr("Paralino") {
-                override fun systemLog(
-                    priority: LogPriority,
-                    tag: String?,
-                    message: String,
-                    t: Throwable?
-                ) {
-                    super.systemLog(priority, tag, message, t)
-                    logToRemote(priority, t)
-                }
-            }
-        } else {
-            object : SystemLogr() {
-                override fun systemLog(
-                    priority: LogPriority,
-                    tag: String?,
-                    message: String,
-                    t: Throwable?
-                ) {
-                    logToRemote(priority, t)
-                }
-            }
-        }
+        return DebugLogr(enabled = backendConfig.logToConsole, tagPrefix = "Paralino")
     }
 
-    private fun logToRemote(priority: LogPriority, t: Throwable?) {
-        val logAllowed = backendConfig.logErrorsToRemote && priority == LogPriority.ERROR
-        val exceptionAllowed =
-            t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException
-        if (logAllowed && exceptionAllowed) {
-            Sentry.captureException(t!!)
+    override fun createCrashReportingLogr(): SystemLogr {
+        return object : SystemLogr() {
+            override fun systemLog(
+                priority: LogPriority,
+                tag: String?,
+                message: String,
+                t: Throwable?
+            ) {
+                if (priority != LogPriority.ERROR || !backendConfig.logErrorsToRemote) {
+                    return
+                }
+
+                val exceptionAllowed =
+                    t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException
+                if (exceptionAllowed) {
+                    Sentry.captureException(t!!)
+                }
+            }
         }
     }
 

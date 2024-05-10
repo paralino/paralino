@@ -62,5 +62,4 @@ class AppwriteRemoteModule: IRemoteModule {
         default: return KotlinException(message: error.localizedDescription)
         }
     }
-    
 }

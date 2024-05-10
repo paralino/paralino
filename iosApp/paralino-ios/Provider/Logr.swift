@@ -8,14 +8,22 @@
 import Foundation
 import shared
 import os
+import Sentry
 
 let Logr = shared.Logr.shared
 
 class DebbugLogr: SystemLogr {
     
+    let canLogToConsole: Bool
     let logger = Logger()
     
+    init(canLogToConsole: Bool) {
+        self.canLogToConsole = canLogToConsole
+    }
+    
     override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {
+        
+        guard canLogToConsole else { return }
         
         let time = Date.now.ISO8601Format(.iso8601(timeZone: TimeZone.current, includingFractionalSeconds: true))
         let tagElement = tag != nil && !tag!.isEmpty ? "[\(tag!)] - " : ""
@@ -35,5 +43,32 @@ class DebbugLogr: SystemLogr {
         default:
             logger.notice("⚪️ \(output)")
         }
+    }
+}
+
+class CrashReportingLogr: SystemLogr {
+    
+    let canLogToRemote: Bool
+    
+    init(canLogToRemote: Bool) {
+        self.canLogToRemote = canLogToRemote
+    }
+    
+    override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {
+        guard canLogToRemote else { return }
+        guard priority == LogPriority.error else { return }
+        guard let error = t?.description() else { return }
+        if t is InternalConnectionException { return }
+        
+        SentrySDK.capture(error: KotlinError(message: message, stackTrace: error))
+    }
+}
+
+class KotlinError: Swift.Error, Decodable {
+    let message: String
+    let stackTrace: String
+    init(message: String, stackTrace: String) {
+        self.message = message
+        self.stackTrace = stackTrace
     }
 }

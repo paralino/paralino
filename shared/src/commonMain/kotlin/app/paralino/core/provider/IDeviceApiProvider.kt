@@ -63,6 +63,7 @@ abstract class IDeviceApiProvider(
     abstract val appVersion: String
     abstract val defaultDeviceName: String
     abstract fun createSystemLogr(): SystemLogr
+    abstract fun createCrashReportingLogr(): SystemLogr
     abstract fun createConfig(): AppConfig
     abstract fun copyToClipboard(data: String)
     abstract suspend fun logout()

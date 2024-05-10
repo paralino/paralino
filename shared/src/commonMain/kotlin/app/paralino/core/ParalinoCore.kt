@@ -132,15 +132,16 @@ object ParalinoCore {
         logr.init(
             logrs = listOf(
                 deviceApiProvider.createSystemLogr(),
-                inAppLogger
+                inAppLogger,
+                deviceApiProvider.createCrashReportingLogr()
             )
         )
 
-        if(config.deviceIdSeed.isBlank()) {
+        if (config.deviceIdSeed.isBlank()) {
             config.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
-        if(backendConfig.serverUrl.isBlank() || backendConfig.projectId.isBlank()) {
+        if (backendConfig.serverUrl.isBlank() || backendConfig.projectId.isBlank()) {
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
         }
     }

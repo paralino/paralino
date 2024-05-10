@@ -9,7 +9,6 @@ import Foundation
 import shared
 import UIKit
 
-
 class DeviceApiProvider: IDeviceApiProvider {
     
     private let backendConfig: BackendConfig
@@ -58,12 +57,11 @@ class DeviceApiProvider: IDeviceApiProvider {
     }
     
     override func createSystemLogr() -> SystemLogr {
-        // TODO log to sentry
-        if(backendConfig.logToConsole) {
-            return DebbugLogr()
-        } else {
-            return DebbugLogr()
-        }
+        return DebbugLogr(canLogToConsole: backendConfig.logToConsole)
+    }
+    
+    override func createCrashReportingLogr() -> SystemLogr {
+        return CrashReportingLogr(canLogToRemote: backendConfig.logErrorsToRemote)
     }
     
     override func doCopyToClipboard(data: String) {
