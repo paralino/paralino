@@ -1,11 +1,11 @@
 package app.paralino.core.repo.personal_code
 
-import app.paralino.core.models.user.UserPersonalCode
-import app.paralino.core.models.raw.PersonalCodeRaw
-import app.paralino.core.utils.extensions.distinctFlowOfList
-import app.paralino.core.models.mappers.PersonalCodeMapperLocal
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.mapToList
+import app.paralino.core.models.mappers.PersonalCodeMapperLocal
+import app.paralino.core.models.raw.PersonalCodeRaw
+import app.paralino.core.models.user.UserPersonalCode
+import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -31,14 +31,6 @@ class PersonalCodeLocalDataSource(
         return database.mapToList { personalCodeQueries.getAllCodes() }
             .distinctFlowOfList()
             .map { it.map { mapper.local2Core(it) } }
-    }
-
-    suspend fun getActivePersonalCodesOnce(): UserPersonalCode? {
-        return database.personalCodeQueries
-            .getAllCodes()
-            .executeAsList()
-            .firstOrNull { !it.encryptedCodeUserData.isNullOrBlank() }
-            ?.let { mapper.local2Core(it) }
     }
 
     suspend fun deletePersonalCode(id: String) {

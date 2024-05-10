@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.BackendResourceIDs
-import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
@@ -66,7 +65,7 @@ fun SettingsScreenCore(
 ) {
 
     MessageDispatcherEffect(viewModel, appState)
-    val accountState by viewModel.accountState.collectAsState(Payload.Loading)
+    val accountState by viewModel.accountState.collectAsState()
 
     Column(
         modifier = Modifier

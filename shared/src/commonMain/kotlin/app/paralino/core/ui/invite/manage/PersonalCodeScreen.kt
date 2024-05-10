@@ -50,7 +50,7 @@ fun PersonalCodeScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
+    val uiState by vm.uiState.collectAsState()
 
     when (val dialog = uiState.data?.alertDialog) {
         is MainAlertDialog.PersonalCodeDelete -> {

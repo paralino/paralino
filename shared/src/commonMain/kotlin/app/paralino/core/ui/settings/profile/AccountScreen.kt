@@ -73,7 +73,7 @@ fun AccountScreenCore(
 
     MessageDispatcherEffect(viewModel, appState)
     var showDangerZoneContent by remember { mutableStateOf(false) }
-    val accountState by viewModel.accountState.collectAsState(Payload.Loading)
+    val accountState by viewModel.accountState.collectAsState()
 
     AccountScreenDialogs(dialog = accountState.data?.alertDialog, onEvent = viewModel::onEvent)
 

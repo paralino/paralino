@@ -1,12 +1,12 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
+import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
@@ -16,12 +16,21 @@ import app.paralino.core.models.user.BlocklistModel
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserSession
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.UnverifiedUserException
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 
 
 class UserRepository constructor(
@@ -99,7 +108,10 @@ class UserRepository constructor(
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
         updateLocalUser(userMeRaw)
-        config.deviceId = cryptoCore.hashProvider.computeHash("${userMeRaw.id}${config.deviceIdSeed}", HashType.SHA256)
+        config.deviceId = cryptoCore.hashProvider.computeHash(
+            "${userMeRaw.id}${config.deviceIdSeed}",
+            HashType.SHA256
+        )
         config.sessionId = userSession.id
         config.emailConfirmed = true
         sessionMonitor.updateSessionState(sessionValid = true)
@@ -152,11 +164,18 @@ class UserRepository constructor(
 
     suspend fun refreshUserIfAvailable(): UserMeRaw {
         return getUserFromRemote()
-            .also {
-                sessionMonitor.updateSessionState(sessionValid = true)
-                config.emailConfirmed = true
-                updateLocalUser(it)
-            }
+            .also { updateLocalUser(it) }
+    }
+
+    suspend fun refreshUserMaybe(): Payload<UserMeRaw?> {
+        try {
+            return triggerRemoteMaybe(
+                remote = { getUserFromRemote() },
+                remotePreference = RemotePreference.CACHE("user_call", 10_000)
+            ).let { Payload.Success(it) }
+        } catch (e: Exception) {
+            return Payload.Error(e)
+        }
     }
 
     suspend fun updateLocalUser(data: UserMeRaw) {
