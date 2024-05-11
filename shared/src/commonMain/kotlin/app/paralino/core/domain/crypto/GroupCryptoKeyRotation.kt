@@ -225,8 +225,10 @@ class GroupCryptoKeyRotation constructor(
                     code = response.statusCode,
                     error = response.errorResponse
                 )
+            } else {
+                logg.tag("tag_crypto_key_group_rotation")
+                    .w("Finished rotating group key for: ${group.id}")
             }
         }
     }
-
 }

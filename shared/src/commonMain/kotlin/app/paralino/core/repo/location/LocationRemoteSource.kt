@@ -74,7 +74,7 @@ class LocationRemoteSource constructor(
                 try {
                     saveCurrentLocation(it)
                 } catch (e: Exception) {
-                    logg.e("location_service", "Error saving location for group ${it.groupId}", e)
+                    logg.w("location_service", "Error saving location for group ${it.groupId}", e)
                 }
             }
         }

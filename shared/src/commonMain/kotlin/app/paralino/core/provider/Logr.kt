@@ -20,11 +20,17 @@ abstract class LogrImpl : ILogr {
         }
 
         val output = if (t != null) {
-            message.takeIf { it.isNotEmpty() }
-                ?.let {
-                    "$it\n${t.stackTraceToString()}"
-                }
-                ?: t.stackTraceToString()
+            if (t.canLogExceptionStackTrace()) {
+                message.takeIf { it.isNotEmpty() }
+                    ?.let {
+                        "$it\n${t.stackTraceToString()}"
+                    }
+                    ?: t.stackTraceToString()
+            } else if (shouldLogExceptionToMessage()) {
+                "$message\n(${t::class.simpleName} - ${t.message})"
+            } else {
+                message
+            }
         } else {
             message.takeIf { it.isNotEmpty() } ?: return
         }

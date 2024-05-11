@@ -119,8 +119,7 @@ class LocationUploadEngine constructor(
                                 lastLocationPush.update { null }
                                 logg.w(
                                     tag = "location_service",
-                                    message = "Error uploading new location: ${e.message}",
-                                    t = e
+                                    message = "Error uploading new location: ${e.message}"
                                 )
                             }
                         }

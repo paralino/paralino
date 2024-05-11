@@ -73,7 +73,7 @@ class AppStatusDebugViewModel(
                         add(
                             AppStatusItemStatusState(
                                 key = "network",
-                                text = "Network: **${deviceStatus.networkStatus.status} (${deviceStatus.networkStatus.networkType})**",
+                                text = "Network: **${deviceStatus.networkStatus.status} (${deviceStatus.networkStatus.networkType ?: "NONE"})**",
                                 isError = !deviceStatus.networkStatus.isOnline
                             )
                         )

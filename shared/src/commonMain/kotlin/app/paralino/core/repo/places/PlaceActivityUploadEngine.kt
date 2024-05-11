@@ -33,6 +33,7 @@ class PlaceActivityUploadEngine(
                 isEnter = isEnter,
                 timeMillis = timeMillis
             )
+            logg.tag(executionKey).i("Sent place activity ${if (isEnter) "enter" else "exit"} event for place (${placeId})")
 
             // sync pending events, but on different thread so we do not block current flow
             scopeProvider.userSessionIOScope.launch {
@@ -40,7 +41,7 @@ class PlaceActivityUploadEngine(
             }
         } catch (e: Exception) {
             logg.tag(executionKey)
-                .w("Error sending place activity event for place (${placeId}), create pending event - ${e.message}")
+                .w("Error sending place activity ${if (isEnter) "enter" else "exit"} event for place (${placeId}), create pending event - ${e.message}")
             database.pendingPlaceEventsQueries.createPendingEvent(
                 placeId = placeId,
                 groupId = groupId,

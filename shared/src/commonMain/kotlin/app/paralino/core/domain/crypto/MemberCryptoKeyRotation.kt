@@ -157,6 +157,9 @@ class MemberCryptoKeyRotation(
 
         if (!response.isSuccess) {
             throw response.remoteException
+        } else {
+            logg.tag("tag_crypto_key_group_member_rotation")
+                .i("Finished rotating group member key for: ${group.id}")
         }
     }
 }

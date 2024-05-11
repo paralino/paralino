@@ -164,6 +164,8 @@ class MemberDeviceKeyRotation(
                 groupId = group.id,
                 integrity = groupDeviceIntegrity
             )
+            logg.tag("tag_crypto_key_group_device_rotation")
+                .i("Finished rotating member device key for ${group.id}")
         }
     }
 
@@ -284,5 +286,4 @@ class MemberDeviceKeyRotation(
             !member.member.isVerified && memberKey != null && !memberKey.encryptedSenderKey.isNullOrBlank()
         }
     }
-
 }
