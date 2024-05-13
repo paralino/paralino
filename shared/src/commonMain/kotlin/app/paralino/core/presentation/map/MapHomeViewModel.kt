@@ -630,12 +630,11 @@ class MapHomeViewModel constructor(
             return
         }
 
-        logg.tag("location_performance").v("Map active for $groupId")
         activePingSubscriptionJob = locationRequestUseCase.keepLocationFocus(
             groupId = groupId,
             focusType = focusType
         )
-            .onStart { logg.v("location_performance", "Group ready ($groupId), start active ping") }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
     }
 

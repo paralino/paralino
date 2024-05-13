@@ -26,27 +26,18 @@ class LocationRequestUseCase constructor(
     private val locationPerformanceManager: LocationPerformanceManager
 ) : BaseRepository() {
 
-    // TODO not called while in background so location performance is not reset
-    // pass isActive flag here
     fun keepLocationFocus(
         groupId: String,
         focusType: MapHomeScreenFocusType
     ): Flow<String> {
         return flow {
             do {
-                logg.tag("location_performance").v("User is looking at map, sending ping")
                 emit("User is looking at map")
-                locationPerformanceManager.locationBoostRequested(
-                    performanceType = LocationPerformanceType.HIGH,
-                    groupId = groupId,
-                    from = "map focus ping"
-                )
                 sendLocationFocusEvent(groupId, focusType)
                 val delayMillis = when (focusType) {
-                    is MapHomeScreenFocusType.MEMBER -> 20_000L
-                    else -> 60_000L
+                    is MapHomeScreenFocusType.MEMBER -> 5_000L
+                    else -> 20_000L
                 }
-                logg.tag("location_performance").v("Delay active ping by $delayMillis")
                 delay(delayMillis)
             } while (currentCoroutineContext().isActive)
         }.catch { emit("Error while boosting location") }
@@ -55,14 +46,21 @@ class LocationRequestUseCase constructor(
     private suspend fun sendLocationFocusEvent(groupId: String, focusType: MapHomeScreenFocusType) {
         triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
-                key = "location_focus_${groupId}_${(focusType as? MapHomeScreenFocusType.MEMBER)?.memberUserId}",
+                key = "location_performance_location_focus_${groupId}_${(focusType as? MapHomeScreenFocusType.MEMBER)?.memberUserId}",
                 timeMillis = when (focusType) {
-                    is MapHomeScreenFocusType.MEMBER -> 15.seconds.inWholeMilliseconds
-                    else -> 40.seconds.inWholeMilliseconds
+                    is MapHomeScreenFocusType.MEMBER -> 20.seconds.inWholeMilliseconds
+                    else -> 60.seconds.inWholeMilliseconds
                 },
                 failOnError = false
             )
         ) {
+            logg.tag("location_performance")
+                .v("Map is active (${focusType::class.simpleName}), boosting location and sending ping")
+            locationPerformanceManager.locationBoostRequested(
+                performanceType = LocationPerformanceType.HIGH,
+                groupId = groupId,
+                from = "map focus ping"
+            )
             try {
                 val requestPayload = LocationFocusPayload(
                     groupId = groupId,
