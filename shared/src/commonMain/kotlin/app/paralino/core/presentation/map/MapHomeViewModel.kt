@@ -68,6 +68,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -92,20 +93,14 @@ class MapHomeViewModel constructor(
     val events = _eventChannel.receiveAsFlow()
 
     private val groupIdData = MutableStateFlow("")
+    private val uiRefreshPingFlow = MutableStateFlow<Instant?>(null)
 
+    private var uiRefreshPingSubscriptionJob: Job? = null
     private var activePingSubscriptionJob: Job? = null
     private var realtimeSubscriptionJob: Job? = null
     private val locationRequestDuration = 20.seconds
     private val locationRequestDelay = 2.minutes
 
-    private val timeRefreshPingFlow = flow<Unit> {
-        emit(Unit)
-        delay(20)
-        while (currentCoroutineContext().isActive) {
-            delay(5.seconds)
-            emit(Unit)
-        }
-    }
 
     val allGroups: StateFlow<Resource<List<UserGroupWithMetadata>>> =
         groupRepo.getAllGroupsLocally()
@@ -143,6 +138,7 @@ class MapHomeViewModel constructor(
 
         deviceApiProvider.appLifecycleState
             .onEach {
+                keepUiRefreshPing()
                 if (it.comingFromBackground) {
                     delay(2000)
                     if (groupIdData.value.isNotBlank()) {
@@ -193,7 +189,7 @@ class MapHomeViewModel constructor(
                         }
                 } else {
                     combine(
-                        timeRefreshPingFlow,
+                        uiRefreshPingFlow.filterNotNull(),
                         groupRepo.getGroupWithMembersLocally(it),
                         placesRepo.getPlacesForGroupLocally(it),
                         getSharingContract(),
@@ -603,6 +599,18 @@ class MapHomeViewModel constructor(
                 isLarge = isSelected
             )
         } ?: emptyList()
+    }
+
+    private fun keepUiRefreshPing() {
+        uiRefreshPingSubscriptionJob?.cancel()
+        if (deviceApiProvider.appLifecycleState.value.current.activeOrInactive) {
+            uiRefreshPingSubscriptionJob = coroutineScope.launch {
+                while (currentCoroutineContext().isActive) {
+                    uiRefreshPingFlow.update { nowUTC() }
+                    delay(5.seconds)
+                }
+            }
+        }
     }
 
     private fun keepLocationFocusOn(
