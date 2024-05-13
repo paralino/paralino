@@ -41,4 +41,8 @@ class BackgroundRefresh {
             }
         }
     }
+    
+    static func logout() {
+        BGTaskScheduler.shared.cancelAllTaskRequests()
+    }
 }

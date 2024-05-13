@@ -19,7 +19,7 @@ class DeviceApiProvider: IDeviceApiProvider {
     }
     
     override func logout() async throws {
-        
+        BackgroundRefresh.logout()
     }
     
     override var appVersionCode: Int64 {
