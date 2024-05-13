@@ -31,6 +31,7 @@ class RefreshEverythingUseCase(
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "full_refresh"
+    private val groupRefreshExecutionKey = "full_refresh_groups_refresh"
 
     fun isProcessing(): Boolean {
         return isProcessing(executionKey)
@@ -62,7 +63,6 @@ class RefreshEverythingUseCase(
                     userRepository.refreshBlocklist()
                     configRepo.refreshConfig()
                     scheduleRefreshAllGroupsWithPlaces(
-                        key = executionKey,
                         time = if (forceGroupRefresh) 0 else 60_000
                     )
                     pushProviderManager.syncPushNotifications()
@@ -80,13 +80,10 @@ class RefreshEverythingUseCase(
     }
 
     suspend fun scheduleRefreshAllGroupsWithPlaces(
-        key: String = "groups_refresh",
         time: Long = 15_000
     ) {
-        val refreshKey = "${executionKey}_${key}"
-
         try {
-            startProcessing(refreshKey)
+            startProcessing(groupRefreshExecutionKey)
         } catch (e: Exception) {
             logg.tag("full_refresh").v("Processing, can't refresh data")
             return
@@ -94,13 +91,13 @@ class RefreshEverythingUseCase(
 
         try {
             triggerRemoteMaybe(
-                remotePreference = RemotePreference.CACHE(key = refreshKey, timeMillis = time),
+                remotePreference = RemotePreference.CACHE(key = groupRefreshExecutionKey, timeMillis = time),
                 remote = { refreshAllGroupsWithPlaces() }
             )
         } catch (e: Exception) {
             logg.tag("full_refresh").w("Error refreshing all groups - ${e.message}")
         } finally {
-            stopProcessing(refreshKey)
+            stopProcessing(groupRefreshExecutionKey)
         }
     }
 
@@ -124,5 +121,4 @@ class RefreshEverythingUseCase(
                 placeActivityUploadEngine.syncPendingEvents()
             }
     }
-
 }

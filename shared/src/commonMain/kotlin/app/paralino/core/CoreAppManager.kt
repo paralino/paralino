@@ -42,7 +42,7 @@ class CoreAppManager(
                 updateConfig()
             }
 
-            if (state.current == AppLifecycleType.ACTIVE && state.previous == AppLifecycleType.BACKGROUND) {
+            if (state.comingFromBackground) {
                 logg.tag("app_state").v("App is active but was in background, refresh groups")
                 updateGroups()
             }

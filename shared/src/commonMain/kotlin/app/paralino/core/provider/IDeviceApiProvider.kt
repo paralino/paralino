@@ -78,7 +78,9 @@ data class AppLifecycleState(
     val previous: AppLifecycleType = AppLifecycleType.DESTROYED,
     val current: AppLifecycleType = AppLifecycleType.DESTROYED,
     val wasEverActive: Boolean = false
-)
+) {
+    val comingFromBackground get() = wasEverActive && current == AppLifecycleType.ACTIVE && previous == AppLifecycleType.BACKGROUND
+}
 
 enum class AppLifecycleType {
     ACTIVE, INACTIVE, BACKGROUND, DESTROYED;

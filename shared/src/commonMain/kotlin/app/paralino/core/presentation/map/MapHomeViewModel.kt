@@ -39,6 +39,8 @@ import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.currentCoroutineContext
@@ -55,6 +57,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -104,18 +107,19 @@ class MapHomeViewModel constructor(
         }
     }
 
-    val allGroups: StateFlow<Resource<List<UserGroupWithMetadata>>> = groupRepo.getAllGroupsLocally()
-        .map { Resource.Ready(it) }
-        .conflate()
-        .distinctUntilChanged { old, new ->
-            old.data.sortedBy { it.id }.toTypedArray()
-                .contentDeepEquals(new.data.sortedBy { it.id }.toTypedArray())
-        }
-        .stateIn(
-            scope = coroutineScope,
-            started = SharingStarted.Eagerly,
-            initialValue = Resource.NotInitialized
-        )
+    val allGroups: StateFlow<Resource<List<UserGroupWithMetadata>>> =
+        groupRepo.getAllGroupsLocally()
+            .map { Resource.Ready(it) }
+            .conflate()
+            .distinctUntilChanged { old, new ->
+                old.data.sortedBy { it.id }.toTypedArray()
+                    .contentDeepEquals(new.data.sortedBy { it.id }.toTypedArray())
+            }
+            .stateIn(
+                scope = coroutineScope,
+                started = SharingStarted.Eagerly,
+                initialValue = Resource.NotInitialized
+            )
 
     /**
      * Used in iOS
@@ -139,25 +143,22 @@ class MapHomeViewModel constructor(
 
         combine(
             groupIdData,
-            uiState.map { it.asReady()?.mapHomeScreenFocusType }
-                .filterNotNull()
-                .distinctUntilChanged(),
             deviceApiProvider.appLifecycleState
                 .map { it.current.activeOrInactive }
+                .distinctUntilChanged(),
+            uiState.map { it.asReady()?.mapHomeScreenFocusType }
+                .filterNotNull()
                 .distinctUntilChanged()
-        ) { groupId, focusType, appState ->
-            Triple(groupId, focusType, appState)
+        ) { _, _, focusType ->
+            focusType
         }
             .debounce(2000)
             .distinctUntilChanged()
             .onEach {
                 initRealtime()
-                keepLocationFocusOn(
-                    groupId = it.first,
-                    focusType = it.second,
-                    isActive = it.third
-                )
+                keepLocationFocusOn(focusType = it)
             }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
         groupIdData
@@ -243,15 +244,35 @@ class MapHomeViewModel constructor(
                                                 )
                                             },
                                             locationRequest = takeIf { location.canRequestLocation }?.let {
-                                                val isRequestInProgress = previousState?.actions?.locationRequest?.run { isLoading && !isWaitingForUser } ?: false
-                                                val hasUserResponded = (previousState?.actions?.locationRequest?.lastLocationRequest?.toEpochMilliseconds() ?: 0) < (location.status.data?.timeUTC?.fromUTCtoInstant()?.plus(2.seconds)?.toEpochMilliseconds() ?: 0)
-                                                val isRequestExpired = previousState?.actions?.locationRequest?.lastLocationRequest?.plus(locationRequestDuration)?.let { it < nowUTC() } ?: true
-                                                val canRequestLocationAgain = previousState?.actions?.locationRequest?.lastLocationRequest?.plus(locationRequestDelay)?.let { it < nowUTC() } ?: true
+                                                val isRequestInProgress =
+                                                    previousState?.actions?.locationRequest?.run { isLoading && !isWaitingForUser }
+                                                        ?: false
+                                                val hasUserResponded =
+                                                    (previousState?.actions?.locationRequest?.lastLocationRequest?.toEpochMilliseconds()
+                                                        ?: 0) < (location.status.data?.timeUTC?.fromUTCtoInstant()
+                                                        ?.plus(2.seconds)?.toEpochMilliseconds()
+                                                        ?: 0)
+                                                val isRequestExpired =
+                                                    previousState?.actions?.locationRequest?.lastLocationRequest
+                                                        ?.plus(locationRequestDuration)
+                                                        ?.let { it < nowUTC() }
+                                                        ?: true
+                                                val canRequestLocationAgain =
+                                                    previousState?.actions?.locationRequest?.lastLocationRequest
+                                                        ?.plus(locationRequestDelay)
+                                                        ?.let { it < nowUTC() }
+                                                        ?: true
 
                                                 if (hasUserResponded && !isRequestInProgress) {
-                                                    LocationRequestItemState(isEnabled = canRequestLocationAgain, lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest)
+                                                    LocationRequestItemState(
+                                                        isEnabled = canRequestLocationAgain,
+                                                        lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest
+                                                    )
                                                 } else if (isRequestExpired && !isRequestInProgress) {
-                                                    LocationRequestItemState(isEnabled = canRequestLocationAgain, lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest)
+                                                    LocationRequestItemState(
+                                                        isEnabled = canRequestLocationAgain,
+                                                        lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest
+                                                    )
                                                 } else {
                                                     previousState?.actions?.locationRequest
                                                 }
@@ -374,9 +395,11 @@ class MapHomeViewModel constructor(
                             isSatelliteMode = _uiState.value.isSatelliteMode
                         )
                     }
+                        .flowOn(Dispatchers.IO)
                 }
             }
             .onEach { _uiState.value = it }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
     }
 
@@ -569,18 +592,18 @@ class MapHomeViewModel constructor(
     }
 
     private fun keepLocationFocusOn(
-        groupId: String?,
-        focusType: MapHomeScreenFocusType,
-        isActive: Boolean
+        focusType: MapHomeScreenFocusType
     ) {
         activePingSubscriptionJob?.cancel()
+
+        val groupId = groupIdData.value
 
         if (groupId.isNullOrBlank()) {
             logg.v("location_performance", "Group id not valid, ignore active ping")
             return
         }
 
-        if (!isActive) {
+        if (!deviceApiProvider.appLifecycleState.value.current.activeOrInactive) {
             logg.v("location_performance", "App is in background, ignore active ping")
             return
         }
@@ -596,9 +619,11 @@ class MapHomeViewModel constructor(
 
     private fun initRealtime() {
         realtimeSubscriptionJob?.cancel()
-        realtimeSubscriptionJob = realtimeEvents.listenForEventsWhileActive()
-            .mapToPayload { Unit }
-            .launchIn(coroutineScope)
+        if (deviceApiProvider.appLifecycleState.value.current.activeOrInactive) {
+            realtimeSubscriptionJob = realtimeEvents.listenForEventsWhileActive()
+                .mapToPayload { Unit }
+                .launchIn(coroutineScope)
+        }
     }
 
     fun memberAction(action: MemberActionType, state: GroupMemberItemState) {
