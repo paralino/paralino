@@ -13,7 +13,7 @@ enum class LocationPerformanceType {
             BATTERY_SAVER -> 0
             BALANCED -> 0
             MEDIUM_HIGH -> 30_000
-            HIGH -> 45_000
+            HIGH -> 30_000
             VERY_HIGH -> 60_000
             MANUAL_BOOST -> 120_000
         }
