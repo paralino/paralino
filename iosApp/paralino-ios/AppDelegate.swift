@@ -37,7 +37,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
         coreAppManager.onAppStart()
         
         BackgroundRefresh.registerAppRefresh()
+        BackgroundRefresh.registerNotificationsRefresh()
         BackgroundRefresh.scheduleAppRefresh()
+        BackgroundRefresh.scheduleNotificationsRefresh()
         
         return true
     }

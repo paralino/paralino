@@ -203,6 +203,7 @@ object KoinIOS {
         val pushNotificationsHandler: PushNotificationHandler get() = get()
         val userDataUpdate: UpdateUserDataUseCase get() = get()
         val refreshEverything: RefreshEverythingUseCase get() = get()
+        val pushProvider: IPushProviderManager get() = get()
     }
 
     object ViewModels : KoinComponent {
