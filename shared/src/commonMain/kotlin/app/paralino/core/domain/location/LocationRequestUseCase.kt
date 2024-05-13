@@ -10,6 +10,7 @@ import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.api.runAsync
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import kotlinx.coroutines.currentCoroutineContext
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.seconds
 
 class LocationRequestUseCase constructor(
     private val functionsApi: IFunctionsApi,
@@ -51,7 +53,16 @@ class LocationRequestUseCase constructor(
     }
 
     private suspend fun sendLocationFocusEvent(groupId: String, focusType: MapHomeScreenFocusType) {
-        triggerRemoteOnly {
+        triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(
+                key = "location_focus_${groupId}_${(focusType as? MapHomeScreenFocusType.MEMBER)?.memberUserId}",
+                timeMillis = when (focusType) {
+                    is MapHomeScreenFocusType.MEMBER -> 15.seconds.inWholeMilliseconds
+                    else -> 40.seconds.inWholeMilliseconds
+                },
+                failOnError = false
+            )
+        ) {
             try {
                 val requestPayload = LocationFocusPayload(
                     groupId = groupId,
