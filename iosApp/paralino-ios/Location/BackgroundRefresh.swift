@@ -16,7 +16,7 @@ class BackgroundRefresh {
     
     static func scheduleAppRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: "app.paralino.ios.task.refresh")
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 60 * 60)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 12 * 60 * 60)
         
         do {
             try BGTaskScheduler.shared.submit(request)
