@@ -163,14 +163,14 @@ class MapHomeViewModel constructor(
             uiState.map { it.asReady()?.mapHomeScreenFocusType }
                 .filterNotNull()
                 .distinctUntilChanged()
-        ) { _, _, focusType ->
-            focusType
+        ) { groupId, appState, focusType ->
+            Triple(groupId, appState, focusType)
         }
             .debounce(2000)
             .distinctUntilChanged()
             .onEach {
                 initRealtime()
-                keepLocationFocusOn(focusType = it)
+                keepLocationFocusOn(focusType = it.third)
             }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
