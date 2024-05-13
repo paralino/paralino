@@ -47,7 +47,7 @@ class CoreAppManager(
                 updateGroups()
             }
         }
-            .launchIn(scopeProvider.defaultScope)
+            .launchIn(scopeProvider.defaultIOScope)
 
         configRepo.getUpdateType()
             .onEach { updateType ->

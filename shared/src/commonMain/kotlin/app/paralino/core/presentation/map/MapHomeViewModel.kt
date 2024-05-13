@@ -39,9 +39,11 @@ import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -98,6 +100,7 @@ class MapHomeViewModel constructor(
     private var uiRefreshPingSubscriptionJob: Job? = null
     private var activePingSubscriptionJob: Job? = null
     private var realtimeSubscriptionJob: Job? = null
+    private var groupSubscriptionJob: Job = SupervisorJob()
     private val locationRequestDuration = 20.seconds
     private val locationRequestDelay = 2.minutes
 
@@ -111,7 +114,7 @@ class MapHomeViewModel constructor(
                     .contentDeepEquals(new.data.sortedBy { it.id }.toTypedArray())
             }
             .stateIn(
-                scope = coroutineScope,
+                scope = CoroutineScope(Dispatchers.IO + groupSubscriptionJob),
                 started = SharingStarted.Eagerly,
                 initialValue = Resource.NotInitialized
             )
@@ -142,7 +145,7 @@ class MapHomeViewModel constructor(
                 if (it.comingFromBackground) {
                     delay(2000)
                     if (groupIdData.value.isNotBlank()) {
-                        coroutineScope.launch {
+                        coroutineScope.launch(Dispatchers.IO) {
                             groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
                         }
                     }
@@ -174,7 +177,7 @@ class MapHomeViewModel constructor(
         groupIdData
             .onEach {
                 if (it.isNotBlank()) {
-                    coroutineScope.launch {
+                    coroutineScope.launch(Dispatchers.IO) {
                         groupPreRefresh.refreshGroupWithMembers(it)
                     }
                 }
@@ -604,7 +607,7 @@ class MapHomeViewModel constructor(
     private fun keepUiRefreshPing() {
         uiRefreshPingSubscriptionJob?.cancel()
         if (deviceApiProvider.appLifecycleState.value.current.activeOrInactive) {
-            uiRefreshPingSubscriptionJob = coroutineScope.launch {
+            uiRefreshPingSubscriptionJob = coroutineScope.launch(Dispatchers.IO) {
                 while (currentCoroutineContext().isActive) {
                     uiRefreshPingFlow.update { nowUTC() }
                     delay(5.seconds)
@@ -833,5 +836,10 @@ class MapHomeViewModel constructor(
                 )
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        groupSubscriptionJob.cancel()
     }
 }

@@ -7,9 +7,12 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.repo.user.UserRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -41,6 +44,7 @@ class MainViewModel constructor(
 
         appConfigRepository.getUpdateType()
             .onEach { updateType -> _uiState.update { it.copy(updateType = updateType) } }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
         appUpdateManager.updateState
