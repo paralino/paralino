@@ -141,6 +141,20 @@ class MapHomeViewModel constructor(
             }
         }.launchIn(coroutineScope)
 
+        deviceApiProvider.appLifecycleState
+            .onEach {
+                if (it.comingFromBackground) {
+                    delay(2000)
+                    if (groupIdData.value.isNotBlank()) {
+                        coroutineScope.launch {
+                            groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
+                        }
+                    }
+                }
+            }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
         combine(
             groupIdData,
             deviceApiProvider.appLifecycleState
