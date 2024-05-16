@@ -51,7 +51,10 @@ class GroupMapperCore constructor(
             data = groupData,
             serverIntegrity = model.serverIntegrity,
             planType = model.planType.key,
-            schemeVersion = model.schemeVersion
+            schemeVersion = model.schemeVersion,
+            membersLimitOverride = model.membersLimitOverride,
+            devicesLimitOverride = model.devicesLimitOverride,
+            placesLimitOverride = model.placesLimitOverride
         )
     }
 
@@ -89,8 +92,11 @@ class GroupMapperCore constructor(
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,
             serverIntegrity = model.serverIntegrity,
-            planType = PlanType.fromKey(model.planType) ?: PlanType.fallback,
-            schemeVersion = model.schemeVersion
+            planType = PlanType.fromKey(model.planType) ?: PlanType.default,
+            schemeVersion = model.schemeVersion,
+            membersLimitOverride = model.membersLimitOverride,
+            devicesLimitOverride = model.devicesLimitOverride,
+            placesLimitOverride = model.placesLimitOverride
         )
     }
 

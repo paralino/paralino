@@ -4,6 +4,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 
 class PlacesViewModel(
     groupId: String,
+    private val appConfigRepo: AppConfigRepository,
     private val placesRepo: PlacesRepository,
     private val groupRepo: UserGroupLocalDataSource,
     val locationStatusProvider: ILocationStatusProvider,
@@ -52,7 +54,8 @@ class PlacesViewModel(
                 groupId = groupId,
                 groupImage = group.image,
                 groupName = group.name,
-                placesLimit = group.planType.placesLimit,
+                placesLimit = group.placesLimitOverride?.toInt()
+                    ?: appConfigRepo.configState.value.planConfigForPlanType(group.planType).placesLimit,
                 places = placesState,
                 errors = errors
             )
@@ -66,7 +69,7 @@ class PlacesViewModel(
     fun tryCreatePlace() {
         val state = _uiState.value.data ?: return
         coroutineScope.launch {
-            if(state.places.size >= state.placesLimit)
+            if (state.places.size >= state.placesLimit)
                 _eventChannel.send(PlacesScreenEvent.GroupPlacesLimitReached(state.placesLimit))
             else
                 _eventChannel.send(PlacesScreenEvent.AddPlace)

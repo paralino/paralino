@@ -7,10 +7,12 @@ import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ConfigData
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.mapSuccess
+import app.paralino.core.models.raw.UserPlanRaw
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
@@ -39,6 +41,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -64,7 +67,8 @@ class SettingsViewModel(
         mapUserState(
             userState = userRepo.localUser.value,
             appConfig = appConfigRepository.configState.value,
-            personalCode = personalCodeRepo.activePersonalCodeState.value
+            personalCode = personalCodeRepo.activePersonalCodeState.value,
+            userPlans = userRepo.userPlans.value.plans.map { it.plan }
         )
     )
     val accountState: StateFlow<Payload<AccountScreenState>> = _accountState
@@ -79,7 +83,7 @@ class SettingsViewModel(
             listOf(
                 async {
                     try {
-                        personalCodeRepo.refreshPersonalCodes()
+                        personalCodeRepo.refreshPersonalCodesAndRestockKeys()
                     } catch (e: Exception) {
                     }
                 },
@@ -95,9 +99,10 @@ class SettingsViewModel(
         combine(
             userRepo.localUser,
             appConfigRepository.getConfig(),
-            personalCodeRepo.activePersonalCodeState
-        ) { userState, appConfig, personalCode ->
-            mapUserState(userState, appConfig, personalCode)
+            personalCodeRepo.activePersonalCodeState,
+            userRepo.userPlans
+        ) { userState, appConfig, personalCode, userPlans ->
+            mapUserState(userState, appConfig, personalCode, userPlans.plans.map { it.plan})
         }.onEach { value ->
             _accountState.update { value }
             runLocationBoostJob()
@@ -109,7 +114,8 @@ class SettingsViewModel(
     private fun mapUserState(
         userState: Resource<UserMe?>,
         appConfig: ConfigData?,
-        personalCode: UserPersonalCode?
+        personalCode: UserPersonalCode?,
+        userPlans: List<UserPlanRaw>
     ): Payload<AccountScreenState> {
         return when (userState) {
             Resource.NotInitialized -> _accountState.value
@@ -132,7 +138,8 @@ class SettingsViewModel(
                             deleteAccountState = null,
                             versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
                             boostTime = null,
-                            placeActivityThrottleEnabled = config.placeActivityThrottle
+                            placeActivityThrottleEnabled = config.placeActivityThrottle,
+                            userPlans = userPlans.map { it.planType }
                         )
                     )
                 } else {

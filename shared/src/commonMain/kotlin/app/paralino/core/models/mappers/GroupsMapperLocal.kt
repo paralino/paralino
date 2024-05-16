@@ -20,7 +20,10 @@ class GroupsMapperLocal(
             data = model.data_,
             serverIntegrity = model.serverIntegrity,
             planType = model.planType,
-            schemeVersion = model.schemeVersion
+            schemeVersion = model.schemeVersion,
+            membersLimitOverride = model.membersLimitOverride,
+            devicesLimitOverride = model.devicesLimitOverride,
+            placesLimitOverride = model.placesLimitOverride
         )
     }
 
@@ -32,7 +35,10 @@ class GroupsMapperLocal(
             data_ = model.data,
             serverIntegrity = model.serverIntegrity,
             planType = model.planType,
-            schemeVersion = model.schemeVersion
+            schemeVersion = model.schemeVersion,
+            membersLimitOverride = model.membersLimitOverride,
+            devicesLimitOverride = model.devicesLimitOverride,
+            placesLimitOverride = model.placesLimitOverride
         )
     }
 }

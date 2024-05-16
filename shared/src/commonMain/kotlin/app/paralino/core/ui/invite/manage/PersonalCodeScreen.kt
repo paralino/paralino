@@ -13,15 +13,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
@@ -39,6 +43,7 @@ import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -119,7 +124,7 @@ fun PersonalCodeScreenCore(
                             Spacer(modifier = Modifier.size(8.dp))
                             PlanLimitCount(
                                 count = state.data.inactiveCodes.size,
-                                limit = state.data.maxCodes
+                                limit = null
                             )
                         }
                     }
@@ -136,23 +141,7 @@ fun PersonalCodeScreenCore(
                     }
                 }
 
-                if (state.data.inactiveCodes.isNotEmpty() || state.data.activeCode != null) {
-                    this.item(key = "button") {
-                        if (state.data.canCreateAlternativeId) {
-                            FilledButton(
-                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
-                                style = ButtonStyle.BIG,
-                                state = if (state.data.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,
-                                icon = CoreAppIcons.AddLink.asPainterResource(),
-                                onClick = { vm.onEvent(PersonalCodeScreenUiEvent.CreateCode) }
-                            ) {
-                                Text(stringResource(MR.strings.invite_create_new_button))
-                            }
-                        } else {
-                            Spacer(modifier = Modifier.size(40.dp))
-                        }
-                    }
-                } else {
+                if (state.data.inactiveCodes.isEmpty() && state.data.activeCode == null) {
                     this.item(key = "empty_state") {
                         DefaultEmptyState(
                             icon = CoreAppIcons.AddLink.asPainterResource(),
@@ -161,6 +150,31 @@ fun PersonalCodeScreenCore(
                             buttonState = if (state.data.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,
                             onClick = { vm.onEvent(PersonalCodeScreenUiEvent.CreateCode) }
                         )
+                    }
+                } else {
+                    this.item(key = "button") {
+                        if (state.data.canCreateAlternativeId) {
+                            FilledButton(
+                                modifier = Modifier.padding(horizontal = 20.dp).padding(top = 20.dp, bottom = 10.dp),
+                                style = ButtonStyle.BIG,
+                                state = if (state.data.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,
+                                icon = CoreAppIcons.AddLink.asPainterResource(),
+                                onClick = { vm.onEvent(PersonalCodeScreenUiEvent.CreateCode) }
+                            ) {
+                                Text(stringResource(MR.strings.invite_create_new_button))
+                            }
+                            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                                Text(
+                                    modifier = Modifier.padding(horizontal = 40.dp)
+                                        .padding(bottom = 20.dp),
+                                    text = stringResource(MR.strings.invite_create_alternative_description, "${state.data.maxCodes}").annotatedBold(),
+                                    style = MaterialTheme.typography.caption,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        } else {
+                            Spacer(modifier = Modifier.size(40.dp))
+                        }
                     }
                 }
             }

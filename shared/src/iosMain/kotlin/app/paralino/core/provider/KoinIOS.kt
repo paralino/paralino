@@ -133,7 +133,7 @@ object KoinIOS {
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
-                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
+                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get()) }
             factory { PersonalCodeViewModel(get(), get(), get()) }
@@ -147,7 +147,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get())
@@ -165,7 +165,7 @@ object KoinIOS {
                     resetPassword = get()
                 )
             }
-            factory { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
+            factory { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get(), get()) }
             factory { (groupID: String, placeId: String) ->
                 PlaceDetailViewModel(
                     groupId = groupID,

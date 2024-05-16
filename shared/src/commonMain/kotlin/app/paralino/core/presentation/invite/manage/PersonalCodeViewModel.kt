@@ -1,15 +1,15 @@
 package app.paralino.core.presentation.invite.manage
 
 import app.paralino.core.models.Payload
-import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.user.UserPersonalCode
+import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
@@ -31,13 +31,13 @@ import kotlinx.coroutines.launch
 class PersonalCodeViewModel(
     private val personalCodeRepo: PersonalCodesRepository,
     private val deviceApiProvider: IDeviceApiProvider,
-    private val appConfigRepo: AppConfigRepository
+    private val userRepo: UserRepository
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PersonalCodeScreenState>>(
         mapPersonalCodes(
             personalCodes = personalCodeRepo.personalCodeLocalState.value,
-            config = appConfigRepo.configState.value,
+            userPlans = userRepo.userPlans.value,
             activeAlertDialog = null
         )
     )
@@ -49,19 +49,19 @@ class PersonalCodeViewModel(
     init {
         coroutineScope.launch {
             try {
-                personalCodeRepo.refreshPersonalCodes()
+                personalCodeRepo.refreshPersonalCodesAndRestockKeys()
             } catch (e: Exception) {
             }
         }
 
         combine(
-            personalCodeRepo.getAndRefreshMyPersonalCodes(),
-            appConfigRepo.configState
-        ) { personalCodes, config ->
+            personalCodeRepo.personalCodeLocalState,
+            userRepo.userPlans
+        ) { personalCodes, plans ->
             _uiState.update {
                 mapPersonalCodes(
                     personalCodes = personalCodes,
-                    config = config,
+                    userPlans = plans,
                     activeAlertDialog = it.data?.alertDialog
                 )
             }
@@ -72,7 +72,7 @@ class PersonalCodeViewModel(
 
     private fun mapPersonalCodes(
         personalCodes: List<UserPersonalCode>,
-        config: ConfigData?,
+        userPlans: UserPlans,
         activeAlertDialog: MainAlertDialog?
     ): Payload<PersonalCodeScreenState> {
         val codeData = personalCodes
@@ -89,14 +89,14 @@ class PersonalCodeViewModel(
                 )
             }
 
-        val maxAlternativeIDs = config?.maxAlternativeIDs ?: 0
+        val maxIDs = userPlans.highestPlanConfig.paralinoIdsLimit
         val inactiveCodes = codeData.filter { !it.isValid }
         return Payload.Success(
             PersonalCodeScreenState(
                 activeCode = codeData.firstOrNull { it.isValid },
                 inactiveCodes = inactiveCodes,
-                canCreateAlternativeId = maxAlternativeIDs > 0 && codeData.size > 0 && maxAlternativeIDs > inactiveCodes.size,
-                maxCodes = maxAlternativeIDs,
+                canCreateAlternativeId = maxIDs > 0 && codeData.size < maxIDs,
+                maxCodes = maxIDs,
                 createLoading = false,
                 alertDialog = activeAlertDialog
             )

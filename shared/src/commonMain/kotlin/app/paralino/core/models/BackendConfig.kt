@@ -52,5 +52,6 @@ object BackendResourceIDs {
     const val collectionUserDevicesID: String = "devices"
     const val collectionPushNotificationID: String = "push_notifications"
     const val collectionConfigID: String = "config"
+    const val collectionUserPlansID: String = "plans"
     const val collectionBlockedID: String = "blocked"
 }

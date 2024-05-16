@@ -7,6 +7,7 @@ import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
 import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
+import app.paralino.core.models.raw.UserPlanRaw
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.repo.api.IDocumentsApi
@@ -97,6 +98,13 @@ class UserRemoteSource constructor(
             collectionId = remoteConfig.resourceIds.collectionBlockedID,
             documentId = blockId
         )
+    }
+
+    suspend fun getPlans(): List<UserPlanRaw> {
+        return docApi.listAllDocuments(
+            databaseType = BackendDatabaseType.PRODUCT,
+            collectionId = remoteConfig.resourceIds.collectionUserPlansID
+        ).map { UserPlanRaw.from(it) }
     }
 
     suspend fun deleteAccount() {

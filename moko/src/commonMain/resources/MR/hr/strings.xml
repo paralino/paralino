@@ -202,6 +202,7 @@
     <string name="invite_delete_alert_title">Sigurno želiš onemogućiti ovaj kod?\n\nNećeš se moći pridružiti novoj grupi ali uvijek možeš ponovno omogućiti svoj Paralino.ID.</string>
     <string name="invite_manage_empty_description">Nemate aktivan **Paralino.ID**.\nStvorite jedan kako biste se pridružili drugim grupama i sigurno dijelili svoju lokaciju s prijateljima.</string>
     <string name="invite_manage_description">Podijelite ovaj kod kako biste se pridružili grupi i sigurno dijelili svoju lokaciju.</string>
+    <string name="invite_create_alternative_description">Dodatni Paralino.ID ti omogućava da imaš više identiteta te da dijeliš različite kodove sa različitim grupama. Trenutno možeš imat **%s** Paralino.ID sa svojom pretplatom.</string>
     <string name="invite_connect_code_placeholder">Korisnikov Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">Dodajete **%1$s** u grupu **%2$s**.\nNakon toga možete sigurno dijeliti svoju lokaciju.</string>
     <string name="invite_connect_button_addToGroup">DODAJ U GRUPU</string>

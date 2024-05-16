@@ -15,6 +15,7 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
@@ -35,6 +36,7 @@ import kotlinx.coroutines.launch
 class GroupDetailViewModel(
     val groupId: String,
     private val userRepo: UserRepository,
+    private val appConfigRepo: AppConfigRepository,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val sharingManager: LocationSharingManager,
     private val placeActivityRepo: PlaceActivityDataSource,
@@ -138,6 +140,8 @@ class GroupDetailViewModel(
                 )
             }
 
+            val membersLimit = group.group.membersLimitOverride?.toInt()
+                ?: appConfigRepo.configState.value.planConfigForPlanType(group.group.planType).membersLimit
             GroupDetailScreenState(
                 id = groupId,
                 canEdit = group.isCurrentUserOwner,
@@ -146,7 +150,7 @@ class GroupDetailViewModel(
                 image = group.image,
                 sharingStatus = sharingState,
                 members = members,
-                memberLimit = group.group.planType.membersLimit,
+                memberLimit = membersLimit,
                 errors = errors
             )
         }

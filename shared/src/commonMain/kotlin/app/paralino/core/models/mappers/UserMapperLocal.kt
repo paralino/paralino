@@ -1,12 +1,17 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.data.db.BlocklistEntity
+import app.paralino.core.data.db.SubscriptionPlanEntity
 import app.paralino.core.data.db.UserEntity
+import app.paralino.core.models.base.PlanBillingPeriod
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
+import app.paralino.core.models.raw.UserPlanRaw
 import app.paralino.core.models.user.BlocklistModel
 import app.paralino.core.models.user.UserMe
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 
 class UserMapperLocal constructor(
     val coreMapper: UserMapperCore,
@@ -61,6 +66,33 @@ class UserMapperLocal constructor(
             resourceId = model.resourceId,
             resourceType = model.resourceType,
             data = model.data_
+        )
+    }
+
+    fun remote2Local(model: UserPlanRaw): SubscriptionPlanEntity {
+        return SubscriptionPlanEntity(
+            id = model.id,
+            groupId = model.groupId,
+            ownerUserId = model.ownerUserId,
+            planType = model.planType.key,
+            billingPeriod = model.billingPeriod.key,
+            expiresAt = model.expiresAt?.toString(),
+            groupsLimitOverride = model.groupsLimitOverride,
+            provider = model.provider
+        )
+    }
+
+    fun local2Remote(model: SubscriptionPlanEntity): UserPlanRaw {
+        return UserPlanRaw(
+            id = model.id,
+            groupId = model.groupId,
+            ownerUserId = model.ownerUserId,
+            planType = PlanType.fromKey(model.planType) ?: PlanType.default,
+            billingPeriod = PlanBillingPeriod.fromKey(model.billingPeriod)
+                ?: PlanBillingPeriod.ONETIME,
+            expiresAt = model.expiresAt?.isoWithOffsetToInstant(),
+            groupsLimitOverride = model.groupsLimitOverride,
+            provider = model.provider
         )
     }
 }

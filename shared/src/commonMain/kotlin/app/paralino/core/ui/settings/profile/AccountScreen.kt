@@ -3,7 +3,10 @@ package app.paralino.core.ui.settings.profile
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
@@ -40,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
@@ -55,6 +61,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
@@ -91,8 +98,8 @@ fun AccountScreenCore(
                     image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
                     personalCode = state.data.userState.personalCode,
                     isGuestUser = state.data.userState.isGuestUser,
-                    canClickOnHeader = false,
                     errorItem = state.data.userState.errorItem,
+                    userPlans = state.data.userPlans,
                     onGuestAccountClick = {
                         if (state.data.canUseEmail) {
                             openConvertAccount()
@@ -109,7 +116,7 @@ fun AccountScreenCore(
                     },
                     onCopy = { viewModel.onEvent(AccountScreenUiEvent.Copy(it)) },
                     onShareCode = { onShare(it) },
-                    onClick = {}
+                    onClick = null
                 )
 
                 SettingsActionItem(
@@ -234,6 +241,7 @@ private fun AccountScreenDialogs(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AccountInfoHeader(
     modifier: Modifier = Modifier,
@@ -241,19 +249,19 @@ fun AccountInfoHeader(
     image: ImageModel,
     personalCode: String?,
     isGuestUser: Boolean,
-    canClickOnHeader: Boolean,
     errorItem: ConditionErrorType?,
+    userPlans: List<PlanType>,
     onErrorItemClick: (ConditionErrorType) -> Unit,
     onGuestAccountClick: () -> Unit,
     onCopy: (String) -> Unit,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     onShareCode: (String) -> Unit,
 ) {
     Column {
         Surface(
             modifier = modifier
                 .fillMaxWidth()
-                .clickable(enabled = canClickOnHeader) { onClick() }
+                .clickable(enabled = onClick != null) { onClick?.invoke() }
                 .padding(bottom = 40.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colors.primary,
@@ -264,33 +272,35 @@ fun AccountInfoHeader(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    if (isGuestUser) {
-                        val backgroundColor = MaterialTheme.colors.onError
-                        val contentColor = MaterialTheme.colors.onPrimary
-                        Row(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(percent = 50))
-                                .clickable { onGuestAccountClick() }
-                                .background(
-                                    backgroundColor,
-                                    RoundedCornerShape(percent = 50)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                painter = CoreAppIcons.Incognito.asPainterResource(),
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = contentColor
-                            )
-                            Spacer(modifier = Modifier.size(4.dp))
-                            Text(
-                                text = stringResource(MR.strings.settings_account_guest_badge).annotatedBold(),
-                                style = MaterialTheme.typography.caption.copy(color = contentColor)
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(
+                                bottom = if (isGuestUser || userPlans.isNotEmpty()) 10.dp else 0.dp
+                            ),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        if (isGuestUser) {
+                            AccountHeaderChip(
+                                backgroundColor = MaterialTheme.colors.onError,
+                                contentColor = MaterialTheme.colors.onPrimary,
+                                icon = CoreAppIcons.Incognito.asPainterResource(),
+                                text = stringResource(MR.strings.settings_account_guest_badge),
+                                onClick = onGuestAccountClick
                             )
                         }
-                        Spacer(modifier = Modifier.size(10.dp))
+                        userPlans.forEach { plan ->
+                            if (plan != PlanType.SILVER) {
+                                Spacer(modifier = Modifier.size(8.dp))
+                                AccountHeaderChip(
+                                    backgroundColor = AppColors.accentDark,
+                                    contentColor = MaterialTheme.colors.onPrimary,
+                                    icon = null,
+                                    text = plan.name,
+                                    onClick = null
+                                )
+                            }
+                        }
                     }
 
                     Row(
@@ -353,7 +363,7 @@ fun AccountInfoHeader(
                     }
                 }
 
-                if (canClickOnHeader) {
+                if (onClick != null) {
                     Icon(
                         modifier = Modifier.width(20.dp),
                         painter = CoreAppIcons.ChevronRight.asPainterResource(),
@@ -373,5 +383,40 @@ fun AccountInfoHeader(
             }
             Spacer(modifier = Modifier.size(10.dp))
         }
+    }
+}
+
+@Composable
+fun AccountHeaderChip(
+    backgroundColor: Color,
+    contentColor: Color,
+    icon: Painter?,
+    text: String,
+    onClick: (() -> Unit)?
+) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(percent = 50))
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
+            .background(
+                backgroundColor,
+                RoundedCornerShape(percent = 50)
+            )
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (icon != null) {
+            Icon(
+                painter = icon,
+                contentDescription = null,
+                modifier = Modifier.size(14.dp),
+                tint = contentColor
+            )
+            Spacer(modifier = Modifier.size(4.dp))
+        }
+        Text(
+            text = text.annotatedBold(),
+            style = MaterialTheme.typography.caption.copy(color = contentColor)
+        )
     }
 }

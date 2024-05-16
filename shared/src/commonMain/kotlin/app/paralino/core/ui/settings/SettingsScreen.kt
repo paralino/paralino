@@ -80,7 +80,7 @@ fun SettingsScreenCore(
                 image = readyState.userState.image ?: ImageModel.emoji(Emojis.robot),
                 personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
-                canClickOnHeader = true,
+                userPlans = readyState.userPlans,
                 errorItem = null,
                 onGuestAccountClick = {
                     if (readyState.canUseEmail) {

@@ -28,11 +28,11 @@ class AppConfigRepository(
     private val config: AppConfig,
 ) : BaseRepository() {
 
-    val configState: StateFlow<ConfigData?> = getConfig()
+    val configState: StateFlow<ConfigData> = getConfig()
         .stateIn(
             scope = scopeProvider.defaultIOScope,
             started = SharingStarted.Eagerly,
-            initialValue = null
+            initialValue = ConfigData.init(emptyList())
         )
 
     fun getUpdateType(): Flow<AppUpdateType> {
@@ -62,7 +62,7 @@ class AppConfigRepository(
     }
 
     suspend fun cancelNewAppVersion() {
-        val appConfig = getConfigOnce() ?: return
+        val appConfig = getConfigOnce()
         config.dismissedAppVersion = when (deviceApiProvider.deviceType) {
             DeviceType.Android -> appConfig.newVersionAndroid
             DeviceType.iOS -> appConfig.newVersionIOS
@@ -76,7 +76,7 @@ class AppConfigRepository(
             .distinctUntilChanged()
     }
 
-    suspend fun getConfigOnce(): ConfigData? {
+    private suspend fun getConfigOnce(): ConfigData {
         return database.configQueries
             .getAll()
             .executeAsList()
