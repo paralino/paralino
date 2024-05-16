@@ -67,7 +67,7 @@ class LocationRequestNotificationHandler(
             // TODO maybe update it only if not updated previously?
             if (performanceType == LocationPerformanceType.VERY_HIGH) {
                 try {
-                    deviceStatusProcessor.pushDeviceStatus(groupId = groupId, tryIncludeLastLocation = false)
+                    deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
                 } catch (e: Exception) {
                     logg.w("Error saving location status", e)
                 }
@@ -75,7 +75,6 @@ class LocationRequestNotificationHandler(
             return
         }
 
-        logg.tag("location_performance").v("Boosting location from location request handler - $performanceType")
         locationPerformanceManager.locationBoostRequested(
             performanceType = performanceType,
             groupId = groupId,
@@ -83,7 +82,7 @@ class LocationRequestNotificationHandler(
         )
 
         try {
-            deviceStatusProcessor.pushDeviceStatus(groupId = groupId, tryIncludeLastLocation = true)
+            deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
         } catch (e: Exception) {
             logg.w("Error saving location status", e)
         }

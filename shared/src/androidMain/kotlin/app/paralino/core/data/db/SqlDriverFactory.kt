@@ -4,15 +4,14 @@ import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import app.paralino.core.data.db.AppDatabase
 
 actual class SqlDriverFactory(private val context: Context) {
-    actual fun createDriver(): SqlDriver {
+    actual fun createMainDatabaseDriver(): SqlDriver {
         return AndroidSqliteDriver(
-            schema = AppDatabase.Schema,
+            schema = MainAppDatabase.Schema,
             context = context,
             name = "paralino_main.db",
-            callback = object : AndroidSqliteDriver.Callback(AppDatabase.Schema) {
+            callback = object : AndroidSqliteDriver.Callback(MainAppDatabase.Schema) {
                 override fun onConfigure(db: SupportSQLiteDatabase) {
                     super.onConfigure(db)
                     setPragma(db, "JOURNAL_MODE = WAL")
@@ -24,6 +23,28 @@ actual class SqlDriverFactory(private val context: Context) {
                     cursor.moveToFirst()
                     cursor.close()
                 }
-            })
+            }
+        )
+    }
+
+    actual fun createLogsDatabaseDriver(): SqlDriver {
+        return AndroidSqliteDriver(
+            schema = LogsDatabase.Schema,
+            context = context,
+            name = "paralino_logs.db",
+            callback = object : AndroidSqliteDriver.Callback(LogsDatabase.Schema) {
+                override fun onConfigure(db: SupportSQLiteDatabase) {
+                    super.onConfigure(db)
+                    setPragma(db, "JOURNAL_MODE = WAL")
+                    setPragma(db, "SYNCHRONOUS = 2")
+                }
+
+                private fun setPragma(db: SupportSQLiteDatabase, pragma: String) {
+                    val cursor = db.query("PRAGMA $pragma")
+                    cursor.moveToFirst()
+                    cursor.close()
+                }
+            }
+        )
     }
 }

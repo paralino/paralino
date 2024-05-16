@@ -28,7 +28,12 @@ struct MapComponent: View {
                         ForEach(mapState.markers) { marker in
                             
                             MapCircle(center: marker.coordinate, radius: CLLocationDistance(Int32(marker.data.accuracy)))
-                                .foregroundStyle(marker.data.pinType == MapPinType.member ? Color.themePrimary.opacity(0.6) : Color.blue.opacity(0.4))
+                                .foregroundStyle(
+                                    marker.data.pinType == MapPinType.member 
+                                    ? Color.themePrimary.opacity(0.6)
+                                    : Color.blue.opacity(0.2)
+                                )
+                                .stroke(lineWidth: marker.data.pinType == MapPinType.member ? CGFloat(0.6) : CGFloat(0.2))
                                 .mapOverlayLevel(level: marker.data.pinType == MapPinType.member ? .aboveLabels : .aboveRoads)
                             
                             Annotation(

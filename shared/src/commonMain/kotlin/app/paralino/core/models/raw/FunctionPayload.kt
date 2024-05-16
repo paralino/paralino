@@ -160,7 +160,8 @@ data class UpdatePlacePayload constructor(
 data class PlaceEventPayload constructor(
     val placeId: String,
     val locationId: String?,
-    val enter: Boolean
+    val enter: Boolean,
+    val timeDifferenceMillis: Long
 )
 
 @Serializable

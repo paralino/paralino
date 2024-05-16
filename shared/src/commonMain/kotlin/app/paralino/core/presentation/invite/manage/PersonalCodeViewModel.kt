@@ -4,71 +4,103 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
+import app.paralino.core.models.user.UserPersonalCode
+import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class PersonalCodeViewModel(
     private val personalCodeRepo: PersonalCodesRepository,
     private val deviceApiProvider: IDeviceApiProvider,
-    private val appConfigRepo: AppConfigRepository
+    private val userRepo: UserRepository
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow<Payload<PersonalCodeScreenState>>(Payload.Loading)
-    val uiState: Flow<Payload<PersonalCodeScreenState>> = _uiState
+    private val _uiState = MutableStateFlow<Payload<PersonalCodeScreenState>>(
+        mapPersonalCodes(
+            personalCodes = personalCodeRepo.personalCodeLocalState.value,
+            userPlans = userRepo.userPlans.value,
+            activeAlertDialog = null
+        )
+    )
+    val uiState: StateFlow<Payload<PersonalCodeScreenState>> = _uiState
 
     private val _eventChannel = Channel<PersonalCodeScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        combine(
-            personalCodeRepo.getAndRefreshMyPersonalCodes(),
-            appConfigRepo.configState
-        ) { personalCodes, config ->
-            _uiState.update {
-                val codeData = personalCodes
-                    .map {
-                        PersonalCodeScreenCodeData(
-                            id = it.id,
-                            code = it.formattedCode,
-                            userImage = it.codeData.data?.ownerImage
-                                ?: ImageModel.emoji(Emojis.robot),
-                            userName = it.codeData.data?.ownerName ?: "---",
-                            canDisable = it.isStillValid(),
-                            isValid = it.isStillValid(),
-                            isActionLoading = false
-                        )
-                    }
+        coroutineScope.launch {
+            try {
+                personalCodeRepo.refreshPersonalCodesAndRestockKeys()
+            } catch (e: Exception) {
+            }
+        }
 
-                val maxAlternativeIDs = config?.maxAlternativeIDs ?: 0
-                val inactiveCodes = codeData.filter { !it.isValid }
-                Payload.Success(
-                    PersonalCodeScreenState(
-                        activeCode = codeData.firstOrNull { it.isValid },
-                        inactiveCodes = inactiveCodes,
-                        canCreateAlternativeId = maxAlternativeIDs > 0 && codeData.size > 0 && maxAlternativeIDs > inactiveCodes.size,
-                        maxCodes = maxAlternativeIDs,
-                        createLoading = false,
-                        alertDialog = _uiState.value.data?.alertDialog
-                    )
+        combine(
+            personalCodeRepo.personalCodeLocalState,
+            userRepo.userPlans
+        ) { personalCodes, plans ->
+            _uiState.update {
+                mapPersonalCodes(
+                    personalCodes = personalCodes,
+                    userPlans = plans,
+                    activeAlertDialog = it.data?.alertDialog
                 )
             }
         }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
+    }
+
+    private fun mapPersonalCodes(
+        personalCodes: List<UserPersonalCode>,
+        userPlans: UserPlans,
+        activeAlertDialog: MainAlertDialog?
+    ): Payload<PersonalCodeScreenState> {
+        val codeData = personalCodes
+            .map {
+                PersonalCodeScreenCodeData(
+                    id = it.id,
+                    code = it.formattedCode,
+                    userImage = it.codeData.data?.ownerImage
+                        ?: ImageModel.emoji(Emojis.robot),
+                    userName = it.codeData.data?.ownerName ?: "---",
+                    canDisable = it.isStillValid(),
+                    isValid = it.isStillValid(),
+                    isActionLoading = false
+                )
+            }
+
+        val maxIDs = userPlans.highestPlanConfig.paralinoIdsLimit
+        val inactiveCodes = codeData.filter { !it.isValid }
+        return Payload.Success(
+            PersonalCodeScreenState(
+                activeCode = codeData.firstOrNull { it.isValid },
+                inactiveCodes = inactiveCodes,
+                canCreateAlternativeId = maxIDs > 0 && codeData.size < maxIDs,
+                maxCodes = maxIDs,
+                createLoading = false,
+                alertDialog = activeAlertDialog
+            )
+        )
     }
 
     private fun createPersonalCode() {
@@ -176,14 +208,18 @@ class PersonalCodeViewModel(
             PersonalCodeScreenUiEvent.CreateCode -> createPersonalCode()
             PersonalCodeScreenUiEvent.DisableCode -> _uiState.update {
                 it.mapSuccess {
-                    it.copy(alertDialog = it.activeCode?.code?.let { MainAlertDialog.PersonalCodeDelete(it) })
+                    it.copy(alertDialog = it.activeCode?.code?.let {
+                        MainAlertDialog.PersonalCodeDelete(it)
+                    })
                 }
             }
+
             PersonalCodeScreenUiEvent.HideDialog -> {
                 _uiState.update {
                     it.mapSuccess { it.copy(alertDialog = null) }
                 }
             }
+
             PersonalCodeScreenUiEvent.DisableCodeConfirm -> deletePersonalCode()
         }
     }

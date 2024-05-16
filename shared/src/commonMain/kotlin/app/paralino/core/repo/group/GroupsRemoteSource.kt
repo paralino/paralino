@@ -60,12 +60,7 @@ class GroupsRemoteSource constructor(
             if (response.isSuccess) {
                 response.responseDataMap!!.parseGroup()
             } else {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to update group",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }
@@ -87,12 +82,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to delete group member",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }
@@ -191,12 +181,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to delete group",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }
@@ -228,12 +213,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to block group",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }
@@ -266,12 +246,7 @@ class GroupsRemoteSource constructor(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to block user",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }

@@ -83,6 +83,54 @@ class CryptoCore(
         )
     }
 
+    suspend fun verifyUserKeysChange(
+        oldKey: UserCryptoKeyRaw,
+        oldPassword: String,
+        newKey: UserCryptoKeyRaw,
+        newPassword: String,
+        userPersonalKey: String
+    ) {
+        check(
+            serviceProvider.decryptDataWithPassword(
+                data = oldKey.encryptedSymmetricKey,
+                password = oldPassword,
+                context = oldKey.ownerUserId
+            ).contentEquals(userPersonalKey)
+        )
+
+        check(
+            serviceProvider.decryptDataWithPassword(
+                data = newKey.encryptedSymmetricKey,
+                password = newPassword,
+                context = newKey.ownerUserId
+            ).contentEquals(userPersonalKey)
+        )
+
+        check(
+            decryptDataWithKey(
+                data = oldKey.encryptedPrivateKey,
+                key = userPersonalKey
+            ).contentEquals(
+                decryptDataWithKey(
+                    data = newKey.encryptedPrivateKey,
+                    key = userPersonalKey
+                )
+            )
+        )
+
+        check(
+            decryptDataWithKey(
+                data = oldKey.encryptedPublicKey,
+                key = userPersonalKey
+            ).contentEquals(
+                decryptDataWithKey(
+                    data = newKey.encryptedPublicKey,
+                    key = userPersonalKey
+                )
+            )
+        )
+    }
+
     suspend fun reEncryptSymmetricKey(
         oldBackupPassword: String,
         newBackupPassword: String,

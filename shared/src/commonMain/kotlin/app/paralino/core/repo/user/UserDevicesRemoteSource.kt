@@ -10,7 +10,6 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
 
 class UserDevicesRemoteSource constructor(
@@ -50,12 +49,7 @@ class UserDevicesRemoteSource constructor(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to update device data",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }

@@ -115,7 +115,7 @@
     <string name="setting_description_locationBoost_enabled">Maximum location performance will reset at %s. **Uses more battery!!!**</string>
     <string name="setting_description_locationBoost_disabled">Use maximum performance for location for up to 2h. **Will use more battery!!!**</string>
     <string name="setting_title_placeActivityThrottle">Throttle place activity</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Your device will create place activity notification only if you spend more than 10 seconds in or out of certain place.</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Your device will create place activity notification if you spend more time in or out of certain place.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Your device will react to place changes faster and might create multiple place activity notifications in short time (for example: if you shortly drive by a certain place).</string>
 
     <string name="login_placeholder_user_name">Name*</string>
@@ -201,6 +201,7 @@
     <string name="invite_delete_alert_title">Are you sure you want to disable this code?\n\nYou will not be able to join any new groups but you can always come back and enable Paralino.ID again.</string>
     <string name="invite_manage_empty_description">You don\'t have an active **Paralino.ID**.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
     <string name="invite_manage_description">Share this code to join a group and start securely sharing your location.</string>
+    <string name="invite_create_alternative_description">Alternative Paralino.IDs allow you to diversify your identity and share different IDs with different people. You can have **%s** Paralino.IDs with your plan.</string>
     <string name="invite_connect_code_placeholder">User Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">You are about to add **%1$s** to **%2$s** group.\nAfter that you can start securely sharing your location.</string>
     <string name="invite_connect_button_addToGroup">ADD TO GROUP</string>

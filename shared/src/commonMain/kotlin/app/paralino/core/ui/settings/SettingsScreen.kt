@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.BackendResourceIDs
-import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
@@ -61,11 +60,12 @@ fun SettingsScreenCore(
     openProfileRawScreen: () -> Unit,
     openBlockList: () -> Unit,
     openLicences: () -> Unit,
+    openAppStatus: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
     MessageDispatcherEffect(viewModel, appState)
-    val accountState by viewModel.accountState.collectAsState(Payload.Loading)
+    val accountState by viewModel.accountState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -80,7 +80,7 @@ fun SettingsScreenCore(
                 image = readyState.userState.image ?: ImageModel.emoji(Emojis.robot),
                 personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
-                canClickOnHeader = true,
+                userPlans = readyState.userPlans,
                 errorItem = null,
                 onGuestAccountClick = {
                     if (readyState.canUseEmail) {
@@ -144,6 +144,7 @@ fun SettingsScreenCore(
         SettingSectionInfo(
             appVersion = accountState.data?.versionName ?: "",
             onLicencesClick = { openLicences() },
+            onAppStatusClick = { openAppStatus() },
             onShareApp = onShareApp
         )
     }
@@ -153,11 +154,19 @@ fun SettingsScreenCore(
 fun SettingSectionInfo(
     appVersion: String,
     onLicencesClick: () -> Unit,
+    onAppStatusClick: () -> Unit,
     onShareApp: (String) -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
     Column {
         SettingsSectionHeader(name = stringResource(MR.strings.settings_section_general_title))
+
+        SettingsActionItem(
+            name = "App status",
+            icon = CoreAppIcons.Settings.asPainterResource()
+        ) {
+            onAppStatusClick()
+        }
 
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_share),

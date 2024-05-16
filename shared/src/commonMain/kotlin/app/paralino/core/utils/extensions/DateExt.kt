@@ -2,6 +2,7 @@ package app.paralino.core.utils.extensions
 
 import kotlinx.datetime.*
 import kotlinx.datetime.format.DateTimeComponents
+import kotlin.time.Duration
 
 fun nowUTC(): Instant = Clock.System.now()
 
@@ -32,4 +33,16 @@ fun String.isoWithOffsetToInstant(): Instant? {
     } catch (e: Exception) {
         null
     }
+}
+
+fun Instant.isInPast(): Boolean {
+    return this < nowUTC()
+}
+
+fun Instant.isInFuture(): Boolean {
+    return this > nowUTC()
+}
+
+fun Instant.isOlderThan(duration: Duration): Boolean {
+    return this.plus(duration) < nowUTC()
 }

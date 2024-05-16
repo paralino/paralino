@@ -30,6 +30,7 @@ struct MapRootScreen: View {
                             case .rawData(let type):
                                 RawDataScreen(appState: RawDataScreen.createState(type: type))
                             case .editProfile: EditProfileScreen(path: $mapState.path)
+                            case .appStatusDebug: AppStatusDebugScreen(path: $mapState.path)
                             }
                         case let .home(homeGraph):
                             switch homeGraph {
@@ -49,7 +50,7 @@ struct MapRootScreen: View {
                             }
                         }
                     }.onAppear {
-                        Logr.i(message: "Route: \(route)")
+                        Logr.d(message: "Route: \(route)")
                     }
                 }
         }

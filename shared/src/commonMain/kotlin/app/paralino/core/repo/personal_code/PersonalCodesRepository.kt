@@ -2,9 +2,11 @@ package app.paralino.core.repo.personal_code
 
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.Resource
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.user.UserRepository
@@ -12,13 +14,38 @@ import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.flow.Flow
-import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration.Companion.minutes
 
 class PersonalCodesRepository constructor(
     private val remote: PersonalCodesRemoteSource,
     private val local: PersonalCodeLocalDataSource,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
+    private val scopeProvider: ICoroutineScopeProvider
 ) : BaseRepository() {
+
+    val personalCodeLocalState: StateFlow<List<UserPersonalCode>> = local.getPersonalCodes()
+        .catch {
+            logg.w("Personal codes state error: ${it.message}")
+            emit(emptyList())
+        }
+        .stateIn(
+            scope = scopeProvider.defaultIOScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
+
+    val activePersonalCodeState: StateFlow<UserPersonalCode?> = personalCodeLocalState
+        .map { it.firstOrNull { it.isStillValid() } }
+        .stateIn(
+            scope = scopeProvider.defaultIOScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
 
     suspend fun createAndSavePersonalCode() {
         triggerRemoteOnly {
@@ -54,19 +81,8 @@ class PersonalCodesRepository constructor(
         }
     }
 
-    fun getAndRefreshMyPersonalCodes(): Flow<List<UserPersonalCode>> {
-        return mergeDataWithRemote(
-            local = local.getPersonalCodes(),
-            remote = {
-                refreshPersonalCodes()
-                tryToRestockPreKeys(20.seconds.inWholeMilliseconds)
-            },
-            localUpdate = { }
-        )
-    }
-
-    suspend fun getActivePersonalCodeOnce(): UserPersonalCode? {
-        return local.getActivePersonalCodesOnce()
+    fun getActivePersonalCodeOnce(): UserPersonalCode? {
+        return activePersonalCodeState.value
     }
 
     suspend fun refreshPersonalCodes() {
@@ -74,6 +90,11 @@ class PersonalCodesRepository constructor(
             remote.getMyPersonalCodes()
                 .also { local.replacePersonalCodes(it) }
         }
+    }
+
+    suspend fun refreshPersonalCodesAndRestockKeys() {
+        refreshPersonalCodes()
+        tryToRestockPreKeys(20.minutes.inWholeMilliseconds)
     }
 
     fun getUserInfoFromCode(code: String): Flow<Payload<UserPersonalCodeData>> {
@@ -107,7 +128,7 @@ class PersonalCodesRepository constructor(
     suspend fun updateUserCode(userMeData: UserMeData) {
         triggerRemoteOnly {
             refreshPersonalCodes()
-            val currentCode = local.getActivePersonalCodesOnce()
+            val currentCode = getActivePersonalCodeOnce()
             if (currentCode != null) {
                 remote.updateCodeUserData(
                     personalCode = currentCode.code,
@@ -123,7 +144,7 @@ class PersonalCodesRepository constructor(
 
     suspend fun tryToRestockPreKeys(cacheDelayMillis: Long) {
         try {
-            val code = local.getActivePersonalCodesOnce()?.code?.cleanCode() ?: return
+            val code = getActivePersonalCodeOnce()?.code?.cleanCode() ?: return
             triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(
                     key = "pre_keys_restock",

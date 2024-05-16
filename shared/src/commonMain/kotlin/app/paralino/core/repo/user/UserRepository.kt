@@ -1,13 +1,14 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
+import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
@@ -15,13 +16,25 @@ import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.BlocklistModel
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
+import app.paralino.core.models.user.UserPlan
+import app.paralino.core.models.user.UserPlans
 import app.paralino.core.models.user.UserSession
+import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.UnverifiedUserException
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 
 
 class UserRepository constructor(
@@ -32,6 +45,7 @@ class UserRepository constructor(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val userMapper: UserMapperCore,
     private val cryptoCore: CryptoCore,
+    private val appConfigRepo: AppConfigRepository
 ) : BaseRepository() {
 
     val cachedUserId: String get() = config.userId
@@ -71,16 +85,26 @@ class UserRepository constructor(
             initialValue = Resource.NotInitialized
         )
 
-    val cachedUser: UserMe? get() = localUser.value.data
-
-    fun getAndRefreshUser(): Flow<Resource<UserMe?>> {
-        return mergeDataWithRemote(
-            local = localUser,
-            remote = { getUserFromRemote() },
-            localUpdate = { updateLocalUser(it) },
-            remotePreference = RemotePreference.CACHE("user_call", 10_000)
-        ).catch { emit(Resource.NotInitialized) }
+    val userPlans: StateFlow<UserPlans> = combine(
+        local.getPlans(),
+        appConfigRepo.configState
+    ) { plans, config ->
+        UserPlans(
+            rawPlans = plans,
+            config = config
+        )
     }
+        .catch {
+            logg.w("User plans parsing error: ${it.message}")
+            emit(UserPlans(emptyList(), appConfigRepo.configState.value))
+        }
+        .stateIn(
+            scope = scopeProvider.defaultIOScope,
+            started = SharingStarted.Eagerly,
+            initialValue = UserPlans(emptyList(), appConfigRepo.configState.value)
+        )
+
+    val cachedUser: UserMe? get() = localUser.value.data
 
     suspend fun login(email: String, password: String): UserSession {
         return triggerRemoteOnly { remote.login(email, password) }
@@ -99,7 +123,10 @@ class UserRepository constructor(
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
         updateLocalUser(userMeRaw)
-        config.deviceId = cryptoCore.hashProvider.computeHash("${userMeRaw.id}${config.deviceIdSeed}", HashType.SHA256)
+        config.deviceId = cryptoCore.hashProvider.computeHash(
+            "${userMeRaw.id}${config.deviceIdSeed}",
+            HashType.SHA256
+        )
         config.sessionId = userSession.id
         config.emailConfirmed = true
         sessionMonitor.updateSessionState(sessionValid = true)
@@ -152,11 +179,25 @@ class UserRepository constructor(
 
     suspend fun refreshUserIfAvailable(): UserMeRaw {
         return getUserFromRemote()
+            .also { updateLocalUser(it) }
             .also {
-                sessionMonitor.updateSessionState(sessionValid = true)
-                config.emailConfirmed = true
-                updateLocalUser(it)
+                try {
+                    remote.getPlans().also { local.savePlans(it) }
+                } catch (e: Exception) {
+                    logg.w("Error refreshing user plans: ${e.message}")
+                }
             }
+    }
+
+    suspend fun refreshUserMaybe(): Payload<UserMeRaw?> {
+        try {
+            return triggerRemoteMaybe(
+                remote = { refreshUserIfAvailable() },
+                remotePreference = RemotePreference.CACHE("user_call", 10_000)
+            ).let { Payload.Success(it) }
+        } catch (e: Exception) {
+            return Payload.Error(e)
+        }
     }
 
     suspend fun updateLocalUser(data: UserMeRaw) {

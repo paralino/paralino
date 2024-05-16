@@ -12,7 +12,10 @@ data class GroupDocumentRaw constructor(
     val data: String,
     val serverIntegrity: String,
     val planType: String,
-    val schemeVersion: String
+    val schemeVersion: String,
+    val membersLimitOverride: Long?,
+    val devicesLimitOverride: Long?,
+    val placesLimitOverride: Long?
 ) {
 
     companion object {
@@ -25,6 +28,9 @@ data class GroupDocumentRaw constructor(
                 serverIntegrity = map["serverIntegrity"] as String,
                 planType = map["planType"] as String,
                 schemeVersion = map["schemeVersion"] as String,
+                membersLimitOverride = (map["membersLimitOverride"] as? Number?)?.toLong(),
+                devicesLimitOverride = (map["devicesLimitOverride"] as? Number?)?.toLong(),
+                placesLimitOverride = (map["placesLimitOverride"] as? Number?)?.toLong()
             )
         }
     }

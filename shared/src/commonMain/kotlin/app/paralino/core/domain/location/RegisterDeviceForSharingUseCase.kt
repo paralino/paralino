@@ -18,10 +18,8 @@ import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.encodeToString
 
@@ -130,16 +128,12 @@ class RegisterDeviceForSharingUseCase constructor(
                     )
 
                     logg.tag("sharing_start").d("Integrity updated, refresh group")
-                    val result2 = groupPreRefreshUseCase.refreshGroupWithMembers(groupId, cacheTimeMillis = 0)
+                    val result2 =
+                        groupPreRefreshUseCase.refreshGroupWithMembers(groupId, cacheTimeMillis = 0)
                     logg.tag("sharing_start").d("Group refreshed ($result2)")
                 } else {
                     logg.tag("sharing_start").w("Device not registered")
-                    // TODO throw better exception
-                    throw BaseRemoteException.fromCode(
-                        code = response.statusCode,
-                        message = "Unable to register device to group $groupId",
-                        cause = Exception(response.stderr)
-                    )
+                    throw response.remoteException
                 }
             }
         } finally {

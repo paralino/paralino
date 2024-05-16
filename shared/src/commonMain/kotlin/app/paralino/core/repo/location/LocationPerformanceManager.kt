@@ -2,6 +2,7 @@ package app.paralino.core.repo.location
 
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
+import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
@@ -26,7 +27,7 @@ class LocationPerformanceManager constructor(
 ) {
 
     private val _locationPerformanceType = MutableStateFlow(
-        LocationPerformanceModel(config.trackingBoostEndTime != null)
+        LocationPerformanceModel(isBoostedManually = config.trackingBoostEndTime?.let { it > nowUTC() } == true)
     )
     val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
     private var performanceUpdateJob: Job? = null
@@ -44,37 +45,67 @@ class LocationPerformanceManager constructor(
         groupId: String?,
         from: String?,
     ) {
+        locationBoostRequested(
+            request = LocationPerformanceRequest(
+                type = performanceType,
+                durationMillis = performanceType.defaultDurationMillis
+            ),
+            groupId = groupId,
+            from = from
+        )
+    }
+
+    fun locationBoostRequested(
+        request: LocationPerformanceRequest,
+        groupId: String?,
+        from: String?,
+    ) {
         logg.tag("location_performance")
-            .v("Location boost ($performanceType) requested for $groupId from $from")
-        setPerformance(performanceType, allowDowngrade = false)
-
-        // TODO check if someone is requesting location multiple times and don't reset performance in that case
-        // if locations is not yet resolved and someone requests location multiple times, cancel or increase reset
-        // that way device will get more time to fetch high quality location
-
-        if (performanceType == LocationPerformanceType.MANUAL_BOOST || _locationPerformanceType.value.current == LocationPerformanceType.MANUAL_BOOST) {
-            logg.tag("location_performance")
-                .v("Device in manual boost, ignore performance reset for ($performanceType)")
-            performanceUpdateJob?.cancel()
-            config.trackingBoostEndTime?.let { it - nowUTC() }?.takeIf { it.isPositive() }?.let {
-                schedulePerformanceReset(type = LocationPerformanceType.BALANCED, resetDelayMillis = it.inWholeMilliseconds)
-            }
-        } else if (performanceType == LocationPerformanceType.VERY_HIGH) {
-            schedulePerformanceReset(LocationPerformanceType.HIGH, 60_000)
-        } else if (_locationPerformanceType.value.current < LocationPerformanceType.VERY_HIGH) {
-            if (performanceType < _locationPerformanceType.value.current) {
-                schedulePerformanceReset(LocationPerformanceType.BALANCED, 45_000)
-            } else {
-                schedulePerformanceReset(LocationPerformanceType.BALANCED, 30_000)
-            }
-        } else {
-            logg.tag("location_performance").v("Skip location performance reset ($performanceType)")
-        }
+            .v("Location boost (${request.type}) requested for $groupId from $from")
+        setPerformance(type = request.type, allowDowngrade = false)
+        preparePerformanceReset(request = request)
     }
 
     fun disableManualBoost() {
         setPerformance(type = LocationPerformanceType.HIGH, allowDowngrade = true)
-        schedulePerformanceReset(LocationPerformanceType.BALANCED, 45_000)
+        schedulePerformanceReset(type = LocationPerformanceType.BALANCED, resetDelayMillis = 30_000)
+    }
+
+    private fun preparePerformanceReset(
+        request: LocationPerformanceRequest
+    ) {
+        // TODO check if someone is requesting location multiple times and don't reset performance in that case
+        // if locations is not yet resolved and someone requests location multiple times, cancel or increase reset
+        // that way device will get more time to fetch high quality location
+
+        if (request.type == LocationPerformanceType.MANUAL_BOOST || _locationPerformanceType.value.current == LocationPerformanceType.MANUAL_BOOST) {
+            logg.tag("location_performance")
+                .v("Device in manual boost, ignore performance reset for (${request.type})")
+            performanceUpdateJob?.cancel()
+            val remainingDuration =
+                config.trackingBoostEndTime?.let { it - nowUTC() }?.takeIf { it.isPositive() }
+            if (remainingDuration != null) {
+                schedulePerformanceReset(
+                    type = LocationPerformanceType.BALANCED,
+                    resetDelayMillis = remainingDuration.inWholeMilliseconds
+                )
+            } else {
+                schedulePerformanceReset(
+                    type = LocationPerformanceType.BALANCED,
+                    resetDelayMillis = 10.seconds.inWholeMilliseconds
+                )
+            }
+        } else if (request.type == LocationPerformanceType.VERY_HIGH) {
+            schedulePerformanceReset(type = request.type.stepDown, resetDelayMillis = 60_000)
+        } else if (_locationPerformanceType.value.current < LocationPerformanceType.VERY_HIGH) {
+            schedulePerformanceReset(
+                type = request.type.stepDown,
+                resetDelayMillis = request.durationMillis
+            )
+        } else {
+            logg.tag("location_performance")
+                .v("Skip location performance reset (${request.type}) from ${_locationPerformanceType.value.current}")
+        }
     }
 
     private fun schedulePerformanceReset(
@@ -88,8 +119,15 @@ class LocationPerformanceManager constructor(
             delay(resetDelayMillis)
             val isManualBoostExpired = config.trackingBoostEndTime?.let { it < nowUTC() } ?: true
             if (_locationPerformanceType.value.current < LocationPerformanceType.MANUAL_BOOST) {
-                logg.tag("location_performance").v("Reset location performance to $type")
+                logg.tag("location_performance")
+                    .v("Reset location performance from ${_locationPerformanceType.value.current} to $type")
                 setPerformance(type = type, allowDowngrade = true)
+                if (type.stepDown != type) {
+                    schedulePerformanceReset(
+                        type = type.stepDown,
+                        resetDelayMillis = type.defaultDurationMillis
+                    )
+                }
             } else if (isManualBoostExpired) {
                 disableManualBoost()
             }
@@ -107,9 +145,6 @@ class LocationPerformanceManager constructor(
                 .v("Skip performance update to $type, allowDowngrade ($allowDowngrade)")
             return
         }
-
-        logg.tag("location_performance")
-            .v("Try to adjust performance update from ${_locationPerformanceType.value.current} -> to $type")
 
         val now = nowUTC().epochSeconds
         val last20min = nowUTC().minus(20, DateTimeUnit.MINUTE).epochSeconds
@@ -167,7 +202,7 @@ class LocationPerformanceManager constructor(
 
         logg.tag("location_performance")
             .v(
-                "Performance - requested: $type, new: $newType, old: ${_locationPerformanceType.value} - for: " +
+                "Performance - requested: $type, new: $newType, old: ${_locationPerformanceType.value.current} [${_locationPerformanceType.value}] - for: " +
                         "BAT: ${deviceStatus.batteryLevel}%, " +
                         "VERY_HIGH: $lastVeryHighBoostDiff, " +
                         "HIGH: $lastHighBoostDiff, " +

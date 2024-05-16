@@ -2,10 +2,12 @@ package app.paralino.core.data.db
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
-import app.paralino.core.data.db.AppDatabase
 
 actual class SqlDriverFactory {
-    actual fun createDriver(): SqlDriver {
-        return NativeSqliteDriver(AppDatabase.Schema, "paralino_main.db")
+    actual fun createMainDatabaseDriver(): SqlDriver {
+        return NativeSqliteDriver(MainAppDatabase.Schema, "paralino_main.db")
+    }
+    actual fun createLogsDatabaseDriver(): SqlDriver {
+        return NativeSqliteDriver(LogsDatabase.Schema, "paralino_logs.db")
     }
 }

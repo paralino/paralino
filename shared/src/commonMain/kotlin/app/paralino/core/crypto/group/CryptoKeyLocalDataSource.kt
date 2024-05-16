@@ -2,6 +2,7 @@ package app.paralino.core.crypto.group
 
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.GroupDeviceIntegrityEntity
+import app.paralino.core.data.db.mapToList
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw

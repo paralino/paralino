@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 class ActiveSharingEngine(
@@ -67,8 +68,8 @@ class ActiveSharingEngine(
         activePingJob?.cancel()
         activePingJob = scopeProvider.userSessionIOScope.launch {
             while (isActive) {
-                delay(5.minutes)
-                if (locationCache.lastLocation?.isOlderThan(5.minutes) != false) {
+                delay(2.hours)
+                if (locationCache.lastLocation?.isOlderThan(3.hours) != false) {
                     logg.v("location_service", "Sending location status after inactivity")
                     updateStatus()
                 } else {

@@ -2,6 +2,8 @@ package app.paralino.core.repo.group
 
 import app.paralino.core.config
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.mapToList
+import app.paralino.core.data.db.mapToOneOrNull
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.domain.crypto.VerificationResultError
 import app.paralino.core.models.group.UserGroup
@@ -232,6 +234,9 @@ class UserGroupLocalDataSource constructor(
             groupQueries.deleteGroup(groupId)
             memberQueries.clearForGroup(groupId)
             locationQueries.clearForGroup(groupId)
+            placesQueries.deleteForGroup(groupId)
+            placeSettingsQueries.deleteForGroup(groupId)
+            pendingPlaceEventsQueries.deleteForGroup(groupId)
         }
     }
 
@@ -239,6 +244,14 @@ class UserGroupLocalDataSource constructor(
         database.transaction {
             memberQueries.deleteMember(groupId = groupId, userId = userId)
             locationQueries.clearForUserInGroup(groupId = groupId, userId = userId)
+        }
+    }
+
+    suspend fun deletePlace(placeId: String) {
+        database.transaction {
+            placesQueries.deletePlace(placeId = placeId)
+            placeSettingsQueries.deleteForPlace(placeId = placeId)
+            pendingPlaceEventsQueries.deleteForPlace(placeId = placeId)
         }
     }
 
@@ -256,6 +269,9 @@ class UserGroupLocalDataSource constructor(
             groupQueries.clearAll()
             memberQueries.clearAll()
             locationQueries.clearAll()
+            placesQueries.clearAll()
+            placeSettingsQueries.clearAll()
+            pendingPlaceEventsQueries.clearAll()
         }
     }
 }

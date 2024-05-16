@@ -54,7 +54,7 @@ class GroupPreRefreshUseCase constructor(
         return processing
     }
 
-    suspend fun refreshGroupWithMembers(groupId: String, cacheTimeMillis: Long = 6_000): Boolean {
+    suspend fun refreshGroupWithMembers(groupId: String, cacheTimeMillis: Long = 10_000): Boolean {
 
         try {
             startProcessing(groupId)
@@ -85,9 +85,9 @@ class GroupPreRefreshUseCase constructor(
             local = local.getGroupWithMembers(groupId = groupId)
                 .catch { emit(null) }
                 .filterNotNull(),
-            remote = { refreshGroupWithMembers(groupId = groupId, cacheTimeMillis = 6000) },
+            remote = { refreshGroupWithMembers(groupId = groupId, cacheTimeMillis = 10000) },
             localUpdate = { },
-            remotePreference = RemotePreference.CACHE(key = "get_group_refresh_$groupId", timeMillis = 8000)
+            remotePreference = RemotePreference.CACHE(key = "get_group_refresh_$groupId", timeMillis = 12000)
         )
     }
 }

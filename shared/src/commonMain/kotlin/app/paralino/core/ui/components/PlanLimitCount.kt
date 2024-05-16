@@ -20,7 +20,7 @@ import app.paralino.core.ui.theme.AppColors
 @Composable
 fun PlanLimitCount(
     count: Int,
-    limit: Int,
+    limit: Int?,
     modifier: Modifier = Modifier,
 ) {
     Text(
@@ -35,7 +35,7 @@ fun PlanLimitCount(
             ) {
                 this.append("$count")
             }
-            if(limit >= count) {
+            if(limit != null && limit >= count) {
                 this.withStyle(
                     style = SpanStyle(
                         fontWeight = FontWeight.Medium,

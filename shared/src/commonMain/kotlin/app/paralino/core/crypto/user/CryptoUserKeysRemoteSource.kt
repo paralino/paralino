@@ -8,7 +8,6 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.utils.exceptions.BaseRemoteException
 
 class CryptoUserKeysRemoteSource(
     private val docApi: IDocumentsApi,
@@ -44,12 +43,7 @@ class CryptoUserKeysRemoteSource(
         if (response.isSuccess) {
             return UserCryptoKeyRaw.from(response.responseDataMap!!)
         } else {
-            // TODO throw better exception
-            throw BaseRemoteException.fromCode(
-                code = response.statusCode,
-                message = "Unable to update user key",
-                cause = Exception(response.stderr)
-            )
+            throw response.remoteException
         }
     }
 }

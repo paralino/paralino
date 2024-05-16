@@ -12,6 +12,7 @@ import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.utils.ConditionErrorType
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
     groupId: String?,
+    private val appConfigRepo: AppConfigRepository,
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
@@ -64,10 +66,13 @@ class SharingStartViewModel(
             locationStatusProvider.status,
             connectionStatus.status,
             currentGroup.flatMapMerge {
-                if(it == null)
+                if (it == null) {
                     flowOf(0)
-                else
-                    locationRepo.getLocationCountForMember(userMemberIdUseCase.getCurrentUserMemberIdForGroup(it.id)!!)
+                } else {
+                    locationRepo.getLocationCountForMember(
+                        userMemberIdUseCase.getCurrentUserMemberIdForGroup(it.id)!!
+                    )
+                }
             }
         ) { locationStatus, connection, locationCount ->
             _uiState.update {
@@ -116,7 +121,8 @@ class SharingStartViewModel(
         _uiState.update {
             it.copy(
                 groupState = Payload.Success(groupItem),
-                devicesLimit = group.group.planType.devicesLimit
+                devicesLimit = group.group.devicesLimitOverride?.toInt()
+                    ?: appConfigRepo.configState.value.planConfigForPlanType(group.group.planType).devicesLimit
             )
         }
     }
@@ -135,7 +141,7 @@ class SharingStartViewModel(
             return
         }
 
-        if(_uiState.value.groupState.data?.uiType == GroupItemState.GroupUiType.UNVERIFIED) {
+        if (_uiState.value.groupState.data?.uiType == GroupItemState.GroupUiType.UNVERIFIED) {
             coroutineScope.launch {
                 _eventChannel.send(SharingStartScreenEvent.UnverifiedGroup)
             }
@@ -162,7 +168,11 @@ class SharingStartViewModel(
         coroutineScope.launch {
             _uiState.update { it.copy(loadingAction = true) }
 
-            if(_uiState.value.devicesCount >= _uiState.value.devicesLimit && _uiState.value.devicesLimit > 1 && !registerDevice.isDeviceAlreadyRegistered(groupId = group.id)) {
+            // TODO fix check if user has only one device and is on free plan
+            if (_uiState.value.devicesCount >= _uiState.value.devicesLimit && _uiState.value.devicesLimit > 1 && !registerDevice.isDeviceAlreadyRegistered(
+                    groupId = group.id
+                )
+            ) {
                 coroutineScope.launch {
                     _eventChannel.send(SharingStartScreenEvent.DevicesLimitReached(_uiState.value.devicesLimit))
                 }
@@ -290,10 +300,9 @@ class SharingStartViewModel(
             addAll(
                 locationStatusProvider.currentStatus.getPossibleErrors(forLongTerm)
             )
-            if(!connectionStatus.status.value.isOnline) {
+            if (!connectionStatus.status.value.isOnline) {
                 add(ConditionErrorType.NETWORK)
             }
         }
     }
-
 }

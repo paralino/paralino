@@ -6,10 +6,15 @@ import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.ConfigData
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.mapSuccess
+import app.paralino.core.models.raw.UserPlanRaw
+import app.paralino.core.models.user.UserMe
+import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
@@ -24,13 +29,19 @@ import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -52,8 +63,15 @@ class SettingsViewModel(
     private val config: AppConfig
 ) : CoreViewModel() {
 
-    private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(Payload.Loading)
-    val accountState: Flow<Payload<AccountScreenState>> = _accountState
+    private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(
+        mapUserState(
+            userState = userRepo.localUser.value,
+            appConfig = appConfigRepository.configState.value,
+            personalCode = personalCodeRepo.activePersonalCodeState.value,
+            userPlans = userRepo.userPlans.value.plans.map { it.plan }
+        )
+    )
+    val accountState: StateFlow<Payload<AccountScreenState>> = _accountState
 
     private val _eventChannel = Channel<AccountScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -61,45 +79,74 @@ class SettingsViewModel(
     private var locationBoostTimeJob: Job? = null
 
     init {
-        combine(
-            userRepo.getAndRefreshUser(),
-            appConfigRepository.getConfig(),
-            personalCodeRepo.getAndRefreshMyPersonalCodes()
-        ) { userState, appConfig, personalCodes ->
-            when (userState) {
-                Resource.NotInitialized -> _accountState.value
-                is Resource.Ready -> {
-                    if (userState.data != null) {
-                        Payload.Success(
-                            AccountScreenState(
-                                userState = UserState(
-                                    name = userState.data.name,
-                                    image = userState.data.data?.userImage,
-                                    email = userState.data.email,
-                                    personalCode = personalCodes.firstOrNull { it.isStillValid() }?.formattedCode,
-                                    isGuestUser = userState.data.isGuestUser,
-                                    errorItem = if (userState.data.needsEmailVerification)
-                                        ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
-                                    else null
-                                ),
-                                canUseEmail = appConfig.emailEnabled,
-                                logoutState = null,
-                                deleteAccountState = null,
-                                versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
-                                boostTime = null,
-                                placeActivityThrottleEnabled = config.placeActivityThrottle
-                            )
-                        )
-                    } else {
-                        Payload.Error(UnauthorizedException(type = null, "User is not ready"))
+        coroutineScope.launch {
+            listOf(
+                async {
+                    try {
+                        personalCodeRepo.refreshPersonalCodesAndRestockKeys()
+                    } catch (e: Exception) {
+                    }
+                },
+                async {
+                    try {
+                        userRepo.refreshUserMaybe()
+                    } catch (e: Exception) {
                     }
                 }
-            }
+            ).awaitAll()
+        }
+
+        combine(
+            userRepo.localUser,
+            appConfigRepository.getConfig(),
+            personalCodeRepo.activePersonalCodeState,
+            userRepo.userPlans
+        ) { userState, appConfig, personalCode, userPlans ->
+            mapUserState(userState, appConfig, personalCode, userPlans.plans.map { it.plan})
         }.onEach { value ->
             _accountState.update { value }
             runLocationBoostJob()
         }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
+    }
+
+    private fun mapUserState(
+        userState: Resource<UserMe?>,
+        appConfig: ConfigData?,
+        personalCode: UserPersonalCode?,
+        userPlans: List<UserPlanRaw>
+    ): Payload<AccountScreenState> {
+        return when (userState) {
+            Resource.NotInitialized -> _accountState.value
+            is Resource.Ready -> {
+                if (userState.data != null) {
+                    Payload.Success(
+                        AccountScreenState(
+                            userState = UserState(
+                                name = userState.data.name,
+                                image = userState.data.data?.userImage,
+                                email = userState.data.email,
+                                personalCode = personalCode?.formattedCode,
+                                isGuestUser = userState.data.isGuestUser,
+                                errorItem = if (userState.data.needsEmailVerification)
+                                    ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
+                                else null
+                            ),
+                            canUseEmail = appConfig?.emailEnabled ?: false,
+                            logoutState = null,
+                            deleteAccountState = null,
+                            versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
+                            boostTime = null,
+                            placeActivityThrottleEnabled = config.placeActivityThrottle,
+                            userPlans = userPlans.map { it.planType }
+                        )
+                    )
+                } else {
+                    Payload.Error(UnauthorizedException(type = null, "User is not ready"))
+                }
+            }
+        }
     }
 
     private fun sendEmailVerification() {

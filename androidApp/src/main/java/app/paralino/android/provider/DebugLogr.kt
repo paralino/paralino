@@ -8,10 +8,17 @@ import android.util.Log
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.SystemLogr
 
-internal open class DebugLogr(private val tagPrefix: String = "") : SystemLogr() {
+internal open class DebugLogr(
+    val enabled: Boolean,
+    private val tagPrefix: String = ""
+) : SystemLogr() {
 
     private val MAX_LOG_LENGTH = 4000
     override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
+
+        if (!enabled) {
+            return
+        }
 
         val androidPriority = when(priority) {
             LogPriority.VERBOSE -> Log.VERBOSE

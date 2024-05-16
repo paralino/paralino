@@ -116,7 +116,7 @@
     <string name="setting_description_locationBoost_enabled">Maksimalne performanse lokacije će se resetirati u %s. **Koristi više baterije!!!**</string>
     <string name="setting_description_locationBoost_disabled">Koristi maksimalne performanse za lokaciju do 2 sata. **Koristi više baterije!!!**</string>
     <string name="setting_title_placeActivityThrottle">Filter aktivnosti mjesta</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Tvoj uređaj će kreirati notifikaciju o mjestu ako provedeš najmanje 10 sekundi na ili izvan određenog mjesta.</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Tvoj uređaj će kreirati notifikaciju o mjestu ako se zadržiš na ili izvan određenog mjesta.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Tvoj uređaj će brže reagirati na promjene mjesta te je moguće da će kreirati više notifikacija o mjestu (npr: ako u kratko vrijeme prođeš kraj mjesta).</string>
 
     <string name="login_placeholder_user_name">Ime*</string>
@@ -202,6 +202,7 @@
     <string name="invite_delete_alert_title">Sigurno želiš onemogućiti ovaj kod?\n\nNećeš se moći pridružiti novoj grupi ali uvijek možeš ponovno omogućiti svoj Paralino.ID.</string>
     <string name="invite_manage_empty_description">Nemate aktivan **Paralino.ID**.\nStvorite jedan kako biste se pridružili drugim grupama i sigurno dijelili svoju lokaciju s prijateljima.</string>
     <string name="invite_manage_description">Podijelite ovaj kod kako biste se pridružili grupi i sigurno dijelili svoju lokaciju.</string>
+    <string name="invite_create_alternative_description">Dodatni Paralino.ID ti omogućava da imaš više identiteta te da dijeliš različite kodove sa različitim grupama. Trenutno možeš imat **%s** Paralino.ID sa svojom pretplatom.</string>
     <string name="invite_connect_code_placeholder">Korisnikov Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">Dodajete **%1$s** u grupu **%2$s**.\nNakon toga možete sigurno dijeliti svoju lokaciju.</string>
     <string name="invite_connect_button_addToGroup">DODAJ U GRUPU</string>

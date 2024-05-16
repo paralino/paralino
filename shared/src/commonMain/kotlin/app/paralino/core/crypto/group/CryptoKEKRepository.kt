@@ -71,13 +71,13 @@ class CryptoKEKRepository(
 
     suspend fun refreshAllKeys() {
         triggerRemoteOnly {
-            logg.tag("tag_crypto_key").w("refreshing group keys")
+            logg.tag("tag_crypto_key").d("refreshing group keys")
             val groupKeys = remote.getAllGroupKeys()
-            logg.tag("tag_crypto_key").w("refreshing member keys")
+            logg.tag("tag_crypto_key").d("refreshing member keys")
             val memberKeys = remote.getAllGroupMemberKeys()
-            logg.tag("tag_crypto_key").w("refreshing device keys")
+            logg.tag("tag_crypto_key").d("refreshing device keys")
             val deviceKeys = remote.getAllGroupDeviceKeys()
-            logg.tag("tag_crypto_key").w("refreshing pre keys")
+            logg.tag("tag_crypto_key").d("refreshing pre keys")
             val preKeys = remote.getAllPersonalGroupKeys()
 
             cachedGroupKeys.value = groupKeys
@@ -94,10 +94,10 @@ class CryptoKEKRepository(
 
     suspend fun refreshGroupKeysForGroup(groupId: String) {
         triggerRemoteOnly {
-            logg.tag("tag_crypto_key_group").w("refreshing only group key")
+            logg.tag("tag_crypto_key_group").d("refreshing only group key")
             remote.getGroupKeyForGroup(groupId)
         }.also {
-            logg.tag("tag_crypto_key_group").w("updated only group keys (${it.size})")
+            logg.tag("tag_crypto_key_group").d("updated only group keys (${it.size})")
 
             cachedGroupKeys.value = emptyList()
             local.recreateGroupKeyForGroup(groupId, it)
@@ -106,12 +106,12 @@ class CryptoKEKRepository(
 
     suspend fun refreshMemberKeysForGroup(groupId: String) {
         triggerRemoteOnly {
-            logg.tag("tag_crypto_key_group_member").w("refreshing only group member key")
+            logg.tag("tag_crypto_key_group_member").d("refreshing only group member key")
             val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
-            logg.tag("tag_crypto_key_group_member").w("refreshing group pre keys")
+            logg.tag("tag_crypto_key_group_member").d("refreshing group pre keys")
             val preKeys = remote.getAllPersonalGroupKeysForGroup(groupId)
             logg.tag("tag_crypto_key_group_member")
-                .w("updated member (${memberKeys.size}), pre (${preKeys.size}) keys")
+                .d("updated member (${memberKeys.size}), pre (${preKeys.size}) keys")
 
             cachedMemberKeys.value = emptyList()
             cachedPersonalGroupKeys.value = emptyList()
@@ -139,7 +139,7 @@ class CryptoKEKRepository(
             val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
             logg.tag("tag_crypto_key_group").d("refreshing group device key")
             val deviceKeys = remote.getAllGroupDeviceKeysForGroup(groupId)
-            logg.tag("tag_crypto_key_group").w("refreshing group pre keys")
+            logg.tag("tag_crypto_key_group").d("refreshing group pre keys")
             val preKeys = remote.getAllPersonalGroupKeysForGroup(groupId)
 
             logg.tag("tag_crypto_key_group")

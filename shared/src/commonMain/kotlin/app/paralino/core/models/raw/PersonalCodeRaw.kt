@@ -12,11 +12,6 @@ data class PersonalCodeRaw constructor(
     val encryptedCode: String,
     val encryptedCodeUserData: String?,
 ) {
-
-    fun isStillValid(): Boolean {
-        return !encryptedCodeUserData.isNullOrBlank()
-    }
-
     companion object {
         fun from(map: Map<String, Any>): PersonalCodeRaw {
             return PersonalCodeRaw(

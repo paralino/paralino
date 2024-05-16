@@ -7,6 +7,7 @@ import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
 import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
+import app.paralino.core.models.raw.UserPlanRaw
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.repo.api.IDocumentsApi
@@ -14,7 +15,6 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.blocking
 
 class UserRemoteSource constructor(
@@ -100,6 +100,13 @@ class UserRemoteSource constructor(
         )
     }
 
+    suspend fun getPlans(): List<UserPlanRaw> {
+        return docApi.listAllDocuments(
+            databaseType = BackendDatabaseType.PRODUCT,
+            collectionId = remoteConfig.resourceIds.collectionUserPlansID
+        ).map { UserPlanRaw.from(it) }
+    }
+
     suspend fun deleteAccount() {
         blocking {
             val response = functionsApi.runAndWait(
@@ -107,12 +114,7 @@ class UserRemoteSource constructor(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to delete user",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }
@@ -134,12 +136,7 @@ class UserRemoteSource constructor(
             )
 
             if (!response.isSuccess) {
-                // TODO throw better exception
-                throw BaseRemoteException.fromCode(
-                    code = response.statusCode,
-                    message = "Unable to reset user",
-                    cause = Exception(response.stderr)
-                )
+                throw response.remoteException
             }
         }
     }

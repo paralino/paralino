@@ -18,7 +18,6 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
@@ -41,7 +40,7 @@ class MemberCryptoKeyRotation(
         // if group is not verified (current member is not verified) skip key generation
         if (!remoteGroup.isGroupVerified) {
             logg.tag("tag_crypto_key_group_member_rotation")
-                .v("Group ${remoteGroup.id} not verified")
+                .w("Group ${remoteGroup.id} not verified")
             return false
         }
 
@@ -68,13 +67,13 @@ class MemberCryptoKeyRotation(
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_member_rotation")
-                .w("not rotating member keys for group: ${remoteGroup.id}")
+                .d("not rotating member keys for group: ${remoteGroup.id}")
             stopProcessing(remoteGroup.id)
             return false
         }
 
         logg.tag("tag_crypto_key_group_member_rotation")
-            .w("group member key is deprecated - rotating: ${remoteGroup.id}")
+            .i("group member key is deprecated - rotating: ${remoteGroup.id}")
 
         try {
             rotateMemberKeysForGroup(remoteGroup)
@@ -157,10 +156,10 @@ class MemberCryptoKeyRotation(
         )
 
         if (!response.isSuccess) {
-            throw BaseRemoteException.fromRemote(
-                code = response.statusCode,
-                error = response.errorResponse
-            )
+            throw response.remoteException
+        } else {
+            logg.tag("tag_crypto_key_group_member_rotation")
+                .i("Finished rotating group member key for: ${group.id}")
         }
     }
 }

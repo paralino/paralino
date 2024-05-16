@@ -49,7 +49,16 @@ class ChangePasswordUseCase(
             )
 
             // first upload new key to server as backup, without deleting old keys
-            userKeyRepository.uploadNewUserKey(newKey, removeOldKeys = false)
+            val backedUpKey = userKeyRepository.uploadNewUserKey(newKey, removeOldKeys = false)
+
+            // verify everything is correctly uploaded and matches
+            cryptoCore.verifyUserKeysChange(
+                oldKey = oldKey,
+                oldPassword = derivedOldPassword.backupPassword,
+                newKey = backedUpKey,
+                newPassword = derivedNewPassword.backupPassword,
+                userPersonalKey = userKeyRepository.personalKey()
+            )
 
             // change login password
             userRepo.changePassword(
@@ -67,5 +76,4 @@ class ChangePasswordUseCase(
             emit(Unit)
         }
     }
-
 }

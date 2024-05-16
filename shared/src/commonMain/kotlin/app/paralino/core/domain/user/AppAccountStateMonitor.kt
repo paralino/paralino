@@ -11,6 +11,8 @@ import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -131,6 +133,7 @@ class AppAccountStateMonitor constructor(
                     else -> {}
                 }
             }
+            .flowOn(Dispatchers.IO)
 }
 
 sealed class AppAccountState {

@@ -13,8 +13,6 @@ class LocationSharingManager(
     private val contractsDataSource: SharingContractsLocalDataSource
 ) {
 
-    // TODO check - if not subscribed to, value will be invalid
-    // currently does not work on iOS since subscription is only active in android app class
     val allContractsFlow: StateFlow<Resource<List<LocationSharingContract>>> =
         contractsDataSource.getAllContracts()
             .map { it.mapNotNull { it.asValidContract() }.toResource() }

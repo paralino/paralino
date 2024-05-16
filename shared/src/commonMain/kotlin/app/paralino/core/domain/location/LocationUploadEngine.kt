@@ -16,6 +16,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRemoteSource
+import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
@@ -46,7 +47,8 @@ class LocationUploadEngine constructor(
     private val infoNotificationPresenter: IInfoMessagesNotificationPresenter,
     private val locationCacheRepo: LocationCacheRepository,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val oneTimeLocationProvider: IOneTimeLocationProvider
+    private val oneTimeLocationProvider: IOneTimeLocationProvider,
+    private val placeActivityRepo: PlaceActivityDataSource
 ) : LimitedExecutionRepository() {
 
     private val maxUploadRate: Duration
@@ -55,7 +57,7 @@ class LocationUploadEngine constructor(
                 LocationPerformanceType.BATTERY_SAVER -> 10.seconds
 
                 LocationPerformanceType.BALANCED,
-                LocationPerformanceType.MEDIUM_HIGH -> 5.seconds
+                LocationPerformanceType.MEDIUM_HIGH -> 4.seconds
 
                 LocationPerformanceType.HIGH,
                 LocationPerformanceType.VERY_HIGH,
@@ -117,8 +119,7 @@ class LocationUploadEngine constructor(
                                 lastLocationPush.update { null }
                                 logg.w(
                                     tag = "location_service",
-                                    message = "Error uploading new location: ${e.message}",
-                                    t = e
+                                    message = "Error uploading new location: ${e.message}"
                                 )
                             }
                         }
@@ -147,7 +148,14 @@ class LocationUploadEngine constructor(
     }
 
     suspend fun updateDeviceStatusOnly() {
-        uploadLocation(data = oneTimeLocationProvider.getLastLocation())
+        uploadLocation(
+            data = oneTimeLocationProvider.getLastLocation(
+                requestType = IOneTimeLocationProvider.RequestType.Fetch(
+                    timeoutMillis = 3.seconds.inWholeMilliseconds,
+                    type = LocationPerformanceType.BATTERY_SAVER
+                )
+            )
+        )
     }
 
     private suspend fun uploadLocation(data: LocationDataModel?) {
@@ -205,6 +213,7 @@ class LocationUploadEngine constructor(
                     "Location device can not be established for current device, abort sharing"
                 )
                 locationSharingManager.stopSharing(groupId)
+                placeActivityRepo.clearForGroup(groupId = groupId)
                 null
             }
 

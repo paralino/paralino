@@ -27,6 +27,7 @@ import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.LogsDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
@@ -51,6 +52,7 @@ import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
+import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
@@ -81,6 +83,7 @@ object KoinSetup {
 
     private val coreDependencyModule = module {
         single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
+        single { LogsDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
 
 //        single { CryptoFrameworkProvider() } bind ICryptoServiceProvider::class
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
@@ -135,7 +138,7 @@ object KoinSetup {
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
         viewModel { (args: String?) ->
-            SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
+            SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get()) }
@@ -148,7 +151,7 @@ object KoinSetup {
                 groupMemberAdd = get()
             )
         }
-        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
@@ -157,10 +160,11 @@ object KoinSetup {
         viewModel { EditProfileViewModel(get(), get()) }
         viewModel { RecoverKeysViewModel(get(), get()) }
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
-        viewModel { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
+        viewModel { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
         viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
         viewModel { BlocklistVideModel(get()) }
+        viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
     }
 }

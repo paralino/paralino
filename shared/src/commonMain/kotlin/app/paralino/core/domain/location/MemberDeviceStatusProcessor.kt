@@ -21,7 +21,7 @@ class MemberDeviceStatusProcessor(
     private val oneTimeLocationProvider: IOneTimeLocationProvider
 ) : BaseRepository() {
 
-    suspend fun pushDeviceStatus(groupId: String, tryIncludeLastLocation: Boolean) {
+    suspend fun pushDeviceStatus(groupId: String) {
         triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "device_status",
@@ -30,11 +30,7 @@ class MemberDeviceStatusProcessor(
         ) {
             val payload = payloadProvider.getLocationPayload(
                 groupId = groupId,
-                data = if (tryIncludeLastLocation) {
-                    oneTimeLocationProvider.getLastLocation()
-                } else {
-                    null
-                },
+                data = oneTimeLocationProvider.getLastLocation(IOneTimeLocationProvider.RequestType.CacheOnly),
                 contract = sharingManager.currentSharingContractForGroup(groupId)
             ).payload
 
@@ -61,10 +57,10 @@ class MemberDeviceStatusProcessor(
                     !sharingActive && statusActive
                 }
 
-            logg.w("Revoking device status for ${memberModels.size} groups")
+            logg.d("Revoking device status for ${memberModels.size} groups")
             memberModels.forEach {
                 try {
-                    pushDeviceStatus(groupId = it.groupId, tryIncludeLastLocation = false)
+                    pushDeviceStatus(groupId = it.groupId)
                 } catch (e: Exception) {
                     logg.w("Error while resetting device status", e)
                 }
@@ -88,7 +84,7 @@ class MemberDeviceStatusProcessor(
                     !sharingActive && canClear
                 }
 
-            logg.w("Clearing old locations for ${memberModels.size} groups")
+            logg.d("Clearing old locations for ${memberModels.size} groups")
             memberModels.forEach {
                 try {
                     remote.clearLocation(it.id)

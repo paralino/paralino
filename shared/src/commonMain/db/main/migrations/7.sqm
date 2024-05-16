@@ -1,0 +1,7 @@
+CREATE TABLE pendingPlaceEventsEntity (
+`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+`placeId` TEXT NOT NULL,
+`groupId` TEXT NOT NULL,
+`isEnter` INTEGER AS kotlin.Boolean NOT NULL,
+`notifyTimeMillis` INTEGER NOT NULL
+);

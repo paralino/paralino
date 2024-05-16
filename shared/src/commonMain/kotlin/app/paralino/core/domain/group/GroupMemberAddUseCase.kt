@@ -20,7 +20,6 @@ import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
@@ -163,12 +162,7 @@ class GroupMemberAddUseCase constructor(
         )
 
         if (!response.isSuccess) {
-            // TODO throw better exception
-            throw BaseRemoteException.fromCode(
-                code = response.statusCode,
-                message = "Unable to add user to a group",
-                cause = Exception(response.stderr)
-            )
+            throw response.remoteException
         }
     }
 }

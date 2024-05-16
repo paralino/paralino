@@ -5,7 +5,10 @@ CREATE TABLE IF NOT EXISTS groupEntity (
 `data` TEXT NOT NULL,
 `serverIntegrity` TEXT NOT NULL,
 `planType` TEXT NOT NULL,
-`schemeVersion` TEXT NOT NULL
+`schemeVersion` TEXT NOT NULL,
+`membersLimitOverride` INTEGER DEFAULT NULL,
+`devicesLimitOverride` INTEGER DEFAULT NULL,
+`placesLimitOverride` INTEGER DEFAULT NULL
 );
 
 createGroup:

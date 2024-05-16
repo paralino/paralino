@@ -5,6 +5,7 @@ import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.LogsDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -15,7 +16,6 @@ import app.paralino.core.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.notifications.PushNotificationHandler
-import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
@@ -27,6 +27,7 @@ import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
+import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
@@ -34,6 +35,7 @@ import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
+import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
@@ -108,6 +110,7 @@ object KoinIOS {
                 single { RealtimeApiWrapperIOS(realtimeApi(get(), get()), get()) } bind IRealtimeApi::class
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
                 single { AppDatabaseHelper(SqlDriverFactory(), get()) }
+                single { LogsDatabaseHelper(SqlDriverFactory(), get()) }
                 single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
                 single { valueFormatter } bind IValueFormatter::class
                 single { appUpdateManager } bind IAppUpdateManager::class
@@ -130,7 +133,7 @@ object KoinIOS {
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
-                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get())
+                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get()) }
             factory { PersonalCodeViewModel(get(), get(), get()) }
@@ -144,7 +147,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get())
@@ -162,7 +165,7 @@ object KoinIOS {
                     resetPassword = get()
                 )
             }
-            factory { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get()) }
+            factory { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get(), get()) }
             factory { (groupID: String, placeId: String) ->
                 PlaceDetailViewModel(
                     groupId = groupID,
@@ -187,6 +190,7 @@ object KoinIOS {
                 )
             }
             factory { BlocklistVideModel(get()) }
+            factory { AppStatusDebugViewModel(get(), get(), get(), get()) }
         }
     }
 
@@ -199,6 +203,7 @@ object KoinIOS {
         val pushNotificationsHandler: PushNotificationHandler get() = get()
         val userDataUpdate: UpdateUserDataUseCase get() = get()
         val refreshEverything: RefreshEverythingUseCase get() = get()
+        val pushProvider: IPushProviderManager get() = get()
     }
 
     object ViewModels : KoinComponent {
@@ -238,6 +243,7 @@ object KoinIOS {
             lat: Double? = null,
             lng: Double? = null
         ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, lat, lng) }
+        val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
     }
 
 }

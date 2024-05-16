@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS placeActivityEntity (
+`placeId` TEXT NOT NULL PRIMARY KEY,
+`groupId` TEXT NOT NULL,
+`isEnter` INTEGER AS kotlin.Boolean NOT NULL,
+`stateChangeTimeMillis` INTEGER NOT NULL,
+`stateChangeTrigger` TEXT NOT NULL,
+`isScheduledStateEnter` INTEGER AS kotlin.Boolean,
+`isLastNotifyStateEnter` INTEGER AS kotlin.Boolean,
+`notifyTrigger` TEXT DEFAULT NULL,
+`scheduleTrigger` TEXT DEFAULT NULL,
+`notifyTimeMillis` INTEGER
+);

@@ -10,7 +10,9 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import kotlin.time.Duration.Companion.minutes
 
@@ -23,10 +25,13 @@ class RefreshEverythingUseCase(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupRefreshUseCase: GroupRefreshUseCase,
     private val configRepo: AppConfigRepository,
-    private val deviceStatusProcessor: MemberDeviceStatusProcessor
+    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
+    private val placeActivityUploadEngine: PlaceActivityUploadEngine,
+    private val pushProviderManager: IPushProviderManager
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "full_refresh"
+    private val groupRefreshExecutionKey = "full_refresh_groups_refresh"
 
     fun isProcessing(): Boolean {
         return isProcessing(executionKey)
@@ -58,9 +63,9 @@ class RefreshEverythingUseCase(
                     userRepository.refreshBlocklist()
                     configRepo.refreshConfig()
                     scheduleRefreshAllGroupsWithPlaces(
-                        key = executionKey,
                         time = if (forceGroupRefresh) 0 else 60_000
                     )
+                    pushProviderManager.syncPushNotifications()
                     personalCodesRepo.tryToRestockPreKeys(5.minutes.inWholeMilliseconds)
                     deviceStatusProcessor.revokeActiveStatus()
                     deviceStatusProcessor.deleteOldLocations()
@@ -75,13 +80,10 @@ class RefreshEverythingUseCase(
     }
 
     suspend fun scheduleRefreshAllGroupsWithPlaces(
-        key: String = "groups_refresh",
         time: Long = 15_000
     ) {
-        val refreshKey = "${executionKey}_${key}"
-
         try {
-            startProcessing(refreshKey)
+            startProcessing(groupRefreshExecutionKey)
         } catch (e: Exception) {
             logg.tag("full_refresh").v("Processing, can't refresh data")
             return
@@ -89,13 +91,13 @@ class RefreshEverythingUseCase(
 
         try {
             triggerRemoteMaybe(
-                remotePreference = RemotePreference.CACHE(key = refreshKey, timeMillis = time),
+                remotePreference = RemotePreference.CACHE(key = groupRefreshExecutionKey, timeMillis = time),
                 remote = { refreshAllGroupsWithPlaces() }
             )
         } catch (e: Exception) {
             logg.tag("full_refresh").w("Error refreshing all groups - ${e.message}")
         } finally {
-            stopProcessing(refreshKey)
+            stopProcessing(groupRefreshExecutionKey)
         }
     }
 
@@ -106,7 +108,7 @@ class RefreshEverythingUseCase(
 
     private suspend fun refreshAllGroups() {
         triggerRemoteOnly {
-            logg.tag("full_refresh").w("refreshing all groups")
+            logg.tag("full_refresh").d("refreshing all groups")
             remote.getAllGroups()
                 .also { cryptoKEKRepo.refreshAllKeys() }
                 .let { it.map { groupRefreshUseCase.handleGroupKeysUpdate(it) } }
@@ -115,6 +117,8 @@ class RefreshEverythingUseCase(
                 logg.tag("full_refresh").d("group and keys ready, updating groups")
                 local.recreateGroups(it)
             }
+            .also {
+                placeActivityUploadEngine.syncPendingEvents()
+            }
     }
-
 }

@@ -5,7 +5,12 @@ import app.paralino.core.logg
 import app.paralino.core.utils.exceptions.InternalConnectionException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 
 
 abstract class BaseRepository {
@@ -39,7 +44,7 @@ abstract class BaseRepository {
             // find a better solution or maybe it will be fixed when FlowAPI reaches stable
             .debounce(10)
             .catch {
-                logg.e("BaseRepo.mergeDataWithRemote - $remotePreference", it)
+                logg.e(tag = "BaseRepo.mergeDataWithRemote", message = "BaseRepo request error - $remotePreference", t = it)
                 throw it
             }
     }
@@ -66,7 +71,7 @@ abstract class BaseRepository {
                 emit(it)
             }
         }.catch {
-            logg.e("BaseRepo.getDataOnce", it)
+            logg.e(tag = "BaseRepo.getDataOnce", message = "BaseRepo request error - $remotePreference", t = it)
             throw it
         }
     }
@@ -82,7 +87,7 @@ abstract class BaseRepository {
                 remote = remote
             )!!
         } catch (e: Exception) {
-            logg.e("BaseRepo.triggerRemoteOnly", e)
+            logg.e(tag = "BaseRepo.triggerRemoteOnly", message = "BaseRepo request error", t = e)
             throw e
         }
     }
@@ -139,7 +144,7 @@ abstract class BaseRepository {
                             remote.invoke()
                         }
                         cacheIsDirty -> {
-                            logg.tag("refresh_cache")
+                            logg.tag("BaseRepo.refresh_cache")
                                 .v("Cache is dirty for ${remotePreference.key} - ${now - started} > ${remotePreference.timeMillis}")
                             when {
                                 remotePreference.failOnError && !isOnline -> throwOfflineError()
@@ -154,7 +159,7 @@ abstract class BaseRepository {
                             }
                         }
                         else -> {
-                            logg.tag("refresh_cache")
+                            logg.tag("BaseRepo.refresh_cache")
                                 .v("Cache not dirty for ${remotePreference.key} - ${now - started} > ${remotePreference.timeMillis}")
                             null
                         }

@@ -17,6 +17,7 @@ import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -114,6 +115,10 @@ fun SwipeableBottomSheet(
             Column(
                 Modifier
                     .fillMaxHeight(0.9f)
+                    .shadow(
+                        elevation = 12.dp,
+                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                    )
                     .background(
                         color = MaterialTheme.colors.background,
                         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)

@@ -26,6 +26,7 @@ import app.paralino.core.domain.location.GeofenceRegistrationMonitor
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationPayloadProvider
 import app.paralino.core.domain.location.LocationRequestUseCase
+import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.domain.location.RealtimeEventsMaker
@@ -64,6 +65,7 @@ import app.paralino.core.notifications.LocationRequestNotificationHandler
 import app.paralino.core.notifications.PlaceActivityNotificationHandler
 import app.paralino.core.notifications.PushNotificationHandler
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
@@ -73,11 +75,12 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRemoteSource
-import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.repo.location.SharingContractsLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodeLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.places.PlaceActivityDataSource
+import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.places.PlacesRepository
@@ -114,22 +117,31 @@ object ParalinoCore {
     }
 
     private fun initializeApp(koinApp: KoinApplication) {
+
+        val logr = Logr
+        logg = logr
+
         val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
         val cryptoCore = koinApp.koin.get<CryptoCore>()
         val backendConfig = koinApp.koin.get<BackendConfig>()
+        val inAppLogger = koinApp.koin.get<InAppLogger>()
 
         AppConfig.instance = deviceApiProvider.createConfig()
         connectionStatus = deviceApiProvider.connectionStatusProvider
 
-        val logr = Logr
-        logr.setLogr(deviceApiProvider.createSystemLogr())
-        logg = logr
+        logr.init(
+            logrs = listOf(
+                deviceApiProvider.createSystemLogr(),
+                inAppLogger,
+                deviceApiProvider.createCrashReportingLogr()
+            )
+        )
 
-        if(config.deviceIdSeed.isBlank()) {
+        if (config.deviceIdSeed.isBlank()) {
             config.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
-        if(backendConfig.serverUrl.isBlank() || backendConfig.projectId.isBlank()) {
+        if (backendConfig.serverUrl.isBlank() || backendConfig.projectId.isBlank()) {
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
         }
     }
@@ -172,6 +184,7 @@ val dataSourceModule = module {
     single { PersonalCodesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get(), get()) }
+    single { PlaceActivityDataSource(get()) }
 }
 
 val coreModule = module {
@@ -193,6 +206,7 @@ val coreModule = module {
     factory { UserMemberIdUseCase(get(), get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get(), config) }
+    factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
 
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -205,14 +219,14 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    single { PersonalCodesRepository(get(), get(), get()) }
+    single { PersonalCodesRepository(get(), get(), get(), get()) }
     single { GroupRepository(get()) }
-    single { UserRepository(get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
-    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), config) }
+    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     single { AppConfigRepository(get(), get(), get(), get(), config) }
 
     single { GroupValidityVerification(get(), get(), get(), config) }
@@ -229,7 +243,9 @@ val coreModule = module {
 
     single { PushNotificationHandler(get(), get(), get(), get(), config) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get()) }
-    factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get(), get()) }
-    factory { GroupActivityNotificationsHandler(get(), get(), get(), get()) }
+    factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get(), get(), get()) }
+    factory { GroupActivityNotificationsHandler(get(), get(), get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), config) }
+
+    single { InAppLogger(get(), get(), get()) }
 }
