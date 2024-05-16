@@ -346,7 +346,7 @@
     <string name="raw_data_section_decrypted">Decrypted data on device</string>
 
     <string name="plan_limit_alert_title">BETA version</string>
-    <string name="plan_limit_alert_message">You reached the maximum number of %1$s (**%2$d**) while in BETA.\n\nThank you for your patience while we scale up our infrastructure!</string>
+    <string name="plan_limit_alert_message">You reached the maximum number of %1$s (**%2$d**) while in BETA.\n\nMore plans will be available soon.\n\nThank you for your patience while we scale up our infrastructure!</string>
     <string name="plan_limit_members_alert_info">group members</string>
     <string name="plan_limit_places_alert_info">group places</string>
     <string name="plan_limit_devices_alert_info">devices</string>
