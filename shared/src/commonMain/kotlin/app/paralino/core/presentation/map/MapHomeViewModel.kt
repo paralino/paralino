@@ -14,7 +14,6 @@ import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
@@ -133,9 +132,10 @@ class MapHomeViewModel constructor(
 
     init {
         allGroups.onEach { groupsData ->
-            if (groupsData is Resource.Ready) {
-                val selectedGroup = groupIdData.value
-                if (!groupsData.data.any { it.id == selectedGroup }) {
+            val selectedGroup = groupIdData.value.takeIf { it.isNotBlank() }
+                ?: config.selectedGroupId
+            if (groupsData is Resource.Ready && groupsData.data.isNotEmpty() && !selectedGroup.isNullOrBlank()) {
+                if (groupsData.data.none { it.id == selectedGroup }) {
                     switchGroup(groupsData.data.firstOrNull()?.id ?: "")
                 }
             }
@@ -431,17 +431,12 @@ class MapHomeViewModel constructor(
     }
 
     fun switchGroup(groupId: String) {
-        if (groupId.isBlank()) {
-            val newGroupId =
-                allGroups.value.data?.firstOrNull { it.id == config.selectedGroupId }?.id
-                    ?: allGroups.value.data?.firstOrNull()?.id
-                    ?: ""
-            groupIdData.update { newGroupId }
-            config.selectedGroupId = newGroupId
-        } else {
-            groupIdData.value = groupId
-            config.selectedGroupId = groupId
-        }
+        val newGroupId = allGroups.value.data?.firstOrNull { it.id == groupId }?.id
+            ?: allGroups.value.data?.firstOrNull { it.id == config.selectedGroupId }?.id
+            ?: allGroups.value.data?.firstOrNull()?.id
+            ?: ""
+        config.selectedGroupId = newGroupId
+        groupIdData.update { newGroupId }
     }
 
     fun toggleMarkerVisibility(memberItem: GroupMemberItemState) {
@@ -872,6 +867,7 @@ class MapHomeViewModel constructor(
                             }
                         }
                     }
+
                     else -> {}
                 }
             }
