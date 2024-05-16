@@ -5,11 +5,14 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 
 sealed class MapHomeScreenState {
     abstract val currentUserImage: ImageModel
     abstract val isSatelliteMode: Boolean
+    abstract val alertDialog: MainAlertDialog?
 
     data class Ready constructor(
         val groupId: String,
@@ -30,6 +33,7 @@ sealed class MapHomeScreenState {
         val sharingStatus: LocationSharingContract?,
         val sharingEndTime: String?,
         val verified: Boolean,
+        override val alertDialog: MainAlertDialog?,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
         val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
@@ -54,14 +58,19 @@ sealed class MapHomeScreenState {
 
     data class Empty(
         override val currentUserImage: ImageModel = ImageModel.emoji(Emojis.robot),
-        override val isSatelliteMode: Boolean = false
+        override val isSatelliteMode: Boolean = false,
+        override val alertDialog: MainAlertDialog? = null,
     ) : MapHomeScreenState()
 }
 
 fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeScreenState.Ready?
 
 sealed class MapHomeScreenEvent {
+    data object AddGroup : MapHomeScreenEvent()
+}
 
+sealed interface MapHomeScreenUiEvent {
+    data class DialogAction(val action: AlertDialogAction) : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {
@@ -78,6 +87,7 @@ sealed interface MapHomeScreenFocusType {
         val memberKeyId: String,
         val forceZoom: Boolean
     ) : MapHomeScreenFocusType
+
     data object ALL_PLACES : MapHomeScreenFocusType
     data object ALL_MEMBERS : MapHomeScreenFocusType
 

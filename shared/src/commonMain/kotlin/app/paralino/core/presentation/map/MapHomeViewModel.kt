@@ -14,6 +14,7 @@ import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
@@ -33,6 +34,7 @@ import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -89,7 +91,7 @@ class MapHomeViewModel constructor(
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(MapHomeScreenState.Empty())
-    val uiState: Flow<MapHomeScreenState> = _uiState
+    val uiState: StateFlow<MapHomeScreenState> = _uiState
 
     private val _eventChannel = Channel<MapHomeScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -405,6 +407,7 @@ class MapHomeViewModel constructor(
                                 )
                             },
                             verified = group.isGroupVerified,
+                            alertDialog = _uiState.value.alertDialog,
                             isSatelliteMode = _uiState.value.isSatelliteMode
                         )
                     }
@@ -834,6 +837,43 @@ class MapHomeViewModel constructor(
                     text = MR.strings.group_member_device_not_responding_message.localizedString(),
                     duration = SnackbarDuration.Long
                 )
+            }
+        }
+    }
+
+    fun tryCreateGroup() {
+        val limit = userRepository.userPlans.value.highestPlan?.plan?.groupsLimitOverride?.toInt()
+            ?: userRepository.userPlans.value.highestPlanConfig.groupsLimit
+        coroutineScope.launch {
+            if (getAllGroups().size >= limit) {
+                updateReadyState {
+                    it.copy(
+                        alertDialog = MainAlertDialog.PlanLimit(
+                            MR.strings.plan_limit_groups_alert_info.localizedString(),
+                            limit = limit
+                        )
+                    )
+                }
+            } else {
+                _eventChannel.send(MapHomeScreenEvent.AddGroup)
+            }
+        }
+    }
+
+    fun onEvent(event: MapHomeScreenUiEvent) {
+        when (event) {
+            is MapHomeScreenUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.PlanLimit -> {
+                        _uiState.update {
+                            when (it) {
+                                is MapHomeScreenState.Empty -> it.copy(alertDialog = null)
+                                is MapHomeScreenState.Ready -> it.copy(alertDialog = null)
+                            }
+                        }
+                    }
+                    else -> {}
+                }
             }
         }
     }

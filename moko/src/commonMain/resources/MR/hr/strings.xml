@@ -351,6 +351,7 @@
     <string name="plan_limit_members_alert_info">članova grupe</string>
     <string name="plan_limit_places_alert_info">mjesta grupe</string>
     <string name="plan_limit_devices_alert_info">uređaja</string>
+    <string name="plan_limit_groups_alert_info">groupa</string>
 
     <string name="app_version_alert_title">Nova nadogradnja aplikacije</string>
     <string name="app_version_alert_message">Nova verzija aplikacije Paralino je dostupna, molimo vas da je ažurirate za bolje iskustvo!</string>

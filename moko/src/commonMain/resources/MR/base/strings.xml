@@ -350,6 +350,7 @@
     <string name="plan_limit_members_alert_info">group members</string>
     <string name="plan_limit_places_alert_info">group places</string>
     <string name="plan_limit_devices_alert_info">devices</string>
+    <string name="plan_limit_groups_alert_info">groups</string>
 
     <string name="app_version_alert_title">New app update</string>
     <string name="app_version_alert_message">New version of Paralino is available, please update for a better experience!</string>

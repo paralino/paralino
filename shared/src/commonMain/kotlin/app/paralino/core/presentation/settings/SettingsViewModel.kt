@@ -102,7 +102,7 @@ class SettingsViewModel(
             personalCodeRepo.activePersonalCodeState,
             userRepo.userPlans
         ) { userState, appConfig, personalCode, userPlans ->
-            mapUserState(userState, appConfig, personalCode, userPlans.plans.map { it.plan})
+            mapUserState(userState, appConfig, personalCode, userPlans.plans.map { it.plan })
         }.onEach { value ->
             _accountState.update { value }
             runLocationBoostJob()
