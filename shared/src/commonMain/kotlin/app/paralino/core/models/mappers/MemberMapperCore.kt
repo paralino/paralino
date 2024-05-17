@@ -120,7 +120,7 @@ class MemberMapperCore constructor(
                         }
                     } catch (e: Exception) {
                         if(memberKey.deviceKeyVersion != location.deviceKeyVersion) {
-                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion})")
+                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion}) ${e.message}")
                             CryptoResource.MissingKey
                         } else {
                             logg.tag("tag_crypto_key_group_member")
@@ -156,7 +156,7 @@ class MemberMapperCore constructor(
                         }
                     } catch (e: Exception) {
                         if(memberKey.deviceKeyVersion != location.deviceKeyVersion) {
-                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion})")
+                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion}) ${e.message}")
                             CryptoResource.MissingKey
                         } else {
                             logg.tag("tag_crypto_key_group_member")
