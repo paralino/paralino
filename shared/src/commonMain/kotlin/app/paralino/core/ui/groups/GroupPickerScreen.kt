@@ -2,20 +2,33 @@ package app.paralino.core.ui.groups
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.ui.components.FilledButton
-import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.theme.ButtonStyle
 import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -44,12 +57,25 @@ fun GroupPickerScreen(
                         contentDescription = null
                     )
                 }
-                Text(
-                    text = stringResource(MR.strings.title_dashboard),
+                Row(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .fillMaxWidth(1f), textAlign = TextAlign.Center
-                )
+                        .fillMaxWidth(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(MR.strings.title_dashboard),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    PlanLimitCount(
+                        modifier = Modifier,
+                        count = groups.size,
+                        limit = null
+                    )
+                }
             }
         }
         items(groups.size, key = { groups.get(it).id }) {

@@ -7,14 +7,13 @@ import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ConfigData
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.mapSuccess
-import app.paralino.core.models.raw.UserPlanRaw
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
+import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
@@ -41,7 +40,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -68,7 +66,7 @@ class SettingsViewModel(
             userState = userRepo.localUser.value,
             appConfig = appConfigRepository.configState.value,
             personalCode = personalCodeRepo.activePersonalCodeState.value,
-            userPlans = userRepo.userPlans.value.plans.map { it.plan }
+            userPlans = userRepo.userPlans.value
         )
     )
     val accountState: StateFlow<Payload<AccountScreenState>> = _accountState
@@ -102,7 +100,7 @@ class SettingsViewModel(
             personalCodeRepo.activePersonalCodeState,
             userRepo.userPlans
         ) { userState, appConfig, personalCode, userPlans ->
-            mapUserState(userState, appConfig, personalCode, userPlans.plans.map { it.plan})
+            mapUserState(userState, appConfig, personalCode, userPlans)
         }.onEach { value ->
             _accountState.update { value }
             runLocationBoostJob()
@@ -115,7 +113,7 @@ class SettingsViewModel(
         userState: Resource<UserMe?>,
         appConfig: ConfigData?,
         personalCode: UserPersonalCode?,
-        userPlans: List<UserPlanRaw>
+        userPlans: UserPlans
     ): Payload<AccountScreenState> {
         return when (userState) {
             Resource.NotInitialized -> _accountState.value
@@ -139,7 +137,7 @@ class SettingsViewModel(
                             versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
                             boostTime = null,
                             placeActivityThrottleEnabled = config.placeActivityThrottle,
-                            userPlans = userPlans.map { it.planType }
+                            userPlans = userPlans.plans.map { it.config }
                         )
                     )
                 } else {

@@ -3,67 +3,27 @@ package app.paralino.core.models.base
 import kotlinx.serialization.Serializable
 
 
-enum class PlanType(
-    val key: String,
-) {
-    FREE(key = "free"),
-    SILVER(key = "silver"),
-    PRO(key = "pro"),
-    MAX(key = "max");
+sealed class PlanType {
+    abstract val key: String
+    val name: String get() = key
 
-    val defaultConfig: PlanConfig
-        get() {
-            return when (this) {
-                FREE -> PlanConfig(
-                    planType = FREE,
-                    groupsLimit = 1,
-                    membersLimit = 5,
-                    devicesLimit = 1,
-                    placesLimit = 2,
-                    historyDaysLimit = 2,
-                    paralinoIdsLimit = 1,
-                    personalDevicesLimit = 2
-                )
-
-                SILVER -> PlanConfig(
-                    planType = SILVER,
-                    groupsLimit = 2,
-                    membersLimit = 10,
-                    devicesLimit = 2,
-                    placesLimit = 3,
-                    historyDaysLimit = 2,
-                    paralinoIdsLimit = 2,
-                    personalDevicesLimit = 2
-                )
-
-                PRO -> PlanConfig(
-                    planType = PRO,
-                    groupsLimit = 10,
-                    membersLimit = 20,
-                    devicesLimit = 3,
-                    placesLimit = 100,
-                    historyDaysLimit = 30,
-                    paralinoIdsLimit = 5,
-                    personalDevicesLimit = 10
-                )
-
-                MAX -> PlanConfig(
-                    planType = MAX,
-                    groupsLimit = 100,
-                    membersLimit = 50,
-                    devicesLimit = 10,
-                    placesLimit = 1000,
-                    historyDaysLimit = -1,
-                    paralinoIdsLimit = 10,
-                    personalDevicesLimit = 100
-                )
-            }
-        }
+    data object FREE : PlanType() {
+        override val key: String = "free"
+    }
+    data object SILVER : PlanType() { override val key: String = "silver" }
+    data object PRO : PlanType() { override val key: String = "pro" }
+    data object MAX : PlanType() { override val key: String = "max" }
+    data class UNKNOWN(override val key: String) : PlanType()
 
     companion object {
-        val default get() = SILVER
-        fun fromKey(key: String): PlanType? {
-            return entries.firstOrNull { it.key == key }
+        fun fromKey(key: String): PlanType {
+            return when (key) {
+                FREE.key -> FREE
+                SILVER.key -> SILVER
+                PRO.key -> PRO
+                MAX.key -> MAX
+                else -> UNKNOWN(key)
+            }
         }
     }
 }
@@ -82,7 +42,8 @@ enum class PlanBillingPeriod(val key: String) {
 
 @Serializable
 data class PlanConfig(
-    val planType: PlanType,
+    val planType: String,
+    val planName: String,
     val groupsLimit: Int,
     val membersLimit: Int,
     val devicesLimit: Int,
@@ -91,30 +52,17 @@ data class PlanConfig(
     val paralinoIdsLimit: Int,
     val personalDevicesLimit: Int
 ) {
-    // null or -1 for override are equal to no override
-    // allow override default limits within maximum range (respect maximum limit)
-
-    fun canCreateGroup(count: Long, limitOverride: Long?): Boolean {
-        return count < (limitOverride?.takeIf { it in 1..1000 } ?: groupsLimit.toLong())
-    }
-
-    fun canCreatePlace(count: Long, limitOverride: Long?): Boolean {
-        return count < (limitOverride?.takeIf { it in 1..1000 } ?: placesLimit.toLong())
-    }
-
-    fun canCreateMember(count: Long, limitOverride: Long?): Boolean {
-        return count < (limitOverride?.takeIf { it in 1..100 } ?: membersLimit.toLong())
-    }
-
-    fun canCreateDevice(count: Long, limitOverride: Long?): Boolean {
-        return count < (limitOverride?.takeIf { it in 1..100 } ?: devicesLimit.toLong())
-    }
-
-    fun canCreatePersonalDevice(count: Long, limitOverride: Long?): Boolean {
-        return count < (limitOverride?.takeIf { it in 1..100 } ?: personalDevicesLimit.toLong())
-    }
-
-    fun canCreateParalinoId(count: Long): Boolean {
-        return count < paralinoIdsLimit
+    companion object {
+        val default = PlanConfig(
+            planType = PlanType.FREE.key,
+            planName = PlanType.FREE.name,
+            groupsLimit = 1,
+            membersLimit = 5,
+            devicesLimit = 1,
+            placesLimit = 2,
+            historyDaysLimit = 2,
+            paralinoIdsLimit = 1,
+            personalDevicesLimit = 2
+        )
     }
 }

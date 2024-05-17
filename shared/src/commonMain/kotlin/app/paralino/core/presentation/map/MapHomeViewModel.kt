@@ -33,6 +33,7 @@ import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -89,7 +90,7 @@ class MapHomeViewModel constructor(
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(MapHomeScreenState.Empty())
-    val uiState: Flow<MapHomeScreenState> = _uiState
+    val uiState: StateFlow<MapHomeScreenState> = _uiState
 
     private val _eventChannel = Channel<MapHomeScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -131,9 +132,10 @@ class MapHomeViewModel constructor(
 
     init {
         allGroups.onEach { groupsData ->
-            if (groupsData is Resource.Ready) {
-                val selectedGroup = groupIdData.value
-                if (!groupsData.data.any { it.id == selectedGroup }) {
+            val selectedGroup = groupIdData.value.takeIf { it.isNotBlank() }
+                ?: config.selectedGroupId
+            if (groupsData is Resource.Ready && groupsData.data.isNotEmpty() && !selectedGroup.isNullOrBlank()) {
+                if (groupsData.data.none { it.id == selectedGroup }) {
                     switchGroup(groupsData.data.firstOrNull()?.id ?: "")
                 }
             }
@@ -405,6 +407,7 @@ class MapHomeViewModel constructor(
                                 )
                             },
                             verified = group.isGroupVerified,
+                            alertDialog = _uiState.value.alertDialog,
                             isSatelliteMode = _uiState.value.isSatelliteMode
                         )
                     }
@@ -428,17 +431,12 @@ class MapHomeViewModel constructor(
     }
 
     fun switchGroup(groupId: String) {
-        if (groupId.isBlank()) {
-            val newGroupId =
-                allGroups.value.data?.firstOrNull { it.id == config.selectedGroupId }?.id
-                    ?: allGroups.value.data?.firstOrNull()?.id
-                    ?: ""
-            groupIdData.update { newGroupId }
-            config.selectedGroupId = newGroupId
-        } else {
-            groupIdData.value = groupId
-            config.selectedGroupId = groupId
-        }
+        val newGroupId = allGroups.value.data?.firstOrNull { it.id == groupId }?.id
+            ?: allGroups.value.data?.firstOrNull { it.id == config.selectedGroupId }?.id
+            ?: allGroups.value.data?.firstOrNull()?.id
+            ?: ""
+        config.selectedGroupId = newGroupId
+        groupIdData.update { newGroupId }
     }
 
     fun toggleMarkerVisibility(memberItem: GroupMemberItemState) {
@@ -834,6 +832,44 @@ class MapHomeViewModel constructor(
                     text = MR.strings.group_member_device_not_responding_message.localizedString(),
                     duration = SnackbarDuration.Long
                 )
+            }
+        }
+    }
+
+    fun tryCreateGroup() {
+        val limit = userRepository.userPlans.value.highestPlan?.plan?.groupsLimitOverride?.toInt()
+            ?: userRepository.userPlans.value.highestPlanConfig.groupsLimit
+        coroutineScope.launch {
+            if (getAllGroups().size >= limit) {
+                updateReadyState {
+                    it.copy(
+                        alertDialog = MainAlertDialog.PlanLimit(
+                            MR.strings.plan_limit_groups_alert_info.localizedString(),
+                            limit = limit
+                        )
+                    )
+                }
+            } else {
+                _eventChannel.send(MapHomeScreenEvent.AddGroup)
+            }
+        }
+    }
+
+    fun onEvent(event: MapHomeScreenUiEvent) {
+        when (event) {
+            is MapHomeScreenUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.PlanLimit -> {
+                        _uiState.update {
+                            when (it) {
+                                is MapHomeScreenState.Empty -> it.copy(alertDialog = null)
+                                is MapHomeScreenState.Ready -> it.copy(alertDialog = null)
+                            }
+                        }
+                    }
+
+                    else -> {}
+                }
             }
         }
     }

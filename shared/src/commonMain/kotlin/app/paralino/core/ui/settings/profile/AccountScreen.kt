@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
@@ -250,7 +251,7 @@ fun AccountInfoHeader(
     personalCode: String?,
     isGuestUser: Boolean,
     errorItem: ConditionErrorType?,
-    userPlans: List<PlanType>,
+    userPlans: List<PlanConfig>,
     onErrorItemClick: (ConditionErrorType) -> Unit,
     onGuestAccountClick: () -> Unit,
     onCopy: (String) -> Unit,
@@ -290,13 +291,13 @@ fun AccountInfoHeader(
                             )
                         }
                         userPlans.forEach { plan ->
-                            if (plan != PlanType.SILVER) {
+                            if (plan.planType != PlanType.SILVER.key) {
                                 Spacer(modifier = Modifier.size(8.dp))
                                 AccountHeaderChip(
                                     backgroundColor = AppColors.accentDark,
                                     contentColor = MaterialTheme.colors.onPrimary,
                                     icon = null,
-                                    text = plan.name,
+                                    text = plan.planName,
                                     onClick = null
                                 )
                             }

@@ -28,7 +28,9 @@ import app.paralino.core.presentation.groups.GroupInitViewModel
 import app.paralino.core.presentation.groups.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.map.FocusedMarkerData
+import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
+import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
@@ -42,6 +44,8 @@ import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
 import app.paralino.core.ui.groups.GroupSettingsScreenCore
@@ -202,6 +206,7 @@ object HomeScreens {
         onSharingStartClick: () -> Unit,
         onSettingsClick: () -> Unit,
         onPlaceClick: (PlaceListItemData) -> Unit,
+        onCreateGroup: () -> Unit,
         mapUIView: () -> UIView,
     ) = ComposeUIViewController() {
         RootScreenIOS {
@@ -236,6 +241,18 @@ object HomeScreens {
                     15.dp.toPx()
                 }
 
+                LaunchedEffect(key1 = Unit) {
+                    vm.events.collectLatest { event ->
+                        when (event) {
+                            MapHomeScreenEvent.AddGroup -> {
+                                onCreateGroup()
+                            }
+
+                            null -> {}
+                        }
+                    }
+                }
+
                 LaunchedEffect(sheetState.currentValue) {
                     snapshotFlow { sheetState.currentValue }.collectLatest {
                         val bottomOffset = (height - bottomOffset).coerceIn(
@@ -244,6 +261,11 @@ object HomeScreens {
                         )
                         onSheetOffsetChange(bottomOffset.value)
                     }
+                }
+
+                val dialog = uiState.alertDialog
+                dialog?.Show {
+                    vm.onEvent(MapHomeScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
                 }
 
                 MainMapSheet(

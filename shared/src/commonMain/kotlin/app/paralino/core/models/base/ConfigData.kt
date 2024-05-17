@@ -1,113 +1,47 @@
 package app.paralino.core.models.base
 
+import app.paralino.core.data.db.ConfigNodeEntity
+import app.paralino.core.logg
 import app.paralino.core.utils.BaseRemoteModule
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class ConfigData(
-    val minVersionAndroid: Long,
-    val minUiVersionAndroid: Long,
-    val newVersionAndroid: Long,
-    val minVersionIOS: Long,
-    val minUiVersionIOS: Long,
-    val newVersionIOS: Long,
-    val androidAppUrl: String?,
-    val emailEnabled: Boolean,
-    val planFree: PlanConfig,
-    val planBeta: PlanConfig,
-    val planPro: PlanConfig,
-    val planMax: PlanConfig
+    val minVersionAndroid: Long = 0,
+    val minUiVersionAndroid: Long = 0,
+    val newVersionAndroid: Long = 0,
+    val minVersionIOS: Long = 0,
+    val minUiVersionIOS: Long = 0,
+    val newVersionIOS: Long = 0,
+    val androidAppUrl: String? = null,
+    val emailEnabled: Boolean = false,
+    val plans: List<PlanConfig> = emptyList()
 ) {
     companion object {
-        fun init(nodes: List<ConfigNode>): ConfigData {
+        fun init(nodes: List<ConfigNodeEntity>): ConfigData {
+            val map = nodes.associateBy { it.id }.mapValues { it.value.value_ }
             return ConfigData(
-                minUiVersionAndroid = nodes.firstOrNull { it.id == "min_ui_version_android" }?.value?.toLongOrNull() ?: 0,
-                minVersionAndroid = nodes.firstOrNull { it.id == "min_version_android" }?.value?.toLongOrNull() ?: 0,
-                newVersionAndroid = nodes.firstOrNull { it.id == "new_version_android" }?.value?.toLongOrNull() ?: 0,
-                minVersionIOS = nodes.firstOrNull { it.id == "min_version_ios" }?.value?.toLongOrNull() ?: 0,
-                minUiVersionIOS = nodes.firstOrNull { it.id == "min_ui_version_ios" }?.value?.toLongOrNull() ?: 0,
-                newVersionIOS = nodes.firstOrNull { it.id == "new_version_ios" }?.value?.toLongOrNull() ?: 0,
-                androidAppUrl = nodes.firstOrNull { it.id == "android_app_url" }?.value?.takeIf { it.isNotBlank() },
-                emailEnabled = nodes.firstOrNull { it.id == "email_enabled" }?.value?.toBoolean() ?: false,
-                planFree = nodes.firstOrNull { it.id == "plan_config_free" }?.value?.let {
+                minVersionAndroid = map.get("minVersionAndroid")?.toLongOrNull() ?: 0,
+                minUiVersionAndroid = map.get("minUiVersionAndroid")?.toLongOrNull() ?: 0,
+                newVersionAndroid = map.get("newVersionAndroid")?.toLongOrNull() ?: 0,
+                minVersionIOS = map.get("minVersionIOS")?.toLongOrNull() ?: 0,
+                minUiVersionIOS = map.get("minUiVersionIOS")?.toLongOrNull() ?: 0,
+                newVersionIOS = map.get("newVersionIOS")?.toLongOrNull() ?: 0,
+                androidAppUrl = map.get("androidAppUrl")?.takeIf { it.isNotBlank() },
+                emailEnabled = map.get("emailEnabled")?.toBooleanStrictOrNull() ?: false,
+                plans = map.get("plans")?.let {
                     try {
-                        BaseRemoteModule.formatter.decodeFromString<PlanConfigValue>(it).toPlanConfig(PlanType.FREE)
+                        BaseRemoteModule.formatter.decodeFromString(it)
                     } catch (e: Exception) {
-                        null
+                        logg.e("Error parsing plans from remote: ${e.message}")
+                        emptyList()
                     }
-                } ?: PlanType.FREE.defaultConfig,
-                planBeta = nodes.firstOrNull { it.id == "plan_config_beta" }?.value?.let {
-                    try {
-                        BaseRemoteModule.formatter.decodeFromString<PlanConfigValue>(it).toPlanConfig(PlanType.SILVER)
-                    } catch (e: Exception) {
-                        null
-                    }
-                } ?: PlanType.SILVER.defaultConfig,
-                planPro = nodes.firstOrNull { it.id == "plan_config_pro" }?.value?.let {
-                    try {
-                        BaseRemoteModule.formatter.decodeFromString<PlanConfigValue>(it).toPlanConfig(PlanType.PRO)
-                    } catch (e: Exception) {
-                        null
-                    }
-                } ?: PlanType.PRO.defaultConfig,
-                planMax = nodes.firstOrNull { it.id == "plan_config_max" }?.value?.let {
-                    try {
-                        BaseRemoteModule.formatter.decodeFromString<PlanConfigValue>(it).toPlanConfig(PlanType.MAX)
-                    } catch (e: Exception) {
-                        null
-                    }
-                } ?: PlanType.MAX.defaultConfig
+                } ?: emptyList()
             )
         }
     }
 
-    fun planConfigForPlanType(planType: PlanType): PlanConfig {
-        return when (planType) {
-            PlanType.SILVER -> planBeta
-            PlanType.FREE -> planFree
-            PlanType.PRO -> planPro
-            PlanType.MAX -> planMax
-        }
-    }
-}
-
-@Serializable
-data class ConfigNode(
-    @SerialName("\$id")
-    val id: String,
-    val value: String?
-) {
-    companion object {
-        @Suppress("UNCHECKED_CAST")
-        fun from(map: Map<String, Any>): ConfigNode {
-            return ConfigNode(
-                id = map["\$id"] as String,
-                value = map["value"] as? String?,
-            )
-        }
-    }
-}
-
-private data class PlanConfigValue(
-    val groups: Int,
-    val members: Int,
-    val devices: Int,
-    val places: Int,
-    val history: Int,
-    val paralinoIds: Int,
-    val personalDevices: Int
-) {
-    fun toPlanConfig(type: PlanType): PlanConfig {
-        return PlanConfig(
-            planType = type,
-            groupsLimit = groups,
-            membersLimit = members,
-            devicesLimit = devices,
-            placesLimit = places,
-            historyDaysLimit = history,
-            paralinoIdsLimit = paralinoIds,
-            personalDevicesLimit = personalDevices
-        )
+    fun planConfigForPlanType(planType: String): PlanConfig {
+        return plans.firstOrNull { it.planType == planType } ?: PlanConfig.default
     }
 }

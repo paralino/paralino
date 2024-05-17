@@ -59,6 +59,9 @@ struct MapHomeScreen: View {
                         onPlaceClick: { place in
                             path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
                         },
+                        onCreateGroup: {
+                            path.append(.home(.groupCreate(groupId: nil)))
+                        },
                         mapUIView: { () -> UIView in
                             SwiftUIInUIView(
                                 content: VStack {
@@ -82,10 +85,29 @@ struct MapHomeScreen: View {
                 }
                 .ignoresSafeArea(.all, edges: .vertical)
             } else if mapState.uiState is MapHomeScreenState.Empty {
-                EmptyView()
+                VStack {
+                    Image("paralino_logo")
+                        .resizable()
+                        .scaledToFit()
+                        .colorMultiply(.themePrimary)
+                        .frame(width: 100, height: 100)
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                }
             } else {
-                ProgressView().progressViewStyle(CircularProgressViewStyle())
+                VStack {
+                    Image("paralino_logo")
+                        .resizable()
+                        .scaledToFit()
+                        .colorMultiply(.themePrimary)
+                        .frame(width: 60, height: 60)
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                }
             }
+        }
+        .onAppear {
+            mapState.vm.switchGroup(groupId: "")
         }
         .groupPickerSheet(
             $groupPicker,
@@ -99,7 +121,7 @@ struct MapHomeScreen: View {
             },
             onCreateGroup: {
                 groupPicker = nil
-                path.append(.home(.groupCreate(groupId: nil)))
+                mapState.vm.tryCreateGroup()
             },
             onJoinGroup: {
                 groupPicker = nil

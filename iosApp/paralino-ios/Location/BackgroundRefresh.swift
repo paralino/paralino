@@ -62,7 +62,7 @@ class BackgroundRefresh {
     }
     
     static func registerNotificationsRefresh() {
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "app.paralino.ios.task.notifications", using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "app.paralino.ios.task.refresh.notifications", using: nil) { task in
             Logr.i(tag:"delegate", message: "Notifications refresh task start")
             self.scheduleNotificationsRefresh()
             pushProvider.syncPushNotifications()

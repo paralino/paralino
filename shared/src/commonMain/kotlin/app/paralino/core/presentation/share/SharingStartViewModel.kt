@@ -168,8 +168,7 @@ class SharingStartViewModel(
         coroutineScope.launch {
             _uiState.update { it.copy(loadingAction = true) }
 
-            // TODO fix check if user has only one device and is on free plan
-            if (_uiState.value.devicesCount >= _uiState.value.devicesLimit && _uiState.value.devicesLimit > 1 && !registerDevice.isDeviceAlreadyRegistered(
+            if (_uiState.value.devicesCount >= _uiState.value.devicesLimit && !registerDevice.isDeviceAlreadyRegistered(
                     groupId = group.id
                 )
             ) {

@@ -38,7 +38,7 @@ fun JsonElement.toMapOfPrimitives(): Any? {
         is JsonNull -> null
         is JsonPrimitive -> {
             if (value.isString) value.content
-            else value.booleanOrNull ?: value.doubleOrNull ?: value.content as? Any
+            else value.booleanOrNull ?: value.content as? Any
         }
         else -> throw SerializationException("Unable to parse object - not a json")
     }

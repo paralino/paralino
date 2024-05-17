@@ -6,7 +6,6 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -50,7 +49,7 @@ class GroupMapperCore constructor(
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,
             serverIntegrity = model.serverIntegrity,
-            planType = model.planType.key,
+            planType = model.planType,
             schemeVersion = model.schemeVersion,
             membersLimitOverride = model.membersLimitOverride,
             devicesLimitOverride = model.devicesLimitOverride,
@@ -92,7 +91,7 @@ class GroupMapperCore constructor(
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,
             serverIntegrity = model.serverIntegrity,
-            planType = PlanType.fromKey(model.planType) ?: PlanType.default,
+            planType = model.planType,
             schemeVersion = model.schemeVersion,
             membersLimitOverride = model.membersLimitOverride,
             devicesLimitOverride = model.devicesLimitOverride,

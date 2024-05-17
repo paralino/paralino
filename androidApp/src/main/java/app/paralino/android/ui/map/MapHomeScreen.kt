@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
@@ -16,23 +17,28 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
-import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.groups.GroupInitScreen
+import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.Resource
+import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
+import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.components.BottomSheetsScreen
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.GroupPickerAction
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.isFullyExpanded
 import app.paralino.core.utils.extensions.safeCast
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -72,7 +78,7 @@ private fun MapHomeContent(
     vm: MapHomeViewModel,
 ) {
 
-    val uiState by vm.uiState.collectAsState(MapHomeScreenState.Empty())
+    val uiState by vm.uiState.collectAsState()
     val readyState by rememberUpdatedState(newValue = uiState.asReady())
     val density = LocalDensity.current
 
@@ -90,6 +96,18 @@ private fun MapHomeContent(
         }
     }
 
+    LaunchedEffect(key1 = Unit) {
+        vm.events.collectLatest { event ->
+            when (event) {
+                MapHomeScreenEvent.AddGroup -> {
+                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
+                }
+
+                null -> {}
+            }
+        }
+    }
+
     rememberSaveable(startGroupId) {
         vm.switchGroup(groupId = startGroupId ?: "")
         ""
@@ -102,6 +120,11 @@ private fun MapHomeContent(
             sheetState.animateTo(BottomSheetPosition.HALF_EXPANDED)
         }
         vm.hideFocusedItem()
+    }
+
+    val dialog = uiState.alertDialog
+    dialog?.Show {
+        vm.onEvent(MapHomeScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
     }
 
     MainMapSheet(
@@ -167,14 +190,20 @@ private fun MapContent(
                 bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
                     0.dp
                 } else {
-                    (this.maxHeight - bottomOffset).coerceIn(0.dp, this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent)
+                    (this.maxHeight - bottomOffset).coerceIn(
+                        0.dp,
+                        this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                    )
                 }
             )
         )
 
         MapHomeScreenElements(
             state = uiState,
-            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(0.dp, this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent),
+            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
+                0.dp,
+                this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+            ),
             onGroupPickerClick = {
                 appState.uiScope.launch {
                     val groups = vm.getAllGroups()
@@ -193,7 +222,7 @@ private fun MapContent(
                             }
 
                             GroupPickerAction.NewGroup -> {
-                                appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
+                                vm.tryCreateGroup()
                             }
 
                             GroupPickerAction.JoinGroup -> {

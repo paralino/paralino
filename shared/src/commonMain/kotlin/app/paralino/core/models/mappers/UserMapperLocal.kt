@@ -4,7 +4,6 @@ import app.paralino.core.data.db.BlocklistEntity
 import app.paralino.core.data.db.SubscriptionPlanEntity
 import app.paralino.core.data.db.UserEntity
 import app.paralino.core.models.base.PlanBillingPeriod
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
@@ -74,7 +73,7 @@ class UserMapperLocal constructor(
             id = model.id,
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
-            planType = model.planType.key,
+            planType = model.planType,
             billingPeriod = model.billingPeriod.key,
             expiresAt = model.expiresAt?.toString(),
             groupsLimitOverride = model.groupsLimitOverride,
@@ -87,7 +86,7 @@ class UserMapperLocal constructor(
             id = model.id,
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
-            planType = PlanType.fromKey(model.planType) ?: PlanType.default,
+            planType = model.planType,
             billingPeriod = PlanBillingPeriod.fromKey(model.billingPeriod)
                 ?: PlanBillingPeriod.ONETIME,
             expiresAt = model.expiresAt?.isoWithOffsetToInstant(),
