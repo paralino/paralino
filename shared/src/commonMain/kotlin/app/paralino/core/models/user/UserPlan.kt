@@ -2,7 +2,6 @@ package app.paralino.core.models.user
 
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.PlanConfig
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.raw.UserPlanRaw
 
 data class UserPlans(
@@ -18,7 +17,7 @@ data class UserPlans(
 
     val nonExpiredPlans = plans.filter { !it.plan.isExpired }
     val highestPlan: UserPlan? get() = nonExpiredPlans.maxByOrNull { it.plan.planType }
-    val highestPlanConfig: PlanConfig get() = highestPlan?.config ?: config.planConfigForPlanType(PlanType.default)
+    val highestPlanConfig: PlanConfig get() = highestPlan?.config ?: PlanConfig.default
 }
 
 data class UserPlan(

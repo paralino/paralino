@@ -5,6 +5,8 @@ import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 
 @Serializable
 data class FunctionExecutionRaw constructor(
@@ -37,6 +39,11 @@ data class FunctionExecutionRaw constructor(
             error = errorResponse
         )
     }
+
+    val responseData: JsonElement?
+        get() {
+            return BaseRemoteModule.formatter.parseToJsonElement(response).jsonObject.get("data")
+        }
 
     val responseDataMap: Map<String, Any>?
         get() {

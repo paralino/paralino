@@ -4,7 +4,6 @@ import app.paralino.core.config
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
@@ -21,7 +20,7 @@ data class UserGroup constructor(
     @Contextual
     val data: CryptoResource<UserGroupData>,
     val serverIntegrity: String,
-    val planType: PlanType,
+    val planType: String,
     val schemeVersion: String,
     val membersLimitOverride: Long?,
     val devicesLimitOverride: Long?,

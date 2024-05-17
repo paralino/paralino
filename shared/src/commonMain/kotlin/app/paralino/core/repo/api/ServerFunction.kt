@@ -40,6 +40,8 @@ enum class ServerFunction constructor(
 
     ACCOUNT_DELETE(method = "DELETE", path = "/user"),
     ACCOUNT_RESET(method = "POST", path = "/user/reset"),
+
+    CONFIG(method = "POST", path = "/", functionId = "config"),
     ;
 
 }

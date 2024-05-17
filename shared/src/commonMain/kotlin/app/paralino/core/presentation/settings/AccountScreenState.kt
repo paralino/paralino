@@ -2,7 +2,7 @@ package app.paralino.core.presentation.settings
 
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.base.PlanType
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 
@@ -15,7 +15,7 @@ data class AccountScreenState constructor(
     val alertDialog: MainAlertDialog? = null,
     val boostTime: String? = null,
     val placeActivityThrottleEnabled: Boolean = true,
-    val userPlans: List<PlanType>
+    val userPlans: List<PlanConfig>
 ) {
     val loadingAction get() = logoutState is Payload.Loading || deleteAccountState is Payload.Loading
 }
