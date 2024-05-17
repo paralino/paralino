@@ -17,7 +17,7 @@ class MapHomeState : BaseMapObservableObject {
     
     @Published var groupState: Bool? = nil
     @Published var path: [NavigationGraph] = []
-    @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(currentUserImage: ImageModel.companion.placeholder(), isSatelliteMode: false)
+    @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(currentUserImage: ImageModel.companion.placeholder(), isSatelliteMode: false, alertDialog: nil)
     
     override init() {
         vm = KoinIOS.ViewModels.shared.mapHomeVM
