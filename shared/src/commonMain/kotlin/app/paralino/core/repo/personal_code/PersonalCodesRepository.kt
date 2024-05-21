@@ -2,7 +2,6 @@ package app.paralino.core.repo.personal_code
 
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
-import app.paralino.core.models.Resource
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData

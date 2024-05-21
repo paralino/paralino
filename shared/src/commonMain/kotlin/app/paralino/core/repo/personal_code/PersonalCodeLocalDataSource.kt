@@ -2,6 +2,7 @@ package app.paralino.core.repo.personal_code
 
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.mapToList
+import app.paralino.core.logg
 import app.paralino.core.models.mappers.PersonalCodeMapperLocal
 import app.paralino.core.models.raw.PersonalCodeRaw
 import app.paralino.core.models.user.UserPersonalCode
@@ -30,7 +31,14 @@ class PersonalCodeLocalDataSource(
     fun getPersonalCodes(): Flow<List<UserPersonalCode>> {
         return database.mapToList { personalCodeQueries.getAllCodes() }
             .distinctFlowOfList()
-            .map { it.map { mapper.local2Core(it) } }
+            .map {
+                try {
+                    it.map { mapper.local2Core(it) }
+                } catch (e: Exception) {
+                    logg.w("account_state", "Error mapping personal codes: ${e.message}")
+                    emptyList()
+                }
+            }
     }
 
     suspend fun deletePersonalCode(id: String) {
