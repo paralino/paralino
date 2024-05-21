@@ -35,12 +35,16 @@ class LogoutUseCase(
     private val config: AppConfig
 ) {
 
-    fun logout(): Flow<Unit> {
-        return userRepo.remoteLogout()
-            .catch { emit(Unit) }
-            .onEach {
+    suspend fun fullLogout(logoutLocallyOnError: Boolean) {
+        try {
+            userRepo.remoteLogout()
+            logoutLocally()
+        } catch (e: Exception) {
+            if (logoutLocallyOnError) {
                 logoutLocally()
             }
+            throw e
+        }
     }
 
     fun deleteAccount(logoutOnError: Boolean = false): Flow<Unit> {
@@ -68,6 +72,8 @@ class LogoutUseCase(
     }
 
     suspend fun logoutLocally() {
+        // TODO clear appwrite session cookie if still somehow present
+        // would be possible if we fork appwrite sdk
         config.clear()
         scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
         clearResources()

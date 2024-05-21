@@ -252,8 +252,8 @@ class UserRepository constructor(
         local.clear()
     }
 
-    fun remoteLogout(): Flow<Unit> {
-        return getDataOnce { remote.logout() }
+    suspend fun remoteLogout() {
+        return triggerRemoteOnly { remote.logout() }
     }
 
     fun deleteAccount(): Flow<Unit> {
