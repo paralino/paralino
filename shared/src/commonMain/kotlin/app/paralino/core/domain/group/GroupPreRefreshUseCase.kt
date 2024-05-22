@@ -1,5 +1,6 @@
 package app.paralino.core.domain.group
 
+import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
@@ -23,11 +24,13 @@ class GroupPreRefreshUseCase constructor(
     private val groupRefresh: GroupRefreshUseCase,
     private val refreshEverything: RefreshEverythingUseCase,
     private val local: UserGroupLocalDataSource,
+    private val limitedExecutionParentManager: LimitedExecutionParentManager
 ) : LimitedExecutionRepository() {
 
     override fun isProcessing(key: String): Boolean {
         val selfProcessing = super.isProcessing(key)
         val fullProcessing = refreshEverything.isProcessingAny()
+        val parentProcessing = limitedExecutionParentManager.isProcessingAny()
         val groupRemoveProcessing = groupRemove.isProcessing(key)
         val groupMemberRemoveProcessing = groupMemberRemove.isProcessing(key)
         val groupMemberAddProcessing = groupMemberAdd.isProcessing(key)
@@ -35,7 +38,7 @@ class GroupPreRefreshUseCase constructor(
         val memberCryptoKeyRotationProcessing = memberCryptoKeyRotation.isProcessing(key)
         val deviceKeyRotationProcessing = deviceKeyRotation.isProcessing(key)
 
-        val processing = selfProcessing || fullProcessing
+        val processing = selfProcessing || fullProcessing || parentProcessing
                 || groupRemoveProcessing || groupMemberRemoveProcessing || groupMemberAddProcessing
                 || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing || deviceKeyRotationProcessing
 
@@ -43,6 +46,7 @@ class GroupPreRefreshUseCase constructor(
             "Group pre-refresh processing ($processing):" +
                     " self: $selfProcessing" +
                     " full: $fullProcessing" +
+                    " parent: $parentProcessing" +
                     " groupRemove: $groupRemoveProcessing" +
                     " groupMemberRemove: $groupMemberRemoveProcessing" +
                     " groupAddRemove: $groupMemberAddProcessing" +
