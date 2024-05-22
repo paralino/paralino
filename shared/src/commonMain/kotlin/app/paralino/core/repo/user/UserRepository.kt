@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 
 
@@ -178,6 +177,7 @@ class UserRepository constructor(
     suspend fun refreshUserIfAvailable(): UserMeRaw {
         return getUserFromRemote()
             .also { updateLocalUser(it) }
+            .also { sessionMonitor.updateSessionState(sessionValid = true) }
             .also {
                 try {
                     remote.getPlans().also { local.savePlans(it) }

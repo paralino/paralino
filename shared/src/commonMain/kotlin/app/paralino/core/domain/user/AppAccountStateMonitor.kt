@@ -24,7 +24,8 @@ class AppAccountStateMonitor constructor(
     private val refreshEverything: RefreshEverythingUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val pushManager: IPushProviderManager,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val userSessionMonitor: UserSessionMonitor
 ) {
 
     private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
@@ -71,13 +72,13 @@ class AppAccountStateMonitor constructor(
                                     Resource.Ready(data = AppAccountState.NO_PROFILE(decryptedUser))
                                 }
                             } catch (e: Exception) {
-                                logg.w("Error decrypting user", e)
+                                logg.e("Error decrypting user", e)
                                 if (config.temporaryBackupPassword.isNotBlank()) {
                                     logg.tag("account_state").v("User needs to reset account")
                                     Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                                 } else {
                                     logg.tag("account_state")
-                                        .v("User can not be initialized, reset (${e.message})")
+                                        .w("User can not be initialized (${e.message})")
                                     logoutUseCase.logoutLocally()
                                     Resource.Ready(data = AppAccountState.NO_USER)
                                 }
@@ -86,7 +87,6 @@ class AppAccountStateMonitor constructor(
                     }
                 }
             }
-
         }
             .onStart { emit(Resource.NotInitialized) }
             .conflate()
@@ -95,6 +95,12 @@ class AppAccountStateMonitor constructor(
                 // so in case of login, navigation is delayed a bit
                 val wasUserNull = oldUserState.data is AppAccountState.NO_USER
                 oldUserState = it
+
+                if (it is Resource.Ready && it.data !is AppAccountState.NO_USER) {
+                    userSessionMonitor.updateSessionState(true)
+                } else {
+                    userSessionMonitor.resetSessionState()
+                }
 
                 if (wasUserNull && it.data is AppAccountState.USER_READY) {
                     logg.tag("account_state").v("${it.data} - User ready - delay for ui")
