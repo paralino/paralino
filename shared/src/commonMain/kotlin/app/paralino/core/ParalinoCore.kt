@@ -9,6 +9,7 @@ import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.crypto.user.UserCryptoKeyLocalDataSource
 import app.paralino.core.data.db.AppConfig
+import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
@@ -196,7 +197,6 @@ val coreModule = module {
     factory { CreateAccountUseCase(get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get()) }
     factory { ChangePasswordUseCase(get(), get(), get()) }
-    factory { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
@@ -208,6 +208,7 @@ val coreModule = module {
     factory { RawCryptoPresentation(get(), get(), get(), get(), config) }
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
 
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -248,4 +249,5 @@ val coreModule = module {
     single { LocationPerformanceManager(get(), get(), config) }
 
     single { InAppLogger(get(), get(), get()) }
+    single { LimitedExecutionParentManager() }
 }

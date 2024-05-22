@@ -1,6 +1,9 @@
 package app.paralino.core.domain.user
 
 import app.paralino.core.logg
+import app.paralino.core.models.Payload
+import app.paralino.core.models.Resource
+import app.paralino.core.models.data
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.flow.*
 import org.koin.ext.getFullName
@@ -13,7 +16,7 @@ class UserSessionMonitor {
         )
     }
 
-    private val sessionStatus = MutableStateFlow(true)
+    private val sessionStatus = MutableStateFlow<Resource<Boolean>>(Resource.NotInitialized)
 
     fun processNetworkError(error: Throwable) {
         logg.w("Remote exception - ${error::class.getFullName()} - ${error.message}")
@@ -29,19 +32,28 @@ class UserSessionMonitor {
         }
     }
 
+    fun resetSessionState() {
+        sessionStatus.value = Resource.NotInitialized
+    }
+
     fun updateSessionState(sessionValid: Boolean) {
-        logg.tag("account_session").v("Update session state - is valid: $sessionValid")
-        sessionStatus.value = sessionValid
+        if (sessionValid) {
+            logg.tag("account_session").v("Update session state - is valid: $sessionValid")
+            sessionStatus.value = Resource.Ready(true)
+        } else if (sessionStatus.value is Resource.Ready) {
+            logg.tag("account_session").v("Update session state - is valid: $sessionValid")
+            sessionStatus.value = Resource.Ready(false)
+        }
     }
 
     fun isSessionExpired(): Boolean {
-        return !sessionStatus.value
+        return sessionStatus.value.data == false
     }
 
     fun listenForSessionExpired(): Flow<Unit> {
         // only emit if session expired
         return sessionStatus
-            .filter { !it }
+            .filter { it.data == false }
             .map { Unit }
     }
 

@@ -178,7 +178,10 @@ class SettingsViewModel(
     }
 
     private fun deleteAccount() {
-        logoutControl.deleteAccount()
+        flow {
+            logoutControl.deleteAccount(logoutLocallyOnError = false)
+            emit(Unit)
+        }
             .mapToPayload { Unit }
             .onEach { state ->
                 _accountState.update {

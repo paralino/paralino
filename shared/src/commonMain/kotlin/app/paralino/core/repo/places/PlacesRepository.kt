@@ -559,10 +559,6 @@ class PlacesRepository constructor(
             }
         )
     }
-
-    suspend fun clear() {
-        placeActivityRepo.clearAll()
-    }
 }
 
 enum class PlaceActivityTriggerType constructor(val key: String) {

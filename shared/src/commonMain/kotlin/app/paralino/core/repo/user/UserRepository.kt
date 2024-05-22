@@ -253,22 +253,14 @@ class UserRepository constructor(
     }
 
     suspend fun remoteLogout() {
-        return triggerRemoteOnly { remote.logout() }
+        triggerRemoteOnly { remote.logout() }
     }
 
-    fun deleteAccount(): Flow<Unit> {
-        return getDataOnce(
-            remote = { remote.deleteAccount() }
-        ).onEach {
-            config.guestEmail = ""
-            config.guestPassword = ""
-        }
+    suspend fun deleteAccount() {
+        triggerRemoteOnly { remote.deleteAccount() }
     }
 
-    fun resetAccount(keyToPersist: UserCryptoKeyRaw?): Flow<Unit> {
-        return getDataOnce(
-            remote = { remote.resetAccount(keyToPersist) }
-        )
+    suspend fun resetAccount(keyToPersist: UserCryptoKeyRaw?) {
+        triggerRemoteOnly { remote.resetAccount(keyToPersist) }
     }
-
 }

@@ -25,6 +25,12 @@ open class LimitedExecutionRepository() : BaseRepository(), ILimitedExecution {
     override var tag: String? = this::class.simpleName
 }
 
+class LimitedExecutionParentManager() : BaseRepository(), ILimitedExecution {
+    override val executionState = MutableStateFlow<Map<String, LimitedExecutionState>>(mapOf())
+    override val mutex = Mutex()
+    override var tag: String? = this::class.simpleName
+}
+
 interface ILimitedExecution {
 
     val executionState: MutableStateFlow<Map<String, LimitedExecutionState>>
