@@ -31,6 +31,7 @@
     <string name="error_something_wrong">Nešto nije uredu!</string>
     <string name="error_something_wrong_http">Nešto nije uredu! [%d]</string>
     <string name="error_generic_snacbar">Ups, pokušajte ponovno.</string>
+    <string name="error_still_loading_snackbar">Osvježavanje podata u tijeku,\n**pokušajte ponovno za par sekundi.**</string>
     <string name="error_location_permission_missing_sheet_message">Lokacijska dozvola je **potrebna** kako bi se uspješno pratila i dijelila vaša lokacija s drugima.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Molimo omogućite **preciznu lokacijsku dozvolu** kako biste uspješno pratili i dijelili vašu lokaciju s drugima.</string>
     <string name="error_location_background_permission_missing_sheet_message">Molimo omogućite pristup lokaciji **uvijek** kako biste **pouzdano i uvijek** pratili i dijelili svoju lokaciju s drugima.</string>

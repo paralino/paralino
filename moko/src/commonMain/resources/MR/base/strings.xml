@@ -30,6 +30,7 @@
     <string name="error_something_wrong">Something went wrong!</string>
     <string name="error_something_wrong_http">Something went wrong! [%d]</string>
     <string name="error_generic_snacbar">Ups, please try again.</string>
+    <string name="error_still_loading_snackbar">Refreshing, **please try again in few seconds.**</string>
     <string name="error_location_permission_missing_sheet_message">Location permission is **required** in order to successfully track and share your location with others.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Please grant **precise location permission** in order to successfully track and share your location with others.</string>
     <string name="error_location_background_permission_missing_sheet_message">Please allow **all the time** location access in order to **reliably and always** track and share your location with others.</string>
