@@ -187,11 +187,11 @@ class UserRepository constructor(
             }
     }
 
-    suspend fun refreshUserMaybe(): Payload<UserMeRaw?> {
+    suspend fun refreshUserMaybe(timeDelayMillis: Long = 10_000): Payload<UserMeRaw?> {
         try {
             return triggerRemoteMaybe(
                 remote = { refreshUserIfAvailable() },
-                remotePreference = RemotePreference.CACHE("user_call", 10_000)
+                remotePreference = RemotePreference.CACHE("user_call", timeDelayMillis)
             ).let { Payload.Success(it) }
         } catch (e: Exception) {
             return Payload.Error(e)

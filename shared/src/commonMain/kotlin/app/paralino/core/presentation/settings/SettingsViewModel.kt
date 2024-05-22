@@ -87,10 +87,7 @@ class SettingsViewModel(
                     }
                 },
                 async {
-                    try {
-                        userRepo.refreshUserMaybe()
-                    } catch (e: Exception) {
-                    }
+                    userRepo.refreshUserMaybe()
                 }
             ).awaitAll()
         }
