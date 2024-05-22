@@ -52,7 +52,11 @@ class CoreAppManager(
         configRepo.getUpdateType()
             .onEach { updateType ->
                 if (updateType is AppUpdateType.FORCE_AND_CANCEL) {
-                    logoutUseCase.logoutLocally()
+                    try {
+                        logoutUseCase.fullLogout(logoutLocallyOnError = true)
+                    } catch (e: Exception) {
+                        logg.w("account_state", "Error on forced app update logout", e)
+                    }
                 }
             }
             .launchIn(scopeProvider.defaultIOScope)
