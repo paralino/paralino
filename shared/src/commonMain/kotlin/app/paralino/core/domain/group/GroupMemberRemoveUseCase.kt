@@ -39,7 +39,7 @@ class GroupMemberRemoveUseCase(
             }
         )
             .onEach {
-                groupRefreshUseCase.refreshRemoteGroupWithMembersAndPlaces(groupId)
+                groupRefreshUseCase.refreshRemoteGroupWithMembersAndPlaces(groupId, cacheTimeMillis = 0)
             }
             .startProcessing(groupId)
     }

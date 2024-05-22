@@ -70,9 +70,9 @@ class GroupPreRefreshUseCase constructor(
         logg.tag("group_actions").v("Not processing, can refresh group $groupId")
 
         try {
-            val result = triggerRemoteMaybe(
-                remotePreference = RemotePreference.CACHE(key = "group_refresh_$groupId", timeMillis = cacheTimeMillis),
-                remote = { groupRefresh.refreshRemoteGroupWithMembersAndPlaces(groupId) }
+            val result = groupRefresh.refreshRemoteGroupWithMembersAndPlaces(
+                groupId = groupId,
+                cacheTimeMillis = cacheTimeMillis
             )
             return result != null
         } catch (e: Exception) {
@@ -91,7 +91,10 @@ class GroupPreRefreshUseCase constructor(
                 .filterNotNull(),
             remote = { refreshGroupWithMembers(groupId = groupId, cacheTimeMillis = 10000) },
             localUpdate = { },
-            remotePreference = RemotePreference.CACHE(key = "get_group_refresh_$groupId", timeMillis = 12000)
+            remotePreference = RemotePreference.CACHE(
+                key = "get_group_refresh_$groupId",
+                timeMillis = 12000
+            )
         )
     }
 }

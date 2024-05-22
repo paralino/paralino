@@ -6,6 +6,7 @@ import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.GroupWithMembersRaw
+import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
@@ -22,14 +23,19 @@ class GroupRefreshUseCase constructor(
     private val groupRemove: GroupRemoveUseCase,
 ) : LimitedExecutionRepository() {
 
-    suspend fun refreshRemoteGroupWithMembersAndPlaces(groupId: String): GroupWithMembersRaw {
-        return getRemoteGroupWithMembers(groupId)
-            .also {
-                logg.tag("tag_crypto_key_group").d("Finished processing group and keys, save group ${it.group.id}")
-                local.updateOrCreateGroup(it)
-            }.also {
-                placeRepo.refreshPlacesForGroup(groupId)
+    suspend fun refreshRemoteGroupWithMembersAndPlaces(groupId: String, cacheTimeMillis: Long): GroupWithMembersRaw? {
+        return triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(key = "group_refresh_$groupId", timeMillis = cacheTimeMillis),
+            remote = {
+                getRemoteGroupWithMembers(groupId)
+                    .also {
+                        logg.tag("tag_crypto_key_group").d("Finished processing group and keys, save group ${it.group.id}")
+                        local.updateOrCreateGroup(it)
+                    }.also {
+                        placeRepo.refreshPlacesForGroup(groupId)
+                    }
             }
+        )
     }
 
     private suspend fun getRemoteGroupWithMembers(groupId: String, retry: Int = 1): GroupWithMembersRaw {
