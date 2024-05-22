@@ -89,7 +89,11 @@ class MapHomeViewModel constructor(
     val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow<MapHomeScreenState>(MapHomeScreenState.Empty())
+    private val _uiState = MutableStateFlow<MapHomeScreenState>(
+        MapHomeScreenState.Empty(
+            currentUserImage = userRepository.localUser.value.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot)
+        )
+    )
     val uiState: StateFlow<MapHomeScreenState> = _uiState
 
     private val _eventChannel = Channel<MapHomeScreenEvent?>()
@@ -201,8 +205,8 @@ class MapHomeViewModel constructor(
                         userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
                     ) { _, group, places, sharingStatus, userData ->
 
-                        if (group == null) {
-                            return@combine MapHomeScreenState.Empty()
+                        if (group == null || userData == null) {
+                            return@combine MapHomeScreenState.Empty(currentUserImage = ImageModel.emoji(Emojis.robot))
                         }
 
                         val membersData = group.members.flatMap { member ->
