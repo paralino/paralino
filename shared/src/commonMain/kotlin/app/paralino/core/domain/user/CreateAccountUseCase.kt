@@ -12,6 +12,7 @@ import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -22,6 +23,7 @@ class CreateAccountUseCase constructor(
     private val userRepo: UserRepository,
     private val cryptoCore: CryptoCore,
     private val userKeyRepository: CryptoUserKeyRepository,
+    private val logoutUseCase: LogoutUseCase
 ) {
 
     fun signUpAsGuest(): Flow<SignUpStep> {
@@ -53,9 +55,22 @@ class CreateAccountUseCase constructor(
                 // test encryption before proceeding
                 createNewKey(derivedPasswords.backupPassword, userId = email)
 
-                val response = userRepo.remoteSignUp(email, derivedPasswords.loginPassword)
-                user = response.first
-                session = response.second
+                user = userRepo.remoteSignUp(email, derivedPasswords.loginPassword)
+
+                session = try {
+                    userRepo.login(email, derivedPasswords.loginPassword)
+                } catch (e: Exception) {
+                    if (e is UnauthorizedException && e.type == UserSessionMonitor.existingSessionError) {
+                        logg.w("login", "Cleanup any ghost session")
+
+                        try { logoutUseCase.fullLogout(logoutLocallyOnError = true) }
+                        catch (e: Exception) { }
+
+                        userRepo.login(email, derivedPasswords.loginPassword)
+                    } else {
+                        throw e
+                    }
+                }
             } catch (e: Exception) {
                 throw SignUpStepException(SignUpStep.STARTING, e)
             }
@@ -106,5 +121,4 @@ class CreateAccountUseCase constructor(
             userId = userId
         )
     }
-
 }

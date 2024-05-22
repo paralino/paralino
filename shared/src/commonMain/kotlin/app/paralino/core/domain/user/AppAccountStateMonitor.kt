@@ -1,20 +1,28 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.provider.ICoroutineScopeProvider
-import app.paralino.core.config
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMe
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 
 class AppAccountStateMonitor constructor(
@@ -25,10 +33,12 @@ class AppAccountStateMonitor constructor(
     private val logoutUseCase: LogoutUseCase,
     private val pushManager: IPushProviderManager,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val userSessionMonitor: UserSessionMonitor
+    private val userSessionMonitor: UserSessionMonitor,
+    private val config: AppConfig
 ) {
 
     private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
+    private var everHadUser = false
 
     val userState: Flow<Resource<AppAccountState>> =
         userRepo.localUserRaw.map { userState ->
@@ -48,6 +58,7 @@ class AppAccountStateMonitor constructor(
                                 Resource.Ready(data = AppAccountState.NO_USER)
                             }
                         }
+
                         userKeyRepo.userKeyState().firstOrNull() != true -> {
                             if (config.temporaryBackupPassword.isNotBlank()) {
                                 logg.tag("account_state")
@@ -55,11 +66,11 @@ class AppAccountStateMonitor constructor(
                                 Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                             } else {
                                 logg.tag("account_state")
-                                    .v("Key is not valid and no backup password - logout locally")
-                                logoutUseCase.logoutLocally()
+                                    .v("Key is not valid and no backup password")
                                 Resource.Ready(data = AppAccountState.NO_USER)
                             }
                         }
+
                         else -> {
                             try {
                                 val decryptedUser = userMapper.remote2Core(user)
@@ -79,7 +90,6 @@ class AppAccountStateMonitor constructor(
                                 } else {
                                     logg.tag("account_state")
                                         .w("User can not be initialized (${e.message})")
-                                    logoutUseCase.logoutLocally()
                                     Resource.Ready(data = AppAccountState.NO_USER)
                                 }
                             }
@@ -98,6 +108,7 @@ class AppAccountStateMonitor constructor(
 
                 if (it is Resource.Ready && it.data !is AppAccountState.NO_USER) {
                     userSessionMonitor.updateSessionState(true)
+                    everHadUser = true
                 } else {
                     userSessionMonitor.resetSessionState()
                 }
@@ -122,6 +133,15 @@ class AppAccountStateMonitor constructor(
                             logg.tag("account_state").v("Unable to refresh user: ${e.message}")
                         }
                     }
+                } else if (!everHadUser && it.data is AppAccountState.NO_USER) {
+                    logg.tag("account_state")
+                        .v("${it.data} - try to logout (${config.wasUserLoggedIn})")
+                    if (config.wasUserLoggedIn) {
+                        try {
+                            logoutUseCase.fullLogout(logoutLocallyOnError = true)
+                        } catch (e: Exception) {
+                        }
+                    }
                 } else {
                     logg.tag("account_state").v("${it.data} - Not refreshing user data")
                 }
@@ -136,6 +156,7 @@ class AppAccountStateMonitor constructor(
                         pushManager.syncPushToken()
                         pushManager.syncPushNotifications()
                     }
+
                     else -> {}
                 }
             }

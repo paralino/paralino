@@ -12,6 +12,7 @@ import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.MissingUserKeyException
+import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -38,8 +39,23 @@ class LoginUseCase constructor(
             try {
                 logg.d("login", "Start login to remote")
                 delay(500)
-                session = userRepo.login(email, derivedPasswords.loginPassword)
+
+                session = try {
+                    userRepo.login(email, derivedPasswords.loginPassword)
+                } catch (e: Exception) {
+                    if (e is UnauthorizedException && e.type == UserSessionMonitor.existingSessionError) {
+                        logg.w("login", "Cleanup any ghost session")
+
+                        try { logoutUseCase.fullLogout(logoutLocallyOnError = true) }
+                        catch (e: Exception) { }
+
+                        userRepo.login(email, derivedPasswords.loginPassword)
+                    } else {
+                        throw e
+                    }
+                }
                 logg.d("login", "Session created")
+
                 user = userRepo.getUserFromRemote()
                 logg.d("login", "User fetched")
             } catch (e: Exception) {

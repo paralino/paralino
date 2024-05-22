@@ -114,8 +114,8 @@ class UserRepository constructor(
     suspend fun remoteSignUp(
         email: String,
         password: String,
-    ): Pair<UserMeRaw, UserSession> {
-        return triggerRemoteOnly { remote.signUpAndCreateSession(email, password) }
+    ): UserMeRaw {
+        return triggerRemoteOnly { remote.signUp(email, password) }
     }
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
@@ -201,6 +201,7 @@ class UserRepository constructor(
     suspend fun updateLocalUser(data: UserMeRaw) {
         config.userId = data.id
         config.email = data.email
+        config.wasUserLoggedIn = true
         local.update(data)
     }
 

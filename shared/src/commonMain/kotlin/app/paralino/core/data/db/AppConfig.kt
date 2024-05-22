@@ -1,6 +1,5 @@
 package app.paralino.core.data.db
 
-import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
@@ -55,10 +54,17 @@ class AppConfig(
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
         const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
         const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
+        const val keyWasUserLoggedIn = "prefs.device.hadUser"
     }
 
     val isTokenValid: Boolean
         get() = sessionId.isNotBlank()
+
+    var wasUserLoggedIn: Boolean
+        get() = provider.appSettings.getBoolean(keyWasUserLoggedIn, false)
+        set(value) {
+            provider.appSettings.putBoolean(keyWasUserLoggedIn, value)
+        }
 
     var deviceIdSeed: String
         get() = provider.appSettings.getString(keyDeviceIDSeed, "")

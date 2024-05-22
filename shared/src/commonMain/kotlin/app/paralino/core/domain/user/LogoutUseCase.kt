@@ -42,48 +42,37 @@ class LogoutUseCase(
 
     suspend fun fullLogout(logoutLocallyOnError: Boolean) {
         logg.w("account_state", "Start full logout")
-        startProcessing(key = executionKey)
-        try {
+        accountAction(logoutLocallyOnError = logoutLocallyOnError) {
             userRepo.remoteLogout()
-            sessionMonitor.resetSessionState()
-            logoutLocallyImpl()
-        } catch (e: Exception) {
-            if (logoutLocallyOnError || e is UnauthorizedException) {
-                logoutLocallyImpl()
-            }
-            throw e
-        } finally {
-            stopProcessing(key = executionKey)
         }
     }
 
     suspend fun deleteAccount(logoutLocallyOnError: Boolean) {
-        startProcessing(key = executionKey)
-        try {
+        accountAction(logoutLocallyOnError = logoutLocallyOnError) {
             userRepo.deleteAccount()
-            sessionMonitor.resetSessionState()
-
             config.guestEmail = ""
             config.guestPassword = ""
-
-            logoutLocallyImpl()
-        } catch (e: Exception) {
-            if (logoutLocallyOnError || e is UnauthorizedException) {
-                logoutLocallyImpl()
-            }
-            throw e
-        } finally {
-            stopProcessing(key = executionKey)
         }
     }
 
     suspend fun resetAccount(keyToPersist: UserCryptoKeyRaw?, logoutLocallyOnError: Boolean) {
+        accountAction(logoutLocallyOnError = logoutLocallyOnError) {
+            userRepo.resetAccount(keyToPersist = keyToPersist)
+        }
+    }
+
+    private suspend fun accountAction(logoutLocallyOnError: Boolean, action: suspend () -> Unit) {
         startProcessing(key = executionKey)
         try {
-            userRepo.resetAccount(keyToPersist = keyToPersist)
+            action()
             sessionMonitor.resetSessionState()
+            config.wasUserLoggedIn = false
             logoutLocallyImpl()
         } catch (e: Exception) {
+            if (e is UnauthorizedException) {
+                config.wasUserLoggedIn = false
+            }
+
             if (logoutLocallyOnError || e is UnauthorizedException) {
                 logoutLocallyImpl()
             }
