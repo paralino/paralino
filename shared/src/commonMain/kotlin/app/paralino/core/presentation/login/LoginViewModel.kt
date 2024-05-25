@@ -2,6 +2,7 @@ package app.paralino.core.presentation.login
 
 import app.paralino.core.MR
 import app.paralino.core.config
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
@@ -32,6 +33,7 @@ class LoginViewModel constructor(
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val appConfigRepository: AppConfigRepository,
     private val startScreenUiType: LoginScreenUiType,
+    private val config: AppConfig
 ) : CoreViewModel() {
 
     val initialUiType: LoginScreenUiType
@@ -48,7 +50,7 @@ class LoginViewModel constructor(
             LoginScreenState(
                 canUseEmail = appConfigRepository.configState.value?.emailEnabled ?: false,
                 uiType = initialUiType,
-                alertDialog = if (hasGuestAccount()) {
+                alertDialog = if (config.hasGuestAccount()) {
                     MainAlertDialog.GuestAccountRecover
                 } else {
                     null
@@ -84,12 +86,6 @@ class LoginViewModel constructor(
         }
     }
 
-    private fun hasGuestAccount(): Boolean {
-        val emailValidation = FormValidation.Email.validate(config.guestEmail)
-        val passwordValidation = FormValidation.Password.validate(config.guestPassword)
-        return emailValidation.result && passwordValidation.result
-    }
-
     private fun recoverGuestAccount() {
         _uiState.update {
             it.copy(
@@ -103,7 +99,7 @@ class LoginViewModel constructor(
             .onEach { processStep(it) }
             .catch {
                 val cause = it.cause
-                if (cause is UnauthorizedException && UserSessionMonitor.unauthorizedTypes.any { it == cause.type }) {
+                if (cause is UnauthorizedException) {
                     dismissGuestAccount()
                 }
                 processSignUpError(it, onRecoverGuest = true)

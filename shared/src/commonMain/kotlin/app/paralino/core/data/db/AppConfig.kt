@@ -1,5 +1,7 @@
 package app.paralino.core.data.db
 
+import app.paralino.core.config
+import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
@@ -171,6 +173,12 @@ class AppConfig(
         set(value) {
             provider.userSettings.putBoolean(keyPlaceActivityThrottle, value)
         }
+
+    fun hasGuestAccount(): Boolean {
+        val emailValidation = FormValidation.Email.validate(config.guestEmail)
+        val passwordValidation = FormValidation.Password.validate(config.guestPassword)
+        return emailValidation.result && passwordValidation.result
+    }
 
     fun clear() {
         provider.userSettings.clear()

@@ -151,6 +151,7 @@ class MapHomeViewModel constructor(
                 if (it.comingFromBackground) {
                     delay(2000)
                     if (groupIdData.value.isNotBlank()) {
+                        logg.v("home_screen", "App in foreground, try to refresh selected group ${groupIdData.value}")
                         coroutineScope.launch(Dispatchers.IO) {
                             groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
                         }
@@ -183,6 +184,7 @@ class MapHomeViewModel constructor(
         groupIdData
             .onEach {
                 if (it.isNotBlank()) {
+                    logg.v("home_screen", "Selected group changed, try to refresh group $it")
                     coroutineScope.launch(Dispatchers.IO) {
                         groupPreRefresh.refreshGroupWithMembers(it)
                     }

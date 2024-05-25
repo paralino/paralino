@@ -5,6 +5,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.domain.user.UserSessionState
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
@@ -126,7 +127,7 @@ class UserRepository constructor(
         )
         config.sessionId = userSession.id
         config.emailConfirmed = true
-        sessionMonitor.updateSessionState(sessionValid = true)
+        sessionMonitor.updateSessionState(state = UserSessionState.OK)
     }
 
     fun updateUserEmail(newEmail: String, password: String): Flow<Unit> {
@@ -177,7 +178,7 @@ class UserRepository constructor(
     suspend fun refreshUserIfAvailable(): UserMeRaw {
         return getUserFromRemote()
             .also { updateLocalUser(it) }
-            .also { sessionMonitor.updateSessionState(sessionValid = true) }
+            .also { sessionMonitor.updateSessionState(state = UserSessionState.OK) }
             .also {
                 try {
                     remote.getPlans().also { local.savePlans(it) }
@@ -249,7 +250,7 @@ class UserRepository constructor(
             .also { local.removeFromBlocklist(id) }
     }
 
-    suspend fun logoutLocally() {
+    suspend fun clearLocally() {
         local.clear()
     }
 

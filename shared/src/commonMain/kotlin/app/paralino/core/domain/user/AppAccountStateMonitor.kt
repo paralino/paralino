@@ -107,7 +107,7 @@ class AppAccountStateMonitor constructor(
                 oldUserState = it
 
                 if (it is Resource.Ready && it.data !is AppAccountState.NO_USER) {
-                    userSessionMonitor.updateSessionState(true)
+                    userSessionMonitor.updateSessionState(state = UserSessionState.OK)
                     everHadUser = true
                 } else {
                     userSessionMonitor.resetSessionState()
@@ -127,10 +127,10 @@ class AppAccountStateMonitor constructor(
                         .v("${it.data} - Refresh user data in background - don't force")
                     scopeProvider.userSessionIOScope.launch {
                         try {
-                            logg.tag("account_state").v("Refresh user on different scope")
+                            logg.tag("account_state").v("Refresh everything on different scope")
                             refreshEverything.refreshEverything(forceGroupRefresh = false)
                         } catch (e: Exception) {
-                            logg.tag("account_state").v("Unable to refresh user: ${e.message}")
+                            logg.tag("account_state").v("Unable to refresh everything: ${e.message}")
                         }
                     }
                 } else if (!everHadUser && it.data is AppAccountState.NO_USER) {

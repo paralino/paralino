@@ -115,7 +115,7 @@ class LogoutUseCase(
         codeRepo.clearLocally()
         sharingManager.stopAllSharing()
         geofenceManager.deleteAllGeofences()
-        userRepo.logoutLocally()
+        userRepo.clearLocally()
         logg.i("account_state", "Cleared all data on logout")
     }
 }

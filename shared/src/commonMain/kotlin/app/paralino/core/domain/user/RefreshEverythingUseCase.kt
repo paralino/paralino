@@ -1,6 +1,7 @@
 package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
@@ -27,14 +28,16 @@ class RefreshEverythingUseCase(
     private val configRepo: AppConfigRepository,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val placeActivityUploadEngine: PlaceActivityUploadEngine,
-    private val pushProviderManager: IPushProviderManager
+    private val pushProviderManager: IPushProviderManager,
+    private val parentManager: LimitedExecutionParentManager
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "full_refresh"
     private val groupRefreshExecutionKey = "full_refresh_groups_refresh"
 
-    fun isProcessing(): Boolean {
-        return isProcessing(executionKey)
+
+    override fun isProcessing(key: String): Boolean {
+        return super.isProcessing(key) || parentManager.isProcessingAny()
     }
 
     suspend fun refreshEverything(

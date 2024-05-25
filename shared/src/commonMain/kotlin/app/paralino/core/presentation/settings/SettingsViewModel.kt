@@ -79,17 +79,9 @@ class SettingsViewModel(
 
     init {
         coroutineScope.launch {
-            listOf(
-                async {
-                    try {
-                        personalCodeRepo.refreshPersonalCodesAndRestockKeys()
-                    } catch (e: Exception) {
-                    }
-                },
-                async {
-                    userRepo.refreshUserMaybe()
-                }
-            ).awaitAll()
+            userRepo.refreshUserMaybe().data?.let {
+                personalCodeRepo.refreshPersonalCodesAndRestockKeys()
+            }
         }
 
         combine(

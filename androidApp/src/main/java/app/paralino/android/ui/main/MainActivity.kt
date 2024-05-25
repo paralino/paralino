@@ -44,6 +44,7 @@ import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.theme.AppTheme
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -191,6 +192,10 @@ fun RootApp(
             AppUpdateStatus.Installing -> {
                 LoadingDialog(text = "Installing...")
             }
+        }
+
+        if (uiState.dataRefreshBlockingLoadingShown) {
+            LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
         }
     }
 }

@@ -39,6 +39,8 @@ import app.paralino.core.domain.user.ChangeEmailUseCase
 import app.paralino.core.domain.user.ChangePasswordUseCase
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.domain.user.CreateAccountUseCase
+import app.paralino.core.domain.user.ExpiredSessionHandler
+import app.paralino.core.domain.user.ExpiredSessionRecovery
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RecoverAccountUseCase
@@ -189,7 +191,7 @@ val dataSourceModule = module {
 }
 
 val coreModule = module {
-    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
+    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
     single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get()) }
 
@@ -200,6 +202,7 @@ val coreModule = module {
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
+    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get(), config) }
     factory { LocationRequestUseCase(get(), get()) }
     factory { ClearUserLocationUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
@@ -208,6 +211,7 @@ val coreModule = module {
     factory { RawCryptoPresentation(get(), get(), get(), get(), config) }
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
 
+    single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -220,9 +224,9 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    single { PersonalCodesRepository(get(), get(), get(), get()) }
+    single { PersonalCodesRepository(get(), get(), get(), get(), get()) }
     single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
