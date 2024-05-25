@@ -57,6 +57,7 @@ class AppConfig(
         const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
         const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
         const val keyWasUserLoggedIn = "prefs.device.hadUser"
+        const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
     }
 
     val isTokenValid: Boolean
@@ -172,6 +173,12 @@ class AppConfig(
         get() = provider.userSettings.getBoolean(keyPlaceActivityThrottle, true)
         set(value) {
             provider.userSettings.putBoolean(keyPlaceActivityThrottle, value)
+        }
+
+    var didEverFullyRefreshData: Boolean
+        get() = provider.userSettings.getBoolean(keyDidEverFullyRefreshed, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyDidEverFullyRefreshed, value)
         }
 
     fun hasGuestAccount(): Boolean {

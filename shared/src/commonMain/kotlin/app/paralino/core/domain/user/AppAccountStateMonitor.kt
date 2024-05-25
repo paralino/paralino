@@ -123,15 +123,22 @@ class AppAccountStateMonitor constructor(
                     emit(Resource.Ready(AppAccountState.DATA_REFRESH))
                     refreshEverything.refreshEverything(forceGroupRefresh = true)
                 } else if (it.data is AppAccountState.USER_READY) {
-                    logg.tag("account_state")
-                        .v("${it.data} - Refresh user data in background - don't force")
-                    scopeProvider.userSessionIOScope.launch {
-                        try {
-                            logg.tag("account_state").v("Refresh everything on different scope")
-                            refreshEverything.refreshEverything(forceGroupRefresh = false)
-                        } catch (e: Exception) {
-                            logg.tag("account_state").v("Unable to refresh everything: ${e.message}")
+                    if (config.didEverFullyRefreshData) {
+                        logg.tag("account_state")
+                            .v("${it.data} - Refresh user data in background - don't force")
+                        scopeProvider.userSessionIOScope.launch {
+                            try {
+                                logg.tag("account_state").v("Refresh everything on different scope")
+                                refreshEverything.refreshEverything(forceGroupRefresh = false)
+                            } catch (e: Exception) {
+                                logg.tag("account_state").v("Unable to refresh everything: ${e.message}")
+                            }
                         }
+                    } else {
+                        logg.tag("account_state").v("${it.data} - First time refresh")
+                        emit(Resource.Ready(AppAccountState.DATA_REFRESH))
+                        refreshEverything.refreshEverything(forceGroupRefresh = true)
+                        config.didEverFullyRefreshData = true
                     }
                 } else if (!everHadUser && it.data is AppAccountState.NO_USER) {
                     logg.tag("account_state")
