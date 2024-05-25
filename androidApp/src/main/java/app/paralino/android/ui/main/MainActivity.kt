@@ -140,9 +140,18 @@ fun RootApp(
                     }
 
                     is AppAccountState.NO_USER -> {
+                        val start = if (finalState.canRecoverGuest) {
+                            AppScreen.LoggedOut.Login
+                        } else {
+                            AppScreen.LoggedOut.Welcome
+                        }
                         AppStartScreen(
                             appState = appState,
-                            start = AppScreen.LoggedOut.Welcome
+                            start = if (finalState.canRecoverGuest) {
+                                AppScreen.LoggedOut.Login
+                            } else {
+                                AppScreen.LoggedOut.Welcome
+                            }
                         )
                     }
 

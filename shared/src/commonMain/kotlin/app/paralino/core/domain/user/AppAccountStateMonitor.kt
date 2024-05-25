@@ -55,7 +55,7 @@ class AppAccountStateMonitor constructor(
                                 Resource.Ready(data = AppAccountState.NO_USER_DATA)
                             } else {
                                 logg.tag("account_state").v("User is null and token is missing")
-                                Resource.Ready(data = AppAccountState.NO_USER)
+                                Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = config.hasGuestAccount()))
                             }
                         }
 
@@ -67,7 +67,7 @@ class AppAccountStateMonitor constructor(
                             } else {
                                 logg.tag("account_state")
                                     .v("Key is not valid and no backup password")
-                                Resource.Ready(data = AppAccountState.NO_USER)
+                                Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = config.hasGuestAccount()))
                             }
                         }
 
@@ -90,7 +90,7 @@ class AppAccountStateMonitor constructor(
                                 } else {
                                     logg.tag("account_state")
                                         .w("User can not be initialized (${e.message})")
-                                    Resource.Ready(data = AppAccountState.NO_USER)
+                                    Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = config.hasGuestAccount()))
                                 }
                             }
                         }
@@ -164,7 +164,7 @@ class AppAccountStateMonitor constructor(
 }
 
 sealed class AppAccountState {
-    object NO_USER : AppAccountState()
+    data class NO_USER(val canRecoverGuest: Boolean) : AppAccountState()
     object NO_USER_DATA : AppAccountState()
     object DATA_REFRESH : AppAccountState()
     data class NO_PROFILE(val user: UserMe) : AppAccountState()
