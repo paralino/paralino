@@ -145,6 +145,16 @@ fun LoginScreenCore(
             }
         }
 
+        is MainAlertDialog.GuestAccountDismissConfirmation -> {
+            dialog.Show {
+                if (it == MainAlertDialog.Buttons.buttonOk) {
+                    vm.onEvent(LoginScreenUiEvent.DismissGuestAccountConfirm)
+                } else if (it == MainAlertDialog.Buttons.buttonCancel) {
+                    vm.onEvent(LoginScreenUiEvent.DismissGuestAccountCancel)
+                }
+            }
+        }
+
         else -> {}
     }
 

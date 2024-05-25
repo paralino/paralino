@@ -136,6 +136,8 @@
     <string name="login_signup_guest_recover_alert_title">Recover guest account</string>
     <string name="login_signup_guest_recover_alert_message">Guest account was found on this device.\nDo you want to try and recover it?</string>
     <string name="login_signup_guest_recover_alert_confirm">Try recovering</string>
+    <string name="login_signup_guest_dismiss_alert_message">You will lose access to all data in saved account and will not be able to recover it!\n\nAre you sure you want to continue?</string>
+    <string name="login_signup_guest_dismiss_alert_confirm">Clear account</string>
     <string name="login_signup_account_type_regular">Account</string>
     <string name="login_signup_account_type_regular_info">Email/password</string>
     <string name="login_signup_account_type_guest">Guest</string>

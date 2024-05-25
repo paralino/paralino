@@ -1,12 +1,10 @@
 package app.paralino.core.presentation.login
 
 import app.paralino.core.MR
-import app.paralino.core.config
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
-import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.localizedString
@@ -98,18 +96,30 @@ class LoginViewModel constructor(
         loginUseCase.login(email = config.guestEmail, password = config.guestPassword)
             .onEach { processStep(it) }
             .catch {
+
+                processSignUpError(it, onRecoverGuest = true)
+
                 val cause = it.cause
                 if (cause is UnauthorizedException) {
                     dismissGuestAccount()
+                    _uiState.update {
+                        it.copy(
+                            uiType = LoginScreenUiType.SIGNUP,
+                            email = "",
+                            password = ""
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            uiType = LoginScreenUiType.SIGNUP_GUEST,
+                            email = "",
+                            password = "",
+                            alertDialog = MainAlertDialog.GuestAccountRecover
+                        )
+                    }
                 }
-                processSignUpError(it, onRecoverGuest = true)
-                _uiState.update {
-                    it.copy(
-                        uiType = LoginScreenUiType.SIGNUP,
-                        email = "",
-                        password = ""
-                    )
-                }
+
                 delay(2000)
                 _uiState.update { it.copy(stepInfo = null) }
             }
@@ -428,12 +438,28 @@ class LoginViewModel constructor(
                 _uiState.update { it.copy(alertDialog = null) }
             }
 
+            LoginScreenUiEvent.RecoverGuestAccount -> {
+                recoverGuestAccount()
+            }
+
             LoginScreenUiEvent.DismissGuestAccount -> {
+                _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountDismissConfirmation) }
+            }
+
+            LoginScreenUiEvent.DismissGuestAccountConfirm -> {
                 dismissGuestAccount()
             }
 
-            LoginScreenUiEvent.RecoverGuestAccount -> {
-                recoverGuestAccount()
+            LoginScreenUiEvent.DismissGuestAccountCancel -> {
+                _uiState.update {
+                    it.copy(
+                        alertDialog = if (config.hasGuestAccount()) {
+                            MainAlertDialog.GuestAccountRecover
+                        } else {
+                            null
+                        }
+                    )
+                }
             }
 
             LoginScreenUiEvent.LoginOrSignup -> {
@@ -443,6 +469,7 @@ class LoginViewModel constructor(
                     proceed()
                 }
             }
+
             LoginScreenUiEvent.ConfirmLoginOrSignup -> proceed()
         }
     }

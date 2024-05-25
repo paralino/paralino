@@ -494,6 +494,28 @@ sealed interface MainAlertDialog {
         )
     }
 
+    object GuestAccountDismissConfirmation : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = stringResource(resource = MR.strings.login_signup_guest_dismiss_alert_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    Buttons.buttonOk,
+                    stringResource(resource = MR.strings.login_signup_guest_dismiss_alert_confirm),
+                    AlertDialogButtonData.destructiveColor
+                ),
+                AlertDialogButtonData(
+                    Buttons.buttonCancel,
+                    stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+            canDismiss = false
+        )
+    }
+
     data class VerifyEmail(
         val email: String
     ) : MainAlertDialog {
