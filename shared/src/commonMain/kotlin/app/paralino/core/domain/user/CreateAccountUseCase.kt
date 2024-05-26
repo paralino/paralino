@@ -31,7 +31,7 @@ class CreateAccountUseCase constructor(
         val password = cryptoCore.getNewSymmetricKey()
         return signUp(email, password)
             .onEach {
-                if (it == SignUpStep.ALL_DONE) {
+                if (it >= SignUpStep.GENERATING_KEYS) {
                     config.guestEmail = email
                     config.guestPassword = password
                 }
