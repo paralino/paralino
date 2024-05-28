@@ -30,7 +30,7 @@ data class GroupPlaceRaw constructor(
 }
 
 @Serializable
-data class GroupPlacesWithSettingsRaw constructor(
+data class GroupPlaceWithSettingsRaw constructor(
     val place: GroupPlaceRaw,
     val settings: GroupPlaceSettingRaw?
 )

@@ -10,7 +10,7 @@ import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlaceSettingRaw
-import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
+import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -23,7 +23,7 @@ class PlacesLocalDataSource(
     private val mapper: GroupPlaceMapperLocal,
 ) {
 
-    suspend fun recreatePlaces(places: List<GroupPlacesWithSettingsRaw>) {
+    suspend fun recreatePlaces(places: List<GroupPlaceWithSettingsRaw>) {
         database.transaction {
             placesQueries.clearAll()
             placeSettingsQueries.clearAll()
@@ -36,7 +36,7 @@ class PlacesLocalDataSource(
         }
     }
 
-    suspend fun updateOrCreatePlace(place: GroupPlacesWithSettingsRaw) {
+    suspend fun updateOrCreatePlace(place: GroupPlaceWithSettingsRaw) {
         database.transaction {
             placesQueries.createPlace(mapper.remote2Local(place.place))
             if (place.settings == null)
@@ -48,7 +48,7 @@ class PlacesLocalDataSource(
 
     suspend fun recreatePlacesForGroup(
         groupId: String,
-        places: List<GroupPlacesWithSettingsRaw>
+        places: List<GroupPlaceWithSettingsRaw>
     ) {
         database.transaction {
             placesQueries.deleteForGroup(groupId)

@@ -11,6 +11,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
+import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
 import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.base.BaseRepository
@@ -69,8 +70,16 @@ class CryptoKEKRepository(
     }
 
 
-    suspend fun refreshAllKeys() {
+    suspend fun refreshAllKeys(groups: List<GroupWithMembersAndPlacesRaw>, force: Boolean) {
         triggerRemoteOnly {
+
+            if (!force && hasAllKeys(groups)) {
+                logg.tag("tag_crypto_key").d("No need to refresh all keys for groups")
+                return@triggerRemoteOnly
+            }
+
+            logg.tag("tag_crypto_key").d("Need to refresh all keys for all groups (${groups.size})")
+
             logg.tag("tag_crypto_key").d("refreshing group keys")
             val groupKeys = remote.getAllGroupKeys()
             logg.tag("tag_crypto_key").d("refreshing member keys")
@@ -131,8 +140,19 @@ class CryptoKEKRepository(
         }
     }
 
-    suspend fun refreshKeysForGroup(groupId: String) {
+    suspend fun refreshKeysForGroup(
+        groupId: String,
+        group: GroupWithMembersAndPlacesRaw,
+        force: Boolean
+    ) {
         triggerRemoteOnly {
+
+            if (!force && hasAllKeysForGroup(group)) {
+                logg.tag("tag_crypto_key_group").d("No need to refresh keys for group $groupId")
+                return@triggerRemoteOnly
+            }
+
+            logg.tag("tag_crypto_key_group").d("Need to refresh all keys for group $groupId")
             logg.tag("tag_crypto_key_group").d("refreshing group key")
             val groupKeys = remote.getGroupKeyForGroup(groupId)
             logg.tag("tag_crypto_key_group").d("refreshing group member key")
@@ -280,12 +300,28 @@ class CryptoKEKRepository(
         return getMemberKeys().filter { it.groupId == groupId }.map { it.signedMembershipPublicKey }
     }
 
-    suspend fun hasGroupKeyByVersion(groupKeyVersion: Long): Boolean {
-        return getGroupKeys().any { it.groupKeyVersion == groupKeyVersion }
+    suspend fun hasGroupKeyByVersion(groupId: String, groupKeyVersion: Long): Boolean {
+        return getGroupKeys().any {
+            it.groupId == groupId && it.groupKeyVersion == groupKeyVersion
+        }
     }
 
-    suspend fun hasDeviceKeyByVersion(deviceKeyVersion: Long): Boolean {
-        return getGroupDeviceKeys().any { it.deviceKeyVersion == deviceKeyVersion }
+    suspend fun hasDeviceKeyByVersion(locationId: String, deviceKeyVersion: Long): Boolean {
+        return getGroupDeviceKeys().any {
+            it.locationId == locationId && it.deviceKeyVersion == deviceKeyVersion
+        }
+    }
+
+    suspend fun hasMemberKeyByVersion(memberId: String, memberKeyVersion: Long): Boolean {
+        return getMemberKeys().any {
+            it.id == memberId && it.memberKeyVersion == memberKeyVersion
+        }
+    }
+
+    suspend fun hasPersonalGroupKeyByVersion(groupId: String, version: Long): Boolean {
+        return getPersonalGroupKeys().any {
+            it.groupId == groupId && it.version == version
+        }
     }
 
     suspend fun getMemberSenderKey(
@@ -295,19 +331,12 @@ class CryptoKEKRepository(
     ): GroupMemberSenderKey {
         val currentUserId = userRepository.cachedUserId
         val allMemberKeys = getGroupDeviceKeys()
-        val keyRaw = allMemberKeys
-            // filter keys that memberUserId created for current user
-            .filter {
-                it.groupId == groupId
-                        && it.ownerUserId == memberUserId
-                        && it.memberUserId == currentUserId
-                        && it.locationId == locationId
-            }
-//            .let { keys ->
-//                logg.tag("tag_crypto_key_group_member").d("member keys count: ${allMemberKeys.size} - ${keys.size} filtered for group $groupId & member $memberUserId")
-//                keys
-//            }
-            .firstOrNull()
+        val keyRaw = allMemberKeys.firstOrNull {
+            it.groupId == groupId
+                    && it.ownerUserId == memberUserId
+                    && it.memberUserId == currentUserId
+                    && it.locationId == locationId
+        }
             ?: let {
                 logg.tag("tag_crypto_key_group_member")
                     .d("member sender key not found for group $groupId & member $memberUserId, key count: ${allMemberKeys.size}")
@@ -555,6 +584,45 @@ class CryptoKEKRepository(
             it.groupId == groupId && it.ownerUserId == userRepository.cachedUserId
         }.map { it.memberKeyVersion }
         return (groupDeviceKeys + groupKeys + memberKeys).distinct()
+    }
+
+    private suspend fun hasAllKeys(groups: List<GroupWithMembersAndPlacesRaw>): Boolean {
+        return groups.all { hasAllKeysForGroup(it) }
+    }
+
+    private suspend fun hasAllKeysForGroup(group: GroupWithMembersAndPlacesRaw): Boolean {
+        buildList {
+            add(group.group.group.groupKeyVersion)
+            addAll(group.group.members.map { it.member.groupKeyVersion })
+            addAll(group.group.members.flatMap { it.locations.map { it.groupKeyVersion } })
+            addAll(group.places.map { it.place.groupKeyVersion })
+        }
+            .distinct()
+            .all { hasGroupKeyByVersion(groupId = group.group.group.id, groupKeyVersion = it) }
+            .takeIf { it }
+            ?: return false
+
+        group.group.members.all { member ->
+            member.locations.all { location ->
+                hasDeviceKeyByVersion(
+                    locationId = location.id,
+                    deviceKeyVersion = location.deviceKeyVersion
+                )
+            }
+        }
+            .takeIf { it }
+            ?: return false
+
+        group.group.members.all { member ->
+            hasMemberKeyByVersion(
+                memberId = member.member.id,
+                memberKeyVersion = member.member.memberKeyVersion
+            )
+        }
+            .takeIf { it }
+            ?: return false
+
+        return true
     }
 
     suspend fun updateIntegrity(

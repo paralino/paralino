@@ -15,7 +15,7 @@ import app.paralino.core.models.places.GroupPlaceSettingsData
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.raw.GroupPlaceRaw
-import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
+import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
@@ -97,22 +97,6 @@ class PlacesRepository constructor(
                 placeActivityRepo.recreatePlacesForGroup(groupId, it)
             }
         )
-    }
-
-    suspend fun refreshPlacesForGroup(groupId: String): List<GroupPlacesWithSettingsRaw> {
-        return triggerRemoteOnly {
-            remote.getPlacesForGroup(groupId)
-        }.also {
-            local.recreatePlacesForGroup(groupId, it)
-            placeActivityRepo.recreatePlacesForGroup(groupId, it)
-        }
-    }
-
-    suspend fun refreshAllPlaces(): List<GroupPlacesWithSettingsRaw> {
-        return triggerRemoteOnly { remote.getAllPlaces() }.also {
-            local.recreatePlaces(it)
-            placeActivityRepo.recreatePlaces(it)
-        }
     }
 
     fun createPlace(groupId: String, private: Boolean, data: GroupPlaceData): Flow<Unit> {

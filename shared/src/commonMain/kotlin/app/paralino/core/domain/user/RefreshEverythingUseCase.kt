@@ -12,13 +12,14 @@ import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
+import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
 import kotlin.time.Duration.Companion.minutes
 
 class RefreshEverythingUseCase(
-    private val placesRepo: PlacesRepository,
+    private val placesLocal: PlacesLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val local: UserGroupLocalDataSource,
     private val userRepository: UserRepository,
@@ -105,20 +106,16 @@ class RefreshEverythingUseCase(
     }
 
     private suspend fun refreshAllGroupsWithPlaces() {
-        refreshAllGroups()
-        placesRepo.refreshAllPlaces()
-    }
-
-    private suspend fun refreshAllGroups() {
         triggerRemoteOnly {
             logg.tag("full_refresh").d("refreshing all groups")
             remote.getAllGroups()
-                .also { cryptoKEKRepo.refreshAllKeys() }
+                .also { cryptoKEKRepo.refreshAllKeys(it, force = false) }
                 .let { it.map { groupRefreshUseCase.handleGroupKeysUpdate(it) } }
         }
             .also {
                 logg.tag("full_refresh").d("group and keys ready, updating groups")
-                local.recreateGroups(it)
+                local.recreateGroups(it.map { it.group })
+                placesLocal.recreatePlaces(it.flatMap { it.places })
             }
             .also {
                 placeActivityUploadEngine.syncPendingEvents()

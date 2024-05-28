@@ -11,6 +11,7 @@ data class MemberDocumentRaw constructor(
     val groupId: String,
 
     val groupKeyVersion: Long,
+    val memberKeyVersion: Long,
     val verification: String,
 
     val data: String,
@@ -27,6 +28,7 @@ data class MemberDocumentRaw constructor(
                 ownerUserId = map["ownerUserId"] as String,
                 groupId = map["groupId"] as String,
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
+                memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
                 data = map["data"] as String,
                 paralinoId = map["paralinoId"] as? String?,
                 verification = map["verification"] as String,
