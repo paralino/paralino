@@ -129,7 +129,7 @@ object KoinIOS {
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), config) }
             factory { (startScreenType: LoginScreenUiType) ->
-                LoginViewModel(get(), get(), get(), get(), startScreenType)
+                LoginViewModel(get(), get(), get(), get(), startScreenType, config)
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
@@ -150,9 +150,9 @@ object KoinIOS {
                 GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
-                GroupSettingsViewModel(groupID, get(), get(), get(), get())
+                GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
             }
-            factory { MainViewModel(get(), get(), get(), get(), get()) }
+            factory { MainViewModel(get(), get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }
