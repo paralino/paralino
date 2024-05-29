@@ -5,6 +5,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.domain.user.UserSessionState
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
@@ -31,7 +32,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 
 
@@ -115,8 +115,8 @@ class UserRepository constructor(
     suspend fun remoteSignUp(
         email: String,
         password: String,
-    ): Pair<UserMeRaw, UserSession> {
-        return triggerRemoteOnly { remote.signUpAndCreateSession(email, password) }
+    ): UserMeRaw {
+        return triggerRemoteOnly { remote.signUp(email, password) }
     }
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
@@ -127,7 +127,7 @@ class UserRepository constructor(
         )
         config.sessionId = userSession.id
         config.emailConfirmed = true
-        sessionMonitor.updateSessionState(sessionValid = true)
+        sessionMonitor.updateSessionState(state = UserSessionState.OK)
     }
 
     fun updateUserEmail(newEmail: String, password: String): Flow<Unit> {
@@ -178,6 +178,7 @@ class UserRepository constructor(
     suspend fun refreshUserIfAvailable(): UserMeRaw {
         return getUserFromRemote()
             .also { updateLocalUser(it) }
+            .also { sessionMonitor.updateSessionState(state = UserSessionState.OK) }
             .also {
                 try {
                     remote.getPlans().also { local.savePlans(it) }
@@ -187,11 +188,11 @@ class UserRepository constructor(
             }
     }
 
-    suspend fun refreshUserMaybe(): Payload<UserMeRaw?> {
+    suspend fun refreshUserMaybe(timeDelayMillis: Long = 10_000): Payload<UserMeRaw?> {
         try {
             return triggerRemoteMaybe(
                 remote = { refreshUserIfAvailable() },
-                remotePreference = RemotePreference.CACHE("user_call", 10_000)
+                remotePreference = RemotePreference.CACHE("user_call", timeDelayMillis)
             ).let { Payload.Success(it) }
         } catch (e: Exception) {
             return Payload.Error(e)
@@ -201,6 +202,7 @@ class UserRepository constructor(
     suspend fun updateLocalUser(data: UserMeRaw) {
         config.userId = data.id
         config.email = data.email
+        config.wasUserLoggedIn = true
         local.update(data)
     }
 
@@ -248,27 +250,19 @@ class UserRepository constructor(
             .also { local.removeFromBlocklist(id) }
     }
 
-    suspend fun logoutLocally() {
+    suspend fun clearLocally() {
         local.clear()
     }
 
-    fun remoteLogout(): Flow<Unit> {
-        return getDataOnce { remote.logout() }
+    suspend fun remoteLogout() {
+        triggerRemoteOnly { remote.logout() }
     }
 
-    fun deleteAccount(): Flow<Unit> {
-        return getDataOnce(
-            remote = { remote.deleteAccount() }
-        ).onEach {
-            config.guestEmail = ""
-            config.guestPassword = ""
-        }
+    suspend fun deleteAccount() {
+        triggerRemoteOnly { remote.deleteAccount() }
     }
 
-    fun resetAccount(keyToPersist: UserCryptoKeyRaw?): Flow<Unit> {
-        return getDataOnce(
-            remote = { remote.resetAccount(keyToPersist) }
-        )
+    suspend fun resetAccount(keyToPersist: UserCryptoKeyRaw?) {
+        triggerRemoteOnly { remote.resetAccount(keyToPersist) }
     }
-
 }

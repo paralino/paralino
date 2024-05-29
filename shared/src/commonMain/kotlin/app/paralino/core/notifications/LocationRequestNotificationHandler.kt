@@ -2,6 +2,7 @@ package app.paralino.core.notifications
 
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.PushNotificationImportance
@@ -20,6 +21,7 @@ class LocationRequestNotificationHandler(
     private val locationPerformanceManager: LocationPerformanceManager,
     private val sharingManager: LocationSharingManager,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
+    private val memberIdUseCase: UserMemberIdUseCase,
     private val coroutineScopeProvider: ICoroutineScopeProvider
 ) : LimitedExecution() {
 
@@ -35,7 +37,8 @@ class LocationRequestNotificationHandler(
         val performanceType = push.performanceType ?: return
         val key = (push.pushType?.key ?: "location_request") + "_${payload.groupId}"
 
-        logg.tag("location_performance").v("Start location performance request $key - (${push.importance} - ${push.pushImportance}) $performanceType")
+        logg.tag("location_performance")
+            .v("Start location performance request $key - (${push.importance} - ${push.pushImportance}) $performanceType")
 
         coroutineScopeProvider.userSessionIOScope.launch {
             try {
@@ -62,14 +65,18 @@ class LocationRequestNotificationHandler(
         performanceType: LocationPerformanceType
     ) {
         logg.v("Update location status and performance for group $groupId")
-        if (!sharingManager.isSharingActiveForGroup(id = groupId)) {
-            // only update not sharing status if someone requested device location
-            // TODO maybe update it only if not updated previously?
-            if (performanceType == LocationPerformanceType.VERY_HIGH) {
-                try {
-                    deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
-                } catch (e: Exception) {
-                    logg.w("Error saving location status", e)
+        if (performanceType == LocationPerformanceType.VERY_HIGH) {
+            if (!sharingManager.isSharingActiveForGroup(id = groupId)) {
+                // update not sharing status if someone manually requested device location
+                // and only if not previously updated
+                // this is to handle the case if location sharing was stopped while device was offline
+                // in that case device status is wrong and was not updated
+                if (memberIdUseCase.getCurrentLocationForGroup(groupId)?.isEnded == false) {
+                    try {
+                        deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
+                    } catch (e: Exception) {
+                        logg.w("Error saving location status", e)
+                    }
                 }
             }
             return
@@ -97,7 +104,7 @@ class LocationRequestNotificationHandler(
 
                 PushNotificationType.LOCATION_FOCUS -> {
                     when (pushImportance) {
-                        PushNotificationImportance.HIGH -> LocationPerformanceType.VERY_HIGH
+                        PushNotificationImportance.HIGH,
                         PushNotificationImportance.MEDIUM -> LocationPerformanceType.HIGH
                         // TODO check if we should use HIGH by default (this was previous behavior)
                         PushNotificationImportance.NORMAL -> LocationPerformanceType.MEDIUM_HIGH

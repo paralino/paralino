@@ -89,7 +89,11 @@ class MapHomeViewModel constructor(
     val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow<MapHomeScreenState>(MapHomeScreenState.Empty())
+    private val _uiState = MutableStateFlow<MapHomeScreenState>(
+        MapHomeScreenState.Empty(
+            currentUserImage = userRepository.localUser.value.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot)
+        )
+    )
     val uiState: StateFlow<MapHomeScreenState> = _uiState
 
     private val _eventChannel = Channel<MapHomeScreenEvent?>()
@@ -147,6 +151,7 @@ class MapHomeViewModel constructor(
                 if (it.comingFromBackground) {
                     delay(2000)
                     if (groupIdData.value.isNotBlank()) {
+                        logg.v("home_screen", "App in foreground, try to refresh selected group ${groupIdData.value}")
                         coroutineScope.launch(Dispatchers.IO) {
                             groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
                         }
@@ -179,6 +184,7 @@ class MapHomeViewModel constructor(
         groupIdData
             .onEach {
                 if (it.isNotBlank()) {
+                    logg.v("home_screen", "Selected group changed, try to refresh group $it")
                     coroutineScope.launch(Dispatchers.IO) {
                         groupPreRefresh.refreshGroupWithMembers(it)
                     }
@@ -201,8 +207,8 @@ class MapHomeViewModel constructor(
                         userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
                     ) { _, group, places, sharingStatus, userData ->
 
-                        if (group == null) {
-                            return@combine MapHomeScreenState.Empty()
+                        if (group == null || userData == null) {
+                            return@combine MapHomeScreenState.Empty(currentUserImage = ImageModel.emoji(Emojis.robot))
                         }
 
                         val membersData = group.members.flatMap { member ->

@@ -38,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -78,20 +79,9 @@ class SettingsViewModel(
 
     init {
         coroutineScope.launch {
-            listOf(
-                async {
-                    try {
-                        personalCodeRepo.refreshPersonalCodesAndRestockKeys()
-                    } catch (e: Exception) {
-                    }
-                },
-                async {
-                    try {
-                        userRepo.refreshUserMaybe()
-                    } catch (e: Exception) {
-                    }
-                }
-            ).awaitAll()
+            userRepo.refreshUserMaybe().data?.let {
+                personalCodeRepo.refreshPersonalCodesAndRestockKeys()
+            }
         }
 
         combine(
@@ -160,7 +150,10 @@ class SettingsViewModel(
     }
 
     private fun logout() {
-        logoutControl.logout()
+        flow {
+            logoutControl.fullLogout(logoutLocallyOnError = false)
+            emit(Unit)
+        }
             .mapToPayload { Unit }
             .onEach { state ->
                 _accountState.update {
@@ -174,7 +167,10 @@ class SettingsViewModel(
     }
 
     private fun deleteAccount() {
-        logoutControl.deleteAccount()
+        flow {
+            logoutControl.deleteAccount(logoutLocallyOnError = false)
+            emit(Unit)
+        }
             .mapToPayload { Unit }
             .onEach { state ->
                 _accountState.update {

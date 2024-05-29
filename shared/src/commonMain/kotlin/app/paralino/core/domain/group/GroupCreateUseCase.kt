@@ -2,7 +2,6 @@ package app.paralino.core.domain.group
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
-import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
@@ -13,7 +12,6 @@ import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.location.MemberModelParalinoIdData
 import app.paralino.core.models.raw.CreateGroupPayload
-import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
@@ -32,9 +30,9 @@ import kotlinx.serialization.encodeToString
 class GroupCreateUseCase(
     private val userRepository: UserRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
-    private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore,
     private val remote: GroupsRemoteSource,
+    private val groupRefresh: GroupRefreshUseCase,
     private val local: UserGroupLocalDataSource,
     private val functionsApi: IFunctionsApi,
     private val personalCodesRepo: PersonalCodesRepository
@@ -42,15 +40,16 @@ class GroupCreateUseCase(
 
     private val groupKey = "group_create"
 
-    fun createGroup(name: String, image: ImageModel): Flow<GroupWithMembersRaw> {
+    fun createGroup(name: String, image: ImageModel): Flow<String> {
         return getDataOnce(
             remote = {
                 createGroupImpl(
                     name = name,
                     image = image
-                ).also { cryptoKEKRepo.refreshKeysForGroup(it.group.id) }
-            },
-            localUpdate = { local.updateOrCreateGroup(it) }
+                ).also {
+                    groupRefresh.refreshRemoteGroupWithMembersAndPlaces(groupId = it, cacheTimeMillis = 0)
+                }
+            }
         )
             .startProcessing(groupKey)
     }
@@ -77,7 +76,7 @@ class GroupCreateUseCase(
     private suspend fun createGroupImpl(
         name: String,
         image: ImageModel,
-    ): GroupWithMembersRaw {
+    ): String {
         val user = userRepository.cachedUser!!
         val userData = user.data!!
         val myData = MemberModelData(userData.userName, userData.userImage)
@@ -172,9 +171,7 @@ class GroupCreateUseCase(
         )
 
         if (response.isSuccess) {
-            return remote.getGroupWithMembers(
-                groupId = response.responseDataMap!!.get("groupId") as String
-            )
+            return response.responseDataMap!!.get("groupId") as String
         } else {
             throw response.remoteException
         }

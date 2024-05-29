@@ -135,7 +135,7 @@ object KoinSetup {
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), config, get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), config) }
-        viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType) }
+        viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, config) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
         viewModel { (args: String?) ->
             SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get())
@@ -152,8 +152,8 @@ object KoinSetup {
             )
         }
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get()) }
-        viewModel { MainViewModel(get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get()) }
+        viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }
         viewModel { ConvertAccountViewModel(get()) }

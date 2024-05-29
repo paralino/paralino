@@ -2,6 +2,7 @@ package app.paralino.core.presentation.main
 
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.domain.user.AppAccountStateMonitor
+import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.base.AppConfigRepository
@@ -24,6 +25,7 @@ class MainViewModel constructor(
     private val sessionMonitor: UserSessionMonitor,
     private val userRepo: UserRepository,
     private val appConfigRepository: AppConfigRepository,
+    private val expiredSessionHandler: ExpiredSessionHandler,
     private val appUpdateManager: IAppUpdateManager
 ) : CoreViewModel() {
 
@@ -34,7 +36,7 @@ class MainViewModel constructor(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        sessionMonitor.listenForSessionExpired()
+        sessionMonitor.listenForFullyExpiredSession()
             .onEach { _uiState.update { it.copy(isSessionExpiredShown = true) } }
             .launchIn(coroutineScope)
 
@@ -49,6 +51,10 @@ class MainViewModel constructor(
 
         appUpdateManager.updateState
             .onEach { updateState -> _uiState.update { it.copy(appUpdateStatus = updateState) } }
+            .launchIn(coroutineScope)
+
+        expiredSessionHandler.observeProcessing()
+            .onEach { state -> _uiState.update { it.copy(dataRefreshBlockingLoadingShown = state) } }
             .launchIn(coroutineScope)
     }
 

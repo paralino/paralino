@@ -51,7 +51,7 @@ class GroupMemberAddUseCase constructor(
                     group = group,
                     codeData = code
                 )
-                groupRefreshUseCase.refreshRemoteGroupWithMembersAndPlaces(groupId)
+                groupRefreshUseCase.refreshRemoteGroupWithMembersAndPlaces(groupId, cacheTimeMillis = 0)
             }
         )
             .map { Unit }

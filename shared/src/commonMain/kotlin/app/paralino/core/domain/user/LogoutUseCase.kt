@@ -2,27 +2,28 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.models.raw.UserCryptoKeyRaw
-import app.paralino.core.repo.group.GroupRepository
-import app.paralino.core.repo.personal_code.PersonalCodesRepository
-import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.repo.user.IPushProviderManager
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.data.db.AppConfig
+import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.domain.LimitedExecutionParentManager
+import app.paralino.core.domain.location.LocationUploadEngine
+import app.paralino.core.logg
+import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.domain.location.LocationUploadEngine
+import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.places.PlaceActivityDataSource
+import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onEach
 
 class LogoutUseCase(
     private val userRepo: UserRepository,
-    private val groupsRepo: GroupRepository,
-    private val placesRepo: PlacesRepository,
+    private val groupsRepo: UserGroupLocalDataSource,
+    private val placeActivityRepo: PlaceActivityDataSource,
     private val sharingManager: LocationSharingManager,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
@@ -32,58 +33,89 @@ class LogoutUseCase(
     private val locationRepo: LocationUploadEngine,
     private val scopeProvider: ICoroutineScopeProvider,
     private val geofenceManager: IGeofenceManager,
-    private val config: AppConfig
-) {
+    private val sessionMonitor: UserSessionMonitor,
+    private val limitedExecutionParentManager: LimitedExecutionParentManager,
+    private val config: AppConfig,
+) : ILimitedExecution by limitedExecutionParentManager {
 
-    fun logout(): Flow<Unit> {
-        return userRepo.remoteLogout()
-            .catch { emit(Unit) }
-            .onEach {
-                logoutLocally()
-            }
+    private val executionKey = "logout_or_delete"
+
+    suspend fun fullLogout(logoutLocallyOnError: Boolean) {
+        logg.w("account_state", "Start full logout")
+        accountAction(logoutLocallyOnError = logoutLocallyOnError) {
+            userRepo.remoteLogout()
+        }
     }
 
-    fun deleteAccount(logoutOnError: Boolean = false): Flow<Unit> {
-        return userRepo.deleteAccount()
-            .catch {
-                if (logoutOnError)
-                    emit(Unit)
-                else throw it
-            }
-            .onEach {
-                logoutLocally()
-            }
+    suspend fun deleteAccount(logoutLocallyOnError: Boolean) {
+        accountAction(logoutLocallyOnError = logoutLocallyOnError) {
+            userRepo.deleteAccount()
+            config.guestEmail = ""
+            config.guestPassword = ""
+        }
     }
 
-    fun resetAccount(keyToPersist: UserCryptoKeyRaw?, logoutOnError: Boolean = false): Flow<Unit> {
-        return userRepo.resetAccount(keyToPersist)
-            .catch {
-                if (logoutOnError)
-                    emit(Unit)
-                else throw it
+    suspend fun resetAccount(keyToPersist: UserCryptoKeyRaw?, logoutLocallyOnError: Boolean) {
+        accountAction(logoutLocallyOnError = logoutLocallyOnError) {
+            userRepo.resetAccount(keyToPersist = keyToPersist)
+        }
+    }
+
+    private suspend fun accountAction(logoutLocallyOnError: Boolean, action: suspend () -> Unit) {
+        startProcessing(key = executionKey)
+        try {
+            action()
+            sessionMonitor.resetSessionState()
+            config.wasUserLoggedIn = false
+            logoutLocallyImpl()
+        } catch (e: Exception) {
+            if (e is UnauthorizedException) {
+                config.wasUserLoggedIn = false
             }
-            .onEach {
-                logoutLocally()
+
+            if (logoutLocallyOnError || e is UnauthorizedException) {
+                logoutLocallyImpl()
             }
+            throw e
+        } finally {
+            stopProcessing(key = executionKey)
+        }
     }
 
     suspend fun logoutLocally() {
-        config.clear()
-        scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
-        clearResources()
-        userRepo.logoutLocally()
+        // TODO clear appwrite session cookie if still somehow present
+        // would be possible if we fork appwrite sdk
+
+        try {
+            startProcessing(key = executionKey)
+        } catch (e: Exception) {
+            logg.w("account_state", "Local logout already processing")
+            return
+        }
+
+        try {
+            logoutLocallyImpl()
+        } finally {
+            stopProcessing(key = executionKey)
+        }
     }
 
-    private suspend fun clearResources() {
+    private suspend fun logoutLocallyImpl() {
+        logg.w("account_state", "Logging user out locally")
+        config.clear()
+        scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
+
         userKeyRepo.clearAll()
         cryptoKEKRepo.clearKeys()
         pushManager.logout()
         deviceStatus.logout()
         locationRepo.logout()
-        groupsRepo.clear()
-        placesRepo.clear()
+        groupsRepo.clearAll()
+        placeActivityRepo.clearAll()
         codeRepo.clearLocally()
         sharingManager.stopAllSharing()
         geofenceManager.deleteAllGeofences()
+        userRepo.clearLocally()
+        logg.i("account_state", "Cleared all data on logout")
     }
 }

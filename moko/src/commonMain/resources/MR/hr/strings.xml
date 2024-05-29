@@ -31,6 +31,7 @@
     <string name="error_something_wrong">Nešto nije uredu!</string>
     <string name="error_something_wrong_http">Nešto nije uredu! [%d]</string>
     <string name="error_generic_snacbar">Ups, pokušajte ponovno.</string>
+    <string name="error_still_loading_snackbar">Osvježavanje podata u tijeku,\n**pokušajte ponovno za par sekundi.**</string>
     <string name="error_location_permission_missing_sheet_message">Lokacijska dozvola je **potrebna** kako bi se uspješno pratila i dijelila vaša lokacija s drugima.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Molimo omogućite **preciznu lokacijsku dozvolu** kako biste uspješno pratili i dijelili vašu lokaciju s drugima.</string>
     <string name="error_location_background_permission_missing_sheet_message">Molimo omogućite pristup lokaciji **uvijek** kako biste **pouzdano i uvijek** pratili i dijelili svoju lokaciju s drugima.</string>
@@ -132,10 +133,12 @@
     <string name="login_button_login">PRIJAVA</string>
     <string name="login_button_reset_password">RESETIRAJ LOZINKU</string>
     <string name="login_signup_guest_alert_title">Stvori gostujući račun</string>
-    <string name="login_signup_guest_alert_message">Podaci za gostujući račun generirani su i sigurno pohranjeni na uređaju.\n\n**UPOZORENJE:**\nNećete moći povratiti račun ili se prijaviti na drugom uređaju!</string>
+    <string name="login_signup_guest_alert_message">Podaci za gostujući račun generirani su i sigurno pohranjeni na uređaju.\n\n**UPOZORENJE:**\nNećete moći spasiti račun ili se prijaviti na drugom uređaju!</string>
     <string name="login_signup_guest_recover_alert_title">Povrati gostujući račun</string>
     <string name="login_signup_guest_recover_alert_message">Gostujući račun pronađen je na ovom uređaju.\nŽelite li pokušati ga povratiti?</string>
     <string name="login_signup_guest_recover_alert_confirm">Pokušaj povrata</string>
+    <string name="login_signup_guest_dismiss_alert_message">Nećete moći pristupiti računu niti podacima!\n\nSigurno želite nastaviti?</string>
+    <string name="login_signup_guest_dismiss_alert_confirm">Izbriši račun</string>
     <string name="login_signup_account_type_regular">Račun</string>
     <string name="login_signup_account_type_regular_info">E-mail/lozinka</string>
     <string name="login_signup_account_type_guest">Gost</string>

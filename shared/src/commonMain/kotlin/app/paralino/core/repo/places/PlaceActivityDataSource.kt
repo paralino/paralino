@@ -5,7 +5,7 @@ import app.paralino.core.data.db.PlaceActivityEntity
 import app.paralino.core.data.db.execute
 import app.paralino.core.data.db.executeWithResult
 import app.paralino.core.models.places.PlaceActivityState
-import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
+import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -82,7 +82,7 @@ class PlaceActivityDataSource(
         }
     }
 
-    suspend fun recreatePlaces(places: List<GroupPlacesWithSettingsRaw>) {
+    suspend fun recreatePlaces(places: List<GroupPlaceWithSettingsRaw>) {
         _placeActivityCache.update {
             it.toMutableMap().apply {
                 this.forEach { entry ->
@@ -107,7 +107,7 @@ class PlaceActivityDataSource(
 
     suspend fun recreatePlacesForGroup(
         groupId: String,
-        places: List<GroupPlacesWithSettingsRaw>
+        places: List<GroupPlaceWithSettingsRaw>
     ) {
         _placeActivityCache.update {
             it.toMutableMap().apply {

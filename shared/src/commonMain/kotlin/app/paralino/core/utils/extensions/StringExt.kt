@@ -4,6 +4,7 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.exceptions.BaseRemoteException
+import app.paralino.core.utils.exceptions.DataStillLoadingException
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.exceptions.EncryptionException
 import app.paralino.core.utils.exceptions.InternalConnectionException
@@ -44,9 +45,17 @@ fun Throwable?.errorString(): String {
         is RemoteConnectionException -> MR.strings.error_server_unavailable.localizedString()
         is InternalConnectionException -> MR.strings.error_no_connection_snackbar.localizedString()
         is BaseRemoteException -> {
-            if (error.code != null)
-                MR.strings.error_something_wrong_http.localizedString(error.code)
-            else MR.strings.error_something_wrong.localizedString()
+            when {
+                error.code != null -> {
+                    MR.strings.error_something_wrong_http.localizedString(error.code)
+                }
+                error is DataStillLoadingException -> {
+                    MR.strings.error_still_loading_snackbar.localizedString()
+                }
+                else -> {
+                    MR.strings.error_something_wrong.localizedString()
+                }
+            }
         }
         is MissingCryptoKeyException -> {
             when (error) {

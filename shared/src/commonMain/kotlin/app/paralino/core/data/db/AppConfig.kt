@@ -1,6 +1,7 @@
 package app.paralino.core.data.db
 
-import app.paralino.core.utils.extensions.fromUTCtoInstant
+import app.paralino.core.config
+import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
@@ -55,10 +56,18 @@ class AppConfig(
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
         const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
         const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
+        const val keyWasUserLoggedIn = "prefs.device.hadUser"
+        const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
     }
 
     val isTokenValid: Boolean
         get() = sessionId.isNotBlank()
+
+    var wasUserLoggedIn: Boolean
+        get() = provider.appSettings.getBoolean(keyWasUserLoggedIn, false)
+        set(value) {
+            provider.appSettings.putBoolean(keyWasUserLoggedIn, value)
+        }
 
     var deviceIdSeed: String
         get() = provider.appSettings.getString(keyDeviceIDSeed, "")
@@ -165,6 +174,18 @@ class AppConfig(
         set(value) {
             provider.userSettings.putBoolean(keyPlaceActivityThrottle, value)
         }
+
+    var didEverFullyRefreshData: Boolean
+        get() = provider.userSettings.getBoolean(keyDidEverFullyRefreshed, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyDidEverFullyRefreshed, value)
+        }
+
+    fun hasGuestAccount(): Boolean {
+        val emailValidation = FormValidation.Email.validate(config.guestEmail)
+        val passwordValidation = FormValidation.Password.validate(config.guestPassword)
+        return emailValidation.result && passwordValidation.result
+    }
 
     fun clear() {
         provider.userSettings.clear()

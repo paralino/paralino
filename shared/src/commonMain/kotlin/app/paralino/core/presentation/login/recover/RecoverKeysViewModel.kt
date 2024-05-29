@@ -174,7 +174,10 @@ class RecoverKeysViewModel(
     private fun logout() {
         val validState = (_uiState.value as? Payload.Success)?.data ?: return
         if (validState.actionLoading) return
-        logoutUseCase.logout()
+        flow {
+            logoutUseCase.fullLogout(logoutLocallyOnError = false)
+            emit(Unit)
+        }
             .mapToPayload { Unit }
             .onEach { state ->
                 state.exception?.let { showSnackbar(it.errorString()) }

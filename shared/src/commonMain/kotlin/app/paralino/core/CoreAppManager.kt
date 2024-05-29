@@ -1,6 +1,8 @@
 package app.paralino.core
 
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.location.ActiveSharingEngine
+import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
@@ -11,6 +13,8 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.AppUpdateType
+import app.paralino.core.repo.user.UserRepository
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -24,14 +28,20 @@ class CoreAppManager(
     private val connectionStatusProvider: IConnectionStatusProvider,
     private val locationStatus: ILocationStatusProvider,
     private val activeSharingEngine: ActiveSharingEngine,
-    private val deviceApiProvider: IDeviceApiProvider
+    private val deviceApiProvider: IDeviceApiProvider,
+    private val userRepo: UserRepository,
+    private val expiredSessionHandler: ExpiredSessionHandler,
+    private val config: AppConfig
 ) {
 
     fun onAppStart() {
         sessionMonitor.listenForSessionExpired()
             .onEach {
-                logg.tag("account_session").v("Got session expired event - logout")
-                logoutUseCase.logoutLocally()
+                logg.tag("account_session").v("Got session expired event")
+                expiredSessionHandler.processExpiredSession()
+            }
+            .catch {
+                logg.tag("account_session").i("Error processing expired session: ${it.message}")
             }
             .launchIn(scopeProvider.defaultScope)
 
@@ -43,7 +53,6 @@ class CoreAppManager(
             }
 
             if (state.comingFromBackground) {
-                logg.tag("app_state").v("App is active but was in background, refresh groups")
                 updateGroups()
             }
         }
@@ -52,7 +61,11 @@ class CoreAppManager(
         configRepo.getUpdateType()
             .onEach { updateType ->
                 if (updateType is AppUpdateType.FORCE_AND_CANCEL) {
-                    logoutUseCase.logoutLocally()
+                    try {
+                        logoutUseCase.fullLogout(logoutLocallyOnError = true)
+                    } catch (e: Exception) {
+                        logg.w("account_state", "Error on forced app update logout", e)
+                    }
                 }
             }
             .launchIn(scopeProvider.defaultIOScope)
@@ -83,10 +96,15 @@ class CoreAppManager(
     }
 
     private fun updateGroups() {
+        if (!config.isTokenValid) {
+            logg.tag("app_state").v("Skip refresh, token is invalid")
+            return
+        }
+
+        logg.tag("app_state").v("App is active but was in background, refresh user and groups")
         scopeProvider.userSessionIOScope.launch {
-            refreshManager.scheduleRefreshAllGroupsWithPlaces(
-                time = 60_000
-            )
+            userRepo.refreshUserMaybe(timeDelayMillis = 30_000)
+            refreshManager.scheduleRefreshAllGroupsWithPlaces(time = 60_000)
         }
     }
 

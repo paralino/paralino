@@ -15,7 +15,7 @@ import app.paralino.core.models.places.GroupPlaceSettings
 import app.paralino.core.models.raw.CreatePlacePayload
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlaceSettingRaw
-import app.paralino.core.models.raw.GroupPlacesWithSettingsRaw
+import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import app.paralino.core.models.raw.PlaceEventPayload
 import app.paralino.core.models.raw.UpdatePlacePayload
 import app.paralino.core.repo.api.BackendQuery
@@ -47,7 +47,7 @@ class PlacesRemoteSource(
         groupId: String,
         private: Boolean,
         data: GroupPlaceData,
-    ): GroupPlacesWithSettingsRaw {
+    ): GroupPlaceWithSettingsRaw {
         return blocking {
             val groupKey =
                 cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
@@ -79,7 +79,7 @@ class PlacesRemoteSource(
         }
     }
 
-    suspend fun getPlaceWithSettings(placeId: String): GroupPlacesWithSettingsRaw {
+    suspend fun getPlaceWithSettings(placeId: String): GroupPlaceWithSettingsRaw {
         return blocking {
             val place = api.getDocument(
                 databaseType = BackendDatabaseType.DATA,
@@ -97,14 +97,14 @@ class PlacesRemoteSource(
                 null
             }
 
-            GroupPlacesWithSettingsRaw(
+            GroupPlaceWithSettingsRaw(
                 place = place,
                 settings = settings
             )
         }
     }
 
-    suspend fun getPlacesForGroup(groupId: String): List<GroupPlacesWithSettingsRaw> {
+    suspend fun getPlacesForGroup(groupId: String): List<GroupPlaceWithSettingsRaw> {
         return blocking {
             val places = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
@@ -119,7 +119,7 @@ class PlacesRemoteSource(
             ).map { it.parsePlaceSettings() }
 
             places.map { place ->
-                GroupPlacesWithSettingsRaw(
+                GroupPlaceWithSettingsRaw(
                     place = place,
                     settings = settings.firstOrNull { it.placeId == place.id }
                 )
@@ -127,7 +127,7 @@ class PlacesRemoteSource(
         }
     }
 
-    suspend fun getAllPlaces(): List<GroupPlacesWithSettingsRaw> {
+    suspend fun getAllPlaces(): List<GroupPlaceWithSettingsRaw> {
         return blocking {
             val places = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
@@ -140,7 +140,7 @@ class PlacesRemoteSource(
             ).map { it.parsePlaceSettings() }
 
             places.map { place ->
-                GroupPlacesWithSettingsRaw(
+                GroupPlaceWithSettingsRaw(
                     place = place,
                     settings = settings.firstOrNull { it.placeId == place.id }
                 )

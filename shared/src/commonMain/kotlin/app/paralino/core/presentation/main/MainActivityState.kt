@@ -9,5 +9,6 @@ data class MainActivityState(
     val userState: Resource<AppAccountState> = Resource.NotInitialized,
     val updateType: AppUpdateType? = null,
     val isSessionExpiredShown: Boolean = false,
-    val appUpdateStatus: AppUpdateStatus = AppUpdateStatus.Idle
+    val appUpdateStatus: AppUpdateStatus = AppUpdateStatus.Idle,
+    val dataRefreshBlockingLoadingShown: Boolean = false
 )

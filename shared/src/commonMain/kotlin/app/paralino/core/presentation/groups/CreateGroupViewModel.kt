@@ -93,7 +93,6 @@ class CreateGroupViewModel(
                 .map { group.id }
         } else {
             createGroup.createGroup(filteredName, image)
-                .map { it.group.id }
         }
 
         groupUpdateFlow

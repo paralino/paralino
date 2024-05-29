@@ -175,10 +175,14 @@ class RealtimeEventsProcessor constructor(
                 return
             }
 
-            val hasDeviceKey =
-                cryptoKEKRepo.hasDeviceKeyByVersion(deviceKeyVersion = location.deviceKeyVersion)
-            val hasGroupKey =
-                cryptoKEKRepo.hasGroupKeyByVersion(groupKeyVersion = location.groupKeyVersion)
+            val hasDeviceKey = cryptoKEKRepo.hasDeviceKeyByVersion(
+                locationId = location.id,
+                deviceKeyVersion = location.deviceKeyVersion
+            )
+            val hasGroupKey = cryptoKEKRepo.hasGroupKeyByVersion(
+                groupId = groupId,
+                groupKeyVersion = location.groupKeyVersion
+            )
 
             if (!hasDeviceKey || !hasGroupKey) {
                 logg.tag("realtime_events")

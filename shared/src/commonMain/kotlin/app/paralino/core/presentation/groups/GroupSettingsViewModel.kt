@@ -2,6 +2,7 @@ package app.paralino.core.presentation.groups
 
 import app.paralino.core.MR
 import app.paralino.core.domain.group.GroupCreateUseCase
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
@@ -14,6 +15,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.exceptions.DataStillLoadingException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -33,7 +35,8 @@ class GroupSettingsViewModel(
     private val userRepo: UserRepository,
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val groupRemove: GroupRemoveUseCase,
-    private val createGroup: GroupCreateUseCase
+    private val createGroup: GroupCreateUseCase,
+    private val groupPreRefresh: GroupPreRefreshUseCase
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroup?>(null)
@@ -97,6 +100,7 @@ class GroupSettingsViewModel(
                     }
                 }
             }
+
             is GroupSettingsUiEvent.DialogAction -> {
                 updateDialog(null)
                 when (event.action.dialog) {
@@ -159,7 +163,11 @@ class GroupSettingsViewModel(
     }
 
     private fun updateDialog(dialog: MainAlertDialog?) {
-        _uiState.update { it.mapReady { it.copy(alertDialog = dialog) } }
+        if (groupPreRefresh.isProcessingAny() && dialog != null) {
+            showSnackbar(DataStillLoadingException("Group not loaded").errorString())
+        } else {
+            _uiState.update { it.mapReady { it.copy(alertDialog = dialog) } }
+        }
     }
 
     private fun leaveOrDeleteGroup() {
@@ -182,8 +190,9 @@ class GroupSettingsViewModel(
         val data = _uiState.value.data
 
         if (data == null) {
-            showSnackbar(NotFoundException("Group not loaded").errorString())
             flowOf(Payload.Error<Unit>(NotFoundException("Group not loaded")))
+        } else if (groupPreRefresh.isProcessingAny()) {
+            flowOf(Payload.Error<Unit>(DataStillLoadingException("Group not loaded")))
         } else {
             action(data)
         }

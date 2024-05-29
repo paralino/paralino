@@ -9,7 +9,6 @@ import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.raw.BlockGroupFunctionData
@@ -17,6 +16,7 @@ import app.paralino.core.models.raw.BlockGroupMemberFunctionData
 import app.paralino.core.models.raw.DeleteGroupMemberPayload
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupSettingsRaw
+import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
 import app.paralino.core.models.raw.GroupWithMembersRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
@@ -28,8 +28,8 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.PermissionDeniedException
 import app.paralino.core.utils.exceptions.UnsupportedGroupEncryptionSchemeException
 import app.paralino.core.utils.extensions.blocking
@@ -37,6 +37,7 @@ import app.paralino.core.utils.extensions.blocking
 class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
+    private val placesRemote: PlacesRemoteSource,
     private val remoteConfig: BackendConfig,
     private val mapper: GroupMapperCore,
     private val cryptoCore: CryptoCore,
@@ -87,7 +88,7 @@ class GroupsRemoteSource constructor(
         }
     }
 
-    suspend fun getAllGroups(): List<GroupWithMembersRaw> {
+    suspend fun getAllGroups(): List<GroupWithMembersAndPlacesRaw> {
         return blocking {
             val groups = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
@@ -109,27 +110,32 @@ class GroupsRemoteSource constructor(
                 collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
             ).map { it.parseMemberLocation() }
 
+            val places = placesRemote.getAllPlaces()
+
             groups
                 .filter { AppConfig.isEncryptionSchemeSupported(it.schemeVersion) }
                 .map { group ->
-                GroupWithMembersRaw(
-                    group = group,
-                    members = members
-                        .filter { it.groupId == group.id }
-                        .map { member ->
-                            MemberWithLocationsRaw(
-                                member = member.copy(settingsRaw = settings.firstOrNull { it.id == member.id && it.groupId == group.id }),
-                                locations = locations.filter { location ->
-                                    member.locationIds.contains(location.id)
-                                }
-                            )
-                        }
-                )
-            }
+                    GroupWithMembersAndPlacesRaw(
+                        group = GroupWithMembersRaw(
+                            group = group,
+                            members = members
+                                .filter { it.groupId == group.id }
+                                .map { member ->
+                                    MemberWithLocationsRaw(
+                                        member = member.copy(settingsRaw = settings.firstOrNull { it.id == member.id && it.groupId == group.id }),
+                                        locations = locations.filter { location ->
+                                            member.locationIds.contains(location.id)
+                                        }
+                                    )
+                                },
+                        ),
+                        places = places.filter { it.place.groupId == group.id }
+                    )
+                }
         }
     }
 
-    suspend fun getGroupWithMembers(groupId: String): GroupWithMembersRaw {
+    suspend fun getGroupWithMembers(groupId: String): GroupWithMembersAndPlacesRaw {
         val group = api.getDocument(
             databaseType = BackendDatabaseType.DATA,
             remoteConfig.resourceIds.collectionGroupsID,
@@ -137,7 +143,10 @@ class GroupsRemoteSource constructor(
         ).parseGroup()
 
         if (!AppConfig.isEncryptionSchemeSupported(group.schemeVersion)) {
-            throw UnsupportedGroupEncryptionSchemeException(groupId = group.id, schemeVersion = group.schemeVersion)
+            throw UnsupportedGroupEncryptionSchemeException(
+                groupId = group.id,
+                schemeVersion = group.schemeVersion
+            )
         }
 
         val members = api.listAllDocuments(
@@ -160,16 +169,21 @@ class GroupsRemoteSource constructor(
             queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
         ).map { it.parseMemberLocation() }
 
-        return GroupWithMembersRaw(
-            group = group,
-            members = members.map { member ->
-                MemberWithLocationsRaw(
-                    member = member.copy(settingsRaw = settings?.takeIf { it.id == member.id }),
-                    locations = locations.filter { location ->
-                        member.locationIds.contains(location.id)
-                    }
-                )
-            }
+        val places = placesRemote.getPlacesForGroup(groupId = groupId)
+
+        return GroupWithMembersAndPlacesRaw(
+            group = GroupWithMembersRaw(
+                group = group,
+                members = members.map { member ->
+                    MemberWithLocationsRaw(
+                        member = member.copy(settingsRaw = settings?.takeIf { it.id == member.id }),
+                        locations = locations.filter { location ->
+                            member.locationIds.contains(location.id)
+                        }
+                    )
+                }
+            ),
+            places = places
         )
     }
 

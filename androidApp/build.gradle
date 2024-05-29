@@ -103,8 +103,8 @@ android {
         }
         direct {
             dimension "version"
-            versionCode 18
-            versionName "0.8.1"
+            versionCode 19
+            versionName "0.8.2"
             versionNameSuffix "-int"
             applicationIdSuffix ".int"
             buildConfigField("boolean", "forceLogToSystem", "false")
@@ -112,8 +112,8 @@ android {
         }
         dev {
             dimension "version"
-            versionCode 18
-            versionName "0.8.1"
+            versionCode 20
+            versionName "0.8.3"
             versionNameSuffix "-dev"
             applicationIdSuffix ".dev"
 
@@ -259,12 +259,9 @@ dependencies {
     implementation "com.mikepenz:aboutlibraries-compose:10.5.1"
     implementation 'io.sentry:sentry-android:6.33.0'
 
-    implementation("io.appwrite:sdk-for-android:5.0.0") {
-        // Appwrite 4.0.1 does not work with 8.2+ AGP
-        // We have to manually exclude and include okhttp bom library
-        // TODO Check if fixed later
-        exclude group: "com.squareup.okhttp3", module: "okhttp-bom"
-    }
+    debugImplementation project(path: ':appwrite-android')
+    releaseImplementation("io.appwrite:sdk-for-android:5.1.1")
+
     debugImplementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
     debugImplementation("com.squareup.okhttp3:okhttp")
     debugImplementation("com.squareup.okhttp3:logging-interceptor")

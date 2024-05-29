@@ -1,8 +1,8 @@
 package app.paralino.core.repo.personal_code
 
+import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
-import app.paralino.core.models.Resource
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
@@ -25,7 +25,8 @@ class PersonalCodesRepository constructor(
     private val remote: PersonalCodesRemoteSource,
     private val local: PersonalCodeLocalDataSource,
     private val userRepo: UserRepository,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val sessionMonitor: UserSessionMonitor
 ) : BaseRepository() {
 
     val personalCodeLocalState: StateFlow<List<UserPersonalCode>> = local.getPersonalCodes()
@@ -93,8 +94,10 @@ class PersonalCodesRepository constructor(
     }
 
     suspend fun refreshPersonalCodesAndRestockKeys() {
-        refreshPersonalCodes()
-        tryToRestockPreKeys(20.minutes.inWholeMilliseconds)
+        if (sessionMonitor.isSessionValid()) {
+            refreshPersonalCodes()
+            tryToRestockPreKeys(20.minutes.inWholeMilliseconds)
+        }
     }
 
     fun getUserInfoFromCode(code: String): Flow<Payload<UserPersonalCodeData>> {

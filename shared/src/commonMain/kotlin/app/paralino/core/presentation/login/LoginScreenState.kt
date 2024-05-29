@@ -39,6 +39,8 @@ sealed class LoginScreenUiEvent {
     data object HideDialog: LoginScreenUiEvent()
     data object RecoverGuestAccount: LoginScreenUiEvent()
     data object DismissGuestAccount: LoginScreenUiEvent()
+    data object DismissGuestAccountConfirm: LoginScreenUiEvent()
+    data object DismissGuestAccountCancel: LoginScreenUiEvent()
     data object LoginOrSignup: LoginScreenUiEvent()
     data object ConfirmLoginOrSignup: LoginScreenUiEvent()
 }

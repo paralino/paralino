@@ -5,6 +5,10 @@ import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
@@ -20,6 +24,12 @@ open class LimitedExecution : ILimitedExecution {
 }
 
 open class LimitedExecutionRepository() : BaseRepository(), ILimitedExecution {
+    override val executionState = MutableStateFlow<Map<String, LimitedExecutionState>>(mapOf())
+    override val mutex = Mutex()
+    override var tag: String? = this::class.simpleName
+}
+
+class LimitedExecutionParentManager() : BaseRepository(), ILimitedExecution {
     override val executionState = MutableStateFlow<Map<String, LimitedExecutionState>>(mapOf())
     override val mutex = Mutex()
     override var tag: String? = this::class.simpleName
@@ -45,6 +55,17 @@ interface ILimitedExecution {
         return duration < current.timeoutMillis
     }
 
+    fun observeIsProcessing(key: String): Flow<Boolean> {
+        return executionState
+            .map { it.get(key) }
+            .distinctUntilChanged()
+            .map {
+                val current = it ?: return@map false
+                val duration = nowUTC().toEpochMilliseconds() - current.startTimeMillis
+                return@map duration < current.timeoutMillis
+            }
+    }
+
     suspend fun startProcessing(
         key: String,
         delayedThresholdMillis: Long = 0,
@@ -56,9 +77,9 @@ interface ILimitedExecution {
             if (isProcessing(key)) {
                 logg.d(
                     "execution",
-                    "Execution ${this::class.simpleName} ($key) is already processing"
+                    "Execution ${tag ?: this::class.simpleName} ($key) is already processing"
                 )
-                throw ExecutionInProgressException("Execution ${this::class.simpleName} ($key) is already processing")
+                throw ExecutionInProgressException("Execution ${tag ?: this::class.simpleName} ($key) is already processing")
             }
 
             executionState.value = executionState.value.toMutableMap()
@@ -85,7 +106,7 @@ interface ILimitedExecution {
                 .absoluteValue
                 .toDuration(DurationUnit.MILLISECONDS)
 
-            logg.v("execution", "Stop execution: ${this::class.simpleName} ($key), time: $time")
+            logg.v("execution", "Stop execution: ${tag ?: this::class.simpleName} ($key), time: $time")
 
             if (current.delayedThresholdMillis > 0) {
                 executionState.value = currentState.toMutableMap().apply {

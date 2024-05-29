@@ -10,7 +10,6 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 
@@ -78,7 +77,8 @@ class RecoverAccountUseCase(
                 backupPassword = backupPassword,
                 userId = userRepo.cachedUserId
             )
-            emitAll(logoutUseCase.resetAccount(newKey.encryptedKeyData))
+            logoutUseCase.resetAccount(keyToPersist = newKey.encryptedKeyData, logoutLocallyOnError = false)
+            emit(Unit)
         }
             .onEach { config.temporaryBackupPassword = "" }
     }

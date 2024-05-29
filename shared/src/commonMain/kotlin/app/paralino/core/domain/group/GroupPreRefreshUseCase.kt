@@ -1,5 +1,6 @@
 package app.paralino.core.domain.group
 
+import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
@@ -23,11 +24,13 @@ class GroupPreRefreshUseCase constructor(
     private val groupRefresh: GroupRefreshUseCase,
     private val refreshEverything: RefreshEverythingUseCase,
     private val local: UserGroupLocalDataSource,
+    private val limitedExecutionParentManager: LimitedExecutionParentManager
 ) : LimitedExecutionRepository() {
 
     override fun isProcessing(key: String): Boolean {
         val selfProcessing = super.isProcessing(key)
         val fullProcessing = refreshEverything.isProcessingAny()
+        val parentProcessing = limitedExecutionParentManager.isProcessingAny()
         val groupRemoveProcessing = groupRemove.isProcessing(key)
         val groupMemberRemoveProcessing = groupMemberRemove.isProcessing(key)
         val groupMemberAddProcessing = groupMemberAdd.isProcessing(key)
@@ -35,7 +38,7 @@ class GroupPreRefreshUseCase constructor(
         val memberCryptoKeyRotationProcessing = memberCryptoKeyRotation.isProcessing(key)
         val deviceKeyRotationProcessing = deviceKeyRotation.isProcessing(key)
 
-        val processing = selfProcessing || fullProcessing
+        val processing = selfProcessing || fullProcessing || parentProcessing
                 || groupRemoveProcessing || groupMemberRemoveProcessing || groupMemberAddProcessing
                 || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing || deviceKeyRotationProcessing
 
@@ -43,6 +46,7 @@ class GroupPreRefreshUseCase constructor(
             "Group pre-refresh processing ($processing):" +
                     " self: $selfProcessing" +
                     " full: $fullProcessing" +
+                    " parent: $parentProcessing" +
                     " groupRemove: $groupRemoveProcessing" +
                     " groupMemberRemove: $groupMemberRemoveProcessing" +
                     " groupAddRemove: $groupMemberAddProcessing" +
@@ -66,9 +70,9 @@ class GroupPreRefreshUseCase constructor(
         logg.tag("group_actions").v("Not processing, can refresh group $groupId")
 
         try {
-            val result = triggerRemoteMaybe(
-                remotePreference = RemotePreference.CACHE(key = "group_refresh_$groupId", timeMillis = cacheTimeMillis),
-                remote = { groupRefresh.refreshRemoteGroupWithMembersAndPlaces(groupId) }
+            val result = groupRefresh.refreshRemoteGroupWithMembersAndPlaces(
+                groupId = groupId,
+                cacheTimeMillis = cacheTimeMillis
             )
             return result != null
         } catch (e: Exception) {
@@ -87,7 +91,10 @@ class GroupPreRefreshUseCase constructor(
                 .filterNotNull(),
             remote = { refreshGroupWithMembers(groupId = groupId, cacheTimeMillis = 10000) },
             localUpdate = { },
-            remotePreference = RemotePreference.CACHE(key = "get_group_refresh_$groupId", timeMillis = 12000)
+            remotePreference = RemotePreference.CACHE(
+                key = "get_group_refresh_$groupId",
+                timeMillis = 12000
+            )
         )
     }
 }
