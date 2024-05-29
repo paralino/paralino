@@ -97,7 +97,7 @@ class LocationRequestNotificationHandler(
 
                 PushNotificationType.LOCATION_FOCUS -> {
                     when (pushImportance) {
-                        PushNotificationImportance.HIGH -> LocationPerformanceType.VERY_HIGH
+                        PushNotificationImportance.HIGH,
                         PushNotificationImportance.MEDIUM -> LocationPerformanceType.HIGH
                         // TODO check if we should use HIGH by default (this was previous behavior)
                         PushNotificationImportance.NORMAL -> LocationPerformanceType.MEDIUM_HIGH
