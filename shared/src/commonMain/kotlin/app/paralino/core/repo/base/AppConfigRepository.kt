@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 
 class AppConfigRepository(
@@ -53,8 +54,16 @@ class AppConfigRepository(
                 database.configQueries.transaction {
                     database.configQueries.clearAll()
                     nodes.entries.forEach { node ->
+                        val value = node.value
                         database.configQueries.createConfig(
-                            ConfigNodeEntity(id = node.key, value_ = node.value.toString())
+                            ConfigNodeEntity(
+                                id = node.key,
+                                value_ = if (value is JsonPrimitive && value.isString) {
+                                    value.content
+                                } else {
+                                    value.toString()
+                                }
+                            )
                         )
                     }
                 }
