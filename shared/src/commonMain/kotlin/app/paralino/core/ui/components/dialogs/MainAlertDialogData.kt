@@ -16,7 +16,8 @@ import kotlinx.serialization.Serializable
 data class AlertDialogButtonData(
     val id: String,
     val text: String,
-    @Contextual val color: Color = Color.Transparent
+    @Contextual val color: Color = Color.Transparent,
+    val needsLongConfirmation: Boolean = false,
 ) {
     companion object {
         val destructiveColor = AppColors.errorBackground
@@ -65,7 +66,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.button_ok),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     Buttons.buttonCancel,
@@ -86,7 +88,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.button_ok),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     Buttons.buttonCancel,
@@ -114,7 +117,8 @@ sealed interface MainAlertDialog {
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
-                    text = stringResource(resource = MR.strings.settings_account_delete_alert_confirm_button)
+                    text = stringResource(resource = MR.strings.settings_account_delete_alert_confirm_button),
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel.plus("3"),
@@ -139,7 +143,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.group_details_leave_group_alert_button),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -160,7 +165,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.group_details_delete_group_alert_button),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -181,7 +187,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.group_details_block_group_alert_button),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -204,7 +211,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.group_details_block_group_alert_button),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -260,7 +268,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.group_details_remove_member_alert_button),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -290,7 +299,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.group_details_remove_member_alert_button),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -319,7 +329,8 @@ sealed interface MainAlertDialog {
                         AlertDialogButtonData.positiveColor
                     } else {
                         AlertDialogButtonData.destructiveColor
-                    }
+                    },
+                    needsLongConfirmation = !turnOn
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -382,7 +393,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.button_ok),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -420,7 +432,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.button_confirm),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -505,7 +518,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.login_signup_guest_dismiss_alert_confirm),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
@@ -550,7 +564,8 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.group_details_delete_group_alert_button),
-                    color = AlertDialogButtonData.destructiveColor
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
