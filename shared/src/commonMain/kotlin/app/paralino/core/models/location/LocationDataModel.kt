@@ -83,6 +83,7 @@ data class MemberDeviceStatus constructor(
     val signalStrength: NetworkSignalStrength? get() = NetworkSignalStrength.fromLevel(signal)
     val onlineStatus: MemberDeviceOnlineStatusType get() {
         return when {
+            statusType == MemberDeviceStatusType.NOT_SHARING -> MemberDeviceOnlineStatusType.UNKNOWN
             timeUTC == null -> MemberDeviceOnlineStatusType.UNKNOWN
             isOlderThan(3.hours) -> MemberDeviceOnlineStatusType.UNKNOWN
             isOlderThan(10.minutes) -> MemberDeviceOnlineStatusType.OFFLINE
