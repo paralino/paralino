@@ -17,7 +17,11 @@ import java.nio.charset.StandardCharsets
 
 class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
-    private val lazySodium = LazySodiumAndroid(SodiumAndroid(), StandardCharsets.UTF_8, HexMessageEncoder())
+    private val lazySodium = LazySodiumAndroid(
+        SodiumAndroid(),
+        StandardCharsets.UTF_8,
+        HexMessageEncoder()
+    )
 
     override fun createRandomId(length: Int, alphabet: AlphabetType): String {
         return NanoId.generate(
@@ -27,22 +31,22 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
     }
 
     override fun createNewSymmetricKey(): String {
-        return lazySodium.cryptoSecretBoxKeygen().asHexString
+        return lazySodium.cryptoSecretBoxKeygen().encode()
     }
 
     override fun createNewCryptoKeyPair(): KeyPair {
         val keyPair = lazySodium.cryptoBoxKeypair()
         return KeyPair(
-            privateKey = keyPair.secretKey.asHexString,
-            publicKey = keyPair.publicKey.asHexString
+            privateKey = keyPair.secretKey.encode(),
+            publicKey = keyPair.publicKey.encode()
         )
     }
 
     override fun createNewSignatureKeyPair(): KeyPair {
         val keyPair = lazySodium.cryptoSignKeypair()
         return KeyPair(
-            privateKey = keyPair.secretKey.asHexString,
-            publicKey = keyPair.publicKey.asHexString
+            privateKey = keyPair.secretKey.encode(),
+            publicKey = keyPair.publicKey.encode()
         )
     }
 
@@ -51,20 +55,20 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         return lazySodium.cryptoSecretBoxEasy(
             data,
             nonce,
-            Key.fromHexString(key)
-        ).let { lazySodium.encodeToString(nonce).plus(it) }
+            key.decodeKey()
+        ).let { nonce.plus(it.decode()).encode() }
     }
 
     override fun decryptDataWithSymmetricKey(data: String, key: String): String {
 
-        val source = lazySodium.decodeFromString(data)
+        val source = data.decode()
         val nonce = source.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
         val content = source.sliceArray(SecretBox.XSALSA20POLY1305_NONCEBYTES until source.size)
 
         return lazySodium.cryptoSecretBoxOpenEasy(
-            lazySodium.encodeToString(content),
+            content.encode(),
             nonce,
-            Key.fromHexString(key)
+            key.decodeKey()
         )
     }
 
@@ -135,15 +139,15 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
     ): String {
         val nonce = lazySodium.nonce(SecretBox.XSALSA20POLY1305_NONCEBYTES)
         val keyPair = com.goterl.lazysodium.utils.KeyPair(
-            Key.fromHexString(publicKey),
-            Key.fromHexString(myPrivateKey)
+            publicKey.decodeKey(),
+            myPrivateKey.decodeKey()
         )
 
         return lazySodium.cryptoBoxEasy(
             data,
             nonce,
             keyPair
-        ).let { lazySodium.encodeToString(nonce).plus(it) }
+        ).let { nonce.plus(it.decode()).encode() }
     }
 
     override fun decryptDataWithKeyPair(
@@ -152,17 +156,17 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         publicKey: String
     ): String {
 
-        val source = lazySodium.decodeFromString(data)
+        val source = data.decode()
         val nonce = source.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
         val content = source.sliceArray(SecretBox.XSALSA20POLY1305_NONCEBYTES until source.size)
 
         val keyPair = com.goterl.lazysodium.utils.KeyPair(
-            Key.fromHexString(publicKey),
-            Key.fromHexString(myPrivateKey)
+            publicKey.decodeKey(),
+            myPrivateKey.decodeKey()
         )
 
         return lazySodium.cryptoBoxOpenEasy(
-            lazySodium.encodeToString(content),
+            content.encode(),
             nonce,
             keyPair
         )
@@ -171,22 +175,40 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
     override fun signData(data: String, myPrivateKey: String): String {
         return lazySodium.cryptoSign(
             data,
-            Key.fromHexString(myPrivateKey)
+            myPrivateKey
         )
     }
 
     override fun verifySignature(data: String, publicKey: String): String? {
         return lazySodium.cryptoSignOpen(
             data,
-            Key.fromHexString(publicKey)
+            publicKey.decodeKey()
         )
     }
 
     override fun computeHash(data: String, type: HashType): String {
-        return when(type) {
+        val hash = when (type) {
             HashType.SHA256 -> lazySodium.cryptoHashSha256(data)
             HashType.SHA512 -> lazySodium.cryptoHashSha512(data)
         }
+
+        // for hash we always use hex
+        return lazySodium.toHexStr(hash.decode())
     }
 
+    private fun Key.encode(): String {
+        return this.asBytes.encode()
+    }
+
+    private fun ByteArray.encode(): String {
+        return lazySodium.encodeToString(this)
+    }
+
+    private fun String.decode(): ByteArray {
+        return lazySodium.decodeFromString(this)
+    }
+
+    private fun String.decodeKey(): Key {
+        return Key.fromBytes(this.decode())
+    }
 }
