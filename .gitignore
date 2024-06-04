@@ -9,8 +9,11 @@
 .cxx
 androidApp/schemas/
 user.properties
+
 local_resources/
+
 appwrite-android/
+lazysodium-android/
 
 androidApp/src/devGoogle/res/values/fcm_config.xml
 androidApp/src/directGoogle/res/values/fcm_config.xml

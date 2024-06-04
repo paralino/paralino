@@ -251,8 +251,7 @@ dependencies {
     googleImplementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
 
     implementation 'com.cossacklabs.com:themis:0.14.0'
-    // TODO fork and use own updated sodium
-    implementation "com.goterl:lazysodium-android:5.1.0@aar"
+    implementation project(path: ':lazysodium-android')
     implementation 'net.java.dev.jna:jna:5.14.0@aar'
     implementation 'io.viascom.nanoid:nanoid:1.0.1'
 
