@@ -49,34 +49,32 @@ class PlacesRemoteSource(
         private: Boolean,
         data: GroupPlaceData,
     ): GroupPlaceWithSettingsRaw {
-        return blocking {
-            val groupKey =
-                cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
+        val groupKey =
+            cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
 
-            val encryptedData = cryptoCore.encryptModel(
-                data = data,
-                key = groupKey.key
+        val encryptedData = cryptoCore.encryptModel(
+            data = data,
+            key = groupKey.key
+        )
+
+        val payload = CreatePlacePayload(
+            groupId = groupId,
+            keyVersion = groupKey.version,
+            private = private,
+            data = encryptedData
+        )
+
+        val response = functionsApi.runAndWait(
+            function = ServerFunction.PLACE_CREATE,
+            data = payload
+        )
+
+        if (response.isSuccess) {
+            return getPlaceWithSettings(
+                placeId = response.responseDataMap!!.get("placeId") as String
             )
-
-            val payload = CreatePlacePayload(
-                groupId = groupId,
-                keyVersion = groupKey.version,
-                private = private,
-                data = encryptedData
-            )
-
-            val response = functionsApi.runAndWait(
-                function = ServerFunction.PLACE_CREATE,
-                data = payload
-            )
-
-            if (response.isSuccess) {
-                getPlaceWithSettings(
-                    placeId = response.responseDataMap!!.get("placeId") as String
-                )
-            } else {
-                throw response.remoteException
-            }
+        } else {
+            throw response.remoteException
         }
     }
 
@@ -90,21 +88,21 @@ class PlacesRemoteSource(
                 ).parsePlace()
             }
 
-            val settings = try {
-                async {
+            val settings = async {
+                try {
                     api.listAllDocuments(
                         databaseType = BackendDatabaseType.DATA,
                         collectionId = BackendResourceIDs.collectionPlacesSettingsID,
                         queries = listOf(BackendQuery.Equals(key = "placeId", value = placeId))
-                    ).first().parsePlaceSettings()
-                }.await()
-            } catch (e: Exception) {
-                null
+                    ).firstOrNull()?.parsePlaceSettings()
+                } catch (e: Exception) {
+                    null
+                }
             }
 
             GroupPlaceWithSettingsRaw(
                 place = place.await(),
-                settings = settings
+                settings = settings.await()
             )
         }
     }
