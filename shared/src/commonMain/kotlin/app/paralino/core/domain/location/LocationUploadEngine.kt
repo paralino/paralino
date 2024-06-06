@@ -14,6 +14,7 @@ import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
+import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
@@ -41,6 +42,7 @@ class LocationUploadEngine constructor(
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val remote: LocationRemoteSource,
+    private val local: LocationLocalDataSource,
     private val placesRepo: PlacesRepository,
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
     private val payloadProvider: LocationPayloadProvider,
@@ -175,9 +177,19 @@ class LocationUploadEngine constructor(
 
             logg.v(
                 tag = "location_service",
-                message = "Upload new ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) with performance ${locationPerformanceManager.locationPerformanceType.value.current}"
+                message = "Upload (${mapped.size}) new ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) with performance ${locationPerformanceManager.locationPerformanceType.value.current}"
             )
-            remote.saveCurrentLocation(mapped)
+
+            mapped.forEach {
+                try {
+                    remote.saveCurrentLocation(it).also {
+                        local.createOrUpdateMemberLocation(it)
+                    }
+                } catch (e: Exception) {
+                    logg.w("location_service", "Error saving location for group ${it.groupId}", e)
+                }
+            }
+
             logg.v(
                 tag = "location_service",
                 message = "New ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) uploaded"
