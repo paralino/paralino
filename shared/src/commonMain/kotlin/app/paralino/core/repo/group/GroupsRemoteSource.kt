@@ -33,6 +33,7 @@ import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.PermissionDeniedException
 import app.paralino.core.utils.exceptions.UnsupportedGroupEncryptionSchemeException
 import app.paralino.core.utils.extensions.blocking
+import kotlinx.coroutines.async
 
 class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
@@ -90,27 +91,43 @@ class GroupsRemoteSource constructor(
 
     suspend fun getAllGroups(): List<GroupWithMembersAndPlacesRaw> {
         return blocking {
-            val groups = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionGroupsID
-            ).map { it.parseGroup() }
+            val groupsAsync = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = remoteConfig.resourceIds.collectionGroupsID
+                ).map { it.parseGroup() }
+            }
 
-            val members = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionGroupMembersID
-            ).map { it.parseGroupMember() }
+            val membersAsync = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = remoteConfig.resourceIds.collectionGroupMembersID
+                ).map { it.parseGroupMember() }
+            }
 
-            val settings = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionGroupSettingsID
-            ).map { it.parseGroupSettings() }
+            val settingsAsync = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = remoteConfig.resourceIds.collectionGroupSettingsID
+                ).map { it.parseGroupSettings() }
+            }
 
-            val locations = api.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
-            ).map { it.parseMemberLocation() }
+            val locationsAsync = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+                ).map { it.parseMemberLocation() }
+            }
 
-            val places = placesRemote.getAllPlaces()
+            val placesAsync = async {
+                placesRemote.getAllPlaces()
+            }
+
+            val groups = groupsAsync.await()
+            val members = membersAsync.await()
+            val settings = settingsAsync.await()
+            val locations = locationsAsync.await()
+            val places = placesAsync.await()
 
             groups
                 .filter { AppConfig.isEncryptionSchemeSupported(it.schemeVersion) }
@@ -136,55 +153,73 @@ class GroupsRemoteSource constructor(
     }
 
     suspend fun getGroupWithMembers(groupId: String): GroupWithMembersAndPlacesRaw {
-        val group = api.getDocument(
-            databaseType = BackendDatabaseType.DATA,
-            remoteConfig.resourceIds.collectionGroupsID,
-            groupId
-        ).parseGroup()
+        return blocking {
+            val groupAsync = async {
+                api.getDocument(
+                    databaseType = BackendDatabaseType.DATA,
+                    remoteConfig.resourceIds.collectionGroupsID,
+                    groupId
+                ).parseGroup().also { group ->
+                    if (!AppConfig.isEncryptionSchemeSupported(group.schemeVersion)) {
+                        throw UnsupportedGroupEncryptionSchemeException(
+                            groupId = group.id,
+                            schemeVersion = group.schemeVersion
+                        )
+                    }
+                }
+            }
 
-        if (!AppConfig.isEncryptionSchemeSupported(group.schemeVersion)) {
-            throw UnsupportedGroupEncryptionSchemeException(
-                groupId = group.id,
-                schemeVersion = group.schemeVersion
+            val membersAsync = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
+                    queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
+                ).map { it.parseGroupMember() }
+            }
+
+            val settingsAsync = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
+                    queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
+                ).map { it.parseGroupSettings() }
+                    .takeIf { it.size == 1 && it.first().ownerUserId == config.userId }
+                    ?.firstOrNull()
+            }
+
+            val locationsAsync = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+                    queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
+                ).map { it.parseMemberLocation() }
+            }
+
+            val placesAsync = async {
+                placesRemote.getPlacesForGroup(groupId = groupId)
+            }
+
+            val group = groupAsync.await()
+            val members = membersAsync.await()
+            val settings = settingsAsync.await()
+            val locations = locationsAsync.await()
+            val places = placesAsync.await()
+
+            return@blocking GroupWithMembersAndPlacesRaw(
+                group = GroupWithMembersRaw(
+                    group = group,
+                    members = members.map { member ->
+                        MemberWithLocationsRaw(
+                            member = member.copy(settingsRaw = settings?.takeIf { it.id == member.id }),
+                            locations = locations.filter { location ->
+                                member.locationIds.contains(location.id)
+                            }
+                        )
+                    }
+                ),
+                places = places
             )
         }
-
-        val members = api.listAllDocuments(
-            databaseType = BackendDatabaseType.DATA,
-            collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
-            queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
-        ).map { it.parseGroupMember() }
-
-        val settings = api.listAllDocuments(
-            databaseType = BackendDatabaseType.DATA,
-            collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
-            queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
-        ).map { it.parseGroupSettings() }
-            .takeIf { it.size == 1 && it.first().ownerUserId == config.userId }
-            ?.firstOrNull()
-
-        val locations = api.listAllDocuments(
-            databaseType = BackendDatabaseType.DATA,
-            collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
-            queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
-        ).map { it.parseMemberLocation() }
-
-        val places = placesRemote.getPlacesForGroup(groupId = groupId)
-
-        return GroupWithMembersAndPlacesRaw(
-            group = GroupWithMembersRaw(
-                group = group,
-                members = members.map { member ->
-                    MemberWithLocationsRaw(
-                        member = member.copy(settingsRaw = settings?.takeIf { it.id == member.id }),
-                        locations = locations.filter { location ->
-                            member.locationIds.contains(location.id)
-                        }
-                    )
-                }
-            ),
-            places = places
-        )
     }
 
     suspend fun deleteGroup(groupId: String) {
