@@ -17,6 +17,7 @@ import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -80,14 +81,15 @@ class CryptoKEKRepository(
 
             logg.tag("tag_crypto_key").d("Need to refresh all keys for all groups (${groups.size})")
 
-            logg.tag("tag_crypto_key").d("refreshing group keys")
-            val groupKeys = remote.getAllGroupKeys()
-            logg.tag("tag_crypto_key").d("refreshing member keys")
-            val memberKeys = remote.getAllGroupMemberKeys()
-            logg.tag("tag_crypto_key").d("refreshing device keys")
-            val deviceKeys = remote.getAllGroupDeviceKeys()
-            logg.tag("tag_crypto_key").d("refreshing pre keys")
-            val preKeys = remote.getAllPersonalGroupKeys()
+            val groupKeysAsync = async { remote.getAllGroupKeys() }
+            val memberKeysAsync = async { remote.getAllGroupMemberKeys() }
+            val deviceKeysAsync = async { remote.getAllGroupDeviceKeys() }
+            val preKeysAsync = async { remote.getAllPersonalGroupKeys() }
+
+            val groupKeys = groupKeysAsync.await()
+            val memberKeys = memberKeysAsync.await()
+            val deviceKeys = deviceKeysAsync.await()
+            val preKeys = preKeysAsync.await()
 
             cachedGroupKeys.value = groupKeys
             cachedMemberKeys.value = memberKeys
@@ -153,14 +155,16 @@ class CryptoKEKRepository(
             }
 
             logg.tag("tag_crypto_key_group").d("Need to refresh all keys for group $groupId")
-            logg.tag("tag_crypto_key_group").d("refreshing group key")
-            val groupKeys = remote.getGroupKeyForGroup(groupId)
-            logg.tag("tag_crypto_key_group").d("refreshing group member key")
-            val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
-            logg.tag("tag_crypto_key_group").d("refreshing group device key")
-            val deviceKeys = remote.getAllGroupDeviceKeysForGroup(groupId)
-            logg.tag("tag_crypto_key_group").d("refreshing group pre keys")
-            val preKeys = remote.getAllPersonalGroupKeysForGroup(groupId)
+
+            val groupKeysAsync = async { remote.getGroupKeyForGroup(groupId) }
+            val memberKeysAsync = async { remote.getAllGroupMemberKeysForGroup(groupId) }
+            val deviceKeysAsync = async { remote.getAllGroupDeviceKeysForGroup(groupId) }
+            val preKeysAsync = async { remote.getAllPersonalGroupKeysForGroup(groupId) }
+
+            val groupKeys = groupKeysAsync.await()
+            val memberKeys = memberKeysAsync.await()
+            val deviceKeys = deviceKeysAsync.await()
+            val preKeys = preKeysAsync.await()
 
             logg.tag("tag_crypto_key_group")
                 .d("Got new group (${groupKeys.size}), member (${memberKeys.size}), device (${deviceKeys.size}), pre (${preKeys.size}) for group $groupId")
