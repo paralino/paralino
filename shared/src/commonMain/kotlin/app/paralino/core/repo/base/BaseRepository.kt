@@ -5,6 +5,7 @@ import app.paralino.core.logg
 import app.paralino.core.utils.exceptions.InternalConnectionException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
@@ -30,7 +31,7 @@ abstract class BaseRepository {
         local: Flow<T>,
         localUpdate: (suspend (U) -> Unit),
         remotePreference: RemotePreference = RemotePreference.PREFER,
-        remote: (suspend () -> U)
+        remote: (suspend CoroutineScope.() -> U)
     ): Flow<T> {
         return local.onStart {
             val localValue = local.firstOrNull()?.also { emit(it) }
@@ -62,7 +63,7 @@ abstract class BaseRepository {
         local: Flow<T>? = null,
         localUpdate: (suspend (T) -> Unit)? = null,
         remotePreference: RemotePreference = RemotePreference.FORCE,
-        remote: (suspend () -> T)
+        remote: (suspend CoroutineScope.() -> T)
     ): Flow<T> {
         return flow<T> {
             val localValue = local?.firstOrNull()?.also { emit(it) }
@@ -78,7 +79,7 @@ abstract class BaseRepository {
 
     suspend fun <T> triggerRemoteOnly(
         localValue: T? = null,
-        remote: (suspend () -> T)
+        remote: (suspend CoroutineScope.() -> T)
     ): T {
         return try {
             triggerRemote(
@@ -94,7 +95,7 @@ abstract class BaseRepository {
 
     suspend fun <T> triggerRemoteMaybe(
         remotePreference: RemotePreference.CACHE,
-        remote: (suspend () -> T)
+        remote: (suspend CoroutineScope.() -> T)
     ): T? {
         return triggerRemote(
             localValue = remotePreference.key,
@@ -106,7 +107,7 @@ abstract class BaseRepository {
     private suspend fun <T, U> triggerRemote(
         localValue: T? = null,
         remotePreference: RemotePreference,
-        remote: (suspend () -> U)
+        remote: (suspend CoroutineScope.() -> U)
     ): U? {
 
         val isOnline = connection.initAndGetStatus().isOnline
@@ -116,11 +117,11 @@ abstract class BaseRepository {
                 RemotePreference.FORCE -> {
                     if (!isOnline)
                         throwOfflineError()
-                    remote.invoke()
+                    remote.invoke(this)
                 }
                 RemotePreference.PREFER -> {
                     when {
-                        isOnline -> remote.invoke()
+                        isOnline -> remote.invoke(this)
                         localValue == null -> throwOfflineError()
                         else -> null
                     }
@@ -129,7 +130,7 @@ abstract class BaseRepository {
                     if (localValue == null) {
                         if (!isOnline)
                             throwOfflineError()
-                        remote.invoke()
+                        remote.invoke(this)
                     } else null
                 }
                 is RemotePreference.CACHE -> {
@@ -141,7 +142,7 @@ abstract class BaseRepository {
                         localValue == null -> {
                             if (!isOnline) throwOfflineError()
                             cachedInfo[remotePreference.key] = now
-                            remote.invoke()
+                            remote.invoke(this)
                         }
                         cacheIsDirty -> {
                             logg.tag("BaseRepo.refresh_cache")
@@ -150,7 +151,7 @@ abstract class BaseRepository {
                                 remotePreference.failOnError && !isOnline -> throwOfflineError()
                                 isOnline -> {
                                     cachedInfo[remotePreference.key] = now
-                                    remote.invoke()
+                                    remote.invoke(this)
                                 }
                                 else -> {
                                     cachedInfo[remotePreference.key] = 0
