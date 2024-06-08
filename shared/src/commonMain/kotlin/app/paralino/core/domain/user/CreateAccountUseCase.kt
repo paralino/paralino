@@ -13,10 +13,13 @@ import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.UnauthorizedException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 
 class CreateAccountUseCase constructor(
@@ -102,6 +105,7 @@ class CreateAccountUseCase constructor(
                 logg.e("Error signing up", it)
                 throw it
             }
+            .flowOn(Dispatchers.IO)
     }
 
     private suspend fun initAndSaveUserKeys(backupPassword: String, userId: String) {
