@@ -32,18 +32,17 @@ class PersonalCodeLocalDataSource(
         return database.mapToList { personalCodeQueries.getAllCodes() }
             .distinctFlowOfList()
             .map {
-                try {
-                    it.map { mapper.local2Core(it) }
-                } catch (e: Exception) {
-                    logg.w("account_state", "Error mapping personal codes: ${e.message}")
-                    emptyList()
+                it.mapNotNull {
+                    try {
+                        mapper.local2Core(it)
+                    } catch (e: Exception) {
+                        logg.w("account_state", "Error mapping personal code: ${e.message}", e)
+                        null
+                    }
                 }
             }
     }
 
-    suspend fun deletePersonalCode(id: String) {
-        database.personalCodeQueries.deleteCode(id)
-    }
 
     suspend fun clear() {
         database.personalCodeQueries.clearAll()
