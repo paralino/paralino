@@ -10,6 +10,7 @@ data class GroupItemState constructor(
     val userCount: Int,
     val uiType: GroupUiType = GroupUiType.INACTIVE,
     val canEdit: Boolean,
+    val isCurrentUserOwner: Boolean,
     val isSelected: Boolean,
     val isLarge: Boolean,
 ) {
@@ -27,6 +28,7 @@ data class GroupItemState constructor(
         userCount = group.memberCount,
         uiType = uiType ?: if (!group.isVerified) GroupUiType.UNVERIFIED else GroupUiType.INACTIVE,
         canEdit = canEdit,
+        isCurrentUserOwner = group.group.isCurrentUserOwner,
         isSelected = isSelected,
         isLarge = isLarge
     )
