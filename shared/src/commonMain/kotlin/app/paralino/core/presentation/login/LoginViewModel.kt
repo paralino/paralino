@@ -5,6 +5,7 @@ import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
+import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.localizedString
@@ -100,7 +101,7 @@ class LoginViewModel constructor(
                 processSignUpError(it, onRecoverGuest = true)
 
                 val cause = it.cause
-                if (cause is UnauthorizedException) {
+                if (cause is UnauthorizedException && cause.type == UserSessionMonitor.invalidCredentials) {
                     dismissGuestAccount()
                     _uiState.update {
                         it.copy(

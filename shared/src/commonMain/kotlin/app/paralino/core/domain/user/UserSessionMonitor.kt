@@ -15,10 +15,13 @@ import org.koin.ext.getFullName
 class UserSessionMonitor {
 
     companion object {
-        val unauthorizedTypes: List<String> = listOf(
-            "general_unauthorized_scope", "user_blocked"
-        )
+        const val userBlocked: String = "user_blocked"
         const val existingSessionError: String = "user_session_already_exists"
+        const val invalidCredentials: String = "user_invalid_credentials"
+
+        val unauthorizedTypes: List<String> = listOf(
+            "general_unauthorized_scope", userBlocked
+        )
     }
 
     private val _sessionStatus = MutableStateFlow<Resource<UserSessionState>>(Resource.NotInitialized)

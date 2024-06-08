@@ -57,12 +57,20 @@ class ExpiredSessionRecovery(
                         )
                         val cause = it.cause
                         if (cause is UnauthorizedException) {
-                            logg.w(
-                                tag = "account_state",
-                                message = "Guest user is no longer authorized, logout locally and clear user"
-                            )
-                            config.guestEmail = ""
-                            config.guestPassword = ""
+                            if (cause.type == UserSessionMonitor.invalidCredentials) {
+                                logg.w(
+                                    tag = "account_state",
+                                    message = "Guest user is no longer authorized, logout locally and clear user"
+                                )
+                                config.guestEmail = ""
+                                config.guestPassword = ""
+                            } else {
+                                logg.w(
+                                    tag = "account_state",
+                                    message = "Guest user is no longer authorized, logout locally"
+                                )
+                            }
+
                             logoutUseCase.logoutLocally()
                             sessionMonitor.updateSessionState(state = UserSessionState.EXPIRED)
                         }
