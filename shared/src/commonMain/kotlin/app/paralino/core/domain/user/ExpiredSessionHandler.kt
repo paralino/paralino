@@ -1,7 +1,6 @@
 package app.paralino.core.domain.user
 
 import app.paralino.core.data.db.AppConfig
-import app.paralino.core.domain.ILimitedExecution
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.logg
@@ -9,10 +8,10 @@ import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.UnauthorizedException
+import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.withContext
 
 class ExpiredSessionRecovery(
     private val logoutUseCase: LogoutUseCase,
@@ -22,12 +21,12 @@ class ExpiredSessionRecovery(
     private val sessionMonitor: UserSessionMonitor,
     private val userRepo: UserRepository,
     private val config: AppConfig,
-) : ILimitedExecution by parentManager {
+) : LimitedExecution(scope = parentManager) {
 
     private val sessionRecoveryKey = "guest_session_recovery"
 
     override fun isProcessing(key: String): Boolean {
-        return super.isProcessing(key) || isProcessingAny()
+        return isProcessingAny()
     }
 
     suspend fun processExpiredSession() {
@@ -45,7 +44,7 @@ class ExpiredSessionRecovery(
         logg.w("account_state", "User is guest, try to recover session")
 
         try {
-            withContext(scopeProvider.ioDispatcher) {
+            blocking {
                 // clearing user here will disable any further potential actions until session is refreshed
                 userRepo.clearLocally()
                 loginUseCase.login(email = config.guestEmail, password = config.guestPassword)
@@ -97,7 +96,7 @@ class ExpiredSessionHandler(
     private val sessionMonitor: UserSessionMonitor,
 ) : LimitedExecution() {
 
-    private val sessionRecoveryKey = "guest_session_recovery"
+    private val sessionRecoveryKey = "guest_session_handler"
 
     fun observeProcessing(): Flow<Boolean> {
         return observeIsProcessing(sessionRecoveryKey)

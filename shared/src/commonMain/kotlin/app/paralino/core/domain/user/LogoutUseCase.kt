@@ -3,7 +3,7 @@ package app.paralino.core.domain.user
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.data.db.AppConfig
-import app.paralino.core.domain.ILimitedExecution
+import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.logg
@@ -36,7 +36,7 @@ class LogoutUseCase(
     private val sessionMonitor: UserSessionMonitor,
     private val limitedExecutionParentManager: LimitedExecutionParentManager,
     private val config: AppConfig,
-) : ILimitedExecution by limitedExecutionParentManager {
+) : LimitedExecution(scope = limitedExecutionParentManager) {
 
     private val executionKey = "logout_or_delete"
 

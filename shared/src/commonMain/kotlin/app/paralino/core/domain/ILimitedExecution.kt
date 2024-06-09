@@ -6,9 +6,7 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
@@ -17,10 +15,11 @@ import kotlin.math.absoluteValue
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-open class LimitedExecution : ILimitedExecution {
-    override val executionState = MutableStateFlow<Map<String, LimitedExecutionState>>(mapOf())
-    override val mutex = Mutex()
-    override var tag: String? = this::class.simpleName
+open class LimitedExecution(val scope: ILimitedExecution? = null) : ILimitedExecution {
+    override val executionState =
+        scope?.executionState ?: MutableStateFlow<Map<String, LimitedExecutionState>>(mapOf())
+    override val mutex = scope?.mutex ?: Mutex()
+    override var tag: String? = scope?.tag ?: this::class.simpleName
 }
 
 open class LimitedExecutionRepository() : BaseRepository(), ILimitedExecution {
@@ -106,7 +105,10 @@ interface ILimitedExecution {
                 .absoluteValue
                 .toDuration(DurationUnit.MILLISECONDS)
 
-            logg.v("execution", "Stop execution: ${tag ?: this::class.simpleName} ($key), time: $time")
+            logg.v(
+                "execution",
+                "Stop execution: ${tag ?: this::class.simpleName} ($key), time: $time"
+            )
 
             if (current.delayedThresholdMillis > 0) {
                 executionState.value = currentState.toMutableMap().apply {
