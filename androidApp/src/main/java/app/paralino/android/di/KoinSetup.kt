@@ -86,7 +86,7 @@ object KoinSetup {
         single { LogsDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
 
 //        single { CryptoFrameworkProvider() } bind ICryptoServiceProvider::class
-        single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
+        single { CryptoFrameworkLibsodium(cryptoScheme = BuildKonfig.cryptoScheme) } bind ICryptoServiceProvider::class
 //        single { CryptoHashProvider() } bind ICryptoHashProvider::class
 
         single<ICoroutineScopeProvider> { androidApplication() as AppClass }

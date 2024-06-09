@@ -32,7 +32,8 @@ class CryptoCore(
         val encryptedPersonalKey = serviceProvider.encryptDataWithPassword(
             data = newPersonalKey,
             password = backupPassword,
-            context = userId
+            context = userId,
+            useFastMode = false
         )
 
         val newSignatureKeyPair = serviceProvider.createNewSignatureKeyPair()
@@ -66,7 +67,8 @@ class CryptoCore(
             serviceProvider.decryptDataWithPassword(
                 data = keys.encryptedKeyData.encryptedSymmetricKey,
                 password = password,
-                context = userId
+                context = userId,
+                useFastMode = false
             ).contentEquals(keys.userPersonalKey)
         )
         check(
@@ -94,7 +96,8 @@ class CryptoCore(
             serviceProvider.decryptDataWithPassword(
                 data = oldKey.encryptedSymmetricKey,
                 password = oldPassword,
-                context = oldKey.ownerUserId
+                context = oldKey.ownerUserId,
+                useFastMode = false
             ).contentEquals(userPersonalKey)
         )
 
@@ -102,7 +105,8 @@ class CryptoCore(
             serviceProvider.decryptDataWithPassword(
                 data = newKey.encryptedSymmetricKey,
                 password = newPassword,
-                context = newKey.ownerUserId
+                context = newKey.ownerUserId,
+                useFastMode = false
             ).contentEquals(userPersonalKey)
         )
 
@@ -141,7 +145,8 @@ class CryptoCore(
             val userKey = serviceProvider.decryptDataWithPassword(
                 data = encryptedKey,
                 password = oldBackupPassword,
-                context = userId
+                context = userId,
+                useFastMode = false
             )
 
             reEncryptSymmetricKey(newBackupPassword, userId, userKey)
@@ -157,7 +162,8 @@ class CryptoCore(
             serviceProvider.encryptDataWithPassword(
                 data = userKey,
                 password = backupPassword,
-                context = userId
+                context = userId,
+                useFastMode = false
             )
         }
     }
@@ -170,7 +176,8 @@ class CryptoCore(
         return serviceProvider.decryptDataWithPassword(
             data = keyData,
             password = password,
-            context = userId
+            context = userId,
+            useFastMode = false
         )
     }
 
@@ -189,7 +196,8 @@ class CryptoCore(
         return serviceProvider.encryptDataWithPassword(
             data = data,
             password = password,
-            context= userId
+            context= userId,
+            useFastMode = true
         )
     }
 
@@ -197,7 +205,8 @@ class CryptoCore(
         return serviceProvider.decryptDataWithPassword(
             data = data,
             password = password,
-            context= userId
+            context= userId,
+            useFastMode = true
         )
     }
 

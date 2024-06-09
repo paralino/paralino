@@ -136,6 +136,7 @@ buildkonfig {
     defaultConfigs {
         buildConfigField(FieldSpec.Type.STRING, "serverUrl", props.getProperty("serverUrl").trimQuotes())
         buildConfigField(FieldSpec.Type.STRING, "serverKey", props.getProperty("serverKey").trimQuotes())
+        buildConfigField(FieldSpec.Type.INT, "cryptoScheme", props.getProperty("cryptoScheme").trimQuotes())
     }
 
     targetConfigs {

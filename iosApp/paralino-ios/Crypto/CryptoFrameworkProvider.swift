@@ -13,13 +13,11 @@ import CryptoKit
 class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     let sodium: Sodium
+    let cryptoScheme: Int32
     
-    init(sodium: Sodium) {
-        self.sodium = sodium
-    }
-    
-    init() {
-        sodium = Sodium()
+    init(cryptoScheme: Int32) {
+        self.sodium = Sodium()
+        self.cryptoScheme = cryptoScheme
     }
     
     func execute<T>(action: () throws -> T?) -> Payload<T> {
@@ -53,7 +51,7 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     func createNewSymmetricKey() -> Payload<NSString> {
         return execute {
-            NSString(string: try sodium.secretBox.key().toHex(sodium))
+            NSString(string: try sodium.secretBox.key().encode(self))
         }
     }
     
@@ -61,8 +59,8 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         return execute {
             let keys = sodium.box.keyPair()
             return KeyPair(
-                privateKey: try keys!.secretKey.toHex(sodium),
-                publicKey: try keys!.publicKey.toHex(sodium)
+                privateKey: try keys!.secretKey.encode(self),
+                publicKey: try keys!.publicKey.encode(self)
             )
         }
     }
@@ -71,8 +69,8 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         return execute {
             let keys = sodium.sign.keyPair()
             return KeyPair(
-                privateKey: try keys!.secretKey.toHex(sodium),
-                publicKey: try keys!.publicKey.toHex(sodium)
+                privateKey: try keys!.secretKey.encode(self),
+                publicKey: try keys!.publicKey.encode(self)
             )
         }
     }
@@ -80,9 +78,9 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     func decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String) -> Payload<NSString> {
         return execute {
             if let value = try? sodium.box.open(
-                nonceAndAuthenticatedCipherText: data.hex2Bin(sodium),
-                senderPublicKey: publicKey.hex2Bin(sodium),
-                recipientSecretKey: myPrivateKey.hex2Bin(sodium)
+                nonceAndAuthenticatedCipherText: data.decode(self),
+                senderPublicKey: publicKey.decode(self),
+                recipientSecretKey: myPrivateKey.decode(self)
             )?.utf8String {
                 NSString(string: value)
             } else {
@@ -91,7 +89,7 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         }
     }
     
-    func decryptDataWithPassword(data: String, password: String, context: String) -> Payload<NSString> {
+    func decryptDataWithPassword(data: String, password: String, context: String, useFastMode: Bool) -> Payload<NSString> {
         return execute {
             
             guard let salt = sodium.genericHash.hash(
@@ -105,13 +103,14 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
                 outputLength: sodium.secretBox.KeyBytes,
                 passwd: password.bytes,
                 salt: salt,
-                opsLimit: sodium.pwHash.OpsLimitInteractive,
-                memLimit: sodium.pwHash.MemLimitInteractive
+                opsLimit: Int(PasswordHashingDefaults.shared.getHashingIterations(useFastMode: useFastMode, cryptoScheme: cryptoScheme)),
+                memLimit: Int(PasswordHashingDefaults.shared.getHashingMemoryInBytes(useFastMode: useFastMode, cryptoScheme: cryptoScheme)),
+                alg: PWHash.Alg.Argon2ID13
             ) else {
                 throw EncryptionError.CryptoError
             }
             
-            let result = try? decryptDataWithSymmetricKey(data: data, key: key.toHex(sodium))
+            let result = try? decryptDataWithSymmetricKey(data: data, key: key.encode(self))
             guard let result = result?.data_ as? NSString else { throw EncryptionError.CryptoError }
             return result
         }
@@ -120,8 +119,8 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     func decryptDataWithSymmetricKey(data: String, key: String) -> Payload<NSString> {
         return execute {
             let result = sodium.secretBox.open(
-                nonceAndAuthenticatedCipherText: try data.hex2Bin(sodium),
-                secretKey: try key.hex2Bin(sodium)
+                nonceAndAuthenticatedCipherText: try data.decode(self),
+                secretKey: try key.decode(self)
             )?.utf8String
             
             if let result = result {
@@ -137,9 +136,9 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         return execute {
             if let value = try? sodium.box.seal(
                 message: data.bytes,
-                recipientPublicKey: publicKey.hex2Bin(sodium),
-                senderSecretKey: myPrivateKey.hex2Bin(sodium)
-            )?.toHex(sodium) {
+                recipientPublicKey: publicKey.decode(self),
+                senderSecretKey: myPrivateKey.decode(self)
+            )?.encode(self) {
                 NSString(string: value)
             } else {
                 throw EncryptionError.CryptoError
@@ -147,7 +146,7 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         }
     }
     
-    func encryptDataWithPassword(data: String, password: String, context: String) -> Payload<NSString> {
+    func encryptDataWithPassword(data: String, password: String, context: String, useFastMode: Bool) -> Payload<NSString> {
         return execute {
             guard let salt = sodium.genericHash.hash(
                 message: context.bytes,
@@ -160,13 +159,14 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
                 outputLength: sodium.secretBox.KeyBytes,
                 passwd: password.bytes,
                 salt: salt,
-                opsLimit: sodium.pwHash.OpsLimitInteractive,
-                memLimit: sodium.pwHash.MemLimitInteractive
+                opsLimit: Int(PasswordHashingDefaults.shared.getHashingIterations(useFastMode: useFastMode, cryptoScheme: cryptoScheme)),
+                memLimit: Int(PasswordHashingDefaults.shared.getHashingMemoryInBytes(useFastMode: useFastMode, cryptoScheme: cryptoScheme)),
+                alg: PWHash.Alg.Argon2ID13
             ) else {
                 throw EncryptionError.CryptoError
             }
             
-            let result = try? encryptDataWithSymmetricKey(data: data, key: key.toHex(sodium))
+            let result = try? encryptDataWithSymmetricKey(data: data, key: key.encode(self))
             guard let result = result?.data_ as? NSString else { throw EncryptionError.CryptoError }
             return result
         }
@@ -176,8 +176,8 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         return execute {
             if let value = try? sodium.secretBox.seal(
                 message: data.bytes,
-                secretKey: key.hex2Bin(sodium)
-            )?.toHex(sodium) {
+                secretKey: key.decode(self)
+            )?.encode(self) {
                 NSString(string: value)
             } else {
                 throw EncryptionError.CryptoError
@@ -187,7 +187,7 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     func signData(data: String, myPrivateKey: String) -> Payload<NSString> {
         return execute {
-            if let value = try? sodium.sign.sign(message: data.bytes, secretKey: myPrivateKey.hex2Bin(sodium))?.toHex(sodium) {
+            if let value = try? sodium.sign.sign(message: data.bytes, secretKey: myPrivateKey.decode(self))?.encode(self) {
                 NSString(string: value)
             } else {
                 throw EncryptionError.CryptoError
@@ -197,7 +197,7 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     func verifySignature(data: String, publicKey: String) -> Payload<NSString> {
         return execute {
-            if let value = try? sodium.sign.open(signedMessage: data.hex2Bin(sodium), publicKey: publicKey.hex2Bin(sodium))?.utf8String {
+            if let value = try? sodium.sign.open(signedMessage: data.decode(self), publicKey: publicKey.decode(self))?.utf8String {
                 NSString(string: value)
             } else {
                 nil
@@ -220,21 +220,48 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
             }
             
             let bytes: [UInt8] = Array(hash.makeIterator())
-            return NSString(string: try bytes.toHex(sodium))
+            return NSString(string: try bytes.encodeToHex(self))
         }
     }
 }
 
 extension Bytes {
-    func toHex(_ sodium: Sodium) throws -> String {
-        guard let value = sodium.utils.bin2hex(self)?.uppercased() else { throw EncryptionError.WrongFormat }
+    func encode(_ framework: CryptoFrameworkProvider) throws -> String {
+        switch framework.cryptoScheme {
+        case ..<2: return try self.encodeToHex(framework)
+        default: return try self.encodeToBase64(framework)
+        }
+    }
+    
+    func encodeToBase64(_ framework: CryptoFrameworkProvider) throws -> String {
+        guard let value = framework.sodium.utils.bin2base64(self, variant: .ORIGINAL) else { throw EncryptionError.WrongFormat }
+        return value
+    }
+    
+    func encodeToHex(_ framework: CryptoFrameworkProvider) throws -> String {
+        guard let value = framework.sodium.utils.bin2hex(self)?.uppercased() else { throw EncryptionError.WrongFormat }
         return value
     }
 }
 
 extension String {
-    func hex2Bin(_ sodium: Sodium) throws -> Bytes {
-        if let bytes = sodium.utils.hex2bin(self.lowercased()) {
+    func decode(_ framework: CryptoFrameworkProvider) throws -> Bytes {
+        switch framework.cryptoScheme {
+        case ..<2: return try self.decodeFromHex(framework)
+        default: return try self.decodeFromBase64(framework)
+        }
+    }
+    
+    func decodeFromBase64(_ framework: CryptoFrameworkProvider) throws -> Bytes {
+        if let bytes = framework.sodium.utils.base642bin(self, variant: .ORIGINAL) {
+            return bytes
+        } else {
+            throw EncryptionError.WrongFormat
+        }
+    }
+    
+    func decodeFromHex(_ framework: CryptoFrameworkProvider) throws -> Bytes {
+        if let bytes = framework.sodium.utils.hex2bin(self.lowercased()) {
             return bytes
         } else {
             throw EncryptionError.WrongFormat

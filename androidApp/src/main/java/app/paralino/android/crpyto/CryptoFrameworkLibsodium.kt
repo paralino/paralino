@@ -4,23 +4,39 @@ import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KeyPair
+import app.paralino.core.crypto.PasswordHashingDefaults
+import app.paralino.core.logg
 import com.goterl.lazysodium.LazySodiumAndroid
 import com.goterl.lazysodium.SodiumAndroid
 import com.goterl.lazysodium.exceptions.SodiumException
 import com.goterl.lazysodium.interfaces.GenericHash
+import com.goterl.lazysodium.interfaces.MessageEncoder
 import com.goterl.lazysodium.interfaces.PwHash
 import com.goterl.lazysodium.interfaces.SecretBox
 import com.goterl.lazysodium.utils.HexMessageEncoder
 import com.goterl.lazysodium.utils.Key
+import com.sun.jna.NativeLong
 import io.viascom.nanoid.NanoId
 import java.nio.charset.StandardCharsets
+import java.util.Base64
 
-class CryptoFrameworkLibsodium : ICryptoServiceProvider {
+class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServiceProvider {
 
     private val lazySodium = LazySodiumAndroid(
         SodiumAndroid(),
         StandardCharsets.UTF_8,
-        HexMessageEncoder()
+        when {
+            cryptoScheme <= 1 -> HexMessageEncoder()
+            else -> object : MessageEncoder {
+                override fun encode(cipher: ByteArray): String {
+                    return Base64.getEncoder().encodeToString(cipher)
+                }
+
+                override fun decode(cipherText: String): ByteArray {
+                    return Base64.getDecoder().decode(cipherText)
+                }
+            }
+        }
     )
 
     override fun createRandomId(length: Int, alphabet: AlphabetType): String {
@@ -75,8 +91,11 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
     override fun encryptDataWithPassword(
         data: String,
         password: String,
-        context: String
+        context: String,
+        useFastMode: Boolean
     ): String {
+
+        logg.d("crypto_lib", "Encrypt with password - start")
 
         val out = lazySodium.randomBytesBuf(GenericHash.BYTES_MIN)
         val input = lazySodium.bytes(context)
@@ -90,24 +109,40 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             throw SodiumException("Error creating password context hash")
         }
 
+        logg.d("crypto_lib", "Encrypt with password - hashing start")
+
         val key = lazySodium.cryptoPwHash(
             password,
             SecretBox.KEYBYTES,
             out,
-            PwHash.OPSLIMIT_INTERACTIVE,
-            PwHash.MEMLIMIT_INTERACTIVE,
+            PasswordHashingDefaults.getHashingIterations(
+                useFastMode = useFastMode,
+                cryptoScheme = cryptoScheme
+            ),
+            NativeLong(
+                PasswordHashingDefaults.getHashingMemoryInBytes(
+                    useFastMode = useFastMode,
+                    cryptoScheme = cryptoScheme
+                )
+            ),
             PwHash.Alg.PWHASH_ALG_ARGON2ID13
         )
 
-        return encryptDataWithSymmetricKey(data, key)
+        logg.d("crypto_lib", "Encrypt with password - hashing done")
+
+        return encryptDataWithSymmetricKey(data, key).also {
+            logg.d("crypto_lib", "Encrypt with password - done")
+        }
     }
 
     override fun decryptDataWithPassword(
         data: String,
         password: String,
-        context: String
+        context: String,
+        useFastMode: Boolean
     ): String {
 
+        logg.d("crypto_lib", "Decrypt with password - start")
         val out = lazySodium.randomBytesBuf(GenericHash.BYTES_MIN)
         val input = lazySodium.bytes(context)
         if (!lazySodium.cryptoGenericHash(
@@ -120,16 +155,30 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             throw SodiumException("Error creating password context hash")
         }
 
+        logg.d("crypto_lib", "Decrypt with password - hashing start")
+
         val key = lazySodium.cryptoPwHash(
             password,
             SecretBox.KEYBYTES,
             out,
-            PwHash.OPSLIMIT_INTERACTIVE,
-            PwHash.MEMLIMIT_INTERACTIVE,
+            PasswordHashingDefaults.getHashingIterations(
+                useFastMode = useFastMode,
+                cryptoScheme = cryptoScheme
+            ),
+            NativeLong(
+                PasswordHashingDefaults.getHashingMemoryInBytes(
+                    useFastMode = useFastMode,
+                    cryptoScheme = cryptoScheme
+                )
+            ),
             PwHash.Alg.PWHASH_ALG_ARGON2ID13
         )
 
-        return decryptDataWithSymmetricKey(data, key)
+        logg.d("crypto_lib", "Decrypt with password - hashing done")
+
+        return decryptDataWithSymmetricKey(data, key).also {
+            logg.d("crypto_lib", "Decrypt with password - done")
+        }
     }
 
     override fun encryptDataWithKeyPair(
