@@ -197,7 +197,7 @@ class GroupValidityVerification(
 
         if (ownerSettings.groupOwnerIntegrity.isNullOrBlank()) {
             // allow missing integrity for now
-            logg.tag("integrity_check_member").v("VALID_CHANGED for ${group.id}")
+            logg.tag("integrity_check_group").v("VALID_CHANGED (empty) for ${group.id}")
             return IntegrityResult.VALID_CHANGED
         }
 
@@ -211,13 +211,13 @@ class GroupValidityVerification(
             ?: return IntegrityResult.CORRUPTED
 
         if (integrity.first.isValidForGroup(integrity.second)) {
-            logg.tag("integrity_check_member").v("VALID for ${group.id}")
+            logg.tag("integrity_check_group").v("VALID for ${group.id}")
             return IntegrityResult.VALID
         } else if (integrity.first.signature != integrity.second) {
-            logg.tag("integrity_check_member").v("VALID_CHANGED for ${group.id}")
+            logg.tag("integrity_check_group").v("VALID_CHANGED for ${group.id}")
             return IntegrityResult.VALID_CHANGED
         } else {
-            logg.tag("integrity_check_member").v("VALID_EXPIRED for ${group.id}")
+            logg.tag("integrity_check_group").v("VALID_EXPIRED for ${group.id}")
             return IntegrityResult.VALID_EXPIRED
         }
     }
@@ -233,13 +233,13 @@ class GroupValidityVerification(
             ?: return IntegrityResult.CORRUPTED
 
         if (integrity.first.isValidForMember(integrity.second)) {
-            logg.tag("integrity_check_group").v("VALID for ${group.id}")
+            logg.tag("integrity_check_member").v("VALID for ${group.id}")
             return IntegrityResult.VALID
         } else if (integrity.first.signature != integrity.second) {
-            logg.tag("integrity_check_group").v("VALID_CHANGED for ${group.id}")
+            logg.tag("integrity_check_member").v("VALID_CHANGED for ${group.id}")
             return IntegrityResult.VALID_CHANGED
         } else {
-            logg.tag("integrity_check_group").v("VALID_EXPIRED for ${group.id}")
+            logg.tag("integrity_check_member").v("VALID_EXPIRED for ${group.id}")
             return IntegrityResult.VALID_EXPIRED
         }
     }

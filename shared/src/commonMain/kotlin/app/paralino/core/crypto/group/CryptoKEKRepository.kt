@@ -20,6 +20,7 @@ import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import org.koin.core.component.getScopeId
 
 class CryptoKEKRepository(
     private val remote: CryptoKeyRemoteDataSource,
@@ -625,6 +626,10 @@ class CryptoKEKRepository(
         }
             .takeIf { it }
             ?: return false
+
+        if (getMemberKeys().filter { it.groupId == group.group.group.id }.size != group.group.members.size) {
+            return false
+        }
 
         return true
     }
