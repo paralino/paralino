@@ -202,7 +202,7 @@ val coreModule = module {
     factory { ChangeEmailUseCase(get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
-    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get(), config) }
+    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), config) }
     factory { LocationRequestUseCase(get(), get()) }
     factory { ClearUserLocationUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
@@ -220,7 +220,7 @@ val coreModule = module {
     single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get()) }
-    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }

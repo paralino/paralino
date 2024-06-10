@@ -5,7 +5,6 @@ import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.logg
 import app.paralino.core.presentation.login.SignUpStep
-import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.blocking
@@ -17,7 +16,6 @@ class ExpiredSessionRecovery(
     private val logoutUseCase: LogoutUseCase,
     private val loginUseCase: LoginUseCase,
     private val parentManager: LimitedExecutionParentManager,
-    private val scopeProvider: ICoroutineScopeProvider,
     private val sessionMonitor: UserSessionMonitor,
     private val userRepo: UserRepository,
     private val config: AppConfig,
