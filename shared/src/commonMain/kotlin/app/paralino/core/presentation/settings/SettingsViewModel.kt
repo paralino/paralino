@@ -80,7 +80,9 @@ class SettingsViewModel(
     init {
         coroutineScope.launch {
             userRepo.refreshUserMaybe().data?.let {
-                personalCodeRepo.refreshPersonalCodesAndRestockKeys()
+                try {
+                    personalCodeRepo.refreshPersonalCodesAndRestockKeys()
+                } catch (_: Exception) { }
             }
         }
 
