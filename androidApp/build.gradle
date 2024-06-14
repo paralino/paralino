@@ -187,18 +187,17 @@ dependencies {
 
     // region android and kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.legacy:legacy-support-core-utils:1.0.0"
 
     implementation "androidx.work:work-runtime-ktx:2.9.0"
 
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.7.0"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.8.2"
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.2"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0'
     // endregion
 
     // region compose
@@ -219,7 +218,6 @@ dependencies {
 
     implementation "com.google.accompanist:accompanist-permissions:0.34.0"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.34.0"
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.32.0"
 
 
 //    implementation "androidx.compose.material3:material3:1.0.0-alpha10"
@@ -230,7 +228,7 @@ dependencies {
     // endregion
 
     // region di
-    def koinVersion = '3.5.3'
+    def koinVersion = '3.5.6'
     implementation "io.insert-koin:koin-android:$koinVersion"
     implementation "io.insert-koin:koin-androidx-compose:$koinVersion"
     // endregion
@@ -238,12 +236,12 @@ dependencies {
     // region utils
     // TODO Replace to googleImplementation when LocationManager API is implemented
 //    googleImplementation 'com.google.android.gms:play-services-location:19.0.1'
-    implementation 'com.google.android.gms:play-services-location:21.2.0'
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
     ossImplementation 'org.osmdroid:osmdroid-android:6.1.10'
 
-    googleImplementation 'com.google.maps.android:maps-compose:5.0.1'
-    googleImplementation 'com.google.maps.android:maps-compose-utils:5.0.1'
-    googleImplementation 'com.google.maps.android:maps-compose-widgets:5.0.1'
+    googleImplementation 'com.google.maps.android:maps-compose:5.0.3'
+    googleImplementation 'com.google.maps.android:maps-compose-utils:5.0.3'
+    googleImplementation 'com.google.maps.android:maps-compose-widgets:5.0.3'
 
     ossImplementation 'com.mapbox.maps:android:10.8.1'
     ossImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
