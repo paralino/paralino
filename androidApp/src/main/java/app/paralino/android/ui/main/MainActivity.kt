@@ -66,9 +66,9 @@ class MainActivity : AppCompatActivity() {
         handleExtraDeeplink(intent?.data)
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleExtraDeeplink(intent?.data)
+        handleExtraDeeplink(intent.data)
     }
 
     private fun handleExtraDeeplink(deeplinkUri: Uri?) {
