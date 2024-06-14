@@ -41,7 +41,8 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.components.resources)
+                // using api here so we can access resources in android as well
+                api(compose.components.resources)
                 api(project(":moko"))
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
@@ -62,7 +63,7 @@ kotlin {
                 implementation("androidx.preference:preference-ktx:1.2.1")
                 implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
                 implementation("app.cash.sqldelight:android-driver:2.0.1")
-                api("androidx.activity:activity-compose:1.8.2")
+                api("androidx.activity:activity-compose:1.9.0")
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.12.0")
             }

@@ -7,90 +7,164 @@ import dev.icerock.moko.resources.ImageResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import paralino.shared.generated.resources.Res
+import paralino.shared.generated.resources.ic_account_circle
+import paralino.shared.generated.resources.ic_add
+import paralino.shared.generated.resources.ic_add_link
+import paralino.shared.generated.resources.ic_adjust
+import paralino.shared.generated.resources.ic_auto_fix_high
+import paralino.shared.generated.resources.ic_battery_charging_full
+import paralino.shared.generated.resources.ic_battery_full
+import paralino.shared.generated.resources.ic_block
+import paralino.shared.generated.resources.ic_check
+import paralino.shared.generated.resources.ic_check_circle
+import paralino.shared.generated.resources.ic_chevron_left
+import paralino.shared.generated.resources.ic_chevron_right
+import paralino.shared.generated.resources.ic_circle_with_outline
+import paralino.shared.generated.resources.ic_close
+import paralino.shared.generated.resources.ic_code
+import paralino.shared.generated.resources.ic_content_copy
+import paralino.shared.generated.resources.ic_delete
+import paralino.shared.generated.resources.ic_delete_forever
+import paralino.shared.generated.resources.ic_devices
+import paralino.shared.generated.resources.ic_drag_indicator
+import paralino.shared.generated.resources.ic_edit
+import paralino.shared.generated.resources.ic_expand_less
+import paralino.shared.generated.resources.ic_expand_more
+import paralino.shared.generated.resources.ic_group
+import paralino.shared.generated.resources.ic_groups
+import paralino.shared.generated.resources.ic_home
+import paralino.shared.generated.resources.ic_home_work
+import paralino.shared.generated.resources.ic_how_to_reg
+import paralino.shared.generated.resources.ic_incognito
+import paralino.shared.generated.resources.ic_key
+import paralino.shared.generated.resources.ic_library_books
+import paralino.shared.generated.resources.ic_location_off
+import paralino.shared.generated.resources.ic_location_on
+import paralino.shared.generated.resources.ic_lock
+import paralino.shared.generated.resources.ic_lock_open
+import paralino.shared.generated.resources.ic_logout
+import paralino.shared.generated.resources.ic_mail
+import paralino.shared.generated.resources.ic_map
+import paralino.shared.generated.resources.ic_more_vert
+import paralino.shared.generated.resources.ic_not_listed_location
+import paralino.shared.generated.resources.ic_notifications_active
+import paralino.shared.generated.resources.ic_notifications_off
+import paralino.shared.generated.resources.ic_password
+import paralino.shared.generated.resources.ic_person
+import paralino.shared.generated.resources.ic_person_add
+import paralino.shared.generated.resources.ic_person_remove
+import paralino.shared.generated.resources.ic_phone_android
+import paralino.shared.generated.resources.ic_phonelink_setup
+import paralino.shared.generated.resources.ic_privacy_tip
+import paralino.shared.generated.resources.ic_radio_button_unchecked
+import paralino.shared.generated.resources.ic_save
+import paralino.shared.generated.resources.ic_schedule
+import paralino.shared.generated.resources.ic_security
+import paralino.shared.generated.resources.ic_settings
+import paralino.shared.generated.resources.ic_share
+import paralino.shared.generated.resources.ic_share_location
+import paralino.shared.generated.resources.ic_signal_cell_1
+import paralino.shared.generated.resources.ic_signal_cell_2
+import paralino.shared.generated.resources.ic_signal_cell_3
+import paralino.shared.generated.resources.ic_speed
+import paralino.shared.generated.resources.ic_stacked_line_chart
+import paralino.shared.generated.resources.ic_stop_circle
+import paralino.shared.generated.resources.ic_timer
+import paralino.shared.generated.resources.ic_visibility
+import paralino.shared.generated.resources.ic_visibility_off
+import paralino.shared.generated.resources.ic_warning
+import paralino.shared.generated.resources.ic_wifi_1
+import paralino.shared.generated.resources.ic_wifi_2
+import paralino.shared.generated.resources.ic_wifi_3
+import paralino.shared.generated.resources.ic_wifi_off
+import paralino.shared.generated.resources.image_map_type_default_dark
+import paralino.shared.generated.resources.image_map_type_default_light
+import paralino.shared.generated.resources.image_map_type_satellite
 
 @OptIn(ExperimentalResourceApi::class)
 object CoreAppIcons {
-    val Check get() = "drawable/ic_check.xml"
-    val PhonelinkSetup get() = "drawable/ic_phonelink_setup.xml"
-    val NotificationsActive get() = "drawable/ic_notifications_active.xml"
-    val LocationOff get() = "drawable/ic_location_off.xml"
-    val Email get() = "drawable/ic_mail.xml"
-    val WifiOff get() = "drawable/ic_wifi_off.xml"
-    val Incognito get() = "drawable/ic_incognito.xml"
-    val Person get() = "drawable/ic_person.xml"
-    val VisibilityOff get() = "drawable/ic_visibility_off.xml"
-    val Visibility get() = "drawable/ic_visibility.xml"
-    val RadioButtonUnchecked get() = "drawable/ic_radio_button_unchecked.xml"
-    val CheckCircle get() = "drawable/ic_check_circle.xml"
-    val DragIndicator get() = "drawable/ic_drag_indicator.xml"
-    val ChevronLeft get() = "drawable/ic_chevron_left.xml"
-    val ChevronRight get() = "drawable/ic_chevron_right.xml"
-    val Warning get() = "drawable/ic_warning.xml"
-    val LocationOn get() = "drawable/ic_location_on.xml"
-    val Group get() = "drawable/ic_group.xml"
-    val Close get() = "drawable/ic_close.xml"
-    val Add get() = "drawable/ic_add.xml"
-    val Key get() = "drawable/ic_key.xml"
-    val Save get() = "drawable/ic_save.xml"
-    val ContentCopy get() = "drawable/ic_content_copy.xml"
-    val Delete get() = "drawable/ic_delete.xml"
-    val Share get() = "drawable/ic_share.xml"
-    val AutoFixHigh get() = "drawable/ic_auto_fix_high.xml"
-    val Logout get() = "drawable/ic_logout.xml"
-    val PrivacyTip get() = "drawable/ic_privacy_tip.xml"
-    val Code get() = "drawable/ic_code.xml"
-    val AccountCircle get() = "drawable/ic_account_circle.xml"
-    val DeleteForever get() = "drawable/ic_delete_forever.xml"
-    val Password get() = "drawable/ic_password.xml"
-    val LibraryBooks = "drawable/ic_library_books.xml"
-    val HowToReg get() = "drawable/ic_how_to_reg.xml"
-    val Edit get() = "drawable/ic_edit.xml"
-    val Security get() = "drawable/ic_security.xml"
-    val AddLink get() = "drawable/ic_add_link.xml"
-    val Block get() = "drawable/ic_block.xml"
-    val Lock get() = "drawable/ic_lock.xml"
-    val LockOpen get() = "drawable/ic_lock_open.xml"
-    val BatteryFull get() = "drawable/ic_battery_full.xml"
-    val PhoneAndroid get() = "drawable/ic_phone_android.xml"
-    val ExpandMore get() = "drawable/ic_expand_more.xml"
-    val ExpandLess get() = "drawable/ic_expand_less.xml"
-    val Devices get() = "drawable/ic_devices.xml"
-    val PersonRemove get() = "drawable/ic_person_remove.xml"
-    val StackedLineChart get() = "drawable/ic_stacked_line_chart.xml"
-    val Timer get() = "drawable/ic_timer.xml"
-    val Speed get() = "drawable/ic_speed.xml"
-    val AccessTime get() = "drawable/ic_schedule.xml"
-    val BatteryChargingFull get() = "drawable/ic_battery_charging_full.xml"
-    val MapsHomeWork get() = "drawable/ic_home_work.xml"
-    val Map get() = "drawable/ic_map.xml"
-    val Home get() = "drawable/ic_home.xml"
-    val ShareLocation get() = "drawable/ic_share_location.xml"
-    val StopCircle get() = "drawable/ic_stop_circle.xml"
-    val MoreVert get() = "drawable/ic_more_vert.xml"
-    val PersonAdd get() = "drawable/ic_person_add.xml"
-    val Settings get() = "drawable/ic_settings.xml"
+    val Check get() = Res.drawable.ic_check
+    val PhonelinkSetup get() = Res.drawable.ic_phonelink_setup
+    val NotificationsActive get() = Res.drawable.ic_notifications_active
+    val LocationOff get() = Res.drawable.ic_location_off
+    val Email get() = Res.drawable.ic_mail
+    val WifiOff get() = Res.drawable.ic_wifi_off
+    val Incognito get() = Res.drawable.ic_incognito
+    val Person get() = Res.drawable.ic_person
+    val VisibilityOff get() = Res.drawable.ic_visibility_off
+    val Visibility get() = Res.drawable.ic_visibility
+    val RadioButtonUnchecked get() = Res.drawable.ic_radio_button_unchecked
+    val CheckCircle get() = Res.drawable.ic_check_circle
+    val DragIndicator get() = Res.drawable.ic_drag_indicator
+    val ChevronLeft get() = Res.drawable.ic_chevron_left
+    val ChevronRight get() = Res.drawable.ic_chevron_right
+    val Warning get() = Res.drawable.ic_warning
+    val LocationOn get() = Res.drawable.ic_location_on
+    val Group get() = Res.drawable.ic_group
+    val Close get() = Res.drawable.ic_close
+    val Add get() = Res.drawable.ic_add
+    val Key get() = Res.drawable.ic_key
+    val Save get() = Res.drawable.ic_save
+    val ContentCopy get() = Res.drawable.ic_content_copy
+    val Delete get() = Res.drawable.ic_delete
+    val Share get() = Res.drawable.ic_share
+    val AutoFixHigh get() = Res.drawable.ic_auto_fix_high
+    val Logout get() = Res.drawable.ic_logout
+    val PrivacyTip get() = Res.drawable.ic_privacy_tip
+    val Code get() = Res.drawable.ic_code
+    val AccountCircle get() = Res.drawable.ic_account_circle
+    val DeleteForever get() = Res.drawable.ic_delete_forever
+    val Password get() = Res.drawable.ic_password
+    val LibraryBooks = Res.drawable.ic_library_books
+    val HowToReg get() = Res.drawable.ic_how_to_reg
+    val Edit get() = Res.drawable.ic_edit
+    val Security get() = Res.drawable.ic_security
+    val AddLink get() = Res.drawable.ic_add_link
+    val Block get() = Res.drawable.ic_block
+    val Lock get() = Res.drawable.ic_lock
+    val LockOpen get() = Res.drawable.ic_lock_open
+    val BatteryFull get() = Res.drawable.ic_battery_full
+    val PhoneAndroid get() = Res.drawable.ic_phone_android
+    val ExpandMore get() = Res.drawable.ic_expand_more
+    val ExpandLess get() = Res.drawable.ic_expand_less
+    val Devices get() = Res.drawable.ic_devices
+    val PersonRemove get() = Res.drawable.ic_person_remove
+    val StackedLineChart get() = Res.drawable.ic_stacked_line_chart
+    val Timer get() = Res.drawable.ic_timer
+    val Speed get() = Res.drawable.ic_speed
+    val AccessTime get() = Res.drawable.ic_schedule
+    val BatteryChargingFull get() = Res.drawable.ic_battery_charging_full
+    val MapsHomeWork get() = Res.drawable.ic_home_work
+    val Map get() = Res.drawable.ic_map
+    val Home get() = Res.drawable.ic_home
+    val ShareLocation get() = Res.drawable.ic_share_location
+    val StopCircle get() = Res.drawable.ic_stop_circle
+    val MoreVert get() = Res.drawable.ic_more_vert
+    val PersonAdd get() = Res.drawable.ic_person_add
+    val Settings get() = Res.drawable.ic_settings
 
-    val NotListedLocation get() = "drawable/ic_not_listed_location.xml"
-    val NotificationsOff get() = "drawable/ic_notifications_off.xml"
-    val Adjust get() = "drawable/ic_adjust.xml"
-    val Groups get() = "drawable/ic_groups.xml"
+    val NotListedLocation get() = Res.drawable.ic_not_listed_location
+    val NotificationsOff get() = Res.drawable.ic_notifications_off
+    val Adjust get() = Res.drawable.ic_adjust
+    val Groups get() = Res.drawable.ic_groups
 
-    val SignalWifi3 get() = "drawable/ic_wifi_3.xml"
-    val SignalWifi2 get() = "drawable/ic_wifi_2.xml"
-    val SignalWifi1 get() = "drawable/ic_wifi_1.xml"
-    val SignalCell3 get() = "drawable/ic_signal_cell_3.xml"
-    val SignalCell2 get() = "drawable/ic_signal_cell_2.xml"
-    val SignalCell1 get() = "drawable/ic_signal_cell_1.xml"
+    val SignalWifi3 get() = Res.drawable.ic_wifi_3
+    val SignalWifi2 get() = Res.drawable.ic_wifi_2
+    val SignalWifi1 get() = Res.drawable.ic_wifi_1
+    val SignalCell3 get() = Res.drawable.ic_signal_cell_3
+    val SignalCell2 get() = Res.drawable.ic_signal_cell_2
+    val SignalCell1 get() = Res.drawable.ic_signal_cell_1
 
     val CircleFull get() = MR.images.ic_circle_full
-    val CircleWithOutline get() = "drawable/ic_circle_with_outline.xml"
-    val MapModeSatellite get() = "drawable/image_map_type_satellite.jpg"
-    val MapModeDefaultLight get() = "drawable/image_map_type_default_light.png"
-    val MapModeDefaultDark get() = "drawable/image_map_type_default_dark.png"
+    val CircleWithOutline get() = Res.drawable.ic_circle_with_outline
+    val MapModeSatellite get() = Res.drawable.image_map_type_satellite
+    val MapModeDefaultLight get() = Res.drawable.image_map_type_default_light
+    val MapModeDefaultDark get() = Res.drawable.image_map_type_default_dark
 
     @Composable
-    fun String.asPainterResource(): Painter {
-        return painterResource(resource = DrawableResource(path = this))
+    inline fun DrawableResource.asPainterResource(): Painter {
+        return painterResource(resource = this)
     }
 
     @Composable
