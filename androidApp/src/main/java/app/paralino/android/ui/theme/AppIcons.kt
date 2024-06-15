@@ -1,7 +1,5 @@
 package app.paralino.android.ui.theme
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.FormatListBulleted
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -18,8 +16,6 @@ object AppIcons {
     val ExpandMore @Composable get() = CoreAppIcons.ExpandMore.asPainterResource()
     val Save @Composable get() = CoreAppIcons.Save.asPainterResource()
     val Close @Composable get() = CoreAppIcons.Close.asPainterResource()
-
-    val List @Composable get() = Icons.Rounded.FormatListBulleted
 
     @Composable
     fun Int.asImageVector(): ImageVector {

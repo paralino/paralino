@@ -1,0 +1,119 @@
+[versions]
+coreKtx = "1.13.1"
+kotlin = "1.9.24"
+androidGradlePlugin = "8.5.0"
+composeBom = "2024.06.00"
+composeMultiplatform = "1.6.11"
+koin = "3.5.6"
+junit = "4.+"
+androidxTestExt = "1.1.5"
+espressoCore = "3.5.1"
+kotlinxCoroutinesCore = "1.9.0-RC"
+kotlinxDatetime = "0.6.0"
+kotlinxSerializationJson = "1.6.3"
+material = "1.12.0"
+appcompat = "1.7.0"
+constraintlayout = "2.1.4"
+legacySupport = "1.0.0"
+multiplatformSettings = "1.1.1"
+preferenceKtx = "1.2.1"
+resources = "0.23.0"
+securityCryptoKtx = "1.1.0-alpha06"
+work = "2.9.0"
+lifecycle = "2.8.2"
+lifecycleExtensions = "2.2.0"
+activityCompose = "1.9.0"
+constraintlayoutCompose = "1.0.1"
+navigationCompose = "2.7.7"
+accompanist = "0.34.0"
+aboutLibraries = "10.5.1"
+sentry = "6.33.0"
+playServicesLocation = "21.3.0"
+osmdroid = "6.1.10"
+mapsCompose = "5.0.3"
+mapbox = "10.8.1"
+mapboxSdkTurf = "6.4.0"
+firebaseMessaging = "23.4.1"
+themis = "0.14.0"
+jna = "5.14.0"
+nanoid = "1.0.1"
+sqldelight = "2.0.2"
+mokoResources = "0.23.0"
+buildKonfig = "0.15.1"
+okhttp = "4.12.0"
+appwrite = "5.1.1"
+
+[libraries]
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
+androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtx" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+legacy-support-core-utils = { group = "androidx.legacy", name = "legacy-support-core-utils", version.ref = "legacySupport" }
+moko-resources = { module = "dev.icerock.moko:resources", version.ref = "resources" }
+moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "resources" }
+multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
+multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
+sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-driver-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-common-java8 = { group = "androidx.lifecycle", name = "lifecycle-common-java8", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycle-extensions = { group = "androidx.lifecycle", name = "lifecycle-extensions", version.ref = "lifecycleExtensions" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutCompose" }
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+compose-animation = { group = "androidx.compose.animation", name = "animation" }
+compose-material = { group = "androidx.compose.material", name = "material" }
+compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
+aboutLibraries-compose = { group = "com.mikepenz", name = "aboutlibraries-compose", version.ref = "aboutLibraries" }
+sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+osmdroid-android = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroid" }
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
+maps-compose-utils = { group = "com.google.maps.android", name = "maps-compose-utils", version.ref = "mapsCompose" }
+maps-compose-widgets = { group = "com.google.maps.android", name = "maps-compose-widgets", version.ref = "mapsCompose" }
+mapbox-android = { group = "com.mapbox.maps", name = "android", version.ref = "mapbox" }
+mapbox-sdk-turf = { group = "com.mapbox.mapboxsdk", name = "mapbox-sdk-turf", version.ref = "mapboxSdkTurf" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessaging" }
+themis = { group = "com.cossacklabs.com", name = "themis", version.ref = "themis" }
+jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
+nanoid = { group = "io.viascom.nanoid", name = "nanoid", version.ref = "nanoid" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+appwrite-android = { group = "io.appwrite", name = "skd-for-android", version.ref = "appwrite" }
+okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttp" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
+logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+compose = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "mokoResources" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }

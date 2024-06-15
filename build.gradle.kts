@@ -1,15 +1,18 @@
+
 plugins {
-    //trick: for the same plugin versions in all sub-modules
-    id("com.android.application").version("8.5.0").apply(false)
-    id("com.android.library").version("8.5.0").apply(false)
-    id("org.jetbrains.compose").version("1.6.11").apply(false)
-    id("com.mikepenz.aboutlibraries.plugin").version("10.5.1").apply(false)
-    id("app.cash.sqldelight").version("2.0.1").apply(false)
-    id("dev.icerock.mobile.multiplatform-resources").version("0.23.0").apply(false)
-    id("com.codingfeline.buildkonfig").version("0.15.1").apply(false)
-    kotlin("android").version("1.9.24").apply(false)
-    kotlin("multiplatform").version("1.9.24").apply(false)
-    kotlin("plugin.serialization").version("1.9.24").apply(false)
+    // Use the plugin versions from the version catalog
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+
+    alias(libs.plugins.compose) apply false
+//    alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.aboutlibraries) apply false
+    alias(libs.plugins.sqldelight) apply false
+    alias(libs.plugins.moko.resources) apply false
+    alias(libs.plugins.buildkonfig) apply false
 }
 
 allprojects {

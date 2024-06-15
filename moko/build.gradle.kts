@@ -1,7 +1,7 @@
 plugins {
-    kotlin("multiplatform")
-    id("com.android.library")
-    id("dev.icerock.mobile.multiplatform-resources")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.moko.resources)
 }
 
 kotlin {
@@ -32,8 +32,8 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                api("dev.icerock.moko:resources:0.23.0")
-                api("dev.icerock.moko:resources-compose:0.23.0")
+                api(libs.moko.resources)
+                api(libs.moko.resources.compose)
             }
         }
 

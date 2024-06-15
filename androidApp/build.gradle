@@ -179,88 +179,73 @@ repositories {
 }
 
 dependencies {
-
     implementation project(path: ':shared')
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext)
+    androidTestImplementation(libs.espresso.core)
 
     // region android and kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation "androidx.legacy:legacy-support-core-utils:1.0.0"
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
+    implementation(libs.legacy.support.core.utils)
 
-    implementation "androidx.work:work-runtime-ktx:2.9.0"
-
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.8.2"
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.2"
-
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.lifecycle.common.java8)
+    implementation(libs.lifecycle.extensions)
+    implementation(libs.lifecycle.runtime.ktx)
     // endregion
 
     // region compose
-    implementation 'androidx.activity:activity-compose:1.9.0'
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-    implementation "androidx.navigation:navigation-compose:2.7.7"
+    implementation(libs.constraintlayout.compose)
+    implementation(libs.navigation.compose)
 
-    implementation platform('androidx.compose:compose-bom:2024.06.00')
-    implementation "androidx.compose.animation:animation"
-    implementation "androidx.compose.material:material:"
-    implementation "androidx.compose.material:material-icons-core"
-    implementation "androidx.compose.material:material-icons-extended"
-    implementation "androidx.compose.foundation:foundation"
-    implementation "androidx.compose.runtime:runtime"
-    implementation "androidx.compose.ui:ui"
-    debugImplementation "androidx.compose.ui:ui-tooling"
-    implementation "androidx.compose.ui:ui-tooling-preview"
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.animation)
+    implementation(libs.compose.material)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+//    implementation "androidx.compose.material:material-icons-core"
+//    implementation "androidx.compose.material:material-icons-extended"
 
-    implementation "com.google.accompanist:accompanist-permissions:0.34.0"
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.34.0"
-
-
-//    implementation "androidx.compose.material3:material3:1.0.0-alpha10"
-//    implementation "androidx.compose.foundation:foundation-layout:$composeVersion"
-//    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
-//    implementation "androidx.compose.ui:ui-tooling-preview:$composeVersion"
-
+    implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.systemuicontroller)
     // endregion
 
     // region di
-    def koinVersion = '3.5.6'
-    implementation "io.insert-koin:koin-android:$koinVersion"
-    implementation "io.insert-koin:koin-androidx-compose:$koinVersion"
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
     // endregion
 
     // region utils
-    // TODO Replace to googleImplementation when LocationManager API is implemented
-//    googleImplementation 'com.google.android.gms:play-services-location:19.0.1'
-    implementation 'com.google.android.gms:play-services-location:21.3.0'
-    ossImplementation 'org.osmdroid:osmdroid-android:6.1.10'
+    implementation(libs.play.services.location)
+    ossImplementation(libs.osmdroid.android)
+    googleImplementation(libs.maps.compose)
+    googleImplementation(libs.maps.compose.utils)
+    googleImplementation(libs.maps.compose.widgets)
+    ossImplementation(libs.mapbox.android)
+    ossImplementation(libs.mapbox.sdk.turf)
+    googleImplementation(libs.firebase.messaging.ktx)
 
-    googleImplementation 'com.google.maps.android:maps-compose:5.0.3'
-    googleImplementation 'com.google.maps.android:maps-compose-utils:5.0.3'
-    googleImplementation 'com.google.maps.android:maps-compose-widgets:5.0.3'
-
-    ossImplementation 'com.mapbox.maps:android:10.8.1'
-    ossImplementation "com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0"
-
-    googleImplementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
-
-    implementation 'com.cossacklabs.com:themis:0.14.0'
+    implementation(libs.themis)
     implementation project(path: ':lazysodium-android')
-    implementation 'net.java.dev.jna:jna:5.14.0@aar'
-    implementation 'io.viascom.nanoid:nanoid:1.0.1'
+    implementation(libs.jna) {
+        artifact { type = 'aar' }
+    }
+//    implementation 'net.java.dev.jna:jna:5.14.0@aar'
+    implementation(libs.nanoid)
 
-    implementation "com.mikepenz:aboutlibraries-compose:10.5.1"
-    implementation 'io.sentry:sentry-android:6.33.0'
+    implementation(libs.aboutLibraries.compose)
+    implementation(libs.sentry.android)
 
     debugImplementation project(path: ':appwrite-android')
-    releaseImplementation("io.appwrite:sdk-for-android:5.1.1")
+    releaseImplementation(libs.appwrite.android)
 
-    debugImplementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
-    debugImplementation("com.squareup.okhttp3:okhttp")
-    debugImplementation("com.squareup.okhttp3:logging-interceptor")
+    debugImplementation(platform(libs.okhttp.bom))
+    debugImplementation(libs.okhttp)
+    debugImplementation(libs.logging.interceptor)
     // endregion
 }
