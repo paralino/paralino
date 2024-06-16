@@ -12,7 +12,7 @@ struct GroupCreateScreen: View {
     
     @Binding var path: [NavigationGraph]
     @StateObject var appState: ViewModelFactoryIOS<CreateGroupViewModel>
-    @State var bottomSheet: BottomSheetsScreen.EmojiPicker? = nil
+    @State var bottomSheet: BottomSheetPickerTypeEmojiPickerBottomSheet? = nil
     
     var body: some View {
         ZStack {
@@ -21,7 +21,7 @@ struct GroupCreateScreen: View {
                 ScreensIOS.shared.home.GroupCreateScreenVC(
                     vm: appState.vm,
                     onBottomSheetAction: { screen in
-                        bottomSheet = screen as? BottomSheetsScreen.EmojiPicker
+                        bottomSheet = screen as? BottomSheetPickerTypeEmojiPickerBottomSheet
                     },
                     groupUpdated: { newGroupId in
                         if appState.vm.isGroupCreate() {

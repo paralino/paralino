@@ -50,7 +50,7 @@ import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -84,7 +84,7 @@ fun SharingStartScreenCore(
     groupId: String?,
     vm: SharingStartViewModel,
     onNavigateBack: () -> Unit,
-    onPickGroup: (BottomSheetsScreen.GroupPicker) -> Unit,
+    onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
     askNotificationPermission: () -> Unit,
     askLocationService: () -> Unit,
     askLocationPermission: () -> Unit,
@@ -332,7 +332,7 @@ fun SharingStartScreenCore(
                             if (groupId.isNullOrBlank()) {
                                 appState.uiScope.launch {
                                     val groups = vm.getAllGroupItems()
-                                    onPickGroup(BottomSheetsScreen.GroupPicker(groups))
+                                    onPickGroup(BottomSheetPickerType.GroupPickerBottomSheet(groups))
                                 }
                             }
                         }
@@ -350,7 +350,7 @@ fun SharingStartScreenCore(
                         onClick = {
                             appState.uiScope.launch {
                                 val groups = vm.getAllGroupItems()
-                                onPickGroup(BottomSheetsScreen.GroupPicker(groups))
+                                onPickGroup(BottomSheetPickerType.GroupPickerBottomSheet(groups))
                             }
                         }
                     ) {

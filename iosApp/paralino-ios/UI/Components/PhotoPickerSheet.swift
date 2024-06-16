@@ -11,7 +11,7 @@ import shared
 
 struct PhotoPickerSheet: ViewModifier {
     
-    @Binding var bottomSheet: BottomSheetsScreen.EmojiPicker?
+    @Binding var bottomSheet: BottomSheetPickerTypeEmojiPickerBottomSheet?
     var onAction: ((ImageModel) -> Void)?
     
     var isShowingSheet: Binding<Bool> {
@@ -52,7 +52,7 @@ struct PhotoPickerSheet: ViewModifier {
 }
 
 extension View {
-    func photoPickerSheet(_ data: Binding<BottomSheetsScreen.EmojiPicker?>, onAction: @escaping (ImageModel) -> Void) -> some View {
+    func photoPickerSheet(_ data: Binding<BottomSheetPickerTypeEmojiPickerBottomSheet?>, onAction: @escaping (ImageModel) -> Void) -> some View {
         self.modifier(PhotoPickerSheet(bottomSheet: data, onAction: onAction))
     }
 }

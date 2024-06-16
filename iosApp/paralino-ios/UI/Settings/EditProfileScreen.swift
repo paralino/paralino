@@ -11,7 +11,7 @@ import shared
 struct EditProfileScreen: View {
     
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.editProfileVM)
-    @State var bottomSheet: BottomSheetsScreen.EmojiPicker? = nil
+    @State var bottomSheet: BottomSheetPickerTypeEmojiPickerBottomSheet? = nil
     @Binding var path: [NavigationGraph]
     
     var body: some View {
@@ -21,7 +21,7 @@ struct EditProfileScreen: View {
                 ScreensIOS.shared.settings.EditProfileScreenVC(
                     vm: appState.vm,
                     onBottomSheetAction: { screen in
-                        bottomSheet = screen as? BottomSheetsScreen.EmojiPicker
+                        bottomSheet = screen as? BottomSheetPickerTypeEmojiPickerBottomSheet
                     },
                     onExit: { path.removeLast() }
                 )

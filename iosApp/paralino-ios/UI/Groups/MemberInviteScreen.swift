@@ -14,7 +14,7 @@ struct MemberInviteScreen: View {
     @StateObject var appState: ViewModelFactoryIOS<MemberInviteViewModel>
     
     // TODO add group picker
-    @State var bottomSheet: BottomSheetsScreen.GroupPicker? = nil
+    @State var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
     var body: some View {
         ZStack {

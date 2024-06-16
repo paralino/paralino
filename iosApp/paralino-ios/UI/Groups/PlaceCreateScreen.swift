@@ -13,7 +13,7 @@ struct PlaceCreateScreen: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var appState: PlaceCreateState
-    @State var bottomSheet: BottomSheetsScreen.EmojiPicker? = nil
+    @State var bottomSheet: BottomSheetPickerTypeEmojiPickerBottomSheet? = nil
     
     var body: some View {
         ZStack {
@@ -25,7 +25,7 @@ struct PlaceCreateScreen: View {
                         path.removeLast()
                     },
                     onBottomSheetAction: { screen in
-                        bottomSheet = screen as? BottomSheetsScreen.EmojiPicker
+                        bottomSheet = screen as? BottomSheetPickerTypeEmojiPickerBottomSheet
                     },
                     mapUIView: {
                         return SwiftUIInUIView(

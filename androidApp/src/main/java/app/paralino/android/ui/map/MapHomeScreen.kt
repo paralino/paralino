@@ -28,7 +28,7 @@ import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
@@ -208,7 +208,7 @@ private fun MapContent(
                 appState.uiScope.launch {
                     val groups = vm.getAllGroups()
                     appState.showBottomSheetForResult(
-                        BottomSheetsScreen.GroupPicker(groups)
+                        BottomSheetPickerType.GroupPickerBottomSheet(groups)
                     ).safeCast<GroupPickerAction>()?.let {
                         when (it) {
                             is GroupPickerAction.GroupPicked -> {

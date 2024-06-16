@@ -42,7 +42,7 @@ import app.paralino.core.presentation.groups.CreateGroupState
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
@@ -60,7 +60,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun GroupCreateScreenCore(
     appState: CoreUiState,
     vm: CreateGroupViewModel,
-    onBottomSheetAction: (BottomSheetsScreen) -> Unit,
+    onBottomSheetAction: (BottomSheetPickerType) -> Unit,
     groupUpdated: (String) -> Unit
 ) {
 
@@ -103,7 +103,7 @@ fun GroupCreateScreenCore(
                 state = finalState.data,
                 nameLengthLimit = vm.groupNameLengthLimit,
                 onImageClick = {
-                    onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.groupEmojis))
+                    onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.groupEmojis))
                 },
                 onCreateGroupClick = { image, name ->
                     vm.createGroup(image, name)

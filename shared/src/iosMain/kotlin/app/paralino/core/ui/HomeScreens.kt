@@ -42,7 +42,7 @@ import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
@@ -86,7 +86,7 @@ object HomeScreens {
 
     fun GroupCreateScreenVC(
         vm: CreateGroupViewModel,
-        onBottomSheetAction: (BottomSheetsScreen) -> Unit,
+        onBottomSheetAction: (BottomSheetPickerType) -> Unit,
         groupUpdated: (String) -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -154,7 +154,7 @@ object HomeScreens {
 
     fun MemberInviteScreenVC(
         vm: MemberInviteViewModel,
-        onPickGroup: (BottomSheetsScreen.GroupPicker) -> Unit,
+        onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
         onExit: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -171,7 +171,7 @@ object HomeScreens {
     fun StartSharingScreenVC(
         vm: SharingStartViewModel,
         groupId: String?,
-        onPickGroup: (BottomSheetsScreen.GroupPicker) -> Unit,
+        onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
         onNavigateBack: () -> Unit,
         askNotificationPermission: () -> Unit,
         askLocationService: () -> Unit,
@@ -407,7 +407,7 @@ object HomeScreens {
     fun PlaceCreateScreenVC(
         vm: CreatePlaceViewModel,
         onNavigateBack: () -> Unit,
-        onBottomSheetAction: (BottomSheetsScreen?) -> Unit,
+        onBottomSheetAction: (BottomSheetPickerType?) -> Unit,
         mapUIView: () -> UIView,
     ) = ComposeUIViewController {
         RootScreenIOS {

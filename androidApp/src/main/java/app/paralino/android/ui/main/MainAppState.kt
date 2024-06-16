@@ -4,7 +4,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.CoreUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -18,14 +18,14 @@ class MainAppState(
     uiScope: CoroutineScope
 ): CoreUiState(scaffoldState, uiScope) {
 
-    fun showBottomSheet(bottomSheetsScreen: BottomSheetsScreen) {
+    fun showBottomSheet(bottomSheetsScreen: BottomSheetPickerType) {
         bottomSheetState.currentBottomSheet.value = bottomSheetsScreen
         uiScope.launch {
             bottomSheetState.bottomSheetState.show()
         }
     }
 
-    suspend fun showBottomSheetForResult(bottomSheetsScreen: BottomSheetsScreen): Any {
+    suspend fun showBottomSheetForResult(bottomSheetsScreen: BottomSheetPickerType): Any {
         showBottomSheet(bottomSheetsScreen)
         return bottomSheetState.sheetResultChannel.receive()
     }
@@ -51,7 +51,7 @@ fun rememberAppState(
 @Composable
 fun rememberBottomSheet(
     bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true),
-    currentBottomSheet: MutableState<BottomSheetsScreen?> = remember {
+    currentBottomSheet: MutableState<BottomSheetPickerType?> = remember {
         mutableStateOf(null)
     },
     channel: Channel<Any> = Channel()
@@ -66,6 +66,6 @@ fun rememberBottomSheet(
 @OptIn(ExperimentalMaterialApi::class)
 class BottomSheetState(
     val bottomSheetState: ModalBottomSheetState,
-    val currentBottomSheet: MutableState<BottomSheetsScreen?>,
+    val currentBottomSheet: MutableState<BottomSheetPickerType?>,
     val sheetResultChannel: Channel<Any>
 )

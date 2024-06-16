@@ -35,14 +35,18 @@ import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ConfigData
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.main.MainScreenEvent
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.ui.components.AppSnackbar
+import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.ui.components.EmojiPickerScreen
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.groups.GroupPickerScreen
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -204,7 +208,10 @@ fun RootApp(
         }
 
         if (uiState.dataRefreshBlockingLoadingShown) {
-            LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
+            LoadingDialog(
+                text = stringResource(MR.strings.login_step_generic_loading),
+                progress = null
+            )
         }
     }
 }
@@ -267,16 +274,34 @@ fun RootAppScreen(
         sheetContent = {
             Spacer(modifier = Modifier.height(1.dp))
             appState.bottomSheetState.currentBottomSheet.value?.let {
-                it.SheetContent(
-                    onClose = {
-                        appState.uiScope.launch { appState.bottomSheetState.bottomSheetState.hide() }
-                    },
-                    onResult = {
-                        appState.uiScope.launch {
-                            appState.bottomSheetState.sheetResultChannel.send(it)
-                        }
+                when (it) {
+                    is BottomSheetPickerType.EmojiPickerBottomSheet -> {
+                        EmojiPickerScreen(
+                            images = it.emojis.map { ImageModel.emoji(it) },
+                            onClick = {
+                                appState.uiScope.launch {
+                                    appState.bottomSheetState.sheetResultChannel.send(it)
+                                }
+                                appState.uiScope.launch { appState.bottomSheetState.bottomSheetState.hide() }
+                            }
+                        )
                     }
-                )
+
+                    is BottomSheetPickerType.GroupPickerBottomSheet -> {
+                        GroupPickerScreen(
+                            groups = it.groups,
+                            onClose = {
+                                appState.uiScope.launch { appState.bottomSheetState.bottomSheetState.hide() }
+                            },
+                            onClick = {
+                                appState.uiScope.launch {
+                                    appState.bottomSheetState.sheetResultChannel.send(it)
+                                }
+                                appState.uiScope.launch { appState.bottomSheetState.bottomSheetState.hide() }
+                            }
+                        )
+                    }
+                }
             }
         }
     ) {
