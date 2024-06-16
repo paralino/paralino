@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.compose)
     alias(libs.plugins.buildkonfig)
+    alias(libs.plugins.moko.resources)
 }
 
 kotlin {
@@ -25,7 +26,6 @@ kotlin {
             framework {
                 baseName = "shared"
                 isStatic = true
-                linkerOpts.add("-lsqlite3")
 
                 // required so iOS app can use resource directly in Swift code
                 export(project(":moko"))
@@ -95,7 +95,7 @@ android {
     compileSdk = 34
 
     sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+    sourceSets["main"].resources.srcDirs("src/commonMain/moko-resources")
 
     defaultConfig {
         minSdk = 29

@@ -17,7 +17,6 @@ constraintlayout = "2.1.4"
 legacySupport = "1.0.0"
 multiplatformSettings = "1.1.1"
 preferenceKtx = "1.2.1"
-resources = "0.23.0"
 securityCryptoKtx = "1.1.0-alpha06"
 work = "2.9.0"
 lifecycle = "2.8.2"
@@ -38,7 +37,7 @@ themis = "0.14.0"
 jna = "5.14.0"
 nanoid = "1.0.1"
 sqldelight = "2.0.2"
-mokoResources = "0.23.0"
+mokoResources = "0.24.0"
 buildKonfig = "0.15.1"
 okhttp = "4.12.0"
 appwrite = "5.1.1"
@@ -58,8 +57,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 legacy-support-core-utils = { group = "androidx.legacy", name = "legacy-support-core-utils", version.ref = "legacySupport" }
-moko-resources = { module = "dev.icerock.moko:resources", version.ref = "resources" }
-moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "resources" }
+moko-resources = { module = "dev.icerock.moko:resources", version.ref = "mokoResources" }
+moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "mokoResources" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }

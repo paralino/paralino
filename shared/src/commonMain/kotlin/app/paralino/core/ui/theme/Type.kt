@@ -8,10 +8,10 @@ import app.paralino.core.MR
 import dev.icerock.moko.resources.compose.asFont
 
 private val Montserrat @Composable get() = FontFamily(
-	MR.fonts.font_montserrat.light.asFont(weight = FontWeight.Light)!!,
-	MR.fonts.font_montserrat.regular.asFont(weight = FontWeight.Normal)!!,
-	MR.fonts.font_montserrat.semibold.asFont(weight = FontWeight.SemiBold)!!,
-	MR.fonts.font_montserrat.bold.asFont(weight = FontWeight.Bold)!!,
+	MR.fonts.font_montserrat_light.asFont(weight = FontWeight.Light)!!,
+	MR.fonts.font_montserrat_regular.asFont(weight = FontWeight.Normal)!!,
+	MR.fonts.font_montserrat_semibold.asFont(weight = FontWeight.SemiBold)!!,
+	MR.fonts.font_montserrat_bold.asFont(weight = FontWeight.Bold)!!,
 )
 
 val AppTypography @Composable get() = Typography(defaultFontFamily = Montserrat)

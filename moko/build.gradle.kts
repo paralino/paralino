@@ -26,10 +26,6 @@ kotlin {
 
     sourceSets {
 
-        all {
-            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
-        }
-
         val commonMain by getting {
             dependencies {
                 api(libs.moko.resources)
@@ -70,10 +66,8 @@ android {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "app.paralino.core"
-    multiplatformResourcesClassName = "MokoResources"
-    multiplatformResourcesVisibility = dev.icerock.gradle.MRVisibility.Public
-    iosBaseLocalizationRegion = "en"
-    multiplatformResourcesSourceSet = "commonMain"
-    disableStaticFrameworkWarning = true
+    resourcesPackage.set("app.paralino.core")
+    resourcesClassName.set("MokoResources")
+    resourcesVisibility.set(dev.icerock.gradle.MRVisibility.Public)
+    iosBaseLocalizationRegion.set("en")
 }
