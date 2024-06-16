@@ -25,26 +25,9 @@ kotlin {
     }
 
     sourceSets {
-
-        val commonMain by getting {
-            dependencies {
-                api(libs.moko.resources)
-                api(libs.moko.resources.compose)
-            }
-        }
-
-        val androidMain by getting {
-            dependsOn(commonMain)
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
+        commonMain.dependencies {
+            api(libs.moko.resources)
+            api(libs.moko.resources.compose)
         }
     }
 }

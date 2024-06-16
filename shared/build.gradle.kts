@@ -35,50 +35,42 @@ kotlin {
         }
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                // using api here so we can access resources in android as well
-                api(compose.components.resources)
-                api(project(":moko"))
-                api(libs.kotlinx.coroutines.core)
-                api(libs.kotlinx.datetime)
-                api(libs.kotlinx.serialization.json)
-                api(libs.sqldelight.coroutines)
-                api(libs.sqldelight.adapters)
-                implementation(libs.multiplatform.settings.coroutines)
-                implementation(libs.multiplatform.settings)
-                api(libs.koin.core)
-            }
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            // using api here so we can access resources in android as well
+            api(compose.components.resources)
+            api(project(":moko"))
+            api(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.datetime)
+            api(libs.kotlinx.serialization.json)
+            api(libs.sqldelight.coroutines)
+            api(libs.sqldelight.adapters)
+            implementation(libs.multiplatform.settings.coroutines)
+            implementation(libs.multiplatform.settings)
+            api(libs.koin.core)
         }
 
-        val androidMain by getting {
-            dependencies {
-                dependsOn(commonMain)
-                api(libs.koin.android)
-                api(libs.lifecycle.viewmodel.ktx)
-                implementation(libs.androidx.preference.ktx)
-                implementation(libs.androidx.security.crypto.ktx)
-                implementation(libs.sqldelight.driver.android)
-                api(libs.activity.compose)
-                api(libs.appcompat)
-                api(libs.androidx.core.ktx)
-            }
+        androidMain.dependencies {
+            api(libs.koin.android)
+            api(libs.lifecycle.viewmodel.ktx)
+            implementation(libs.androidx.preference.ktx)
+            implementation(libs.androidx.security.crypto.ktx)
+            implementation(libs.sqldelight.driver.android)
+            api(libs.activity.compose)
+            api(libs.appcompat)
+            api(libs.androidx.core.ktx)
         }
 
-        val iosMain by creating {
-            dependsOn(commonMain)
-            dependencies {
-                implementation(libs.sqldelight.driver.native)
-            }
+        iosMain.get().dependsOn(commonMain.get())
+        iosMain.dependencies {
+            implementation(libs.sqldelight.driver.native)
         }
-        val iosX64Main by getting { dependsOn(iosMain) }
-        val iosArm64Main by getting { dependsOn(iosMain) }
-        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
     }
 }
 
