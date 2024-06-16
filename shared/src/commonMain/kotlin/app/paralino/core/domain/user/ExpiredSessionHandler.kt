@@ -45,6 +45,10 @@ class ExpiredSessionRecovery(
             blocking {
                 // clearing user here will disable any further potential actions until session is refreshed
                 userRepo.clearLocally()
+                // also clearing push tokens, so those will be synced again after new login
+                config.pushTokenUnsynced = ""
+                config.pushTokenSynced = ""
+
                 loginUseCase.login(email = config.guestEmail, password = config.guestPassword)
                     .catch {
                         logg.w(
