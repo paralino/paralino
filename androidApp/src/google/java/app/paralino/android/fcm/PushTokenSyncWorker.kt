@@ -70,7 +70,7 @@ class PushTokenSyncWorker(
                 .build()
 
             logg.tag("push_notifications").v("Create token sync request")
-            workManager.enqueueUniqueWork("push_token_sync_work", ExistingWorkPolicy.KEEP, request)
+            workManager.enqueueUniqueWork("push_token_sync_work", ExistingWorkPolicy.APPEND_OR_REPLACE, request)
         }
     }
 }
