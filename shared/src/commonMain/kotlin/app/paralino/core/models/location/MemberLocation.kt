@@ -1,5 +1,6 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.BuildKonfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.data
 import app.paralino.core.utils.extensions.fromUTCtoInstant
@@ -35,7 +36,8 @@ data class MemberLocation constructor(
 
     val canRequestLocation: Boolean get() {
         val adaptedStatus = locationAwareStatusType
-        return adaptedStatus != MemberDeviceStatusType.TOO_MANY_REQUESTS
+        return BuildKonfig.hasPreviewFeatures
+                && adaptedStatus != MemberDeviceStatusType.TOO_MANY_REQUESTS
                 && adaptedStatus != MemberDeviceStatusType.ACTIVE
                 && (isOlderThan(3.minutes) || !hasLocation)
                 && status.data?.statusType != MemberDeviceStatusType.NOT_SHARING

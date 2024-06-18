@@ -31,8 +31,6 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -123,7 +121,7 @@ class SettingsViewModel(
                                     ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
                                 else null
                             ),
-                            canUseEmail = appConfig?.emailEnabled ?: false,
+                            canUseEmail = appConfig?.isEmailEnabled ?: false,
                             logoutState = null,
                             deleteAccountState = null,
                             versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",

@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import app.paralino.core.BuildKonfig
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
@@ -373,24 +374,26 @@ fun SharingStartScreenCore(
                 onInputChange = { vm.onDeviceNameChange(it) }
             )
 
-            Row(
-                modifier = Modifier
-                    .padding(vertical = 4.dp)
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colors.surface,
-                        shape = RoundedCornerShape(percent = 20)
+            if (BuildKonfig.hasPreviewFeatures) {
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 4.dp)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colors.surface,
+                            shape = RoundedCornerShape(percent = 20)
+                        )
+                        .padding(vertical = 8.dp, horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.groups_sharing_devices),
+                        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.alpha(ContentAlpha.medium)
                     )
-                    .padding(vertical = 8.dp, horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(MR.strings.groups_sharing_devices),
-                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.alpha(ContentAlpha.medium)
-                )
-                Spacer(modifier = Modifier.size(8.dp))
-                PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
+                }
             }
 
             SettingsSectionHeader(name = stringResource(MR.strings.title_settings))
@@ -485,25 +488,28 @@ fun SharingStartScreenCore(
 //                )
             }
 
-            Spacer(modifier = Modifier.size(10.dp))
+            if (BuildKonfig.hasPreviewFeatures) {
 
-            val notifyOthersState by rememberSeekbarState(
-                key = state,
-                LargeSeekbarSwitchState.SeekbarSwitchState(
-                    seekbarState = null,
-                    switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
+                Spacer(modifier = Modifier.size(10.dp))
+
+                val notifyOthersState by rememberSeekbarState(
+                    key = state,
+                    LargeSeekbarSwitchState.SeekbarSwitchState(
+                        seekbarState = null,
+                        switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
+                    )
                 )
-            )
-            LargeSeekbarSwitch(
-                modifier = Modifier.fillMaxWidth(),
-                icon = CoreAppIcons.NotificationsActive.asPainterResource(),
-                title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
-                description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
-                state = notifyOthersState,
-                onStateChange = {
-                    vm.toggleNotifyOthers(it)
-                }
-            )
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth(),
+                    icon = CoreAppIcons.NotificationsActive.asPainterResource(),
+                    title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
+                    description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
+                    state = notifyOthersState,
+                    onStateChange = {
+                        vm.toggleNotifyOthers(it)
+                    }
+                )
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.groups
 
+import app.paralino.core.BuildKonfig
 import app.paralino.core.config
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
@@ -102,8 +103,7 @@ class GroupDetailViewModel(
                                 ?.let {
                                     MemberActionItemState(MemberActionType.UNBLOCK_USER)
                                 },
-                            // TODO remove when on production
-                            securityAction = true
+                            securityAction = BuildKonfig.hasPreviewFeatures
                         ),
                         allowShowingDevices = true,
                         lastLocationPing = valueFormatter.getLastLocationPing(member),

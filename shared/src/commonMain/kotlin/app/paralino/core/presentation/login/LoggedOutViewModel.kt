@@ -14,12 +14,12 @@ class LoggedOutViewModel(
     private val appConfigRepository: AppConfigRepository
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow(LoggedOutScreenState(hasLogin = appConfigRepository.configState.value?.emailEnabled == true))
+    private val _uiState = MutableStateFlow(LoggedOutScreenState(hasLogin = appConfigRepository.configState.value?.isEmailEnabled == true))
     val uiState: Flow<LoggedOutScreenState> = _uiState
 
     init {
         appConfigRepository.getConfig()
-            .map { it.emailEnabled }
+            .map { it.isEmailEnabled }
             .distinctUntilChanged()
             .onEach { canUseEmail ->
                 _uiState.update { it.copy(hasLogin = canUseEmail) }

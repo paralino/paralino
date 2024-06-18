@@ -131,6 +131,8 @@ buildkonfig {
         buildConfigField(FieldSpec.Type.STRING, "serverUrl", props.getProperty("serverUrl").trimQuotes())
         buildConfigField(FieldSpec.Type.STRING, "serverKey", props.getProperty("serverKey").trimQuotes())
         buildConfigField(FieldSpec.Type.INT, "cryptoScheme", props.getProperty("cryptoScheme").trimQuotes())
+        buildConfigField(FieldSpec.Type.BOOLEAN, "isDevMode", props.getProperty("devMode").trimQuotes())
+        buildConfigField(FieldSpec.Type.BOOLEAN, "hasPreviewFeatures", props.getProperty("devMode").trimQuotes())
     }
 
     targetConfigs {
@@ -140,6 +142,8 @@ buildkonfig {
         }
         create("ios") {
             buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNiOS").trimQuotes())
+            buildConfigField(FieldSpec.Type.BOOLEAN, "isDevMode", "true")
+            buildConfigField(FieldSpec.Type.BOOLEAN, "hasPreviewFeatures", "true")
         }
     }
 }
