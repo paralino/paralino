@@ -63,11 +63,12 @@ import org.jetbrains.compose.resources.DrawableResource
 fun LargeSeekbarSwitch(
     modifier: Modifier = Modifier,
     icon: Painter?,
+    state: LargeSeekbarSwitchState.SeekbarSwitchState,
     title: String,
     description: String? = null,
     titleStyle: TextStyle = MaterialTheme.typography.body2,
     focusDescription: Boolean = false,
-    state: LargeSeekbarSwitchState.SeekbarSwitchState,
+    elevation: Dp = 16.dp,
     size: LargeSwitchSize = LargeSwitchSize(),
     onProgressChange: ((Int) -> Unit)? = null,
     onStateChange: ((Boolean) -> Unit)? = null,
@@ -88,7 +89,7 @@ fun LargeSeekbarSwitch(
                     this.clickable { onStateChange?.invoke(!state.switchState.checkState) }
                 else this
             }
-            .shadow(elevation = 16.dp, shape = RoundedCornerShape(12.dp), spotColor = Color.DarkGray)
+            .shadow(elevation = elevation, shape = RoundedCornerShape(12.dp), spotColor = Color.DarkGray)
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
     ) {
