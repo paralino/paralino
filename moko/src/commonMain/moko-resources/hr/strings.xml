@@ -21,10 +21,13 @@
     <string name="button_verify">Verificiraj</string>
     <string name="button_showAll">Prikaži sve</string>
     <string name="button_open">Otvori</string>
+    <string name="button_cool">Cool</string>
 
     <string name="alert_title_confirm">Molimo potvrdite</string>
     <string name="alert_sessionExpired_title">Sesija istekla</string>
     <string name="alert_sessionExpired_message">Vaša sesija je istekla, molimo prijavite se ponovno.</string>
+    <string name="alert_comingSoon_title">U izradi 🤞</string>
+    <string name="alert_comingSoon_message">Ova opcija je trenutno u razvoju i dolazi ubrzo.</string>
     <string name="error_load_data_generic">Nije moguće dovršiti zahtjev.</string>
     <string name="error_no_connection_snackbar">Nemoguće povezivanje\n**Provjerite svoju internetsku vezu.**</string>
     <string name="error_server_unavailable">Trenutačno nije moguće uspostaviti vezu, molimo pokušajte ponovno uskoro.</string>
