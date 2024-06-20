@@ -100,8 +100,6 @@ class GroupMemberAddUseCase constructor(
                 )
             }
 
-        val keyId = cryptoCore.derivePassword(codeData.keyData.code).loginPassword
-
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
             data = codeData.userData.ownerIdentityKey,
             type = HashType.SHA256
@@ -134,7 +132,7 @@ class GroupMemberAddUseCase constructor(
 
         val payload = CreateGroupMemberPayload(
             groupId = groupId,
-            codeKeyId = keyId,
+            codeKeyId = codeData.codeKeyId,
             keyId = codeData.keyData.keyId,
             groupOwnerIntegrity = groupIntegrity,
             memberVerification = memberVerification,

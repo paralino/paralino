@@ -52,6 +52,7 @@ class PersonalCodeMapperCore(
         ) ?: throw DecryptionException("User personal code can not be verified")
 
         return UserPersonalCodeData(
+            codeKeyId = derivedCode.loginPassword,
             userData = userData,
             keyData = keyData
         )
