@@ -35,30 +35,3 @@ interface ICryptoHashProvider {
         encodingType: EncodingType = EncodingType.HEX
     ): String
 }
-
-object PasswordHashingDefaults {
-    fun getHashingIterations(mode: PasswordHashingMode, cryptoScheme: Int): Long {
-        return when {
-            cryptoScheme <= 1 -> 2
-            else -> when(mode) {
-                PasswordHashingMode.FAST -> 2
-                PasswordHashingMode.NORMAL -> 3
-                PasswordHashingMode.SLOW -> 5
-            }
-        }
-    }
-
-    fun getHashingMemoryInMB(mode: PasswordHashingMode, cryptoScheme: Int): Long {
-        val mb = when {
-            cryptoScheme <= 1 -> 64L
-            // 64 or 256 MB
-            else -> when(mode) {
-                PasswordHashingMode.FAST -> 32L
-                PasswordHashingMode.NORMAL -> 64L
-                PasswordHashingMode.SLOW -> 128L
-            }
-        }
-
-        return mb
-    }
-}

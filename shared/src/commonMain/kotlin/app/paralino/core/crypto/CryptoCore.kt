@@ -320,14 +320,16 @@ class CryptoCore(
         return KDFAlg(
             encoding = EncodingType.BASE64_URL.key,
             kdf = KDFType.ARGON2ID.key,
-            memoryMb = PasswordHashingDefaults.getHashingMemoryInMB(
-                mode = mode,
-                cryptoScheme = BuildKonfig.cryptoScheme
-            ),
-            rounds = PasswordHashingDefaults.getHashingIterations(
-                mode = mode,
-                cryptoScheme = BuildKonfig.cryptoScheme
-            ),
+            memoryMb = when(mode) {
+                PasswordHashingMode.FAST -> 32L
+                PasswordHashingMode.NORMAL -> 64L
+                PasswordHashingMode.SLOW -> 128L
+            },
+            rounds = when(mode) {
+                PasswordHashingMode.FAST -> 2
+                PasswordHashingMode.NORMAL -> 3
+                PasswordHashingMode.SLOW -> 5
+            },
             keyBytes = keyBytes
         )
     }
