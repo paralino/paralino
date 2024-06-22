@@ -1,7 +1,8 @@
 package app.paralino.core.presentation.settings.passwordchange
 
 import app.paralino.core.MR
-import app.paralino.core.domain.user.ChangePasswordUseCase
+import app.paralino.core.domain.user.ChangeCredentialsStep
+import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
@@ -23,7 +24,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 
 class ChangePasswordViewModel(
-    private val changePassword: ChangePasswordUseCase,
+    private val changePassword: ChangeCredentialsUseCase,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(ChangePasswordScreenState())
@@ -78,9 +79,11 @@ class ChangePasswordViewModel(
                             }
                         }
                         is Payload.Success -> {
-                            _uiState.update { it.copy(actionLoading = false) }
-                            delay(400)
-                            _eventChannel.send(ChangePasswordScreenEvent.PasswordChanged)
+                            _uiState.update { it.copy(actionLoading = result.data != ChangeCredentialsStep.DONE) }
+                            if (result.data == ChangeCredentialsStep.DONE) {
+                                delay(400)
+                                _eventChannel.send(ChangePasswordScreenEvent.PasswordChanged)
+                            }
                         }
                     }
                 }

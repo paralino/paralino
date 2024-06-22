@@ -105,7 +105,7 @@ class AppConfig(
             provider.userSettings.putBoolean(keyEmailConfirmed, value)
         }
 
-    var temporaryBackupPassword: String
+    var temporaryMasterAuthKey: String
         get() = provider.userSettings.getString(keyTempPassword, "")
         set(value) {
             provider.userSettings.putString(keyTempPassword, value)

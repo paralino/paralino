@@ -1,9 +1,8 @@
 package app.paralino.core.crypto
 
+import app.paralino.core.BuildKonfig
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.extensions.blocking
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.encodeToString
 
 class CryptoCore(
@@ -24,16 +23,21 @@ class CryptoCore(
     }
 
     suspend fun generateNewKeysForUser(
-        backupPassword: String,
-        userId: String,
-        keyVersion: Long = nowUTC().toEpochMilliseconds(),
+        authKey: UserAuthDerivedKey,
+        userId: String
     ): GeneratedUserKeys {
+
         val newPersonalKey = getNewSymmetricKey()
-        val encryptedPersonalKey = serviceProvider.encryptDataWithPassword(
+
+        val dataKDF = getDefaultDataKDFAlg()
+        val masterKey = deriveUserMasterKey(
+            userId = userId,
+            masterAuthKey = authKey.masterAuthKey,
+            alg = dataKDF
+        )
+        val encryptedPersonalKey = encryptDataWithKey(
             data = newPersonalKey,
-            password = backupPassword,
-            context = userId,
-            useFastMode = false
+            key = masterKey
         )
 
         val newSignatureKeyPair = serviceProvider.createNewSignatureKeyPair()
@@ -47,28 +51,30 @@ class CryptoCore(
         )
 
         val encryptedKeyData = UserCryptoKeyRaw(
+            // id & version are not used in this case so they can be empty values
             "",
+            version = 0,
             ownerUserId = userId,
             encryptedSymmetricKey = encryptedPersonalKey,
             encryptedPrivateKey = encryptedPrivateIdentityKey,
             encryptedPublicKey = encryptedPublicIdentityKey,
-            version = keyVersion
+            loginSalt = authKey.loginSalt,
+            loginAlg = BaseRemoteModule.formatter.encodeToString(authKey.kdfAlg),
+            dataAlg = BaseRemoteModule.formatter.encodeToString(dataKDF),
         )
 
         val keys = GeneratedUserKeys(newPersonalKey, encryptedKeyData)
 
-        verifyKeys(keys, newSignatureKeyPair, backupPassword, userId)
+        verifyKeys(keys = keys, identityKeyPair = newSignatureKeyPair, key = masterKey)
 
         return keys
     }
 
-    private suspend fun verifyKeys(keys: GeneratedUserKeys, identityKeyPair: KeyPair, password: String, userId: String) {
+    private suspend fun verifyKeys(keys: GeneratedUserKeys, identityKeyPair: KeyPair, key: String) {
         check(
-            serviceProvider.decryptDataWithPassword(
+            decryptDataWithKey(
                 data = keys.encryptedKeyData.encryptedSymmetricKey,
-                password = password,
-                context = userId,
-                useFastMode = false
+                key = key
             ).contentEquals(keys.userPersonalKey)
         )
         check(
@@ -87,28 +93,28 @@ class CryptoCore(
 
     suspend fun verifyUserKeysChange(
         oldKey: UserCryptoKeyRaw,
-        oldPassword: String,
         newKey: UserCryptoKeyRaw,
-        newPassword: String,
+        oldMasterAuthKey: String,
+        newMasterAuthKey: String,
         userPersonalKey: String
     ) {
         check(
-            serviceProvider.decryptDataWithPassword(
-                data = oldKey.encryptedSymmetricKey,
-                password = oldPassword,
-                context = oldKey.ownerUserId,
-                useFastMode = false
+            decryptUserPersonalKey(
+                masterAuthKey = oldMasterAuthKey,
+                userId = oldKey.ownerUserId,
+                encryptedMasterKey = oldKey.encryptedSymmetricKey,
+                alg = BaseRemoteModule.formatter.decodeFromString(oldKey.dataAlg)
             ).contentEquals(userPersonalKey)
-        )
+        ) { "Old key does not match" }
 
         check(
-            serviceProvider.decryptDataWithPassword(
-                data = newKey.encryptedSymmetricKey,
-                password = newPassword,
-                context = newKey.ownerUserId,
-                useFastMode = false
+            decryptUserPersonalKey(
+                masterAuthKey = newMasterAuthKey,
+                userId = newKey.ownerUserId,
+                encryptedMasterKey = newKey.encryptedSymmetricKey,
+                alg = BaseRemoteModule.formatter.decodeFromString(newKey.dataAlg)
             ).contentEquals(userPersonalKey)
-        )
+        ) { "New key does not match" }
 
         check(
             decryptDataWithKey(
@@ -120,7 +126,7 @@ class CryptoCore(
                     key = userPersonalKey
                 )
             )
-        )
+        ) { "Private key does not match" }
 
         check(
             decryptDataWithKey(
@@ -132,52 +138,37 @@ class CryptoCore(
                     key = userPersonalKey
                 )
             )
+        ) { "Public key does not match" }
+    }
+
+    suspend fun encryptUserPersonalKey(
+        userId: String,
+        masterAuthKey: String,
+        userPersonalKey: String,
+        alg: KDFAlg
+    ): String {
+        val masterKey = deriveUserMasterKey(
+            userId = userId,
+            masterAuthKey = masterAuthKey,
+            alg = alg
+        )
+        return encryptDataWithKey(
+            data = userPersonalKey,
+            key = masterKey
         )
     }
 
-    suspend fun reEncryptSymmetricKey(
-        oldBackupPassword: String,
-        newBackupPassword: String,
+    suspend fun decryptUserPersonalKey(
+        masterAuthKey: String,
         userId: String,
-        encryptedKey: String,
+        encryptedMasterKey: String,
+        alg: KDFAlg
     ): String {
-        return blocking {
-            val userKey = serviceProvider.decryptDataWithPassword(
-                data = encryptedKey,
-                password = oldBackupPassword,
-                context = userId,
-                useFastMode = false
-            )
-
-            reEncryptSymmetricKey(newBackupPassword, userId, userKey)
-        }
-    }
-
-    suspend fun reEncryptSymmetricKey(
-        backupPassword: String,
-        userId: String,
-        userKey: String,
-    ): String {
-        return blocking {
-            serviceProvider.encryptDataWithPassword(
-                data = userKey,
-                password = backupPassword,
-                context = userId,
-                useFastMode = false
-            )
-        }
-    }
-
-    suspend fun signIn(
-        password: String,
-        userId: String,
-        keyData: String,
-    ): String {
-        return serviceProvider.decryptDataWithPassword(
-            data = keyData,
-            password = password,
-            context = userId,
-            useFastMode = false
+        val masterKey =
+            deriveUserMasterKey(userId = userId, masterAuthKey = masterAuthKey, alg = alg)
+        return decryptDataWithKey(
+            data = encryptedMasterKey,
+            key = masterKey
         )
     }
 
@@ -189,24 +180,6 @@ class CryptoCore(
         return serviceProvider.encryptDataWithSymmetricKey(
             data = data,
             key = key
-        )
-    }
-
-    suspend fun encryptDataWithSimplePassword(data: String, password: String, userId: String): String {
-        return serviceProvider.encryptDataWithPassword(
-            data = data,
-            password = password,
-            context= userId,
-            useFastMode = true
-        )
-    }
-
-    suspend fun decryptDataWithSimplePassword(data: String, password: String, userId: String): String {
-        return serviceProvider.decryptDataWithPassword(
-            data = data,
-            password = password,
-            context= userId,
-            useFastMode = true
         )
     }
 
@@ -241,7 +214,11 @@ class CryptoCore(
         )
     }
 
-    suspend fun decryptKeyWithKeyPair(key: String, myPrivateKey: String, publicKey: String): String {
+    suspend fun decryptKeyWithKeyPair(
+        key: String,
+        myPrivateKey: String,
+        publicKey: String
+    ): String {
         return decryptDataWithKeyPair(
             data = key,
             myPrivateKey = myPrivateKey,
@@ -257,17 +234,103 @@ class CryptoCore(
         return serviceProvider.verifySignature(data, publicKey)
     }
 
-    fun derivePassword(password: String): DerivedPasswords {
+    suspend fun deriveParalinoIdAuthKey(code: String): String {
+        val masterKey = serviceProvider.deriveKeyFromPassword(
+            password = code,
+            // using hardcoded, plain text salt here since code is the only input
+            salt = "Fleur_de_sel",
+            alg = getKDFAlg(keyBytes = 32, mode = PasswordHashingMode.FAST)
+        )
 
-        val passwordHash = hashProvider.computeHash(password, HashType.SHA256)
-        val sourceHash = hashProvider.computeHash(passwordHash, HashType.SHA512)
-
-        return DerivedPasswords(
-            loginPassword = sourceHash.slice(0 until (sourceHash.length / 2)),
-            backupPassword = sourceHash.slice((sourceHash.length / 2) until sourceHash.length)
+        return serviceProvider.computeHash(
+            data = masterKey,
+            type = HashType.GENERIC_256,
+            encodingType = EncodingType.BASE64_URL
         )
     }
 
+    suspend fun deriveParalinoIdMasterKeys(
+        code: String,
+        userId: String
+    ): DerivedPasswords {
+
+        val authKey = deriveParalinoIdAuthKey(code = code)
+        val masterKey = serviceProvider.deriveKeyFromPassword(
+            password = code,
+            salt = userId,
+            alg = getKDFAlg(keyBytes = 64, mode = PasswordHashingMode.FAST)
+        )
+
+        return DerivedPasswords(
+            loginPassword = authKey,
+            backupPassword = masterKey
+        )
+    }
+
+    // TODO change salt to proper salt
+    suspend fun deriveUserAuthKey(
+        salt: String,
+        password: String,
+        alg: KDFAlg
+    ): UserAuthDerivedKey {
+        val sourceKey = serviceProvider.deriveKeyFromPassword(
+            password = password,
+            salt = salt,
+            alg = alg
+        )
+
+        val loginKey = serviceProvider.computeHash(
+            data = sourceKey,
+            type = HashType.GENERIC_256,
+            encodingType = EncodingType.BASE64_URL
+        )
+
+        return UserAuthDerivedKey(
+            masterAuthKey = sourceKey,
+            loginKey = loginKey,
+            loginSalt = salt,
+            kdfAlg = alg
+        )
+    }
+
+    suspend fun deriveUserMasterKey(
+        userId: String,
+        masterAuthKey: String,
+        alg: KDFAlg
+    ): String {
+        return serviceProvider.deriveKeyFromPassword(
+            password = masterAuthKey,
+            salt = userId,
+            alg = alg
+        )
+    }
+
+    fun getDefaultLoginKDFAlg(): KDFAlg {
+        return getKDFAlg(keyBytes = 32, mode = PasswordHashingMode.NORMAL)
+    }
+
+    fun getDefaultDataKDFAlg(): KDFAlg {
+        return getKDFAlg(keyBytes = 64, mode = PasswordHashingMode.SLOW)
+    }
+
+    private fun getKDFAlg(
+        keyBytes: Int,
+        mode: PasswordHashingMode
+    ): KDFAlg {
+        return KDFAlg(
+            encoding = EncodingType.BASE64_URL.key,
+            kdf = KDFType.ARGON2ID.key,
+            memoryMb = PasswordHashingDefaults.getHashingMemoryInMB(
+                mode = mode,
+                cryptoScheme = BuildKonfig.cryptoScheme
+            ),
+            rounds = PasswordHashingDefaults.getHashingIterations(
+                mode = mode,
+                cryptoScheme = BuildKonfig.cryptoScheme
+            ),
+            keyBytes = keyBytes
+        )
+    }
 }
 
 class GeneratedUserKeys(

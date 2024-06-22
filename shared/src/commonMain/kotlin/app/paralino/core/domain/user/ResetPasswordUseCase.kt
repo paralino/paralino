@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flow
 
 class ResetPasswordUseCase(
     private val userRepository: UserRepository,
+    private val changeCredentials: ChangeCredentialsUseCase,
     private val cryptoCore: CryptoCore
 ) {
 
@@ -33,11 +34,20 @@ class ResetPasswordUseCase(
     fun resetPassword(userId: String, secret: String, password: String): Flow<SignUpStep> {
         return flow {
             emit(SignUpStep.STARTING)
-            val derivedPassword = cryptoCore.derivePassword(password)
-            userRepository.resetPassword(userId, secret, derivedPassword.loginPassword)
+            // TODO change salt & alg to proper values from remote
+            val loginAlg = cryptoCore.getDefaultLoginKDFAlg()
+            val authKey = cryptoCore.deriveUserAuthKey(
+                salt = userId,
+                password = password,
+                alg = loginAlg
+            )
+            userRepository.resetPassword(
+                userId = userId,
+                secret = secret,
+                password = authKey.loginKey
+            )
             delay(500)
             emit(SignUpStep.ALL_DONE)
         }
     }
-
 }

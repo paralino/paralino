@@ -1,8 +1,10 @@
 package app.paralino.core.provider
 
 import app.paralino.core.crypto.AlphabetType
+import app.paralino.core.crypto.EncodingType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
+import app.paralino.core.crypto.KDFAlg
 import app.paralino.core.crypto.KeyPair
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -10,7 +12,7 @@ import app.paralino.core.models.getOrThrow
 
 class CryptoServiceWrapperIOS(
     private val cryptoIOS: ICryptoServiceProviderIOS
-): ICryptoServiceProvider {
+) : ICryptoServiceProvider {
 
     override fun createRandomId(length: Int, alphabet: AlphabetType): String {
         return cryptoIOS.createRandomId(length, alphabet).getOrThrow()
@@ -28,6 +30,19 @@ class CryptoServiceWrapperIOS(
         return cryptoIOS.createNewSignatureKeyPair().getOrThrow()
     }
 
+    override suspend fun deriveKeyFromPassword(
+        password: String,
+        salt: String,
+        alg: KDFAlg
+    ): String {
+        return cryptoIOS.deriveKeyFromPassword(password = password, salt = salt, alg = alg)
+            .getOrThrow()
+    }
+
+    override fun deriveLongSymmetricKey(key: String, derivedKeyId: Long, context: String): String {
+        return cryptoIOS.deriveLongSymmetricKey(key, derivedKeyId, context).getOrThrow()
+    }
+
     override fun encryptDataWithSymmetricKey(data: String, key: String): String {
         return cryptoIOS.encryptDataWithSymmetricKey(data, key).getOrThrow()
     }
@@ -37,19 +52,6 @@ class CryptoServiceWrapperIOS(
             cryptoIOS.decryptDataWithSymmetricKey(data, key).getOrThrow()
         } catch (e: Exception) {
             logg.i("Error with decryptDataWithSymmetricKey: ${e.message}")
-            throw e
-        }
-    }
-
-    override fun encryptDataWithPassword(data: String, password: String, context: String, useFastMode: Boolean): String {
-        return cryptoIOS.encryptDataWithPassword(data, password, context, useFastMode).getOrThrow()
-    }
-
-    override fun decryptDataWithPassword(data: String, password: String, context: String, useFastMode: Boolean): String {
-        return try {
-            cryptoIOS.decryptDataWithPassword(data, password, context, useFastMode).getOrThrow()
-        } catch (e: Exception) {
-            logg.i("Error with decryptDataWithPassword: ${e.message}")
             throw e
         }
     }
@@ -82,8 +84,12 @@ class CryptoServiceWrapperIOS(
         }
     }
 
-    override fun computeHash(data: String, type: HashType): String {
-        return cryptoIOS.computeHash(data, type).getOrThrow()
+    override fun computeHash(data: String, type: HashType, encodingType: EncodingType): String {
+        return cryptoIOS.computeHash(data, type, encodingType).getOrThrow()
+    }
+
+    override fun changeEncoding(input: String, source: EncodingType, target: EncodingType): String {
+        return cryptoIOS.changeEncoding(input, source, target).getOrThrow()
     }
 }
 
@@ -94,8 +100,9 @@ interface ICryptoServiceProviderIOS {
     fun createNewSignatureKeyPair(): Payload<KeyPair>
     fun encryptDataWithSymmetricKey(data: String, key: String): Payload<String>
     fun decryptDataWithSymmetricKey(data: String, key: String): Payload<String>
-    fun encryptDataWithPassword(data: String, password: String, context: String, useFastMode: Boolean): Payload<String>
-    fun decryptDataWithPassword(data: String, password: String, context: String, useFastMode: Boolean): Payload<String>
+
+    fun deriveLongSymmetricKey(key: String, derivedKeyId: Long, context: String): Payload<String>
+    suspend fun deriveKeyFromPassword(password: String, salt: String, alg: KDFAlg): Payload<String>
 
     fun encryptDataWithKeyPair(
         data: String,
@@ -107,9 +114,10 @@ interface ICryptoServiceProviderIOS {
         data: String,
         myPrivateKey: String,
         publicKey: String
-    ): Payload<String> 
+    ): Payload<String>
 
     fun signData(data: String, myPrivateKey: String): Payload<String>
     fun verifySignature(data: String, publicKey: String): Payload<String>
-    fun computeHash(data: String, type: HashType): Payload<String> 
+    fun computeHash(data: String, type: HashType, encodingType: EncodingType): Payload<String>
+    fun changeEncoding(input: String, source: EncodingType, target: EncodingType): Payload<String>
 }

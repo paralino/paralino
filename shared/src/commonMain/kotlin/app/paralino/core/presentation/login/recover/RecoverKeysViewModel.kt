@@ -47,13 +47,13 @@ class RecoverKeysViewModel(
             .mapToPayload { it }
             .onEach { result ->
                 _uiState.update { uiState ->
-                    val backupPassword = config.temporaryBackupPassword
-                    if (backupPassword.isNotBlank()) {
+                    val masterAuthKey = config.temporaryMasterAuthKey
+                    if (masterAuthKey.isNotBlank()) {
                         result.mapSuccess {
                             keys = it
                             RecoverKeysScreenState(
                                 canRecoverOldKey = it.isNotEmpty(),
-                                backupPassword = backupPassword
+                                masterAuthKey = masterAuthKey
                             )
                         }
                     } else {
@@ -76,7 +76,7 @@ class RecoverKeysViewModel(
         if (validatePassword()) {
             if (validState.canRecoverOldKey && key != null) {
                 recoverAccountUseCase.recoverUserAccount(
-                    backupPassword = validState.backupPassword,
+                    masterAuthKey = validState.masterAuthKey,
                     key = key
                 )
                     .mapToPayload { it }
@@ -103,7 +103,7 @@ class RecoverKeysViewModel(
         val validState = (_uiState.value as? Payload.Success)?.data ?: return
         if (!validState.canRecoverOldKey || validState.recoverState.data == null) {
             recoverAccountUseCase.resetUserAccount(
-                backupPassword = validState.backupPassword
+                masterAuthKey = validState.masterAuthKey
             )
                 .mapToPayload { it }
                 .onEach { result ->

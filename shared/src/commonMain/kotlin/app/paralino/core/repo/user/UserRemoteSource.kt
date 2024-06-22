@@ -16,6 +16,7 @@ import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.extensions.blocking
+import kotlin.math.log
 
 class UserRemoteSource constructor(
     private val api: IUserApi,
@@ -126,7 +127,10 @@ class UserRemoteSource constructor(
                 AccountResetCryptoKeyPayload(
                     encryptedSymmetricKey = it.encryptedSymmetricKey,
                     encryptedPrivateKey = it.encryptedPrivateKey,
-                    encryptedPublicKey = it.encryptedPublicKey
+                    encryptedPublicKey = it.encryptedPublicKey,
+                    loginSalt = it.loginSalt,
+                    loginAlg = it.loginAlg,
+                    dataAlg = it.dataAlg
                 )
             }
 

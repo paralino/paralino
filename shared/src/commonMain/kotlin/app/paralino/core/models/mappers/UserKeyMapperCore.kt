@@ -35,6 +35,9 @@ class UserKeyMapperCore constructor(
             encryptedSymmetricKey = model.encryptedSymmetricKey,
             encryptedPrivateKey = model.encryptedPrivateKey,
             encryptedPublicKey = model.encryptedPublicKey,
+            loginSalt = model.loginSalt,
+            loginAlg = model.loginAlg,
+            dataAlg = model.dataAlg,
             isActive = isActive
         )
     }
@@ -46,6 +49,9 @@ class UserKeyMapperCore constructor(
             encryptedSymmetricKey = model.encryptedSymmetricKey,
             encryptedPrivateKey = model.encryptedPrivateKey,
             encryptedPublicKey = model.encryptedPublicKey,
+            loginSalt = model.loginSalt,
+            loginAlg = model.loginAlg,
+            dataAlg = model.dataAlg,
             ownerUserId = userId
         )
     }

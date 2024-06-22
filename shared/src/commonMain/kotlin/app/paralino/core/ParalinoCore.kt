@@ -35,8 +35,7 @@ import app.paralino.core.domain.location.RealtimeEventsProcessor
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.user.AppAccountStateMonitor
-import app.paralino.core.domain.user.ChangeEmailUseCase
-import app.paralino.core.domain.user.ChangePasswordUseCase
+import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.ExpiredSessionHandler
@@ -197,9 +196,8 @@ val coreModule = module {
 
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
-    factory { ResetPasswordUseCase(get(), get()) }
-    factory { ChangePasswordUseCase(get(), get(), get()) }
-    factory { ChangeEmailUseCase(get(), get()) }
+    factory { ResetPasswordUseCase(get(), get(), get()) }
+    factory { ChangeCredentialsUseCase(get(), get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
     factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), config) }

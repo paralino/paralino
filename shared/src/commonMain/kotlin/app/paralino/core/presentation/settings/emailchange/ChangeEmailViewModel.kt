@@ -1,7 +1,8 @@
 package app.paralino.core.presentation.settings.emailchange
 
 import app.paralino.core.MR
-import app.paralino.core.domain.user.ChangeEmailUseCase
+import app.paralino.core.domain.user.ChangeCredentialsStep
+import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
@@ -24,7 +25,7 @@ import kotlinx.coroutines.flow.update
 
 class ChangeEmailViewModel(
     private val userRepository: UserRepository,
-    private val changeEmail: ChangeEmailUseCase,
+    private val changeCredentials: ChangeCredentialsUseCase,
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -53,7 +54,7 @@ class ChangeEmailViewModel(
         } else if (!passwordValidation.result) {
             showSnackbar(getFormValidationErrorText(validation = passwordValidation.type))
         } else {
-            changeEmail.changeEmail(email = email, password = password)
+            changeCredentials.changeEmail(email = email, password = password)
                 .mapToPayload { it }
                 .onEach { result ->
                     when (result) {
@@ -73,9 +74,11 @@ class ChangeEmailViewModel(
                         }
 
                         is Payload.Success -> {
-                            _uiState.update { it.copy(actionLoading = false) }
-                            delay(400)
-                            _eventChannel.send(ChangeEmailScreenEvent.EmailChanged)
+                            _uiState.update { it.copy(actionLoading = result.data != ChangeCredentialsStep.DONE) }
+                            if (result.data == ChangeCredentialsStep.DONE) {
+                                delay(400)
+                                _eventChannel.send(ChangeEmailScreenEvent.EmailChanged)
+                            }
                         }
                     }
                 }

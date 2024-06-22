@@ -118,7 +118,7 @@ class GroupValidityVerification(
             if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
                 val hash = cryptoCore.hashProvider.computeHash(
                     data = memberPublicKey.identityKey.key,
-                    type = HashType.SHA256
+                    type = HashType.GENERIC_256
                 )
 
                 if (verification != hash) {

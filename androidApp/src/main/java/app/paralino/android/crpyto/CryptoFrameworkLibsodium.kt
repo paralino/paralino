@@ -1,15 +1,17 @@
 package app.paralino.android.crpyto
 
 import app.paralino.core.crypto.AlphabetType
+import app.paralino.core.crypto.EncodingType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
+import app.paralino.core.crypto.KDFAlg
+import app.paralino.core.crypto.KDFType
 import app.paralino.core.crypto.KeyPair
-import app.paralino.core.crypto.PasswordHashingDefaults
-import app.paralino.core.logg
+import app.paralino.core.utils.exceptions.UnsupportedEncryptionSchemeException
 import com.goterl.lazysodium.LazySodiumAndroid
 import com.goterl.lazysodium.SodiumAndroid
 import com.goterl.lazysodium.exceptions.SodiumException
-import com.goterl.lazysodium.interfaces.GenericHash
+import com.goterl.lazysodium.interfaces.KeyDerivation
 import com.goterl.lazysodium.interfaces.MessageEncoder
 import com.goterl.lazysodium.interfaces.PwHash
 import com.goterl.lazysodium.interfaces.SecretBox
@@ -22,22 +24,44 @@ import java.util.Base64
 
 class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServiceProvider {
 
-    private val lazySodium = LazySodiumAndroid(
-        SodiumAndroid(),
-        StandardCharsets.UTF_8,
-        when {
-            cryptoScheme <= 1 -> HexMessageEncoder()
-            else -> object : MessageEncoder {
-                override fun encode(cipher: ByteArray): String {
-                    return Base64.getEncoder().encodeToString(cipher)
-                }
-
-                override fun decode(cipherText: String): ByteArray {
-                    return Base64.getDecoder().decode(cipherText)
-                }
-            }
+    private val hexEncoder = HexMessageEncoder()
+    private val base64Encoder = object : MessageEncoder {
+        override fun encode(cipher: ByteArray): String {
+            return Base64.getEncoder().encodeToString(cipher)
         }
+
+        override fun decode(cipherText: String): ByteArray {
+            return Base64.getDecoder().decode(cipherText)
+        }
+    }
+    private val base64UrlEncoder = object : MessageEncoder {
+        override fun encode(cipher: ByteArray): String {
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(cipher)
+        }
+
+        override fun decode(cipherText: String): ByteArray {
+            return Base64.getUrlDecoder().decode(cipherText)
+        }
+    }
+
+    private val sodiumAndroid = SodiumAndroid()
+    private val lazySodiumHex = LazySodiumAndroid(
+        sodiumAndroid,
+        StandardCharsets.UTF_8,
+        hexEncoder
     )
+    private val lazySodiumBase64 = LazySodiumAndroid(
+        sodiumAndroid,
+        StandardCharsets.UTF_8,
+        base64Encoder
+    )
+    private val lazySodiumBase64Url = LazySodiumAndroid(
+        sodiumAndroid,
+        StandardCharsets.UTF_8,
+        base64UrlEncoder
+    )
+
+    private val lazySodium = lazySodiumBase64Url
 
     override fun createRandomId(length: Int, alphabet: AlphabetType): String {
         return NanoId.generate(
@@ -88,96 +112,52 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
         )
     }
 
-    override fun encryptDataWithPassword(
-        data: String,
-        password: String,
-        context: String,
-        useFastMode: Boolean
+    override fun deriveLongSymmetricKey(
+        key: String,
+        derivedKeyId: Long,
+        context: String
     ): String {
-
-        logg.d("crypto_lib", "Encrypt with password - start")
-
-        val out = lazySodium.randomBytesBuf(GenericHash.BYTES_MIN)
-        val input = lazySodium.bytes(context)
-        if (!lazySodium.cryptoGenericHash(
-                out,
-                GenericHash.BYTES_MIN,
-                input,
-                input.size.toLong()
-            )
-        ) {
-            throw SodiumException("Error creating password context hash")
-        }
-
-        logg.d("crypto_lib", "Encrypt with password - hashing start")
-
-        val key = lazySodium.cryptoPwHash(
-            password,
-            SecretBox.KEYBYTES,
-            out,
-            PasswordHashingDefaults.getHashingIterations(
-                useFastMode = useFastMode,
-                cryptoScheme = cryptoScheme
-            ),
-            NativeLong(
-                PasswordHashingDefaults.getHashingMemoryInBytes(
-                    useFastMode = useFastMode,
-                    cryptoScheme = cryptoScheme
-                )
-            ),
-            PwHash.Alg.PWHASH_ALG_ARGON2ID13
-        )
-
-        logg.d("crypto_lib", "Encrypt with password - hashing done")
-
-        return encryptDataWithSymmetricKey(data, key).also {
-            logg.d("crypto_lib", "Encrypt with password - done")
-        }
+        return lazySodium.cryptoKdfDeriveFromKey(
+            KeyDerivation.BYTES_MAX,
+            derivedKeyId,
+            context,
+            key.decodeKey()
+        ).encode()
     }
 
-    override fun decryptDataWithPassword(
-        data: String,
+    override suspend fun deriveKeyFromPassword(
         password: String,
-        context: String,
-        useFastMode: Boolean
+        salt: String,
+        alg: KDFAlg
     ): String {
+        when (alg.kdfType) {
+            KDFType.ARGON2ID -> {
+                val saltOutput = lazySodium.randomBytesBuf(PwHash.ARGON2ID_SALTBYTES)
+                val saltInput = lazySodium.bytes(salt)
+                if (
+                    !lazySodium.cryptoGenericHash(
+                        saltOutput,
+                        PwHash.ARGON2ID_SALTBYTES,
+                        saltInput,
+                        saltInput.size.toLong()
+                    )
+                ) {
+                    throw SodiumException("Error creating password context hash")
+                }
 
-        logg.d("crypto_lib", "Decrypt with password - start")
-        val out = lazySodium.randomBytesBuf(GenericHash.BYTES_MIN)
-        val input = lazySodium.bytes(context)
-        if (!lazySodium.cryptoGenericHash(
-                out,
-                GenericHash.BYTES_MIN,
-                input,
-                input.size.toLong()
-            )
-        ) {
-            throw SodiumException("Error creating password context hash")
-        }
-
-        logg.d("crypto_lib", "Decrypt with password - hashing start")
-
-        val key = lazySodium.cryptoPwHash(
-            password,
-            SecretBox.KEYBYTES,
-            out,
-            PasswordHashingDefaults.getHashingIterations(
-                useFastMode = useFastMode,
-                cryptoScheme = cryptoScheme
-            ),
-            NativeLong(
-                PasswordHashingDefaults.getHashingMemoryInBytes(
-                    useFastMode = useFastMode,
-                    cryptoScheme = cryptoScheme
+                val key = lazySodium.cryptoPwHash(
+                    password,
+                    alg.keyBytes,
+                    saltOutput,
+                    alg.rounds,
+                    NativeLong(alg.memoryBytes),
+                    PwHash.Alg.PWHASH_ALG_ARGON2ID13
                 )
-            ),
-            PwHash.Alg.PWHASH_ALG_ARGON2ID13
-        )
 
-        logg.d("crypto_lib", "Decrypt with password - hashing done")
+                return key
+            }
 
-        return decryptDataWithSymmetricKey(data, key).also {
-            logg.d("crypto_lib", "Decrypt with password - done")
+            null -> throw UnsupportedEncryptionSchemeException(scheme = alg.kdf)
         }
     }
 
@@ -235,14 +215,59 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
         )
     }
 
-    override fun computeHash(data: String, type: HashType): String {
-        val hash = when (type) {
-            HashType.SHA256 -> lazySodium.cryptoHashSha256(data)
-            HashType.SHA512 -> lazySodium.cryptoHashSha512(data)
+    override fun computeHash(data: String, type: HashType, encodingType: EncodingType): String {
+
+        val message: ByteArray = lazySodium.bytes(data)
+        val hash: ByteArray = lazySodium.randomBytesBuf(type.bytes)
+        val res: Boolean =
+            lazySodium.cryptoGenericHash(hash, hash.size, message, message.size.toLong())
+
+        if (!res) {
+            throw SodiumException("Could not hash the message.")
         }
 
-        // for hash we always use hex
-        return lazySodium.toHexStr(hash.decode())
+        return when (encodingType) {
+            EncodingType.HEX -> hexEncoder.encode(hash)
+            EncodingType.BASE64 -> base64Encoder.encode(hash)
+            EncodingType.BASE64_URL -> base64UrlEncoder.encode(hash)
+        }
+    }
+
+    override fun changeEncoding(input: String, source: EncodingType, target: EncodingType): String {
+
+        val encoder: MessageEncoder
+        val decoder: MessageEncoder
+
+        when (source) {
+            EncodingType.HEX -> {
+                decoder = hexEncoder
+                encoder = when (target) {
+                    EncodingType.HEX -> return input
+                    EncodingType.BASE64 -> base64Encoder
+                    EncodingType.BASE64_URL -> base64UrlEncoder
+                }
+            }
+
+            EncodingType.BASE64 -> {
+                decoder = base64Encoder
+                encoder = when (target) {
+                    EncodingType.HEX -> hexEncoder
+                    EncodingType.BASE64 -> return input
+                    EncodingType.BASE64_URL -> base64UrlEncoder
+                }
+            }
+
+            EncodingType.BASE64_URL -> {
+                decoder = base64UrlEncoder
+                encoder = when (target) {
+                    EncodingType.HEX -> hexEncoder
+                    EncodingType.BASE64 -> base64Encoder
+                    EncodingType.BASE64_URL -> return input
+                }
+            }
+        }
+
+        return encoder.encode(decoder.decode(input))
     }
 
     private fun Key.encode(): String {

@@ -102,7 +102,7 @@ class GroupMemberAddUseCase constructor(
 
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
             data = codeData.userData.ownerIdentityKey,
-            type = HashType.SHA256
+            type = HashType.GENERIC_256
         )
 
         val memberVerification = cryptoCore.signData(
@@ -116,7 +116,7 @@ class GroupMemberAddUseCase constructor(
                 hashProvider = cryptoCore.hashProvider,
                 serverIntegrity = cryptoCore.hashProvider.computeHash(
                     data = group.group.serverIntegrity.plus(codeData.userData.ownerUserId),
-                    type = HashType.SHA256
+                    type = HashType.GENERIC_256
                 ),
                 memberVerifications = group.members.map { it.member.verification } + memberVerification,
                 encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(

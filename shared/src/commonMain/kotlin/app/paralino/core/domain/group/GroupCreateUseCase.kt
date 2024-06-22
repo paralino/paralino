@@ -105,7 +105,7 @@ class GroupCreateUseCase(
         val groupData = UserGroupData(name, image, UserGroup.groupPrivateGroupId)
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
             data = myIdentityKeys.publicKey,
-            type = HashType.SHA256
+            type = HashType.GENERIC_256
         )
 
         val memberVerification = cryptoCore.signData(
@@ -119,7 +119,7 @@ class GroupCreateUseCase(
                 hashProvider = cryptoCore.hashProvider,
                 serverIntegrity = cryptoCore.hashProvider.computeHash(
                     data = user.id,
-                    type = HashType.SHA256
+                    type = HashType.GENERIC_256
                 ),
                 memberVerifications = listOf(memberVerification),
                 encryptedMemberPublicKeys = listOf(signedPublicKey)
@@ -144,7 +144,7 @@ class GroupCreateUseCase(
             groupMemberIntegrity = groupIntegrity,
             keyId = cryptoCore.hashProvider.computeHash(
                 data = exchangeKeyPair.publicKey,
-                type = HashType.SHA256
+                type = HashType.GENERIC_256
             ),
             encryptedUserKeys = cryptoCore.encryptModel(
                 data = userKeys,

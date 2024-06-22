@@ -3,6 +3,7 @@ package app.paralino.core.repo.personal_code
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
+import app.paralino.core.crypto.PasswordHashingMode
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
@@ -42,7 +43,10 @@ class PersonalCodesRemoteSource constructor(
 ) {
 
     suspend fun updateCodeUserData(personalCode: String, userId: String, userMeData: UserMeData) {
-        val derivedCode = cryptoCore.derivePassword(personalCode)
+        val derivedCode = cryptoCore.deriveParalinoIdMasterKeys(
+            code = personalCode,
+            userId = userId
+        )
         val myKey = userKeyRepo.latestKeyPair()
 
         val codeUserData = PersonalCodeUserData(
@@ -66,10 +70,9 @@ class PersonalCodesRemoteSource constructor(
 
         val data = PersonalCodeUpdateData(
             keyId = derivedCode.loginPassword,
-            encryptedCodeUserData = cryptoCore.encryptDataWithSimplePassword(
+            encryptedCodeUserData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(codeUserData),
-                password = derivedCode.backupPassword,
-                userId = userId
+                key = derivedCode.backupPassword
             ),
             keys = createPreKeys(userId, personalCode, integrity)
         )
@@ -92,7 +95,10 @@ class PersonalCodesRemoteSource constructor(
     suspend fun tryCreatingCode(user: UserMe, userMeData: UserMeData?) {
 
         val personalCode = cryptoCore.randomId(length = 8, alphabet = AlphabetType.SAFE)
-        val derivedCode = cryptoCore.derivePassword(personalCode)
+        val derivedCode = cryptoCore.deriveParalinoIdMasterKeys(
+            code = personalCode,
+            userId = user.id
+        )
         val myKey = userKeyRepo.latestKeyPair()
 
         val codeUserData = PersonalCodeUserData(
@@ -114,14 +120,17 @@ class PersonalCodesRemoteSource constructor(
             )
         }
 
-        val keys = createPreKeys(user.id, personalCode, integrity)
+        val keys = createPreKeys(
+            personalCode = personalCode,
+            integrity = integrity,
+            encryptionKey = derivedCode.backupPassword
+        )
 
         val data = PersonalCodeCreateData(
             keyId = derivedCode.loginPassword,
-            encryptedCodeUserData = cryptoCore.encryptDataWithSimplePassword(
+            encryptedCodeUserData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(codeUserData),
-                password = derivedCode.backupPassword,
-                userId = user.id
+                key = derivedCode.backupPassword
             ),
             encryptedCode = cryptoCore.encryptDataWithKey(
                 data = personalCode,
@@ -162,7 +171,10 @@ class PersonalCodesRemoteSource constructor(
         }
         logg.v("Found ${currentUnusedKeys.size} unused pre keys, try to restock")
 
-        val derivedCode = cryptoCore.derivePassword(personalCode)
+        val derivedCode = cryptoCore.deriveParalinoIdMasterKeys(
+            code = personalCode,
+            userId = userId
+        )
         val integrity = GroupIntegrity(
             timeUtc = nowUTC().toString(),
             // this signature will always be invalid, but we are passing it for consistency
@@ -174,7 +186,11 @@ class PersonalCodesRemoteSource constructor(
                 key = userKeyRepo.personalKey(),
             )
         }
-        val keys = createPreKeys(userId, personalCode, integrity)
+        val keys = createPreKeys(
+            personalCode = personalCode,
+            integrity = integrity,
+            encryptionKey = derivedCode.backupPassword
+        )
 
         val data = PersonalPreKeyUpdateData(
             personalCodeKeyId = derivedCode.loginPassword,
@@ -197,13 +213,12 @@ class PersonalCodesRemoteSource constructor(
     }
 
     private suspend fun createPreKeys(
-        userId: String,
         personalCode: String,
         integrity: String,
+        encryptionKey: String,
         count: Int = 6
     ): List<PersonalCodePreKeyData> {
         val myKey = userKeyRepo.latestKeyPair()
-        val derivedCode = cryptoCore.derivePassword(personalCode)
 
         return (0 until count).map {
 
@@ -211,7 +226,7 @@ class PersonalCodesRemoteSource constructor(
 
             val keyId = cryptoCore.hashProvider.computeHash(
                 data = exchangeKeyPair.publicKey,
-                type = HashType.SHA256
+                type = HashType.GENERIC_256
             )
 
             val codeKeyData = PersonalCodeKeyData(
@@ -233,10 +248,9 @@ class PersonalCodesRemoteSource constructor(
                     data = userKeys,
                     key = userKeyRepo.personalKey()
                 ),
-                encryptedCodeKeyData = cryptoCore.encryptDataWithSimplePassword(
+                encryptedCodeKeyData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(codeKeyData),
-                    password = derivedCode.backupPassword,
-                    userId = userId
+                    key = encryptionKey
                 ),
                 integrity = integrity,
                 keyId = keyId
@@ -253,10 +267,10 @@ class PersonalCodesRemoteSource constructor(
     }
 
     suspend fun getUserInfoFromCode(code: String): UserPersonalCodeData {
-        val codeKeys = cryptoCore.derivePassword(code)
+        val authKey = cryptoCore.deriveParalinoIdAuthKey(code = code)
         val response = functionsApi.runAndWait(
             function = ServerFunction.PERSONAL_CODE_READ,
-            data = codeKeys.loginPassword
+            data = authKey
         )
 
         if (!response.isSuccess) {
