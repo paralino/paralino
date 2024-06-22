@@ -140,6 +140,10 @@ class GroupMemberAddUseCase constructor(
             groupKeys = encryptedOldKeys,
             memberSignedPublicKey = codeData.keyData.signedOwnerKxPublicKey,
             memberIdentityKey = codeData.userData.ownerIdentityKey,
+            serverIntegrity = cryptoCore.hashProvider.computeHash(
+                data = group.group.serverIntegrity.plus(codeData.userData.ownerUserId),
+                type = HashType.GENERIC_256
+            ),
             memberData = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberModelData(codeData.userData.ownerName, codeData.userData.ownerImage)

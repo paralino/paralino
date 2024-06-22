@@ -142,6 +142,10 @@ class GroupCreateUseCase(
                 key = groupKey
             ),
             groupMemberIntegrity = groupIntegrity,
+            serverIntegrity = cryptoCore.hashProvider.computeHash(
+                data = user.id,
+                type = HashType.GENERIC_256
+            ),
             keyId = cryptoCore.hashProvider.computeHash(
                 data = exchangeKeyPair.publicKey,
                 type = HashType.GENERIC_256
