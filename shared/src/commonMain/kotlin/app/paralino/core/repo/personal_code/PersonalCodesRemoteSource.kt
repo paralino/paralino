@@ -74,7 +74,11 @@ class PersonalCodesRemoteSource constructor(
                 data = BaseRemoteModule.formatter.encodeToString(codeUserData),
                 key = derivedCode.backupPassword
             ),
-            keys = createPreKeys(userId, personalCode, integrity)
+            keys = createPreKeys(
+                personalCode = personalCode,
+                integrity = integrity,
+                encryptionKey = derivedCode.backupPassword
+            )
         )
 
         functionsApi.runAndWait(
