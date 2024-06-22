@@ -14,14 +14,6 @@ import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.exceptions.MissingUserKeyException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
 import app.paralino.core.utils.exceptions.UnverifiedUserException
-import dev.icerock.moko.resources.desc.desc
-
-fun randomString(length: Int = 32): String {
-    val source = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-    return (1..length)
-        .map { source.random() }
-        .joinToString("")
-}
 
 fun String.splitRanges(wrappedChars: String): List<Pair<String, IntRange>> {
     val ranges = mutableListOf<Pair<String, IntRange>>()

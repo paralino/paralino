@@ -31,7 +31,12 @@ class CreateAccountUseCase constructor(
 ) {
 
     fun signUpAsGuest(): Flow<SignUpStep> {
-        val email = "${cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)}${UserMe.guestUserEmail}"
+        val email = "${
+            cryptoCore.randomId(
+                length = 32,
+                alphabet = AlphabetType.EXTENDED
+            )
+        }${UserMe.guestUserEmail}"
         val password = cryptoCore.getNewSymmetricKey()
         return signUp(email, password)
             .onEach {
@@ -50,7 +55,14 @@ class CreateAccountUseCase constructor(
 
             emit(SignUpStep.STARTING)
             val loginAlg = cryptoCore.getDefaultLoginKDFAlg()
-            val authKey = cryptoCore.deriveUserAuthKey(salt = email, password = password, alg = loginAlg)
+            val authKey = cryptoCore.deriveUserAuthKey(
+                salt = cryptoCore.randomId(
+                    length = 32,
+                    alphabet = AlphabetType.EXTENDED
+                ),
+                password = password,
+                alg = loginAlg
+            )
             val user: UserMeRaw
             val session: UserSession
 
@@ -113,7 +125,10 @@ class CreateAccountUseCase constructor(
             .flowOn(Dispatchers.IO)
     }
 
-    private suspend fun createNewKey(userId: String, authKey: UserAuthDerivedKey): GeneratedUserKeys {
+    private suspend fun createNewKey(
+        userId: String,
+        authKey: UserAuthDerivedKey
+    ): GeneratedUserKeys {
         return cryptoCore.generateNewKeysForUser(
             authKey = authKey,
             userId = userId

@@ -52,7 +52,16 @@ data class FunctionExecutionRaw constructor(
                 .mapValues { it.value!! }
                 .get("data") as? Map<String, Any>
         }
+
+    inline fun <reified T> response(): FunctionResponse<T> {
+        return BaseRemoteModule.formatter.decodeFromString(response)
+    }
 }
+
+@Serializable
+data class FunctionResponse<T>(
+    val data: T
+)
 
 @Serializable
 data class FunctionErrorBody(

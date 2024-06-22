@@ -280,8 +280,7 @@ class PersonalCodesRemoteSource constructor(
                 cause = Exception(response.stderr)
             )
         } else {
-            val responseContent = response.responseDataMap
-                ?.tryParseFromJson<PersonalCodeResponse>()!!
+            val responseContent = response.response<PersonalCodeResponse>().data
             return personalCodeMapper.remote2CoreRead(
                 code = code,
                 encryptedUserData = responseContent.encryptedCodeUserData,

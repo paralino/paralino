@@ -20,11 +20,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
 class LoginUseCase constructor(
-    val userRepo: UserRepository,
-    val cryptoCore: CryptoCore,
-    val userKeyRepository: CryptoUserKeyRepository,
-    val keyMapper: UserKeyMapperCore,
-    val logoutUseCase: LogoutUseCase,
+    private val userRepo: UserRepository,
+    private val cryptoCore: CryptoCore,
+    private val userKeyRepository: CryptoUserKeyRepository,
+    private val keyMapper: UserKeyMapperCore,
+    private val logoutUseCase: LogoutUseCase,
 ) {
 
     fun login(email: String, password: String): Flow<SignUpStep> {
@@ -33,10 +33,12 @@ class LoginUseCase constructor(
             logg.d("login", "Start login - derive password")
             emit(SignUpStep.STARTING)
 
-            // TODO get login alg from remote
-            val loginAlg = cryptoCore.getDefaultLoginKDFAlg()
-            val authKey =
-                cryptoCore.deriveUserAuthKey(salt = email, password = password, alg = loginAlg)
+            val loginDetails = userRepo.getLoginDetails(key = email)
+            val authKey = cryptoCore.deriveUserAuthKey(
+                salt = loginDetails.loginSalt,
+                password = password,
+                alg = loginDetails.loginAlg
+            )
             val session: UserSession
             val user: UserMeRaw
 

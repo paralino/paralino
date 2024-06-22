@@ -12,6 +12,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
+import app.paralino.core.models.raw.LoginDetailsRaw
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.BlocklistModel
@@ -265,5 +266,9 @@ class UserRepository constructor(
 
     suspend fun resetAccount(keyToPersist: UserCryptoKeyRaw?) {
         triggerRemoteOnly { remote.resetAccount(keyToPersist) }
+    }
+
+    suspend fun getLoginDetails(key: String): LoginDetailsRaw {
+        return triggerRemoteOnly { remote.getLoginDetails(key) }
     }
 }

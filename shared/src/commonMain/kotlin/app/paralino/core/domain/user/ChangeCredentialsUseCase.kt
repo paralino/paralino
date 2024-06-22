@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.config
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
@@ -8,6 +8,7 @@ import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.DecryptionException
+import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.exceptions.MissingUserKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
@@ -27,18 +28,12 @@ class ChangeCredentialsUseCase(
     fun changeEmail(email: String, password: String): Flow<ChangeCredentialsStep> {
         return changeCredentials(
             userId = userRepo.cachedUserId,
-            newSalt = email,
             oldPassword = password,
-            newPassword = password,
+            newPassword = null,
             action = { oldLoginKey, newLoginKey ->
-                // TODO change to only mail update after salt is changed
                 userRepo.updateUserEmail(
                     newEmail = email,
                     password = oldLoginKey
-                )
-                userRepo.changePassword(
-                    oldPassword = oldLoginKey,
-                    newPassword = newLoginKey
                 )
             }
         )
@@ -47,7 +42,6 @@ class ChangeCredentialsUseCase(
     fun changePassword(oldPassword: String, newPassword: String): Flow<ChangeCredentialsStep> {
         return changeCredentials(
             userId = userRepo.cachedUserId,
-            newSalt = config.email,
             oldPassword = oldPassword,
             newPassword = newPassword,
             action = { oldLoginKey, newLoginKey ->
@@ -61,9 +55,8 @@ class ChangeCredentialsUseCase(
 
     fun changeCredentials(
         userId: String,
-        newSalt: String,
         oldPassword: String,
-        newPassword: String,
+        newPassword: String?,
         action: suspend (String, String) -> Unit
     ): Flow<ChangeCredentialsStep> {
         return flow {
@@ -77,11 +70,18 @@ class ChangeCredentialsUseCase(
                 password = oldPassword,
                 alg = BaseRemoteModule.formatter.decodeFromString(oldKey.loginAlg)
             )
-            val newMasterAuthKey = cryptoCore.deriveUserAuthKey(
-                salt = newSalt,
-                password = newPassword,
-                alg = cryptoCore.getDefaultLoginKDFAlg()
-            )
+            val newMasterAuthKey = if (newPassword.isNullOrBlank()) {
+                oldMasterAuthKey
+            } else {
+                cryptoCore.deriveUserAuthKey(
+                    salt = cryptoCore.randomId(
+                        length = 32,
+                        alphabet = AlphabetType.EXTENDED
+                    ),
+                    password = newPassword,
+                    alg = cryptoCore.getDefaultLoginKDFAlg()
+                )
+            }
 
             emit(ChangeCredentialsStep.KEY_SETUP)
 
@@ -106,22 +106,34 @@ class ChangeCredentialsUseCase(
                 encryptedSymmetricKey = newEncryptedKey,
                 encryptedPrivateKey = oldKey.encryptedPrivateKey,
                 encryptedPublicKey = oldKey.encryptedPublicKey,
-                loginSalt = newSalt,
+                loginSalt = newMasterAuthKey.loginSalt,
                 loginAlg = BaseRemoteModule.formatter.encodeToString(newMasterAuthKey.kdfAlg),
                 dataAlg = BaseRemoteModule.formatter.encodeToString(dataKdfAlg)
             )
 
+            // verify everything is correctly done and matches
+            try {
+                cryptoCore.verifyUserKeysChange(
+                    oldKey = oldKey,
+                    newKey = newKey,
+                    oldMasterAuthKey = oldMasterAuthKey.masterAuthKey,
+                    newMasterAuthKey = newMasterAuthKey.masterAuthKey,
+                    userPersonalKey = userKeyRepo.personalKey()
+                )
+            } catch (e: Exception) {
+                throw InvalidRequestException(message = e.message, e)
+            }
+
             // first upload new key to server as backup, without deleting old keys
             val backedUpKey = userKeyRepo.uploadNewUserKey(newKey, removeOldKeys = false)
 
-            // verify everything is correctly uploaded and matches
-            cryptoCore.verifyUserKeysChange(
-                oldKey = oldKey,
-                newKey = backedUpKey,
-                oldMasterAuthKey = oldMasterAuthKey.masterAuthKey,
-                newMasterAuthKey = newMasterAuthKey.masterAuthKey,
-                userPersonalKey = userKeyRepo.personalKey()
-            )
+            // check once more everything is properly uploaded
+            check(newKey.encryptedSymmetricKey == backedUpKey.encryptedSymmetricKey)
+            check(newKey.encryptedPrivateKey == backedUpKey.encryptedPrivateKey)
+            check(newKey.encryptedPublicKey == backedUpKey.encryptedPublicKey)
+            check(newKey.loginSalt == backedUpKey.loginSalt)
+            check(newKey.loginAlg == backedUpKey.loginAlg)
+            check(newKey.dataAlg == backedUpKey.dataAlg)
 
             emit(ChangeCredentialsStep.CHANGING_CREDENTIALS)
 

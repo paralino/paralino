@@ -15,7 +15,6 @@ class ConvertAccountUseCase constructor(
     ): Flow<ChangeCredentialsStep> {
         return changeCredentials.changeCredentials(
             userId = config.userId,
-            newSalt = email,
             oldPassword = config.guestPassword,
             newPassword = password,
             action = { oldLoginKey, newLoginKey ->
