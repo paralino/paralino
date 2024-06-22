@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.encodeToString
 
 class LoginUseCase constructor(
     private val userRepo: UserRepository,
@@ -114,7 +115,7 @@ class LoginUseCase constructor(
                 if (correctPersonalKey == null) {
                     // data is corrupted, current user password does not match user key
                     // this will trigger account recovery
-                    config.temporaryMasterAuthKey = authKey.masterAuthKey
+                    config.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
                     userRepo.initLocallyAfterSignUp(user, session)
                     throw MissingUserKeyException(false)
                 } else {
@@ -139,7 +140,7 @@ class LoginUseCase constructor(
             } catch (e: Exception) {
                 // this will trigger account recovery
                 logg.w("login", "Error initializing user keys", e)
-                config.temporaryMasterAuthKey = authKey.masterAuthKey
+                config.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
                 userRepo.initLocallyAfterSignUp(user, session)
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
             }

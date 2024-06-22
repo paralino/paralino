@@ -13,6 +13,7 @@ import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.encodeToString
 
 class CreateAccountUseCase constructor(
     private val userRepo: UserRepository,
@@ -104,7 +106,7 @@ class CreateAccountUseCase constructor(
                 userKeyRepository.clearAll()
                 // key generation failed but user is created
                 // we are saving user as is, so account recovery can take place later on
-                config.temporaryMasterAuthKey = authKey.masterAuthKey
+                config.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
                 userRepo.initLocallyAfterSignUp(user, session)
 
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)

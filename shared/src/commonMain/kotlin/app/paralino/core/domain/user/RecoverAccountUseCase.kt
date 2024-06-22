@@ -3,6 +3,7 @@ package app.paralino.core.domain.user
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
+import app.paralino.core.crypto.UserAuthDerivedKey
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
@@ -13,6 +14,7 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
 class RecoverAccountUseCase(
@@ -102,10 +104,11 @@ class RecoverAccountUseCase(
             // only re-encrypting symmetric key
             // private asymmetric key is encrypted with symmetric key and keys don't change here
             val dataKdfAlg = cryptoCore.getDefaultDataKDFAlg()
+            val authKey: UserAuthDerivedKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey)
             val newEncryptedKey = try {
                 cryptoCore.encryptUserPersonalKey(
                     userId = userRepo.cachedUserId,
-                    masterAuthKey = masterAuthKey,
+                    masterAuthKey = authKey.masterAuthKey,
                     userPersonalKey = key.userPersonalKey,
                     alg = dataKdfAlg
                 )

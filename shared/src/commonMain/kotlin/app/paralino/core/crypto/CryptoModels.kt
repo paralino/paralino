@@ -9,6 +9,7 @@ class KeyPair(
     val publicKey: String
 )
 
+@Serializable
 data class UserAuthDerivedKey(
     val masterAuthKey: String,
     val loginKey: String,
