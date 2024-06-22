@@ -43,7 +43,7 @@ object PasswordHashingDefaults {
             else -> when(mode) {
                 PasswordHashingMode.FAST -> 2
                 PasswordHashingMode.NORMAL -> 3
-                PasswordHashingMode.SLOW -> 4
+                PasswordHashingMode.SLOW -> 5
             }
         }
     }
