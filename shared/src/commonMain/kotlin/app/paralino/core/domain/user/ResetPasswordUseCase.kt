@@ -7,6 +7,7 @@ import app.paralino.core.utils.exceptions.NotFoundException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlin.math.log
 
 class ResetPasswordUseCase(
     private val userRepository: UserRepository,
@@ -34,12 +35,11 @@ class ResetPasswordUseCase(
     fun resetPassword(userId: String, secret: String, password: String): Flow<SignUpStep> {
         return flow {
             emit(SignUpStep.STARTING)
-            // TODO change salt & alg to proper values from remote
-            val loginAlg = cryptoCore.getDefaultLoginKDFAlg()
+            val loginDetails = userRepository.getLoginDetails(key = userId)
             val authKey = cryptoCore.deriveUserAuthKey(
-                salt = userId,
+                salt = loginDetails.loginSalt,
                 password = password,
-                alg = loginAlg
+                alg = loginDetails.loginAlg
             )
             userRepository.resetPassword(
                 userId = userId,
