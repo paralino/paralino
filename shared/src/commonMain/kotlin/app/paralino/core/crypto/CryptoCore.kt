@@ -267,7 +267,6 @@ class CryptoCore(
         )
     }
 
-    // TODO change salt to proper salt
     suspend fun deriveUserAuthKey(
         salt: String,
         password: String,

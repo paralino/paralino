@@ -24,8 +24,6 @@ interface ICryptoServiceProvider : ICryptoHashProvider {
 
     fun signData(data: String, myPrivateKey: String): String
     fun verifySignature(data: String, publicKey: String): String?
-
-    fun changeEncoding(input: String, source: EncodingType, target: EncodingType): String
 }
 
 interface ICryptoHashProvider {

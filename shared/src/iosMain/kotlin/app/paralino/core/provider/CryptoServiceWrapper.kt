@@ -87,10 +87,6 @@ class CryptoServiceWrapperIOS(
     override fun computeHash(data: String, type: HashType, encodingType: EncodingType): String {
         return cryptoIOS.computeHash(data, type, encodingType).getOrThrow()
     }
-
-    override fun changeEncoding(input: String, source: EncodingType, target: EncodingType): String {
-        return cryptoIOS.changeEncoding(input, source, target).getOrThrow()
-    }
 }
 
 interface ICryptoServiceProviderIOS {
@@ -119,5 +115,4 @@ interface ICryptoServiceProviderIOS {
     fun signData(data: String, myPrivateKey: String): Payload<String>
     fun verifySignature(data: String, publicKey: String): Payload<String>
     fun computeHash(data: String, type: HashType, encodingType: EncodingType): Payload<String>
-    fun changeEncoding(input: String, source: EncodingType, target: EncodingType): Payload<String>
 }

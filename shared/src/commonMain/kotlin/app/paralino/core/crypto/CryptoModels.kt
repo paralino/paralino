@@ -22,13 +22,35 @@ data class DerivedPasswords(
     val backupPassword: String
 )
 
-data class CipherPayload(
+@Serializable
+data class CipherAlg(
     val enc: String,
     val alg: String,
     val data: String
 ) {
-    val kdfType: CipherAlgType? get() = CipherAlgType.fromKey(alg)
+    constructor(encodingType: EncodingType, algType: CipherAlgType, data: String) : this(
+        enc = encodingType.key,
+        alg = algType.key,
+        data = data
+    )
+
+    val algorithm: CipherAlgType? get() = CipherAlgType.fromKey(alg)
     val encodingType: EncodingType? get() = EncodingType.fromKey(enc)
+
+    fun encode(): String {
+        return "$enc:$alg:@$data"
+    }
+
+    companion object {
+        fun decode(input: String): CipherAlg {
+            val index = input.indexOfFirst { it == '@' }
+            val metadata = input.substring(0, index).split(":")
+            val encoding = metadata[0]
+            val alg = metadata[1]
+            val data = input.substring(index + 1)
+            return CipherAlg(enc = encoding, alg = alg, data = data)
+        }
+    }
 }
 
 @Serializable
@@ -45,7 +67,8 @@ data class KDFAlg(
 }
 
 enum class CipherAlgType(val key: String) {
-    XSALSA20POLY1305(key = "xsp");
+    XSALSA20POLY1305(key = "xsp"),
+    DEFAULT(key = "");
 
     companion object {
         fun fromKey(key: String): CipherAlgType? {
