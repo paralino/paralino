@@ -164,8 +164,11 @@ class CryptoCore(
         encryptedMasterKey: String,
         alg: KDFAlg
     ): String {
-        val masterKey =
-            deriveUserMasterKey(userId = userId, masterAuthKey = masterAuthKey, alg = alg)
+        val masterKey = deriveUserMasterKey(
+            userId = userId,
+            masterAuthKey = masterAuthKey,
+            alg = alg
+        )
         return decryptDataWithKey(
             data = encryptedMasterKey,
             key = masterKey
@@ -239,7 +242,7 @@ class CryptoCore(
             password = code,
             // using hardcoded, plain text salt here since code is the only input
             salt = "Fleur_de_sel",
-            alg = getKDFAlg(keyBytes = 32, mode = PasswordHashingMode.FAST)
+            alg = getKDFAlg(mode = PasswordHashingMode.FAST)
         )
 
         return serviceProvider.computeHash(
@@ -258,7 +261,7 @@ class CryptoCore(
         val masterKey = serviceProvider.deriveKeyFromPassword(
             password = code,
             salt = userId,
-            alg = getKDFAlg(keyBytes = 64, mode = PasswordHashingMode.FAST)
+            alg = getKDFAlg(mode = PasswordHashingMode.FAST)
         )
 
         return DerivedPasswords(
@@ -272,27 +275,27 @@ class CryptoCore(
         password: String,
         alg: KDFAlg
     ): UserAuthDerivedKey {
-        val sourceKey = serviceProvider.deriveKeyFromPassword(
+        val masterAuthKey = serviceProvider.deriveKeyFromPassword(
             password = password,
             salt = salt,
             alg = alg
         )
 
         val loginKey = serviceProvider.computeHash(
-            data = sourceKey,
+            data = masterAuthKey,
             type = HashType.GENERIC_256,
             encodingType = EncodingType.BASE64_URL
         )
 
         return UserAuthDerivedKey(
-            masterAuthKey = sourceKey,
+            masterAuthKey = masterAuthKey,
             loginKey = loginKey,
             loginSalt = salt,
             kdfAlg = alg
         )
     }
 
-    suspend fun deriveUserMasterKey(
+    private suspend fun deriveUserMasterKey(
         userId: String,
         masterAuthKey: String,
         alg: KDFAlg
@@ -305,17 +308,14 @@ class CryptoCore(
     }
 
     fun getDefaultLoginKDFAlg(): KDFAlg {
-        return getKDFAlg(keyBytes = 32, mode = PasswordHashingMode.NORMAL)
+        return getKDFAlg(mode = PasswordHashingMode.NORMAL)
     }
 
     fun getDefaultDataKDFAlg(): KDFAlg {
-        return getKDFAlg(keyBytes = 64, mode = PasswordHashingMode.SLOW)
+        return getKDFAlg(mode = PasswordHashingMode.SLOW)
     }
 
-    private fun getKDFAlg(
-        keyBytes: Int,
-        mode: PasswordHashingMode
-    ): KDFAlg {
+    private fun getKDFAlg(mode: PasswordHashingMode): KDFAlg {
         return KDFAlg(
             encoding = EncodingType.BASE64_URL.key,
             kdf = KDFType.ARGON2ID.key,
@@ -329,7 +329,7 @@ class CryptoCore(
                 PasswordHashingMode.NORMAL -> 3
                 PasswordHashingMode.SLOW -> 5
             },
-            keyBytes = keyBytes
+            keyBytes = 32
         )
     }
 }
