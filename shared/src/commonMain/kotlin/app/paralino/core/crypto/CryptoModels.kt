@@ -38,17 +38,40 @@ data class CipherAlg(
     val encodingType: EncodingType? get() = EncodingType.fromKey(enc)
 
     fun encode(): String {
-        return "$enc:$alg:@$data"
+        return "@:$enc:$alg:@$data"
     }
 
     companion object {
         fun decode(input: String): CipherAlg {
-            val index = input.indexOfFirst { it == '@' }
-            val metadata = input.substring(0, index).split(":")
+
+            if (!input.startsWith("@:")) {
+                return default(input)
+            }
+
+            val index = input.indexOf(":@")
+
+            if (index == -1) {
+                return default(input)
+            }
+
+            val metadata = input.substring(2, index).split(":")
+
+            if (metadata.size < 2) {
+                return default(input)
+            }
+
             val encoding = metadata[0]
             val alg = metadata[1]
-            val data = input.substring(index + 1)
+            val data = input.substring(index + 2)
             return CipherAlg(enc = encoding, alg = alg, data = data)
+        }
+
+        fun default(data: String): CipherAlg {
+            return CipherAlg(
+                encodingType = EncodingType.BASE64_URL,
+                algType = CipherAlgType.XSALSA20POLY1305,
+                data = data
+            )
         }
     }
 }
