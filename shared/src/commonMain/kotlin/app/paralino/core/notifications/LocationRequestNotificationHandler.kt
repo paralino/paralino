@@ -65,8 +65,8 @@ class LocationRequestNotificationHandler(
         performanceType: LocationPerformanceType
     ) {
         logg.v("Update location status and performance for group $groupId")
-        if (performanceType == LocationPerformanceType.VERY_HIGH) {
-            if (!sharingManager.isSharingActiveForGroup(id = groupId)) {
+        if (!sharingManager.isSharingActiveForGroup(id = groupId)) {
+            if (performanceType == LocationPerformanceType.VERY_HIGH) {
                 // update not sharing status if someone manually requested device location
                 // and only if not previously updated
                 // this is to handle the case if location sharing was stopped while device was offline
