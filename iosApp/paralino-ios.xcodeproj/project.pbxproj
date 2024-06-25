@@ -915,7 +915,7 @@
 			repositoryURL = "https://github.com/jedisct1/swift-sodium.git";
 			requirement = {
 				kind = revision;
-				revision = 6262c021e108b5fb16d2caa1e319e913cea2406d;
+				revision = 0d3021d0f81ac4be8600fecc19630b831def1b5b;
 			};
 		};
 		25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */ = {
