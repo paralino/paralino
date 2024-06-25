@@ -52,6 +52,7 @@ class GroupRefreshUseCase constructor(
                 // if session is expired, this will throw and session recovery will kick in
                 // in that case group will not be accidentally removed and sharing will continue
                 userRepository.refreshUserIfAvailable()
+                logg.tag("tag_crypto_key_group").i("Group not found and user is valid - remove group locally")
                 groupRemove.clearGroupLocally(groupId)
             }
             throw e
