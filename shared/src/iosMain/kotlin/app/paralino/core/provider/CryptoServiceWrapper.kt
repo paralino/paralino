@@ -39,8 +39,8 @@ class CryptoServiceWrapperIOS(
             .getOrThrow()
     }
 
-    override fun deriveLongSymmetricKey(key: String, derivedKeyId: Long, context: String): String {
-        return cryptoIOS.deriveLongSymmetricKey(key, derivedKeyId, context).getOrThrow()
+    override fun deriveSymmetricKey(key: String, derivedKeyId: Long, context: String): String {
+        return cryptoIOS.deriveSymmetricKey(key, derivedKeyId, context).getOrThrow()
     }
 
     override fun encryptDataWithSymmetricKey(data: String, key: String): String {
@@ -97,7 +97,7 @@ interface ICryptoServiceProviderIOS {
     fun encryptDataWithSymmetricKey(data: String, key: String): Payload<String>
     fun decryptDataWithSymmetricKey(data: String, key: String): Payload<String>
 
-    fun deriveLongSymmetricKey(key: String, derivedKeyId: Long, context: String): Payload<String>
+    fun deriveSymmetricKey(key: String, derivedKeyId: Long, context: String): Payload<String>
     suspend fun deriveKeyFromPassword(password: String, salt: String, alg: KDFAlg): Payload<String>
 
     fun encryptDataWithKeyPair(

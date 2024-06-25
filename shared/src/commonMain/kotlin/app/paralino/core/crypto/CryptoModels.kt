@@ -30,14 +30,18 @@ data class CipherAlg(
 ) {
     constructor(encodingType: EncodingType, algType: CipherAlgType, data: String) : this(
         enc = encodingType.key,
-        alg = algType.key,
+        // only take first key as main one
+        alg = algType.keys.first(),
         data = data
     )
 
     val algorithm: CipherAlgType? get() = CipherAlgType.fromKey(alg)
     val encodingType: EncodingType? get() = EncodingType.fromKey(enc)
 
-    fun encode(): String {
+    fun encode(skipTagsIfDefault: Boolean): String {
+        if (skipTagsIfDefault && encodingType == EncodingType.BASE64_URL && algorithm == CipherAlgType.DEFAULT) {
+            return data
+        }
         return "@:$enc:$alg:@$data"
     }
 
@@ -45,19 +49,19 @@ data class CipherAlg(
         fun decode(input: String): CipherAlg {
 
             if (!input.startsWith("@:")) {
-                return default(input)
+                return default(CipherAlgType.DEFAULT, input)
             }
 
             val index = input.indexOf(":@")
 
             if (index == -1) {
-                return default(input)
+                return default(CipherAlgType.DEFAULT, input)
             }
 
             val metadata = input.substring(2, index).split(":")
 
             if (metadata.size < 2) {
-                return default(input)
+                return default(CipherAlgType.DEFAULT, input)
             }
 
             val encoding = metadata[0]
@@ -66,10 +70,10 @@ data class CipherAlg(
             return CipherAlg(enc = encoding, alg = alg, data = data)
         }
 
-        fun default(data: String): CipherAlg {
+        fun default(algType: CipherAlgType, data: String): CipherAlg {
             return CipherAlg(
                 encodingType = EncodingType.BASE64_URL,
-                algType = CipherAlgType.XSALSA20POLY1305,
+                algType = algType,
                 data = data
             )
         }
@@ -89,13 +93,12 @@ data class KDFAlg(
     val memoryBytes: Long get() = memoryMb * 1024 * 1024
 }
 
-enum class CipherAlgType(val key: String) {
-    XSALSA20POLY1305(key = "xsp"),
-    DEFAULT(key = "");
+enum class CipherAlgType(val keys: List<String>) {
+    DEFAULT(keys = listOf("", "xcp"));
 
     companion object {
         fun fromKey(key: String): CipherAlgType? {
-            return CipherAlgType.entries.firstOrNull { it.key == key }
+            return CipherAlgType.entries.firstOrNull { it.keys.contains(key) }
         }
     }
 }

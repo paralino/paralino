@@ -14,7 +14,7 @@ interface ICryptoServiceProvider : ICryptoHashProvider {
      * @param derivedKeyId Index or specific id that belongs to derived key.
      * @param context The context for derived key. Exactly 8 bytes.
      */
-    fun deriveLongSymmetricKey(key: String, derivedKeyId: Long, context: String): String
+    fun deriveSymmetricKey(key: String, derivedKeyId: Long, context: String): String
 
     fun encryptDataWithSymmetricKey(data: String, key: String): String
     fun decryptDataWithSymmetricKey(data: String, key: String): String

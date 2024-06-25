@@ -51,7 +51,7 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     func createNewSymmetricKey() -> Payload<NSString> {
         return execute {
-            NSString(string: try sodium.secretBox.key().encodeKey(self))
+            NSString(string: try sodium.aead.xchacha20poly1305ietf.key().encodeWithCipherAlg(self, alg: .default_))
         }
     }
     
@@ -59,8 +59,8 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         return execute {
             let keys = sodium.box.keyPair()
             return KeyPair(
-                privateKey: try keys!.secretKey.encodeKey(self),
-                publicKey: try keys!.publicKey.encodeKey(self)
+                privateKey: try keys!.secretKey.encodeWithCipherAlg(self),
+                publicKey: try keys!.publicKey.encodeWithCipherAlg(self)
             )
         }
     }
@@ -69,20 +69,19 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         return execute {
             let keys = sodium.sign.keyPair()
             return KeyPair(
-                privateKey: try keys!.secretKey.encodeKey(self),
-                publicKey: try keys!.publicKey.encodeKey(self)
+                privateKey: try keys!.secretKey.encodeWithCipherAlg(self),
+                publicKey: try keys!.publicKey.encodeWithCipherAlg(self)
             )
         }
     }
     
     func deriveKeyFromPassword(password: String, salt: String, alg: KDFAlg) async throws -> Payload<NSString> {
         return execute {
-            
             switch alg.kdfType {
             case .argon2id:
                 guard let saltBytes = sodium.genericHash.hash(
                     message: salt.bytes,
-                    outputLength: sodium.genericHash.BytesMin
+                    outputLength: sodium.pwHash.SaltBytes
                 ) else {
                     throw EncryptionError.CryptoError
                 }
@@ -98,34 +97,57 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
                     throw EncryptionError.CryptoError
                 }
                 
-                return NSString(string: try key.encodeKey(self))
+                var result: String?
+                switch alg.encodingType {
+                case .hex: result = try key.encodeToHex(self)
+                case .base64: result = try key.encodeToBase64(self)
+                case .base64Url: result = try key.encodeToBase64Url(self)
+                default: throw EncryptionError.WrongFormat
+                }
+                
+                if let result = result {
+                    return NSString(string: result)
+                } else {
+                    throw EncryptionError.CryptoError
+                }
             default: throw EncryptionError.CryptoError
             }
         }
     }
     
-    func deriveLongSymmetricKey(key: String, derivedKeyId: Int64, context: String) -> Payload<NSString> {
+    func deriveSymmetricKey(key: String, derivedKeyId: Int64, context: String) -> Payload<NSString> {
         return execute {
-            guard let newKey = sodium.keyDerivation.derive(
-                secretKey: try key.decodeKey(self),
-                index: UInt64(derivedKeyId),
-                length: sodium.keyDerivation.BytesMax,
-                context: context
-            ) else {
-                throw EncryptionError.CryptoError
+            let decodedKey = try key.decodeCipher(self)
+            switch decodedKey.algorithm {
+            case .default_:
+                guard let newKey = sodium.keyDerivation.derive(
+                    secretKey: try decodedKey.decodeData(self),
+                    index: UInt64(derivedKeyId),
+                    length: sodium.keyDerivation.KeyBytes,
+                    context: context
+                ) else {
+                    throw EncryptionError.CryptoError
+                }
+                return NSString(string: try newKey.encodeWithCipherAlg(self, alg: .default_))
+            default: throw EncryptionError.WrongFormat
             }
-            return NSString(string: try newKey.encodeKey(self))
         }
     }
     
     func encryptDataWithSymmetricKey(data: String, key: String) -> Payload<NSString> {
         return execute {
-            if let value = try? sodium.secretBox.seal(
-                message: data.bytes,
-                secretKey: key.decodeKey(self)
-            )?.encodeWithCipherAlg(self) {
-                NSString(string: value)
-            } else {
+            let decodedKey = try key.decodeCipher(self)
+            switch decodedKey.algorithm {
+            case .default_:
+                if let value = try? sodium.aead.xchacha20poly1305ietf.encrypt(
+                    message: data.bytes,
+                    secretKey: try decodedKey.decodeData(self)
+                )?.encodeWithCipherAlg(self, alg: .default_) {
+                    return NSString(string: value)
+                } else {
+                    throw EncryptionError.CryptoError
+                }
+            default:
                 throw EncryptionError.CryptoError
             }
         }
@@ -133,16 +155,19 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     func decryptDataWithSymmetricKey(data: String, key: String) -> Payload<NSString> {
         return execute {
-            
             let cipher = try data.decodeCipher(self)
+            let decodedKey = try key.decodeCipher(self)
+            
+            if cipher.algorithm != decodedKey.algorithm {
+                throw EncryptionError.WrongFormat
+            }
             
             switch cipher.algorithm {
-            case .xsalsa20poly1305, .default_:
-                let result = sodium.secretBox.open(
-                    nonceAndAuthenticatedCipherText: try cipher.decode(self),
-                    secretKey: try key.decodeKey(self)
+            case .default_:
+                let result = sodium.aead.xchacha20poly1305ietf.decrypt(
+                    nonceAndAuthenticatedCipherText: try cipher.decodeData(self),
+                    secretKey: try decodedKey.decodeData(self)
                 )?.utf8String
-                
                 if let result = result {
                     return NSString(string: result)
                 } else {
@@ -157,29 +182,49 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     func encryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String) -> Payload<NSString> {
         return execute {
-            if let value = try? sodium.box.seal(
-                message: data.bytes,
-                recipientPublicKey: publicKey.decodeKey(self),
-                senderSecretKey: myPrivateKey.decodeKey(self)
-            )?.encodeWithCipherAlg(self) {
-                NSString(string: value)
-            } else {
-                throw EncryptionError.CryptoError
+            let decodedPrivateKey = try myPrivateKey.decodeCipher(self)
+            let decodedPublicKey = try publicKey.decodeCipher(self)
+            
+            if decodedPrivateKey.algorithm != decodedPublicKey.algorithm {
+                throw EncryptionError.WrongFormat
+            }
+            
+            switch decodedPublicKey.algorithm {
+            case .default_:
+                if let value = try? sodium.box.seal(
+                    message: data.bytes,
+                    recipientPublicKey: decodedPublicKey.decodeData(self),
+                    senderSecretKey: decodedPrivateKey.decodeData(self)
+                )?.encodeWithCipherAlg(self, alg: .default_) {
+                    return NSString(string: value)
+                } else {
+                    throw EncryptionError.CryptoError
+                }
+            default: throw EncryptionError.CryptoError
             }
         }
     }
     
     func decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String) -> Payload<NSString> {
         return execute {
-            
             let cipher = try data.decodeCipher(self)
+            let decodedPrivateKey = try myPrivateKey.decodeCipher(self)
+            let decodedPublicKey = try publicKey.decodeCipher(self)
+            
+            if decodedPrivateKey.algorithm != decodedPublicKey.algorithm {
+                throw EncryptionError.WrongFormat
+            }
+            
+            if cipher.algorithm != decodedPublicKey.algorithm {
+                throw EncryptionError.WrongFormat
+            }
             
             switch cipher.algorithm {
-            case .xsalsa20poly1305, .default_:
+            case .default_:
                 let result = try? sodium.box.open(
-                    nonceAndAuthenticatedCipherText: cipher.decode(self),
-                    senderPublicKey: publicKey.decodeKey(self),
-                    recipientSecretKey: myPrivateKey.decodeKey(self)
+                    nonceAndAuthenticatedCipherText: cipher.decodeData(self),
+                    senderPublicKey: decodedPublicKey.decodeData(self),
+                    recipientSecretKey: decodedPrivateKey.decodeData(self)
                 )?.utf8String
                 
                 if let result = result {
@@ -195,13 +240,18 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     func signData(data: String, myPrivateKey: String) -> Payload<NSString> {
         return execute {
-            if let value = try? sodium.sign.sign(
-                message: data.bytes,
-                secretKey: myPrivateKey.decodeKey(self)
-            )?.encodeWithCipherAlg(self) {
-                NSString(string: value)
-            } else {
-                throw EncryptionError.CryptoError
+            let decodedPrivateKey = try myPrivateKey.decodeCipher(self)
+            switch decodedPrivateKey.algorithm {
+            case .default_:
+                if let value = try? sodium.sign.sign(
+                    message: data.bytes,
+                    secretKey: decodedPrivateKey.decodeData(self)
+                )?.encodeWithCipherAlg(self, alg: .default_) {
+                    return NSString(string: value)
+                } else {
+                    throw EncryptionError.CryptoError
+                }
+            default: throw EncryptionError.WrongFormat
             }
         }
     }
@@ -209,12 +259,17 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     func verifySignature(data: String, publicKey: String) -> Payload<NSString> {
         return execute {
             let cipher = try data.decodeCipher(self)
+            let decodedPublicKey = try publicKey.decodeCipher(self)
+            
+            if cipher.algorithm != decodedPublicKey.algorithm {
+                throw EncryptionError.WrongFormat
+            }
             
             switch cipher.algorithm {
-            case .xsalsa20poly1305, .default_:
+            case .default_:
                 if let value = try? sodium.sign.open(
-                    signedMessage: cipher.decode(self),
-                    publicKey: publicKey.decodeKey(self)
+                    signedMessage: cipher.decodeData(self),
+                    publicKey: decodedPublicKey.decodeData(self)
                 )?.utf8String {
                     return NSString(string: value)
                 } else {
@@ -228,8 +283,6 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     func computeHash(data: String, type: HashType, encodingType: EncodingType) -> Payload<NSString> {
         return execute {
-            guard let content = data.data(using: .utf8) else { throw EncryptionError.CryptoError }
-            
             let hash = sodium.genericHash.hash(message: data.bytes, key: nil, outputLength: Int(type.bytes))
             
             var result: String?
@@ -250,19 +303,8 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
 }
 
 extension Bytes {
-    //    func encode(_ framework: CryptoFrameworkProvider) throws -> String {
-    //        switch framework.cryptoScheme {
-    //        case ..<2: return try self.encodeToHex(framework)
-    //        default: return try self.encodeToBase64(framework)
-    //        }
-    //    }
-    
-    func encodeKey(_ framework: CryptoFrameworkProvider) throws -> String {
-        try self.encodeToBase64Url(framework)
-    }
-    
-    func encodeWithCipherAlg(_ framework: CryptoFrameworkProvider) throws -> String {
-        CipherAlg(encodingType: .base64Url, algType: .xsalsa20poly1305, data: try self.encodeToBase64Url(framework)).encode()
+    func encodeWithCipherAlg(_ framework: CryptoFrameworkProvider, alg: CipherAlgType = .default_) throws -> String {
+        CipherAlg.init(encodingType: .base64Url, algType: alg, data: try self.encodeToBase64Url(framework)).encode(skipTagsIfDefault: true)
     }
     
     func encodeToBase64(_ framework: CryptoFrameworkProvider) throws -> String {
@@ -282,18 +324,6 @@ extension Bytes {
 }
 
 extension String {
-    
-    //    func decode(_ framework: CryptoFrameworkProvider) throws -> Bytes {
-    //        switch framework.cryptoScheme {
-    //        case ..<2: return try self.decodeFromHex(framework)
-    //        default: return try self.decodeFromBase64(framework)
-    //        }
-    //    }
-    
-    func decodeKey(_ framework: CryptoFrameworkProvider) throws -> Bytes {
-        try self.decodeFromBase64Url(framework)
-    }
-    
     func decodeCipher(_ framework: CryptoFrameworkProvider) throws -> CipherAlg {
         CipherAlg.companion.decode(input: self)
     }
@@ -324,7 +354,7 @@ extension String {
 }
 
 extension CipherAlg {
-    func decode(_ framework: CryptoFrameworkProvider) throws -> Bytes {
+    func decodeData(_ framework: CryptoFrameworkProvider) throws -> Bytes {
         switch self.encodingType {
         case .hex: return try self.data.decodeFromHex(framework)
         case .base64: return try self.data.decodeFromBase64(framework)

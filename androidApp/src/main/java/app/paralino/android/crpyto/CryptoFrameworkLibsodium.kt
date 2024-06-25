@@ -13,11 +13,12 @@ import app.paralino.core.utils.exceptions.UnsupportedEncryptionSchemeException
 import com.goterl.lazysodium.LazySodiumAndroid
 import com.goterl.lazysodium.SodiumAndroid
 import com.goterl.lazysodium.exceptions.SodiumException
+import com.goterl.lazysodium.interfaces.AEAD
 import com.goterl.lazysodium.interfaces.Box
 import com.goterl.lazysodium.interfaces.KeyDerivation
 import com.goterl.lazysodium.interfaces.MessageEncoder
 import com.goterl.lazysodium.interfaces.PwHash
-import com.goterl.lazysodium.interfaces.SecretBox
+import com.goterl.lazysodium.interfaces.Sign
 import com.goterl.lazysodium.utils.HexMessageEncoder
 import com.goterl.lazysodium.utils.Key
 import com.sun.jna.NativeLong
@@ -62,67 +63,116 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
     }
 
     override fun createNewSymmetricKey(): String {
-        return lazySodium.cryptoSecretBoxKeygen().encode()
+        val key = lazySodium.randomBytesBuf(AEAD.XCHACHA20POLY1305_IETF_KEYBYTES)
+        lazySodium.cryptoAeadXChaCha20Poly1305IetfKeygen(key)
+        return key.encodeWithCipherAlg()
     }
 
     override fun createNewCryptoKeyPair(): KeyPair {
         val keyPair = lazySodium.cryptoBoxKeypair()
         return KeyPair(
-            privateKey = keyPair.secretKey.encode(),
-            publicKey = keyPair.publicKey.encode()
+            privateKey = keyPair.secretKey.asBytes.encodeWithCipherAlg(),
+            publicKey = keyPair.publicKey.asBytes.encodeWithCipherAlg(),
         )
     }
 
     override fun createNewSignatureKeyPair(): KeyPair {
         val keyPair = lazySodium.cryptoSignKeypair()
         return KeyPair(
-            privateKey = keyPair.secretKey.encode(),
-            publicKey = keyPair.publicKey.encode()
+            privateKey = keyPair.secretKey.asBytes.encodeWithCipherAlg(),
+            publicKey = keyPair.publicKey.asBytes.encodeWithCipherAlg()
         )
     }
 
     override fun encryptDataWithSymmetricKey(data: String, key: String): String {
-        val nonce = lazySodium.nonce(SecretBox.XSALSA20POLY1305_NONCEBYTES)
-        return lazySodium.cryptoSecretBoxEasy(
-            data,
-            nonce,
-            key.decodeKey()
-        ).let { nonce.plus(it.decode()).encodeWithCipherAlg() }
+        val decodedKey = key.decodeAsCipherPayload()
+        when (decodedKey.algorithm) {
+            CipherAlgType.DEFAULT -> {
+                val nonce = lazySodium.nonce(AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES)
+                val messageBytes: ByteArray = lazySodium.bytes(data)
+                val cipherBytes = ByteArray(AEAD.XCHACHA20POLY1305_IETF_ABYTES + messageBytes.size)
+
+                val result = lazySodium.cryptoAeadXChaCha20Poly1305IetfEncrypt(
+                    cipherBytes,
+                    null,
+                    messageBytes,
+                    messageBytes.size.toLong(),
+                    null,
+                    0,
+                    null,
+                    nonce,
+                    decodedKey.decodeData()
+                )
+
+                if (!result) {
+                    throw SodiumException("Could not encrypt message.")
+                }
+
+                return nonce.plus(cipherBytes).encodeWithCipherAlg(algType = CipherAlgType.DEFAULT)
+            }
+
+            null -> throw UnsupportedEncryptionSchemeException("algorithm: ${decodedKey.algorithm}")
+        }
     }
 
     override fun decryptDataWithSymmetricKey(data: String, key: String): String {
+        val cipher = data.decodeAsCipherPayload()
+        val decodedKey = key.decodeAsCipherPayload()
 
-        val cipher = data.decodeCipher()
+        if (cipher.algorithm != decodedKey.algorithm) {
+            throw UnsupportedEncryptionSchemeException("algorithm mismatch")
+        }
 
         when (cipher.algorithm) {
-            CipherAlgType.XSALSA20POLY1305, CipherAlgType.DEFAULT -> {
+            CipherAlgType.DEFAULT -> {
                 val source = cipher.decodeData()
-                val nonce = source.sliceArray(0 until SecretBox.XSALSA20POLY1305_NONCEBYTES)
-                val content =
-                    source.sliceArray(SecretBox.XSALSA20POLY1305_NONCEBYTES until source.size)
+                val nonce = source.sliceArray(0 until AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES)
+                val cipherBytes =
+                    source.sliceArray(AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES until source.size)
+                val messageBytes = ByteArray(cipherBytes.size - AEAD.XCHACHA20POLY1305_IETF_ABYTES)
 
-                return lazySodium.cryptoSecretBoxOpenEasy(
-                    content.encode(),
+                val result = lazySodium.cryptoAeadXChaCha20Poly1305IetfDecrypt(
+                    messageBytes,
+                    null,
+                    null,
+                    cipherBytes,
+                    cipherBytes.size.toLong(),
+                    null,
+                    0L,
                     nonce,
-                    key.decodeKey()
+                    decodedKey.decodeData()
                 )
+                if (!result) {
+                    throw SodiumException("Could not decrypt message")
+                }
+
+                return lazySodium.str(messageBytes)
             }
 
             null -> throw UnsupportedEncryptionSchemeException("algorithm: ${cipher.algorithm}")
         }
     }
 
-    override fun deriveLongSymmetricKey(
+    override fun deriveSymmetricKey(
         key: String,
         derivedKeyId: Long,
         context: String
     ): String {
-        return lazySodium.cryptoKdfDeriveFromKey(
-            KeyDerivation.BYTES_MAX,
-            derivedKeyId,
-            context,
-            key.decodeKey()
-        ).encode()
+        val decodedKey = key.decodeAsCipherPayload()
+        when (decodedKey.algorithm) {
+            CipherAlgType.DEFAULT -> {
+                val derivedKey = lazySodium.cryptoKdfDeriveFromKey(
+                    KeyDerivation.MASTER_KEY_BYTES,
+                    derivedKeyId,
+                    context,
+                    Key.fromBytes(decodedKey.decodeData())
+                )
+
+                return derivedKey.asBytes.encodeWithCipherAlg()
+            }
+
+            else -> throw UnsupportedEncryptionSchemeException(scheme = "algorithm ${decodedKey.algorithm}")
+        }
     }
 
     override suspend fun deriveKeyFromPassword(
@@ -145,16 +195,38 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
                     throw SodiumException("Error creating password context hash")
                 }
 
-                val key = lazySodium.cryptoPwHash(
-                    password,
-                    alg.keyBytes,
+                val passwordBytes: ByteArray = lazySodium.bytes(password)
+                PwHash.Checker.checkAll(
+                    passwordBytes.size.toLong(),
+                    saltOutput.size.toLong(),
+                    alg.rounds,
+                    NativeLong(alg.memoryBytes)
+                )
+                val outputKey = ByteArray(alg.keyBytes)
+                val result = lazySodium.cryptoPwHash(
+                    outputKey,
+                    outputKey.size,
+                    passwordBytes,
+                    passwordBytes.size,
                     saltOutput,
                     alg.rounds,
                     NativeLong(alg.memoryBytes),
                     PwHash.Alg.PWHASH_ALG_ARGON2ID13
                 )
 
-                return key
+                if (!result) {
+                    throw SodiumException(
+                        "Could not hash your string. This may be due to insufficient " +
+                                "memory or your CPU does not support Argon2's instruction set."
+                    )
+                }
+
+                return when (alg.encodingType) {
+                    EncodingType.HEX -> hexEncoder.encode(outputKey)
+                    EncodingType.BASE64 -> base64Encoder.encode(outputKey)
+                    EncodingType.BASE64_URL,
+                    null -> base64UrlEncoder.encode(outputKey)
+                }
             }
 
             null -> throw UnsupportedEncryptionSchemeException(scheme = alg.kdf)
@@ -166,17 +238,37 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
         myPrivateKey: String,
         publicKey: String
     ): String {
-        val nonce = lazySodium.nonce(Box.CURVE25519XSALSA20POLY1305_NONCEBYTES)
-        val keyPair = com.goterl.lazysodium.utils.KeyPair(
-            publicKey.decodeKey(),
-            myPrivateKey.decodeKey()
-        )
+        val decodedPrivateKey = myPrivateKey.decodeAsCipherPayload()
+        val decodedPublicKey = publicKey.decodeAsCipherPayload()
 
-        return lazySodium.cryptoBoxEasy(
-            data,
-            nonce,
-            keyPair
-        ).let { nonce.plus(it.decode()).encodeWithCipherAlg() }
+        if (decodedPrivateKey.algorithm != decodedPublicKey.algorithm) {
+            throw UnsupportedEncryptionSchemeException("algorithm mismatch")
+        }
+
+        when (decodedPublicKey.algorithm) {
+            CipherAlgType.DEFAULT -> {
+                val nonce = lazySodium.nonce(Box.CURVE25519XSALSA20POLY1305_NONCEBYTES)
+                val messageBytes: ByteArray = lazySodium.bytes(data)
+                val cipherBytes = ByteArray(Box.MACBYTES + messageBytes.size)
+
+                val result: Boolean = lazySodium.cryptoBoxEasy(
+                    cipherBytes,
+                    messageBytes,
+                    messageBytes.size.toLong(),
+                    nonce,
+                    decodedPublicKey.decodeData(),
+                    decodedPrivateKey.decodeData()
+                )
+
+                if (!result) {
+                    throw SodiumException("Could not encrypt your message.")
+                }
+
+                return nonce.plus(cipherBytes).encodeWithCipherAlg()
+            }
+
+            else -> throw UnsupportedEncryptionSchemeException("algorithm: ${decodedPublicKey.algorithm}")
+        }
     }
 
     override fun decryptDataWithKeyPair(
@@ -184,51 +276,100 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
         myPrivateKey: String,
         publicKey: String
     ): String {
+        val cipher = data.decodeAsCipherPayload()
+        val decodedPrivateKey = myPrivateKey.decodeAsCipherPayload()
+        val decodedPublicKey = publicKey.decodeAsCipherPayload()
 
-        val cipher = data.decodeCipher()
+        if (decodedPrivateKey.algorithm != decodedPublicKey.algorithm) {
+            throw UnsupportedEncryptionSchemeException("algorithm mismatch")
+        }
+
+        if (cipher.algorithm != decodedPublicKey.algorithm) {
+            throw UnsupportedEncryptionSchemeException("algorithm mismatch")
+        }
 
         when (cipher.algorithm) {
-            CipherAlgType.XSALSA20POLY1305, CipherAlgType.DEFAULT -> {
+            CipherAlgType.DEFAULT -> {
                 val source = cipher.decodeData()
                 val nonce = source.sliceArray(0 until Box.CURVE25519XSALSA20POLY1305_NONCEBYTES)
                 val content =
                     source.sliceArray(Box.CURVE25519XSALSA20POLY1305_NONCEBYTES until source.size)
 
-                val keyPair = com.goterl.lazysodium.utils.KeyPair(
-                    publicKey.decodeKey(),
-                    myPrivateKey.decodeKey()
+                val message = ByteArray(content.size - Box.MACBYTES)
+                val res: Boolean = lazySodium.cryptoBoxOpenEasy(
+                    message,
+                    content,
+                    content.size.toLong(),
+                    nonce,
+                    decodedPublicKey.decodeData(),
+                    decodedPrivateKey.decodeData()
                 )
 
-                return lazySodium.cryptoBoxOpenEasy(
-                    content.encode(),
-                    nonce,
-                    keyPair
-                )
+                if (!res) {
+                    throw SodiumException("Could not decrypt your message.")
+                }
+
+                return lazySodium.str(message)
             }
 
-            null -> throw UnsupportedEncryptionSchemeException("algorithm: ${cipher.algorithm}")
+            else -> throw UnsupportedEncryptionSchemeException("algorithm: ${cipher.algorithm}")
         }
     }
 
     override fun signData(data: String, myPrivateKey: String): String {
-        return lazySodium.cryptoSign(
-            data,
-            myPrivateKey
-        ).decode().encodeWithCipherAlg()
+        val decodedPrivateKey = myPrivateKey.decodeAsCipherPayload()
+        when (decodedPrivateKey.algorithm) {
+            CipherAlgType.DEFAULT -> {
+                val messageBytes = lazySodium.bytes(data)
+                val signedMessage = lazySodium.randomBytesBuf(Sign.BYTES + messageBytes.size)
+                val result = lazySodium.cryptoSign(
+                    signedMessage,
+                    messageBytes,
+                    messageBytes.size.toLong(),
+                    decodedPrivateKey.decodeData()
+                )
+
+                if (!result) {
+                    throw SodiumException("Could not sign your message.")
+                }
+
+                return signedMessage.encodeWithCipherAlg()
+            }
+
+            else -> throw UnsupportedEncryptionSchemeException("algorithm: ${decodedPrivateKey.algorithm}")
+        }
     }
 
     override fun verifySignature(data: String, publicKey: String): String? {
-        val signedData = data.decodeCipher()
+        val signedData = data.decodeAsCipherPayload()
+        val decodedPublicKey = publicKey.decodeAsCipherPayload()
+
+        if (signedData.algorithm != decodedPublicKey.algorithm) {
+            throw UnsupportedEncryptionSchemeException("algorithm mismatch")
+        }
 
         when (signedData.algorithm) {
-            CipherAlgType.XSALSA20POLY1305, CipherAlgType.DEFAULT -> {
-                return lazySodium.cryptoSignOpen(
-                    signedData.decodeData().encode(),
-                    publicKey.decodeKey()
+            CipherAlgType.DEFAULT -> {
+
+                val signedMessageBytes = signedData.decodeData()
+                val publicKeyBytes = decodedPublicKey.decodeData()
+                val messageBytes = lazySodium.randomBytesBuf(signedMessageBytes.size - Sign.BYTES)
+
+                val result = lazySodium.cryptoSignOpen(
+                    messageBytes,
+                    signedMessageBytes,
+                    signedMessageBytes.size.toLong(),
+                    publicKeyBytes
                 )
+
+                if (!result) {
+                    return null
+                }
+
+                return lazySodium.str(messageBytes)
             }
 
-            null -> throw UnsupportedEncryptionSchemeException("algorithm: ${signedData.algorithm}")
+            else -> throw UnsupportedEncryptionSchemeException("algorithm: ${signedData.algorithm}")
         }
     }
 
@@ -250,23 +391,15 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
         }
     }
 
-    private fun ByteArray.encode(): String {
-        return messageEncoder.encode(this)
-    }
-
-    private fun String.decode(): ByteArray {
-        return messageEncoder.decode(this)
-    }
-
-    private fun ByteArray.encodeWithCipherAlg(): String {
+    private fun ByteArray.encodeWithCipherAlg(algType: CipherAlgType = CipherAlgType.DEFAULT): String {
         return CipherAlg(
+            algType = algType,
             encodingType = EncodingType.BASE64_URL,
-            algType = CipherAlgType.XSALSA20POLY1305,
             data = base64UrlEncoder.encode(this)
-        ).encode()
+        ).encode(skipTagsIfDefault = true)
     }
 
-    private fun String.decodeCipher(): CipherAlg {
+    private fun String.decodeAsCipherPayload(): CipherAlg {
         return CipherAlg.decode(this)
     }
 
@@ -277,13 +410,5 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
             EncodingType.BASE64_URL -> base64UrlEncoder.decode(this.data)
             null -> throw UnsupportedEncryptionSchemeException("encoding: ${this.encodingType}")
         }
-    }
-
-    private fun Key.encode(): String {
-        return base64UrlEncoder.encode(this.asBytes)
-    }
-
-    private fun String.decodeKey(): Key {
-        return Key.fromBytes(base64UrlEncoder.decode(this))
     }
 }
