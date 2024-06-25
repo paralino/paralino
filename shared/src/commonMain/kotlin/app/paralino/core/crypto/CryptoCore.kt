@@ -281,10 +281,10 @@ class CryptoCore(
             alg = alg
         )
 
-        val loginKey = serviceProvider.computeHash(
-            data = masterAuthKey,
-            type = HashType.GENERIC_256,
-            encodingType = EncodingType.BASE64_URL
+        val loginKey = serviceProvider.deriveSymmetricKey(
+            key = masterAuthKey,
+            derivedKeyId = 0,
+            context = "prlnauth"
         )
 
         return UserAuthDerivedKey(
@@ -300,10 +300,16 @@ class CryptoCore(
         masterAuthKey: String,
         alg: KDFAlg
     ): String {
-        return serviceProvider.deriveKeyFromPassword(
+        val masterSeedKey = serviceProvider.deriveKeyFromPassword(
             password = masterAuthKey,
             salt = userId,
             alg = alg
+        )
+
+        return serviceProvider.deriveSymmetricKey(
+            key = masterSeedKey,
+            derivedKeyId = 1,
+            context = "prlndata"
         )
     }
 
