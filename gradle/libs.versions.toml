@@ -33,7 +33,6 @@ mapsCompose = "5.0.3"
 mapbox = "10.8.1"
 mapboxSdkTurf = "6.4.0"
 firebaseMessaging = "23.4.1"
-themis = "0.14.0"
 jna = "5.14.0"
 nanoid = "1.0.1"
 sqldelight = "2.0.2"
@@ -93,7 +92,6 @@ maps-compose-widgets = { group = "com.google.maps.android", name = "maps-compose
 mapbox-android = { group = "com.mapbox.maps", name = "android", version.ref = "mapbox" }
 mapbox-sdk-turf = { group = "com.mapbox.mapboxsdk", name = "mapbox-sdk-turf", version.ref = "mapboxSdkTurf" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessaging" }
-themis = { group = "com.cossacklabs.com", name = "themis", version.ref = "themis" }
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 nanoid = { group = "io.viascom.nanoid", name = "nanoid", version.ref = "nanoid" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }

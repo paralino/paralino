@@ -239,7 +239,6 @@ dependencies {
     ossImplementation(libs.mapbox.android)
     ossImplementation(libs.mapbox.sdk.turf)
 
-    implementation(libs.themis)
     implementation(project(path = ":lazysodium-android"))
     implementation(libs.jna) {
         artifact { type = "aar" }
