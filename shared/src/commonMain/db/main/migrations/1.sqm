@@ -1,1 +1,0 @@
-ALTER TABLE sharingContractEntity ADD COLUMN shareNetwork INTEGER DEFAULT 1 NOT NULL;
