@@ -148,9 +148,13 @@ fun SettingsScreenCore(
 
         SettingSectionInfo(
             appVersion = accountState.data?.versionName ?: "",
+            isErrorReportingEnabled = readyState?.isErrorReportingEnabled ?: false,
             onLicencesClick = { openLicences() },
             onAppStatusClick = { openAppStatus() },
-            onShareApp = onShareApp
+            onShareApp = onShareApp,
+            toggleErrorReporting = {
+                viewModel.onEvent(AccountScreenUiEvent.ToggleErrorReporting)
+            }
         )
     }
 }
@@ -158,9 +162,11 @@ fun SettingsScreenCore(
 @Composable
 fun SettingSectionInfo(
     appVersion: String,
+    isErrorReportingEnabled: Boolean,
     onLicencesClick: () -> Unit,
     onAppStatusClick: () -> Unit,
     onShareApp: (String) -> Unit,
+    toggleErrorReporting: () -> Unit
 ) {
     val uriHandler = LocalUriHandler.current
     Column {
@@ -205,6 +211,13 @@ fun SettingSectionInfo(
         ) {
             onLicencesClick()
         }
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_errorReporting),
+            description = stringResource(MR.strings.setting_description_errorReporting),
+            icon = CoreAppIcons.LibraryBooks.asPainterResource(),
+            type = SettingsActionItemType.Switch(isErrorReportingEnabled),
+            onClick = toggleErrorReporting
+        )
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(

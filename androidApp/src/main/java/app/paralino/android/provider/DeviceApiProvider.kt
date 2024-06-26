@@ -8,6 +8,7 @@ import app.paralino.android.BuildConfig
 import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.isBatteryCharging
+import app.paralino.core.config
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.data.db.AppConfigProvider
 import app.paralino.core.logg
@@ -61,6 +62,10 @@ class DeviceApiProvider constructor(
                 message: String,
                 t: Throwable?
             ) {
+                if (!config.errorReporting) {
+                    return
+                }
+
                 if (priority != LogPriority.ERROR || !backendConfig.logErrorsToRemote) {
                     return
                 }

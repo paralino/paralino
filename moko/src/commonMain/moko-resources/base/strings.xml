@@ -115,6 +115,8 @@
     <string name="setting_title_delete_account">Delete account</string>
     <string name="setting_title_dangerZone">Danger zone</string>
 
+    <string name="setting_title_errorReporting">Anonymous crash logs</string>
+    <string name="setting_description_errorReporting">Share anonymous error logs in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
     <string name="setting_title_locationBoost">Location boost</string>
     <string name="setting_description_locationBoost_enabled">Maximum location performance will reset at %s. **Uses more battery!!!**</string>
     <string name="setting_description_locationBoost_disabled">Use maximum performance for location for up to 2h. **Will use more battery!!!**</string>

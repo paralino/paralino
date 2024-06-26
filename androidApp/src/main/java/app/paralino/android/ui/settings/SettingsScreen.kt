@@ -83,9 +83,11 @@ fun MainPreview() {
         Surface {
             SettingSectionInfo(
                 appVersion = "v1.2.3 (43)",
+                isErrorReportingEnabled = true,
                 onLicencesClick = {},
                 onAppStatusClick = {},
-                onShareApp = {}
+                onShareApp = {},
+                toggleErrorReporting = {},
             )
         }
     }
