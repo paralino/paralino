@@ -51,7 +51,7 @@ class RegisterDeviceForSharingUseCase constructor(
             triggerRemoteOnly {
                 // refresh all group data before sharing starts
                 logg.tag("sharing_start").d("Start location register, refresh group data")
-                val result1 = groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
+                val result1 = groupPreRefreshUseCase.refreshGroupWithMembers(groupId, throwOnError = true)
                 logg.tag("sharing_start").d("Group refreshed ($result1), fetch group")
                 val group = groupLocal.getGroupWithMembers(groupId).firstOrNull()
                     ?: throw IllegalStateException("Group does not exist: $groupId")
