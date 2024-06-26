@@ -19,6 +19,7 @@ import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.SystemLogr
 import app.paralino.core.utils.exceptions.InternalConnectionException
+import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import io.sentry.Sentry
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -65,7 +66,8 @@ class DeviceApiProvider constructor(
                 }
 
                 val exceptionAllowed =
-                    t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException
+                    t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException &&
+                            t !is MissingGroupKeyException
                 if (exceptionAllowed) {
                     Sentry.captureException(t!!)
                 }
