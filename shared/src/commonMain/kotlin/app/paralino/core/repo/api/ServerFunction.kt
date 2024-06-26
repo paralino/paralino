@@ -1,9 +1,12 @@
 package app.paralino.core.repo.api
 
+import app.paralino.core.BuildKonfig
+
 enum class ServerFunction constructor(
     val method: String,
     val path: String,
-    val functionId: String = "api"
+    val functionId: String = "api",
+    val useSdk: Boolean = true
 ) {
     GROUP_CREATE(method = "POST", path = "/groups"),
     GROUP_DELETE(method = "DELETE", path = "/groups"),
@@ -41,8 +44,8 @@ enum class ServerFunction constructor(
     ACCOUNT_DELETE(method = "DELETE", path = "/user"),
     ACCOUNT_RESET(method = "POST", path = "/user/reset"),
 
-    CONFIG(method = "GET", path = "/config", functionId = "config"),
-    LOGIN(method = "POST", path = "/login", functionId = "config")
+    CONFIG(method = "GET", path = "/config", functionId = BuildKonfig.publicServerUrl, useSdk = false),
+    LOGIN(method = "POST", path = "/login", functionId = BuildKonfig.publicServerUrl, useSdk = false)
     ;
 
 }

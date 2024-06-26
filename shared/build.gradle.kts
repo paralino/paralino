@@ -53,6 +53,8 @@ kotlin {
             api(libs.sqldelight.adapters)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.multiplatform.settings)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.logging)
             api(libs.koin.core)
         }
 
@@ -65,11 +67,14 @@ kotlin {
             api(libs.activity.compose)
             api(libs.appcompat)
             api(libs.androidx.core.ktx)
+            api(libs.kotlinx.coroutines.android)
+            implementation(libs.ktor.client.okhttp)
         }
 
         iosMain.get().dependsOn(commonMain.get())
         iosMain.dependencies {
             implementation(libs.sqldelight.driver.native)
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
@@ -128,6 +133,7 @@ buildkonfig {
     props.load(FileInputStream(propsFile))
 
     defaultConfigs {
+        buildConfigField(FieldSpec.Type.STRING, "publicServerUrl", props.getProperty("publicServerUrl").trimQuotes())
         buildConfigField(FieldSpec.Type.STRING, "serverUrl", props.getProperty("serverUrl").trimQuotes())
         buildConfigField(FieldSpec.Type.STRING, "serverKey", props.getProperty("serverKey").trimQuotes())
         buildConfigField(FieldSpec.Type.INT, "cryptoScheme", props.getProperty("cryptoScheme").trimQuotes())
