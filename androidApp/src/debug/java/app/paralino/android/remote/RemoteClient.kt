@@ -2,6 +2,7 @@ package app.paralino.android.remote
 
 import io.appwrite.Client
 import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 
 object RemoteClient {
     fun setup(client: Client, debug: Boolean): Client {
@@ -13,6 +14,8 @@ object RemoteClient {
             .http
             .newBuilder()
             .addInterceptor(interceptor)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20, TimeUnit.SECONDS)
             .build()
         return client
     }
