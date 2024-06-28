@@ -13,6 +13,9 @@ class FunctionsApiWrapper(
     }
 
     override suspend fun runAndWait(function: ServerFunction, data: String?): FunctionExecutionRaw {
+        if (!function.useSdk) {
+            return api.executeFunction(function, data)
+        }
         return api.runAndWait(function, data).getOrThrow()
     }
 }
