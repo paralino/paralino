@@ -1,5 +1,6 @@
 package app.paralino.core.ui.map
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -24,7 +24,6 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapGroupPicker(
     modifier: Modifier = Modifier,
@@ -35,11 +34,11 @@ fun MapGroupPicker(
     Surface(
         modifier = modifier
             .height(height)
-            .wrapContentWidth(),
+            .wrapContentWidth()
+            .clickable(onClick = onExpandClick),
         elevation = 8.dp,
         shape = RoundedCornerShape(percent = 100),
-        color = MaterialTheme.colors.surface,
-        onClick = onExpandClick
+        color = MaterialTheme.colors.background
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 8.dp),
