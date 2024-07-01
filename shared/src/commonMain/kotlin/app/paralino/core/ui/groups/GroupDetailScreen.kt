@@ -218,7 +218,8 @@ fun GroupDetailScreenCore(
                                     contentDescription = null
                                 )
                             },
-                            backgroundColor = MaterialTheme.colors.primary,
+                            backgroundColor = MaterialTheme.colors.onError,
+                            contentColor = MaterialTheme.colors.onPrimary,
                             elevation = FloatingActionButtonDefaults.elevation(
                                 2.dp, 4.dp, 3.dp, 3.dp
                             ),
