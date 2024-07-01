@@ -17,16 +17,16 @@ struct AppColors {
         static let lightBackground = 0xFFFAFAFA
         static let lightSurface = 0xFFF0EEF3
         
-        static let lightThemePrimary = 0xFF4F307A
+        static let lightThemePrimary = 0xFF2B1342
         static let lightThemeSecondary = 0xFFCCCCCC
         
         static let errorBackground = 0x33F44336
         static let redMain = 0xFFB3261E
         
         static let darkBackground = 0xFF080011
-        static let darkSurface = 0xFF1D1129
+        static let darkSurface = 0xFF1A1025
         
-        static let darkThemePrimary = 0xFF4F307A
+        static let darkThemePrimary = 0xFF3A195A
         static let darkThemeSecondary = 0xFF929292
     }
 }
