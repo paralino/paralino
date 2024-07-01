@@ -3,7 +3,6 @@ package app.paralino.core.ui.groups
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +25,8 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.components.dialogs.DefaultToolbar
+import app.paralino.core.ui.components.dialogs.ToolbarButtons
 import app.paralino.core.ui.theme.ButtonStyle
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -43,40 +42,31 @@ fun GroupPickerScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         stickyHeader(key = "title") {
-            Box(
+            DefaultToolbar(
                 modifier = Modifier
-                    .background(MaterialTheme.colors.background)
-                    .fillMaxWidth()
                     .padding(bottom = 10.dp, top = 10.dp)
-                    .padding(horizontal = 10.dp)
-            ) {
-                IconButton(onClick = onClose) {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter = CoreAppIcons.Close.asPainterResource(),
-                        contentDescription = null
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxWidth(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
+                    .padding(horizontal = 10.dp),
+                elevation = 0.dp,
+                titleComposable = {
+                    Row(
                         modifier = Modifier,
-                        text = stringResource(MR.strings.title_dashboard),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
-                    PlanLimitCount(
-                        modifier = Modifier,
-                        count = groups.size,
-                        limit = null
-                    )
-                }
-            }
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(MR.strings.title_dashboard),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        PlanLimitCount(
+                            count = groups.size,
+                            limit = null
+                        )
+                    }
+                },
+                navigationIcon = { ToolbarButtons.Close(onClick = onClose) },
+                actions = {}
+            )
         }
         items(groups.size, key = { groups.get(it).id }) {
             val group = groups[it]
