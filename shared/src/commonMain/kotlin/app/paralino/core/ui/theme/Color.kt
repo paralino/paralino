@@ -10,7 +10,7 @@ object AppColors {
     val lightBackground = Color(0xFFFAFAFA)
     val lightSurface = Color(0xFFF0EEF3)
 
-    val lightThemePrimary = Color(0xFF4F307A)
+    val lightThemePrimary = Color(0xFF2B1342)
     val lightThemeSecondary = Color(0xFFCCCCCC)
 
     val errorBackground = Color(0x33F44336)
@@ -18,8 +18,8 @@ object AppColors {
     val highlightGold = Color(0xFFFFC107)
 
     val darkBackground = Color(0xFF080011)
-    val darkSurface = Color(0xFF1D1129)
+    val darkSurface = Color(0xFF1A1025)
 
-    val darkThemePrimary = Color(0xFF4F307A)
+    val darkThemePrimary = Color(0xFF3A195A)
     val darkThemeSecondary = Color(0xFF929292)
 }
