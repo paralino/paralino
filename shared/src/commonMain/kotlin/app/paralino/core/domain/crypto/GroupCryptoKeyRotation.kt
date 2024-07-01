@@ -8,32 +8,26 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
-import app.paralino.core.models.group.UserGroupWithMembers
-import app.paralino.core.models.places.GroupPlace
+import app.paralino.core.models.group.UserGroupWithMembersAndPlaces
 import app.paralino.core.models.raw.GroupKeysPayload
 import app.paralino.core.models.raw.GroupPlaceDataUpdatePayload
 import app.paralino.core.models.raw.UpdateGroupKeysPayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 
 class GroupCryptoKeyRotation constructor(
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
-    private val placesRepo: PlacesRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val userRepository: UserRepository,
     private val cryptoKEKRepository: CryptoKEKRepository,
@@ -43,29 +37,29 @@ class GroupCryptoKeyRotation constructor(
 ) : LimitedExecution() {
 
     suspend fun rotateGroupAndMemberKeys(
-        remoteGroup: UserGroupWithMembers,
+        remoteGroup: UserGroupWithMembersAndPlaces,
         force: Boolean
     ): Boolean {
         return if (rotateGroupAndMemberKeysIfNeeded(remoteGroup, force)) {
             true
         } else {
-            val didRotateMemberKey = memberCryptoKeyRotation.rotateMemberKeys(remoteGroup, force = false)
+            val didRotateMemberKey = memberCryptoKeyRotation.rotateMemberKeys(remoteGroup.groupWithMembers, force = false)
             if(didRotateMemberKey)
                 cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
 
-            val didRotateDeviceKeys = deviceKeyRotation.rotateDeviceKeys(remoteGroup, force = false)
+            val didRotateDeviceKeys = deviceKeyRotation.rotateDeviceKeys(remoteGroup.groupWithMembers, force = false)
 
             didRotateMemberKey || didRotateDeviceKeys
         }
     }
 
     private suspend fun rotateGroupAndMemberKeysIfNeeded(
-        remoteGroup: UserGroupWithMembers,
+        remoteGroup: UserGroupWithMembersAndPlaces,
         force: Boolean
     ): Boolean {
         if (remoteGroup.ownerUserId != userRepository.cachedUserId) return false
         // if group is not verified (current member is not verified - group owner) skip key generation
-        if (!remoteGroup.isGroupVerified) {
+        if (!remoteGroup.groupWithMembers.isGroupVerified) {
             logg.tag("tag_crypto_key_group_rotation").v("Group ${remoteGroup.id} not verified")
             return false
         }
@@ -78,7 +72,7 @@ class GroupCryptoKeyRotation constructor(
             return false
         }
 
-        val integrity = validityVerification.checkIntegrityForGroupKey(remoteGroup)
+        val integrity = validityVerification.checkIntegrityForGroupKey(remoteGroup.groupWithMembers)
         logg.tag("tag_crypto_key_group_rotation").v("Group ${remoteGroup.id} integrity: $integrity")
         if (integrity == IntegrityResult.CORRUPTED) {
             logg.tag("tag_crypto_key_group_rotation")
@@ -108,7 +102,7 @@ class GroupCryptoKeyRotation constructor(
     }
 
     private suspend fun rotateGroupAndMemberKeys(
-        remoteGroup: UserGroupWithMembers
+        remoteGroup: UserGroupWithMembersAndPlaces
     ) {
         // 1. rotate group key
         rotateGroupKeys(group = remoteGroup)
@@ -117,18 +111,18 @@ class GroupCryptoKeyRotation constructor(
 
         // 2. only rotate member keys
         val didRotateMemberKeys =
-            memberCryptoKeyRotation.rotateMemberKeys(remoteGroup = remoteGroup, force = true)
+            memberCryptoKeyRotation.rotateMemberKeys(remoteGroup = remoteGroup.groupWithMembers, force = true)
         if (didRotateMemberKeys)
             cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
 
         // 3. rotate current device keys
-        val didRotateDeviceKeys = deviceKeyRotation.rotateDeviceKeys(remoteGroup = remoteGroup, force = true)
+        val didRotateDeviceKeys = deviceKeyRotation.rotateDeviceKeys(remoteGroup = remoteGroup.groupWithMembers, force = true)
         if (didRotateDeviceKeys)
             cryptoKEKRepository.refreshDeviceKeysForGroup(groupId = remoteGroup.id)
     }
 
     private suspend fun rotateGroupKeys(
-        group: UserGroupWithMembers
+        group: UserGroupWithMembersAndPlaces
     ) {
         blocking {
 
@@ -139,14 +133,14 @@ class GroupCryptoKeyRotation constructor(
 
             val newGroupKey = cryptoCore.getNewSymmetricKey()
 
-            val groupData = group.data.data?.let {
+            val groupData = group.groupWithMembers.data.data?.let {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(it),
                     key = newGroupKey
                 )
             } ?: ""
 
-            val places = placesRepo.getPlacesForGroupLocally(group.id).first()
+            val places = group.places.map { it.place }
             val placesData = emptyList<GroupPlaceDataUpdatePayload>()
 //            val placesData = places.mapNotNull { place ->
 //                place.data.data?.let {
@@ -160,12 +154,12 @@ class GroupCryptoKeyRotation constructor(
 //                }
 //            }
 
-            val usedKeys = group.members.map { it.member.groupKeyVersion } +
-                    group.members.flatMap { it.locations.map { it.groupKeyVersion } } +
+            val usedKeys = group.groupWithMembers.members.map { it.member.groupKeyVersion } +
+                    group.groupWithMembers.members.flatMap { it.locations.map { it.groupKeyVersion } } +
                     places.map { it.groupKeyVersion } +
-                    group.groupKeyVersion
+                    group.groupWithMembers.groupKeyVersion
 
-            val keys = group.members.mapNotNull { groupMember ->
+            val keys = group.groupWithMembers.members.mapNotNull { groupMember ->
 
                 if (!groupMember.member.isVerified)
                     return@mapNotNull null
@@ -193,8 +187,8 @@ class GroupCryptoKeyRotation constructor(
                 timeUtc = nowUTC().toString(),
                 signature = GroupIntegrity.createSignature(
                     hashProvider = cryptoCore.hashProvider,
-                    serverIntegrity = group.group.serverIntegrity,
-                    memberVerifications = group.members.map { it.member.verification },
+                    serverIntegrity = group.groupWithMembers.group.serverIntegrity,
+                    memberVerifications = group.groupWithMembers.members.map { it.member.verification },
                     encryptedMemberPublicKeys = cryptoKEKRepository.getAllEncryptedMembershipPublicKeys(
                         groupId = group.id
                     )

@@ -156,7 +156,7 @@ val mappersModule = module {
     single { UserMapperCore(get(), get()) }
     single { SharingContractsMapper }
     single { GroupsMapperLocal(get()) }
-    single { GroupMapperCore(get(), get(), get()) }
+    single { GroupMapperCore(get(), get(), get(), get()) }
     single { MemberMapperCore(get(), get(), get()) }
     single { MemberWithLocationsMapperLocal(get()) }
     single { GroupKeysMapper() }
@@ -215,8 +215,8 @@ val coreModule = module {
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
+    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get()) }
     single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get()) }

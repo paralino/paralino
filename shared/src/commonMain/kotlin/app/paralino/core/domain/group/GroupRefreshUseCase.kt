@@ -66,9 +66,9 @@ class GroupRefreshUseCase constructor(
         }
 
         logg.tag("tag_crypto_key_group").d("got new group from remote, handle key rotation | retry #$retry")
-        val remoteGroup = groupMapperCore.remote2CoreWithMembers(group.group)
+        val remoteGroup = groupMapperCore.remote2CoreWithMembersAndPlaces(group)
 
-        if(!remoteGroup.isGroupVerified)
+        if(!remoteGroup.groupWithMembers.isGroupVerified)
             logg.tag("tag_crypto_key_group").e("Current member is unverified in group ${group.group.group.id}")
 
         if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = false)) {

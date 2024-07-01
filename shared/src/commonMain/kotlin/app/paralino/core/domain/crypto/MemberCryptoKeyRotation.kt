@@ -8,7 +8,6 @@ import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -25,7 +24,6 @@ import kotlinx.serialization.encodeToString
 
 class MemberCryptoKeyRotation(
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeyRepository,
     private val cryptoKEKRepository: CryptoKEKRepository,
