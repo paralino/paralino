@@ -13,6 +13,7 @@ data class PlacesListScreenState constructor(
     val groupImage: ImageModel,
     val groupName: String,
     val placesLimit: Int,
+    val canShowPlacesLimit: Boolean,
     val places: List<PlaceListItemData>,
     val errors: List<ConditionErrorType>
 ) {

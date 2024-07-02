@@ -11,7 +11,8 @@ data class GroupDetailScreenState(
     val image: ImageModel,
     val sharingStatus: LocationSharingState?,
     val members: List<GroupMemberItemState>,
-    val memberLimit: Int,
+    val membersLimit: Int,
+    val canShowMembersLimit: Boolean,
     val errors: List<ConditionErrorType>
 )
 

@@ -222,7 +222,11 @@ private fun PlacesScreen(
                         PlanLimitCount(
                             modifier = Modifier.padding(top = 4.dp),
                             count = state.places.size,
-                            limit = state.placesLimit
+                            limit = if (state.canShowPlacesLimit) {
+                                state.placesLimit
+                            } else {
+                                null
+                            }
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         SmallActionButton(

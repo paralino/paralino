@@ -150,7 +150,8 @@ class GroupDetailViewModel(
                 image = group.image,
                 sharingStatus = sharingState,
                 members = members,
-                memberLimit = membersLimit,
+                membersLimit = membersLimit,
+                canShowMembersLimit = group.isCurrentUserOwner,
                 errors = errors
             )
         }
@@ -250,8 +251,8 @@ class GroupDetailViewModel(
     fun tryAddMember() {
         val state = _uiState.value.data ?: return
         coroutineScope.launch {
-            if (state.members.size >= state.memberLimit)
-                _eventChannel.send(GroupDetailScreenEvent.GroupMembersLimitReached(state.memberLimit))
+            if (state.members.size >= state.membersLimit)
+                _eventChannel.send(GroupDetailScreenEvent.GroupMembersLimitReached(state.membersLimit))
             else
                 _eventChannel.send(GroupDetailScreenEvent.GroupMemberAdd)
         }
