@@ -37,7 +37,7 @@ class LoginViewModel constructor(
 ) : CoreViewModel() {
 
     val initialUiType: LoginScreenUiType
-        get() = if (appConfigRepository.configState.value?.isEmailEnabled == true) startScreenUiType else LoginScreenUiType.SIGNUP_GUEST
+        get() = if (appConfigRepository.configState.value.isEmailEnabled) startScreenUiType else LoginScreenUiType.SIGNUP_GUEST
 
     private val _uiState: MutableStateFlow<LoginScreenState>
     val uiState: StateFlow<LoginScreenState>
@@ -48,7 +48,7 @@ class LoginViewModel constructor(
     init {
         _uiState = MutableStateFlow(
             LoginScreenState(
-                canUseEmail = appConfigRepository.configState.value?.isEmailEnabled ?: false,
+                canUseEmail = appConfigRepository.configState.value.isEmailEnabled,
                 uiType = initialUiType,
                 alertDialog = if (config.hasGuestAccount()) {
                     MainAlertDialog.GuestAccountRecover
@@ -443,7 +443,11 @@ class LoginViewModel constructor(
         when (event) {
             LoginScreenUiEvent.LoginOrSignup -> {
                 if (_uiState.value.uiType == LoginScreenUiType.SIGNUP_GUEST) {
-                    _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountCreating) }
+                    if (_uiState.value.canUseEmail) {
+                        _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountCreating) }
+                    } else {
+                        proceed()
+                    }
                 } else {
                     proceed()
                 }
