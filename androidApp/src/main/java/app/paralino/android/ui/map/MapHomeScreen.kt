@@ -28,16 +28,16 @@ import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
-import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.groups.GroupBottomSheetPicker
 import app.paralino.core.ui.groups.GroupPickerAction
+import app.paralino.core.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.isFullyExpanded
-import app.paralino.core.utils.extensions.safeCast
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -81,6 +81,7 @@ private fun MapHomeContent(
     val uiState by vm.uiState.collectAsState()
     val readyState by rememberUpdatedState(newValue = uiState.asReady())
     val density = LocalDensity.current
+    val pickerState = rememberGroupBottomSheetPickerState()
 
     val sheetState = rememberSwipeableState(
         initialValue = BottomSheetPosition.HALF_EXPANDED,
@@ -160,7 +161,13 @@ private fun MapHomeContent(
                 uiState = uiState,
                 readyState = readyState,
                 vm = vm,
-                bottomOffset = bottomOffset
+                bottomOffset = bottomOffset,
+                onGroupPickerClick = {
+                    appState.uiScope.launch {
+                        val groups = vm.getAllGroups()
+                        pickerState.show(groups)
+                    }
+                }
             )
         },
         onFocusOnMembersClick = {
@@ -168,6 +175,36 @@ private fun MapHomeContent(
         },
         onFocusOnPlacesClick = {
             vm.setSelectedContentType(MapSheetSelectedContentType.PLACES)
+        }
+    )
+
+    GroupBottomSheetPicker(
+        state = pickerState,
+        onClick = {
+            appState.uiScope.launch {
+                pickerState.hide()
+                when (it) {
+                    is GroupPickerAction.GroupPicked -> {
+                        vm.switchGroup(it.group.id)
+                    }
+
+                    is GroupPickerAction.GroupEditPicked -> {
+                        appState.navController.navigate(
+                            AppScreen.MainHome.GroupDetails.route(it.group.id)
+                        )
+                    }
+
+                    GroupPickerAction.NewGroup -> {
+                        vm.tryCreateGroup()
+                    }
+
+                    GroupPickerAction.JoinGroup -> {
+                        appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                    }
+
+                    GroupPickerAction.Close -> {}
+                }
+            }
         }
     )
 }
@@ -178,7 +215,8 @@ private fun MapContent(
     uiState: MapHomeScreenState,
     readyState: MapHomeScreenState.Ready?,
     vm: MapHomeViewModel,
-    bottomOffset: Dp
+    bottomOffset: Dp,
+    onGroupPickerClick: () -> Unit
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         MainHomeMapComposable(
@@ -204,41 +242,12 @@ private fun MapContent(
                 0.dp,
                 this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
             ),
-            onGroupPickerClick = {
-                appState.uiScope.launch {
-                    val groups = vm.getAllGroups()
-                    appState.showBottomSheetForResult(
-                        BottomSheetPickerType.GroupPickerBottomSheet(groups)
-                    ).safeCast<GroupPickerAction>()?.let {
-                        when (it) {
-                            is GroupPickerAction.GroupPicked -> {
-                                vm.switchGroup(it.group.id)
-                            }
-
-                            is GroupPickerAction.GroupEditPicked -> {
-                                appState.navController.navigate(
-                                    AppScreen.MainHome.GroupDetails.route(it.group.id)
-                                )
-                            }
-
-                            GroupPickerAction.NewGroup -> {
-                                vm.tryCreateGroup()
-                            }
-
-                            GroupPickerAction.JoinGroup -> {
-                                appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
-                            }
-                        }
-                    }
-                }
-            },
+            onGroupPickerClick = onGroupPickerClick,
             onGroupDetailsClick = {
                 when (val state = uiState) {
                     is MapHomeScreenState.Ready -> {
                         appState.navController.navigate(
-                            AppScreen.MainHome.GroupDetails.route(
-                                state.groupId
-                            )
+                            AppScreen.MainHome.GroupDetails.route(state.groupId)
                         )
                     }
 
@@ -249,9 +258,7 @@ private fun MapContent(
                 when (val state = uiState) {
                     is MapHomeScreenState.Ready -> {
                         appState.navController.navigate(
-                            AppScreen.MainHome.SharingStart.route(
-                                state.groupId
-                            )
+                            AppScreen.MainHome.SharingStart.route(state.groupId)
                         )
                     }
 

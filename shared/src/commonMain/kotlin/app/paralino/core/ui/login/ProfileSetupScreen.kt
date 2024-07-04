@@ -22,7 +22,7 @@ import dev.icerock.moko.resources.compose.stringResource
 fun ProfileSetupScreenCore(
     appState: CoreUiState,
     vm: EditProfileViewModel,
-    onBottomSheetAction: (BottomSheetPickerType) -> Unit,
+    onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)

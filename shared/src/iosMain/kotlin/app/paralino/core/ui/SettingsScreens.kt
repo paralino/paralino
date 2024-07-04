@@ -90,7 +90,7 @@ object SettingsScreens {
 
     fun EditProfileScreenVC(
         vm: EditProfileViewModel,
-        onBottomSheetAction: (BottomSheetPickerType) -> Unit,
+        onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
         onExit: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {

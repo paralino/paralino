@@ -41,7 +41,7 @@ object LoginScreens {
 
     fun CompleteProfileVC(
         vm: EditProfileViewModel,
-        onBottomSheetAction: (BottomSheetPickerType) -> Unit,
+        onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             ProfileSetupScreenCore(

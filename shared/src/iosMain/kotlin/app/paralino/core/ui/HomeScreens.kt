@@ -86,7 +86,7 @@ object HomeScreens {
 
     fun GroupCreateScreenVC(
         vm: CreateGroupViewModel,
-        onBottomSheetAction: (BottomSheetPickerType) -> Unit,
+        onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
         groupUpdated: (String) -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -407,7 +407,7 @@ object HomeScreens {
     fun PlaceCreateScreenVC(
         vm: CreatePlaceViewModel,
         onNavigateBack: () -> Unit,
-        onBottomSheetAction: (BottomSheetPickerType?) -> Unit,
+        onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
         mapUIView: () -> UIView,
     ) = ComposeUIViewController {
         RootScreenIOS {

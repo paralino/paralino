@@ -60,7 +60,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun GroupCreateScreenCore(
     appState: CoreUiState,
     vm: CreateGroupViewModel,
-    onBottomSheetAction: (BottomSheetPickerType) -> Unit,
+    onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
     groupUpdated: (String) -> Unit
 ) {
 

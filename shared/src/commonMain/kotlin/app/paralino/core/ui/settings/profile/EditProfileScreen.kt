@@ -47,7 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun EditProfileScreen(
     appState: CoreUiState,
     vm: EditProfileViewModel,
-    onBottomSheetAction: (BottomSheetPickerType) -> Unit,
+    onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
     onExit: () -> Unit
 ) {
 

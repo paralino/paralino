@@ -6,15 +6,10 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.Deeplink
@@ -35,22 +29,17 @@ import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ConfigData
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.main.MainScreenEvent
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.ui.components.AppSnackbar
-import app.paralino.core.ui.components.BottomSheetPickerType
-import app.paralino.core.ui.components.EmojiPickerScreen
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.groups.GroupPickerScreen
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -258,53 +247,10 @@ fun MainAppScreen(
     }
 }
 
-
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RootAppScreen(
     appState: MainAppState,
     content: @Composable () -> Unit,
 ) {
-    ModalBottomSheetLayout(
-        modifier = Modifier.fillMaxSize(),
-        sheetBackgroundColor = MaterialTheme.colors.background,
-        sheetShape = RoundedCornerShape(topStartPercent = 5, topEndPercent = 5),
-        sheetState = appState.bottomSheetState.bottomSheetState,
-        scrimColor = MaterialTheme.colors.surface.copy(alpha = 0.6f),
-        sheetContent = {
-            Spacer(modifier = Modifier.height(1.dp))
-            appState.bottomSheetState.currentBottomSheet.value?.let {
-                when (it) {
-                    is BottomSheetPickerType.EmojiPickerBottomSheet -> {
-                        EmojiPickerScreen(
-                            images = it.emojis.map { ImageModel.emoji(it) },
-                            onClick = {
-                                appState.uiScope.launch {
-                                    appState.bottomSheetState.sheetResultChannel.send(it)
-                                }
-                                appState.uiScope.launch { appState.bottomSheetState.bottomSheetState.hide() }
-                            }
-                        )
-                    }
-
-                    is BottomSheetPickerType.GroupPickerBottomSheet -> {
-                        GroupPickerScreen(
-                            groups = it.groups,
-                            onClose = {
-                                appState.uiScope.launch { appState.bottomSheetState.bottomSheetState.hide() }
-                            },
-                            onClick = {
-                                appState.uiScope.launch {
-                                    appState.bottomSheetState.sheetResultChannel.send(it)
-                                }
-                                appState.uiScope.launch { appState.bottomSheetState.bottomSheetState.hide() }
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    ) {
-        content()
-    }
+    content()
 }

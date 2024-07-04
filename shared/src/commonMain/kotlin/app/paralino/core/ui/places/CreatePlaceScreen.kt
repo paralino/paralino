@@ -64,7 +64,7 @@ fun CreatePlaceScreenCore(
     appState: CoreUiState,
     vm: CreatePlaceViewModel,
     onNavigateBack: () -> Unit,
-    onBottomSheetAction: (BottomSheetPickerType?) -> Unit,
+    onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
     mapContent: @Composable (CreatePlaceScreenState) -> Unit,
 ) {
 
