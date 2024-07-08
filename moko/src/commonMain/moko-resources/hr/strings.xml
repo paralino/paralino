@@ -278,7 +278,7 @@
     <string name="group_member_device_request_disabled">Moraš sačekati nekoliko trenutaka prije nego što ponovno osvježiš lokaciju 🙏</string>
 
     <string name="group_members_last_active_status_now">Upravo sada</string>
-    <string name="group_members_last_active_status_recently_1">Prije 1 minute</string>
+    <string name="group_members_last_active_status_recently_1">Prije 1 minutu</string>
     <string name="group_members_last_active_status_recently_2">Prije 2 minute</string>
     <string name="group_members_last_status_update">**Zadnje ažuriranje:**</string>
     <string name="group_members_status_inactive">Nema aktivnosti</string>
