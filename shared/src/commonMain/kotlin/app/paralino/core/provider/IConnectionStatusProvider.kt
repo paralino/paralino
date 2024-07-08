@@ -22,17 +22,17 @@ abstract class IConnectionStatusProvider(
     suspend fun initAndGetStatus(forceCheck: Boolean = false): NetworkConnectionInfo {
         val networkStatus = when {
             !isNetworkAvailable() -> {
+                logg.v("app_state", "Network status OFFLINE")
                 NetworkConnectionInfo(ConnectionStatus.OFFLINE)
             }
             checkInternet(url = backendConfig.serverUrl, forceCheck = forceCheck) -> {
                 NetworkConnectionInfo(ConnectionStatus.CONNECTED, getNetworkType())
             }
             else -> {
+                logg.v("app_state", "Network status CONNECTED_NO_INTERNET")
                 NetworkConnectionInfo(ConnectionStatus.CONNECTED_NO_INTERNET, getNetworkType())
             }
         }
-
-        logg.v("app_state", "Network status: $networkStatus")
 
         _status.value = networkStatus
         return networkStatus
