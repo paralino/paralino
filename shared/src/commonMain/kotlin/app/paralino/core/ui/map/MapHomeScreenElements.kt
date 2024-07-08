@@ -312,7 +312,7 @@ fun CloseFocusButton(
             painter = CoreAppIcons.Close.asPainterResource(),
             contentDescription = null,
             modifier = Modifier.size(18.dp),
-            tint = MaterialTheme.colors.secondary
+            tint = MaterialTheme.colors.onPrimary
         )
     }
 }
