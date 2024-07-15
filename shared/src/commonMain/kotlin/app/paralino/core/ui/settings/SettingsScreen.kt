@@ -206,6 +206,12 @@ fun SettingSectionInfo(
             uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl)
         }
         SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_terms),
+            icon = CoreAppIcons.PrivacyTip.asPainterResource()
+        ) {
+            uriHandler.openUri(BackendResourceIDs.termsOfUseUrl)
+        }
+        SettingsActionItem(
             name = stringResource(MR.strings.setting_title_libraries),
             icon = CoreAppIcons.LibraryBooks.asPainterResource()
         ) {

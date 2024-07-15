@@ -109,7 +109,8 @@
     <string name="setting_title_rate">Give some stars 🌟🌟🌟🌟🌟</string>
     <string name="setting_title_help">Help &amp; support</string>
     <string name="setting_title_sourceCode">Check out source code</string>
-    <string name="setting_title_privacy">Privacy &amp; Terms</string>
+    <string name="setting_title_privacy">Privacy Policy</string>
+    <string name="setting_title_terms">Terms of Use</string>
     <string name="setting_title_libraries">Acknowledgments</string>
     <string name="setting_title_logout">Logout</string>
     <string name="setting_title_delete_account">Delete account</string>

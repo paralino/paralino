@@ -110,7 +110,8 @@
     <string name="setting_title_rate">Ocijeni sa zvjezdicama 🌟🌟🌟🌟🌟</string>
     <string name="setting_title_help">Pomoć i podrška</string>
     <string name="setting_title_sourceCode">Pogledaj izvorni kod</string>
-    <string name="setting_title_privacy">Privatnost i uvjeti</string>
+    <string name="setting_title_privacy">Pravila Privatnosti</string>
+    <string name="setting_title_terms">Uvjeti korištenja</string>
     <string name="setting_title_libraries">Zahvale</string>
     <string name="setting_title_logout">Odjava</string>
     <string name="setting_title_delete_account">Izbriši račun</string>
