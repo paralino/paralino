@@ -22,10 +22,10 @@ object BackendResourceIDs {
     const val passwordResetUrl = "https://paralino.app/recover"
     const val emailConfirmationUrl = "https://paralino.app/verify"
 
-    const val homeUrl = "https://paralino.app"
+    const val homeUrl = "https://paralino.com"
     const val sourceCodeUrl = "https://github.com/paralino"
-    const val privacyPolicyUrl = "https://paralino.app/privacy"
-    const val termsOfUseUrl = "https://paralino.app/terms"
+    const val privacyPolicyUrl = "https://paralino.com/privacy"
+    const val termsOfUseUrl = "https://paralino.com/terms"
     const val storeUrlGooglePlay = "https://play.google.com/store/apps/details?id=app.paralino.android"
 
     const val uniqueIdPlaceholder = "unique()"
