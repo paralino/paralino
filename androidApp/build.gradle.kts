@@ -161,6 +161,8 @@ android {
 
 aboutLibraries {
     configPath = "config"
+    additionalLicenses = arrayOf("svg_backgrounds")
+    prettyPrint = true
 }
 
 kotlin {
@@ -246,6 +248,7 @@ dependencies {
     // implementation("net.java.dev.jna:jna:5.14.0@aar")
     implementation(libs.nanoid)
 
+    implementation(libs.aboutLibraries.core)
     implementation(libs.aboutLibraries.compose)
     implementation(libs.sentry.android)
 

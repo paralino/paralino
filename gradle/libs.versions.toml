@@ -25,7 +25,7 @@ activityCompose = "1.9.0"
 constraintlayoutCompose = "1.0.1"
 navigationCompose = "2.7.7"
 accompanist = "0.34.0"
-aboutLibraries = "10.5.1"
+aboutLibraries = "11.2.2"
 sentry = "6.33.0"
 playServicesLocation = "21.3.0"
 osmdroid = "6.1.10"
@@ -85,6 +85,7 @@ compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 aboutLibraries-compose = { group = "com.mikepenz", name = "aboutlibraries-compose", version.ref = "aboutLibraries" }
+aboutLibraries-core = { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutLibraries" }
 sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 osmdroid-android = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroid" }
