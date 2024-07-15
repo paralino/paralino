@@ -1,0 +1,15 @@
+{
+  "uniqueId": "svgbackgrounds:svg_backgrounds",
+  "developers": [
+    {
+      "name": "https://www.svgbackgrounds.com/",
+      "organisationUrl": "https://www.svgbackgrounds.com/"
+    }
+  ],
+  "artifactVersion": "-",
+  "description": "Endless Constellation SVG pattern used at welcome screen",
+  "name": "SVG Backgrounds",
+  "tag": "svg_backgrounds",
+  "website": "https://www.svgbackgrounds.com/",
+  "licenses": ["svg_backgrounds"]
+}
