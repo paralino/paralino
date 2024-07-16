@@ -5,6 +5,7 @@ interface ICryptoServiceProvider : ICryptoHashProvider {
     fun createRandomId(length: Int, alphabet: AlphabetType): String
 
     fun createNewSymmetricKey(): String
+    fun createNewSymmetricKeyForDerivation(): String
     fun createNewCryptoKeyPair(): KeyPair
     fun createNewSignatureKeyPair(): KeyPair
 

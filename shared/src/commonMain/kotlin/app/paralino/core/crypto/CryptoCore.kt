@@ -1,6 +1,5 @@
 package app.paralino.core.crypto
 
-import app.paralino.core.BuildKonfig
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.encodeToString
@@ -16,6 +15,10 @@ class CryptoCore(
 
     fun getNewSymmetricKey(): String {
         return serviceProvider.createNewSymmetricKey()
+    }
+
+    fun getNewSymmetricKeyForLocationData(): String {
+        return serviceProvider.createNewSymmetricKeyForDerivation()
     }
 
     fun getNewCryptoKeyPair(): KeyPair {

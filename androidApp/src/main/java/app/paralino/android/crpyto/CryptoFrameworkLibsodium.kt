@@ -68,6 +68,12 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
         return key.encodeWithCipherAlg()
     }
 
+    override fun createNewSymmetricKeyForDerivation(): String {
+        val key = lazySodium.randomBytesBuf(AEAD.XCHACHA20POLY1305_IETF_KEYBYTES)
+        lazySodium.cryptoAeadXChaCha20Poly1305IetfKeygen(key)
+        return key.encodeWithCipherAlg(algType = CipherAlgType.DEFAULT_KEY_DERIVE)
+    }
+
     override fun createNewCryptoKeyPair(): KeyPair {
         val keyPair = lazySodium.cryptoBoxKeypair()
         return KeyPair(
@@ -88,69 +94,132 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
         val decodedKey = key.decodeAsCipherPayload()
         when (decodedKey.algorithm) {
             CipherAlgType.DEFAULT -> {
-                val nonce = lazySodium.nonce(AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES)
-                val messageBytes: ByteArray = lazySodium.bytes(data)
-                val cipherBytes = ByteArray(AEAD.XCHACHA20POLY1305_IETF_ABYTES + messageBytes.size)
-
-                val result = lazySodium.cryptoAeadXChaCha20Poly1305IetfEncrypt(
-                    cipherBytes,
-                    null,
-                    messageBytes,
-                    messageBytes.size.toLong(),
-                    null,
-                    0,
-                    null,
-                    nonce,
-                    decodedKey.decodeData()
+                return encryptDataWithSymmetricKey(
+                    data = data,
+                    key = decodedKey.decodeData()
+                ).encodeWithCipherAlg(
+                    algType = CipherAlgType.DEFAULT,
+                    payload = null
                 )
+            }
 
-                if (!result) {
-                    throw SodiumException("Could not encrypt message.")
-                }
-
-                return nonce.plus(cipherBytes).encodeWithCipherAlg(algType = CipherAlgType.DEFAULT)
+            CipherAlgType.DEFAULT_KEY_DERIVE -> {
+                // we are using random key id, and not a counter or some internal state
+                // since realtime locations don't have order, this way we make it hard to guess
+                // how many times location was updated compared to using a counter
+                // key id is not sensitive and is stored and delivered in plain text
+                val keyId = lazySodium.randomBytesRandom()
+                val newKey = deriveSymmetricKey(
+                    key = decodedKey.data,
+                    derivedKeyId = keyId,
+                    context = "_derive_"
+                )
+                return encryptDataWithSymmetricKey(
+                    data = data,
+                    key = newKey.decodeAsCipherPayload().decodeData()
+                )
+                    .encodeWithCipherAlg(
+                        algType = CipherAlgType.DEFAULT_KEY_DERIVE,
+                        payload = base64UrlEncoder.encode(lazySodium.bytes(keyId.toString()))
+                    )
             }
 
             null -> throw UnsupportedEncryptionSchemeException("algorithm: ${decodedKey.algorithm}")
         }
     }
 
+    private fun encryptDataWithSymmetricKey(
+        data: String,
+        key: ByteArray
+    ): ByteArray {
+        val nonce = lazySodium.nonce(AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES)
+        val messageBytes: ByteArray = lazySodium.bytes(data)
+        val cipherBytes = ByteArray(AEAD.XCHACHA20POLY1305_IETF_ABYTES + messageBytes.size)
+
+        val result = lazySodium.cryptoAeadXChaCha20Poly1305IetfEncrypt(
+            cipherBytes,
+            null,
+            messageBytes,
+            messageBytes.size.toLong(),
+            null,
+            0,
+            null,
+            nonce,
+            key
+        )
+
+        if (!result) {
+            throw SodiumException("Could not encrypt message.")
+        }
+
+        return nonce.plus(cipherBytes)
+    }
+
     override fun decryptDataWithSymmetricKey(data: String, key: String): String {
         val cipher = data.decodeAsCipherPayload()
         val decodedKey = key.decodeAsCipherPayload()
 
-        if (cipher.algorithm != decodedKey.algorithm) {
+        val algorithmMatches = when (cipher.algorithm) {
+            CipherAlgType.DEFAULT -> decodedKey.algorithm == CipherAlgType.DEFAULT || decodedKey.algorithm == CipherAlgType.DEFAULT_KEY_DERIVE
+            CipherAlgType.DEFAULT_KEY_DERIVE -> decodedKey.algorithm == CipherAlgType.DEFAULT || decodedKey.algorithm == CipherAlgType.DEFAULT_KEY_DERIVE
+            null -> decodedKey.algorithm == null
+        }
+
+        if (!algorithmMatches) {
             throw UnsupportedEncryptionSchemeException("algorithm mismatch")
         }
 
         when (cipher.algorithm) {
             CipherAlgType.DEFAULT -> {
-                val source = cipher.decodeData()
-                val nonce = source.sliceArray(0 until AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES)
-                val cipherBytes =
-                    source.sliceArray(AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES until source.size)
-                val messageBytes = ByteArray(cipherBytes.size - AEAD.XCHACHA20POLY1305_IETF_ABYTES)
-
-                val result = lazySodium.cryptoAeadXChaCha20Poly1305IetfDecrypt(
-                    messageBytes,
-                    null,
-                    null,
-                    cipherBytes,
-                    cipherBytes.size.toLong(),
-                    null,
-                    0L,
-                    nonce,
-                    decodedKey.decodeData()
+                return decryptDataWithSymmetricKey(
+                    cipher = cipher,
+                    key = decodedKey.decodeData()
                 )
-                if (!result) {
-                    throw SodiumException("Could not decrypt message")
-                }
+            }
 
-                return lazySodium.str(messageBytes)
+            CipherAlgType.DEFAULT_KEY_DERIVE -> {
+                val keyId = cipher.payload
+                    ?.let { lazySodium.str(base64UrlEncoder.decode(it)) }
+                    ?.toLongOrNull()
+                    ?: throw UnsupportedEncryptionSchemeException("keyId: ${cipher.payload}")
+                val newKey = deriveSymmetricKey(
+                    key = decodedKey.data,
+                    derivedKeyId = keyId,
+                    context = "_derive_"
+                )
+                return decryptDataWithSymmetricKey(
+                    cipher = cipher,
+                    key = newKey.decodeAsCipherPayload().decodeData()
+                )
             }
 
             null -> throw UnsupportedEncryptionSchemeException("algorithm: ${cipher.algorithm}")
         }
+    }
+
+    private fun decryptDataWithSymmetricKey(cipher: CipherAlg, key: ByteArray): String {
+        val source = cipher.decodeData()
+        val nonce = source.sliceArray(0 until AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES)
+        val cipherBytes =
+            source.sliceArray(AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES until source.size)
+        val messageBytes = ByteArray(cipherBytes.size - AEAD.XCHACHA20POLY1305_IETF_ABYTES)
+
+        val result = lazySodium.cryptoAeadXChaCha20Poly1305IetfDecrypt(
+            messageBytes,
+            null,
+            null,
+            cipherBytes,
+            cipherBytes.size.toLong(),
+            null,
+            0L,
+            nonce,
+            key
+        )
+        if (!result) {
+            throw SodiumException("Could not decrypt message")
+        }
+
+        return lazySodium.str(messageBytes)
     }
 
     override fun deriveSymmetricKey(
@@ -160,7 +229,7 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
     ): String {
         val decodedKey = key.decodeAsCipherPayload()
         when (decodedKey.algorithm) {
-            CipherAlgType.DEFAULT -> {
+            CipherAlgType.DEFAULT, CipherAlgType.DEFAULT_KEY_DERIVE -> {
                 val derivedKey = lazySodium.cryptoKdfDeriveFromKey(
                     KeyDerivation.MASTER_KEY_BYTES,
                     derivedKeyId,
@@ -391,10 +460,14 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
         }
     }
 
-    private fun ByteArray.encodeWithCipherAlg(algType: CipherAlgType = CipherAlgType.DEFAULT): String {
+    private fun ByteArray.encodeWithCipherAlg(
+        algType: CipherAlgType = CipherAlgType.DEFAULT,
+        payload: String? = null
+    ): String {
         return CipherAlg(
             algType = algType,
             encodingType = EncodingType.BASE64_URL,
+            payload = payload,
             data = base64UrlEncoder.encode(this)
         ).encode(skipTagsIfDefault = true)
     }

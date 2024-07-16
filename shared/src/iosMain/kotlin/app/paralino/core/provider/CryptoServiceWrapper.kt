@@ -22,6 +22,10 @@ class CryptoServiceWrapperIOS(
         return cryptoIOS.createNewSymmetricKey().getOrThrow()
     }
 
+    override fun createNewSymmetricKeyForDerivation(): String {
+        return cryptoIOS.createNewSymmetricKeyForDerivation().getOrThrow()
+    }
+
     override fun createNewCryptoKeyPair(): KeyPair {
         return cryptoIOS.createNewCryptoKeyPair().getOrThrow()
     }
@@ -92,6 +96,7 @@ class CryptoServiceWrapperIOS(
 interface ICryptoServiceProviderIOS {
     fun createRandomId(length: Int, alphabet: AlphabetType): Payload<String>
     fun createNewSymmetricKey(): Payload<String>
+    fun createNewSymmetricKeyForDerivation(): Payload<String>
     fun createNewCryptoKeyPair(): Payload<KeyPair>
     fun createNewSignatureKeyPair(): Payload<KeyPair>
     fun encryptDataWithSymmetricKey(data: String, key: String): Payload<String>

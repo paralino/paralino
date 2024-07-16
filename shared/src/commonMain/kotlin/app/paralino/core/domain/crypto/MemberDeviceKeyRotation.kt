@@ -240,7 +240,7 @@ class MemberDeviceKeyRotation(
         if (myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
             throw MissingMemberKeyException(group.id, config.userId)
 
-        val newSenderKey = cryptoCore.getNewSymmetricKey()
+        val newSenderKey = cryptoCore.getNewSymmetricKeyForLocationData()
 
         val keys = group.members.mapNotNull { groupMember ->
 

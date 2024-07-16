@@ -26,12 +26,19 @@ data class DerivedPasswords(
 data class CipherAlg(
     val enc: String,
     val alg: String,
+    val payload: String?,
     val data: String
 ) {
-    constructor(encodingType: EncodingType, algType: CipherAlgType, data: String) : this(
+    constructor(
+        encodingType: EncodingType,
+        algType: CipherAlgType,
+        payload: String?,
+        data: String
+    ) : this(
         enc = encodingType.key,
         // only take first key as main one
         alg = algType.keys.first(),
+        payload = payload,
         data = data
     )
 
@@ -39,41 +46,58 @@ data class CipherAlg(
     val encodingType: EncodingType? get() = EncodingType.fromKey(enc)
 
     fun encode(skipTagsIfDefault: Boolean): String {
-        if (skipTagsIfDefault && encodingType == EncodingType.BASE64_URL && algorithm == CipherAlgType.DEFAULT) {
+        val tags = buildList {
+            if (payload.isNullOrBlank()) {
+                if (!skipTagsIfDefault || encodingType != EncodingType.BASE64_URL || algorithm != CipherAlgType.DEFAULT) {
+                    add(enc)
+                    add(alg)
+                }
+            } else {
+                add(enc)
+                add(alg)
+                add(payload)
+            }
+        }
+
+        if (tags.isEmpty()) {
             return data
         }
-        return "@:$enc:$alg:@$data"
+
+        val tagsPayload = tags.joinToString(separator = ":")
+        return "@:$tagsPayload:@$data"
     }
 
     companion object {
         fun decode(input: String): CipherAlg {
 
             if (!input.startsWith("@:")) {
-                return default(CipherAlgType.DEFAULT, input)
+                return default(data = input)
             }
 
             val index = input.indexOf(":@")
 
             if (index == -1) {
-                return default(CipherAlgType.DEFAULT, input)
+                return default(data = input)
             }
 
             val metadata = input.substring(2, index).split(":")
 
             if (metadata.size < 2) {
-                return default(CipherAlgType.DEFAULT, input)
+                return default(data = input)
             }
 
             val encoding = metadata[0]
             val alg = metadata[1]
+            val payload = metadata.getOrNull(2)
             val data = input.substring(index + 2)
-            return CipherAlg(enc = encoding, alg = alg, data = data)
+            return CipherAlg(enc = encoding, alg = alg, payload = payload, data = data)
         }
 
-        fun default(algType: CipherAlgType, data: String): CipherAlg {
+        private fun default(data: String): CipherAlg {
             return CipherAlg(
                 encodingType = EncodingType.BASE64_URL,
-                algType = algType,
+                algType = CipherAlgType.DEFAULT,
+                payload = null,
                 data = data
             )
         }
@@ -94,10 +118,12 @@ data class KDFAlg(
 }
 
 enum class CipherAlgType(val keys: List<String>) {
-    DEFAULT(keys = listOf("", "xcp"));
+    DEFAULT(keys = listOf("", "xcp")),
+    DEFAULT_KEY_DERIVE(keys = listOf("xcp-kd"));
 
     companion object {
         fun fromKey(key: String): CipherAlgType? {
+            if (key == "") return DEFAULT
             return CipherAlgType.entries.firstOrNull { it.keys.contains(key) }
         }
     }
@@ -108,6 +134,7 @@ enum class KDFType(val key: String) {
 
     companion object {
         fun fromKey(key: String): KDFType? {
+            if (key == "") return ARGON2ID
             return KDFType.entries.firstOrNull { it.key == key }
         }
     }
@@ -136,6 +163,7 @@ enum class EncodingType(val key: String) {
 
     companion object {
         fun fromKey(key: String): EncodingType? {
+            if (key == "") return BASE64_URL
             return EncodingType.entries.firstOrNull { it.key == key }
         }
     }

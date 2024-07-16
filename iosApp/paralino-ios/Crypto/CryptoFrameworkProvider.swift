@@ -55,6 +55,12 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         }
     }
     
+    func createNewSymmetricKeyForDerivation() -> Payload<NSString> {
+        return execute {
+            NSString(string: try sodium.aead.xchacha20poly1305ietf.key().encodeWithCipherAlg(self, alg: .defaultKeyDerive))
+        }
+    }
+    
     func createNewCryptoKeyPair() -> Payload<KeyPair> {
         return execute {
             let keys = sodium.box.keyPair()
@@ -117,20 +123,24 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     func deriveSymmetricKey(key: String, derivedKeyId: Int64, context: String) -> Payload<NSString> {
         return execute {
-            let decodedKey = try key.decodeCipher(self)
-            switch decodedKey.algorithm {
-            case .default_:
-                guard let newKey = sodium.keyDerivation.derive(
-                    secretKey: try decodedKey.decodeData(self),
-                    index: UInt64(derivedKeyId),
-                    length: sodium.keyDerivation.KeyBytes,
-                    context: context
-                ) else {
-                    throw EncryptionError.CryptoError
-                }
-                return NSString(string: try newKey.encodeWithCipherAlg(self, alg: .default_))
-            default: throw EncryptionError.WrongFormat
+            return NSString(string: try deriveSymmetricKeyImpl(key: key, derivedKeyId: derivedKeyId, context: context))
+        }
+    }
+    
+    func deriveSymmetricKeyImpl(key: String, derivedKeyId: Int64, context: String) throws -> String {
+        let decodedKey = try key.decodeCipher(self)
+        switch decodedKey.algorithm {
+        case .default_:
+            guard let newKey = sodium.keyDerivation.derive(
+                secretKey: try decodedKey.decodeData(self),
+                index: UInt64(derivedKeyId),
+                length: sodium.keyDerivation.KeyBytes,
+                context: context
+            ) else {
+                throw EncryptionError.CryptoError
             }
+            return try newKey.encodeWithCipherAlg(self, alg: .default_)
+        default: throw EncryptionError.WrongFormat
         }
     }
     
@@ -143,6 +153,25 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
                     message: data.bytes,
                     secretKey: try decodedKey.decodeData(self)
                 )?.encodeWithCipherAlg(self, alg: .default_) {
+                    return NSString(string: value)
+                } else {
+                    throw EncryptionError.CryptoError
+                }
+            case .defaultKeyDerive:
+                let keyId = sodium.randomBytes.random()
+                let newKey = try deriveSymmetricKeyImpl(
+                    key: decodedKey.data,
+                    derivedKeyId: Int64(keyId),
+                    context: "_derive_"
+                )
+                if let value = try? sodium.aead.xchacha20poly1305ietf.encrypt(
+                    message: data.bytes,
+                    secretKey: try newKey.decodeCipher(self).decodeData(self)
+                )?.encodeWithCipherAlg(
+                    self,
+                    alg: .defaultKeyDerive,
+                    payload: "\(keyId)".bytes.encodeToBase64Url(self)
+                ) {
                     return NSString(string: value)
                 } else {
                     throw EncryptionError.CryptoError
@@ -167,6 +196,31 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
                 let result = sodium.aead.xchacha20poly1305ietf.decrypt(
                     nonceAndAuthenticatedCipherText: try cipher.decodeData(self),
                     secretKey: try decodedKey.decodeData(self)
+                )?.utf8String
+                if let result = result {
+                    return NSString(string: result)
+                } else {
+                    Logr.i(message: "Result not valid \(result ?? "---")")
+                    throw EncryptionError.CryptoError
+                }
+            case .defaultKeyDerive:
+                
+                guard let keyIdPayload = try cipher.payload?.decodeFromBase64Url(self).utf8String else {
+                    throw EncryptionError.CryptoError
+                }
+                guard let keyId = UInt32(keyIdPayload) else {
+                    throw EncryptionError.CryptoError
+                }
+                
+                let newKey = try deriveSymmetricKeyImpl(
+                    key: decodedKey.data,
+                    derivedKeyId: Int64(keyId),
+                    context: "_derive_"
+                )
+
+                let result = sodium.aead.xchacha20poly1305ietf.decrypt(
+                    nonceAndAuthenticatedCipherText: try cipher.decodeData(self),
+                    secretKey: try newKey.decodeCipher(self).decodeData(self)
                 )?.utf8String
                 if let result = result {
                     return NSString(string: result)
@@ -303,8 +357,8 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
 }
 
 extension Bytes {
-    func encodeWithCipherAlg(_ framework: CryptoFrameworkProvider, alg: CipherAlgType = .default_) throws -> String {
-        CipherAlg.init(encodingType: .base64Url, algType: alg, data: try self.encodeToBase64Url(framework)).encode(skipTagsIfDefault: true)
+    func encodeWithCipherAlg(_ framework: CryptoFrameworkProvider, alg: CipherAlgType = .default_, payload: String? = nil) throws -> String {
+        CipherAlg.init(encodingType: .base64Url, algType: alg, payload: payload, data: try self.encodeToBase64Url(framework)).encode(skipTagsIfDefault: true)
     }
     
     func encodeToBase64(_ framework: CryptoFrameworkProvider) throws -> String {
