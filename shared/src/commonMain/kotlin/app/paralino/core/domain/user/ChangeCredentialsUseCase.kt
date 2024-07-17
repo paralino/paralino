@@ -3,7 +3,6 @@ package app.paralino.core.domain.user
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
-import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserAuthDerivedKey
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
@@ -92,8 +91,8 @@ class ChangeCredentialsUseCase(
                 changeCredentials(
                     userId = userId,
                     oldKey = GeneratedUserKeys(
-                        userPersonalKey = userKeyRepo.personalKey(),
-                        signatureKeyPair = userKeyRepo.latestKeyPair(),
+                        userPersonalKey = userKeyRepo.activePersonalKey(),
+                        signatureKeyPair = userKeyRepo.signatureKeyPair(),
                         encryptedKeyData = oldKey
                     ),
                     oldMasterAuthKey = oldMasterAuthKey,
@@ -122,7 +121,7 @@ class ChangeCredentialsUseCase(
 
             val newUserKeys = cryptoCore.changeUserMasterKey(
                 userId = userId,
-                signatureKeyPair = userKeyRepo.latestKeyPair(),
+                signatureKeyPair = userKeyRepo.signatureKeyPair(),
                 authKey = newMasterAuthKey
             )
 

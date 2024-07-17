@@ -9,7 +9,6 @@ import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.*
 import app.paralino.core.utils.BaseRemoteModule
-import kotlinx.serialization.decodeFromString
 
 class UserMapperCore(
     private val cryptoCore: CryptoCore,
@@ -26,7 +25,7 @@ class UserMapperCore(
                 try {
                     cryptoCore.decryptDataWithKey(
                         data = it,
-                        key = userKeyRepo.personalKey()
+                        key = userKeyRepo.activePersonalKey()
                     ).let {
                         BaseRemoteModule.formatter.decodeFromString<BlockListModelData>(it)
                     }.let {
@@ -50,7 +49,7 @@ class UserMapperCore(
     }
 
     suspend fun remote2Core(model: UserMeDataRaw): UserMeData {
-        val userKey = userKeyRepo.personalKey()
+        val userKey = userKeyRepo.activePersonalKey()
         return UserMeData(
             userImage = model.userImage?.let {
                 try {
@@ -70,7 +69,7 @@ class UserMapperCore(
     }
 
     suspend fun core2Remote(model: UserMeData): UserMeDataRaw {
-        val userKey = userKeyRepo.personalKey()
+        val userKey = userKeyRepo.activePersonalKey()
         return UserMeDataRaw(
             userImage = model.userImage?.image?.let { cryptoCore.encryptDataWithKey(it, userKey) },
             userName = model.userName.takeIf { it.isNotBlank() }

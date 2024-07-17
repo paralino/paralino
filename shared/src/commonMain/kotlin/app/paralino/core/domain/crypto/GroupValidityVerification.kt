@@ -138,7 +138,7 @@ class GroupValidityVerification(
                         try {
                             cryptoCore.decryptDataWithKey(
                                 data = memberGroupSettings.integrity,
-                                key = userKeyRepo.personalKey(),
+                                key = userKeyRepo.activePersonalKey(),
                             ).let {
                                 try {
                                     BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it)
@@ -288,7 +288,7 @@ class GroupValidityVerification(
         val remoteIntegrity = try {
             cryptoCore.decryptDataWithKey(
                 data = myIntegrity,
-                key = userKeyRepo.personalKey()
+                key = userKeyRepo.activePersonalKey()
             ).let { BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it) }
         } catch (e: Exception) {
             logg.tag(tag).w("CORRUPTED for $groupId - Error parsing: ${e.message}")

@@ -119,7 +119,7 @@ class RegisterDeviceForSharingUseCase constructor(
                     ).let {
                         cryptoCore.encryptDataWithKey(
                             data = BaseRemoteModule.formatter.encodeToString(it),
-                            key = userKeyRepo.personalKey()
+                            key = userKeyRepo.activePersonalKey()
                         )
                     }
                     cryptoKEKRepo.updateIntegrity(

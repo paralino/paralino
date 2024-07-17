@@ -11,13 +11,13 @@ class CryptoUserKeyRepository(
     private val remote: CryptoUserKeysRemoteSource,
 ) : BaseRepository() {
 
-    suspend fun personalKey(): String {
+    suspend fun activePersonalKey(): String {
         return local.getCachedUserKey()
             .takeIf { it.isNotBlank() }
             ?: throw MissingUserKeyException(localCache = true)
     }
 
-    suspend fun latestKeyPair(): SimpleKeyPairData {
+    suspend fun signatureKeyPair(): SimpleKeyPairData {
         return local.getKeyPair() ?: throw MissingUserKeyException(localCache = false)
     }
 

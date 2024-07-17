@@ -85,7 +85,7 @@ class MemberCryptoKeyRotation(
     private suspend fun rotateMemberKeysForGroup(
         group: UserGroupWithMembers
     ) {
-        val myKey = userKeyRepo.latestKeyPair()
+        val myKey = userKeyRepo.signatureKeyPair()
         val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
         val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId, keyVersion = null)
 
@@ -112,7 +112,7 @@ class MemberCryptoKeyRotation(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey()
+                key = userKeyRepo.activePersonalKey()
             )
         }
 
@@ -142,7 +142,7 @@ class MemberCryptoKeyRotation(
                     privateKey = newExchangeKeys.privateKey,
                     publicKey = newExchangeKeys.publicKey
                 ),
-                key = userKeyRepo.personalKey()
+                key = userKeyRepo.activePersonalKey()
             ),
             groupKeyVersion = groupKey.version,
             memberKeyVersionsToKeep = memberKeyVersionsToKeep

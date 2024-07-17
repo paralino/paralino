@@ -20,7 +20,6 @@ import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
-import org.koin.core.component.getScopeId
 
 class CryptoKEKRepository(
     private val remote: CryptoKeyRemoteDataSource,
@@ -510,7 +509,7 @@ class CryptoKEKRepository(
         // always return own identity key from secure storage but ensure no one tampered with key from server
         val identityKey = if (keyRaw.ownerUserId == currentUserId) {
             keyRaw.ownerIdentityKey
-                .takeIf { it == userKeyRepository.latestKeyPair().publicKey }
+                .takeIf { it == userKeyRepository.signatureKeyPair().publicKey }
                 .also {
                     if (it == null) logg.tag("tag_crypto_key_group_member")
                         .w("User ${keyRaw.ownerUserId} own identity key do not match in group ${keyRaw.groupId}")
@@ -547,7 +546,7 @@ class CryptoKEKRepository(
             if (keyRaw != null) {
                 cryptoCore.decryptDataWithKey(
                     data = keyRaw.encryptedUserKeys,
-                    key = userKeyRepository.personalKey()
+                    key = userKeyRepository.activePersonalKey()
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<SimpleKeyPairData>(it)
                 } to keyRaw.version
@@ -558,7 +557,7 @@ class CryptoKEKRepository(
                         try {
                             cryptoCore.decryptDataWithKey(
                                 data = key.encryptedUserKeys,
-                                key = userKeyRepository.personalKey()
+                                key = userKeyRepository.activePersonalKey()
                             ).let {
                                 BaseRemoteModule.formatter.decodeFromString<SimpleKeyPairData>(it)
                             } to key.version

@@ -80,7 +80,7 @@ class GroupCreateUseCase(
         val user = userRepository.cachedUser!!
         val userData = user.data!!
         val myData = MemberModelData(userData.userName, userData.userImage)
-        val myIdentityKeys = userKeyRepo.latestKeyPair()
+        val myIdentityKeys = userKeyRepo.signatureKeyPair()
 
         val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
 
@@ -127,7 +127,7 @@ class GroupCreateUseCase(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey()
+                key = userKeyRepo.activePersonalKey()
             )
         }
 
@@ -152,7 +152,7 @@ class GroupCreateUseCase(
             ),
             encryptedUserKeys = cryptoCore.encryptModel(
                 data = userKeys,
-                key = userKeyRepo.personalKey()
+                key = userKeyRepo.activePersonalKey()
             ),
             memberVerification = memberVerification,
             memberData = cryptoCore.encryptDataWithKey(

@@ -45,7 +45,7 @@ class PersonalCodesRemoteSource constructor(
             code = personalCode,
             userId = userId
         )
-        val myKey = userKeyRepo.latestKeyPair()
+        val myKey = userKeyRepo.signatureKeyPair()
 
         val codeUserData = PersonalCodeUserData(
             ownerUserId = userId,
@@ -62,7 +62,7 @@ class PersonalCodesRemoteSource constructor(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey(),
+                key = userKeyRepo.activePersonalKey(),
             )
         }
 
@@ -101,7 +101,7 @@ class PersonalCodesRemoteSource constructor(
             code = personalCode,
             userId = user.id
         )
-        val myKey = userKeyRepo.latestKeyPair()
+        val myKey = userKeyRepo.signatureKeyPair()
 
         val codeUserData = PersonalCodeUserData(
             ownerUserId = user.id,
@@ -118,7 +118,7 @@ class PersonalCodesRemoteSource constructor(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey(),
+                key = userKeyRepo.activePersonalKey(),
             )
         }
 
@@ -136,7 +136,7 @@ class PersonalCodesRemoteSource constructor(
             ),
             encryptedCode = cryptoCore.encryptDataWithKey(
                 data = personalCode,
-                key = userKeyRepo.personalKey()
+                key = userKeyRepo.activePersonalKey()
             ),
             keys = keys
         )
@@ -185,7 +185,7 @@ class PersonalCodesRemoteSource constructor(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey(),
+                key = userKeyRepo.activePersonalKey(),
             )
         }
         val keys = createPreKeys(
@@ -220,7 +220,7 @@ class PersonalCodesRemoteSource constructor(
         encryptionKey: String,
         count: Int = 6
     ): List<PersonalCodePreKeyData> {
-        val myKey = userKeyRepo.latestKeyPair()
+        val myKey = userKeyRepo.signatureKeyPair()
 
         return (0 until count).map {
 
@@ -248,7 +248,7 @@ class PersonalCodesRemoteSource constructor(
             PersonalCodePreKeyData(
                 encryptedUserKeys = cryptoCore.encryptModel(
                     data = userKeys,
-                    key = userKeyRepo.personalKey()
+                    key = userKeyRepo.activePersonalKey()
                 ),
                 encryptedCodeKeyData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(codeKeyData),
