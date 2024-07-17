@@ -2,6 +2,7 @@ package app.paralino.core.domain.group
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
@@ -12,7 +13,6 @@ import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.location.MemberModelParalinoIdData
 import app.paralino.core.models.raw.CreateGroupPayload
-import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait

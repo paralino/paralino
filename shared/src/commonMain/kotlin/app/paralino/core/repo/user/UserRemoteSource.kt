@@ -128,6 +128,7 @@ class UserRemoteSource constructor(
                     encryptedSymmetricKey = it.encryptedSymmetricKey,
                     encryptedPrivateKey = it.encryptedPrivateKey,
                     encryptedPublicKey = it.encryptedPublicKey,
+                    publicKey = it.publicKey,
                     loginSalt = it.loginSalt,
                     loginAlg = it.loginAlg,
                     dataAlg = it.dataAlg

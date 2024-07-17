@@ -21,7 +21,7 @@ class CryptoCore(
         return serviceProvider.createNewSymmetricKeyForDerivation()
     }
 
-    fun getNewCryptoKeyPair(): KeyPair {
+    fun getNewCryptoKeyPair(): SimpleKeyPairData {
         return serviceProvider.createNewCryptoKeyPair()
     }
 
@@ -29,10 +29,22 @@ class CryptoCore(
         authKey: UserAuthDerivedKey,
         userId: String
     ): GeneratedUserKeys {
+        val newSignatureKeyPair = serviceProvider.createNewSignatureKeyPair()
+        return changeUserMasterKey(
+            userId = userId,
+            signatureKeyPair = newSignatureKeyPair,
+            authKey = authKey
+        )
+    }
 
+    suspend fun changeUserMasterKey(
+        userId: String,
+        signatureKeyPair: SimpleKeyPairData,
+        authKey: UserAuthDerivedKey,
+    ): GeneratedUserKeys {
         val newPersonalKey = getNewSymmetricKey()
-
         val dataKDF = getDefaultDataKDFAlg()
+
         val masterKey = deriveUserMasterKey(
             userId = userId,
             masterAuthKey = authKey.masterAuthKey,
@@ -43,13 +55,12 @@ class CryptoCore(
             key = masterKey
         )
 
-        val newSignatureKeyPair = serviceProvider.createNewSignatureKeyPair()
         val encryptedPrivateIdentityKey = encryptDataWithKey(
-            data = newSignatureKeyPair.privateKey,
+            data = signatureKeyPair.privateKey,
             key = newPersonalKey
         )
         val encryptedPublicIdentityKey = encryptDataWithKey(
-            data = newSignatureKeyPair.publicKey,
+            data = signatureKeyPair.publicKey,
             key = newPersonalKey
         )
 
@@ -61,19 +72,25 @@ class CryptoCore(
             encryptedSymmetricKey = encryptedPersonalKey,
             encryptedPrivateKey = encryptedPrivateIdentityKey,
             encryptedPublicKey = encryptedPublicIdentityKey,
+            publicKey = signatureKeyPair.publicKey,
+            oldMasterKeys = null,
             loginSalt = authKey.loginSalt,
             loginAlg = BaseRemoteModule.formatter.encodeToString(authKey.kdfAlg),
             dataAlg = BaseRemoteModule.formatter.encodeToString(dataKDF),
         )
 
-        val keys = GeneratedUserKeys(newPersonalKey, encryptedKeyData)
+        val keys = GeneratedUserKeys(
+            userPersonalKey = newPersonalKey,
+            signatureKeyPair = signatureKeyPair,
+            encryptedKeyData = encryptedKeyData
+        )
 
-        verifyKeys(keys = keys, identityKeyPair = newSignatureKeyPair, key = masterKey)
+        verifyKeys(keys = keys, identityKeyPair = signatureKeyPair, key = masterKey)
 
         return keys
     }
 
-    private suspend fun verifyKeys(keys: GeneratedUserKeys, identityKeyPair: KeyPair, key: String) {
+    private suspend fun verifyKeys(keys: GeneratedUserKeys, identityKeyPair: SimpleKeyPairData, key: String) {
         check(
             decryptDataWithKey(
                 data = keys.encryptedKeyData.encryptedSymmetricKey,
@@ -99,7 +116,8 @@ class CryptoCore(
         newKey: UserCryptoKeyRaw,
         oldMasterAuthKey: String,
         newMasterAuthKey: String,
-        userPersonalKey: String
+        oldMasterKey: String,
+        newMasterKey: String
     ) {
         check(
             decryptUserPersonalKey(
@@ -107,7 +125,7 @@ class CryptoCore(
                 userId = oldKey.ownerUserId,
                 encryptedMasterKey = oldKey.encryptedSymmetricKey,
                 alg = BaseRemoteModule.formatter.decodeFromString(oldKey.dataAlg)
-            ).contentEquals(userPersonalKey)
+            ).contentEquals(oldMasterKey)
         ) { "Old key does not match" }
 
         check(
@@ -116,17 +134,17 @@ class CryptoCore(
                 userId = newKey.ownerUserId,
                 encryptedMasterKey = newKey.encryptedSymmetricKey,
                 alg = BaseRemoteModule.formatter.decodeFromString(newKey.dataAlg)
-            ).contentEquals(userPersonalKey)
+            ).contentEquals(newMasterKey)
         ) { "New key does not match" }
 
         check(
             decryptDataWithKey(
                 data = oldKey.encryptedPrivateKey,
-                key = userPersonalKey
+                key = oldMasterKey
             ).contentEquals(
                 decryptDataWithKey(
                     data = newKey.encryptedPrivateKey,
-                    key = userPersonalKey
+                    key = newMasterKey
                 )
             )
         ) { "Private key does not match" }
@@ -134,14 +152,18 @@ class CryptoCore(
         check(
             decryptDataWithKey(
                 data = oldKey.encryptedPublicKey,
-                key = userPersonalKey
+                key = oldMasterKey
             ).contentEquals(
                 decryptDataWithKey(
                     data = newKey.encryptedPublicKey,
-                    key = userPersonalKey
+                    key = newMasterKey
                 )
             )
         ) { "Public key does not match" }
+
+        check(oldKey.publicKey == newKey.publicKey) {
+            "Public key does not match"
+        }
     }
 
     suspend fun encryptUserPersonalKey(
@@ -345,5 +367,6 @@ class CryptoCore(
 
 class GeneratedUserKeys(
     val userPersonalKey: String,
+    val signatureKeyPair: SimpleKeyPairData,
     val encryptedKeyData: UserCryptoKeyRaw,
 )

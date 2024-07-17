@@ -31,10 +31,12 @@ class CryptoUserKeysRemoteSource(
             encryptedPublicKey = data.encryptedPublicKey,
             encryptedPrivateKey = data.encryptedPrivateKey,
             encryptedSymmetricKey = data.encryptedSymmetricKey,
+            publicKey = data.publicKey,
+            oldMasterKeys = data.oldMasterKeys,
             loginSalt = data.loginSalt,
             loginAlg = data.loginAlg,
             dataAlg = data.dataAlg,
-            keyVersion = data.version,
+            matchingKeyVersion = data.version,
             removeOldKeys = removeOldKeys,
         )
 

@@ -171,10 +171,12 @@ data class UpdateUserKeysFunctionData constructor(
     val encryptedPublicKey: String,
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
+    val publicKey: String,
+    val oldMasterKeys: String?,
     val loginSalt: String,
     val loginAlg: String,
     val dataAlg: String,
-    val keyVersion: Long,
+    val matchingKeyVersion: Long,
     val removeOldKeys: Boolean,
 )
 
@@ -183,6 +185,7 @@ data class AccountResetCryptoKeyPayload constructor(
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
     val encryptedPublicKey: String,
+    val publicKey: String,
     val loginSalt: String,
     val loginAlg: String,
     val dataAlg: String

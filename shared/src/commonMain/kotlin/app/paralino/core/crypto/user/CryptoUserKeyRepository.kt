@@ -1,7 +1,7 @@
 package app.paralino.core.crypto.user
 
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.models.raw.UserCryptoKeyRaw
-import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.exceptions.MissingUserKeyException
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +17,7 @@ class CryptoUserKeyRepository(
             ?: throw MissingUserKeyException(localCache = true)
     }
 
-    suspend fun latestKeyPair(): AsymmetricCryptoKeyData {
+    suspend fun latestKeyPair(): SimpleKeyPairData {
         return local.getKeyPair() ?: throw MissingUserKeyException(localCache = false)
     }
 

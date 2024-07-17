@@ -1,13 +1,17 @@
 package app.paralino.core.crypto.user
 
+import app.paralino.core.crypto.SimpleKeyPairData
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.mapToOneOrNull
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
-import app.paralino.core.models.user.AsymmetricCryptoKeyData
-import app.paralino.core.data.db.AppConfig
-import app.paralino.core.data.db.mapToOneOrNull
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 
 class UserCryptoKeyLocalDataSource constructor(
     private val userKeyMapper: UserKeyMapperCore,
@@ -38,7 +42,7 @@ class UserCryptoKeyLocalDataSource constructor(
         }
     }
 
-    suspend fun getKeyPair(): AsymmetricCryptoKeyData? {
+    suspend fun getKeyPair(): SimpleKeyPairData? {
         return getMyKey()?.let { userKeyMapper.mapKeyPair(it, getCachedUserKey()) }
     }
 

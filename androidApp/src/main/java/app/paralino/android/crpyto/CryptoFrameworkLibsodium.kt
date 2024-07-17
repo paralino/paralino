@@ -8,7 +8,7 @@ import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KDFAlg
 import app.paralino.core.crypto.KDFType
-import app.paralino.core.crypto.KeyPair
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.utils.exceptions.UnsupportedEncryptionSchemeException
 import com.goterl.lazysodium.LazySodiumAndroid
 import com.goterl.lazysodium.SodiumAndroid
@@ -74,17 +74,17 @@ class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServicePr
         return key.encodeWithCipherAlg(algType = CipherAlgType.DEFAULT_KEY_DERIVE)
     }
 
-    override fun createNewCryptoKeyPair(): KeyPair {
+    override fun createNewCryptoKeyPair(): SimpleKeyPairData {
         val keyPair = lazySodium.cryptoBoxKeypair()
-        return KeyPair(
+        return SimpleKeyPairData(
             privateKey = keyPair.secretKey.asBytes.encodeWithCipherAlg(),
             publicKey = keyPair.publicKey.asBytes.encodeWithCipherAlg(),
         )
     }
 
-    override fun createNewSignatureKeyPair(): KeyPair {
+    override fun createNewSignatureKeyPair(): SimpleKeyPairData {
         val keyPair = lazySodium.cryptoSignKeypair()
-        return KeyPair(
+        return SimpleKeyPairData(
             privateKey = keyPair.secretKey.asBytes.encodeWithCipherAlg(),
             publicKey = keyPair.publicKey.asBytes.encodeWithCipherAlg()
         )

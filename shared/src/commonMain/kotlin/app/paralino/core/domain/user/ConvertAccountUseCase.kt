@@ -19,7 +19,7 @@ class ConvertAccountUseCase constructor(
             newPassword = password,
             action = { oldLoginKey, newLoginKey ->
                 userRepo.changePassword(
-                    oldPassword = oldLoginKey,
+                    oldPassword = oldLoginKey!!,
                     newPassword = newLoginKey
                 )
 

@@ -61,20 +61,20 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         }
     }
     
-    func createNewCryptoKeyPair() -> Payload<KeyPair> {
+    func createNewCryptoKeyPair() -> Payload<SimpleKeyPairData> {
         return execute {
             let keys = sodium.box.keyPair()
-            return KeyPair(
+            return SimpleKeyPairData(
                 privateKey: try keys!.secretKey.encodeWithCipherAlg(self),
                 publicKey: try keys!.publicKey.encodeWithCipherAlg(self)
             )
         }
     }
     
-    func createNewSignatureKeyPair() -> Payload<KeyPair> {
+    func createNewSignatureKeyPair() -> Payload<SimpleKeyPairData> {
         return execute {
             let keys = sodium.sign.keyPair()
-            return KeyPair(
+            return SimpleKeyPairData(
                 privateKey: try keys!.secretKey.encodeWithCipherAlg(self),
                 publicKey: try keys!.publicKey.encodeWithCipherAlg(self)
             )

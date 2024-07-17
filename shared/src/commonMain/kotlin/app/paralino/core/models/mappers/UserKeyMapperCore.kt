@@ -1,16 +1,17 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.data.db.UserKeysEntity
+import app.paralino.core.logg
 import app.paralino.core.models.raw.UserCryptoKeyRaw
-import app.paralino.core.models.user.AsymmetricCryptoKeyData
 import app.paralino.core.models.user.SessionCryptoKeyData
 
 class UserKeyMapperCore constructor(
     private val cryptoCore: CryptoCore,
 ) {
 
-    suspend fun mapKeyPair(model: UserCryptoKeyRaw, userKey: String): AsymmetricCryptoKeyData {
+    suspend fun mapKeyPair(model: UserCryptoKeyRaw, userKey: String): SimpleKeyPairData {
         val privateKey = cryptoCore.decryptDataWithKey(
             data = model.encryptedPrivateKey,
             key = userKey
@@ -21,10 +22,13 @@ class UserKeyMapperCore constructor(
             key = userKey
         )
 
-        return AsymmetricCryptoKeyData(
+        check(publicKey == model.publicKey) {
+            logg.i("User public key are not matching")
+        }
+
+        return SimpleKeyPairData(
             privateKey = privateKey,
-            publicKey = publicKey,
-            version = model.version
+            publicKey = publicKey
         )
     }
 
@@ -35,6 +39,8 @@ class UserKeyMapperCore constructor(
             encryptedSymmetricKey = model.encryptedSymmetricKey,
             encryptedPrivateKey = model.encryptedPrivateKey,
             encryptedPublicKey = model.encryptedPublicKey,
+            publicKey = model.publicKey,
+            oldMasterKeys = model.oldMasterKeys,
             loginSalt = model.loginSalt,
             loginAlg = model.loginAlg,
             dataAlg = model.dataAlg,
@@ -49,6 +55,8 @@ class UserKeyMapperCore constructor(
             encryptedSymmetricKey = model.encryptedSymmetricKey,
             encryptedPrivateKey = model.encryptedPrivateKey,
             encryptedPublicKey = model.encryptedPublicKey,
+            publicKey = model.publicKey,
+            oldMasterKeys = model.oldMasterKeys,
             loginSalt = model.loginSalt,
             loginAlg = model.loginAlg,
             dataAlg = model.dataAlg,

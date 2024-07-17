@@ -5,7 +5,7 @@ import app.paralino.core.crypto.EncodingType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KDFAlg
-import app.paralino.core.crypto.KeyPair
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.getOrThrow
@@ -26,11 +26,11 @@ class CryptoServiceWrapperIOS(
         return cryptoIOS.createNewSymmetricKeyForDerivation().getOrThrow()
     }
 
-    override fun createNewCryptoKeyPair(): KeyPair {
+    override fun createNewCryptoKeyPair(): SimpleKeyPairData {
         return cryptoIOS.createNewCryptoKeyPair().getOrThrow()
     }
 
-    override fun createNewSignatureKeyPair(): KeyPair {
+    override fun createNewSignatureKeyPair(): SimpleKeyPairData {
         return cryptoIOS.createNewSignatureKeyPair().getOrThrow()
     }
 
@@ -97,8 +97,8 @@ interface ICryptoServiceProviderIOS {
     fun createRandomId(length: Int, alphabet: AlphabetType): Payload<String>
     fun createNewSymmetricKey(): Payload<String>
     fun createNewSymmetricKeyForDerivation(): Payload<String>
-    fun createNewCryptoKeyPair(): Payload<KeyPair>
-    fun createNewSignatureKeyPair(): Payload<KeyPair>
+    fun createNewCryptoKeyPair(): Payload<SimpleKeyPairData>
+    fun createNewSignatureKeyPair(): Payload<SimpleKeyPairData>
     fun encryptDataWithSymmetricKey(data: String, key: String): Payload<String>
     fun decryptDataWithSymmetricKey(data: String, key: String): Payload<String>
 

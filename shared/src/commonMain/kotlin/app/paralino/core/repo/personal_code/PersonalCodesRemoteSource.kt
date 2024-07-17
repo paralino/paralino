@@ -3,7 +3,7 @@ package app.paralino.core.repo.personal_code
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
-import app.paralino.core.crypto.PasswordHashingMode
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
@@ -19,7 +19,6 @@ import app.paralino.core.models.raw.PersonalPreKeyRaw
 import app.paralino.core.models.raw.PersonalPreKeyUpdateData
 import app.paralino.core.models.user.PersonalCodeKeyData
 import app.paralino.core.models.user.PersonalCodeUserData
-import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCodeData
@@ -30,7 +29,6 @@ import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.nowUTC
-import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.serialization.encodeToString
 
 class PersonalCodesRemoteSource constructor(

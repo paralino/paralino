@@ -5,6 +5,7 @@ import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberIdentityKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
@@ -13,7 +14,6 @@ import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
-import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
