@@ -140,7 +140,7 @@ class ChangeCredentialsUseCase(
                     add(
                         SymmetricCryptoKeyData(
                             key = oldKey.userPersonalKey,
-                            version = oldKey.encryptedKeyData.version
+                            version = oldKey.encryptedKeyData.userKeyVersion
                         )
                     )
                 }
@@ -149,7 +149,7 @@ class ChangeCredentialsUseCase(
             // change version
             val newKey = UserCryptoKeyRaw(
                 id = oldKey.encryptedKeyData.id,
-                version = 0,
+                userKeyVersion = 0,
                 ownerUserId = userId,
                 encryptedSymmetricKey = newUserKeys.encryptedKeyData.encryptedSymmetricKey,
                 encryptedPrivateKey = newUserKeys.encryptedKeyData.encryptedPrivateKey,

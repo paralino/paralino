@@ -5,7 +5,9 @@ import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.data.db.UserKeysEntity
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserCryptoKeyRaw
+import app.paralino.core.models.user.OldMasterKeys
 import app.paralino.core.models.user.SessionCryptoKeyData
+import app.paralino.core.utils.BaseRemoteModule
 
 class UserKeyMapperCore constructor(
     private val cryptoCore: CryptoCore,
@@ -35,7 +37,7 @@ class UserKeyMapperCore constructor(
     fun remote2Local(model: UserCryptoKeyRaw, isActive: Boolean): UserKeysEntity {
         return UserKeysEntity(
             id = model.id,
-            version = model.version,
+            userKeyVersion = model.userKeyVersion,
             encryptedSymmetricKey = model.encryptedSymmetricKey,
             encryptedPrivateKey = model.encryptedPrivateKey,
             encryptedPublicKey = model.encryptedPublicKey,
@@ -51,7 +53,7 @@ class UserKeyMapperCore constructor(
     fun local2Remote(model: UserKeysEntity, userId: String): UserCryptoKeyRaw {
         return UserCryptoKeyRaw(
             id = model.id,
-            version = model.version ?: 0,
+            userKeyVersion = model.userKeyVersion ?: 0,
             encryptedSymmetricKey = model.encryptedSymmetricKey,
             encryptedPrivateKey = model.encryptedPrivateKey,
             encryptedPublicKey = model.encryptedPublicKey,
@@ -80,4 +82,12 @@ class UserKeyMapperCore constructor(
         )
     }
 
+    suspend fun remote2Core(oldMasterKeys: String, userKey: String): OldMasterKeys {
+        return cryptoCore.decryptDataWithKey(
+            data = oldMasterKeys,
+            key = userKey
+        ).let {
+            BaseRemoteModule.formatter.decodeFromString<OldMasterKeys>(it)
+        }
+    }
 }

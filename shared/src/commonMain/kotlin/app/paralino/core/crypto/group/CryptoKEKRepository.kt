@@ -324,7 +324,7 @@ class CryptoKEKRepository(
 
     suspend fun hasPersonalGroupKeyByVersion(groupId: String, version: Long): Boolean {
         return getPersonalGroupKeys().any {
-            it.groupId == groupId && it.version == version
+            it.groupId == groupId && it.personalGroupKeyVersion == version
         }
     }
 
@@ -530,11 +530,11 @@ class CryptoKEKRepository(
             .let { keys ->
                 val matchingKey = if (version != null) {
                     // if key version is passed get matching key
-                    keys.takeIf { it.count { it.version == version } == 1 }
-                        ?.firstOrNull { it.version == version }
+                    keys.takeIf { it.count { it.personalGroupKeyVersion == version } == 1 }
+                        ?.firstOrNull { it.personalGroupKeyVersion == version }
                 } else {
                     // otherwise get latest key
-                    keys.maxByOrNull { it.version }
+                    keys.maxByOrNull { it.personalGroupKeyVersion }
                 }
 
 //                logg.tag("tag_crypto_key_group").d("group keys count: ${allKeys.size} - ${keys.size} for group $groupId, with version ($version) match: ${matchingKey != null}")
@@ -549,10 +549,10 @@ class CryptoKEKRepository(
                     key = userKeyRepository.activePersonalKey()
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<SimpleKeyPairData>(it)
-                } to keyRaw.version
+                } to keyRaw.personalGroupKeyVersion
             } else {
                 allKeys
-                    .sortedByDescending { it.version }
+                    .sortedByDescending { it.personalGroupKeyVersion }
                     .firstNotNullOfOrNull { key ->
                         try {
                             cryptoCore.decryptDataWithKey(
@@ -560,7 +560,7 @@ class CryptoKEKRepository(
                                 key = userKeyRepository.activePersonalKey()
                             ).let {
                                 BaseRemoteModule.formatter.decodeFromString<SimpleKeyPairData>(it)
-                            } to key.version
+                            } to key.personalGroupKeyVersion
                         } catch (e: Exception) {
                             null
                         }

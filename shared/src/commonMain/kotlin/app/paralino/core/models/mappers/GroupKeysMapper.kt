@@ -90,7 +90,7 @@ class GroupKeysMapper {
             ownerUserId = model.ownerUserId,
             encryptedUserKeys = model.encryptedUserKeys,
             groupId = model.groupId,
-            version = model.version
+            personalGroupKeyVersion = model.personalGroupKeyVersion
         )
     }
 
@@ -100,7 +100,7 @@ class GroupKeysMapper {
             ownerUserId = model.ownerUserId,
             encryptedUserKeys = model.encryptedUserKeys,
             groupId = model.groupId,
-            version = model.version
+            personalGroupKeyVersion = model.personalGroupKeyVersion
         )
     }
 

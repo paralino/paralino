@@ -16,7 +16,7 @@ data class UserCryptoKeyRaw constructor(
     val loginSalt: String,
     val loginAlg: String,
     val dataAlg: String,
-    val version: Long
+    val userKeyVersion: Long
 ) {
     companion object {
         @Suppress("UNCHECKED_CAST")
@@ -32,7 +32,7 @@ data class UserCryptoKeyRaw constructor(
                 loginSalt = map["loginSalt"] as String,
                 loginAlg = map["loginAlg"] as String,
                 dataAlg = map["dataAlg"] as String,
-                version = (map["version"] as Number).toLong()
+                userKeyVersion = (map["userKeyVersion"] as Number).toLong()
             )
         }
     }

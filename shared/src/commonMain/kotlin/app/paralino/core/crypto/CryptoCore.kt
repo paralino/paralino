@@ -67,7 +67,7 @@ class CryptoCore(
         val encryptedKeyData = UserCryptoKeyRaw(
             // id & version are not used in this case so they can be empty values
             "",
-            version = 0,
+            userKeyVersion = 0,
             ownerUserId = userId,
             encryptedSymmetricKey = encryptedPersonalKey,
             encryptedPrivateKey = encryptedPrivateIdentityKey,
