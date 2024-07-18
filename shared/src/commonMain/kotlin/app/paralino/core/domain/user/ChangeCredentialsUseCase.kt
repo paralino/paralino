@@ -90,7 +90,7 @@ class ChangeCredentialsUseCase(
                 changeCredentials(
                     userId = userId,
                     oldKey = GeneratedUserKeys(
-                        userPersonalKey = userKeyRepo.activePersonalKey(),
+                        userPersonalKey = userKeyRepo.activePersonalKeyWithVersion().key,
                         signatureKeyPair = userKeyRepo.signatureKeyPair(),
                         encryptedKeyData = oldKey
                     ),

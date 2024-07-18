@@ -8,6 +8,7 @@ import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.data.db.GroupDeviceIntegrityEntity
 import app.paralino.core.logg
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -546,7 +547,7 @@ class CryptoKEKRepository(
             if (keyRaw != null) {
                 cryptoCore.decryptDataWithKey(
                     data = keyRaw.encryptedUserKeys,
-                    key = userKeyRepository.activePersonalKey()
+                    key = userKeyRepository.personalKey(version = keyRaw.userKeyVersion).key
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<SimpleKeyPairData>(it)
                 } to keyRaw.personalGroupKeyVersion
@@ -557,7 +558,7 @@ class CryptoKEKRepository(
                         try {
                             cryptoCore.decryptDataWithKey(
                                 data = key.encryptedUserKeys,
-                                key = userKeyRepository.activePersonalKey()
+                                key = userKeyRepository.personalKey(version = key.userKeyVersion).key
                             ).let {
                                 BaseRemoteModule.formatter.decodeFromString<SimpleKeyPairData>(it)
                             } to key.personalGroupKeyVersion
@@ -635,13 +636,18 @@ class CryptoKEKRepository(
 
     suspend fun updateIntegrity(
         groupId: String,
-        integrity: String
+        integrity: String,
+        userKeyVersion: Long
     ) {
-        local.updateGroupDeviceIntegrity(groupId, integrity)
+        local.updateGroupDeviceIntegrity(
+            groupId = groupId,
+            integrity = integrity,
+            userKeyVersion = userKeyVersion
+        )
     }
 
-    suspend fun getDeviceIntegrityForGroup(groupId: String): String? {
-        return local.getGroupDeviceIntegrity(groupId)?.integrity
+    suspend fun getDeviceIntegrityForGroup(groupId: String): GroupDeviceIntegrityEntity? {
+        return local.getGroupDeviceIntegrity(groupId)
     }
 
     suspend fun deleteAllKeysForGroup(groupId: String) {

@@ -144,6 +144,7 @@ class MemberDeviceKeyRotation(
                 error = response.errorResponse
             )
         } else {
+            val userKey = userKeyRepo.activePersonalKeyWithVersion()
             val groupDeviceIntegrity = GroupIntegrity(
                 timeUtc = nowUTC().toString(),
                 signature = GroupIntegrity.createSignature(
@@ -157,12 +158,13 @@ class MemberDeviceKeyRotation(
             ).let {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(it),
-                    key = userKeyRepo.activePersonalKey()
+                    key = userKey.key
                 )
             }
             cryptoKEKRepository.updateIntegrity(
                 groupId = group.id,
-                integrity = groupDeviceIntegrity
+                integrity = groupDeviceIntegrity,
+                userKeyVersion = userKey.version
             )
             logg.tag("tag_crypto_key_group_device_rotation")
                 .i("Finished rotating member device key for ${group.id}")

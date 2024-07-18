@@ -110,6 +110,7 @@ class GroupMemberAddUseCase constructor(
             myPrivateKey = myKey.privateKey,
         )
 
+        val userKey = userKeyRepo.activePersonalKeyWithVersion()
         val groupIntegrity = GroupIntegrity(
             timeUtc = nowUTC().toString(),
             signature = GroupIntegrity.createSignature(
@@ -126,7 +127,7 @@ class GroupMemberAddUseCase constructor(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.activePersonalKey()
+                key = userKey.key
             )
         }
 
@@ -135,6 +136,7 @@ class GroupMemberAddUseCase constructor(
             codeKeyId = codeData.codeKeyId,
             keyId = codeData.keyData.keyId,
             groupOwnerIntegrity = groupIntegrity,
+            userKeyVersion = userKey.version,
             memberVerification = memberVerification,
             userToAddId = codeData.userData.ownerUserId,
             groupKeys = encryptedOldKeys,

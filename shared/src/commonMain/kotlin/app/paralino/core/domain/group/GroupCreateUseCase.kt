@@ -113,6 +113,7 @@ class GroupCreateUseCase(
             myPrivateKey = myIdentityKeys.privateKey,
         )
 
+        val userKey = userKeyRepo.activePersonalKeyWithVersion()
         val groupIntegrity = GroupIntegrity(
             timeUtc = nowUTC().toString(),
             signature = GroupIntegrity.createSignature(
@@ -127,7 +128,7 @@ class GroupCreateUseCase(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.activePersonalKey()
+                key = userKey.key
             )
         }
 
@@ -142,6 +143,7 @@ class GroupCreateUseCase(
                 key = groupKey
             ),
             groupMemberIntegrity = groupIntegrity,
+            userKeyVersion = userKey.version,
             serverIntegrity = cryptoCore.hashProvider.computeHash(
                 data = user.id,
                 type = HashType.GENERIC_256
@@ -152,7 +154,7 @@ class GroupCreateUseCase(
             ),
             encryptedUserKeys = cryptoCore.encryptModel(
                 data = userKeys,
-                key = userKeyRepo.activePersonalKey()
+                key = userKey.key
             ),
             memberVerification = memberVerification,
             memberData = cryptoCore.encryptDataWithKey(

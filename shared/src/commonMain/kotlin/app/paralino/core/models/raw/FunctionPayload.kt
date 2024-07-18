@@ -9,6 +9,7 @@ data class CreateGroupPayload constructor(
     val signedPublicKey: String,
     val ownerIdentityKey: String,
     val groupMemberIntegrity: String,
+    val userKeyVersion: Long,
     val serverIntegrity: String,
     val encryptedUserKeys: String,
     val keyId: String,
@@ -30,6 +31,7 @@ data class CreateGroupMemberPayload constructor(
     val codeKeyId: String,
     val keyId: String,
     val groupOwnerIntegrity: String,
+    val userKeyVersion: Long,
     val serverIntegrity: String,
     val memberVerification: String,
     val userToAddId: String,
@@ -71,6 +73,7 @@ data class BlockGroupMemberFunctionData(
 data class UpdateGroupKeysPayload constructor(
     val groupId: String,
     val integrity: String,
+    val userKeyVersion: Long,
     val keyVersionsToKeep: List<Long>,
     val encryptedGroupKeys: List<GroupKeysPayload>,
     val groupData: String,
@@ -107,6 +110,7 @@ data class UpdateGroupMemberSenderKeysPayload(
 data class UpdateOwnMemberPublicKeyPayload(
     val groupId: String,
     val integrity: String,
+    val userKeyVersion: Long,
     val memberData: String,
     val paralinoId: String?,
     val signedPublicKey: String,

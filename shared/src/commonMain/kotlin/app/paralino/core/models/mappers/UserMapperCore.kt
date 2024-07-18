@@ -29,7 +29,7 @@ class UserMapperCore(
                 try {
                     cryptoCore.decryptDataWithKey(
                         data = it,
-                        key = userKeyRepo.personalKey(version = model.userKeyVersion ?: 0).key
+                        key = userKeyRepo.personalKey(version = model.userKeyVersion).key
                     ).let {
                         BaseRemoteModule.formatter.decodeFromString<BlockListModelData>(it)
                     }.let {
@@ -53,7 +53,7 @@ class UserMapperCore(
     }
 
     suspend fun remote2Core(model: UserMeDataRaw): UserMeData {
-        val userKey = userKeyRepo.personalKey(version = model.userKeyVersion ?: 0)
+        val userKey = userKeyRepo.personalKey(version = model.userKeyVersion)
         return UserMeData(
             userImage = model.userImage?.let {
                 try {

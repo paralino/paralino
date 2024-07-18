@@ -183,6 +183,7 @@ class GroupCryptoKeyRotation constructor(
                 }
             }
 
+            val userKey = userKeyRepo.activePersonalKeyWithVersion()
             val groupIntegrity = GroupIntegrity(
                 timeUtc = nowUTC().toString(),
                 signature = GroupIntegrity.createSignature(
@@ -196,13 +197,14 @@ class GroupCryptoKeyRotation constructor(
             ).let {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(it),
-                    key = userKeyRepo.activePersonalKey()
+                    key = userKey.key
                 )
             }
 
             val payload = UpdateGroupKeysPayload(
                 groupId = group.id,
                 integrity = groupIntegrity,
+                userKeyVersion = userKey.version,
                 keyVersionsToKeep = usedKeys.distinct(),
                 encryptedGroupKeys = keys,
                 groupData = groupData,

@@ -99,6 +99,7 @@ class MemberCryptoKeyRotation(
 
         val member = group.members.filter { it.member.userId == config.userId }.firstOrNull()!!
 
+        val userKey = userKeyRepo.activePersonalKeyWithVersion()
         val groupIntegrity = GroupIntegrity(
             timeUtc = nowUTC().toString(),
             signature = GroupIntegrity.createSignature(
@@ -112,7 +113,7 @@ class MemberCryptoKeyRotation(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.activePersonalKey()
+                key = userKey.key
             )
         }
 
@@ -123,6 +124,7 @@ class MemberCryptoKeyRotation(
         val payloadData = UpdateOwnMemberPublicKeyPayload(
             groupId = group.id,
             integrity = groupIntegrity,
+            userKeyVersion = userKey.version,
             memberData = cryptoCore.encryptDataWithKey(
                 BaseRemoteModule.formatter.encodeToString(member.member.memberData.data),
                 groupKey.key
@@ -142,7 +144,7 @@ class MemberCryptoKeyRotation(
                     privateKey = newExchangeKeys.privateKey,
                     publicKey = newExchangeKeys.publicKey
                 ),
-                key = userKeyRepo.activePersonalKey()
+                key = userKey.key
             ),
             groupKeyVersion = groupKey.version,
             memberKeyVersionsToKeep = memberKeyVersionsToKeep

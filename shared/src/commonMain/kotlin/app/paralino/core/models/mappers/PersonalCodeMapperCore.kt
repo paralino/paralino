@@ -62,7 +62,7 @@ class PersonalCodeMapperCore(
 
         val code = cryptoCore.decryptDataWithKey(
             data = model.encryptedCode,
-            key = userKeyRepo.personalKey(version = model.userKeyVersion ?: 0).key
+            key = userKeyRepo.personalKey(version = model.userKeyVersion).key
         )
 
         val derivedCode = cryptoCore.deriveParalinoIdMasterKeys(

@@ -106,6 +106,7 @@ class RegisterDeviceForSharingUseCase constructor(
                 if (response.isSuccess) {
                     logg.tag("sharing_start").d("Device registered, save integrity")
 
+                    val userKey = userKeyRepo.activePersonalKeyWithVersion()
                     val groupDeviceIntegrity = GroupIntegrity(
                         timeUtc = nowUTC().toString(),
                         signature = GroupIntegrity.createSignature(
@@ -119,12 +120,13 @@ class RegisterDeviceForSharingUseCase constructor(
                     ).let {
                         cryptoCore.encryptDataWithKey(
                             data = BaseRemoteModule.formatter.encodeToString(it),
-                            key = userKeyRepo.activePersonalKey()
+                            key = userKey.key
                         )
                     }
                     cryptoKEKRepo.updateIntegrity(
                         groupId = group.id,
-                        integrity = groupDeviceIntegrity
+                        integrity = groupDeviceIntegrity,
+                        userKeyVersion = userKey.version
                     )
 
                     logg.tag("sharing_start").d("Integrity updated, refresh group")

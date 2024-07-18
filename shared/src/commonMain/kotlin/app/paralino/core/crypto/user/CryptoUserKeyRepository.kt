@@ -14,25 +14,21 @@ class CryptoUserKeyRepository(
     private val userKeyMapper: UserKeyMapperCore
 ) : BaseRepository() {
 
-    suspend fun activePersonalKey(): String {
-        return activePersonalKeyWithVersion().key
-    }
-
     suspend fun activePersonalKeyWithVersion(): SymmetricCryptoKeyData {
         return local.getCachedUserKey()
             .takeIf { it != null && it.key.isNotBlank() }
             ?: throw MissingUserKeyException(localCache = true)
     }
 
-    suspend fun personalKey(version: Long): SymmetricCryptoKeyData {
+    suspend fun personalKey(version: Long? = null): SymmetricCryptoKeyData {
         val rawKey = getLocalRawKey() ?: throw MissingUserKeyException(localCache = false)
 
-        if (version == rawKey.userKeyVersion || version == 0L) {
+        if (version == rawKey.userKeyVersion || version == 0L || version == null) {
             return activePersonalKeyWithVersion()
         }
 
         val oldKeys = rawKey.oldMasterKeys?.let {
-            userKeyMapper.remote2Core(oldMasterKeys = it, userKey = activePersonalKey())
+            userKeyMapper.remote2Core(oldMasterKeys = it, userKey = activePersonalKeyWithVersion().key)
         } ?: throw MissingUserKeyException(localCache = false)
 
         val key = oldKeys.keys.firstOrNull {
