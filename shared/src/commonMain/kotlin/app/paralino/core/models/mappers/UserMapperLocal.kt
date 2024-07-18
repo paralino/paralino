@@ -56,7 +56,8 @@ class UserMapperLocal constructor(
             ownerUserId = model.ownerUserId,
             resourceId = model.resourceId,
             resourceType = model.resourceType,
-            data_ = model.data
+            data_ = model.data,
+            userKeyVersion = model.userKeyVersion
         )
     }
 
@@ -66,7 +67,8 @@ class UserMapperLocal constructor(
             ownerUserId = model.ownerUserId,
             resourceId = model.resourceId,
             resourceType = model.resourceType,
-            data = model.data_
+            data = model.data_,
+            userKeyVersion = model.userKeyVersion
         )
     }
 

@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS blocklistEntity (
 `ownerUserId` TEXT NOT NULL,
 `resourceType` TEXT NOT NULL,
 `resourceId` TEXT NOT NULL,
-`data` TEXT
+`data` TEXT,
+`userKeyVersion` INTEGER
 );
 
 createBlocklist:

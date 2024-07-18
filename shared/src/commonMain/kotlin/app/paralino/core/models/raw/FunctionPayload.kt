@@ -55,14 +55,16 @@ data class DeleteGroupMemberPayload constructor(
 @Serializable
 data class BlockGroupFunctionData(
     val groupId: String,
-    val groupData: String
+    val groupData: String,
+    val userKeyVersion: Long
 )
 
 @Serializable
 data class BlockGroupMemberFunctionData(
     val groupId: String,
     val userId: String,
-    val userData: String
+    val userData: String,
+    val userKeyVersion: Long
 )
 
 @Serializable

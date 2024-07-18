@@ -29,7 +29,7 @@ class UserMapperCore(
                 try {
                     cryptoCore.decryptDataWithKey(
                         data = it,
-                        key = userKeyRepo.activePersonalKey()
+                        key = userKeyRepo.personalKey(version = model.userKeyVersion ?: 0).key
                     ).let {
                         BaseRemoteModule.formatter.decodeFromString<BlockListModelData>(it)
                     }.let {

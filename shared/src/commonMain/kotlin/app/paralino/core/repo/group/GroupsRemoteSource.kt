@@ -241,19 +241,21 @@ class GroupsRemoteSource constructor(
             if (config.userId == group.ownerUserId)
                 throw PermissionDeniedException("Owner can not block the group")
 
+            val userKey = cryptoUserKeyRepo.activePersonalKeyWithVersion()
             val groupData = group.data.data?.let {
                 cryptoCore.encryptModel(
                     data = BlockListModelData(
                         name = it.name,
                         image = it.image
                     ),
-                    key = cryptoUserKeyRepo.activePersonalKey()
+                    key = userKey.key
                 )
             } ?: ""
 
             val payload = BlockGroupFunctionData(
                 groupId = group.id,
-                groupData = groupData
+                groupData = groupData,
+                userKeyVersion = userKey.version
             )
 
             val response = functionsApi.runAndWait(
@@ -273,20 +275,22 @@ class GroupsRemoteSource constructor(
             if (config.userId == user.userId)
                 throw PermissionDeniedException("You can not block yourself")
 
+            val userKey = cryptoUserKeyRepo.activePersonalKeyWithVersion()
             val userData = user.memberData.data?.let {
                 cryptoCore.encryptModel(
                     data = BlockListModelData(
                         name = it.name,
                         image = it.image ?: ImageModel.emoji(Emojis.robot)
                     ),
-                    key = cryptoUserKeyRepo.activePersonalKey()
+                    key = userKey.key
                 )
             } ?: ""
 
             val payload = BlockGroupMemberFunctionData(
                 groupId = user.groupId,
                 userId = user.userId,
-                userData = userData
+                userData = userData,
+                userKeyVersion = userKey.version
             )
 
             val response = functionsApi.runAndWait(
