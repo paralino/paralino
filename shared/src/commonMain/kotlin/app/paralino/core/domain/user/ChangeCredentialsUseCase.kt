@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.serialization.encodeToString
 
 class ChangeCredentialsUseCase(
     private val userRepo: UserRepository,
@@ -125,14 +124,16 @@ class ChangeCredentialsUseCase(
                 authKey = newMasterAuthKey
             )
 
-            val oldMasterKeys = oldKey.encryptedKeyData.oldMasterKeys?.let {
-                cryptoCore.decryptDataWithKey(
-                    data = it,
-                    key = oldKey.userPersonalKey
-                ).let {
-                    BaseRemoteModule.formatter.decodeFromString<OldMasterKeys>(it)
-                }
-            } ?: OldMasterKeys(keys = emptyList())
+            val oldMasterKeys = oldKey.encryptedKeyData.oldMasterKeys
+                ?.takeIf { it.isNotBlank() }
+                ?.let {
+                    cryptoCore.decryptDataWithKey(
+                        data = it,
+                        key = oldKey.userPersonalKey
+                    ).let {
+                        BaseRemoteModule.formatter.decodeFromString<OldMasterKeys>(it)
+                    }
+                } ?: OldMasterKeys(keys = emptyList())
 
             val updatedOldMasterKeys = oldMasterKeys.copy(
                 keys = buildList {
@@ -144,7 +145,13 @@ class ChangeCredentialsUseCase(
                         )
                     )
                 }
-            ).let { BaseRemoteModule.formatter.encodeToString(it) }
+            )
+                .let {
+                    cryptoCore.encryptModel(
+                        data = it,
+                        key = newUserKeys.userPersonalKey
+                    )
+                }
 
             // change version
             val newKey = UserCryptoKeyRaw(
@@ -200,7 +207,10 @@ class ChangeCredentialsUseCase(
 
             // at this point both login password and encryption key are updated safely
             // we can save the key locally
-            userKeyRepo.saveUserKeyLocally(keyRaw = newRemoteKey, decryptedKey = newUserKeys.userPersonalKey)
+            userKeyRepo.saveUserKeyLocally(
+                keyRaw = newRemoteKey,
+                decryptedKey = newUserKeys.userPersonalKey
+            )
 
             emit(ChangeCredentialsStep.DONE)
         }.catch {

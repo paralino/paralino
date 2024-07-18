@@ -140,6 +140,9 @@ class AppAccountStateMonitor constructor(
                         refreshEverything.refreshEverything(forceGroupRefresh = true)
                         config.didEverFullyRefreshData = true
                     }
+                } else if (it.data is AppAccountState.NO_PROFILE) {
+                    logg.tag("account_state").v("${it.data} - Refresh user and profile")
+                    userRepo.refreshUserMaybe()
                 } else if (!everHadUser && it.data is AppAccountState.NO_USER) {
                     logg.tag("account_state")
                         .v("${it.data} - try to logout (${config.wasUserLoggedIn})")

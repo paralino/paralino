@@ -28,6 +28,6 @@ data class UserMe constructor(
 
 @Serializable
 data class UserMeData constructor(
-    var userImage: ImageModel? = null,
-    val userName: String = "",
+    val userImage: ImageModel? = null,
+    val userName: String = ""
 )

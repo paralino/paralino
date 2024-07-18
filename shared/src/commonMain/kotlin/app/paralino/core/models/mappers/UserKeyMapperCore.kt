@@ -7,6 +7,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.OldMasterKeys
 import app.paralino.core.models.user.SessionCryptoKeyData
+import app.paralino.core.models.user.SymmetricCryptoKeyData
 import app.paralino.core.utils.BaseRemoteModule
 
 class UserKeyMapperCore constructor(
@@ -75,10 +76,17 @@ class UserKeyMapperCore constructor(
         return SessionCryptoKeyData(encryptedKey = encryptedKey, sessionKey = newSessionKey)
     }
 
-    suspend fun unwrapMasterKey(sessionMasterKey: String, encryptedUserMasterKey: String): String {
-        return cryptoCore.decryptDataWithKey(
-            data = encryptedUserMasterKey,
-            key = sessionMasterKey
+    suspend fun unwrapMasterKey(
+        sessionMasterKey: String,
+        encryptedUserMasterKey: String,
+        keyVersion: Long
+    ): SymmetricCryptoKeyData {
+        return SymmetricCryptoKeyData(
+            key = cryptoCore.decryptDataWithKey(
+                data = encryptedUserMasterKey,
+                key = sessionMasterKey
+            ),
+            version = keyVersion
         )
     }
 
