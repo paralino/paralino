@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class BlocklistVideModel(
+class BlocklistViewModel(
     private val userRepository: UserRepository
 ) : CoreViewModel() {
 

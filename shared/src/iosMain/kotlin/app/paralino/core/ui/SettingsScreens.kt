@@ -7,7 +7,7 @@ import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
-import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
+import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
@@ -104,7 +104,7 @@ object SettingsScreens {
     }
 
     fun BlocklistScreenVC(
-        vm: BlocklistVideModel
+        vm: BlocklistViewModel
     ) = ComposeUIViewController {
         RootScreenIOS {
             BlocklistScreenCore(

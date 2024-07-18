@@ -30,7 +30,7 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.settings.blocklist.BlockListScreenUiEvent
 import app.paralino.core.presentation.settings.blocklist.BlocklistElementState
 import app.paralino.core.presentation.settings.blocklist.BlocklistScreenState
-import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
+import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -44,7 +44,7 @@ import dev.icerock.moko.resources.compose.stringResource
 @Composable
 fun BlocklistScreenCore(
     appState: CoreUiState,
-    vm: BlocklistVideModel,
+    vm: BlocklistViewModel,
     paddingValues: PaddingValues
 ) {
 

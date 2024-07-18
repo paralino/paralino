@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
-import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
+import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.ToolbarButtons
 import app.paralino.core.ui.settings.BlocklistScreenCore
@@ -16,7 +16,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun BlocklistScreen(
     appState: MainAppState,
-    vm: BlocklistVideModel = getViewModel()
+    vm: BlocklistViewModel = getViewModel()
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
