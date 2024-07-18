@@ -228,6 +228,7 @@ data class PersonalCodeCreateData(
     val keyId: String,
     val encryptedCode: String,
     val encryptedCodeUserData: String,
+    val userKeyVersion: Long,
     val keys: List<PersonalCodePreKeyData>
 )
 
@@ -236,6 +237,7 @@ data class PersonalCodePreKeyData(
     val encryptedCodeKeyData: String?,
     val encryptedUserKeys: String,
     val integrity: String,
+    val userKeyVersion: Long,
     val keyId: String
 )
 

@@ -11,6 +11,7 @@ data class PersonalCodeRaw constructor(
     val ownerUserId: String,
     val encryptedCode: String,
     val encryptedCodeUserData: String?,
+    val userKeyVersion: Long?
 ) {
     companion object {
         fun from(map: Map<String, Any>): PersonalCodeRaw {
@@ -20,6 +21,7 @@ data class PersonalCodeRaw constructor(
                 ownerUserId = map["ownerUserId"] as String,
                 encryptedCode = map["encryptedCode"] as String,
                 encryptedCodeUserData = map["encryptedCodeUserData"] as? String?,
+                userKeyVersion = (map["userKeyVersion"] as? Number?)?.toLong()
             )
         }
     }
