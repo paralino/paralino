@@ -83,7 +83,18 @@ class PersonalCodesRemoteSource constructor(
 
     suspend fun tryCreatingCode(user: UserMe, userMeData: UserMeData?) {
 
-        val personalCode = cryptoCore.randomId(length = 8, alphabet = AlphabetType.SAFE)
+        var personalCode: String? = null
+        do {
+            val newCode = cryptoCore.randomId(length = 8, alphabet = AlphabetType.SAFE)
+            val charGroups = newCode.groupBy { it }
+
+            // only allow codes with enough different characters (i.e. 1111-2222 is not allowed)
+            // one character can only appear max 3 times, and there has to be at least 4 different character
+            if (charGroups.size >= 4 && charGroups.maxOf { it.value.size } <= 3) {
+                personalCode = newCode
+            }
+        } while (personalCode == null)
+
         val derivedCode = cryptoCore.deriveParalinoIdMasterKeys(
             code = personalCode,
             userId = user.id
