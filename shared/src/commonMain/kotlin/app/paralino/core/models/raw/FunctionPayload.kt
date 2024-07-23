@@ -9,6 +9,7 @@ data class CreateGroupPayload constructor(
     val signedPublicKey: String,
     val ownerIdentityKey: String,
     val groupMemberIntegrity: String,
+    val userKeyVersion: Long,
     val serverIntegrity: String,
     val encryptedUserKeys: String,
     val keyId: String,
@@ -30,6 +31,7 @@ data class CreateGroupMemberPayload constructor(
     val codeKeyId: String,
     val keyId: String,
     val groupOwnerIntegrity: String,
+    val userKeyVersion: Long,
     val serverIntegrity: String,
     val memberVerification: String,
     val userToAddId: String,
@@ -55,20 +57,23 @@ data class DeleteGroupMemberPayload constructor(
 @Serializable
 data class BlockGroupFunctionData(
     val groupId: String,
-    val groupData: String
+    val groupData: String,
+    val userKeyVersion: Long
 )
 
 @Serializable
 data class BlockGroupMemberFunctionData(
     val groupId: String,
     val userId: String,
-    val userData: String
+    val userData: String,
+    val userKeyVersion: Long
 )
 
 @Serializable
 data class UpdateGroupKeysPayload constructor(
     val groupId: String,
     val integrity: String,
+    val userKeyVersion: Long,
     val keyVersionsToKeep: List<Long>,
     val encryptedGroupKeys: List<GroupKeysPayload>,
     val groupData: String,
@@ -105,6 +110,7 @@ data class UpdateGroupMemberSenderKeysPayload(
 data class UpdateOwnMemberPublicKeyPayload(
     val groupId: String,
     val integrity: String,
+    val userKeyVersion: Long,
     val memberData: String,
     val paralinoId: String?,
     val signedPublicKey: String,
@@ -171,10 +177,12 @@ data class UpdateUserKeysFunctionData constructor(
     val encryptedPublicKey: String,
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
+    val publicKey: String,
+    val oldMasterKeys: String?,
     val loginSalt: String,
     val loginAlg: String,
     val dataAlg: String,
-    val keyVersion: Long,
+    val matchingKeyVersion: Long,
     val removeOldKeys: Boolean,
 )
 
@@ -183,6 +191,7 @@ data class AccountResetCryptoKeyPayload constructor(
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
     val encryptedPublicKey: String,
+    val publicKey: String,
     val loginSalt: String,
     val loginAlg: String,
     val dataAlg: String
@@ -225,6 +234,7 @@ data class PersonalCodeCreateData(
     val keyId: String,
     val encryptedCode: String,
     val encryptedCodeUserData: String,
+    val userKeyVersion: Long,
     val keys: List<PersonalCodePreKeyData>
 )
 
@@ -233,6 +243,7 @@ data class PersonalCodePreKeyData(
     val encryptedCodeKeyData: String?,
     val encryptedUserKeys: String,
     val integrity: String,
+    val userKeyVersion: Long,
     val keyId: String
 )
 

@@ -3,7 +3,7 @@ package app.paralino.core.repo.personal_code
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
-import app.paralino.core.crypto.PasswordHashingMode
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
@@ -19,7 +19,6 @@ import app.paralino.core.models.raw.PersonalPreKeyRaw
 import app.paralino.core.models.raw.PersonalPreKeyUpdateData
 import app.paralino.core.models.user.PersonalCodeKeyData
 import app.paralino.core.models.user.PersonalCodeUserData
-import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCodeData
@@ -30,7 +29,6 @@ import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.nowUTC
-import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.serialization.encodeToString
 
 class PersonalCodesRemoteSource constructor(
@@ -47,7 +45,7 @@ class PersonalCodesRemoteSource constructor(
             code = personalCode,
             userId = userId
         )
-        val myKey = userKeyRepo.latestKeyPair()
+        val myKey = userKeyRepo.signatureKeyPair()
 
         val codeUserData = PersonalCodeUserData(
             ownerUserId = userId,
@@ -55,18 +53,6 @@ class PersonalCodesRemoteSource constructor(
             ownerImage = userMeData.userImage,
             ownerIdentityKey = myKey.publicKey,
         )
-
-        val integrity = GroupIntegrity(
-            timeUtc = nowUTC().toString(),
-            // this signature will always be invalid, but we are passing it for consistency
-            // this also ensures user will always rotate keys when added to new group
-            signature = ""
-        ).let {
-            cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey(),
-            )
-        }
 
         val data = PersonalCodeUpdateData(
             keyId = derivedCode.loginPassword,
@@ -76,7 +62,6 @@ class PersonalCodesRemoteSource constructor(
             ),
             keys = createPreKeys(
                 personalCode = personalCode,
-                integrity = integrity,
                 encryptionKey = derivedCode.backupPassword
             )
         )
@@ -98,12 +83,23 @@ class PersonalCodesRemoteSource constructor(
 
     suspend fun tryCreatingCode(user: UserMe, userMeData: UserMeData?) {
 
-        val personalCode = cryptoCore.randomId(length = 8, alphabet = AlphabetType.SAFE)
+        var personalCode: String? = null
+        do {
+            val newCode = cryptoCore.randomId(length = 8, alphabet = AlphabetType.SAFE)
+            val charGroups = newCode.groupBy { it }
+
+            // only allow codes with enough different characters (i.e. 1111-2222 is not allowed)
+            // one character can only appear max 3 times, and there has to be at least 4 different character
+            if (charGroups.size >= 4 && charGroups.maxOf { it.value.size } <= 3) {
+                personalCode = newCode
+            }
+        } while (personalCode == null)
+
         val derivedCode = cryptoCore.deriveParalinoIdMasterKeys(
             code = personalCode,
             userId = user.id
         )
-        val myKey = userKeyRepo.latestKeyPair()
+        val myKey = userKeyRepo.signatureKeyPair()
 
         val codeUserData = PersonalCodeUserData(
             ownerUserId = user.id,
@@ -112,24 +108,12 @@ class PersonalCodesRemoteSource constructor(
             ownerIdentityKey = myKey.publicKey,
         )
 
-        val integrity = GroupIntegrity(
-            timeUtc = nowUTC().toString(),
-            // this signature will always be invalid, but we are passing it for consistency
-            // this also ensures user will always rotate keys when added to new group
-            signature = ""
-        ).let {
-            cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey(),
-            )
-        }
-
         val keys = createPreKeys(
             personalCode = personalCode,
-            integrity = integrity,
             encryptionKey = derivedCode.backupPassword
         )
 
+        val userKey = userKeyRepo.activePersonalKeyWithVersion()
         val data = PersonalCodeCreateData(
             keyId = derivedCode.loginPassword,
             encryptedCodeUserData = cryptoCore.encryptDataWithKey(
@@ -138,8 +122,9 @@ class PersonalCodesRemoteSource constructor(
             ),
             encryptedCode = cryptoCore.encryptDataWithKey(
                 data = personalCode,
-                key = userKeyRepo.personalKey()
+                key = userKey.key
             ),
+            userKeyVersion = userKey.version,
             keys = keys
         )
 
@@ -162,7 +147,6 @@ class PersonalCodesRemoteSource constructor(
         userId: String,
         personalCode: String
     ) {
-
         val currentUnusedKeys = docApi.listAllDocuments(
             databaseType = BackendDatabaseType.KEYS,
             collectionId = remoteConfig.resourceIds.collectionPersonalIdKeysID,
@@ -179,20 +163,9 @@ class PersonalCodesRemoteSource constructor(
             code = personalCode,
             userId = userId
         )
-        val integrity = GroupIntegrity(
-            timeUtc = nowUTC().toString(),
-            // this signature will always be invalid, but we are passing it for consistency
-            // this also ensures user will always rotate keys when added to new group
-            signature = ""
-        ).let {
-            cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey(),
-            )
-        }
+
         val keys = createPreKeys(
             personalCode = personalCode,
-            integrity = integrity,
             encryptionKey = derivedCode.backupPassword
         )
 
@@ -218,11 +191,23 @@ class PersonalCodesRemoteSource constructor(
 
     private suspend fun createPreKeys(
         personalCode: String,
-        integrity: String,
         encryptionKey: String,
         count: Int = 6
     ): List<PersonalCodePreKeyData> {
-        val myKey = userKeyRepo.latestKeyPair()
+        val signatureKeys = userKeyRepo.signatureKeyPair()
+        val userKey = userKeyRepo.activePersonalKeyWithVersion()
+
+        val integrity = GroupIntegrity(
+            timeUtc = nowUTC().toString(),
+            // this signature will always be invalid, but we are passing it for consistency
+            // this also ensures user will always rotate keys when added to new group
+            signature = ""
+        ).let {
+            cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(it),
+                key = userKey.key,
+            )
+        }
 
         return (0 until count).map {
 
@@ -236,7 +221,7 @@ class PersonalCodesRemoteSource constructor(
             val codeKeyData = PersonalCodeKeyData(
                 signedOwnerKxPublicKey = cryptoCore.signData(
                     data = exchangeKeyPair.publicKey,
-                    myPrivateKey = myKey.privateKey
+                    myPrivateKey = signatureKeys.privateKey
                 ),
                 code = personalCode,
                 keyId = keyId
@@ -250,13 +235,14 @@ class PersonalCodesRemoteSource constructor(
             PersonalCodePreKeyData(
                 encryptedUserKeys = cryptoCore.encryptModel(
                     data = userKeys,
-                    key = userKeyRepo.personalKey()
+                    key = userKey.key
                 ),
                 encryptedCodeKeyData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(codeKeyData),
                     key = encryptionKey
                 ),
                 integrity = integrity,
+                userKeyVersion = userKey.version,
                 keyId = keyId
             )
         }

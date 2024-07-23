@@ -11,10 +11,12 @@ data class UserCryptoKeyRaw constructor(
     val encryptedSymmetricKey: String,
     val encryptedPrivateKey: String,
     val encryptedPublicKey: String,
+    val publicKey: String,
+    val oldMasterKeys: String?,
     val loginSalt: String,
     val loginAlg: String,
     val dataAlg: String,
-    val version: Long
+    val userKeyVersion: Long
 ) {
     companion object {
         @Suppress("UNCHECKED_CAST")
@@ -25,10 +27,12 @@ data class UserCryptoKeyRaw constructor(
                 encryptedSymmetricKey = map["encryptedSymmetricKey"] as String,
                 encryptedPrivateKey = map["encryptedPrivateKey"] as String,
                 encryptedPublicKey = map["encryptedPublicKey"] as String,
+                publicKey = map["publicKey"] as String,
+                oldMasterKeys = map["oldMasterKeys"] as? String?,
                 loginSalt = map["loginSalt"] as String,
                 loginAlg = map["loginAlg"] as String,
                 dataAlg = map["dataAlg"] as String,
-                version = (map["version"] as Number).toLong()
+                userKeyVersion = (map["userKeyVersion"] as Number).toLong()
             )
         }
     }

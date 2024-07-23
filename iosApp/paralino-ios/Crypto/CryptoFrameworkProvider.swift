@@ -13,11 +13,9 @@ import CryptoKit
 class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     let sodium: Sodium
-    let cryptoScheme: Int32
-    
-    init(cryptoScheme: Int32) {
+
+    init() {
         self.sodium = Sodium()
-        self.cryptoScheme = cryptoScheme
     }
     
     func execute<T>(action: () throws -> T?) -> Payload<T> {
@@ -61,20 +59,20 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
         }
     }
     
-    func createNewCryptoKeyPair() -> Payload<KeyPair> {
+    func createNewCryptoKeyPair() -> Payload<SimpleKeyPairData> {
         return execute {
             let keys = sodium.box.keyPair()
-            return KeyPair(
+            return SimpleKeyPairData(
                 privateKey: try keys!.secretKey.encodeWithCipherAlg(self),
                 publicKey: try keys!.publicKey.encodeWithCipherAlg(self)
             )
         }
     }
     
-    func createNewSignatureKeyPair() -> Payload<KeyPair> {
+    func createNewSignatureKeyPair() -> Payload<SimpleKeyPairData> {
         return execute {
             let keys = sodium.sign.keyPair()
-            return KeyPair(
+            return SimpleKeyPairData(
                 privateKey: try keys!.secretKey.encodeWithCipherAlg(self),
                 publicKey: try keys!.publicKey.encodeWithCipherAlg(self)
             )

@@ -1,13 +1,19 @@
 package app.paralino.core.crypto.user
 
+import app.paralino.core.crypto.SimpleKeyPairData
+import app.paralino.core.data.db.AppConfig
 import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.data.db.mapToOneOrNull
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
-import app.paralino.core.models.user.AsymmetricCryptoKeyData
-import app.paralino.core.data.db.AppConfig
-import app.paralino.core.data.db.mapToOneOrNull
-import kotlinx.coroutines.flow.*
+import app.paralino.core.models.user.SymmetricCryptoKeyData
+import app.paralino.core.utils.exceptions.MissingUserKeyException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 
 class UserCryptoKeyLocalDataSource constructor(
     private val userKeyMapper: UserKeyMapperCore,
@@ -15,13 +21,14 @@ class UserCryptoKeyLocalDataSource constructor(
     private val database: AppDatabaseHelper
 ) {
 
-    suspend fun getCachedUserKey(): String {
+    suspend fun getCachedUserKey(): SymmetricCryptoKeyData? {
         if(appConfig.sessionMasterKey.isBlank() || appConfig.encryptedUserMasterKey.isBlank())
-            return ""
+            return null
 
         return userKeyMapper.unwrapMasterKey(
             sessionMasterKey = appConfig.sessionMasterKey,
-            encryptedUserMasterKey = appConfig.encryptedUserMasterKey
+            encryptedUserMasterKey = appConfig.encryptedUserMasterKey,
+            keyVersion = appConfig.userMasterKeyVersion
         )
     }
 
@@ -29,6 +36,7 @@ class UserCryptoKeyLocalDataSource constructor(
         val keyData = userKeyMapper.wrapMasterKey(userMasterKey = decryptedMainKey)
         appConfig.sessionMasterKey = keyData.sessionKey
         appConfig.encryptedUserMasterKey = keyData.encryptedKey
+        appConfig.userMasterKeyVersion = key.userKeyVersion
 
         database.userKeysQueries.transaction {
             database.userKeysQueries.clearAll()
@@ -38,8 +46,13 @@ class UserCryptoKeyLocalDataSource constructor(
         }
     }
 
-    suspend fun getKeyPair(): AsymmetricCryptoKeyData? {
-        return getMyKey()?.let { userKeyMapper.mapKeyPair(it, getCachedUserKey()) }
+    suspend fun getKeyPair(): SimpleKeyPairData? {
+        return getMyKey()?.let {
+            userKeyMapper.mapKeyPair(
+                model = it,
+                userKey = getCachedUserKey()?.key ?: throw MissingUserKeyException(localCache = true)
+            )
+        }
     }
 
     suspend fun getMyKey(): UserCryptoKeyRaw? {
@@ -61,9 +74,9 @@ class UserCryptoKeyLocalDataSource constructor(
             .distinctUntilChanged()
             .map {
                 try {
-                    val userKey = getCachedUserKey()
-                    logg.v("User keys changed: master key valid (${userKey.isNotBlank()}), key data valid (${it != null})")
-                    userKeyMapper.mapKeyPair(it!!, userKey)
+                    val userKey = getCachedUserKey()?.key
+                    logg.v("User keys changed: master key valid (${userKey != null}), key data valid (${it != null})")
+                    userKeyMapper.mapKeyPair(it!!, userKey!!)
                     logg.v("User keys can be parsed and decrypted")
                     true
                 } catch (e: Exception) {
@@ -78,6 +91,7 @@ class UserCryptoKeyLocalDataSource constructor(
     suspend fun clearAllKeys() {
         appConfig.encryptedUserMasterKey = ""
         appConfig.sessionMasterKey = ""
+        appConfig.userMasterKeyVersion = 0
         database.userKeysQueries.transaction {
             database.userKeysQueries.clearAll()
         }

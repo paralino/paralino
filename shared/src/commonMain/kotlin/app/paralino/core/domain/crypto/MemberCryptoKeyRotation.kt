@@ -3,6 +3,7 @@ package app.paralino.core.domain.crypto
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
@@ -12,7 +13,6 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.UpdateOwnMemberPublicKeyPayload
-import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
@@ -85,7 +85,7 @@ class MemberCryptoKeyRotation(
     private suspend fun rotateMemberKeysForGroup(
         group: UserGroupWithMembers
     ) {
-        val myKey = userKeyRepo.latestKeyPair()
+        val myKey = userKeyRepo.signatureKeyPair()
         val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
         val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId, keyVersion = null)
 
@@ -99,6 +99,7 @@ class MemberCryptoKeyRotation(
 
         val member = group.members.filter { it.member.userId == config.userId }.firstOrNull()!!
 
+        val userKey = userKeyRepo.activePersonalKeyWithVersion()
         val groupIntegrity = GroupIntegrity(
             timeUtc = nowUTC().toString(),
             signature = GroupIntegrity.createSignature(
@@ -112,7 +113,7 @@ class MemberCryptoKeyRotation(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey()
+                key = userKey.key
             )
         }
 
@@ -123,6 +124,7 @@ class MemberCryptoKeyRotation(
         val payloadData = UpdateOwnMemberPublicKeyPayload(
             groupId = group.id,
             integrity = groupIntegrity,
+            userKeyVersion = userKey.version,
             memberData = cryptoCore.encryptDataWithKey(
                 BaseRemoteModule.formatter.encodeToString(member.member.memberData.data),
                 groupKey.key
@@ -142,7 +144,7 @@ class MemberCryptoKeyRotation(
                     privateKey = newExchangeKeys.privateKey,
                     publicKey = newExchangeKeys.publicKey
                 ),
-                key = userKeyRepo.personalKey()
+                key = userKey.key
             ),
             groupKeyVersion = groupKey.version,
             memberKeyVersionsToKeep = memberKeyVersionsToKeep

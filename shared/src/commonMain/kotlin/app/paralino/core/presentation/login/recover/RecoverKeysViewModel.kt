@@ -18,6 +18,8 @@ import app.paralino.core.utils.exceptions.MissingCryptoKeyException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class RecoverKeysViewModel(
     val logoutUseCase: LogoutUseCase,
@@ -41,44 +44,43 @@ class RecoverKeysViewModel(
     private var keys = listOf<UserCryptoKeyRaw>()
 
     init {
-        flow {
-            emit(recoverAccountUseCase.getUserKeys())
-        }
-            .mapToPayload { it }
-            .onEach { result ->
-                _uiState.update { uiState ->
-                    val masterAuthKey = config.temporaryMasterAuthKey
-                    if (masterAuthKey.isNotBlank()) {
-                        result.mapSuccess {
-                            keys = it
-                            RecoverKeysScreenState(
-                                canRecoverOldKey = it.isNotEmpty(),
-                                masterAuthKey = masterAuthKey
-                            )
-                        }
-                    } else {
-                        Payload.Error(MissingCryptoKeyException("Missing backup password"))
-                    }
-                }
+        coroutineScope.launch(Dispatchers.IO) {
+            val userKeys = try {
+                recoverAccountUseCase.getUserKeys()
+            } catch (e: Exception) {
+                showSnackbar(e.errorString())
+                emptyList()
             }
-            .onEach {
-                if (it is Payload.Error) {
-                    showSnackbar(it.exception.errorString())
-                }
-            }
-            .launchIn(coroutineScope)
-    }
 
+            _uiState.update { uiState ->
+                val masterAuthKey = config.temporaryMasterAuthKey
+                if (masterAuthKey.isNotBlank()) {
+                    keys = userKeys
+                    Payload.Success(
+                        RecoverKeysScreenState(
+                            canRecoverOldKey = userKeys.isNotEmpty(),
+                            masterAuthKey = masterAuthKey
+                        )
+                    )
+                } else {
+                    Payload.Error(MissingCryptoKeyException("Missing backup password"))
+                }
+            }
+        }
+    }
 
     private fun recoverAccount() {
         val validState = (_uiState.value as? Payload.Success)?.data ?: return
         val key = validState.recoverState.data
         if (validatePassword()) {
             if (validState.canRecoverOldKey && key != null) {
-                recoverAccountUseCase.recoverUserAccount(
-                    masterAuthKey = validState.masterAuthKey,
-                    key = key
-                )
+                flow {
+                    recoverAccountUseCase.recoverUserAccount(
+                        masterAuthKey = validState.masterAuthKey,
+                        key = key
+                    )
+                    emit(Unit)
+                }
                     .mapToPayload { it }
                     .onEach { result ->
 

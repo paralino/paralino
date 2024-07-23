@@ -32,7 +32,8 @@ class UserMapperLocal constructor(
             emailVerification = model.emailVerification,
             data = UserMeDataRaw(
                 userImage = model.user_data_userImage,
-                userName = model.user_data_userName
+                userName = model.user_data_userName,
+                userKeyVersion = model.user_data_userKeyVersion
             )
         )
     }
@@ -44,7 +45,8 @@ class UserMapperLocal constructor(
             registration = model.registration,
             emailVerification = model.emailVerification,
             user_data_userImage = model.data?.userImage,
-            user_data_userName = model.data?.userName
+            user_data_userName = model.data?.userName,
+            user_data_userKeyVersion = model.data?.userKeyVersion,
         )
     }
 
@@ -54,7 +56,8 @@ class UserMapperLocal constructor(
             ownerUserId = model.ownerUserId,
             resourceId = model.resourceId,
             resourceType = model.resourceType,
-            data_ = model.data
+            data_ = model.data,
+            userKeyVersion = model.userKeyVersion
         )
     }
 
@@ -64,7 +67,8 @@ class UserMapperLocal constructor(
             ownerUserId = model.ownerUserId,
             resourceId = model.resourceId,
             resourceType = model.resourceType,
-            data = model.data_
+            data = model.data_,
+            userKeyVersion = model.userKeyVersion
         )
     }
 

@@ -6,8 +6,8 @@ interface ICryptoServiceProvider : ICryptoHashProvider {
 
     fun createNewSymmetricKey(): String
     fun createNewSymmetricKeyForDerivation(): String
-    fun createNewCryptoKeyPair(): KeyPair
-    fun createNewSignatureKeyPair(): KeyPair
+    fun createNewCryptoKeyPair(): SimpleKeyPairData
+    fun createNewSignatureKeyPair(): SimpleKeyPairData
 
     suspend fun deriveKeyFromPassword(password: String, salt: String, alg: KDFAlg): String
 

@@ -1,10 +1,10 @@
 package app.paralino.core.crypto
 
-import app.paralino.core.models.user.SimpleKeyPairData
 import kotlinx.serialization.Serializable
 
 
-class KeyPair(
+@Serializable
+class SimpleKeyPairData(
     val privateKey: String,
     val publicKey: String
 )

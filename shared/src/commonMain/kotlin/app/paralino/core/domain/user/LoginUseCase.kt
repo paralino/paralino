@@ -95,7 +95,7 @@ class LoginUseCase constructor(
                         )
 
                         // check if keypair is valid by decrypting
-                        keyMapper.mapKeyPair(
+                        val signatureKeyPair = keyMapper.mapKeyPair(
                             model = it,
                             userKey = personalKeyData
                         )
@@ -103,6 +103,7 @@ class LoginUseCase constructor(
                         // key is valid
                         GeneratedUserKeys(
                             userPersonalKey = personalKeyData,
+                            signatureKeyPair = signatureKeyPair,
                             encryptedKeyData = it
                         )
                     } catch (e: Exception) {

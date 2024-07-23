@@ -14,21 +14,24 @@ data class UserMeRaw constructor(
 
 @Serializable
 data class UserMeDataRaw constructor(
-    var userImage: String? = null,
-    var userName: String? = null,
+    var userImage: String?,
+    var userName: String?,
+    var userKeyVersion: Long?
 ) {
     fun toPostJson(): Map<String, Any> {
         return mutableMapOf<String, Any>().apply {
             userImage?.let { put("userImage", it) }
             userName?.let { put("userName", it) }
+            userKeyVersion?.let { put("userKeyVersion", it) }
         }
     }
 
     companion object {
-        fun parseData(prefs: Map<String, Any>): UserMeDataRaw? {
+        fun parseData(prefs: Map<String, Any>): UserMeDataRaw {
             return UserMeDataRaw(
                 userImage = prefs["userImage"] as? String,
                 userName = prefs["userName"] as? String,
+                userKeyVersion = (prefs["userKeyVersion"] as? Number?)?.toLong(),
             )
         }
     }

@@ -53,7 +53,7 @@ import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
-import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
+import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
@@ -85,9 +85,7 @@ object KoinSetup {
         single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
         single { LogsDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
 
-//        single { CryptoFrameworkProvider() } bind ICryptoServiceProvider::class
-        single { CryptoFrameworkLibsodium(cryptoScheme = BuildKonfig.cryptoScheme) } bind ICryptoServiceProvider::class
-//        single { CryptoHashProvider() } bind ICryptoHashProvider::class
+        single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
 
         single<ICoroutineScopeProvider> { androidApplication() as AppClass }
         single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }
@@ -164,7 +162,7 @@ object KoinSetup {
         viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
         viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
-        viewModel { BlocklistVideModel(get()) }
+        viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
     }
 }

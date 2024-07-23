@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS groupDeviceIntegrityEntity (
 `id` TEXT NOT NULL PRIMARY KEY,
-`integrity` TEXT
+`integrity` TEXT,
+`userKeyVersion` INTEGER
 );
 
 createKey:

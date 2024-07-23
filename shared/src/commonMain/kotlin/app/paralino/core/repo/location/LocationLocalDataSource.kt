@@ -25,7 +25,10 @@ class LocationLocalDataSource(
                     settings_id = currentMember?.settings_id,
                     settings_groupId = currentMember?.settings_groupId,
                     settings_ownerUserId = currentMember?.settings_ownerUserId,
-                    settings_integrity = currentMember?.settings_integrity,
+                    settings_memberIntegrity = currentMember?.settings_memberIntegrity,
+                    settings_groupIntegrity = currentMember?.settings_groupIntegrity,
+                    settings_memberIntegrityUserKeyVersion = currentMember?.settings_memberIntegrityUserKeyVersion,
+                    settings_groupIntegrityUserKeyVersion = currentMember?.settings_groupIntegrityUserKeyVersion
                 )
                 database.memberQueries.create(newMember)
             }

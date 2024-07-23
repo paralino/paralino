@@ -36,7 +36,7 @@ import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
-import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
+import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
@@ -189,7 +189,7 @@ object KoinIOS {
                     rawPresentationType = rawDataType
                 )
             }
-            factory { BlocklistVideModel(get()) }
+            factory { BlocklistViewModel(get()) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get()) }
         }
     }
@@ -222,7 +222,7 @@ object KoinIOS {
         val changePasswordVM get() = get<ChangePasswordViewModel>()
         val convertAccountVM get() = get<ConvertAccountViewModel>()
         val personalCodeVM get() = get<PersonalCodeViewModel>()
-        val blocklistVM get() = get<BlocklistVideModel>()
+        val blocklistVM get() = get<BlocklistViewModel>()
         fun rawDataVM(type: RawPresentationDataType) =
             get<RawDataPresentationViewModel> { parametersOf(type) }
 

@@ -10,7 +10,8 @@ data class PersonalGroupKeyRaw(
     val ownerUserId: String,
     val encryptedUserKeys: String,
     val groupId: String,
-    val version: Long
+    val personalGroupKeyVersion: Long,
+    val userKeyVersion: Long
 ) {
 
     companion object {
@@ -20,7 +21,8 @@ data class PersonalGroupKeyRaw(
                 ownerUserId = map["ownerUserId"] as String,
                 encryptedUserKeys = map["encryptedUserKeys"] as String,
                 groupId = map["groupId"] as String,
-                version = (map["version"] as Number).toLong(),
+                personalGroupKeyVersion = (map["personalGroupKeyVersion"] as Number).toLong(),
+                userKeyVersion = (map["userKeyVersion"] as Number).toLong()
             )
         }
     }

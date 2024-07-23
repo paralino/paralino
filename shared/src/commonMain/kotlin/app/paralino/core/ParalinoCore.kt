@@ -198,7 +198,7 @@ val coreModule = module {
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get(), get()) }
     factory { ChangeCredentialsUseCase(get(), get(), get()) }
-    factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
+    factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
     factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), config) }
     factory { LocationRequestUseCase(get(), get()) }
@@ -242,7 +242,7 @@ val coreModule = module {
 
     single { CryptoCore(get()) }
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
-    single { CryptoUserKeyRepository(get(), get()) }
+    single { CryptoUserKeyRepository(get(), get(), get()) }
 
     single { PushNotificationHandler(get(), get(), get(), get(), config) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get(), get()) }

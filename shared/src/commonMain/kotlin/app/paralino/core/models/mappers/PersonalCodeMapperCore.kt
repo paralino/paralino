@@ -1,7 +1,6 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.PasswordHashingMode
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
@@ -63,7 +62,7 @@ class PersonalCodeMapperCore(
 
         val code = cryptoCore.decryptDataWithKey(
             data = model.encryptedCode,
-            key = userKeyRepo.personalKey()
+            key = userKeyRepo.personalKey(version = model.userKeyVersion).key
         )
 
         val derivedCode = cryptoCore.deriveParalinoIdMasterKeys(
@@ -80,7 +79,7 @@ class PersonalCodeMapperCore(
                     ).let {
                         BaseRemoteModule.formatter.decodeFromString<PersonalCodeUserData>(it)
                     }.takeIf {
-                        it.ownerIdentityKey == userKeyRepo.latestKeyPair().publicKey
+                        it.ownerIdentityKey == userKeyRepo.signatureKeyPair().publicKey
                     }!!
                 )
             } catch (e: Exception) {

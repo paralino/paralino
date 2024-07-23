@@ -41,6 +41,7 @@ class AppConfig(
 
         const val keyToken = "prefs.profile.token"
         const val keyUserKey = "prefs.user.masterKey"
+        const val keyUserKeyVersion = "prefs.user.masterKey.version"
         const val keySessionKey = "prefs.user.sessionKey"
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
@@ -128,6 +129,12 @@ class AppConfig(
         get() = provider.userSettings.getString(keyUserKey, "")
         set(value) {
             provider.userSettings.putString(keyUserKey, value)
+        }
+
+    var userMasterKeyVersion: Long
+        get() = provider.userSettings.getLong(keyUserKeyVersion, 0)
+        set(value) {
+            provider.userSettings.putLong(keyUserKeyVersion, value)
         }
 
     var sessionMasterKey: String

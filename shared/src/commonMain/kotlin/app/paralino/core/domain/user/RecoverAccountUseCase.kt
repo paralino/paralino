@@ -9,13 +9,10 @@ import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.DecryptionException
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 
 class RecoverAccountUseCase(
     private val userRepo: UserRepository,
@@ -23,6 +20,7 @@ class RecoverAccountUseCase(
     private val cryptoCore: CryptoCore,
     private val keyMapper: UserKeyMapperCore,
     private val logoutUseCase: LogoutUseCase,
+    private val changeCredential: ChangeCredentialsUseCase
 ) {
 
     suspend fun getCorrectUserKeyForPassword(
@@ -32,7 +30,6 @@ class RecoverAccountUseCase(
         return getCorrectUserKeyForPassword(
             keys = keys,
             userId = userRepo.cachedUserId,
-            userEmail = config.email,
             password = password
         )
     }
@@ -44,10 +41,8 @@ class RecoverAccountUseCase(
     suspend fun getCorrectUserKeyForPassword(
         keys: List<UserCryptoKeyRaw>,
         userId: String,
-        userEmail: String,
         password: String,
     ): GeneratedUserKeys? {
-
         val correctPersonalKey = keys.reversed().firstNotNullOfOrNull {
             try {
                 val authKey =
@@ -65,7 +60,7 @@ class RecoverAccountUseCase(
                 )
 
                 // check if keypair is valid by decrypting
-                keyMapper.mapKeyPair(
+                val signatureKeyPair = keyMapper.mapKeyPair(
                     model = it,
                     userKey = personalKeyData
                 )
@@ -73,6 +68,7 @@ class RecoverAccountUseCase(
                 // key is valid
                 GeneratedUserKeys(
                     userPersonalKey = personalKeyData,
+                    signatureKeyPair = signatureKeyPair,
                     encryptedKeyData = it
                 )
             } catch (e: Exception) {
@@ -98,52 +94,25 @@ class RecoverAccountUseCase(
             .onEach { config.temporaryMasterAuthKey = "" }
     }
 
-    fun recoverUserAccount(masterAuthKey: String, key: GeneratedUserKeys): Flow<Unit> {
-        return flow {
+    suspend fun recoverUserAccount(masterAuthKey: String, key: GeneratedUserKeys) {
 
-            // only re-encrypting symmetric key
-            // private asymmetric key is encrypted with symmetric key and keys don't change here
-            val dataKdfAlg = cryptoCore.getDefaultDataKDFAlg()
-            val authKey: UserAuthDerivedKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey)
-            val newEncryptedKey = try {
-                cryptoCore.encryptUserPersonalKey(
-                    userId = userRepo.cachedUserId,
-                    masterAuthKey = authKey.masterAuthKey,
-                    userPersonalKey = key.userPersonalKey,
-                    alg = dataKdfAlg
-                )
-            } catch (e: Exception) {
-                throw DecryptionException("Can't change encryption key", e)
+        // private asymmetric key is encrypted with symmetric key and keys don't change here
+        val authKey: UserAuthDerivedKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey)
+
+        changeCredential.changeCredentials(
+            userId = userRepo.cachedUserId,
+            oldKey = key,
+            oldMasterAuthKey = null,
+            newMasterAuthKey = authKey,
+            action = { _, _ -> }
+        )
+            .onEach {
+                if (it == ChangeCredentialsStep.DONE) {
+                    // at this point encryption keys are correct and updated and old keys are removed
+                    // we can remove temporary password
+                    config.temporaryMasterAuthKey = ""
+                }
             }
-
-            // change version
-            val newKey = key.encryptedKeyData.copy(
-                encryptedSymmetricKey = newEncryptedKey,
-                version = nowUTC().toEpochMilliseconds()
-            )
-
-            UserCryptoKeyRaw(
-                id = key.encryptedKeyData.id,
-                version = nowUTC().toEpochMilliseconds(),
-                ownerUserId = key.encryptedKeyData.ownerUserId,
-                encryptedSymmetricKey = newEncryptedKey,
-                encryptedPrivateKey = key.encryptedKeyData.encryptedPrivateKey,
-                encryptedPublicKey = key.encryptedKeyData.encryptedPublicKey,
-                loginSalt = key.encryptedKeyData.loginSalt,
-                loginAlg = BaseRemoteModule.formatter.encodeToString(key.encryptedKeyData.loginAlg),
-                dataAlg = BaseRemoteModule.formatter.encodeToString(dataKdfAlg)
-            )
-
-            // upload and save key
-            val remoteKey = userKeyRepo.uploadNewUserKey(newKey, removeOldKeys = true)
-            userKeyRepo.saveUserKeyLocally(remoteKey, key.userPersonalKey)
-
-            // at this point encryption keys are correct and updated and old keys are removed
-            // we can remove temporary password
-
-            config.temporaryMasterAuthKey = ""
-
-            emit(Unit)
-        }
+            .collect()
     }
 }
