@@ -13,11 +13,9 @@ import CryptoKit
 class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
     
     let sodium: Sodium
-    let cryptoScheme: Int32
-    
-    init(cryptoScheme: Int32) {
+
+    init() {
         self.sodium = Sodium()
-        self.cryptoScheme = cryptoScheme
     }
     
     func execute<T>(action: () throws -> T?) -> Payload<T> {

@@ -26,7 +26,7 @@ import io.viascom.nanoid.NanoId
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
-class CryptoFrameworkLibsodium(private val cryptoScheme: Int) : ICryptoServiceProvider {
+class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
     private val hexEncoder = HexMessageEncoder()
     private val base64Encoder = object : MessageEncoder {
