@@ -60,7 +60,7 @@ class AppAccountStateMonitor constructor(
                         }
 
                         userKeyRepo.userKeyState().firstOrNull() != true -> {
-                            if (config.temporaryBackupPassword.isNotBlank()) {
+                            if (config.temporaryMasterAuthKey.isNotBlank()) {
                                 logg.tag("account_state")
                                     .v("Key is not valid but backup password is active")
                                 Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
@@ -84,7 +84,7 @@ class AppAccountStateMonitor constructor(
                                 }
                             } catch (e: Exception) {
                                 logg.e("Error decrypting user", e)
-                                if (config.temporaryBackupPassword.isNotBlank()) {
+                                if (config.temporaryMasterAuthKey.isNotBlank()) {
                                     logg.tag("account_state").v("User needs to reset account")
                                     Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                                 } else {
@@ -140,6 +140,9 @@ class AppAccountStateMonitor constructor(
                         refreshEverything.refreshEverything(forceGroupRefresh = true)
                         config.didEverFullyRefreshData = true
                     }
+                } else if (it.data is AppAccountState.NO_PROFILE) {
+                    logg.tag("account_state").v("${it.data} - Refresh user and profile")
+                    userRepo.refreshUserMaybe()
                 } else if (!everHadUser && it.data is AppAccountState.NO_USER) {
                     logg.tag("account_state")
                         .v("${it.data} - try to logout (${config.wasUserLoggedIn})")

@@ -1,5 +1,6 @@
 *.iml
-.gradle
+.gradle/
+.kotlin/
 /local.properties
 /.idea
 .DS_Store
@@ -9,8 +10,11 @@
 .cxx
 androidApp/schemas/
 user.properties
+
 local_resources/
+
 appwrite-android/
+lazysodium-android/
 
 androidApp/src/devGoogle/res/values/fcm_config.xml
 androidApp/src/directGoogle/res/values/fcm_config.xml
@@ -19,3 +23,5 @@ androidApp/src/playStore/res/values/fcm_config.xml
 androidApp/proguard-merged-config.txt
 
 paralinoTestKey
+
+androidApp/playStoreGoogle/release/

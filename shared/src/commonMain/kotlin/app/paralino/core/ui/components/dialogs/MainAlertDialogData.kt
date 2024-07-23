@@ -56,6 +56,22 @@ sealed interface MainAlertDialog {
         return resource.localizedString()
     }
 
+    object ComingSoon : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_comingSoon_title),
+            message = stringResource(resource = MR.strings.alert_comingSoon_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_cool),
+                    color = AlertDialogButtonData.positiveColor
+                )
+            ),
+        )
+    }
+
     object Logout : MainAlertDialog {
         override val key: String = this::class.simpleName ?: "dialog"
         override val dialogData: AlertDialogData = AlertDialogData(

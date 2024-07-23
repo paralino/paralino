@@ -55,6 +55,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import org.jetbrains.compose.resources.DrawableResource
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -62,11 +63,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun LargeSeekbarSwitch(
     modifier: Modifier = Modifier,
     icon: Painter?,
+    state: LargeSeekbarSwitchState.SeekbarSwitchState,
     title: String,
     description: String? = null,
     titleStyle: TextStyle = MaterialTheme.typography.body2,
     focusDescription: Boolean = false,
-    state: LargeSeekbarSwitchState.SeekbarSwitchState,
+    elevation: Dp = 16.dp,
     size: LargeSwitchSize = LargeSwitchSize(),
     onProgressChange: ((Int) -> Unit)? = null,
     onStateChange: ((Boolean) -> Unit)? = null,
@@ -87,7 +89,7 @@ fun LargeSeekbarSwitch(
                     this.clickable { onStateChange?.invoke(!state.switchState.checkState) }
                 else this
             }
-            .shadow(elevation = 16.dp, shape = RoundedCornerShape(12.dp), spotColor = Color.DarkGray)
+            .shadow(elevation = elevation, shape = RoundedCornerShape(12.dp), spotColor = Color.DarkGray)
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
     ) {
@@ -317,8 +319,8 @@ fun rememberSeekbarState(
 object LargeSeekbarSwitchState {
     data class Switch(
         val checkState: Boolean,
-        val checkedIconRes: String = CoreAppIcons.CheckCircle,
-        val unCheckedIconRes: String = CoreAppIcons.RadioButtonUnchecked
+        val checkedIconRes: DrawableResource = CoreAppIcons.CheckCircle,
+        val unCheckedIconRes: DrawableResource = CoreAppIcons.RadioButtonUnchecked
     )
 
     data class Seekbar(

@@ -6,6 +6,8 @@ import app.paralino.core.repo.api.BaseFunctionsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import io.appwrite.enums.ExecutionMethod
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
 class FunctionsApi constructor(
     private val remoteModule: AppWriteRemoteModule,
@@ -26,6 +28,11 @@ class FunctionsApi constructor(
     }
 
     override suspend fun runAndWait(function: ServerFunction, data: String?): FunctionExecutionRaw {
+
+        if (!function.useSdk) {
+            return executeFunction(function, data)
+        }
+
         return remoteModule.execute {
             val execution = functions.createExecution(
                 functionId = function.functionId,

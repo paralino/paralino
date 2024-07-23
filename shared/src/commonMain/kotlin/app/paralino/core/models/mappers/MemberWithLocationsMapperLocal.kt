@@ -40,14 +40,17 @@ class MemberWithLocationsMapperLocal(
                 model.settings_id,
                 model.settings_groupId,
                 model.settings_ownerUserId,
-                model.settings_integrity
-            ) { id, groupId, userId, integrity ->
+                model.settings_memberIntegrity,
+                model.settings_memberIntegrityUserKeyVersion
+            ) { id, groupId, userId, memberIntegrity, memberIntegrityUserKeyVersion ->
                 GroupSettingsRaw(
                     id = id,
                     groupId = groupId,
                     ownerUserId = userId,
-                    integrity = integrity,
-                    groupOwnerIntegrity = model.settings_groupOwnerIntegrity
+                    memberIntegrity = memberIntegrity,
+                    groupIntegrity = model.settings_groupIntegrity,
+                    memberIntegrityUserKeyVersion = memberIntegrityUserKeyVersion,
+                    groupIntegrityUserKeyVersion = model.settings_groupIntegrityUserKeyVersion
                 )
             },
             locationIds = memberLocations.map { it.id }
@@ -100,8 +103,10 @@ class MemberWithLocationsMapperLocal(
             settings_id = model.settingsRaw?.id,
             settings_groupId = model.settingsRaw?.groupId,
             settings_ownerUserId = model.settingsRaw?.ownerUserId,
-            settings_integrity = model.settingsRaw?.integrity,
-            settings_groupOwnerIntegrity = model.settingsRaw?.groupOwnerIntegrity,
+            settings_memberIntegrity = model.settingsRaw?.memberIntegrity,
+            settings_groupIntegrity = model.settingsRaw?.groupIntegrity,
+            settings_memberIntegrityUserKeyVersion = model.settingsRaw?.memberIntegrityUserKeyVersion,
+            settings_groupIntegrityUserKeyVersion = model.settingsRaw?.groupIntegrityUserKeyVersion,
             data_ = model.data,
             paralinoId = model.paralinoId,
         )

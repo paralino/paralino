@@ -65,7 +65,7 @@ internal fun rememberMapViewWithLifecycle(
     val mapView = remember(context, darkMode, satellite) {
         val option = ResourceOptionsManager.getDefault(
             context,
-            BuildKonfig.mapboxAccessToken
+            app.paralino.android.BuildConfig.mapboxAccessToken
         ).resourceOptions
         MapView(
             context,

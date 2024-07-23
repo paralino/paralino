@@ -31,7 +31,7 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileScreenStat
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
@@ -47,7 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun EditProfileScreen(
     appState: CoreUiState,
     vm: EditProfileViewModel,
-    onBottomSheetAction: (BottomSheetsScreen) -> Unit,
+    onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
     onExit: () -> Unit
 ) {
 
@@ -70,7 +70,7 @@ fun EditProfileScreen(
     EditProfileScreen(
         state = uiState,
         onImageClick = {
-            onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.userEmojis))
+            onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.userEmojis))
         },
         onNameChange = { vm.onNameChange(it) },
         onCreateGroupClick = { vm.proceed() }

@@ -15,7 +15,7 @@ struct SharingStartScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState: ViewModelFactoryIOS<SharingStartViewModel>
     
-    @State var bottomSheet: BottomSheetsScreen.GroupPicker? = nil
+    @State var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     let notificationPermissionHandler = NotificationPermissionHandler()
     
     var body: some View {

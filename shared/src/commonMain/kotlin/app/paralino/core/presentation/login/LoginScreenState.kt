@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.login
 
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 
 data class LoginScreenState constructor(
@@ -36,13 +37,8 @@ sealed class LoginScreenEvent {
 }
 
 sealed class LoginScreenUiEvent {
-    data object HideDialog: LoginScreenUiEvent()
-    data object RecoverGuestAccount: LoginScreenUiEvent()
-    data object DismissGuestAccount: LoginScreenUiEvent()
-    data object DismissGuestAccountConfirm: LoginScreenUiEvent()
-    data object DismissGuestAccountCancel: LoginScreenUiEvent()
-    data object LoginOrSignup: LoginScreenUiEvent()
-    data object ConfirmLoginOrSignup: LoginScreenUiEvent()
+    data object LoginOrSignup : LoginScreenUiEvent()
+    data class DialogAction(val action: AlertDialogAction) : LoginScreenUiEvent()
 }
 
 sealed interface SignUpStepInfo {

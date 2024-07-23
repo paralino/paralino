@@ -9,8 +9,10 @@ data class GroupSettingsRaw(
     val id: String,
     val ownerUserId: String,
     val groupId: String,
-    val integrity: String,
-    val groupOwnerIntegrity: String?,
+    val memberIntegrity: String,
+    val groupIntegrity: String?,
+    val memberIntegrityUserKeyVersion: Long,
+    val groupIntegrityUserKeyVersion: Long?
 ) {
 
     companion object {
@@ -19,8 +21,10 @@ data class GroupSettingsRaw(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 groupId = map["groupId"] as String,
-                integrity = map["integrity"] as String,
-                groupOwnerIntegrity = map["groupOwnerIntegrity"] as? String?,
+                memberIntegrity = map["memberIntegrity"] as String,
+                groupIntegrity = map["groupIntegrity"] as? String?,
+                memberIntegrityUserKeyVersion = (map["memberIntegrityUserKeyVersion"] as Number).toLong(),
+                groupIntegrityUserKeyVersion = (map["groupIntegrityUserKeyVersion"] as? Number)?.toLong()
             )
         }
     }

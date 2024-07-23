@@ -2,6 +2,7 @@ package app.paralino.core.repo.user
 
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.EncodingType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.user.UserSessionMonitor
@@ -11,6 +12,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
+import app.paralino.core.models.raw.LoginDetailsRaw
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.BlocklistModel
@@ -122,19 +124,19 @@ class UserRepository constructor(
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
         updateLocalUser(userMeRaw)
         config.deviceId = cryptoCore.hashProvider.computeHash(
-            "${userMeRaw.id}${config.deviceIdSeed}",
-            HashType.SHA256
+            data = "${userMeRaw.id}${config.deviceIdSeed}",
+            type = HashType.GENERIC_256,
+            encodingType = EncodingType.BASE64_URL
         )
         config.sessionId = userSession.id
         config.emailConfirmed = true
         sessionMonitor.updateSessionState(state = UserSessionState.OK)
     }
 
-    fun updateUserEmail(newEmail: String, password: String): Flow<Unit> {
-        return getDataOnce(
-            remote = { remote.updateEmail(newEmail, password) },
-            localUpdate = { updateLocalUser(it) }
-        ).map { Unit }
+    suspend fun updateUserEmail(newEmail: String, password: String) {
+        triggerRemoteOnly {
+            remote.updateEmail(newEmail, password)
+        }.also { updateLocalUser(it) }
     }
 
     suspend fun changePassword(oldPassword: String, newPassword: String) {
@@ -264,5 +266,9 @@ class UserRepository constructor(
 
     suspend fun resetAccount(keyToPersist: UserCryptoKeyRaw?) {
         triggerRemoteOnly { remote.resetAccount(keyToPersist) }
+    }
+
+    suspend fun getLoginDetails(key: String): LoginDetailsRaw {
+        return triggerRemoteOnly { remote.getLoginDetails(key) }
     }
 }

@@ -34,6 +34,7 @@ data class UserPersonalCode constructor(
 
 @Serializable
 data class UserPersonalCodeData constructor(
+    val codeKeyId: String,
     val userData: PersonalCodeUserData,
     val keyData: PersonalCodeKeyData
 ) {

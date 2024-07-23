@@ -1,34 +1,19 @@
+
 plugins {
-    //trick: for the same plugin versions in all sub-modules
-    id("com.android.application").version("8.3.1").apply(false)
-    id("com.android.library").version("8.3.1").apply(false)
-    id("org.jetbrains.compose").version("1.6.2").apply(false)
-    id("com.mikepenz.aboutlibraries.plugin").version("10.5.1").apply(false)
-    id("app.cash.sqldelight").version("2.0.1").apply(false)
-    id("dev.icerock.mobile.multiplatform-resources").version("0.23.0").apply(false)
-    id("com.codingfeline.buildkonfig").version("0.15.1").apply(false)
-    kotlin("android").version("1.9.23").apply(false)
-    kotlin("multiplatform").version("1.9.23").apply(false)
-    kotlin("plugin.serialization").version("1.9.23").apply(false)
+    // Use the plugin versions from the version catalog
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+
+    alias(libs.plugins.compose) apply false
+    alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.aboutlibraries) apply false
+    alias(libs.plugins.sqldelight) apply false
+    alias(libs.plugins.moko.resources) apply false
+    alias(libs.plugins.buildkonfig) apply false
 }
-
-// region kotlinx atomicfu error
-
-// at some point build failed with new version
-// remove this after fix and if build works without workaround
-// https://slack-chats.kotlinlang.org/t/12093271/hi-folks-i-am-trying-to-run-the-kmm-compose-multiplatform-pr#1aebb3a5-2e7e-4dd6-973c-f5763e1559a3
-//buildscript {
-//    dependencies {
-//        // Use the same version in the error
-//        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.17.3")
-//    }
-//}
-//
-//allprojects {
-//    apply(plugin = "kotlinx-atomicfu")
-//}
-
-// endregion
 
 allprojects {
     repositories {

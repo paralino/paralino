@@ -2,13 +2,12 @@ package app.paralino.core.presentation.login.recover
 
 import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.models.Resource
-import app.paralino.core.presentation.common.FormValidationResult
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 
 data class RecoverKeysScreenState constructor(
     val canRecoverOldKey: Boolean = false,
     val recoverState: Resource<GeneratedUserKeys?> = Resource.NotInitialized,
-    val backupPassword: String = "",
+    val masterAuthKey: String = "",
     val oldPassword: String = "",
     val hasOldPasswordError: Boolean = false,
     val logoutLoading: Boolean? = null,

@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS personalGroupKeyEntity (
 `ownerUserId` TEXT NOT NULL,
 `encryptedUserKeys` TEXT NOT NULL,
 `groupId` TEXT NOT NULL,
-`version` INTEGER NOT NULL
+`personalGroupKeyVersion` INTEGER NOT NULL,
+`userKeyVersion` INTEGER NOT NULL
 );
 
 createKey:

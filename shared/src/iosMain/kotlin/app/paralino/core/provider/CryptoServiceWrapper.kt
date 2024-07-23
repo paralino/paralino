@@ -1,16 +1,18 @@
 package app.paralino.core.provider
 
 import app.paralino.core.crypto.AlphabetType
+import app.paralino.core.crypto.EncodingType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoServiceProvider
-import app.paralino.core.crypto.KeyPair
+import app.paralino.core.crypto.KDFAlg
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.getOrThrow
 
 class CryptoServiceWrapperIOS(
     private val cryptoIOS: ICryptoServiceProviderIOS
-): ICryptoServiceProvider {
+) : ICryptoServiceProvider {
 
     override fun createRandomId(length: Int, alphabet: AlphabetType): String {
         return cryptoIOS.createRandomId(length, alphabet).getOrThrow()
@@ -20,12 +22,29 @@ class CryptoServiceWrapperIOS(
         return cryptoIOS.createNewSymmetricKey().getOrThrow()
     }
 
-    override fun createNewCryptoKeyPair(): KeyPair {
+    override fun createNewSymmetricKeyForDerivation(): String {
+        return cryptoIOS.createNewSymmetricKeyForDerivation().getOrThrow()
+    }
+
+    override fun createNewCryptoKeyPair(): SimpleKeyPairData {
         return cryptoIOS.createNewCryptoKeyPair().getOrThrow()
     }
 
-    override fun createNewSignatureKeyPair(): KeyPair {
+    override fun createNewSignatureKeyPair(): SimpleKeyPairData {
         return cryptoIOS.createNewSignatureKeyPair().getOrThrow()
+    }
+
+    override suspend fun deriveKeyFromPassword(
+        password: String,
+        salt: String,
+        alg: KDFAlg
+    ): String {
+        return cryptoIOS.deriveKeyFromPassword(password = password, salt = salt, alg = alg)
+            .getOrThrow()
+    }
+
+    override fun deriveSymmetricKey(key: String, derivedKeyId: Long, context: String): String {
+        return cryptoIOS.deriveSymmetricKey(key, derivedKeyId, context).getOrThrow()
     }
 
     override fun encryptDataWithSymmetricKey(data: String, key: String): String {
@@ -37,19 +56,6 @@ class CryptoServiceWrapperIOS(
             cryptoIOS.decryptDataWithSymmetricKey(data, key).getOrThrow()
         } catch (e: Exception) {
             logg.i("Error with decryptDataWithSymmetricKey: ${e.message}")
-            throw e
-        }
-    }
-
-    override fun encryptDataWithPassword(data: String, password: String, context: String): String {
-        return cryptoIOS.encryptDataWithPassword(data, password, context).getOrThrow()
-    }
-
-    override fun decryptDataWithPassword(data: String, password: String, context: String): String {
-        return try {
-            cryptoIOS.decryptDataWithPassword(data, password, context).getOrThrow()
-        } catch (e: Exception) {
-            logg.i("Error with decryptDataWithPassword: ${e.message}")
             throw e
         }
     }
@@ -82,20 +88,22 @@ class CryptoServiceWrapperIOS(
         }
     }
 
-    override fun computeHash(data: String, type: HashType): String {
-        return cryptoIOS.computeHash(data, type).getOrThrow()
+    override fun computeHash(data: String, type: HashType, encodingType: EncodingType): String {
+        return cryptoIOS.computeHash(data, type, encodingType).getOrThrow()
     }
 }
 
 interface ICryptoServiceProviderIOS {
     fun createRandomId(length: Int, alphabet: AlphabetType): Payload<String>
     fun createNewSymmetricKey(): Payload<String>
-    fun createNewCryptoKeyPair(): Payload<KeyPair>
-    fun createNewSignatureKeyPair(): Payload<KeyPair>
+    fun createNewSymmetricKeyForDerivation(): Payload<String>
+    fun createNewCryptoKeyPair(): Payload<SimpleKeyPairData>
+    fun createNewSignatureKeyPair(): Payload<SimpleKeyPairData>
     fun encryptDataWithSymmetricKey(data: String, key: String): Payload<String>
     fun decryptDataWithSymmetricKey(data: String, key: String): Payload<String>
-    fun encryptDataWithPassword(data: String, password: String, context: String): Payload<String>
-    fun decryptDataWithPassword(data: String, password: String, context: String): Payload<String>
+
+    fun deriveSymmetricKey(key: String, derivedKeyId: Long, context: String): Payload<String>
+    suspend fun deriveKeyFromPassword(password: String, salt: String, alg: KDFAlg): Payload<String>
 
     fun encryptDataWithKeyPair(
         data: String,
@@ -107,9 +115,9 @@ interface ICryptoServiceProviderIOS {
         data: String,
         myPrivateKey: String,
         publicKey: String
-    ): Payload<String> 
+    ): Payload<String>
 
     fun signData(data: String, myPrivateKey: String): Payload<String>
     fun verifySignature(data: String, publicKey: String): Payload<String>
-    fun computeHash(data: String, type: HashType): Payload<String> 
+    fun computeHash(data: String, type: HashType, encodingType: EncodingType): Payload<String>
 }

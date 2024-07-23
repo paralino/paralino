@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.groups
 
+import app.paralino.core.BuildKonfig
 import app.paralino.core.config
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
@@ -102,8 +103,7 @@ class GroupDetailViewModel(
                                 ?.let {
                                     MemberActionItemState(MemberActionType.UNBLOCK_USER)
                                 },
-                            // TODO remove when on production
-                            securityAction = true
+                            securityAction = BuildKonfig.hasPreviewFeatures
                         ),
                         allowShowingDevices = true,
                         lastLocationPing = valueFormatter.getLastLocationPing(member),
@@ -150,7 +150,8 @@ class GroupDetailViewModel(
                 image = group.image,
                 sharingStatus = sharingState,
                 members = members,
-                memberLimit = membersLimit,
+                membersLimit = membersLimit,
+                canShowMembersLimit = group.isCurrentUserOwner,
                 errors = errors
             )
         }
@@ -250,8 +251,8 @@ class GroupDetailViewModel(
     fun tryAddMember() {
         val state = _uiState.value.data ?: return
         coroutineScope.launch {
-            if (state.members.size >= state.memberLimit)
-                _eventChannel.send(GroupDetailScreenEvent.GroupMembersLimitReached(state.memberLimit))
+            if (state.members.size >= state.membersLimit)
+                _eventChannel.send(GroupDetailScreenEvent.GroupMembersLimitReached(state.membersLimit))
             else
                 _eventChannel.send(GroupDetailScreenEvent.GroupMemberAdd)
         }

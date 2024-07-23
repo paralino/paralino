@@ -11,7 +11,6 @@ import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.DecryptionException
-import kotlinx.serialization.decodeFromString
 
 class PersonalCodeMapperCore(
     private val cryptoCore: CryptoCore,
@@ -25,20 +24,21 @@ class PersonalCodeMapperCore(
         userId: String
     ): UserPersonalCodeData {
 
-        val derivedCode = cryptoCore.derivePassword(code)
-
-        val userData = cryptoCore.decryptDataWithSimplePassword(
-            data = encryptedUserData,
-            password = derivedCode.backupPassword,
+        val derivedCode = cryptoCore.deriveParalinoIdMasterKeys(
+            code = code,
             userId = userId
+        )
+
+        val userData = cryptoCore.decryptDataWithKey(
+            data = encryptedUserData,
+            key = derivedCode.backupPassword
         ).let {
             BaseRemoteModule.formatter.decodeFromString<PersonalCodeUserData>(it)
         }
 
-        val keyData = cryptoCore.decryptDataWithSimplePassword(
+        val keyData = cryptoCore.decryptDataWithKey(
             data = encryptedKeyData,
-            password = derivedCode.backupPassword,
-            userId = userId
+            key = derivedCode.backupPassword
         ).let {
             BaseRemoteModule.formatter.decodeFromString<PersonalCodeKeyData>(it)
         }
@@ -52,6 +52,7 @@ class PersonalCodeMapperCore(
         ) ?: throw DecryptionException("User personal code can not be verified")
 
         return UserPersonalCodeData(
+            codeKeyId = derivedCode.loginPassword,
             userData = userData,
             keyData = keyData
         )
@@ -61,22 +62,24 @@ class PersonalCodeMapperCore(
 
         val code = cryptoCore.decryptDataWithKey(
             data = model.encryptedCode,
-            key = userKeyRepo.personalKey()
+            key = userKeyRepo.personalKey(version = model.userKeyVersion).key
         )
 
-        val derivedCode = cryptoCore.derivePassword(code)
+        val derivedCode = cryptoCore.deriveParalinoIdMasterKeys(
+            code = code,
+            userId = model.ownerUserId
+        )
 
         val userData = if (!model.encryptedCodeUserData.isNullOrBlank()) {
             try {
                 CryptoResource.Ready(
-                    cryptoCore.decryptDataWithSimplePassword(
+                    cryptoCore.decryptDataWithKey(
                         data = model.encryptedCodeUserData,
-                        password = derivedCode.backupPassword,
-                        userId = model.ownerUserId
+                        key = derivedCode.backupPassword
                     ).let {
                         BaseRemoteModule.formatter.decodeFromString<PersonalCodeUserData>(it)
                     }.takeIf {
-                        it.ownerIdentityKey == userKeyRepo.latestKeyPair().publicKey
+                        it.ownerIdentityKey == userKeyRepo.signatureKeyPair().publicKey
                     }!!
                 )
             } catch (e: Exception) {

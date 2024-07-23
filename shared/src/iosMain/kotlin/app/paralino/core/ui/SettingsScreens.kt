@@ -7,12 +7,12 @@ import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
-import app.paralino.core.presentation.settings.blocklist.BlocklistVideModel
+import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.invite.manage.PersonalCodeScreenCore
 import app.paralino.core.ui.settings.AppStatusDebugScreenCore
 import app.paralino.core.ui.settings.BlocklistScreenCore
@@ -90,7 +90,7 @@ object SettingsScreens {
 
     fun EditProfileScreenVC(
         vm: EditProfileViewModel,
-        onBottomSheetAction: (BottomSheetsScreen) -> Unit,
+        onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
         onExit: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -104,7 +104,7 @@ object SettingsScreens {
     }
 
     fun BlocklistScreenVC(
-        vm: BlocklistVideModel
+        vm: BlocklistViewModel
     ) = ComposeUIViewController {
         RootScreenIOS {
             BlocklistScreenCore(

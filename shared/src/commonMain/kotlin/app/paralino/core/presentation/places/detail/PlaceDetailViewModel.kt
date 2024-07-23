@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.places.detail
 
+import app.paralino.core.BuildKonfig
 import app.paralino.core.config
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
@@ -45,22 +46,26 @@ class PlaceDetailViewModel(
             placeFlow.update { Resource.Ready(place) }
             groupFlow.update { Resource.Ready(group) }
 
-            val settings = group.members.map { member ->
-                val memberSetting =
-                    place.settings?.alertData?.firstOrNull { it.memberUserId == member.member.userId }
-                PlaceSettingsState(
-                    groupId = groupId,
-                    placeId = placeId,
-                    memberUserId = member.member.userId,
-                    name = member.member.name,
-                    image = member.member.image ?: ImageModel.emoji(Emojis.robot),
-                    // default to true for other members and false to current user
-                    notifyEnter = memberSetting?.enter ?: (member.member.userId != config.userId),
-                    notifyExit = memberSetting?.exit ?: (member.member.userId != config.userId),
-                    loadingEnter = false,
-                    loadingExit = false
-                )
-            }.sortedSettings()
+            val settings = if (BuildKonfig.hasPreviewFeatures) {
+                group.members.map { member ->
+                    val memberSetting =
+                        place.settings?.alertData?.firstOrNull { it.memberUserId == member.member.userId }
+                    PlaceSettingsState(
+                        groupId = groupId,
+                        placeId = placeId,
+                        memberUserId = member.member.userId,
+                        name = member.member.name,
+                        image = member.member.image ?: ImageModel.emoji(Emojis.robot),
+                        // default to true for other members and false to current user
+                        notifyEnter = memberSetting?.enter ?: (member.member.userId != config.userId),
+                        notifyExit = memberSetting?.exit ?: (member.member.userId != config.userId),
+                        loadingEnter = false,
+                        loadingExit = false
+                    )
+                }.sortedSettings()
+            } else {
+                emptyList()
+            }
 
             PlaceDetailScreenState(
                 groupId = groupId,

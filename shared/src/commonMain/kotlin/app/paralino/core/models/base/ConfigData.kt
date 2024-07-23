@@ -1,5 +1,6 @@
 package app.paralino.core.models.base
 
+import app.paralino.core.BuildKonfig
 import app.paralino.core.data.db.ConfigNodeEntity
 import app.paralino.core.logg
 import app.paralino.core.utils.BaseRemoteModule
@@ -17,6 +18,9 @@ data class ConfigData(
     val emailEnabled: Boolean = false,
     val plans: List<PlanConfig> = emptyList()
 ) {
+
+    val isEmailEnabled: Boolean get() = BuildKonfig.hasPreviewFeatures && emailEnabled
+
     companion object {
         fun init(nodes: List<ConfigNodeEntity>): ConfigData {
             val map = nodes.associateBy { it.id }.mapValues { it.value.value_ }

@@ -2,6 +2,7 @@ package app.paralino.core.domain.group
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
+import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
@@ -12,7 +13,6 @@ import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.location.MemberModelParalinoIdData
 import app.paralino.core.models.raw.CreateGroupPayload
-import app.paralino.core.models.user.SimpleKeyPairData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
@@ -80,7 +80,7 @@ class GroupCreateUseCase(
         val user = userRepository.cachedUser!!
         val userData = user.data!!
         val myData = MemberModelData(userData.userName, userData.userImage)
-        val myIdentityKeys = userKeyRepo.latestKeyPair()
+        val myIdentityKeys = userKeyRepo.signatureKeyPair()
 
         val exchangeKeyPair = cryptoCore.getNewCryptoKeyPair()
 
@@ -105,7 +105,7 @@ class GroupCreateUseCase(
         val groupData = UserGroupData(name, image, UserGroup.groupPrivateGroupId)
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
             data = myIdentityKeys.publicKey,
-            type = HashType.SHA256
+            type = HashType.GENERIC_256
         )
 
         val memberVerification = cryptoCore.signData(
@@ -113,13 +113,14 @@ class GroupCreateUseCase(
             myPrivateKey = myIdentityKeys.privateKey,
         )
 
+        val userKey = userKeyRepo.activePersonalKeyWithVersion()
         val groupIntegrity = GroupIntegrity(
             timeUtc = nowUTC().toString(),
             signature = GroupIntegrity.createSignature(
                 hashProvider = cryptoCore.hashProvider,
                 serverIntegrity = cryptoCore.hashProvider.computeHash(
                     data = user.id,
-                    type = HashType.SHA256
+                    type = HashType.GENERIC_256
                 ),
                 memberVerifications = listOf(memberVerification),
                 encryptedMemberPublicKeys = listOf(signedPublicKey)
@@ -127,7 +128,7 @@ class GroupCreateUseCase(
         ).let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = userKeyRepo.personalKey()
+                key = userKey.key
             )
         }
 
@@ -142,13 +143,18 @@ class GroupCreateUseCase(
                 key = groupKey
             ),
             groupMemberIntegrity = groupIntegrity,
+            userKeyVersion = userKey.version,
+            serverIntegrity = cryptoCore.hashProvider.computeHash(
+                data = user.id,
+                type = HashType.GENERIC_256
+            ),
             keyId = cryptoCore.hashProvider.computeHash(
                 data = exchangeKeyPair.publicKey,
-                type = HashType.SHA256
+                type = HashType.GENERIC_256
             ),
             encryptedUserKeys = cryptoCore.encryptModel(
                 data = userKeys,
-                key = userKeyRepo.personalKey()
+                key = userKey.key
             ),
             memberVerification = memberVerification,
             memberData = cryptoCore.encryptDataWithKey(

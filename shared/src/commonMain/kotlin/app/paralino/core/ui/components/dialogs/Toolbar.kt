@@ -8,31 +8,61 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 
 @Composable
 fun DefaultToolbar(
-    title: String?,
+    modifier: Modifier = Modifier,
+    titleComposable: (@Composable () -> Unit)?,
+    elevation: Dp = 4.dp,
     navigationIcon: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
+        modifier = modifier,
         backgroundColor = MaterialTheme.colors.background,
-        elevation = 4.dp,
+        elevation = elevation,
         title = {
-            if (title != null) {
+            if (titleComposable != null) {
+                ProvideTextStyle(value = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)) {
+                    titleComposable()
+                }
+            }
+        },
+        navigationIcon = navigationIcon,
+        actions = actions
+    )
+}
+
+@Composable
+fun DefaultToolbar(
+    modifier: Modifier = Modifier,
+    title: String?,
+    elevation: Dp = 4.dp,
+    navigationIcon: (@Composable () -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    DefaultToolbar(
+        modifier = modifier,
+        elevation = elevation,
+        titleComposable = if (title != null) {
+            @Composable {
                 Text(
                     text = title,
                     fontWeight = FontWeight.Bold
                 )
             }
+        } else {
+            null
         },
         navigationIcon = navigationIcon,
         actions = actions

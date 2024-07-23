@@ -218,7 +218,8 @@ fun GroupDetailScreenCore(
                                     contentDescription = null
                                 )
                             },
-                            backgroundColor = MaterialTheme.colors.primary,
+                            backgroundColor = MaterialTheme.colors.onError,
+                            contentColor = MaterialTheme.colors.onPrimary,
                             elevation = FloatingActionButtonDefaults.elevation(
                                 2.dp, 4.dp, 3.dp, 3.dp
                             ),
@@ -314,7 +315,11 @@ fun GroupDetailScreenCore(
                             Spacer(modifier = Modifier.size(8.dp))
                             PlanLimitCount(
                                 count = state.data.members.size,
-                                limit = state.data.memberLimit
+                                limit = if (state.data.canShowMembersLimit) {
+                                    state.data.membersLimit
+                                } else {
+                                    null
+                                }
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             if (state.data.canEdit) {

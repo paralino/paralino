@@ -13,7 +13,7 @@ struct MapHomeScreen: View {
     
     @Binding var path: [NavigationGraph]
     @StateObject var mapState: MapHomeState
-    @State var groupPicker: BottomSheetsScreen.GroupPicker? = nil
+    @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
     var body: some View {
         ZStack {
@@ -41,7 +41,7 @@ struct MapHomeScreen: View {
                             }
                         },
                         onGroupPickerClick: {
-                            groupPicker = BottomSheetsScreen.GroupPicker(groups: mapState.vm.getAllGroups())
+                            groupPicker = BottomSheetPickerTypeGroupPickerBottomSheet(groups: mapState.vm.getAllGroups())
                         },
                         onGroupDetailsClick: {
                             if let groupId = mapState.uiState.asReady()?.groupId {

@@ -19,6 +19,7 @@ class PersonalCodeMapperLocal(
             ownerUserId = model.ownerUserId,
             encryptedCode = model.encryptedCode,
             encryptedCodeUserData = model.encryptedCodeUserData,
+            userKeyVersion = model.userKeyVersion
         )
     }
 
@@ -29,7 +30,7 @@ class PersonalCodeMapperLocal(
             ownerUserId = model.ownerUserId,
             encryptedCode = model.encryptedCode,
             encryptedCodeUserData = model.encryptedCodeUserData,
+            userKeyVersion = model.userKeyVersion
         )
     }
-
 }

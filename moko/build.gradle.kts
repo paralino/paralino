@@ -1,7 +1,7 @@
 plugins {
-    kotlin("multiplatform")
-    id("com.android.library")
-    id("dev.icerock.mobile.multiplatform-resources")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.moko.resources)
 }
 
 kotlin {
@@ -25,30 +25,9 @@ kotlin {
     }
 
     sourceSets {
-
-        all {
-            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
-        }
-
-        val commonMain by getting {
-            dependencies {
-                api("dev.icerock.moko:resources:0.23.0")
-                api("dev.icerock.moko:resources-compose:0.23.0")
-            }
-        }
-
-        val androidMain by getting {
-            dependsOn(commonMain)
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
+        commonMain.dependencies {
+            api(libs.moko.resources)
+            api(libs.moko.resources.compose)
         }
     }
 }
@@ -70,10 +49,8 @@ android {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "app.paralino.core"
-    multiplatformResourcesClassName = "MokoResources"
-    multiplatformResourcesVisibility = dev.icerock.gradle.MRVisibility.Public
-    iosBaseLocalizationRegion = "en"
-    multiplatformResourcesSourceSet = "commonMain"
-    disableStaticFrameworkWarning = true
+    resourcesPackage.set("app.paralino.core")
+    resourcesClassName.set("MokoResources")
+    resourcesVisibility.set(dev.icerock.gradle.MRVisibility.Public)
+    iosBaseLocalizationRegion.set("en")
 }

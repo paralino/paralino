@@ -1,1 +1,0 @@
-ALTER TABLE groupKeysEntity ADD COLUMN ownerUserId TEXT DEFAULT "" NOT NULL;

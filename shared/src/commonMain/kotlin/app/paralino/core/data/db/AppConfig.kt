@@ -41,6 +41,7 @@ class AppConfig(
 
         const val keyToken = "prefs.profile.token"
         const val keyUserKey = "prefs.user.masterKey"
+        const val keyUserKeyVersion = "prefs.user.masterKey.version"
         const val keySessionKey = "prefs.user.sessionKey"
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
@@ -58,6 +59,7 @@ class AppConfig(
         const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
         const val keyWasUserLoggedIn = "prefs.device.hadUser"
         const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
+        const val keyErrorReporting = "prefs.user.errorReporting"
     }
 
     val isTokenValid: Boolean
@@ -105,7 +107,7 @@ class AppConfig(
             provider.userSettings.putBoolean(keyEmailConfirmed, value)
         }
 
-    var temporaryBackupPassword: String
+    var temporaryMasterAuthKey: String
         get() = provider.userSettings.getString(keyTempPassword, "")
         set(value) {
             provider.userSettings.putString(keyTempPassword, value)
@@ -127,6 +129,12 @@ class AppConfig(
         get() = provider.userSettings.getString(keyUserKey, "")
         set(value) {
             provider.userSettings.putString(keyUserKey, value)
+        }
+
+    var userMasterKeyVersion: Long
+        get() = provider.userSettings.getLong(keyUserKeyVersion, 0)
+        set(value) {
+            provider.userSettings.putLong(keyUserKeyVersion, value)
         }
 
     var sessionMasterKey: String
@@ -179,6 +187,12 @@ class AppConfig(
         get() = provider.userSettings.getBoolean(keyDidEverFullyRefreshed, false)
         set(value) {
             provider.userSettings.putBoolean(keyDidEverFullyRefreshed, value)
+        }
+
+    var errorReporting: Boolean
+        get() = provider.userSettings.getBoolean(keyErrorReporting, true)
+        set(value) {
+            provider.userSettings.putBoolean(keyErrorReporting, value)
         }
 
     fun hasGuestAccount(): Boolean {

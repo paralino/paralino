@@ -37,9 +37,12 @@ import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import paralino.shared.generated.resources.Res
+import paralino.shared.generated.resources.ic_launcher_foreground
+import paralino.shared.generated.resources.ic_login
+import paralino.shared.generated.resources.paralino_start_background
 
 @Composable
 fun WelcomeScreen(
@@ -66,7 +69,7 @@ fun WelcomeScreen(
         Surface(color = MaterialTheme.colors.background) {
 
             Image(
-                painter = painterResource(resource = DrawableResource("drawable/paralino_start_background.jpg")),
+                painter = painterResource(resource = Res.drawable.paralino_start_background),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier.fillMaxSize()
@@ -95,7 +98,7 @@ fun WelcomeScreen(
                 Spacer(Modifier.weight(1f))
 
                 Image(
-                    painter = painterResource(resource = DrawableResource("drawable/ic_launcher_foreground.xml")),
+                    painter = painterResource(resource = Res.drawable.ic_launcher_foreground),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
@@ -118,7 +121,7 @@ fun WelcomeScreen(
                     onClick = onStartClick
                 ) {
                     Icon(
-                        painterResource(resource = DrawableResource("drawable/ic_login.xml")),
+                        painterResource(resource = Res.drawable.ic_login),
                         contentDescription = null
                     )
                     Spacer(Modifier.size(8.dp))

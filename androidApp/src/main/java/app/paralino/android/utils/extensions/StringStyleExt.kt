@@ -55,7 +55,7 @@ fun Context.attributedBold(@StringRes res: Int, extraSpans: List<SpanContainer> 
 fun String.attributedBold(context: Context, extraSpans: List<SpanContainer> = listOf()): SpannableString {
     val ranges = this.splitRanges("**")
     val cleanString = this.replace("**", "")
-    val typeface = MR.fonts.font_montserrat.semibold.getTypeface(context) ?: return SpannableString("")
+    val typeface = MR.fonts.font_montserrat_semibold.getTypeface(context) ?: return SpannableString("")
     val spannableString = SpannableString(cleanString)
     ranges.forEach { range ->
         spannableString.setSpan(

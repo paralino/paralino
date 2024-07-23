@@ -846,7 +846,7 @@ class MapHomeViewModel constructor(
         val limit = userRepository.userPlans.value.highestPlan?.plan?.groupsLimitOverride?.toInt()
             ?: userRepository.userPlans.value.highestPlanConfig.groupsLimit
         coroutineScope.launch {
-            if (getAllGroups().size >= limit) {
+            if (getAllGroups().filter { it.isCurrentUserOwner }.size >= limit) {
                 updateReadyState {
                     it.copy(
                         alertDialog = MainAlertDialog.PlanLimit(

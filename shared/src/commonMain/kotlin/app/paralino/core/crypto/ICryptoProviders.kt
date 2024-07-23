@@ -1,18 +1,24 @@
 package app.paralino.core.crypto
 
-interface ICryptoServiceProvider: ICryptoHashProvider {
+interface ICryptoServiceProvider : ICryptoHashProvider {
 
     fun createRandomId(length: Int, alphabet: AlphabetType): String
 
     fun createNewSymmetricKey(): String
-    fun createNewCryptoKeyPair(): KeyPair
-    fun createNewSignatureKeyPair(): KeyPair
+    fun createNewSymmetricKeyForDerivation(): String
+    fun createNewCryptoKeyPair(): SimpleKeyPairData
+    fun createNewSignatureKeyPair(): SimpleKeyPairData
+
+    suspend fun deriveKeyFromPassword(password: String, salt: String, alg: KDFAlg): String
+
+    /**
+     * @param derivedKeyId Index or specific id that belongs to derived key.
+     * @param context The context for derived key. Exactly 8 bytes.
+     */
+    fun deriveSymmetricKey(key: String, derivedKeyId: Long, context: String): String
 
     fun encryptDataWithSymmetricKey(data: String, key: String): String
     fun decryptDataWithSymmetricKey(data: String, key: String): String
-
-    fun encryptDataWithPassword(data: String, password: String, context: String): String
-    fun decryptDataWithPassword(data: String, password: String, context: String): String
 
     fun encryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String
     fun decryptDataWithKeyPair(data: String, myPrivateKey: String, publicKey: String): String
@@ -22,15 +28,9 @@ interface ICryptoServiceProvider: ICryptoHashProvider {
 }
 
 interface ICryptoHashProvider {
-    fun computeHash(data: String, type: HashType): String
-}
-
-enum class AlphabetType(val alphabet: String) {
-    SAFE(alphabet = "3456789ABCDEFGHJKLMNPQRTUWYZ"),
-    EXTENDED(alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-}
-
-enum class HashType {
-    SHA256,
-    SHA512
+    fun computeHash(
+        data: String,
+        type: HashType,
+        encodingType: EncodingType = EncodingType.HEX
+    ): String
 }

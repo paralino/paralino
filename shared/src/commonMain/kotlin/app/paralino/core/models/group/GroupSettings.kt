@@ -7,6 +7,8 @@ data class GroupSettings(
     val id: String,
     val ownerUserId: String,
     val groupId: String,
-    val integrity: String,
-    val groupOwnerIntegrity: String?,
+    val memberIntegrity: String,
+    val groupIntegrity: String?,
+    val memberIntegrityUserKeyVersion: Long,
+    val groupIntegrityUserKeyVersion: Long?
 )

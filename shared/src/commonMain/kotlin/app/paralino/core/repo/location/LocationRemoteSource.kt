@@ -4,7 +4,6 @@ import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.location.MemberGroupId
@@ -66,24 +65,8 @@ class LocationRemoteSource constructor(
         }
     }
 
-    suspend fun saveCurrentLocation(
-        ids: List<MemberGroupId>,
-    ) {
-        blocking {
-            ids.forEach {
-                try {
-                    saveCurrentLocation(it)
-                } catch (e: Exception) {
-                    logg.w("location_service", "Error saving location for group ${it.groupId}", e)
-                }
-            }
-        }
-    }
-
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
-    suspend fun saveCurrentLocation(
-        data: MemberGroupId,
-    ) {
+    suspend fun saveCurrentLocation(data: MemberGroupId): MemberLocationRaw {
         val memberKey = cryptoKEKRepo.getMemberSenderKey(
             groupId = data.groupId,
             memberUserId = config.userId,
@@ -110,12 +93,12 @@ class LocationRemoteSource constructor(
             "deviceKeyVersion" to memberKey.deviceKeyVersion,
         ).filter { it.value != null }
 
-        documentApi.updateDocument(
+        return documentApi.updateDocument(
             databaseType = BackendDatabaseType.DATA,
             collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
             docId = data.locationId,
             data = payload
-        )
+        ).let { MemberLocationRaw.from(it) }
     }
 
     suspend fun getMember(memberId: String): MemberWithLocationsRaw {

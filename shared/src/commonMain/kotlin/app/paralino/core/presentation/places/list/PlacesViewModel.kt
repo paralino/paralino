@@ -50,13 +50,20 @@ class PlacesViewModel(
                 emptyList()
             }
 
+            val placesLimit = group.placesLimitOverride?.toInt()
+                ?: appConfigRepo.configState.value.planConfigForPlanType(group.planType).placesLimit
             val state = PlacesListScreenState(
                 groupId = groupId,
                 groupImage = group.image,
                 groupName = group.name,
-                placesLimit = group.placesLimitOverride?.toInt()
-                    ?: appConfigRepo.configState.value.planConfigForPlanType(group.planType).placesLimit,
+                placesLimit = placesLimit,
                 places = placesState,
+                canShowPlacesLimit = if (group.isCurrentUserOwner) {
+                    true
+                } else {
+                    // only show places limit to other members if close to limit
+                    placesState.size >= placesLimit.minus(2)
+                },
                 errors = errors
             )
             state

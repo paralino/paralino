@@ -2,8 +2,6 @@ package app.paralino.core.crypto
 
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.extensions.blocking
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.encodeToString
 
 class CryptoCore(
@@ -19,54 +17,84 @@ class CryptoCore(
         return serviceProvider.createNewSymmetricKey()
     }
 
-    fun getNewCryptoKeyPair(): KeyPair {
+    fun getNewSymmetricKeyForLocationData(): String {
+        return serviceProvider.createNewSymmetricKeyForDerivation()
+    }
+
+    fun getNewCryptoKeyPair(): SimpleKeyPairData {
         return serviceProvider.createNewCryptoKeyPair()
     }
 
     suspend fun generateNewKeysForUser(
-        backupPassword: String,
+        authKey: UserAuthDerivedKey,
+        userId: String
+    ): GeneratedUserKeys {
+        val newSignatureKeyPair = serviceProvider.createNewSignatureKeyPair()
+        return changeUserMasterKey(
+            userId = userId,
+            signatureKeyPair = newSignatureKeyPair,
+            authKey = authKey
+        )
+    }
+
+    suspend fun changeUserMasterKey(
         userId: String,
-        keyVersion: Long = nowUTC().toEpochMilliseconds(),
+        signatureKeyPair: SimpleKeyPairData,
+        authKey: UserAuthDerivedKey,
     ): GeneratedUserKeys {
         val newPersonalKey = getNewSymmetricKey()
-        val encryptedPersonalKey = serviceProvider.encryptDataWithPassword(
+        val dataKDF = getDefaultDataKDFAlg()
+
+        val masterKey = deriveUserMasterKey(
+            userId = userId,
+            masterAuthKey = authKey.masterAuthKey,
+            alg = dataKDF
+        )
+        val encryptedPersonalKey = encryptDataWithKey(
             data = newPersonalKey,
-            password = backupPassword,
-            context = userId
+            key = masterKey
         )
 
-        val newSignatureKeyPair = serviceProvider.createNewSignatureKeyPair()
         val encryptedPrivateIdentityKey = encryptDataWithKey(
-            data = newSignatureKeyPair.privateKey,
+            data = signatureKeyPair.privateKey,
             key = newPersonalKey
         )
         val encryptedPublicIdentityKey = encryptDataWithKey(
-            data = newSignatureKeyPair.publicKey,
+            data = signatureKeyPair.publicKey,
             key = newPersonalKey
         )
 
         val encryptedKeyData = UserCryptoKeyRaw(
+            // id & version are not used in this case so they can be empty values
             "",
+            userKeyVersion = 0,
             ownerUserId = userId,
             encryptedSymmetricKey = encryptedPersonalKey,
             encryptedPrivateKey = encryptedPrivateIdentityKey,
             encryptedPublicKey = encryptedPublicIdentityKey,
-            version = keyVersion
+            publicKey = signatureKeyPair.publicKey,
+            oldMasterKeys = null,
+            loginSalt = authKey.loginSalt,
+            loginAlg = BaseRemoteModule.formatter.encodeToString(authKey.kdfAlg),
+            dataAlg = BaseRemoteModule.formatter.encodeToString(dataKDF),
         )
 
-        val keys = GeneratedUserKeys(newPersonalKey, encryptedKeyData)
+        val keys = GeneratedUserKeys(
+            userPersonalKey = newPersonalKey,
+            signatureKeyPair = signatureKeyPair,
+            encryptedKeyData = encryptedKeyData
+        )
 
-        verifyKeys(keys, newSignatureKeyPair, backupPassword, userId)
+        verifyKeys(keys = keys, identityKeyPair = signatureKeyPair, key = masterKey)
 
         return keys
     }
 
-    private suspend fun verifyKeys(keys: GeneratedUserKeys, identityKeyPair: KeyPair, password: String, userId: String) {
+    private suspend fun verifyKeys(keys: GeneratedUserKeys, identityKeyPair: SimpleKeyPairData, key: String) {
         check(
-            serviceProvider.decryptDataWithPassword(
+            decryptDataWithKey(
                 data = keys.encryptedKeyData.encryptedSymmetricKey,
-                password = password,
-                context = userId
+                key = key
             ).contentEquals(keys.userPersonalKey)
         )
         check(
@@ -85,92 +113,90 @@ class CryptoCore(
 
     suspend fun verifyUserKeysChange(
         oldKey: UserCryptoKeyRaw,
-        oldPassword: String,
         newKey: UserCryptoKeyRaw,
-        newPassword: String,
-        userPersonalKey: String
+        oldMasterAuthKey: String,
+        newMasterAuthKey: String,
+        oldMasterKey: String,
+        newMasterKey: String
     ) {
         check(
-            serviceProvider.decryptDataWithPassword(
-                data = oldKey.encryptedSymmetricKey,
-                password = oldPassword,
-                context = oldKey.ownerUserId
-            ).contentEquals(userPersonalKey)
-        )
+            decryptUserPersonalKey(
+                masterAuthKey = oldMasterAuthKey,
+                userId = oldKey.ownerUserId,
+                encryptedMasterKey = oldKey.encryptedSymmetricKey,
+                alg = BaseRemoteModule.formatter.decodeFromString(oldKey.dataAlg)
+            ).contentEquals(oldMasterKey)
+        ) { "Old key does not match" }
 
         check(
-            serviceProvider.decryptDataWithPassword(
-                data = newKey.encryptedSymmetricKey,
-                password = newPassword,
-                context = newKey.ownerUserId
-            ).contentEquals(userPersonalKey)
-        )
+            decryptUserPersonalKey(
+                masterAuthKey = newMasterAuthKey,
+                userId = newKey.ownerUserId,
+                encryptedMasterKey = newKey.encryptedSymmetricKey,
+                alg = BaseRemoteModule.formatter.decodeFromString(newKey.dataAlg)
+            ).contentEquals(newMasterKey)
+        ) { "New key does not match" }
 
         check(
             decryptDataWithKey(
                 data = oldKey.encryptedPrivateKey,
-                key = userPersonalKey
+                key = oldMasterKey
             ).contentEquals(
                 decryptDataWithKey(
                     data = newKey.encryptedPrivateKey,
-                    key = userPersonalKey
+                    key = newMasterKey
                 )
             )
-        )
+        ) { "Private key does not match" }
 
         check(
             decryptDataWithKey(
                 data = oldKey.encryptedPublicKey,
-                key = userPersonalKey
+                key = oldMasterKey
             ).contentEquals(
                 decryptDataWithKey(
                     data = newKey.encryptedPublicKey,
-                    key = userPersonalKey
+                    key = newMasterKey
                 )
             )
+        ) { "Public key does not match" }
+
+        check(oldKey.publicKey == newKey.publicKey) {
+            "Public key does not match"
+        }
+    }
+
+    suspend fun encryptUserPersonalKey(
+        userId: String,
+        masterAuthKey: String,
+        userPersonalKey: String,
+        alg: KDFAlg
+    ): String {
+        val masterKey = deriveUserMasterKey(
+            userId = userId,
+            masterAuthKey = masterAuthKey,
+            alg = alg
+        )
+        return encryptDataWithKey(
+            data = userPersonalKey,
+            key = masterKey
         )
     }
 
-    suspend fun reEncryptSymmetricKey(
-        oldBackupPassword: String,
-        newBackupPassword: String,
+    suspend fun decryptUserPersonalKey(
+        masterAuthKey: String,
         userId: String,
-        encryptedKey: String,
+        encryptedMasterKey: String,
+        alg: KDFAlg
     ): String {
-        return blocking {
-            val userKey = serviceProvider.decryptDataWithPassword(
-                data = encryptedKey,
-                password = oldBackupPassword,
-                context = userId
-            )
-
-            reEncryptSymmetricKey(newBackupPassword, userId, userKey)
-        }
-    }
-
-    suspend fun reEncryptSymmetricKey(
-        backupPassword: String,
-        userId: String,
-        userKey: String,
-    ): String {
-        return blocking {
-            serviceProvider.encryptDataWithPassword(
-                data = userKey,
-                password = backupPassword,
-                context = userId
-            )
-        }
-    }
-
-    suspend fun signIn(
-        password: String,
-        userId: String,
-        keyData: String,
-    ): String {
-        return serviceProvider.decryptDataWithPassword(
-            data = keyData,
-            password = password,
-            context = userId
+        val masterKey = deriveUserMasterKey(
+            userId = userId,
+            masterAuthKey = masterAuthKey,
+            alg = alg
+        )
+        return decryptDataWithKey(
+            data = encryptedMasterKey,
+            key = masterKey
         )
     }
 
@@ -182,22 +208,6 @@ class CryptoCore(
         return serviceProvider.encryptDataWithSymmetricKey(
             data = data,
             key = key
-        )
-    }
-
-    suspend fun encryptDataWithSimplePassword(data: String, password: String, userId: String): String {
-        return serviceProvider.encryptDataWithPassword(
-            data = data,
-            password = password,
-            context= userId
-        )
-    }
-
-    suspend fun decryptDataWithSimplePassword(data: String, password: String, userId: String): String {
-        return serviceProvider.decryptDataWithPassword(
-            data = data,
-            password = password,
-            context= userId
         )
     }
 
@@ -232,7 +242,11 @@ class CryptoCore(
         )
     }
 
-    suspend fun decryptKeyWithKeyPair(key: String, myPrivateKey: String, publicKey: String): String {
+    suspend fun decryptKeyWithKeyPair(
+        key: String,
+        myPrivateKey: String,
+        publicKey: String
+    ): String {
         return decryptDataWithKeyPair(
             data = key,
             myPrivateKey = myPrivateKey,
@@ -248,20 +262,111 @@ class CryptoCore(
         return serviceProvider.verifySignature(data, publicKey)
     }
 
-    fun derivePassword(password: String): DerivedPasswords {
+    suspend fun deriveParalinoIdAuthKey(code: String): String {
+        val masterKey = serviceProvider.deriveKeyFromPassword(
+            password = code,
+            // using hardcoded, plain text salt here since code is the only input
+            salt = "Fleur_de_sel",
+            alg = getKDFAlg(mode = PasswordHashingMode.FAST)
+        )
 
-        val passwordHash = hashProvider.computeHash(password, HashType.SHA256)
-        val sourceHash = hashProvider.computeHash(passwordHash, HashType.SHA512)
-
-        return DerivedPasswords(
-            loginPassword = sourceHash.slice(0 until (sourceHash.length / 2)),
-            backupPassword = sourceHash.slice((sourceHash.length / 2) until sourceHash.length)
+        return serviceProvider.computeHash(
+            data = masterKey,
+            type = HashType.GENERIC_256,
+            encodingType = EncodingType.BASE64_URL
         )
     }
 
+    suspend fun deriveParalinoIdMasterKeys(
+        code: String,
+        userId: String
+    ): DerivedPasswords {
+
+        val authKey = deriveParalinoIdAuthKey(code = code)
+        val masterKey = serviceProvider.deriveKeyFromPassword(
+            password = code,
+            salt = userId,
+            alg = getKDFAlg(mode = PasswordHashingMode.FAST)
+        )
+
+        return DerivedPasswords(
+            loginPassword = authKey,
+            backupPassword = masterKey
+        )
+    }
+
+    suspend fun deriveUserAuthKey(
+        salt: String,
+        password: String,
+        alg: KDFAlg
+    ): UserAuthDerivedKey {
+        val masterAuthKey = serviceProvider.deriveKeyFromPassword(
+            password = password,
+            salt = salt,
+            alg = alg
+        )
+
+        val loginKey = serviceProvider.deriveSymmetricKey(
+            key = masterAuthKey,
+            derivedKeyId = 0,
+            context = "prlnauth"
+        )
+
+        return UserAuthDerivedKey(
+            masterAuthKey = masterAuthKey,
+            loginKey = loginKey,
+            loginSalt = salt,
+            kdfAlg = alg
+        )
+    }
+
+    private suspend fun deriveUserMasterKey(
+        userId: String,
+        masterAuthKey: String,
+        alg: KDFAlg
+    ): String {
+        val masterSeedKey = serviceProvider.deriveKeyFromPassword(
+            password = masterAuthKey,
+            salt = userId,
+            alg = alg
+        )
+
+        return serviceProvider.deriveSymmetricKey(
+            key = masterSeedKey,
+            derivedKeyId = 1,
+            context = "prlndata"
+        )
+    }
+
+    fun getDefaultLoginKDFAlg(): KDFAlg {
+        return getKDFAlg(mode = PasswordHashingMode.NORMAL)
+    }
+
+    fun getDefaultDataKDFAlg(): KDFAlg {
+        return getKDFAlg(mode = PasswordHashingMode.SLOW)
+    }
+
+    private fun getKDFAlg(mode: PasswordHashingMode): KDFAlg {
+        return KDFAlg(
+            encoding = EncodingType.BASE64_URL.key,
+            kdf = KDFType.ARGON2ID.key,
+            memoryMb = when(mode) {
+                PasswordHashingMode.FAST -> 32L
+                PasswordHashingMode.NORMAL -> 64L
+                PasswordHashingMode.SLOW -> 128L
+            },
+            rounds = when(mode) {
+                PasswordHashingMode.FAST -> 2
+                PasswordHashingMode.NORMAL -> 3
+                PasswordHashingMode.SLOW -> 5
+            },
+            keyBytes = 32
+        )
+    }
 }
 
 class GeneratedUserKeys(
     val userPersonalKey: String,
+    val signatureKeyPair: SimpleKeyPairData,
     val encryptedKeyData: UserCryptoKeyRaw,
 )

@@ -1,20 +1,22 @@
 package app.paralino.android.ui.groups
 
 import android.annotation.SuppressLint
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.CreateGroupViewModel
+import app.paralino.core.ui.components.EmojiBottomSheetPicker
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.rememberEmojiBottomSheetPickerState
 import app.paralino.core.ui.groups.GroupCreateScreenCore
-import app.paralino.core.utils.extensions.safeCast
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun GroupCreateScreen(
@@ -22,6 +24,9 @@ fun GroupCreateScreen(
     groupId: String?,
     vm: CreateGroupViewModel = getViewModel { parametersOf(groupId) },
 ) {
+
+    val pickerState = rememberEmojiBottomSheetPickerState()
+
     Scaffold(
         topBar = {
             DefaultToolbar(
@@ -35,10 +40,7 @@ fun GroupCreateScreen(
             vm = vm,
             onBottomSheetAction = {
                 appState.uiScope.launch {
-                    appState.showBottomSheetForResult(it)
-                        .safeCast<ImageModel>()?.let {
-                            vm.updateImage(it)
-                        }
+                    pickerState.show(it.emojis)
                 }
             },
             groupUpdated = { newGroupId ->
@@ -54,4 +56,12 @@ fun GroupCreateScreen(
             }
         )
     }
+
+    EmojiBottomSheetPicker(
+        state = pickerState,
+        onClick = {
+            vm.updateImage(it)
+            appState.uiScope.launch { pickerState.hide() }
+        }
+    )
 }

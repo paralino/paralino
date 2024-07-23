@@ -11,7 +11,7 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenState
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.settings.profile.EditProfileScreen
@@ -22,7 +22,7 @@ import dev.icerock.moko.resources.compose.stringResource
 fun ProfileSetupScreenCore(
     appState: CoreUiState,
     vm: EditProfileViewModel,
-    onBottomSheetAction: (BottomSheetsScreen) -> Unit,
+    onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
@@ -37,7 +37,7 @@ fun ProfileSetupScreenCore(
         )
         EditProfileScreen(
             state = uiState,
-            onImageClick = { onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.userEmojis)) },
+            onImageClick = { onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.userEmojis)) },
             onNameChange = { vm.onNameChange(it) },
             onCreateGroupClick = { vm.proceed() }
         )

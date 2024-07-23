@@ -4,6 +4,7 @@ import app.paralino.core.config
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
+import app.paralino.core.crypto.UserAuthDerivedKey
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserMeRaw
@@ -12,12 +13,17 @@ import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.UnauthorizedException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.encodeToString
 
 class CreateAccountUseCase constructor(
     private val userRepo: UserRepository,
@@ -27,7 +33,12 @@ class CreateAccountUseCase constructor(
 ) {
 
     fun signUpAsGuest(): Flow<SignUpStep> {
-        val email = "${cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)}${UserMe.guestUserEmail}"
+        val email = "${
+            cryptoCore.randomId(
+                length = 32,
+                alphabet = AlphabetType.EXTENDED
+            )
+        }${UserMe.guestUserEmail}"
         val password = cryptoCore.getNewSymmetricKey()
         return signUp(email, password)
             .onEach {
@@ -45,28 +56,36 @@ class CreateAccountUseCase constructor(
         return flow {
 
             emit(SignUpStep.STARTING)
-            val derivedPasswords = cryptoCore.derivePassword(password)
+            val loginAlg = cryptoCore.getDefaultLoginKDFAlg()
+            val authKey = cryptoCore.deriveUserAuthKey(
+                salt = cryptoCore.randomId(
+                    length = 32,
+                    alphabet = AlphabetType.EXTENDED
+                ),
+                password = password,
+                alg = loginAlg
+            )
             val user: UserMeRaw
             val session: UserSession
 
             try {
-                delay(500)
-
                 // test encryption before proceeding
-                createNewKey(derivedPasswords.backupPassword, userId = email)
+                createNewKey(userId = email, authKey = authKey)
 
-                user = userRepo.remoteSignUp(email, derivedPasswords.loginPassword)
+                user = userRepo.remoteSignUp(email = email, password = authKey.loginKey)
 
                 session = try {
-                    userRepo.login(email, derivedPasswords.loginPassword)
+                    userRepo.login(email = email, password = authKey.loginKey)
                 } catch (e: Exception) {
                     if (e is UnauthorizedException && e.type == UserSessionMonitor.existingSessionError) {
                         logg.w("login", "Cleanup any ghost session")
 
-                        try { logoutUseCase.fullLogout(logoutLocallyOnError = true) }
-                        catch (e: Exception) { }
+                        try {
+                            logoutUseCase.fullLogout(logoutLocallyOnError = true)
+                        } catch (e: Exception) {
+                        }
 
-                        userRepo.login(email, derivedPasswords.loginPassword)
+                        userRepo.login(email = email, password = authKey.loginKey)
                     } else {
                         throw e
                     }
@@ -78,16 +97,19 @@ class CreateAccountUseCase constructor(
             // user is created at server and have a valid session
 
             emit(SignUpStep.GENERATING_KEYS)
+
             try {
-                delay(500)
-                initAndSaveUserKeys(derivedPasswords.backupPassword, user.id)
+                val keys = createNewKey(userId = user.id, authKey = authKey)
+                val remoteKey = userKeyRepository.uploadNewUserKey(keys.encryptedKeyData)
+                userKeyRepository.saveUserKeyLocally(remoteKey, keys.userPersonalKey)
             } catch (e: Exception) {
                 userKeyRepository.clearAll()
                 // key generation failed but user is created
                 // we are saving user as is, so account recovery can take place later on
-                config.temporaryBackupPassword = derivedPasswords.backupPassword
+                config.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
                 userRepo.initLocallyAfterSignUp(user, session)
-                throw e
+
+                throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
             }
 
             // user and user keys are ready
@@ -102,22 +124,15 @@ class CreateAccountUseCase constructor(
                 logg.e("Error signing up", it)
                 throw it
             }
+            .flowOn(Dispatchers.IO)
     }
 
-    private suspend fun initAndSaveUserKeys(backupPassword: String, userId: String) {
-        try {
-            val keys = createNewKey(backupPassword, userId)
-            val remoteKey = userKeyRepository.uploadNewUserKey(keys.encryptedKeyData)
-            userKeyRepository.saveUserKeyLocally(remoteKey, keys.userPersonalKey)
-        } catch (e: Exception) {
-            userKeyRepository.clearAll()
-            throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
-        }
-    }
-
-    private suspend fun createNewKey(backupPassword: String, userId: String): GeneratedUserKeys {
+    private suspend fun createNewKey(
+        userId: String,
+        authKey: UserAuthDerivedKey
+    ): GeneratedUserKeys {
         return cryptoCore.generateNewKeysForUser(
-            backupPassword = backupPassword,
+            authKey = authKey,
             userId = userId
         )
     }

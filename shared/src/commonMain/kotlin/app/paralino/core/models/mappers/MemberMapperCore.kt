@@ -245,8 +245,10 @@ class MemberMapperCore constructor(
                     id = it.id,
                     groupId = it.groupId,
                     ownerUserId = it.ownerUserId,
-                    integrity = it.integrity,
-                    groupOwnerIntegrity = it.groupOwnerIntegrity
+                    memberIntegrity = it.memberIntegrity,
+                    groupIntegrity = it.groupIntegrity,
+                    memberIntegrityUserKeyVersion = it.memberIntegrityUserKeyVersion,
+                    groupIntegrityUserKeyVersion = it.groupIntegrityUserKeyVersion
                 )
             },
             memberData = memberData,

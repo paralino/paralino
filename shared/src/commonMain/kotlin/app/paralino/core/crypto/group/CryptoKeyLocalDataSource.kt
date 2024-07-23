@@ -114,9 +114,9 @@ class CryptoKeyLocalDataSource constructor(
         return database.groupDeviceIntegrityQueries.getForGroup(groupId).executeAsOneOrNull()
     }
 
-    suspend fun updateGroupDeviceIntegrity(groupId: String, integrity: String) {
+    suspend fun updateGroupDeviceIntegrity(groupId: String, integrity: String, userKeyVersion: Long) {
         database.groupDeviceIntegrityQueries.createKey(
-            GroupDeviceIntegrityEntity(id = groupId, integrity = integrity)
+            GroupDeviceIntegrityEntity(id = groupId, integrity = integrity, userKeyVersion = userKeyVersion)
         )
     }
 

@@ -5,6 +5,7 @@ import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
 import app.paralino.core.models.raw.BlocklistRaw
+import app.paralino.core.models.raw.LoginDetailsRaw
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.raw.UserPlanRaw
@@ -126,7 +127,11 @@ class UserRemoteSource constructor(
                 AccountResetCryptoKeyPayload(
                     encryptedSymmetricKey = it.encryptedSymmetricKey,
                     encryptedPrivateKey = it.encryptedPrivateKey,
-                    encryptedPublicKey = it.encryptedPublicKey
+                    encryptedPublicKey = it.encryptedPublicKey,
+                    publicKey = it.publicKey,
+                    loginSalt = it.loginSalt,
+                    loginAlg = it.loginAlg,
+                    dataAlg = it.dataAlg
                 )
             }
 
@@ -139,6 +144,19 @@ class UserRemoteSource constructor(
                 throw response.remoteException
             }
         }
+    }
+
+    suspend fun getLoginDetails(key: String): LoginDetailsRaw {
+        val response = functionsApi.runAndWait(
+            function = ServerFunction.LOGIN,
+            data = key
+        )
+
+        if (!response.isSuccess) {
+            throw response.remoteException
+        }
+
+        return response.response<LoginDetailsRaw>().data
     }
 
     suspend fun logout() {

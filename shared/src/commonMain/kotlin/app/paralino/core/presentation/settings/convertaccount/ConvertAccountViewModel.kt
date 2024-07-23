@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.settings.convertaccount
 
 import app.paralino.core.MR
+import app.paralino.core.domain.user.ChangeCredentialsStep
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
@@ -18,6 +19,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -82,9 +84,11 @@ class ConvertAccountViewModel(
                             }
                         }
                         is Payload.Success -> {
-                            _uiState.update { it.copy(actionLoading = false) }
-                            delay(400)
-                            _eventChannel.send(ConvertAccountScreenEvent.AccountUpdated)
+                            _uiState.update { it.copy(actionLoading = result.data != ChangeCredentialsStep.DONE) }
+                            if (result.data == ChangeCredentialsStep.DONE) {
+                                delay(400)
+                                _eventChannel.send(ConvertAccountScreenEvent.AccountUpdated)
+                            }
                         }
                     }
                 }

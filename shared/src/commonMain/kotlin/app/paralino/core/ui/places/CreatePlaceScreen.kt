@@ -40,7 +40,7 @@ import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
@@ -64,7 +64,7 @@ fun CreatePlaceScreenCore(
     appState: CoreUiState,
     vm: CreatePlaceViewModel,
     onNavigateBack: () -> Unit,
-    onBottomSheetAction: (BottomSheetsScreen?) -> Unit,
+    onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
     mapContent: @Composable (CreatePlaceScreenState) -> Unit,
 ) {
 
@@ -154,7 +154,7 @@ fun CreatePlaceScreenCore(
                         .padding(it),
                     state = finalState.data,
                     onImageClick = {
-                        onBottomSheetAction(BottomSheetsScreen.EmojiPicker(Emojis.groupEmojis))
+                        onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.groupEmojis))
                     },
                     onNameChange = { vm.updateName(it) },
                     onRadiusChanged = { vm.updateRadius(it) },

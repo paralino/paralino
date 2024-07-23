@@ -10,6 +10,7 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 
@@ -21,6 +22,7 @@ class GroupRefreshUseCase constructor(
     private val groupMapperCore: GroupMapperCore,
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
     private val groupRemove: GroupRemoveUseCase,
+    private val userRepository: UserRepository
 ) : LimitedExecutionRepository() {
 
     suspend fun refreshRemoteGroupWithMembersAndPlaces(groupId: String, cacheTimeMillis: Long): GroupWithMembersAndPlacesRaw? {
@@ -46,6 +48,11 @@ class GroupRefreshUseCase constructor(
             }
         } catch (e: Exception) {
             if (e.asRemoteException() is NotFoundException) {
+                // ensure user is available and session is valid
+                // if session is expired, this will throw and session recovery will kick in
+                // in that case group will not be accidentally removed and sharing will continue
+                userRepository.refreshUserIfAvailable()
+                logg.tag("tag_crypto_key_group").i("Group not found and user is valid - remove group locally")
                 groupRemove.clearGroupLocally(groupId)
             }
             throw e
@@ -60,9 +67,9 @@ class GroupRefreshUseCase constructor(
         }
 
         logg.tag("tag_crypto_key_group").d("got new group from remote, handle key rotation | retry #$retry")
-        val remoteGroup = groupMapperCore.remote2CoreWithMembers(group.group)
+        val remoteGroup = groupMapperCore.remote2CoreWithMembersAndPlaces(group)
 
-        if(!remoteGroup.isGroupVerified)
+        if(!remoteGroup.groupWithMembers.isGroupVerified)
             logg.tag("tag_crypto_key_group").e("Current member is unverified in group ${group.group.group.id}")
 
         if (groupCryptoKeyRotation.rotateGroupAndMemberKeys(remoteGroup, force = false)) {

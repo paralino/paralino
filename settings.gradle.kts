@@ -4,7 +4,9 @@ include(":androidApp")
 include(":shared")
 include(":moko")
 include(":appwrite-android")
+include(":lazysodium-android")
 project(":appwrite-android").projectDir = File("appwrite-android/library")
+project(":lazysodium-android").projectDir = File("lazysodium-android/app")
 
 pluginManagement {
     repositories {

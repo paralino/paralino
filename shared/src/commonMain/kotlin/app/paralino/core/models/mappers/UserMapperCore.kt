@@ -7,9 +7,12 @@ import app.paralino.core.models.base.asImageModel
 import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserMeDataRaw
 import app.paralino.core.models.raw.UserMeRaw
-import app.paralino.core.models.user.*
+import app.paralino.core.models.user.BlockListModelData
+import app.paralino.core.models.user.BlocklistModel
+import app.paralino.core.models.user.BlocklistType
+import app.paralino.core.models.user.UserMe
+import app.paralino.core.models.user.UserMeData
 import app.paralino.core.utils.BaseRemoteModule
-import kotlinx.serialization.decodeFromString
 
 class UserMapperCore(
     private val cryptoCore: CryptoCore,
@@ -26,7 +29,7 @@ class UserMapperCore(
                 try {
                     cryptoCore.decryptDataWithKey(
                         data = it,
-                        key = userKeyRepo.personalKey()
+                        key = userKeyRepo.personalKey(version = model.userKeyVersion).key
                     ).let {
                         BaseRemoteModule.formatter.decodeFromString<BlockListModelData>(it)
                     }.let {
@@ -50,18 +53,18 @@ class UserMapperCore(
     }
 
     suspend fun remote2Core(model: UserMeDataRaw): UserMeData {
-        val userKey = userKeyRepo.personalKey()
+        val userKey = userKeyRepo.personalKey(version = model.userKeyVersion)
         return UserMeData(
             userImage = model.userImage?.let {
                 try {
-                    cryptoCore.decryptDataWithKey(it, userKey)
+                    cryptoCore.decryptDataWithKey(it, userKey.key)
                 } catch (e: Exception) {
                     null
                 }
             }?.asImageModel(),
             userName = model.userName?.let {
                 try {
-                    cryptoCore.decryptDataWithKey(it, userKey)
+                    cryptoCore.decryptDataWithKey(it, userKey.key)
                 } catch (e: Exception) {
                     ""
                 }
@@ -70,11 +73,15 @@ class UserMapperCore(
     }
 
     suspend fun core2Remote(model: UserMeData): UserMeDataRaw {
-        val userKey = userKeyRepo.personalKey()
+        val userKey = userKeyRepo.activePersonalKeyWithVersion()
         return UserMeDataRaw(
-            userImage = model.userImage?.image?.let { cryptoCore.encryptDataWithKey(it, userKey) },
-            userName = model.userName.takeIf { it.isNotBlank() }
-                ?.let { cryptoCore.encryptDataWithKey(it, userKey) },
+            userImage = model.userImage?.image?.let {
+                cryptoCore.encryptDataWithKey(it, userKey.key)
+            },
+            userName = model.userName.takeIf { it.isNotBlank() }?.let {
+                cryptoCore.encryptDataWithKey(it, userKey.key)
+            },
+            userKeyVersion = userKey.version
         )
     }
 

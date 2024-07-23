@@ -8,6 +8,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
+import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.utils.Emojis
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -87,5 +88,12 @@ data class UserGroupWithMembers constructor(
         get() {
             return members.firstOrNull { it.member.userId == config.userId }?.currentDeviceLocation
         }
+}
 
+data class UserGroupWithMembersAndPlaces constructor(
+    val groupWithMembers: UserGroupWithMembers,
+    val places: List<GroupPlaceWithSettings>
+) {
+    val id: String get() = groupWithMembers.id
+    val ownerUserId: String get() = groupWithMembers.ownerUserId
 }

@@ -11,20 +11,21 @@ import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingUserKeyException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.encodeToString
 
 class LoginUseCase constructor(
-    val userRepo: UserRepository,
-    val cryptoCore: CryptoCore,
-    val userKeyRepository: CryptoUserKeyRepository,
-    val keyMapper: UserKeyMapperCore,
-    val logoutUseCase: LogoutUseCase,
+    private val userRepo: UserRepository,
+    private val cryptoCore: CryptoCore,
+    private val userKeyRepository: CryptoUserKeyRepository,
+    private val keyMapper: UserKeyMapperCore,
+    private val logoutUseCase: LogoutUseCase,
 ) {
 
     fun login(email: String, password: String): Flow<SignUpStep> {
@@ -32,7 +33,13 @@ class LoginUseCase constructor(
 
             logg.d("login", "Start login - derive password")
             emit(SignUpStep.STARTING)
-            val derivedPasswords = cryptoCore.derivePassword(password)
+
+            val loginDetails = userRepo.getLoginDetails(key = email)
+            val authKey = cryptoCore.deriveUserAuthKey(
+                salt = loginDetails.loginSalt,
+                password = password,
+                alg = loginDetails.loginAlg
+            )
             val session: UserSession
             val user: UserMeRaw
 
@@ -41,15 +48,17 @@ class LoginUseCase constructor(
                 delay(500)
 
                 session = try {
-                    userRepo.login(email, derivedPasswords.loginPassword)
+                    userRepo.login(email = email, password = authKey.loginKey)
                 } catch (e: Exception) {
                     if (e is UnauthorizedException && e.type == UserSessionMonitor.existingSessionError) {
                         logg.w("login", "Cleanup any ghost session")
 
-                        try { logoutUseCase.fullLogout(logoutLocallyOnError = true) }
-                        catch (e: Exception) { }
+                        try {
+                            logoutUseCase.fullLogout(logoutLocallyOnError = true)
+                        } catch (e: Exception) {
+                        }
 
-                        userRepo.login(email, derivedPasswords.loginPassword)
+                        userRepo.login(email = email, password = authKey.loginKey)
                     } else {
                         throw e
                     }
@@ -78,14 +87,15 @@ class LoginUseCase constructor(
                 val correctPersonalKey = keys.reversed().firstNotNullOfOrNull {
                     try {
                         // try getting correct keys from encrypted data that matches password
-                        val personalKeyData = cryptoCore.signIn(
-                            password = derivedPasswords.backupPassword,
+                        val personalKeyData = cryptoCore.decryptUserPersonalKey(
+                            masterAuthKey = authKey.masterAuthKey,
                             userId = user.id,
-                            keyData = it.encryptedSymmetricKey
+                            encryptedMasterKey = it.encryptedSymmetricKey,
+                            alg = BaseRemoteModule.formatter.decodeFromString(it.dataAlg)
                         )
 
                         // check if keypair is valid by decrypting
-                        keyMapper.mapKeyPair(
+                        val signatureKeyPair = keyMapper.mapKeyPair(
                             model = it,
                             userKey = personalKeyData
                         )
@@ -93,6 +103,7 @@ class LoginUseCase constructor(
                         // key is valid
                         GeneratedUserKeys(
                             userPersonalKey = personalKeyData,
+                            signatureKeyPair = signatureKeyPair,
                             encryptedKeyData = it
                         )
                     } catch (e: Exception) {
@@ -105,7 +116,7 @@ class LoginUseCase constructor(
                 if (correctPersonalKey == null) {
                     // data is corrupted, current user password does not match user key
                     // this will trigger account recovery
-                    config.temporaryBackupPassword = derivedPasswords.backupPassword
+                    config.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
                     userRepo.initLocallyAfterSignUp(user, session)
                     throw MissingUserKeyException(false)
                 } else {
@@ -130,7 +141,7 @@ class LoginUseCase constructor(
             } catch (e: Exception) {
                 // this will trigger account recovery
                 logg.w("login", "Error initializing user keys", e)
-                config.temporaryBackupPassword = derivedPasswords.backupPassword
+                config.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
                 userRepo.initLocallyAfterSignUp(user, session)
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
             }
@@ -161,5 +172,4 @@ class LoginUseCase constructor(
             throw it
         }
     }
-
 }

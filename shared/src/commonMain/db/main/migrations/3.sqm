@@ -1,1 +1,0 @@
-ALTER TABLE memberEntity ADD COLUMN settings_groupOwnerIntegrity TEXT DEFAULT NULL;

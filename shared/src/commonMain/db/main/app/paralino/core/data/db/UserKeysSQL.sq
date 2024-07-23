@@ -1,9 +1,14 @@
 CREATE TABLE IF NOT EXISTS userKeysEntity (
 `id` TEXT NOT NULL PRIMARY KEY,
-`version` INTEGER,
+`userKeyVersion` INTEGER,
 `encryptedSymmetricKey` TEXT NOT NULL,
 `encryptedPrivateKey` TEXT NOT NULL,
 `encryptedPublicKey` TEXT NOT NULL,
+`publicKey` TEXT NOT NULL,
+`oldMasterKeys` TEXT,
+`loginSalt` TEXT NOT NULL,
+`loginAlg` TEXT NOT NULL,
+`dataAlg` TEXT NOT NULL,
 `isActive` INTEGER AS kotlin.Boolean NOT NULL
 );
 

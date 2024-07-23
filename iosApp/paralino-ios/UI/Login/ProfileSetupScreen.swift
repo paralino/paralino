@@ -11,7 +11,7 @@ import shared
 struct ProfileSetupScreen: View {
     
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.editProfileVM)
-    @State var bottomSheet: BottomSheetsScreen.EmojiPicker? = nil
+    @State var bottomSheet: BottomSheetPickerTypeEmojiPickerBottomSheet? = nil
     
     var body: some View {
         ZStack {
@@ -20,7 +20,7 @@ struct ProfileSetupScreen: View {
                 ScreensIOS.shared.login.CompleteProfileVC(
                     vm: appState.vm
                 ) { screen in
-                    bottomSheet = screen as? BottomSheetsScreen.EmojiPicker
+                    bottomSheet = screen as? BottomSheetPickerTypeEmojiPickerBottomSheet
                 }
             }
             .ignoresSafeArea(.all, edges: .bottom)

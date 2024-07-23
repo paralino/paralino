@@ -20,10 +20,13 @@
     <string name="button_verify">Verify</string>
     <string name="button_showAll">Show all</string>
     <string name="button_open">Open</string>
+    <string name="button_cool">Cool</string>
 
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
     <string name="alert_sessionExpired_message">Your session expired, please login again.</string>
+    <string name="alert_comingSoon_title">Coming soon 🤞</string>
+    <string name="alert_comingSoon_message">This feature is already in development and is coming soon.</string>
     <string name="error_load_data_generic">Unable to complete the request.</string>
     <string name="error_no_connection_snackbar">Unable to connect\n**Check your internet connection.**</string>
     <string name="error_server_unavailable">Unable to connect at the moment, please try again shortly.</string>
@@ -106,12 +109,15 @@
     <string name="setting_title_rate">Give some stars 🌟🌟🌟🌟🌟</string>
     <string name="setting_title_help">Help &amp; support</string>
     <string name="setting_title_sourceCode">Check out source code</string>
-    <string name="setting_title_privacy">Privacy &amp; Terms</string>
+    <string name="setting_title_privacy">Privacy Policy</string>
+    <string name="setting_title_terms">Terms of Use</string>
     <string name="setting_title_libraries">Acknowledgments</string>
     <string name="setting_title_logout">Logout</string>
     <string name="setting_title_delete_account">Delete account</string>
     <string name="setting_title_dangerZone">Danger zone</string>
 
+    <string name="setting_title_errorReporting">Anonymous crash logs</string>
+    <string name="setting_description_errorReporting">Share anonymous error logs in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
     <string name="setting_title_locationBoost">Location boost</string>
     <string name="setting_description_locationBoost_enabled">Maximum location performance will reset at %s. **Uses more battery!!!**</string>
     <string name="setting_description_locationBoost_disabled">Use maximum performance for location for up to 2h. **Will use more battery!!!**</string>
@@ -128,7 +134,7 @@
     <string name="login_signup_switch_button_signup">or **CREATE ACCOUNT**</string>
     <string name="login_button_forgot_password">Forgot password?</string>
     <string name="login_button_create_account">CREATE ACCOUNT</string>
-    <string name="login_button_create_guest_account">CONTINUE AS GUEST</string>
+    <string name="login_button_create_guest_account">CONTINUE</string>
     <string name="login_button_login">LOG IN</string>
     <string name="login_button_reset_password">RESET PASSWORD</string>
     <string name="login_signup_guest_alert_title">Create guest account</string>
@@ -147,7 +153,7 @@
     <string name="login_signup_terms_privacy_terms">terms of use</string>
 
     <string name="login_step_logIn">Logging you in</string>
-    <string name="login_step_signUp">Creating account</string>
+    <string name="login_step_signUp">Creating an account</string>
     <string name="login_step_encryption">Setting up encryption</string>
     <string name="login_step_allDone">Success!</string>
     <string name="login_step_user_setup">Preparing user</string>
@@ -192,7 +198,7 @@
     <string name="groups_sharing_devices">Devices</string>
     <string name="groups_sharing_potential_error_title">Warning</string>
     <string name="groups_sharing_potential_error_message">To share your location please resolve all the errors: \n\n%s\n</string>
-    <string name="groups_sharing_potential_error_background_location_message">Your location can not be shared if you restart your phone!\n\nPlease allow **all the time** location access for reliable sharing.</string>
+    <string name="groups_sharing_potential_error_background_location_message">Your location can not be shared in the background or if you restart your phone!\n\nPlease allow **all the time** location access for reliable sharing.</string>
     <string name="groups_sharing_error_unverified_group_title">Unverified group or member</string>
     <string name="groups_sharing_error_unverified_group_message">You can not share location to unverified group or member.\n\nTry refreshing the group data.</string>
 

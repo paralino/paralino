@@ -3,22 +3,24 @@ package app.paralino.core.domain.user
 import app.paralino.core.config
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
+import app.paralino.core.crypto.UserAuthDerivedKey
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.exceptions.DecryptionException
-import app.paralino.core.utils.extensions.nowUTC
+import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 
 class RecoverAccountUseCase(
     private val userRepo: UserRepository,
     private val userKeyRepo: CryptoUserKeyRepository,
-    val cryptoCore: CryptoCore,
-    val keyMapper: UserKeyMapperCore,
-    val logoutUseCase: LogoutUseCase,
+    private val cryptoCore: CryptoCore,
+    private val keyMapper: UserKeyMapperCore,
+    private val logoutUseCase: LogoutUseCase,
+    private val changeCredential: ChangeCredentialsUseCase
 ) {
 
     suspend fun getCorrectUserKeyForPassword(
@@ -41,19 +43,24 @@ class RecoverAccountUseCase(
         userId: String,
         password: String,
     ): GeneratedUserKeys? {
-
-        val derivedPassword = cryptoCore.derivePassword(password)
         val correctPersonalKey = keys.reversed().firstNotNullOfOrNull {
             try {
+                val authKey =
+                    cryptoCore.deriveUserAuthKey(
+                        salt = it.loginSalt,
+                        password = password,
+                        alg = BaseRemoteModule.formatter.decodeFromString(it.loginAlg)
+                    )
                 // try getting correct keys from encrypted data that matches password
-                val personalKeyData = cryptoCore.signIn(
-                    password = derivedPassword.backupPassword,
+                val personalKeyData = cryptoCore.decryptUserPersonalKey(
+                    masterAuthKey = authKey.masterAuthKey,
                     userId = userId,
-                    keyData = it.encryptedSymmetricKey
+                    encryptedMasterKey = it.encryptedSymmetricKey,
+                    alg = BaseRemoteModule.formatter.decodeFromString(it.dataAlg)
                 )
 
                 // check if keypair is valid by decrypting
-                keyMapper.mapKeyPair(
+                val signatureKeyPair = keyMapper.mapKeyPair(
                     model = it,
                     userKey = personalKeyData
                 )
@@ -61,6 +68,7 @@ class RecoverAccountUseCase(
                 // key is valid
                 GeneratedUserKeys(
                     userPersonalKey = personalKeyData,
+                    signatureKeyPair = signatureKeyPair,
                     encryptedKeyData = it
                 )
             } catch (e: Exception) {
@@ -71,50 +79,40 @@ class RecoverAccountUseCase(
         return correctPersonalKey
     }
 
-    fun resetUserAccount(backupPassword: String): Flow<Unit> {
+    fun resetUserAccount(masterAuthKey: String): Flow<Unit> {
         return flow {
             val newKey = cryptoCore.generateNewKeysForUser(
-                backupPassword = backupPassword,
+                authKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey),
                 userId = userRepo.cachedUserId
             )
-            logoutUseCase.resetAccount(keyToPersist = newKey.encryptedKeyData, logoutLocallyOnError = false)
-            emit(Unit)
-        }
-            .onEach { config.temporaryBackupPassword = "" }
-    }
-
-    fun recoverUserAccount(backupPassword: String, key: GeneratedUserKeys): Flow<Unit> {
-        return flow {
-
-            // only re-encrypting symmetric key
-            // private asymmetric key is encrypted with symmetric key and keys don't change here
-            val newEncryptedKey = try {
-                cryptoCore.reEncryptSymmetricKey(
-                    backupPassword = backupPassword,
-                    userId = userRepo.cachedUserId,
-                    userKey = key.userPersonalKey
-                )
-            } catch (e: Exception) {
-                throw DecryptionException("Can't change encryption key", e)
-            }
-
-            // change version
-            val newKey = key.encryptedKeyData.copy(
-                encryptedSymmetricKey = newEncryptedKey,
-                version = nowUTC().toEpochMilliseconds()
+            logoutUseCase.resetAccount(
+                keyToPersist = newKey.encryptedKeyData,
+                logoutLocallyOnError = false
             )
-
-            // upload and save key
-            val remoteKey = userKeyRepo.uploadNewUserKey(newKey, removeOldKeys = true)
-            userKeyRepo.saveUserKeyLocally(remoteKey, key.userPersonalKey)
-
-            // at this point encryption keys are correct and updated and old keys are removed
-            // we can remove temporary password
-
-            config.temporaryBackupPassword = ""
-
             emit(Unit)
         }
+            .onEach { config.temporaryMasterAuthKey = "" }
     }
 
+    suspend fun recoverUserAccount(masterAuthKey: String, key: GeneratedUserKeys) {
+
+        // private asymmetric key is encrypted with symmetric key and keys don't change here
+        val authKey: UserAuthDerivedKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey)
+
+        changeCredential.changeCredentials(
+            userId = userRepo.cachedUserId,
+            oldKey = key,
+            oldMasterAuthKey = null,
+            newMasterAuthKey = authKey,
+            action = { _, _ -> }
+        )
+            .onEach {
+                if (it == ChangeCredentialsStep.DONE) {
+                    // at this point encryption keys are correct and updated and old keys are removed
+                    // we can remove temporary password
+                    config.temporaryMasterAuthKey = ""
+                }
+            }
+            .collect()
+    }
 }

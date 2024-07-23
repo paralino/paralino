@@ -10,7 +10,8 @@ data class BlocklistRaw(
     val ownerUserId: String,
     val resourceId: String,
     val resourceType: String,
-    val data: String?
+    val data: String?,
+    val userKeyVersion: Long?
 ) {
     companion object {
         @Suppress("UNCHECKED_CAST")
@@ -21,6 +22,7 @@ data class BlocklistRaw(
                 resourceId = map["resourceId"] as String,
                 resourceType = map["resourceType"] as String,
                 data = map["data"] as? String?,
+                userKeyVersion = (map["userKeyVersion"] as? Number?)?.toLong()
             )
         }
     }

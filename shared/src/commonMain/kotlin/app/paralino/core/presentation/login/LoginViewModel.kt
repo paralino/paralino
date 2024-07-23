@@ -5,11 +5,13 @@ import app.paralino.core.data.db.AppConfig
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
+import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -35,7 +37,7 @@ class LoginViewModel constructor(
 ) : CoreViewModel() {
 
     val initialUiType: LoginScreenUiType
-        get() = if (appConfigRepository.configState.value?.emailEnabled == true) startScreenUiType else LoginScreenUiType.SIGNUP_GUEST
+        get() = if (appConfigRepository.configState.value.isEmailEnabled) startScreenUiType else LoginScreenUiType.SIGNUP_GUEST
 
     private val _uiState: MutableStateFlow<LoginScreenState>
     val uiState: StateFlow<LoginScreenState>
@@ -46,7 +48,7 @@ class LoginViewModel constructor(
     init {
         _uiState = MutableStateFlow(
             LoginScreenState(
-                canUseEmail = appConfigRepository.configState.value?.emailEnabled ?: false,
+                canUseEmail = appConfigRepository.configState.value.isEmailEnabled,
                 uiType = initialUiType,
                 alertDialog = if (config.hasGuestAccount()) {
                     MainAlertDialog.GuestAccountRecover
@@ -61,8 +63,8 @@ class LoginViewModel constructor(
             .onEach { config ->
                 _uiState.update {
                     it.copy(
-                        canUseEmail = config.emailEnabled,
-                        uiType = if (!config.emailEnabled) LoginScreenUiType.SIGNUP_GUEST else it.uiType
+                        canUseEmail = config.isEmailEnabled,
+                        uiType = if (!config.isEmailEnabled) LoginScreenUiType.SIGNUP_GUEST else it.uiType
                     )
                 }
             }
@@ -100,7 +102,7 @@ class LoginViewModel constructor(
                 processSignUpError(it, onRecoverGuest = true)
 
                 val cause = it.cause
-                if (cause is UnauthorizedException) {
+                if (cause is UnauthorizedException && cause.type == UserSessionMonitor.invalidCredentials) {
                     dismissGuestAccount()
                     _uiState.update {
                         it.copy(
@@ -350,6 +352,11 @@ class LoginViewModel constructor(
             return
 
         if (type != LoginScreenUiType.SIGNUP_GUEST && !_uiState.value.canUseEmail) {
+            if (!config.hasGuestAccount()) {
+                _uiState.update {
+                    it.copy(alertDialog = MainAlertDialog.ComingSoon)
+                }
+            }
             return
         }
 
@@ -434,43 +441,62 @@ class LoginViewModel constructor(
 
     fun onEvent(event: LoginScreenUiEvent) {
         when (event) {
-            LoginScreenUiEvent.HideDialog -> {
-                _uiState.update { it.copy(alertDialog = null) }
-            }
-
-            LoginScreenUiEvent.RecoverGuestAccount -> {
-                recoverGuestAccount()
-            }
-
-            LoginScreenUiEvent.DismissGuestAccount -> {
-                _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountDismissConfirmation) }
-            }
-
-            LoginScreenUiEvent.DismissGuestAccountConfirm -> {
-                dismissGuestAccount()
-            }
-
-            LoginScreenUiEvent.DismissGuestAccountCancel -> {
-                _uiState.update {
-                    it.copy(
-                        alertDialog = if (config.hasGuestAccount()) {
-                            MainAlertDialog.GuestAccountRecover
-                        } else {
-                            null
-                        }
-                    )
-                }
-            }
-
             LoginScreenUiEvent.LoginOrSignup -> {
                 if (_uiState.value.uiType == LoginScreenUiType.SIGNUP_GUEST) {
-                    _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountCreating) }
+                    if (_uiState.value.canUseEmail) {
+                        _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountCreating) }
+                    } else {
+                        proceed()
+                    }
                 } else {
                     proceed()
                 }
             }
 
-            LoginScreenUiEvent.ConfirmLoginOrSignup -> proceed()
+            is LoginScreenUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.ComingSoon -> {
+                        hideDialog()
+                    }
+                    is MainAlertDialog.GuestAccountCreating -> {
+                        hideDialog()
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            proceed()
+                        }
+                    }
+
+                    is MainAlertDialog.GuestAccountRecover -> {
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            recoverGuestAccount()
+                        } else if (event.action.action == MainAlertDialog.Buttons.buttonCancel) {
+                            _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountDismissConfirmation) }
+                        }
+                    }
+
+                    is MainAlertDialog.GuestAccountDismissConfirmation -> {
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            dismissGuestAccount()
+                        } else if (event.action.action == MainAlertDialog.Buttons.buttonCancel) {
+                            _uiState.update {
+                                it.copy(
+                                    alertDialog = if (config.hasGuestAccount()) {
+                                        MainAlertDialog.GuestAccountRecover
+                                    } else {
+                                        null
+                                    }
+                                )
+                            }
+                        }
+                    }
+                     else -> {}
+                }
+            }
+        }
+    }
+
+    private fun hideDialog() {
+        if (!config.hasGuestAccount()) {
+            _uiState.update { it.copy(alertDialog = null) }
         }
     }
 

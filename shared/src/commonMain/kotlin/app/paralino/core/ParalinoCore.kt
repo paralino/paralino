@@ -35,8 +35,7 @@ import app.paralino.core.domain.location.RealtimeEventsProcessor
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.user.AppAccountStateMonitor
-import app.paralino.core.domain.user.ChangeEmailUseCase
-import app.paralino.core.domain.user.ChangePasswordUseCase
+import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.ExpiredSessionHandler
@@ -156,7 +155,7 @@ val mappersModule = module {
     single { UserMapperCore(get(), get()) }
     single { SharingContractsMapper }
     single { GroupsMapperLocal(get()) }
-    single { GroupMapperCore(get(), get(), get()) }
+    single { GroupMapperCore(get(), get(), get(), get()) }
     single { MemberMapperCore(get(), get(), get()) }
     single { MemberWithLocationsMapperLocal(get()) }
     single { GroupKeysMapper() }
@@ -197,12 +196,11 @@ val coreModule = module {
 
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
-    factory { ResetPasswordUseCase(get(), get()) }
-    factory { ChangePasswordUseCase(get(), get(), get()) }
-    factory { ChangeEmailUseCase(get(), get()) }
-    factory { RecoverAccountUseCase(get(), get(), get(), get(), get()) }
+    factory { ResetPasswordUseCase(get(), get(), get()) }
+    factory { ChangeCredentialsUseCase(get(), get(), get()) }
+    factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
-    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get(), config) }
+    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), config) }
     factory { LocationRequestUseCase(get(), get()) }
     factory { ClearUserLocationUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
@@ -215,12 +213,12 @@ val coreModule = module {
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get()) }
+    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get()) }
     single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get()) }
-    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -229,7 +227,7 @@ val coreModule = module {
     single { PersonalCodesRepository(get(), get(), get(), get(), get()) }
     single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
     single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
     single { AppConfigRepository(get(), get(), get(), get(), config) }
@@ -244,7 +242,7 @@ val coreModule = module {
 
     single { CryptoCore(get()) }
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
-    single { CryptoUserKeyRepository(get(), get()) }
+    single { CryptoUserKeyRepository(get(), get(), get()) }
 
     single { PushNotificationHandler(get(), get(), get(), get(), config) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get(), get()) }

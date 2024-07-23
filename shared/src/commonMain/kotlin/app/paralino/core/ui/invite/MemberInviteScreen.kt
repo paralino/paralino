@@ -37,7 +37,7 @@ import app.paralino.core.presentation.invite.input.MemberInviteScreenState
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.BottomSheetsScreen
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
@@ -57,7 +57,7 @@ fun MemberInviteScreenCore(
     appState: CoreUiState,
     vm: MemberInviteViewModel,
     contentPadding: PaddingValues,
-    onPickGroup: (BottomSheetsScreen.GroupPicker) -> Unit,
+    onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
 
@@ -93,7 +93,7 @@ fun MemberInviteScreenCore(
         onPickGroup = {
             appState.uiScope.launch {
                 val groups = vm.getAllGroups()
-                onPickGroup(BottomSheetsScreen.GroupPicker(groups))
+                onPickGroup(BottomSheetPickerType.GroupPickerBottomSheet(groups))
             }
         }
     )

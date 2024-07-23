@@ -8,6 +8,7 @@ import app.paralino.android.BuildConfig
 import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.isBatteryCharging
+import app.paralino.core.config
 import app.paralino.core.data.db.AppConfig
 import app.paralino.core.data.db.AppConfigProvider
 import app.paralino.core.logg
@@ -19,6 +20,7 @@ import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.SystemLogr
 import app.paralino.core.utils.exceptions.InternalConnectionException
+import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import io.sentry.Sentry
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -60,12 +62,17 @@ class DeviceApiProvider constructor(
                 message: String,
                 t: Throwable?
             ) {
+                if (!config.errorReporting) {
+                    return
+                }
+
                 if (priority != LogPriority.ERROR || !backendConfig.logErrorsToRemote) {
                     return
                 }
 
                 val exceptionAllowed =
-                    t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException
+                    t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException &&
+                            t !is MissingGroupKeyException
                 if (exceptionAllowed) {
                     Sentry.captureException(t!!)
                 }

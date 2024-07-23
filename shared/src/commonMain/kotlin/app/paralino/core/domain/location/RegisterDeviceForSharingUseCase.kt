@@ -51,7 +51,7 @@ class RegisterDeviceForSharingUseCase constructor(
             triggerRemoteOnly {
                 // refresh all group data before sharing starts
                 logg.tag("sharing_start").d("Start location register, refresh group data")
-                val result1 = groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
+                val result1 = groupPreRefreshUseCase.refreshGroupWithMembers(groupId, throwOnError = true)
                 logg.tag("sharing_start").d("Group refreshed ($result1), fetch group")
                 val group = groupLocal.getGroupWithMembers(groupId).firstOrNull()
                     ?: throw IllegalStateException("Group does not exist: $groupId")
@@ -106,6 +106,7 @@ class RegisterDeviceForSharingUseCase constructor(
                 if (response.isSuccess) {
                     logg.tag("sharing_start").d("Device registered, save integrity")
 
+                    val userKey = userKeyRepo.activePersonalKeyWithVersion()
                     val groupDeviceIntegrity = GroupIntegrity(
                         timeUtc = nowUTC().toString(),
                         signature = GroupIntegrity.createSignature(
@@ -119,12 +120,13 @@ class RegisterDeviceForSharingUseCase constructor(
                     ).let {
                         cryptoCore.encryptDataWithKey(
                             data = BaseRemoteModule.formatter.encodeToString(it),
-                            key = userKeyRepo.personalKey()
+                            key = userKey.key
                         )
                     }
                     cryptoKEKRepo.updateIntegrity(
                         groupId = group.id,
-                        integrity = groupDeviceIntegrity
+                        integrity = groupDeviceIntegrity,
+                        userKeyVersion = userKey.version
                     )
 
                     logg.tag("sharing_start").d("Integrity updated, refresh group")

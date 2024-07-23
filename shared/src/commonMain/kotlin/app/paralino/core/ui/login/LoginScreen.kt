@@ -63,7 +63,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.theme.AppColors
@@ -72,9 +72,10 @@ import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import paralino.shared.generated.resources.Res
+import paralino.shared.generated.resources.ic_launcher_foreground
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -125,37 +126,8 @@ fun LoginScreenCore(
         }
     }
 
-    when (val dialog = uiState.alertDialog) {
-        is MainAlertDialog.GuestAccountCreating -> {
-            dialog.Show {
-                vm.onEvent(LoginScreenUiEvent.HideDialog)
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.onEvent(LoginScreenUiEvent.ConfirmLoginOrSignup)
-                }
-            }
-        }
-
-        is MainAlertDialog.GuestAccountRecover -> {
-            dialog.Show {
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.onEvent(LoginScreenUiEvent.RecoverGuestAccount)
-                } else if (it == MainAlertDialog.Buttons.buttonCancel) {
-                    vm.onEvent(LoginScreenUiEvent.DismissGuestAccount)
-                }
-            }
-        }
-
-        is MainAlertDialog.GuestAccountDismissConfirmation -> {
-            dialog.Show {
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.onEvent(LoginScreenUiEvent.DismissGuestAccountConfirm)
-                } else if (it == MainAlertDialog.Buttons.buttonCancel) {
-                    vm.onEvent(LoginScreenUiEvent.DismissGuestAccountCancel)
-                }
-            }
-        }
-
-        else -> {}
+    uiState.alertDialog?.let { dialog ->
+        dialog.Show { vm.onEvent(LoginScreenUiEvent.DialogAction(AlertDialogAction(dialog, it))) }
     }
 
     Column(
@@ -176,7 +148,7 @@ fun LoginScreenCore(
         Spacer(modifier = Modifier.weight(0.2f))
 
         Image(
-            painter = painterResource(resource = DrawableResource("drawable/ic_launcher_foreground.xml")),
+            painter = painterResource(resource = Res.drawable.ic_launcher_foreground),
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
@@ -214,6 +186,7 @@ fun LoginScreenCore(
                         description = stringResource(resource = MR.strings.login_signup_account_type_regular_info),
                         focusDescription = false,
                         state = signUpRegularSwitchState,
+                        elevation = if (uiState.canUseEmail) 16.dp else 0.dp,
                         onStateChange = {
                             vm.setScreenUiType(LoginScreenUiType.SIGNUP)
                         }

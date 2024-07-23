@@ -15,18 +15,18 @@ struct AppColors {
         static let accentDark = 0xFF00796B
         
         static let lightBackground = 0xFFFAFAFA
-        static let lightSurface = 0xFFF0EEF3
+        static let lightSurface = 0xFFF1F3EF
         
-        static let lightThemePrimary = 0xFF4F307A
+        static let lightThemePrimary = 0xFF12423D
         static let lightThemeSecondary = 0xFFCCCCCC
         
         static let errorBackground = 0x33F44336
         static let redMain = 0xFFB3261E
         
-        static let darkBackground = 0xFF080011
-        static let darkSurface = 0xFF1D1129
+        static let darkBackground = 0xFF000E0A
+        static let darkSurface = 0xFF0B1A17
         
-        static let darkThemePrimary = 0xFF4F307A
+        static let darkThemePrimary = 0xFF0F443F
         static let darkThemeSecondary = 0xFF929292
     }
 }

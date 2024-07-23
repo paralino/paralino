@@ -118,7 +118,7 @@ class GroupValidityVerification(
             if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
                 val hash = cryptoCore.hashProvider.computeHash(
                     data = memberPublicKey.identityKey.key,
-                    type = HashType.SHA256
+                    type = HashType.GENERIC_256
                 )
 
                 if (verification != hash) {
@@ -132,13 +132,13 @@ class GroupValidityVerification(
                 if (memberGroupSettings == null) {
                     verificationErrors.add(VerificationResultError.MISSING_MEMBER_SETTINGS)
                 } else {
-                    if (memberGroupSettings.integrity.isBlank()) {
+                    if (memberGroupSettings.memberIntegrity.isBlank()) {
                         verificationErrors.add(VerificationResultError.MISSING_MEMBER_INTEGRITY)
                     } else {
                         try {
                             cryptoCore.decryptDataWithKey(
-                                data = memberGroupSettings.integrity,
-                                key = userKeyRepo.personalKey(),
+                                data = memberGroupSettings.memberIntegrity,
+                                key = userKeyRepo.personalKey(version = memberGroupSettings.memberIntegrityUserKeyVersion).key,
                             ).let {
                                 try {
                                     BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it)
@@ -195,44 +195,23 @@ class GroupValidityVerification(
             ?.member?.settings
             ?: return IntegrityResult.CORRUPTED
 
-        if (ownerSettings.groupOwnerIntegrity.isNullOrBlank()) {
+        if (ownerSettings.groupIntegrity.isNullOrBlank()) {
             // allow missing integrity for now
-            logg.tag("integrity_check_member").v("VALID_CHANGED for ${group.id}")
+            logg.tag("integrity_check_group").v("VALID_CHANGED (empty) for ${group.id}")
             return IntegrityResult.VALID_CHANGED
         }
 
         val integrity = getIntegrity(
             groupId = group.group.id,
             serverIntegrity = group.group.serverIntegrity,
-            myIntegrity = ownerSettings.groupOwnerIntegrity,
+            myIntegrity = ownerSettings.groupIntegrity,
+            userKeyVersion = ownerSettings.groupIntegrityUserKeyVersion,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = true
         )
             ?: return IntegrityResult.CORRUPTED
 
         if (integrity.first.isValidForGroup(integrity.second)) {
-            logg.tag("integrity_check_member").v("VALID for ${group.id}")
-            return IntegrityResult.VALID
-        } else if (integrity.first.signature != integrity.second) {
-            logg.tag("integrity_check_member").v("VALID_CHANGED for ${group.id}")
-            return IntegrityResult.VALID_CHANGED
-        } else {
-            logg.tag("integrity_check_member").v("VALID_EXPIRED for ${group.id}")
-            return IntegrityResult.VALID_EXPIRED
-        }
-    }
-
-    suspend fun checkIntegrityForMemberKey(group: UserGroupWithMembers): IntegrityResult {
-        val integrity = getIntegrity(
-            groupId = group.group.id,
-            serverIntegrity = group.group.serverIntegrity,
-            myIntegrity = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings?.integrity,
-            memberVerifications = group.members.map { it.member.verification },
-            forGroup = false
-        )
-            ?: return IntegrityResult.CORRUPTED
-
-        if (integrity.first.isValidForMember(integrity.second)) {
             logg.tag("integrity_check_group").v("VALID for ${group.id}")
             return IntegrityResult.VALID
         } else if (integrity.first.signature != integrity.second) {
@@ -244,9 +223,33 @@ class GroupValidityVerification(
         }
     }
 
+    suspend fun checkIntegrityForMemberKey(group: UserGroupWithMembers): IntegrityResult {
+        val mySettings = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings
+        val integrity = getIntegrity(
+            groupId = group.group.id,
+            serverIntegrity = group.group.serverIntegrity,
+            myIntegrity = mySettings?.memberIntegrity,
+            userKeyVersion = mySettings?.memberIntegrityUserKeyVersion,
+            memberVerifications = group.members.map { it.member.verification },
+            forGroup = false
+        )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForMember(integrity.second)) {
+            logg.tag("integrity_check_member").v("VALID for ${group.id}")
+            return IntegrityResult.VALID
+        } else if (integrity.first.signature != integrity.second) {
+            logg.tag("integrity_check_member").v("VALID_CHANGED for ${group.id}")
+            return IntegrityResult.VALID_CHANGED
+        } else {
+            logg.tag("integrity_check_member").v("VALID_EXPIRED for ${group.id}")
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
+
     suspend fun checkIntegrityForDeviceKey(group: UserGroupWithMembers): IntegrityResult {
         val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = group.id)
-        if (keyIntegrity.isNullOrBlank()) {
+        if (keyIntegrity?.integrity.isNullOrBlank()) {
             logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id} (missing)")
             return IntegrityResult.VALID_EXPIRED
         }
@@ -254,7 +257,8 @@ class GroupValidityVerification(
         val integrity = getIntegrity(
             groupId = group.group.id,
             serverIntegrity = group.group.serverIntegrity,
-            myIntegrity = keyIntegrity,
+            myIntegrity = keyIntegrity?.integrity,
+            userKeyVersion = keyIntegrity?.userKeyVersion,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = false
         )
@@ -276,6 +280,7 @@ class GroupValidityVerification(
         groupId: String,
         serverIntegrity: String,
         myIntegrity: String?,
+        userKeyVersion: Long?,
         memberVerifications: List<String>,
         forGroup: Boolean,
     ): Pair<GroupIntegrity, String>? {
@@ -288,7 +293,7 @@ class GroupValidityVerification(
         val remoteIntegrity = try {
             cryptoCore.decryptDataWithKey(
                 data = myIntegrity,
-                key = userKeyRepo.personalKey()
+                key = userKeyRepo.personalKey(version = userKeyVersion).key
             ).let { BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it) }
         } catch (e: Exception) {
             logg.tag(tag).w("CORRUPTED for $groupId - Error parsing: ${e.message}")

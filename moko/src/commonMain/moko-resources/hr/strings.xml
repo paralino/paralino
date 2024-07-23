@@ -21,10 +21,13 @@
     <string name="button_verify">Verificiraj</string>
     <string name="button_showAll">Prikaži sve</string>
     <string name="button_open">Otvori</string>
+    <string name="button_cool">Cool</string>
 
     <string name="alert_title_confirm">Molimo potvrdite</string>
     <string name="alert_sessionExpired_title">Sesija istekla</string>
     <string name="alert_sessionExpired_message">Vaša sesija je istekla, molimo prijavite se ponovno.</string>
+    <string name="alert_comingSoon_title">U izradi 🤞</string>
+    <string name="alert_comingSoon_message">Ova opcija je trenutno u razvoju i dolazi ubrzo.</string>
     <string name="error_load_data_generic">Nije moguće dovršiti zahtjev.</string>
     <string name="error_no_connection_snackbar">Nemoguće povezivanje\n**Provjerite svoju internetsku vezu.**</string>
     <string name="error_server_unavailable">Trenutačno nije moguće uspostaviti vezu, molimo pokušajte ponovno uskoro.</string>
@@ -107,12 +110,15 @@
     <string name="setting_title_rate">Ocijeni sa zvjezdicama 🌟🌟🌟🌟🌟</string>
     <string name="setting_title_help">Pomoć i podrška</string>
     <string name="setting_title_sourceCode">Pogledaj izvorni kod</string>
-    <string name="setting_title_privacy">Privatnost i uvjeti</string>
+    <string name="setting_title_privacy">Pravila Privatnosti</string>
+    <string name="setting_title_terms">Uvjeti korištenja</string>
     <string name="setting_title_libraries">Zahvale</string>
     <string name="setting_title_logout">Odjava</string>
     <string name="setting_title_delete_account">Izbriši račun</string>
     <string name="setting_title_dangerZone">Zona opasnosti</string>
 
+    <string name="setting_title_errorReporting">Anonimno podaci o greškama</string>
+    <string name="setting_description_errorReporting">Podijeli anonimne informacije u slučaju greške u aplikaciji.\nInformacije ne sadrže osobne podatke te mi koristimo privatnu infrastructure tako da sve ostaje unutar Paralina!</string>
     <string name="setting_title_locationBoost">Maksimalna lokacija</string>
     <string name="setting_description_locationBoost_enabled">Maksimalne performanse lokacije će se resetirati u %s. **Koristi više baterije!!!**</string>
     <string name="setting_description_locationBoost_disabled">Koristi maksimalne performanse za lokaciju do 2 sata. **Koristi više baterije!!!**</string>
@@ -125,14 +131,14 @@
     <string name="login_placeholder_password">Lozinka*</string>
     <string name="login_placeholder_password_old">Stara lozinka*</string>
     <string name="login_placeholder_password_confirm">Potvrdi lozinku*</string>
-    <string name="login_signup_switch_button_login">Imate račun? **PRIJAVITE SE**</string>
-    <string name="login_signup_switch_button_signup">ili **STVORITE RAČUN**</string>
+    <string name="login_signup_switch_button_login">Imaš račun? **PRIJAVI SE**</string>
+    <string name="login_signup_switch_button_signup">ili **KREIRAJ RAČUN**</string>
     <string name="login_button_forgot_password">Zaboravljena lozinka?</string>
-    <string name="login_button_create_account">STVORI RAČUN</string>
-    <string name="login_button_create_guest_account">NASTAVI KAO GOST</string>
+    <string name="login_button_create_account">KREIRAJ RAČUN</string>
+    <string name="login_button_create_guest_account">NASTAVI</string>
     <string name="login_button_login">PRIJAVA</string>
     <string name="login_button_reset_password">RESETIRAJ LOZINKU</string>
-    <string name="login_signup_guest_alert_title">Stvori gostujući račun</string>
+    <string name="login_signup_guest_alert_title">Kreiraj gostujući račun</string>
     <string name="login_signup_guest_alert_message">Podaci za gostujući račun generirani su i sigurno pohranjeni na uređaju.\n\n**UPOZORENJE:**\nNećete moći spasiti račun ili se prijaviti na drugom uređaju!</string>
     <string name="login_signup_guest_recover_alert_title">Povrati gostujući račun</string>
     <string name="login_signup_guest_recover_alert_message">Gostujući račun pronađen je na ovom uređaju.\nŽelite li pokušati ga povratiti?</string>
@@ -273,7 +279,7 @@
     <string name="group_member_device_request_disabled">Moraš sačekati nekoliko trenutaka prije nego što ponovno osvježiš lokaciju 🙏</string>
 
     <string name="group_members_last_active_status_now">Upravo sada</string>
-    <string name="group_members_last_active_status_recently_1">Prije 1 minute</string>
+    <string name="group_members_last_active_status_recently_1">Prije 1 minutu</string>
     <string name="group_members_last_active_status_recently_2">Prije 2 minute</string>
     <string name="group_members_last_status_update">**Zadnje ažuriranje:**</string>
     <string name="group_members_status_inactive">Nema aktivnosti</string>

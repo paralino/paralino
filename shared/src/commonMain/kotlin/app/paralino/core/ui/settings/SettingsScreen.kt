@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.paralino.core.BuildKonfig
 import app.paralino.core.MR
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.base.ImageModel
@@ -116,36 +117,44 @@ fun SettingsScreenCore(
                 openProfileRawScreen()
             }
 
-            SettingsActionItem(
-                name = stringResource(MR.strings.setting_title_locationBoost),
-                description = when (readyState.boostTime != null) {
-                    true -> stringResource(MR.strings.setting_description_locationBoost_enabled, readyState.boostTime)
-                    false -> stringResource(MR.strings.setting_description_locationBoost_disabled)
-                },
-                icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                type = SettingsActionItemType.Switch(readyState.boostTime != null)
-            ) {
-                viewModel.onEvent(AccountScreenUiEvent.ToggleLocationBoost)
+            if (BuildKonfig.hasPreviewFeatures) {
+                SettingsActionItem(
+                    name = stringResource(MR.strings.setting_title_locationBoost),
+                    description = when (readyState.boostTime != null) {
+                        true -> stringResource(MR.strings.setting_description_locationBoost_enabled, readyState.boostTime)
+                        false -> stringResource(MR.strings.setting_description_locationBoost_disabled)
+                    },
+                    icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                    type = SettingsActionItemType.Switch(readyState.boostTime != null)
+                ) {
+                    viewModel.onEvent(AccountScreenUiEvent.ToggleLocationBoost)
+                }
             }
 
-            SettingsActionItem(
-                name = stringResource(MR.strings.setting_title_placeActivityThrottle),
-                description = when (readyState.placeActivityThrottleEnabled) {
-                    true -> stringResource(MR.strings.setting_description_placeActivityThrottle_enabled)
-                    false -> stringResource(MR.strings.setting_description_placeActivityThrottle_disabled)
-                },
-                icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                type = SettingsActionItemType.Switch(readyState.placeActivityThrottleEnabled)
-            ) {
-                viewModel.onEvent(AccountScreenUiEvent.TogglePlaceActivityThrottle)
+            if (BuildKonfig.hasPreviewFeatures) {
+                SettingsActionItem(
+                    name = stringResource(MR.strings.setting_title_placeActivityThrottle),
+                    description = when (readyState.placeActivityThrottleEnabled) {
+                        true -> stringResource(MR.strings.setting_description_placeActivityThrottle_enabled)
+                        false -> stringResource(MR.strings.setting_description_placeActivityThrottle_disabled)
+                    },
+                    icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
+                    type = SettingsActionItemType.Switch(readyState.placeActivityThrottleEnabled)
+                ) {
+                    viewModel.onEvent(AccountScreenUiEvent.TogglePlaceActivityThrottle)
+                }
             }
         }
 
         SettingSectionInfo(
             appVersion = accountState.data?.versionName ?: "",
+            isErrorReportingEnabled = readyState?.isErrorReportingEnabled ?: false,
             onLicencesClick = { openLicences() },
             onAppStatusClick = { openAppStatus() },
-            onShareApp = onShareApp
+            onShareApp = onShareApp,
+            toggleErrorReporting = {
+                viewModel.onEvent(AccountScreenUiEvent.ToggleErrorReporting)
+            }
         )
     }
 }
@@ -153,37 +162,43 @@ fun SettingsScreenCore(
 @Composable
 fun SettingSectionInfo(
     appVersion: String,
+    isErrorReportingEnabled: Boolean,
     onLicencesClick: () -> Unit,
     onAppStatusClick: () -> Unit,
     onShareApp: (String) -> Unit,
+    toggleErrorReporting: () -> Unit
 ) {
     val uriHandler = LocalUriHandler.current
     Column {
         SettingsSectionHeader(name = stringResource(MR.strings.settings_section_general_title))
 
-        SettingsActionItem(
-            name = "App status",
-            icon = CoreAppIcons.Settings.asPainterResource()
-        ) {
-            onAppStatusClick()
+        if (BuildKonfig.hasPreviewFeatures) {
+            SettingsActionItem(
+                name = "App status",
+                icon = CoreAppIcons.Settings.asPainterResource()
+            ) {
+                onAppStatusClick()
+            }
         }
 
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_share),
-            icon = CoreAppIcons.Share.asPainterResource()
-        ) {
-            onShareApp(BackendResourceIDs.homeUrl)
+        if (BuildKonfig.hasPreviewFeatures) {
+            SettingsActionItem(
+                name = stringResource(MR.strings.setting_title_share),
+                icon = CoreAppIcons.Share.asPainterResource()
+            ) {
+                onShareApp(BackendResourceIDs.homeUrl)
+            }
         }
 //    SettingsActionItem(
 //        name = stringResource(MR.strings.setting_title_help),
 //        icon = AppIcons.Help
 //    ) {}
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_sourceCode),
-            icon = CoreAppIcons.Code.asPainterResource()
-        ) {
-            uriHandler.openUri(BackendResourceIDs.sourceCodeUrl)
-        }
+//        SettingsActionItem(
+//            name = stringResource(MR.strings.setting_title_sourceCode),
+//            icon = CoreAppIcons.Code.asPainterResource()
+//        ) {
+//            uriHandler.openUri(BackendResourceIDs.sourceCodeUrl)
+//        }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_privacy),
             icon = CoreAppIcons.PrivacyTip.asPainterResource()
@@ -191,11 +206,24 @@ fun SettingSectionInfo(
             uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl)
         }
         SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_terms),
+            icon = CoreAppIcons.PrivacyTip.asPainterResource()
+        ) {
+            uriHandler.openUri(BackendResourceIDs.termsOfUseUrl)
+        }
+        SettingsActionItem(
             name = stringResource(MR.strings.setting_title_libraries),
             icon = CoreAppIcons.LibraryBooks.asPainterResource()
         ) {
             onLicencesClick()
         }
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_errorReporting),
+            description = stringResource(MR.strings.setting_description_errorReporting),
+            icon = CoreAppIcons.LibraryBooks.asPainterResource(),
+            type = SettingsActionItemType.Switch(isErrorReportingEnabled),
+            onClick = toggleErrorReporting
+        )
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(

@@ -7,8 +7,6 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 
 @Serializable
 data class GroupIntegrity(
@@ -17,21 +15,23 @@ data class GroupIntegrity(
 ) {
 
     private fun isTimeValid(duration: Duration): Boolean {
-        return timeUtc.isoWithOffsetToInstant()?.plus(duration)?.let { it > nowUTC() && it < nowUTC().plus(7.days) } ?: false
+        return timeUtc.isoWithOffsetToInstant()
+            ?.plus(duration)?.let {
+                it > nowUTC() && it < nowUTC().plus(duration)
+            } ?: false
     }
 
     fun isValidForGroup(signature: String): Boolean {
-        val timeValidity = isTimeValid(7.days)
-        return this.signature == signature && timeValidity
+        return this.signature == signature
     }
 
     fun isValidForMember(signature: String): Boolean {
-        val timeValidity = isTimeValid(2.hours)
+        val timeValidity = isTimeValid(30.days)
         return this.signature == signature && timeValidity
     }
 
     fun isValidForDevice(signature: String): Boolean {
-        val timeValidity = isTimeValid(60.minutes)
+        val timeValidity = isTimeValid(14.days)
         return this.signature == signature && timeValidity
     }
 
@@ -48,7 +48,7 @@ data class GroupIntegrity(
                 addAll(encryptedMemberPublicKeys)
             }
             val seed = ids.joinToString(separator = ",")
-            return hashProvider.computeHash(seed, HashType.SHA256)
+            return hashProvider.computeHash(seed, HashType.GENERIC_256)
         }
     }
 }

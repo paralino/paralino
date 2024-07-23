@@ -10,7 +10,7 @@ import shared
 
 struct GroupPickerSheet: ViewModifier {
     
-    @Binding var bottomSheet: BottomSheetsScreen.GroupPicker?
+    @Binding var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet?
     
     var onSelectGroup: ((GroupItemState) -> Void)?
     var onEditGroup: ((GroupItemState) -> Void)?
@@ -54,7 +54,7 @@ struct GroupPickerSheet: ViewModifier {
 
 extension View {
     func groupPickerSheet(
-        _ data: Binding<BottomSheetsScreen.GroupPicker?>,
+        _ data: Binding<BottomSheetPickerTypeGroupPickerBottomSheet?>,
         onSelectGroup: @escaping (GroupItemState) -> Void,
         onEditGroup: @escaping (GroupItemState) -> Void,
         onCreateGroup: @escaping () -> Void,

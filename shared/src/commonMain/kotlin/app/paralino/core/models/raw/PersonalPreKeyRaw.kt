@@ -10,6 +10,7 @@ data class PersonalPreKeyRaw(
     val ownerUserId: String,
     val encryptedUserKeys: String,
     val integrity: String,
+    val userKeyVersion: Long?,
     val encryptedCodeKeyData: String?,
 ) {
 
@@ -21,6 +22,7 @@ data class PersonalPreKeyRaw(
                 encryptedUserKeys = map["encryptedUserKeys"] as String,
                 integrity = map["integrity"] as String,
                 encryptedCodeKeyData = map["encryptedCodeKeyData"] as? String?,
+                userKeyVersion = (map["userKeyVersion"] as? Number?)?.toLong()
             )
         }
     }

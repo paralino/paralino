@@ -5,12 +5,14 @@ import java.io.FileNotFoundException
 import java.util.Properties
 
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.serialization")
-    id("com.android.library")
-    id("app.cash.sqldelight")
-    id("org.jetbrains.compose")
-    id("com.codingfeline.buildkonfig")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sqldelight)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.buildkonfig)
+    alias(libs.plugins.moko.resources)
 }
 
 kotlin {
@@ -25,58 +27,55 @@ kotlin {
             framework {
                 baseName = "shared"
                 isStatic = true
-                linkerOpts.add("-lsqlite3")
 
                 // required so iOS app can use resource directly in Swift code
                 export(project(":moko"))
-                export("dev.icerock.moko:resources:0.23.0")
+                export(libs.moko.resources)
             }
         }
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.components.resources)
-                api(project(":moko"))
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-                api("app.cash.sqldelight:coroutines-extensions:2.0.1")
-                api("app.cash.sqldelight:primitive-adapters:2.0.1")
-                implementation("com.russhwolf:multiplatform-settings-coroutines:1.1.1")
-                implementation("com.russhwolf:multiplatform-settings:1.1.1")
-                api("io.insert-koin:koin-core:3.5.3")
-            }
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            // using api here so we can access resources in android as well
+            api(compose.components.resources)
+            api(project(":moko"))
+            api(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.datetime)
+            api(libs.kotlinx.serialization.json)
+            api(libs.sqldelight.coroutines)
+            api(libs.sqldelight.adapters)
+            implementation(libs.multiplatform.settings.coroutines)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.logging)
+            api(libs.koin.core)
         }
 
-        val androidMain by getting {
-            dependencies {
-                dependsOn(commonMain)
-                api("io.insert-koin:koin-android:3.5.3")
-                api("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-                implementation("androidx.preference:preference-ktx:1.2.1")
-                implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
-                implementation("app.cash.sqldelight:android-driver:2.0.1")
-                api("androidx.activity:activity-compose:1.8.2")
-                api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.12.0")
-            }
+        androidMain.dependencies {
+            api(libs.koin.android)
+            api(libs.lifecycle.viewmodel.ktx)
+            implementation(libs.androidx.preference.ktx)
+            implementation(libs.androidx.security.crypto.ktx)
+            implementation(libs.sqldelight.driver.android)
+            api(libs.activity.compose)
+            api(libs.appcompat)
+            api(libs.androidx.core.ktx)
+            api(libs.kotlinx.coroutines.android)
+            implementation(libs.ktor.client.okhttp)
         }
 
-        val iosMain by creating {
-            dependsOn(commonMain)
-            dependencies {
-                implementation("app.cash.sqldelight:native-driver:2.0.1")
-            }
+        iosMain.get().dependsOn(commonMain.get())
+        iosMain.dependencies {
+            implementation(libs.sqldelight.driver.native)
+            implementation(libs.ktor.client.darwin)
         }
-        val iosX64Main by getting { dependsOn(iosMain) }
-        val iosArm64Main by getting { dependsOn(iosMain) }
-        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
     }
 }
 
@@ -94,7 +93,7 @@ android {
     compileSdk = 34
 
     sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+    sourceSets["main"].resources.srcDirs("src/commonMain/moko-resources")
 
     defaultConfig {
         minSdk = 29
@@ -134,17 +133,21 @@ buildkonfig {
     props.load(FileInputStream(propsFile))
 
     defaultConfigs {
+        buildConfigField(FieldSpec.Type.STRING, "publicServerUrl", props.getProperty("publicServerUrl").trimQuotes())
         buildConfigField(FieldSpec.Type.STRING, "serverUrl", props.getProperty("serverUrl").trimQuotes())
         buildConfigField(FieldSpec.Type.STRING, "serverKey", props.getProperty("serverKey").trimQuotes())
+        buildConfigField(FieldSpec.Type.BOOLEAN, "isDevMode", props.getProperty("devMode").trimQuotes())
+        buildConfigField(FieldSpec.Type.BOOLEAN, "hasPreviewFeatures", props.getProperty("devMode").trimQuotes())
     }
 
     targetConfigs {
         create("android") {
             buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNAndroid").trimQuotes())
-            buildConfigField(FieldSpec.Type.STRING, "mapboxAccessToken", props.getProperty("MAPBOX_ACCESS_TOKEN").trimQuotes())
         }
         create("ios") {
             buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNiOS").trimQuotes())
+            buildConfigField(FieldSpec.Type.BOOLEAN, "isDevMode", "true")
+            buildConfigField(FieldSpec.Type.BOOLEAN, "hasPreviewFeatures", "true")
         }
     }
 }

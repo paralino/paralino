@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -28,7 +28,6 @@ import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.theme.AppColors
 
 @Composable
 fun GroupListItem(
@@ -45,27 +44,27 @@ fun GroupListItem(
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colors.surface)
             .run {
-                if(data.isSelected) {
+                if (data.isSelected) {
                     this.border(
                         width = 2.dp,
-                        color = AppColors.accent,
+                        color = MaterialTheme.colors.primary,
                         shape = RoundedCornerShape(16.dp)
                     )
                 } else this
             }
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ImageModelImage(
             imageModel = data.image,
             modifier = Modifier
-                .size(if(data.isLarge) 72.dp else 50.dp)
+                .size(if (data.isLarge) 72.dp else 50.dp)
                 .border(
                     0.5.dp,
                     MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                    RoundedCornerShape(12.dp)
+                    RoundedCornerShape(10.dp)
                 ),
-            clipShape = RoundedCornerShape(12.dp)
+            clipShape = RoundedCornerShape(10.dp)
         )
 
         Spacer(modifier = Modifier.size(16.dp))
@@ -74,7 +73,7 @@ fun GroupListItem(
         ) {
             Text(
                 text = data.name,
-                style = MaterialTheme.typography.h6.copy(fontSize = if(data.isLarge) 20.sp else 16.sp),
+                style = MaterialTheme.typography.h6.copy(fontSize = if (data.isLarge) 20.sp else 16.sp),
                 modifier = Modifier
             )
 
@@ -104,17 +103,17 @@ fun GroupListItem(
             GroupStatusTag(status)
         }
 
-        if(data.canEdit) {
+        if (data.canEdit) {
             Icon(
-                painter = CoreAppIcons.Edit.asPainterResource(),
+                painter = CoreAppIcons.Settings.asPainterResource(),
                 contentDescription = null,
-                tint = AppColors.accentDark,
+                tint = MaterialTheme.colors.onPrimary,
                 modifier = Modifier
-                    .size(width = 52.dp, height = if(data.isLarge) 64.dp else 50.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(AppColors.accentLight.copy(alpha = 0.2f))
+                    .size(40.dp)
                     .clickable { onEdit() }
-                    .padding(14.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colors.primary)
+                    .padding(10.dp)
             )
         }
     }

@@ -1,6 +1,6 @@
 # Add project specific ProGuard rules here.
 # You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
+# proguardFiles setting in build.gradle.kts.
 #
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
@@ -123,6 +123,8 @@
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport
 -dontwarn org.joda.time.Instant
+
+-dontwarn org.slf4j.impl.StaticLoggerBinder
 # endregion
 
 # region gson

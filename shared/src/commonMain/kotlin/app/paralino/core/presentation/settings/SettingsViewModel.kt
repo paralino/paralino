@@ -31,8 +31,6 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -80,7 +78,9 @@ class SettingsViewModel(
     init {
         coroutineScope.launch {
             userRepo.refreshUserMaybe().data?.let {
-                personalCodeRepo.refreshPersonalCodesAndRestockKeys()
+                try {
+                    personalCodeRepo.refreshPersonalCodesAndRestockKeys()
+                } catch (_: Exception) { }
             }
         }
 
@@ -121,12 +121,13 @@ class SettingsViewModel(
                                     ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
                                 else null
                             ),
-                            canUseEmail = appConfig?.emailEnabled ?: false,
+                            canUseEmail = appConfig?.isEmailEnabled ?: false,
                             logoutState = null,
                             deleteAccountState = null,
                             versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
                             boostTime = null,
                             placeActivityThrottleEnabled = config.placeActivityThrottle,
+                            isErrorReportingEnabled = config.errorReporting,
                             userPlans = userPlans.plans.map { it.config }
                         )
                     )
@@ -224,6 +225,17 @@ class SettingsViewModel(
         }
     }
 
+    private fun toggleErrorReporting() {
+        _accountState.update {
+            it.mapSuccess {
+                val newValue = !it.isErrorReportingEnabled
+                logg.v("Toggle error reporting: $newValue")
+                config.errorReporting = newValue
+                it.copy(isErrorReportingEnabled = newValue)
+            }
+        }
+    }
+
     private fun onShowDialog(dialog: MainAlertDialog?) {
         _accountState.update { it.mapSuccess { it.copy(alertDialog = dialog) } }
     }
@@ -239,6 +251,7 @@ class SettingsViewModel(
             AccountScreenUiEvent.LogoutConfirm -> logout()
             AccountScreenUiEvent.ToggleLocationBoost -> toggleBoost()
             AccountScreenUiEvent.TogglePlaceActivityThrottle -> togglePlaceActivityThrottle()
+            AccountScreenUiEvent.ToggleErrorReporting -> toggleErrorReporting()
             is AccountScreenUiEvent.Copy -> copyToClipboard(event.content)
             AccountScreenUiEvent.SendEmailVerification -> {
                 _accountState.update {

@@ -6,6 +6,7 @@ import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.math.absoluteValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -39,7 +40,7 @@ data class LocationDataModel constructor(
                 if (first.timeUTCInstant > second.timeUTCInstant) {
                     // first is newer, second is older
                     val difference = first.timeUTCInstant - second.timeUTCInstant
-                    if (difference < 1.seconds && second.accuracy < first.accuracy) {
+                    if (difference < 1.seconds && second.accuracy < first.accuracy && (first.accuracy - second.accuracy).absoluteValue > 30) {
                         // time difference is not huge but accuracy is better, use second location
                         return second
                     } else {
@@ -47,7 +48,7 @@ data class LocationDataModel constructor(
                     }
                 } else if (second.timeUTCInstant > first.timeUTCInstant) {
                     val difference = second.timeUTCInstant - first.timeUTCInstant
-                    if (difference < 1.seconds && first.accuracy < second.accuracy) {
+                    if (difference < 1.seconds && first.accuracy < second.accuracy && (first.accuracy - second.accuracy).absoluteValue > 30) {
                         // time difference is not huge but accuracy is better, use first location
                         return first
                     } else {

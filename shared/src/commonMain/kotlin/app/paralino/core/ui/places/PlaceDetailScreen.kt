@@ -135,7 +135,10 @@ fun PlaceDetailScreenCore(
             )
 
             if (finalState.data.fullLoading) {
-                LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
+                LoadingDialog(
+                    text = stringResource(MR.strings.login_step_generic_loading),
+                    progress = null
+                )
             }
         }
     }
@@ -166,47 +169,44 @@ private fun PlaceDetailScreen(
         ),
         userScrollEnabled = userScrollEnabled
     ) {
-        if (state.settings.isNotEmpty()) {
+        this.item(key = "main_header") {
+            PlaceListItem(
+                modifier = Modifier.padding(top = 26.dp),
+                state = PlaceListItemData(
+                    id = state.placeId,
+                    groupId = state.groupId,
+                    name = state.name,
+                    image = state.image,
+                    private = state.private,
+                    lat = 0.0,
+                    lng = 0.0,
+                    radiusMeters = 0
+                ),
+                hasEndArrow = false,
+                backgroundColor = Color.Transparent
+            )
+        }
 
-            this.item(key = "main_header") {
-                PlaceListItem(
-                    modifier = Modifier.padding(top = 26.dp),
-                    state = PlaceListItemData(
-                        id = state.placeId,
-                        groupId = state.groupId,
-                        name = state.name,
-                        image = state.image,
-                        private = state.private,
-                        lat = 0.0,
-                        lng = 0.0,
-                        radiusMeters = 0
-                    ),
-                    hasEndArrow = false,
-                    backgroundColor = Color.Transparent
-                )
-            }
-
-            this.item(key = "map") {
-                // map
+        this.item(key = "map") {
+            // map
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .padding(top = 26.dp),
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colors.background,
+                border = BorderStroke(6.dp, MaterialTheme.colors.surface),
+                elevation = 12.dp
+            ) {
                 Surface(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                        .padding(top = 26.dp),
+                        .fillMaxSize()
+                        .padding(4.dp),
                     shape = MaterialTheme.shapes.medium,
                     color = MaterialTheme.colors.background,
-                    border = BorderStroke(6.dp, MaterialTheme.colors.surface),
-                    elevation = 12.dp
                 ) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(4.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colors.background,
-                    ) {
-                        mapContent(state)
-                    }
+                    mapContent(state)
                 }
             }
         }
