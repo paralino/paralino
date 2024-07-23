@@ -133,6 +133,12 @@ android {
         }
         create("oss") {
             dimension = "source"
+            val propsFile = rootProject.file("user.properties")
+            if (propsFile.exists()) {
+                val props = Properties()
+                props.load(FileInputStream(propsFile))
+                buildConfigField("String", "mapboxAccessToken", props["MAPBOX_ACCESS_TOKEN"] as String)
+            }
         }
         create("google") {
             dimension = "source"
