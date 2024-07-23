@@ -110,6 +110,12 @@ android {
             dimension = "version"
             versionCode = 14
             versionName = "0.5.1"
+
+            val propsFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
+
+            if (!propsFile.exists()) {
+                throw FileNotFoundException("Missing Firebase config file")
+            }
         }
         create("direct") {
             dimension = "version"
