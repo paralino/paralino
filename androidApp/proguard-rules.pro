@@ -123,6 +123,8 @@
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport
 -dontwarn org.joda.time.Instant
+
+-dontwarn org.slf4j.impl.StaticLoggerBinder
 # endregion
 
 # region gson
