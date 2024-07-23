@@ -258,11 +258,11 @@ dependencies {
     implementation(libs.aboutLibraries.compose)
     implementation(libs.sentry.android)
 
-    debugImplementation(project(path = ":appwrite-android"))
-    releaseImplementation(libs.appwrite.android)
+    implementation(project(path = ":appwrite-android"))
+//    releaseImplementation(libs.appwrite.android)
 
-    debugImplementation(platform(libs.okhttp.bom))
-    debugImplementation(libs.okhttp)
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp)
     debugImplementation(libs.logging.interceptor)
     // endregion
 }
