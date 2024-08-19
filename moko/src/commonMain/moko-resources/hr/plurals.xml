@@ -3,15 +3,17 @@
     <plurals name="groups_sharing_duration_type_minutes">
         <item quantity="one">%d minuta</item>
         <item quantity="few">%d minute</item>
+        <item quantity="other">%d minuta</item>
     </plurals>
     <plurals name="groups_sharing_duration_type_hours" tools:ignore="UnusedQuantity">
         <item quantity="one">%d sat</item>
-        <item quantity="two">%d sata</item>
-        <item quantity="few">%d sati</item>
+        <item quantity="few">%d sata</item>
+        <item quantity="other">%d sati</item>
     </plurals>
     <plurals name="groups_sharing_duration_type_days">
         <item quantity="one">%d dan</item>
         <item quantity="few">%d dana</item>
+        <item quantity="other">%d dana</item>
     </plurals>
     <plurals name="groups_sharing_duration_type_months">
         <item quantity="one">%d mjesec</item>

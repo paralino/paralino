@@ -108,8 +108,8 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 24
-            versionName = "0.9.3"
+            versionCode = 26
+            versionName = "0.9.5"
 
             val propsFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
 
