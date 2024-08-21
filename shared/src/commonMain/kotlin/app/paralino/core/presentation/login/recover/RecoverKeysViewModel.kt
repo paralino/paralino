@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.login.recover
 
 import app.paralino.core.MR
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RecoverAccountUseCase
 import app.paralino.core.models.Payload
@@ -53,7 +53,7 @@ class RecoverKeysViewModel(
             }
 
             _uiState.update { uiState ->
-                val masterAuthKey = config.temporaryMasterAuthKey
+                val masterAuthKey = appPrefs.temporaryMasterAuthKey
                 if (masterAuthKey.isNotBlank()) {
                     keys = userKeys
                     Payload.Success(

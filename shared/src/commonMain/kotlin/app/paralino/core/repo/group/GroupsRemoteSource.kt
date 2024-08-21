@@ -1,9 +1,9 @@
 package app.paralino.core.repo.group
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
@@ -130,7 +130,7 @@ class GroupsRemoteSource constructor(
             val places = placesAsync.await()
 
             groups
-                .filter { AppConfig.isEncryptionSchemeSupported(it.schemeVersion) }
+                .filter { AppPrefs.isEncryptionSchemeSupported(it.schemeVersion) }
                 .map { group ->
                     GroupWithMembersAndPlacesRaw(
                         group = GroupWithMembersRaw(
@@ -160,7 +160,7 @@ class GroupsRemoteSource constructor(
                     remoteConfig.resourceIds.collectionGroupsID,
                     groupId
                 ).parseGroup().also { group ->
-                    if (!AppConfig.isEncryptionSchemeSupported(group.schemeVersion)) {
+                    if (!AppPrefs.isEncryptionSchemeSupported(group.schemeVersion)) {
                         throw UnsupportedGroupEncryptionSchemeException(
                             groupId = group.id,
                             schemeVersion = group.schemeVersion
@@ -183,7 +183,7 @@ class GroupsRemoteSource constructor(
                     collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
                     queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
                 ).map { it.parseGroupSettings() }
-                    .takeIf { it.size == 1 && it.first().ownerUserId == config.userId }
+                    .takeIf { it.size == 1 && it.first().ownerUserId == appPrefs.userId }
                     ?.firstOrNull()
             }
 
@@ -238,7 +238,7 @@ class GroupsRemoteSource constructor(
     suspend fun blockGroup(group: UserGroup) {
         return blocking {
 
-            if (config.userId == group.ownerUserId)
+            if (appPrefs.userId == group.ownerUserId)
                 throw PermissionDeniedException("Owner can not block the group")
 
             val userKey = cryptoUserKeyRepo.activePersonalKeyWithVersion()
@@ -272,7 +272,7 @@ class GroupsRemoteSource constructor(
     suspend fun blockUser(user: MemberModel) {
         return blocking {
 
-            if (config.userId == user.userId)
+            if (appPrefs.userId == user.userId)
                 throw PermissionDeniedException("You can not block yourself")
 
             val userKey = cryptoUserKeyRepo.activePersonalKeyWithVersion()

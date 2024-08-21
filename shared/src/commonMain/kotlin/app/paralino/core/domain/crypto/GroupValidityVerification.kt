@@ -7,7 +7,7 @@ import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -19,7 +19,7 @@ class GroupValidityVerification(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeyRepository,
-    private val config: AppConfig
+    private val appPrefs: AppPrefs
 ) {
 
     private suspend fun verifyUser(
@@ -128,7 +128,7 @@ class GroupValidityVerification(
                 verificationErrors.add(VerificationResultError.MEMBER_MISSING_PUBLIC_KEY)
             }
 
-            if (memberUserId == config.userId) {
+            if (memberUserId == appPrefs.userId) {
                 if (memberGroupSettings == null) {
                     verificationErrors.add(VerificationResultError.MISSING_MEMBER_SETTINGS)
                 } else {
@@ -191,7 +191,7 @@ class GroupValidityVerification(
         val ownerSettings = group
             .takeIf { it.isCurrentUserOwner }
             ?.members
-            ?.firstOrNull { it.member.userId == config.userId }
+            ?.firstOrNull { it.member.userId == appPrefs.userId }
             ?.member?.settings
             ?: return IntegrityResult.CORRUPTED
 
@@ -224,7 +224,7 @@ class GroupValidityVerification(
     }
 
     suspend fun checkIntegrityForMemberKey(group: UserGroupWithMembers): IntegrityResult {
-        val mySettings = group.members.firstOrNull { it.member.userId == config.userId }?.member?.settings
+        val mySettings = group.members.firstOrNull { it.member.userId == appPrefs.userId }?.member?.settings
         val integrity = getIntegrity(
             groupId = group.group.id,
             serverIntegrity = group.group.serverIntegrity,

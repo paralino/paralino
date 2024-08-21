@@ -5,7 +5,7 @@ import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +24,7 @@ class MainViewModel constructor(
     private val userStateMonitor: AppAccountStateMonitor,
     private val sessionMonitor: UserSessionMonitor,
     private val userRepo: UserRepository,
-    private val appConfigRepository: AppConfigRepository,
+    private val remoteConfigRepository: RemoteConfigRepository,
     private val expiredSessionHandler: ExpiredSessionHandler,
     private val appUpdateManager: IAppUpdateManager
 ) : CoreViewModel() {
@@ -44,7 +44,7 @@ class MainViewModel constructor(
             .onEach { userState -> _uiState.update { it.copy(userState = userState) } }
             .launchIn(coroutineScope)
 
-        appConfigRepository.getUpdateType()
+        remoteConfigRepository.getUpdateType()
             .onEach { updateType -> _uiState.update { it.copy(updateType = updateType) } }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
@@ -60,7 +60,7 @@ class MainViewModel constructor(
 
     fun cancelVersion() {
         coroutineScope.launch {
-            appConfigRepository.cancelNewAppVersion()
+            remoteConfigRepository.cancelNewAppVersion()
             if (_uiState.value.updateType?.isForced != true) {
                 _uiState.update { it.copy(updateType = null) }
             }

@@ -22,7 +22,7 @@ import app.paralino.android.tracking.LocationService
 import app.paralino.core.CoreAppManager
 import app.paralino.core.MR
 import app.paralino.core.ParalinoCore
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
@@ -136,7 +136,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
     private fun initCrashReporting() {
         SentryAndroid.init(this) {
             it.isSendDefaultPii = false
-            it.isEnabled = AppConfig.instance.errorReporting
+            it.isEnabled = AppPrefs.instance.errorReporting
         }
     }
 

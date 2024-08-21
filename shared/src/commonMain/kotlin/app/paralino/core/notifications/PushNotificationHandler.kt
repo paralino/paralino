@@ -1,6 +1,6 @@
 package app.paralino.core.notifications
 
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.BackendDatabaseType
@@ -19,7 +19,7 @@ class PushNotificationHandler constructor(
     private val groupMemberActivityPush: GroupActivityNotificationsHandler,
     private val locationRequestPush: LocationRequestNotificationHandler,
     private val docApi: IDocumentsApi,
-    private val config: AppConfig,
+    private val appPrefs: AppPrefs,
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "notification_sync"
@@ -55,7 +55,7 @@ class PushNotificationHandler constructor(
     private suspend fun checkForPushNotificationsImpl() {
         logg.tag("push_notifications").v("Start checking push notifications")
 
-        val deviceQuery = listOfNotNull(config.deviceId, config.sessionId)
+        val deviceQuery = listOfNotNull(appPrefs.deviceId, appPrefs.sessionId)
             .filter { it.isNotBlank() }
             .takeIf { it.isNotEmpty() }
             ?.let { BackendQuery.Equals(key = "deviceId", value = it) }
@@ -226,6 +226,6 @@ class PushNotificationHandler constructor(
     }
 
     private fun PushNotificationRaw.isForThisDevice(): Boolean {
-        return this.deviceId.isNullOrBlank() || this.deviceId == config.deviceId || this.deviceId == config.sessionId
+        return this.deviceId.isNullOrBlank() || this.deviceId == appPrefs.deviceId || this.deviceId == appPrefs.sessionId
     }
 }

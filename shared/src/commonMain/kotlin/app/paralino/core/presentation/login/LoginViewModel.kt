@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.login
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
@@ -9,9 +9,8 @@ import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -31,13 +30,13 @@ class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase,
     private val createAccountUseCase: CreateAccountUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
-    private val appConfigRepository: AppConfigRepository,
+    private val remoteConfigRepository: RemoteConfigRepository,
     private val startScreenUiType: LoginScreenUiType,
-    private val config: AppConfig
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     val initialUiType: LoginScreenUiType
-        get() = if (appConfigRepository.configState.value.isEmailEnabled) startScreenUiType else LoginScreenUiType.SIGNUP_GUEST
+        get() = if (remoteConfigRepository.configState.value.isEmailEnabled) startScreenUiType else LoginScreenUiType.SIGNUP_GUEST
 
     private val _uiState: MutableStateFlow<LoginScreenState>
     val uiState: StateFlow<LoginScreenState>
@@ -48,9 +47,9 @@ class LoginViewModel constructor(
     init {
         _uiState = MutableStateFlow(
             LoginScreenState(
-                canUseEmail = appConfigRepository.configState.value.isEmailEnabled,
+                canUseEmail = remoteConfigRepository.configState.value.isEmailEnabled,
                 uiType = initialUiType,
-                alertDialog = if (config.hasGuestAccount()) {
+                alertDialog = if (appPrefs.hasGuestAccount()) {
                     MainAlertDialog.GuestAccountRecover
                 } else {
                     null
@@ -59,7 +58,7 @@ class LoginViewModel constructor(
         )
         uiState = _uiState
 
-        appConfigRepository.getConfig()
+        remoteConfigRepository.getConfig()
             .onEach { config ->
                 _uiState.update {
                     it.copy(
@@ -95,7 +94,7 @@ class LoginViewModel constructor(
                 password = "***"
             )
         }
-        loginUseCase.login(email = config.guestEmail, password = config.guestPassword)
+        loginUseCase.login(email = appPrefs.guestEmail, password = appPrefs.guestPassword)
             .onEach { processStep(it) }
             .catch {
 
@@ -352,7 +351,7 @@ class LoginViewModel constructor(
             return
 
         if (type != LoginScreenUiType.SIGNUP_GUEST && !_uiState.value.canUseEmail) {
-            if (!config.hasGuestAccount()) {
+            if (!appPrefs.hasGuestAccount()) {
                 _uiState.update {
                     it.copy(alertDialog = MainAlertDialog.ComingSoon)
                 }
@@ -434,8 +433,8 @@ class LoginViewModel constructor(
     }
 
     private fun dismissGuestAccount() {
-        config.guestEmail = ""
-        config.guestPassword = ""
+        appPrefs.guestEmail = ""
+        appPrefs.guestPassword = ""
         _uiState.update { it.copy(alertDialog = null) }
     }
 
@@ -479,7 +478,7 @@ class LoginViewModel constructor(
                         } else if (event.action.action == MainAlertDialog.Buttons.buttonCancel) {
                             _uiState.update {
                                 it.copy(
-                                    alertDialog = if (config.hasGuestAccount()) {
+                                    alertDialog = if (appPrefs.hasGuestAccount()) {
                                         MainAlertDialog.GuestAccountRecover
                                     } else {
                                         null
@@ -495,7 +494,7 @@ class LoginViewModel constructor(
     }
 
     private fun hideDialog() {
-        if (!config.hasGuestAccount()) {
+        if (!appPrefs.hasGuestAccount()) {
             _uiState.update { it.copy(alertDialog = null) }
         }
     }

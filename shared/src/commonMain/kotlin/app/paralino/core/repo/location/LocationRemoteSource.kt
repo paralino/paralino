@@ -1,6 +1,6 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
@@ -69,11 +69,11 @@ class LocationRemoteSource constructor(
     suspend fun saveCurrentLocation(data: MemberGroupId): MemberLocationRaw {
         val memberKey = cryptoKEKRepo.getMemberSenderKey(
             groupId = data.groupId,
-            memberUserId = config.userId,
+            memberUserId = appPrefs.userId,
             locationId = data.locationId
         )
         if (memberKey !is GroupMemberSenderKey.Valid)
-            throw MissingMemberKeyException(data.groupId, config.userId)
+            throw MissingMemberKeyException(data.groupId, appPrefs.userId)
 
         val locationData = data.locationData?.let {
             cryptoCore.encryptDataWithKey(
@@ -110,7 +110,7 @@ class LocationRemoteSource constructor(
                 documentId = memberId
             ).let { MemberDocumentRaw.from(it) }
 
-            val settings = if (member.ownerUserId == config.userId) {
+            val settings = if (member.ownerUserId == appPrefs.userId) {
                 documentApi.getDocument(
                     databaseType = BackendDatabaseType.DATA,
                     collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,

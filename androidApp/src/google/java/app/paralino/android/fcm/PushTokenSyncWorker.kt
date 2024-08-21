@@ -11,7 +11,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import app.paralino.android.notification.SyncNotificationProvider
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.getOrThrow
@@ -38,7 +38,7 @@ class PushTokenSyncWorker(
                 FirebaseMessaging.getInstance().token.await()
             }
             logg.tag("push_notifications").v("Got token from firebase: $token")
-            config.pushTokenUnsynced = token
+            appPrefs.pushTokenUnsynced = token
             userDataUpdate.userDataUpdate.registerPushTokenIfNeeded()?.getOrThrow()
         } catch (e: Exception) {
             logg.tag("push_notifications").e("Error syncing push token", e)

@@ -1,7 +1,7 @@
 package app.paralino.core.notifications
 
 import app.paralino.core.MR
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
@@ -45,7 +45,7 @@ class GroupActivityNotificationsHandler(
             val groupName = group?.data?.data?.name //?.let { "$groupEmoji$it" }
             val memberName = member?.name //?.let { "$memberEmoji$it" }
 
-            if (payload.memberUserId == config.userId) {
+            if (payload.memberUserId == appPrefs.userId) {
                 if (groupName.isNullOrBlank()) {
                     MR.strings.group_member_current_add_notification_default.localizedString()
                 } else {
@@ -98,7 +98,7 @@ class GroupActivityNotificationsHandler(
             val member = group?.memberByUserId(payload.memberUserId)
             val memberName = member?.name
 
-            if (payload.memberUserId == config.userId) {
+            if (payload.memberUserId == appPrefs.userId) {
                 MR.strings.group_member_current_sharing_started_notification.localizedString()
             } else {
                 if (memberName.isNullOrBlank()) {

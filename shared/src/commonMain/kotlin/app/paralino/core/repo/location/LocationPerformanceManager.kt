@@ -1,6 +1,6 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
@@ -23,11 +23,11 @@ import kotlin.time.Duration.Companion.seconds
 class LocationPerformanceManager constructor(
     private val scope: ICoroutineScopeProvider,
     private val deviceStatus: IDeviceApiProvider,
-    private val config: AppConfig
+    private val appPrefs: AppPrefs
 ) {
 
     private val _locationPerformanceType = MutableStateFlow(
-        LocationPerformanceModel(isBoostedManually = config.trackingBoostEndTime?.let { it > nowUTC() } == true)
+        LocationPerformanceModel(isBoostedManually = appPrefs.trackingBoostEndTime?.let { it > nowUTC() } == true)
     )
     val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
     private var performanceUpdateJob: Job? = null
@@ -83,7 +83,7 @@ class LocationPerformanceManager constructor(
                 .v("Device in manual boost, ignore performance reset for (${request.type})")
             performanceUpdateJob?.cancel()
             val remainingDuration =
-                config.trackingBoostEndTime?.let { it - nowUTC() }?.takeIf { it.isPositive() }
+                appPrefs.trackingBoostEndTime?.let { it - nowUTC() }?.takeIf { it.isPositive() }
             if (remainingDuration != null) {
                 schedulePerformanceReset(
                     type = LocationPerformanceType.BALANCED,
@@ -117,7 +117,7 @@ class LocationPerformanceManager constructor(
             logg.tag("location_performance")
                 .v("Schedule location performance reset from ${_locationPerformanceType.value.current} to $type in $resetDelayMillis")
             delay(resetDelayMillis)
-            val isManualBoostExpired = config.trackingBoostEndTime?.let { it < nowUTC() } ?: true
+            val isManualBoostExpired = appPrefs.trackingBoostEndTime?.let { it < nowUTC() } ?: true
             if (_locationPerformanceType.value.current < LocationPerformanceType.MANUAL_BOOST) {
                 logg.tag("location_performance")
                     .v("Reset location performance from ${_locationPerformanceType.value.current} to $type")

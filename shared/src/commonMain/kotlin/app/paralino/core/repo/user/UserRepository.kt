@@ -1,6 +1,6 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.EncodingType
 import app.paralino.core.crypto.HashType
@@ -21,7 +21,7 @@ import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.provider.ICoroutineScopeProvider
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
@@ -45,10 +45,10 @@ class UserRepository constructor(
     private val userKeyRepo: CryptoUserKeyRepository,
     private val userMapper: UserMapperCore,
     private val cryptoCore: CryptoCore,
-    private val appConfigRepo: AppConfigRepository
+    private val remoteConfigRepo: RemoteConfigRepository
 ) : BaseRepository() {
 
-    val cachedUserId: String get() = config.userId
+    val cachedUserId: String get() = appPrefs.userId
 
     val localUser: StateFlow<Resource<UserMe?>> = combine(
         local.getMeRaw(),
@@ -87,7 +87,7 @@ class UserRepository constructor(
 
     val userPlans: StateFlow<UserPlans> = combine(
         local.getPlans(),
-        appConfigRepo.configState
+        remoteConfigRepo.configState
     ) { plans, config ->
         UserPlans(
             rawPlans = plans,
@@ -96,12 +96,12 @@ class UserRepository constructor(
     }
         .catch {
             logg.w("User plans parsing error: ${it.message}")
-            emit(UserPlans(emptyList(), appConfigRepo.configState.value))
+            emit(UserPlans(emptyList(), remoteConfigRepo.configState.value))
         }
         .stateIn(
             scope = scopeProvider.defaultIOScope,
             started = SharingStarted.Eagerly,
-            initialValue = UserPlans(emptyList(), appConfigRepo.configState.value)
+            initialValue = UserPlans(emptyList(), remoteConfigRepo.configState.value)
         )
 
     val cachedUser: UserMe? get() = localUser.value.data
@@ -123,13 +123,13 @@ class UserRepository constructor(
 
     suspend fun initLocallyAfterSignUp(userMeRaw: UserMeRaw, userSession: UserSession) {
         updateLocalUser(userMeRaw)
-        config.deviceId = cryptoCore.hashProvider.computeHash(
-            data = "${userMeRaw.id}${config.deviceIdSeed}",
+        appPrefs.deviceId = cryptoCore.hashProvider.computeHash(
+            data = "${userMeRaw.id}${appPrefs.deviceIdSeed}",
             type = HashType.GENERIC_256,
             encodingType = EncodingType.BASE64_URL
         )
-        config.sessionId = userSession.id
-        config.emailConfirmed = true
+        appPrefs.sessionId = userSession.id
+        appPrefs.emailConfirmed = true
         sessionMonitor.updateSessionState(state = UserSessionState.OK)
     }
 
@@ -170,7 +170,7 @@ class UserRepository constructor(
                 logg.v("User does not exist")
             } else {
                 if (e is UnverifiedUserException)
-                    config.emailConfirmed = false
+                    appPrefs.emailConfirmed = false
                 logg.e("Error refreshing user")
             }
             throw e
@@ -202,9 +202,9 @@ class UserRepository constructor(
     }
 
     suspend fun updateLocalUser(data: UserMeRaw) {
-        config.userId = data.id
-        config.email = data.email
-        config.wasUserLoggedIn = true
+        appPrefs.userId = data.id
+        appPrefs.email = data.email
+        appPrefs.wasUserLoggedIn = true
         local.update(data)
     }
 

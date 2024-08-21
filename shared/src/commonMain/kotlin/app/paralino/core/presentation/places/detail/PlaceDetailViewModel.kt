@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.places.detail
 
 import app.paralino.core.BuildKonfig
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
@@ -57,8 +57,8 @@ class PlaceDetailViewModel(
                         name = member.member.name,
                         image = member.member.image ?: ImageModel.emoji(Emojis.robot),
                         // default to true for other members and false to current user
-                        notifyEnter = memberSetting?.enter ?: (member.member.userId != config.userId),
-                        notifyExit = memberSetting?.exit ?: (member.member.userId != config.userId),
+                        notifyEnter = memberSetting?.enter ?: (member.member.userId != appPrefs.userId),
+                        notifyExit = memberSetting?.exit ?: (member.member.userId != appPrefs.userId),
                         loadingEnter = false,
                         loadingExit = false
                     )
@@ -122,7 +122,7 @@ class PlaceDetailViewModel(
     private fun canEditPlace(): Boolean {
         val place = placeFlow.value.data ?: return false
         val group = groupFlow.value.data ?: return false
-        return group.isCurrentUserOwner || place.place.ownerUserId == config.userId
+        return group.isCurrentUserOwner || place.place.ownerUserId == appPrefs.userId
     }
 
     fun toggleEnterSettings(userId: String) {
@@ -188,7 +188,7 @@ class PlaceDetailViewModel(
 
     private fun List<PlaceSettingsState>.sortedSettings(): List<PlaceSettingsState> {
         return this.sortedBy { it.name }
-            .sortedBy { it.memberUserId == config.userId }
+            .sortedBy { it.memberUserId == appPrefs.userId }
     }
 
 }

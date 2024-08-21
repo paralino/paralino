@@ -1,6 +1,6 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.provider.IOneTimeLocationProvider
@@ -48,7 +48,7 @@ class MemberDeviceStatusProcessor(
                 timeMillis = 10.minutes.inWholeMilliseconds
             )
         ) {
-            val memberModels = local.getMemberModelsWithLocationForUser(config.userId)
+            val memberModels = local.getMemberModelsWithLocationForUser(appPrefs.userId)
                 .mapNotNull { it.currentDeviceLocation }
                 .filter {
                     val sharingActive = sharingManager.isSharingActiveForGroup(it.groupId)
@@ -76,7 +76,7 @@ class MemberDeviceStatusProcessor(
                 timeMillis = 4.hours.inWholeMilliseconds
             )
         ) {
-            val memberModels = local.getMemberModelsWithLocationForUser(config.userId)
+            val memberModels = local.getMemberModelsWithLocationForUser(appPrefs.userId)
                 .mapNotNull { it.currentDeviceLocation }
                 .filter {
                     val sharingActive = sharingManager.isSharingActiveForGroup(it.groupId)

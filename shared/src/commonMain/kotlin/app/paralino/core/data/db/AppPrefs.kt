@@ -1,23 +1,23 @@
 package app.paralino.core.data.db
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.datetime.Instant
 
-expect class AppConfigProvider {
+expect class AppPrefsProvider {
     val userSettings: Settings
     val appSettings: Settings
 }
 
-class AppConfig(
-    private val provider: AppConfigProvider
+class AppPrefs(
+    private val provider: AppPrefsProvider
 ) {
 
     companion object {
-        lateinit var instance: AppConfig
+        lateinit var instance: AppPrefs
 
         const val supportedEncryptionScheme: String = "1.0"
         fun shouldUpgradeEncryptionScheme(schemeVersion: String): Boolean {
@@ -196,8 +196,8 @@ class AppConfig(
         }
 
     fun hasGuestAccount(): Boolean {
-        val emailValidation = FormValidation.Email.validate(config.guestEmail)
-        val passwordValidation = FormValidation.Password.validate(config.guestPassword)
+        val emailValidation = FormValidation.Email.validate(appPrefs.guestEmail)
+        val passwordValidation = FormValidation.Password.validate(appPrefs.guestPassword)
         return emailValidation.result && passwordValidation.result
     }
 

@@ -8,9 +8,9 @@ import app.paralino.android.BuildConfig
 import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.isBatteryCharging
-import app.paralino.core.config
-import app.paralino.core.data.db.AppConfig
-import app.paralino.core.data.db.AppConfigProvider
+import app.paralino.core.appPrefs
+import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.data.db.AppPrefsProvider
 import app.paralino.core.logg
 import app.paralino.core.models.BackendConfig
 import app.paralino.core.models.base.DeviceType
@@ -62,7 +62,7 @@ class DeviceApiProvider constructor(
                 message: String,
                 t: Throwable?
             ) {
-                if (!config.errorReporting) {
+                if (!appPrefs.errorReporting) {
                     return
                 }
 
@@ -80,8 +80,8 @@ class DeviceApiProvider constructor(
         }
     }
 
-    override fun createConfig(): AppConfig {
-        return AppConfig(AppConfigProvider(appClass))
+    override fun createConfig(): AppPrefs {
+        return AppPrefs(AppPrefsProvider(appClass))
     }
 
     override fun copyToClipboard(data: String) {

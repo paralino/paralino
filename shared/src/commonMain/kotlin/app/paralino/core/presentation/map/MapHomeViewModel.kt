@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
@@ -84,7 +84,7 @@ class MapHomeViewModel constructor(
     private val clearUserLocation: ClearUserLocationUseCase,
     private val realtimeEvents: RealtimeEventsMaker,
     private val userRepository: UserRepository,
-    private val config: AppConfig,
+    private val appPrefs: AppPrefs,
     private val deviceApiProvider: IDeviceApiProvider,
     val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
@@ -137,7 +137,7 @@ class MapHomeViewModel constructor(
     init {
         allGroups.onEach { groupsData ->
             val selectedGroup = groupIdData.value.takeIf { it.isNotBlank() }
-                ?: config.selectedGroupId
+                ?: appPrefs.selectedGroupId
             if (groupsData is Resource.Ready && groupsData.data.isNotEmpty() && !selectedGroup.isNullOrBlank()) {
                 if (groupsData.data.none { it.id == selectedGroup }) {
                     switchGroup(groupsData.data.firstOrNull()?.id ?: "")
@@ -217,7 +217,7 @@ class MapHomeViewModel constructor(
                                     GroupMemberItemStateWithOneLocation(
                                         memberState = GroupMemberState(
                                             member = member.member,
-                                            isCurrentUser = member.member.userId == config.userId,
+                                            isCurrentUser = member.member.userId == appPrefs.userId,
                                             canHaveExpandButton = false
                                         ),
                                         actions = MemberActionsState(),
@@ -227,7 +227,7 @@ class MapHomeViewModel constructor(
                             } else {
                                 val memberState = GroupMemberState(
                                     member = member.member,
-                                    isCurrentUser = member.member.userId == config.userId,
+                                    isCurrentUser = member.member.userId == appPrefs.userId,
                                     canHaveExpandButton = false
                                 )
                                 member.locations.map { location ->
@@ -253,8 +253,8 @@ class MapHomeViewModel constructor(
                                             deleteLocation = takeIf {
                                                 canDeleteLocation(
                                                     groupId = group.id,
-                                                    isCurrentUser = member.member.userId == config.userId,
-                                                    isCurrentDevice = location.deviceId == config.deviceId,
+                                                    isCurrentUser = member.member.userId == appPrefs.userId,
+                                                    isCurrentDevice = location.deviceId == appPrefs.deviceId,
                                                     hasLocation = locationVisibility.isVisible()
                                                 )
                                             }?.let {
@@ -304,7 +304,7 @@ class MapHomeViewModel constructor(
                                             name = location.name,
                                             image = member.member.image,
                                             canEdit = false,
-                                            currentDevice = location.deviceId == config.deviceId,
+                                            currentDevice = location.deviceId == appPrefs.deviceId,
                                             showSpeedAndElevation = true,
                                             visibility = locationVisibility,
                                             formatter = valueFormatter
@@ -438,10 +438,10 @@ class MapHomeViewModel constructor(
 
     fun switchGroup(groupId: String) {
         val newGroupId = allGroups.value.data?.firstOrNull { it.id == groupId }?.id
-            ?: allGroups.value.data?.firstOrNull { it.id == config.selectedGroupId }?.id
+            ?: allGroups.value.data?.firstOrNull { it.id == appPrefs.selectedGroupId }?.id
             ?: allGroups.value.data?.firstOrNull()?.id
             ?: ""
-        config.selectedGroupId = newGroupId
+        appPrefs.selectedGroupId = newGroupId
         groupIdData.update { newGroupId }
     }
 
@@ -704,7 +704,7 @@ class MapHomeViewModel constructor(
                                             ?.takeIf { action ->
                                                 canDeleteLocation(
                                                     groupId = memberState.memberState.groupId,
-                                                    isCurrentUser = memberState.memberState.userId == config.userId,
+                                                    isCurrentUser = memberState.memberState.userId == appPrefs.userId,
                                                     isCurrentDevice = memberState.location?.currentDevice == true,
                                                     hasLocation = memberState.location?.visibility?.isVisible() == true
                                                 )

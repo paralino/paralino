@@ -1,6 +1,6 @@
 package app.paralino.core.models.group
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
@@ -31,7 +31,7 @@ data class UserGroup constructor(
     val name: String get() = nameOrNull ?: "---"
     val nameOrNull: String? get() = data.data?.name
     val image: ImageModel get() = data.data?.image ?: ImageModel.emoji(Emojis.lock)
-    val isCurrentUserOwner: Boolean get() = ownerUserId == config.userId
+    val isCurrentUserOwner: Boolean get() = ownerUserId == appPrefs.userId
     val enforceMemberAuthentication: Boolean = data.data?.enforceMemberAuthentication != false
 
     companion object {
@@ -68,7 +68,7 @@ data class UserGroupWithMembers constructor(
     val members: List<MemberModelWithLocations>
 ) {
 
-    val isGroupVerified get() = memberByUserId(config.userId)!!.isVerified
+    val isGroupVerified get() = memberByUserId(appPrefs.userId)!!.isVerified
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
     val groupKeyVersion: Long get() = group.groupKeyVersion
@@ -86,7 +86,7 @@ data class UserGroupWithMembers constructor(
 
     val currentDeviceLocation: MemberLocation?
         get() {
-            return members.firstOrNull { it.member.userId == config.userId }?.currentDeviceLocation
+            return members.firstOrNull { it.member.userId == appPrefs.userId }?.currentDeviceLocation
         }
 }
 

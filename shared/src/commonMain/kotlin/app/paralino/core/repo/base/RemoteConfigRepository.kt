@@ -1,6 +1,6 @@
 package app.paralino.core.repo.base
 
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.ConfigNodeEntity
 import app.paralino.core.data.db.mapToList
@@ -21,12 +21,12 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 
-class AppConfigRepository(
+class RemoteConfigRepository(
     private val database: AppDatabaseHelper,
     private val functionsApi: IFunctionsApi,
     private val deviceApiProvider: IDeviceApiProvider,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val config: AppConfig,
+    private val appPrefs: AppPrefs,
 ) : BaseRepository() {
 
     val configState: StateFlow<ConfigData> = getConfig()
@@ -71,10 +71,10 @@ class AppConfigRepository(
     }
 
     suspend fun cancelNewAppVersion() {
-        val appConfig = getConfigOnce()
-        config.dismissedAppVersion = when (deviceApiProvider.deviceType) {
-            DeviceType.Android -> appConfig.newVersionAndroid
-            DeviceType.iOS -> appConfig.newVersionIOS
+        val remoteConfig = getConfigOnce()
+        appPrefs.dismissedAppVersion = when (deviceApiProvider.deviceType) {
+            DeviceType.Android -> remoteConfig.newVersionAndroid
+            DeviceType.iOS -> remoteConfig.newVersionIOS
         }
     }
 
@@ -116,7 +116,7 @@ class AppConfigRepository(
         return when {
             currentVersion < minVersion -> AppUpdateType.FORCE_AND_CANCEL(configData)
             currentVersion < minUiVersion -> AppUpdateType.FORCE(configData)
-            currentVersion < newVersion && newVersion > config.dismissedAppVersion -> AppUpdateType.SOFT(
+            currentVersion < newVersion && newVersion > appPrefs.dismissedAppVersion -> AppUpdateType.SOFT(
                 configData
             )
 

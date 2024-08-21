@@ -1,6 +1,6 @@
 package app.paralino.core.provider
 
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,7 +64,7 @@ abstract class IDeviceApiProvider(
     abstract val defaultDeviceName: String
     abstract fun createSystemLogr(): SystemLogr
     abstract fun createCrashReportingLogr(): SystemLogr
-    abstract fun createConfig(): AppConfig
+    abstract fun createConfig(): AppPrefs
     abstract fun copyToClipboard(data: String)
     abstract suspend fun logout()
 }

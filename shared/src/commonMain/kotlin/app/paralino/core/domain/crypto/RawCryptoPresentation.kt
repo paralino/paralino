@@ -1,7 +1,7 @@
 package app.paralino.core.domain.crypto
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
@@ -23,7 +23,7 @@ class RawCryptoPresentation constructor(
     private val groupLocal: UserGroupLocalDataSource,
     private val memberLocal: LocationLocalDataSource,
     private val userLocal: UserLocalDataSource,
-    private val config: AppConfig
+    private val appPrefs: AppPrefs
 ) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -35,11 +35,11 @@ class RawCryptoPresentation constructor(
                     subtitle = null,
                     contentIdInfo = buildList {
                         // only allow group owner to see group id
-                        if (it.first.ownerUserId == config.userId) {
+                        if (it.first.ownerUserId == appPrefs.userId) {
                             add("GroupID: **$groupId**")
                         }
                         add("Group encryption scheme: **${it.first.schemeVersion}**")
-                        add("Supported encryption scheme: **${AppConfig.supportedEncryptionScheme}**")
+                        add("Supported encryption scheme: **${AppPrefs.supportedEncryptionScheme}**")
                     },
                     rawData = it.first.data,
                     decryptedData = it.second.data.mapSuccess {
@@ -48,7 +48,7 @@ class RawCryptoPresentation constructor(
                     type = RawPresentationDataType.GroupPresentation(groupId)
                 )
                 val myMemberId =
-                    memberLocal.getUserMemberId(groupId = groupId, userId = config.userId) ?: ""
+                    memberLocal.getUserMemberId(groupId = groupId, userId = appPrefs.userId) ?: ""
                 getGroupMemberRawPresentation(group = it.second, memberId = myMemberId)
                     .map {
                         RawPresentationModel(
@@ -68,7 +68,7 @@ class RawCryptoPresentation constructor(
                     title = it.second.nameOrNull?.let { "**$it**" } ?: "---",
                     subtitle = null,
                     contentIdInfo = buildList {
-                        if (it.first.ownerUserId == config.userId) {
+                        if (it.first.ownerUserId == appPrefs.userId) {
                             // only allow place owner to see place id
                             add("PlaceID: **$placeId**")
                         }
@@ -148,7 +148,7 @@ class RawCryptoPresentation constructor(
                                     .plus(": **$it**")
                             },
                             contentIdInfo = buildList {
-                                if (rawPair.first.member.ownerUserId == config.userId) {
+                                if (rawPair.first.member.ownerUserId == appPrefs.userId) {
                                     add("DeviceID: **${location.deviceId}**")
                                 }
                             },
@@ -170,8 +170,8 @@ class RawCryptoPresentation constructor(
                             },
                             subtitle = null,
                             contentIdInfo = buildList {
-                                if (rawPair.first.member.ownerUserId == config.userId) {
-                                    add("UserID: **${config.userId}**")
+                                if (rawPair.first.member.ownerUserId == appPrefs.userId) {
+                                    add("UserID: **${appPrefs.userId}**")
                                     add("MemberID: **${rawPair.first.member.id}**")
                                 }
                                 add("Devices: **${rawPair.first.locations.size}**")
@@ -228,8 +228,8 @@ class RawCryptoPresentation constructor(
                         if (it?.second?.isGuestUser == false) {
                             add("Email: **${it.second.email}**")
                         }
-                        add("UserID: **${config.userId}**")
-                        add("DeviceID: **${config.deviceId}**")
+                        add("UserID: **${appPrefs.userId}**")
+                        add("DeviceID: **${appPrefs.deviceId}**")
                     },
                     rawData = it?.first?.data?.let {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)

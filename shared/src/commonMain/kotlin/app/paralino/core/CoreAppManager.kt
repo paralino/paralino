@@ -1,6 +1,6 @@
 package app.paralino.core
 
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.LogoutUseCase
@@ -11,7 +11,7 @@ import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.catch
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class CoreAppManager(
     private val scopeProvider: ICoroutineScopeProvider,
-    private val configRepo: AppConfigRepository,
+    private val configRepo: RemoteConfigRepository,
     private val refreshManager: RefreshEverythingUseCase,
     private val sessionMonitor: UserSessionMonitor,
     private val logoutUseCase: LogoutUseCase,
@@ -31,7 +31,7 @@ class CoreAppManager(
     private val deviceApiProvider: IDeviceApiProvider,
     private val userRepo: UserRepository,
     private val expiredSessionHandler: ExpiredSessionHandler,
-    private val config: AppConfig
+    private val appPrefs: AppPrefs
 ) {
 
     fun onAppStart() {
@@ -96,7 +96,7 @@ class CoreAppManager(
     }
 
     private fun updateGroups() {
-        if (!config.isTokenValid) {
+        if (!appPrefs.isTokenValid) {
             logg.tag("app_state").v("Skip refresh, token is invalid")
             return
         }

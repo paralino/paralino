@@ -8,7 +8,7 @@ import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.crypto.user.UserCryptoKeyLocalDataSource
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.GroupValidityVerification
@@ -70,7 +70,7 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -128,7 +128,7 @@ object ParalinoCore {
         val backendConfig = koinApp.koin.get<BackendConfig>()
         val inAppLogger = koinApp.koin.get<InAppLogger>()
 
-        AppConfig.instance = deviceApiProvider.createConfig()
+        AppPrefs.instance = deviceApiProvider.createConfig()
         connectionStatus = deviceApiProvider.connectionStatusProvider
 
         logr.init(
@@ -139,8 +139,8 @@ object ParalinoCore {
             )
         )
 
-        if (config.deviceIdSeed.isBlank()) {
-            config.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
+        if (appPrefs.deviceIdSeed.isBlank()) {
+            appPrefs.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
         if (backendConfig.serverUrl.isBlank() || backendConfig.projectId.isBlank()) {
@@ -172,7 +172,7 @@ val dataSourceModule = module {
     single { LocationLocalDataSource(get(), get()) }
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
-    single { UserCryptoKeyLocalDataSource(get(), config, get()) }
+    single { UserCryptoKeyLocalDataSource(get(), appPrefs, get()) }
     single { CryptoKeyLocalDataSource(get(), get()) }
     single { UserGroupLocalDataSource(get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
@@ -190,7 +190,7 @@ val dataSourceModule = module {
 }
 
 val coreModule = module {
-    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
+    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
     single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get()) }
 
@@ -200,17 +200,17 @@ val coreModule = module {
     factory { ChangeCredentialsUseCase(get(), get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get()) }
-    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), config) }
+    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), appPrefs) }
     factory { LocationRequestUseCase(get(), get()) }
     factory { ClearUserLocationUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory { RawCryptoPresentation(get(), get(), get(), get(), config) }
+    factory { RawCryptoPresentation(get(), get(), get(), get(), appPrefs) }
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -229,13 +229,13 @@ val coreModule = module {
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
-    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), config) }
-    single { AppConfigRepository(get(), get(), get(), get(), config) }
+    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { RemoteConfigRepository(get(), get(), get(), get(), appPrefs) }
 
-    single { GroupValidityVerification(get(), get(), get(), config) }
+    single { GroupValidityVerification(get(), get(), get(), appPrefs) }
     single { LocationSharingManager(get(), get()) }
     single { UserSessionMonitor() }
-    single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), config) }
+    single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
     single { LocationPayloadProvider(get(), get(), get(), get()) }
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get()) }
@@ -244,11 +244,11 @@ val coreModule = module {
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get(), get()) }
 
-    single { PushNotificationHandler(get(), get(), get(), get(), config) }
+    single { PushNotificationHandler(get(), get(), get(), get(), appPrefs) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get(), get()) }
     factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get(), get(), get()) }
     factory { GroupActivityNotificationsHandler(get(), get(), get(), get(), get()) }
-    single { LocationPerformanceManager(get(), get(), config) }
+    single { LocationPerformanceManager(get(), get(), appPrefs) }
 
     single { InAppLogger(get(), get(), get()) }
     single { LimitedExecutionParentManager() }

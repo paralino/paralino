@@ -12,7 +12,7 @@ import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.utils.ConditionErrorType
@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
     groupId: String?,
-    private val appConfigRepo: AppConfigRepository,
+    private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
@@ -122,7 +122,7 @@ class SharingStartViewModel(
             it.copy(
                 groupState = Payload.Success(groupItem),
                 devicesLimit = group.group.devicesLimitOverride?.toInt()
-                    ?: appConfigRepo.configState.value.planConfigForPlanType(group.group.planType).devicesLimit
+                    ?: remoteConfigRepo.configState.value.planConfigForPlanType(group.group.planType).devicesLimit
             )
         }
     }

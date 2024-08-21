@@ -2,7 +2,7 @@ package app.paralino.core.provider
 
 import app.paralino.core.CoreAppManager
 import app.paralino.core.app_update.IAppUpdateManager
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.LogsDatabaseHelper
@@ -125,11 +125,11 @@ object KoinIOS {
         return module {
             factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), config, get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get())
             }
-            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), config) }
+            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
             factory { (startScreenType: LoginScreenUiType) ->
-                LoginViewModel(get(), get(), get(), get(), startScreenType, config)
+                LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs)
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
