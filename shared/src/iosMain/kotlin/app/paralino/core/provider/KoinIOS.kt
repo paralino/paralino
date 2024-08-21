@@ -11,7 +11,7 @@ import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
@@ -78,16 +78,16 @@ object KoinIOS {
         groupActivityNotificationPresenter: IGroupActivityNotificationPresenter,
         infoNotificationPresenter: IInfoMessagesNotificationPresenter,
         geofenceManager: IGeofenceManager,
-        backendConfig: BackendConfig,
+        appBuildConfig: AppBuildConfig,
         oneTimeLocationProvider: (
             locationStatusProvider: ILocationStatusProvider,
             locationCacheRepo: LocationCacheRepository
         ) -> IOneTimeLocationProvider,
         remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
-        documentsApi: (IRemoteModule, BackendConfig) -> IDocumentApiIOS,
-        userApi: (IRemoteModule, BackendConfig) -> IUserApiIOS,
-        functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApiIOS,
-        realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
+        documentsApi: (IRemoteModule, AppBuildConfig) -> IDocumentApiIOS,
+        userApi: (IRemoteModule, AppBuildConfig) -> IUserApiIOS,
+        functionsApi: (IRemoteModule, AppBuildConfig) -> IFunctionsApiIOS,
+        realtimeApi: (IRemoteModule, AppBuildConfig) -> IRealtimeApiIOS,
         cryptoServiceProvider: ICryptoServiceProviderIOS,
         valueFormatter: IValueFormatter,
         appUpdateManager: IAppUpdateManager
@@ -103,7 +103,7 @@ object KoinIOS {
                 factory { infoNotificationPresenter } bind IInfoMessagesNotificationPresenter::class
                 single { geofenceManager }
                 single { remoteModule(get()) }
-                single { backendConfig }
+                single { appBuildConfig }
                 single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
                 single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
                 single { FunctionsApiWrapper(functionsApi(get(), get())) } bind IFunctionsApi::class

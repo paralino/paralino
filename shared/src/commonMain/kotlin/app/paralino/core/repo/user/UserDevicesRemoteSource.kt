@@ -2,7 +2,7 @@ package app.paralino.core.repo.user
 
 import app.paralino.core.appPrefs
 import app.paralino.core.domain.location.UserMemberIdUseCase
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.raw.UpdateUserDeviceFunctionData
 import app.paralino.core.models.raw.UserDeviceRaw
@@ -15,21 +15,21 @@ import app.paralino.core.utils.extensions.blocking
 class UserDevicesRemoteSource constructor(
     private val documentApi: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
+    private val appBuildConfig: AppBuildConfig,
     private val userMemberIdUseCase: UserMemberIdUseCase
 ) {
 
     suspend fun getDevicesWithData(): List<UserDeviceRaw> {
         return documentApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = remoteConfig.resourceIds.collectionUserDevicesID
+            collectionId = appBuildConfig.resourceIds.collectionUserDevicesID
         ).map { UserDeviceRaw.from(it) }
     }
 
     suspend fun getCurrentDevicesWithData(): UserDeviceRaw {
         return documentApi.getDocument(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = remoteConfig.resourceIds.collectionUserDevicesID,
+            collectionId = appBuildConfig.resourceIds.collectionUserDevicesID,
             documentId = appPrefs.sessionId
         ).let { UserDeviceRaw.from(it) }
     }

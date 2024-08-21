@@ -6,7 +6,7 @@ import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
@@ -34,7 +34,7 @@ import kotlinx.serialization.encodeToString
 class PersonalCodesRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val docApi: IDocumentsApi,
-    private val remoteConfig: BackendConfig,
+    private val appBuildConfig: AppBuildConfig,
     private val personalCodeMapper: PersonalCodeMapperCore,
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeyRepository
@@ -149,7 +149,7 @@ class PersonalCodesRemoteSource constructor(
     ) {
         val currentUnusedKeys = docApi.listAllDocuments(
             databaseType = BackendDatabaseType.KEYS,
-            collectionId = remoteConfig.resourceIds.collectionPersonalIdKeysID,
+            collectionId = appBuildConfig.resourceIds.collectionPersonalIdKeysID,
         ).map { it.parsePreKey() }
             .filter { !it.encryptedCodeKeyData.isNullOrBlank() }
 
@@ -251,7 +251,7 @@ class PersonalCodesRemoteSource constructor(
     suspend fun getMyPersonalCodes(): List<PersonalCodeRaw> {
         return docApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = remoteConfig.resourceIds.collectionPersonalCodeID
+            collectionId = appBuildConfig.resourceIds.collectionPersonalCodeID
         )
             .map { PersonalCodeRaw.from(it) }
     }

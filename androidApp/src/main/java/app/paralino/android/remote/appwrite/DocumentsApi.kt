@@ -21,7 +21,7 @@ class DocumentsApi constructor(
             database.createDocument(
                 databaseId = databaseType.id,
                 collectionId = collectionId,
-                documentId = docId ?: this.backendConfig.resourceIds.uniqueIdPlaceholder,
+                documentId = docId ?: this.appBuildConfig.resourceIds.uniqueIdPlaceholder,
                 data = data
             ).parseDocument()
         }

@@ -5,9 +5,9 @@ import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
 object RemoteClient {
-    fun setup(client: Client, debug: Boolean): Client {
+    fun setup(client: Client, logRequests: Boolean): Client {
         val interceptor = HttpLoggingInterceptor().apply {
-            level = if (debug) HttpLoggingInterceptor.Level.BASIC
+            level = if (logRequests) HttpLoggingInterceptor.Level.BASIC
             else HttpLoggingInterceptor.Level.NONE
         }
         client.http = client

@@ -1,9 +1,11 @@
 package app.paralino.core.models
 
-data class BackendConfig constructor(
+data class AppBuildConfig constructor(
     val serverUrl: String,
     val projectId: String,
-    val debug: Boolean,
+    val publicServerUrl: String,
+    val isDevMode: Boolean,
+    val hasPreviewFeatures: Boolean,
     val logToConsole: Boolean,
     val logErrorsToRemote: Boolean,
 ) {

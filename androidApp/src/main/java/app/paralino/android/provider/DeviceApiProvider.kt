@@ -12,7 +12,7 @@ import app.paralino.core.appPrefs
 import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.data.db.AppPrefsProvider
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.IDeviceApiProvider
@@ -27,7 +27,7 @@ import java.net.SocketTimeoutException
 
 class DeviceApiProvider constructor(
     private val appClass: AppClass,
-    private val backendConfig: BackendConfig,
+    private val appBuildConfig: AppBuildConfig,
     locationStatusProvider: ILocationStatusProvider,
     connectionStatusProvider: IConnectionStatusProvider,
 ) : IDeviceApiProvider(locationStatusProvider, connectionStatusProvider) {
@@ -51,7 +51,7 @@ class DeviceApiProvider constructor(
         get() = Build.MANUFACTURER
 
     override fun createSystemLogr(): SystemLogr {
-        return DebugLogr(enabled = backendConfig.logToConsole, tagPrefix = "Paralino")
+        return DebugLogr(enabled = appBuildConfig.logToConsole, tagPrefix = "Paralino")
     }
 
     override fun createCrashReportingLogr(): SystemLogr {
@@ -66,7 +66,7 @@ class DeviceApiProvider constructor(
                     return
                 }
 
-                if (priority != LogPriority.ERROR || !backendConfig.logErrorsToRemote) {
+                if (priority != LogPriority.ERROR || !appBuildConfig.logErrorsToRemote) {
                     return
                 }
 

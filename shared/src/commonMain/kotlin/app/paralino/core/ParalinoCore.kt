@@ -47,7 +47,7 @@ import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
@@ -125,7 +125,7 @@ object ParalinoCore {
 
         val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
         val cryptoCore = koinApp.koin.get<CryptoCore>()
-        val backendConfig = koinApp.koin.get<BackendConfig>()
+        val appBuildConfig = koinApp.koin.get<AppBuildConfig>()
         val inAppLogger = koinApp.koin.get<InAppLogger>()
 
         AppPrefs.instance = deviceApiProvider.createConfig()
@@ -143,7 +143,7 @@ object ParalinoCore {
             appPrefs.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
-        if (backendConfig.serverUrl.isBlank() || backendConfig.projectId.isBlank()) {
+        if (appBuildConfig.serverUrl.isBlank() || appBuildConfig.projectId.isBlank()) {
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
         }
     }
