@@ -206,13 +206,13 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
                 guard let keyIdPayload = try cipher.payload?.decodeFromBase64Url(self).utf8String else {
                     throw EncryptionError.CryptoError
                 }
-                guard let keyId = UInt32(keyIdPayload) else {
+                guard let keyId = Int64(keyIdPayload) else {
                     throw EncryptionError.CryptoError
                 }
                 
                 let newKey = try deriveSymmetricKeyImpl(
                     key: decodedKey.data,
-                    derivedKeyId: Int64(keyId),
+                    derivedKeyId: keyId,
                     context: "_derive_"
                 )
 
