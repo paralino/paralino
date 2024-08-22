@@ -58,12 +58,18 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         val propsFile = rootProject.file("user.properties")
-        if (propsFile.exists()) {
-            val props = Properties()
-            props.load(FileInputStream(propsFile))
-            manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
-            resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
+        if (!propsFile.exists()) {
+            throw FileNotFoundException("Missing properties config file")
         }
+
+        val props = Properties()
+        props.load(FileInputStream(propsFile))
+        manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
+        resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
+
+        buildConfigField("String", "serverUrl", props["productionServerUrl"] as String)
+        buildConfigField("String", "serverKey", props["productionServerKey"] as String)
+        buildConfigField("String", "publicServerUrl", props["productionPublicServerUrl"] as String)
 
         // room schema export
         javaCompileOptions {
@@ -111,9 +117,8 @@ android {
             versionCode = 26
             versionName = "0.9.5"
 
-            val propsFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
-
-            if (!propsFile.exists()) {
+            val fcmConfigFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
+            if (!fcmConfigFile.exists()) {
                 throw FileNotFoundException("Missing Firebase config file")
             }
         }
@@ -123,7 +128,9 @@ android {
             versionName = "0.8.3"
             versionNameSuffix = "-int"
             applicationIdSuffix = ".int"
+
             buildConfigField("boolean", "forceLogToSystem", "false")
+
             signingConfig = signingConfigs.getByName("testConfig")
         }
         create("dev") {
@@ -135,6 +142,14 @@ android {
 
             buildConfigField("boolean", "internalTesting", "true")
             buildConfigField("boolean", "forceLogToSystem", "true")
+
+            val propsFile = rootProject.file("user.properties")
+            val props = Properties()
+            props.load(FileInputStream(propsFile))
+            buildConfigField("String", "serverUrl", props["devServerUrl"] as String)
+            buildConfigField("String", "serverKey", props["devServerKey"] as String)
+            buildConfigField("String", "publicServerUrl", props["devPublicServerUrl"] as String)
+
             signingConfig = signingConfigs.getByName("testConfig")
         }
         create("oss") {

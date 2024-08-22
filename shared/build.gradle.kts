@@ -132,22 +132,11 @@ buildkonfig {
     val props = Properties()
     props.load(FileInputStream(propsFile))
 
-    defaultConfigs {
-        buildConfigField(FieldSpec.Type.STRING, "publicServerUrl", props.getProperty("publicServerUrl").trimQuotes())
-        buildConfigField(FieldSpec.Type.STRING, "serverUrl", props.getProperty("serverUrl").trimQuotes())
-        buildConfigField(FieldSpec.Type.STRING, "serverKey", props.getProperty("serverKey").trimQuotes())
-        buildConfigField(FieldSpec.Type.BOOLEAN, "isDevMode", props.getProperty("devMode").trimQuotes())
-        buildConfigField(FieldSpec.Type.BOOLEAN, "hasPreviewFeatures", props.getProperty("devMode").trimQuotes())
-    }
+    defaultConfigs {}
 
     targetConfigs {
-        create("android") {
-            buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNAndroid").trimQuotes())
-        }
         create("ios") {
             buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNiOS").trimQuotes())
-            buildConfigField(FieldSpec.Type.BOOLEAN, "isDevMode", "true")
-            buildConfigField(FieldSpec.Type.BOOLEAN, "hasPreviewFeatures", "true")
         }
     }
 }

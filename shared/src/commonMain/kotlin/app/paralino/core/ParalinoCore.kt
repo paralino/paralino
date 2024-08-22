@@ -128,6 +128,7 @@ object ParalinoCore {
         val appBuildConfig = koinApp.koin.get<AppBuildConfig>()
         val inAppLogger = koinApp.koin.get<InAppLogger>()
 
+        AppBuildConfig.instance = appBuildConfig
         AppPrefs.instance = deviceApiProvider.createConfig()
         connectionStatus = deviceApiProvider.connectionStatusProvider
 

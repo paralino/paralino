@@ -22,7 +22,6 @@ import app.paralino.android.remote.appwrite.RealtimeApi
 import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
-import app.paralino.core.BuildKonfig
 import app.paralino.core.appPrefs
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
@@ -115,9 +114,9 @@ object KoinSetup {
 
         single {
             AppBuildConfig(
-                serverUrl = BuildKonfig.serverUrl,
-                projectId = BuildKonfig.serverKey,
-                publicServerUrl = BuildKonfig.publicServerUrl,
+                serverUrl = BuildConfig.serverUrl,
+                projectId = BuildConfig.serverKey,
+                publicServerUrl = BuildConfig.publicServerUrl,
                 isDevMode = BuildConfig.internalTesting,
                 hasPreviewFeatures = BuildConfig.internalTesting,
                 logToConsole = BuildConfig.forceLogToSystem,

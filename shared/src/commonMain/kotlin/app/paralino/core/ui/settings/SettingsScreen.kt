@@ -33,8 +33,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.BuildKonfig
 import app.paralino.core.MR
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -117,7 +117,7 @@ fun SettingsScreenCore(
                 openProfileRawScreen()
             }
 
-            if (BuildKonfig.hasPreviewFeatures) {
+            if (AppBuildConfig.instance.hasPreviewFeatures) {
                 SettingsActionItem(
                     name = stringResource(MR.strings.setting_title_locationBoost),
                     description = when (readyState.boostTime != null) {
@@ -131,7 +131,7 @@ fun SettingsScreenCore(
                 }
             }
 
-            if (BuildKonfig.hasPreviewFeatures) {
+            if (AppBuildConfig.instance.hasPreviewFeatures) {
                 SettingsActionItem(
                     name = stringResource(MR.strings.setting_title_placeActivityThrottle),
                     description = when (readyState.placeActivityThrottleEnabled) {
@@ -172,7 +172,7 @@ fun SettingSectionInfo(
     Column {
         SettingsSectionHeader(name = stringResource(MR.strings.settings_section_general_title))
 
-        if (BuildKonfig.hasPreviewFeatures) {
+        if (AppBuildConfig.instance.hasPreviewFeatures) {
             SettingsActionItem(
                 name = "App status",
                 icon = CoreAppIcons.Settings.asPainterResource()
@@ -181,7 +181,7 @@ fun SettingSectionInfo(
             }
         }
 
-        if (BuildKonfig.hasPreviewFeatures) {
+        if (AppBuildConfig.instance.hasPreviewFeatures) {
             SettingsActionItem(
                 name = stringResource(MR.strings.setting_title_share),
                 icon = CoreAppIcons.Share.asPainterResource()

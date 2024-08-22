@@ -11,6 +11,10 @@ data class AppBuildConfig constructor(
 ) {
     val endpoint = "$serverUrl/v1"
     val resourceIds = BackendResourceIDs
+
+    companion object {
+        lateinit var instance: AppBuildConfig
+    }
 }
 
 enum class BackendDatabaseType(val id: String) {

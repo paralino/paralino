@@ -1,8 +1,8 @@
 package app.paralino.core.models.base
 
-import app.paralino.core.BuildKonfig
 import app.paralino.core.data.db.ConfigNodeEntity
 import app.paralino.core.logg
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.Serializable
 
@@ -19,7 +19,7 @@ data class ConfigData(
     val plans: List<PlanConfig> = emptyList()
 ) {
 
-    val isEmailEnabled: Boolean get() = BuildKonfig.hasPreviewFeatures && emailEnabled
+    val isEmailEnabled: Boolean get() = AppBuildConfig.instance.hasPreviewFeatures && emailEnabled
 
     companion object {
         fun init(nodes: List<ConfigNodeEntity>): ConfigData {

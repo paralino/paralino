@@ -1,7 +1,7 @@
 package app.paralino.core.repo.api
 
-import app.paralino.core.BuildKonfig
 import app.paralino.core.logg
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.raw.FunctionExecutionRaw
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.utils.BaseRemoteModule
@@ -26,7 +26,7 @@ abstract class BaseFunctionsApi(
 
     suspend fun executeFunction(function: ServerFunction, data: String?): FunctionExecutionRaw {
         val client = HttpClient() {
-            if (BuildKonfig.isDevMode) {
+            if (AppBuildConfig.instance.isDevMode) {
                 install(Logging) {
                     logger = object : io.ktor.client.plugins.logging.Logger {
                         override fun log(message: String) {

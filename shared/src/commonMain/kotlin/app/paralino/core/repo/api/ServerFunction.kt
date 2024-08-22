@@ -1,6 +1,6 @@
 package app.paralino.core.repo.api
 
-import app.paralino.core.BuildKonfig
+import app.paralino.core.models.AppBuildConfig
 
 enum class ServerFunction constructor(
     val method: String,
@@ -44,8 +44,8 @@ enum class ServerFunction constructor(
     ACCOUNT_DELETE(method = "DELETE", path = "/user"),
     ACCOUNT_RESET(method = "POST", path = "/user/reset"),
 
-    CONFIG(method = "GET", path = "/config", functionId = BuildKonfig.publicServerUrl, useSdk = false),
-    LOGIN(method = "POST", path = "/login", functionId = BuildKonfig.publicServerUrl, useSdk = false)
+    CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),
+    LOGIN(method = "POST", path = "/login", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false)
     ;
 
 }

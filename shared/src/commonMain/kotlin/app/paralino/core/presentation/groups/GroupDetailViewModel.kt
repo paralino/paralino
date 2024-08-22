@@ -1,11 +1,11 @@
 package app.paralino.core.presentation.groups
 
-import app.paralino.core.BuildKonfig
 import app.paralino.core.appPrefs
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -103,7 +103,7 @@ class GroupDetailViewModel(
                                 ?.let {
                                     MemberActionItemState(MemberActionType.UNBLOCK_USER)
                                 },
-                            securityAction = BuildKonfig.hasPreviewFeatures
+                            securityAction = AppBuildConfig.instance.hasPreviewFeatures
                         ),
                         allowShowingDevices = true,
                         lastLocationPing = valueFormatter.getLastLocationPing(member),
