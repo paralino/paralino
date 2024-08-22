@@ -12,17 +12,17 @@ import Appwrite
 class AppwriteRemoteModule: IRemoteModule {
     
     let sessionMonitor: UserSessionMonitor
-    let backendConfig: BackendConfig
+    let appBuildConfig: AppBuildConfig
     
-    init(sessionMonitor: UserSessionMonitor, backendConfig: BackendConfig) {
+    init(sessionMonitor: UserSessionMonitor, appBuildConfig: AppBuildConfig) {
         self.sessionMonitor = sessionMonitor
-        self.backendConfig = backendConfig
+        self.appBuildConfig = appBuildConfig
     }
     
     lazy var client: Client = {
         return Client()
-            .setEndpoint(backendConfig.endpoint)
-            .setProject(backendConfig.projectId)
+            .setEndpoint(appBuildConfig.endpoint)
+            .setProject(appBuildConfig.projectId)
             .setSelfSigned(false)
     }()
     

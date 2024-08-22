@@ -11,10 +11,14 @@ import UIKit
 
 class DeviceApiProvider: IDeviceApiProvider {
     
-    private let backendConfig: BackendConfig
+    private let appBuildConfig: AppBuildConfig
     
-    init(backendConfig: BackendConfig, locationStatusProvider: ILocationStatusProvider, connectionStatusProvider: IConnectionStatusProvider) {
-        self.backendConfig = backendConfig
+    init(
+        appBuildConfig: AppBuildConfig,
+        locationStatusProvider: ILocationStatusProvider,
+        connectionStatusProvider: IConnectionStatusProvider
+    ) {
+        self.appBuildConfig = appBuildConfig
         super.init(locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider)
     }
     
@@ -52,16 +56,16 @@ class DeviceApiProvider: IDeviceApiProvider {
         "iPhone"
     }
     
-    override func createConfig() -> AppConfig {
-        AppConfig(provider: AppConfigProvider())
+    override func createConfig() -> AppPrefs {
+        AppPrefs(provider: AppPrefsProvider())
     }
     
     override func createSystemLogr() -> SystemLogr {
-        return DebbugLogr(canLogToConsole: backendConfig.logToConsole)
+        return DebbugLogr(canLogToConsole: appBuildConfig.logToConsole)
     }
     
     override func createCrashReportingLogr() -> SystemLogr {
-        return CrashReportingLogr(canLogToRemote: backendConfig.logErrorsToRemote)
+        return CrashReportingLogr(canLogToRemote: appBuildConfig.logErrorsToRemote)
     }
     
     override func doCopyToClipboard(data: String) {

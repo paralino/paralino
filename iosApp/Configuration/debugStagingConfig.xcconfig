@@ -1,0 +1,15 @@
+//
+//  debugStagingConfig.xcconfig
+//  paralino-ios
+//
+//  Created by Zelimir on 2024-08-22.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "staging-config.xcconfig"
+
+TEAM_ID=
+BUNDLE_ID=app.paralino.ios.test
+APP_NAME=ParalinoS
