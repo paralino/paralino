@@ -285,5 +285,7 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     debugImplementation(libs.logging.interceptor)
+
+    implementation(libs.play.billing)
     // endregion
 }
