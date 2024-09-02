@@ -40,6 +40,7 @@ sealed class PlanType {
 }
 
 enum class PlanBillingPeriod(val key: String) {
+    WEEKLY(key = "weekly"),
     MONTHLY(key = "monthly"),
     ANNUALLY(key = "annually"),
     ONETIME(key = "oneTime");
