@@ -52,6 +52,20 @@ enum class PlanBillingPeriod(val key: String) {
     }
 }
 
+enum class PlanProvider(val key: String) {
+    APPLE_APP_STORE(key = "app_store"),
+    GOOGLE_PLAY_STORE(key = "play_store"),
+    PARALINO(key = "paralino");
+
+    val isPurchasedByUser: Boolean get() = this == APPLE_APP_STORE || this == GOOGLE_PLAY_STORE
+
+    companion object {
+        fun fromKey(key: String?): PlanProvider {
+            return values().firstOrNull { it.key == key } ?: PARALINO
+        }
+    }
+}
+
 @Serializable
 data class PlanConfig(
     val planType: String,

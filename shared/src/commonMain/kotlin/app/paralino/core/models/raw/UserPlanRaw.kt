@@ -1,6 +1,8 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.PlanBillingPeriod
+import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -17,7 +19,7 @@ class UserPlanRaw constructor(
     val ownerUserId: String?,
     val expiresAt: Instant?,
     val groupsLimitOverride: Long?,
-    val provider: String?
+    val provider: PlanProvider
 ) {
 
     // allow for some manual grace period
@@ -40,7 +42,7 @@ class UserPlanRaw constructor(
                 },
                 expiresAt = (map["expiresAt"] as? String)?.isoWithOffsetToInstant(),
                 groupsLimitOverride = (map["groupsLimitOverride"] as? Number?)?.toLong(),
-                provider = map["provider"] as? String
+                provider = PlanProvider.fromKey(map["provider"] as? String)
             )
         }
     }
