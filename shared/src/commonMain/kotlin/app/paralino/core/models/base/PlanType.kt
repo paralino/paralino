@@ -6,14 +6,25 @@ import kotlinx.serialization.Serializable
 sealed class PlanType {
     abstract val key: String
     val name: String get() = key
+    abstract val order: Int
 
     data object FREE : PlanType() {
         override val key: String = "free"
+        override val order: Int = 0
     }
-    data object SILVER : PlanType() { override val key: String = "silver" }
-    data object PRO : PlanType() { override val key: String = "pro" }
-    data object MAX : PlanType() { override val key: String = "max" }
-    data class UNKNOWN(override val key: String) : PlanType()
+    data object SILVER : PlanType() {
+        override val key: String = "silver"
+        override val order: Int = 1
+    }
+    data object PRO : PlanType() {
+        override val key: String = "pro"
+        override val order: Int = 100
+    }
+    data object MAX : PlanType() {
+        override val key: String = "max"
+        override val order: Int = 200
+    }
+    data class UNKNOWN(override val key: String, override val order: Int = -1) : PlanType()
 
     companion object {
         fun fromKey(key: String): PlanType {
