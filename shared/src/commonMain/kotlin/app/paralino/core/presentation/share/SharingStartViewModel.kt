@@ -121,8 +121,7 @@ class SharingStartViewModel(
         _uiState.update {
             it.copy(
                 groupState = Payload.Success(groupItem),
-                devicesLimit = group.group.devicesLimitOverride?.toInt()
-                    ?: remoteConfigRepo.configState.value.planConfigForPlanType(group.group.planType).devicesLimit
+                devicesLimit = group.group.devicesLimit(remoteConfigRepo.configState.value)
             )
         }
     }

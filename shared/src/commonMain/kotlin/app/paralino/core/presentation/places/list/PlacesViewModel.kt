@@ -50,8 +50,7 @@ class PlacesViewModel(
                 emptyList()
             }
 
-            val placesLimit = group.placesLimitOverride?.toInt()
-                ?: remoteConfigRepo.configState.value.planConfigForPlanType(group.planType).placesLimit
+            val placesLimit = group.placesLimit(remoteConfigRepo.configState.value)
             val state = PlacesListScreenState(
                 groupId = groupId,
                 groupImage = group.image,

@@ -28,6 +28,7 @@ class UserPlanRaw constructor(
         ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 30.minutes)
         ?.let { it < nowUTC() }
         ?: false
+
     val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
 
     companion object {

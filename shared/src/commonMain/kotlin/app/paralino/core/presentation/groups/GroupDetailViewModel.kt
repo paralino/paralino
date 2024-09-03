@@ -140,8 +140,7 @@ class GroupDetailViewModel(
                 )
             }
 
-            val membersLimit = group.group.membersLimitOverride?.toInt()
-                ?: remoteConfigRepo.configState.value.planConfigForPlanType(group.group.planType).membersLimit
+            val membersLimit = group.group.membersLimit(remoteConfigRepo.configState.value)
             GroupDetailScreenState(
                 id = groupId,
                 canEdit = group.isCurrentUserOwner,

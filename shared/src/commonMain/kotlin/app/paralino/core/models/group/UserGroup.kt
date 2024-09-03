@@ -2,16 +2,22 @@ package app.paralino.core.models.group
 
 import app.paralino.core.appPrefs
 import app.paralino.core.domain.crypto.VerificationResult
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.minutes
 
 @Serializable
 data class UserGroup constructor(
@@ -21,8 +27,10 @@ data class UserGroup constructor(
     @Contextual
     val data: CryptoResource<UserGroupData>,
     val serverIntegrity: String,
-    val planType: String,
     val schemeVersion: String,
+    val planType: String,
+    val planExpiresAt: Instant?,
+    val provider: String?,
     val membersLimitOverride: Long?,
     val devicesLimitOverride: Long?,
     val placesLimitOverride: Long?
@@ -33,6 +41,40 @@ data class UserGroup constructor(
     val image: ImageModel get() = data.data?.image ?: ImageModel.emoji(Emojis.lock)
     val isCurrentUserOwner: Boolean get() = ownerUserId == appPrefs.userId
     val enforceMemberAuthentication: Boolean = data.data?.enforceMemberAuthentication != false
+
+    // allow for some manual grace period
+    // it might take few minutes until correct subscription data is synced and reflected on backend
+    private val isPlanExpired: Boolean get() = planExpiresAt
+        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 30.minutes)
+        ?.let { it < nowUTC() }
+        ?: false
+
+    fun membersLimit(config: ConfigData): Int {
+        if (isPlanExpired) {
+            return PlanConfig.default.membersLimit
+        } else {
+            return membersLimitOverride?.toInt()
+                ?: config.planConfigForPlanType(planType).membersLimit
+        }
+    }
+
+    fun devicesLimit(config: ConfigData): Int {
+        if (isPlanExpired) {
+            return PlanConfig.default.devicesLimit
+        } else {
+            return devicesLimitOverride?.toInt()
+                ?: config.planConfigForPlanType(planType).devicesLimit
+        }
+    }
+
+    fun placesLimit(config: ConfigData): Int {
+        if (isPlanExpired) {
+            return PlanConfig.default.placesLimit
+        } else {
+            return placesLimitOverride?.toInt()
+                ?: config.planConfigForPlanType(planType).placesLimit
+        }
+    }
 
     companion object {
         const val groupPublicSharingId = "publicSharing"
