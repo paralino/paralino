@@ -37,6 +37,9 @@ fun SubscriptionScreen(
             appState = appState,
             vm = vm,
             paddingValues = it,
+            onNavigateBack = {
+                appState.navController.popBackStack()
+            },
             openBillingStore = {
                 uriHandler.openUri(BackendResourceIDs.subscriptionUrlGooglePlay)
             },

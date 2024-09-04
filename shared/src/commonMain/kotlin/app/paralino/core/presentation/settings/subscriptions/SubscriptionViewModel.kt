@@ -1,7 +1,5 @@
 package app.paralino.core.presentation.settings.subscriptions
 
-import app.paralino.core.data.db.AppPrefs
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
@@ -9,8 +7,10 @@ import app.paralino.core.models.user.UserPlan
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,19 +18,19 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SubscriptionViewModel(
     private val userRepo: UserRepository,
     private val billingProvider: IBillingProvider,
-    private val remoteConfigRepo: RemoteConfigRepository,
-    private val appBuildConfig: AppBuildConfig,
+    private val userConfigRepo: UserConfigRepository,
     private val deviceApi: IDeviceApiProvider,
-    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
         SubscriptionScreenState(
-            subscriptionState = getPlanState(userRepo.userPlans.value.highestPlan)
+            subscriptionState = getPlanState(userRepo.userPlans.value.highestValidPlan),
+            isLoading = true
         )
     )
     val uiState: Flow<SubscriptionScreenState> = _uiState
@@ -41,12 +41,20 @@ class SubscriptionViewModel(
     init {
         userRepo.userPlans
             .onEach { plans ->
-                _uiState.update { it.copy(subscriptionState = getPlanState(plans.highestPlan)) }
+                _uiState.update { it.copy(subscriptionState = getPlanState(plans.highestValidPlan)) }
             }
             .launchIn(coroutineScope)
 
-        // TODO change to billing user id
-        billingProvider.configure(billingUserId = userRepo.cachedUserId)
+        coroutineScope.launch {
+            try {
+                val billingUserId = userConfigRepo.ensureAndGetBillingUserId()
+                billingProvider.configure(billingUserId = billingUserId)
+                _uiState.update { it.copy(isLoading = false) }
+            } catch (e: Exception) {
+                messageDispatcher.showSnackbar(text = e.errorString())
+                _uiState.update { it.copy(alertDialog = MainAlertDialog.BillingLoadingError) }
+            }
+        }
     }
 
     private fun getPlanState(plan: UserPlan?): SubscriptionInfoState? {
@@ -70,6 +78,11 @@ class SubscriptionViewModel(
         when (event) {
             is SubscriptionScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
+                    is MainAlertDialog.BillingLoadingError -> {
+                        _uiState.update { it.copy(alertDialog = null) }
+                        _eventChannel.trySend(SubscriptionScreenEvent.OnNavigateBack)
+                    }
+
                     else -> {
 
                     }

@@ -360,6 +360,7 @@
     <string name="plan_limit_places_alert_info">group places</string>
     <string name="plan_limit_devices_alert_info">devices</string>
     <string name="plan_limit_groups_alert_info">groups</string>
+    <string name="plan_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
 
     <string name="app_version_alert_title">New app update</string>
     <string name="app_version_alert_message">New version of Paralino is available, please update for a better experience!</string>

@@ -843,8 +843,8 @@ class MapHomeViewModel constructor(
     }
 
     fun tryCreateGroup() {
-        val limit = userRepository.userPlans.value.highestPlan?.plan?.groupsLimitOverride?.toInt()
-            ?: userRepository.userPlans.value.highestPlanConfig.groupsLimit
+        val limit = userRepository.userPlans.value.highestValidPlan?.plan?.groupsLimitOverride?.toInt()
+            ?: userRepository.userPlans.value.highestValidPlanConfig.groupsLimit
         coroutineScope.launch {
             if (limit >= 0 && getAllGroups().filter { it.isCurrentUserOwner }.size >= limit) {
                 updateReadyState {

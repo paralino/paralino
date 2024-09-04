@@ -6,7 +6,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 data class SubscriptionScreenState(
     val subscriptionState: SubscriptionInfoState? = null,
     val alertDialog: MainAlertDialog? = null,
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true
 ) {
     val isSubscribed: Boolean = subscriptionState != null
 }
@@ -21,7 +21,7 @@ data class SubscriptionInfoState(
 )
 
 sealed class SubscriptionScreenEvent() {
-    data object OnError : SubscriptionScreenEvent()
+    data object OnNavigateBack : SubscriptionScreenEvent()
 }
 
 sealed class SubscriptionScreenUiEvent() {

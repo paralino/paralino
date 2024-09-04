@@ -10,6 +10,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
+import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +24,7 @@ class RawCryptoPresentation constructor(
     private val groupLocal: UserGroupLocalDataSource,
     private val memberLocal: LocationLocalDataSource,
     private val userLocal: UserLocalDataSource,
+    private val userConfigRepo: UserConfigRepository,
     private val appPrefs: AppPrefs
 ) {
 
@@ -229,6 +231,7 @@ class RawCryptoPresentation constructor(
                             add("Email: **${it.second.email}**")
                         }
                         add("UserID: **${appPrefs.userId}**")
+                        add("Billing UserID: **${userConfigRepo.configState.value.billingCustomerId}**")
                         add("DeviceID: **${appPrefs.deviceId}**")
                     },
                     rawData = it?.first?.data?.let {

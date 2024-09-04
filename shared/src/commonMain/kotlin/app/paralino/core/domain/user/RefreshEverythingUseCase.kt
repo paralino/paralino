@@ -14,6 +14,7 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import kotlin.time.Duration.Companion.minutes
 
@@ -26,6 +27,7 @@ class RefreshEverythingUseCase(
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupRefreshUseCase: GroupRefreshUseCase,
     private val configRepo: RemoteConfigRepository,
+    private val userConfigRepo: UserConfigRepository,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val placeActivityUploadEngine: PlaceActivityUploadEngine,
     private val pushProviderManager: IPushProviderManager,
@@ -65,6 +67,7 @@ class RefreshEverythingUseCase(
                     personalCodesRepo.refreshPersonalCodes()
                     userRepository.refreshBlocklist()
                     configRepo.refreshConfig()
+                    userConfigRepo.refreshAndGetConfig()
                     scheduleRefreshAllGroupsWithPlaces(
                         time = if (forceGroupRefresh) 0 else 60_000
                     )

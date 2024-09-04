@@ -86,6 +86,7 @@ import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserDevicesRemoteSource
 import app.paralino.core.repo.user.UserLocalDataSource
 import app.paralino.core.repo.user.UserRemoteSource
@@ -207,7 +208,7 @@ val coreModule = module {
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory { RawCryptoPresentation(get(), get(), get(), get(), appPrefs) }
+    factory { RawCryptoPresentation(get(), get(), get(), get(), get(), appPrefs) }
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
@@ -223,7 +224,7 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get()) }
     single { GroupRepository(get()) }
@@ -232,6 +233,7 @@ val coreModule = module {
     single { LocationCacheRepository(get()) }
     single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { RemoteConfigRepository(get(), get(), get(), get(), appPrefs) }
+    single { UserConfigRepository(get(), get(), get(), get()) }
 
     single { GroupValidityVerification(get(), get(), get(), appPrefs) }
     single { LocationSharingManager(get(), get()) }

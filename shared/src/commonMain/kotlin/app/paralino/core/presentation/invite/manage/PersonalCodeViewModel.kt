@@ -90,7 +90,7 @@ class PersonalCodeViewModel(
                 )
             }
 
-        val maxIDs = userPlans.highestPlanConfig.paralinoIdsLimit
+        val maxIDs = userPlans.highestValidPlanConfig.paralinoIdsLimit
         val inactiveCodes = codeData.filter { !it.isValid }
         return Payload.Success(
             PersonalCodeScreenState(

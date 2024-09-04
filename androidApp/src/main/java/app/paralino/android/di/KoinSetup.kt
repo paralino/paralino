@@ -171,6 +171,6 @@ object KoinSetup {
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
-        viewModel { SubscriptionViewModel(get(), get(), get(), get(), get(), appPrefs) }
+        viewModel { SubscriptionViewModel(get(), get(), get(), get()) }
     }
 }
