@@ -12,7 +12,10 @@ class BillingProvider(
     private val appBuildConfig: AppBuildConfig
 ): IBillingProvider {
     override fun configure(billingUserId: String) {
-        Purchases.logLevel = LogLevel.DEBUG
+        Purchases.logLevel = when (appBuildConfig.logToConsole) {
+            true -> LogLevel.DEBUG
+            false -> LogLevel.ERROR
+        }
         Purchases.configure(
             PurchasesConfiguration.Builder(
                 context = appClass.applicationContext,
