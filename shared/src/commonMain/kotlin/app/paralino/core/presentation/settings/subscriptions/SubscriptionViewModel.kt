@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.settings.subscriptions
 
+import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
@@ -51,6 +52,7 @@ class SubscriptionViewModel(
                 billingProvider.configure(billingUserId = billingUserId)
                 _uiState.update { it.copy(isLoading = false) }
             } catch (e: Exception) {
+                logg.i(message = "Error getting billing ID", t = e)
                 messageDispatcher.showSnackbar(text = e.errorString())
                 _uiState.update { it.copy(alertDialog = MainAlertDialog.BillingLoadingError) }
             }

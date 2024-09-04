@@ -34,11 +34,11 @@ class UserConfigRepository(
             initialValue = UserConfigModel.fromDatabase(emptyList())
         )
 
-    suspend fun refreshAndGetConfig(): UserConfigModel? {
+    suspend fun refreshAndGetConfig(force: Boolean = false): UserConfigModel? {
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "config_refresh",
-                timeMillis = 10_000,
+                timeMillis = if (force) 0 else 120_000,
                 failOnError = false
             )
         ) { getConfigFromRemote() }
@@ -66,7 +66,7 @@ class UserConfigRepository(
             return billingCustomerId
         }
 
-        val freshCustomerId = refreshAndGetConfig()?.billingCustomerId
+        val freshCustomerId = refreshAndGetConfig(force = true)?.billingCustomerId
 
         if (!freshCustomerId.isNullOrBlank()) {
             return freshCustomerId
@@ -77,7 +77,7 @@ class UserConfigRepository(
             data = null
         )
 
-        return refreshAndGetConfig()?.billingCustomerId!!
+        return refreshAndGetConfig(force = true)?.billingCustomerId!!
     }
 
     private fun getConfig(): Flow<UserConfigModel> {
