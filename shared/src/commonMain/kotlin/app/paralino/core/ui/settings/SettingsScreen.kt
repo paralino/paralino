@@ -62,6 +62,7 @@ fun SettingsScreenCore(
     openBlockList: () -> Unit,
     openLicences: () -> Unit,
     openAppStatus: () -> Unit,
+    openSubscriptions: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
@@ -115,6 +116,13 @@ fun SettingsScreenCore(
                 icon = CoreAppIcons.Security.asPainterResource()
             ) {
                 openProfileRawScreen()
+            }
+
+            SettingsActionItem(
+                name = "Subs",
+                icon = CoreAppIcons.Settings.asPainterResource()
+            ) {
+                openSubscriptions()
             }
 
             if (AppBuildConfig.instance.hasPreviewFeatures) {

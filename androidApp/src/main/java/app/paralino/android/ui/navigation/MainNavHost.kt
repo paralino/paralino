@@ -24,10 +24,12 @@ import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
+import app.paralino.android.ui.settings.BillingScreen
 import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.RawDataScreen
 import app.paralino.android.ui.settings.SettingsScreen
+import app.paralino.android.ui.settings.SubscriptionScreen
 import app.paralino.android.ui.settings.profile.AccountScreen
 import app.paralino.android.ui.settings.profile.ChangeEmailScreen
 import app.paralino.android.ui.settings.profile.ChangePasswordScreen
@@ -170,6 +172,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.Settings.AppStatusDebug.routeSignature) {
             AppStatusDebugScreen(appState)
+        }
+        composable(AppScreen.Settings.Subscriptions.routeSignature) {
+            SubscriptionScreen(appState)
+        }
+        composable(AppScreen.Settings.BillingPaywall.routeSignature) {
+            BillingScreen(appState)
         }
         composable(AppScreen.Settings.ProfileDetails.RawDataScreen.routeSignature) {
             val type =

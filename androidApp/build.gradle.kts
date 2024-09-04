@@ -61,7 +61,7 @@ android {
 
         manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
         resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
-
+        buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
 
         // room schema export
         javaCompileOptions {
@@ -258,6 +258,9 @@ dependencies {
     implementation(libs.play.services.location)
     googleImplementation(libs.firebase.messaging.ktx)
 
+    googleImplementation(libs.revenuecat.android)
+    googleImplementation(libs.revenuecat.android.ui)
+
     ossImplementation(libs.osmdroid.android)
     googleImplementation(libs.maps.compose)
     googleImplementation(libs.maps.compose.utils)
@@ -282,7 +285,5 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     debugImplementation(libs.logging.interceptor)
-
-    implementation(libs.play.billing)
     // endregion
 }

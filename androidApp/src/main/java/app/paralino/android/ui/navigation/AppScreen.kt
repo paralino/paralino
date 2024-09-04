@@ -169,6 +169,14 @@ sealed class AppScreen {
             override val routeSignature: String = "blocklist"
         }
 
+        object Subscriptions : AppScreen() {
+            override val routeSignature: String = "subscription"
+        }
+
+        object BillingPaywall : AppScreen() {
+            override val routeSignature: String = "billing-paywall"
+        }
+
         object ProfileDetails : AppScreen() {
             override val routeSignature: String = "profile"
 

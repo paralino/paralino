@@ -5,6 +5,7 @@ data class AppBuildConfig constructor(
     val projectId: String,
     val publicServerUrl: String,
     val isDevMode: Boolean,
+    val billingRCApiKey: String,
     val hasPreviewFeatures: Boolean,
     val logToConsole: Boolean,
     val logErrorsToRemote: Boolean,
@@ -33,6 +34,7 @@ object BackendResourceIDs {
     const val privacyPolicyUrl = "https://paralino.com/privacy"
     const val termsOfUseUrl = "https://paralino.com/terms"
     const val storeUrlGooglePlay = "https://play.google.com/store/apps/details?id=app.paralino.android"
+    const val subscriptionUrlGooglePlay = "https://play.google.com/store/account/subscriptions"
 
     const val uniqueIdPlaceholder = "unique()"
 

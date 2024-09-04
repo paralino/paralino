@@ -10,6 +10,7 @@ import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.notification.PlaceNotificationPresenter
+import app.paralino.android.provider.BillingProvider
 import app.paralino.android.provider.ConnectionStatusProvider
 import app.paralino.android.provider.DeviceApiProvider
 import app.paralino.android.provider.LocationStatusProvider
@@ -57,7 +58,9 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
+import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
+import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
@@ -104,6 +107,8 @@ object KoinSetup {
         single<IFunctionsApi> { FunctionsApi(get(), get()) }
         single<IRealtimeApi> { RealtimeApi(get()) }
 
+        single<IBillingProvider> { BillingProvider(androidApplication() as AppClass, get()) }
+
         single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
     }
 
@@ -120,6 +125,7 @@ object KoinSetup {
                 isDevMode = BuildConfig.internalTesting,
                 hasPreviewFeatures = BuildConfig.internalTesting,
                 logToConsole = BuildConfig.forceLogToSystem,
+                billingRCApiKey = BuildConfig.revenueCatApiKey,
                 logErrorsToRemote = true
             )
         }
@@ -165,5 +171,6 @@ object KoinSetup {
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
+        viewModel { SubscriptionViewModel(get(), get(), get(), get(), get(), appPrefs) }
     }
 }

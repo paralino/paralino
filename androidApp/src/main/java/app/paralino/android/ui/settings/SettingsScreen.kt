@@ -68,6 +68,9 @@ fun SettingsScreen(
             openAppStatus = {
                 appState.navController.navigate(AppScreen.Settings.AppStatusDebug.routeSignature)
             },
+            openSubscriptions = {
+                appState.navController.navigate(AppScreen.Settings.Subscriptions.routeSignature)
+            },
             onShareCode = {
                 context.share(it)
             }
