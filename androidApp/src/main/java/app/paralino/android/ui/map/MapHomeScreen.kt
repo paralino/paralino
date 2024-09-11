@@ -164,8 +164,8 @@ private fun MapHomeContent(
                 bottomOffset = bottomOffset,
                 onGroupPickerClick = {
                     appState.uiScope.launch {
-                        val groups = vm.getAllGroups()
-                        pickerState.show(groups)
+                        val groupPickerState = vm.getGroupPickerState()
+                        pickerState.show(groupPickerState)
                     }
                 }
             )
@@ -200,6 +200,10 @@ private fun MapHomeContent(
 
                     GroupPickerAction.JoinGroup -> {
                         appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                    }
+
+                    GroupPickerAction.OpenSubscriptions -> {
+                        appState.navController.navigate(AppScreen.MainHome.Subscriptions.route())
                     }
 
                     GroupPickerAction.Close -> {}

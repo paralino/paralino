@@ -39,7 +39,7 @@ fun MemberInviteScreen(
             vm = vm,
             contentPadding = it,
             onPickGroup = {
-                appState.uiScope.launch { pickerState.show(it.groups) }
+                appState.uiScope.launch { pickerState.show(it) }
             },
             onNavigateBack = {
                 appState.navController.popBackStack()

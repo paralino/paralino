@@ -57,7 +57,7 @@ fun SharingStartScreen(
             vm = vm,
             onNavigateBack = { appState.navController.popBackStack() },
             onPickGroup = {
-                appState.uiScope.launch { pickerState.show(it.groups) }
+                appState.uiScope.launch { pickerState.show(it) }
             },
             askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
             askLocationService = { permissionHandler.askLocationService() },

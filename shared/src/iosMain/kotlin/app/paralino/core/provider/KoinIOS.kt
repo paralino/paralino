@@ -133,7 +133,7 @@ object KoinIOS {
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
-                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get())
+                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get()) }
             factory { PersonalCodeViewModel(get(), get(), get()) }
@@ -143,7 +143,8 @@ object KoinIOS {
                     code = code,
                     codeRepo = get(),
                     groupRepo = get(),
-                    groupMemberAdd = get()
+                    groupMemberAdd = get(),
+                    userRepo = get()
                 )
             }
             factory { (groupID: String) ->

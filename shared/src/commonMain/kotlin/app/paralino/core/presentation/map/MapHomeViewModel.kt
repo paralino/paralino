@@ -32,6 +32,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
@@ -590,7 +591,14 @@ class MapHomeViewModel constructor(
         }
     }
 
-    fun getAllGroups(): List<GroupItemState> {
+    fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
+        return BottomSheetPickerType.GroupPickerBottomSheet(
+            userPlan = userRepository.userPlans.value.highestValidPlanConfig,
+            groups = getAllGroupsItemState()
+        )
+    }
+
+    fun getAllGroupsItemState(): List<GroupItemState> {
         return allGroups.value.data?.map { group ->
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
@@ -846,7 +854,7 @@ class MapHomeViewModel constructor(
         val limit = userRepository.userPlans.value.highestValidPlan?.plan?.groupsLimitOverride?.toInt()
             ?: userRepository.userPlans.value.highestValidPlanConfig.groupsLimit
         coroutineScope.launch {
-            if (limit >= 0 && getAllGroups().filter { it.isCurrentUserOwner }.size >= limit) {
+            if (limit >= 0 && getAllGroupsItemState().filter { it.isCurrentUserOwner }.size >= limit) {
                 updateReadyState {
                     it.copy(
                         alertDialog = MainAlertDialog.PlanLimit(

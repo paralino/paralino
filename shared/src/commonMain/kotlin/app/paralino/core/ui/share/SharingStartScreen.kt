@@ -332,8 +332,8 @@ fun SharingStartScreenCore(
                         onClick = {
                             if (groupId.isNullOrBlank()) {
                                 appState.uiScope.launch {
-                                    val groups = vm.getAllGroupItems()
-                                    onPickGroup(BottomSheetPickerType.GroupPickerBottomSheet(groups))
+                                    val groupPickerState = vm.getGroupPickerState()
+                                    onPickGroup(groupPickerState)
                                 }
                             }
                         }
@@ -350,8 +350,8 @@ fun SharingStartScreenCore(
                         icon = CoreAppIcons.Groups.asPainterResource(),
                         onClick = {
                             appState.uiScope.launch {
-                                val groups = vm.getAllGroupItems()
-                                onPickGroup(BottomSheetPickerType.GroupPickerBottomSheet(groups))
+                                val groupPickerState = vm.getGroupPickerState()
+                                onPickGroup(groupPickerState)
                             }
                         }
                     ) {

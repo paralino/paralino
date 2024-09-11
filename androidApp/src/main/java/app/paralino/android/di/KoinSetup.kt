@@ -143,7 +143,7 @@ object KoinSetup {
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
         viewModel { (args: String?) ->
-            SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get())
+            SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get()) }
@@ -153,7 +153,8 @@ object KoinSetup {
                 code = code,
                 codeRepo = get(),
                 groupRepo = get(),
-                groupMemberAdd = get()
+                groupMemberAdd = get(),
+                userRepo = get()
             )
         }
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }

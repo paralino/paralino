@@ -15,6 +15,8 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.exceptions.TimeoutException
@@ -40,7 +42,8 @@ class SharingStartViewModel(
     private val connectionStatus: IConnectionStatusProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
     private val userMemberIdUseCase: UserMemberIdUseCase,
-    private val locationRepo: LocationLocalDataSource
+    private val locationRepo: LocationLocalDataSource,
+    private val userRepo: UserRepository
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -96,8 +99,11 @@ class SharingStartViewModel(
         }.launchIn(coroutineScope)
     }
 
-    suspend fun getAllGroupItems(): List<GroupItemState> {
-        return getAllGroups().map { GroupItemState(it) }
+    suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
+        return BottomSheetPickerType.GroupPickerBottomSheet(
+            userPlan = userRepo.userPlans.value.highestValidPlanConfig,
+            groups = getAllGroups().map { GroupItemState(it) }
+        )
     }
 
     private suspend fun getAllGroups(): List<UserGroupWithMetadata> {
