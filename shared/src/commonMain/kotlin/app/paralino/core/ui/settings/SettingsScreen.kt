@@ -1,11 +1,13 @@
 package app.paralino.core.ui.settings
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -82,7 +84,7 @@ fun SettingsScreenCore(
                 image = readyState.userState.image ?: ImageModel.emoji(Emojis.robot),
                 personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
-                userPlans = readyState.userPlans,
+                userPlan = readyState.userPlan,
                 errorItem = null,
                 onGuestAccountClick = {
                     if (readyState.canUseEmail) {
@@ -95,6 +97,16 @@ fun SettingsScreenCore(
                 onClick = openProfileDetails
             )
         }
+
+        Spacer(modifier = Modifier.size(20.dp))
+
+        AnimatedVisibility(visible = readyState?.userPlan?.planTypeEnum?.isPremium == false) {
+            PremiumPlanBanner(
+                onClick = openSubscriptions
+            )
+        }
+
+        Spacer(modifier = Modifier.size(20.dp))
 
         if (readyState != null) {
             SettingsActionItem(
@@ -129,7 +141,11 @@ fun SettingsScreenCore(
                 SettingsActionItem(
                     name = stringResource(MR.strings.setting_title_locationBoost),
                     description = when (readyState.boostTime != null) {
-                        true -> stringResource(MR.strings.setting_description_locationBoost_enabled, readyState.boostTime)
+                        true -> stringResource(
+                            MR.strings.setting_description_locationBoost_enabled,
+                            readyState.boostTime
+                        )
+
                         false -> stringResource(MR.strings.setting_description_locationBoost_disabled)
                     },
                     icon = CoreAppIcons.ShareLocation.asPainterResource(),

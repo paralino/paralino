@@ -126,6 +126,10 @@
     <string name="setting_description_placeActivityThrottle_enabled">Tvoj uređaj će kreirati notifikaciju o mjestu ako se zadržiš na ili izvan određenog mjesta.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Tvoj uređaj će brže reagirati na promjene mjesta te je moguće da će kreirati više notifikacija o mjestu (npr: ako u kratko vrijeme prođeš kraj mjesta).</string>
 
+    <string name="plans_banner_settings_title">Nadogradi svoj plan</string>
+    <string name="plans_banner_settings_description">Otključaj više mogućnosti i poboljšaj svoje iskustvo!</string>
+    <string name="plans_banner_settings_action">Istraži</string>
+
     <string name="login_placeholder_user_name">Ime*</string>
     <string name="login_placeholder_email">E-mail*</string>
     <string name="login_placeholder_password">Lozinka*</string>

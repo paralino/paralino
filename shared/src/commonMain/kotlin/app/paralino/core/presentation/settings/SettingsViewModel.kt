@@ -128,7 +128,7 @@ class SettingsViewModel(
                             boostTime = null,
                             placeActivityThrottleEnabled = appPrefs.placeActivityThrottle,
                             isErrorReportingEnabled = appPrefs.errorReporting,
-                            userPlans = userPlans.nonExpiredPlans.map { it.config }
+                            userPlan = userPlans.highestValidPlanConfig
                         )
                     )
                 } else {
