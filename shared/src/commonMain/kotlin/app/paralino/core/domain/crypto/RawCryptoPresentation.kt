@@ -228,11 +228,11 @@ class RawCryptoPresentation constructor(
                     subtitle = null,
                     contentIdInfo = buildList {
                         if (it?.second?.isGuestUser == false) {
-                            add("Email: **${it.second.email}**")
+                            add("Email:\n**${it.second.email}**\n")
                         }
-                        add("UserID: **${appPrefs.userId}**")
-                        add("Billing UserID: **${userConfigRepo.configState.value.billingCustomerId}**")
-                        add("DeviceID: **${appPrefs.deviceId}**")
+                        add("UserID:\n**${appPrefs.userId}**\n")
+                        add("Billing UserID:\n**${userConfigRepo.configState.value.billingCustomerId}**\n")
+                        add("DeviceID:\n**${appPrefs.deviceId}**")
                     },
                     rawData = it?.first?.data?.let {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
