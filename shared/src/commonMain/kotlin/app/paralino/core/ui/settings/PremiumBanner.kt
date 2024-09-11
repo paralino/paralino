@@ -50,13 +50,13 @@ import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.random.Random
 
 
 @Composable
 fun PremiumPlanBannerSmall(
     modifier: Modifier = Modifier,
+    description: String = stringResource(MR.strings.plans_banner_settings_description),
     onClick: () -> Unit
 ) {
     Box(
@@ -103,11 +103,13 @@ fun PremiumPlanBannerSmall(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(MR.strings.plans_banner_settings_description),
+                    text = description,
                     color = Color.White,
                     style = MaterialTheme.typography.caption
                 )
             }
+
+            Spacer(modifier = Modifier.size(16.dp))
 
             Text(
                 modifier = Modifier

@@ -128,6 +128,9 @@
     <string name="plans_banner_settings_title">Upgrade your Plan</string>
     <string name="plans_banner_settings_description">Get more of everything and take your experience to the next level!</string>
     <string name="plans_banner_settings_action">Learn more</string>
+    <string name="plans_banner_inline_group_detail">Connect with more friends and family members!</string>
+    <string name="plans_banner_inline_places">Add more places and enjoy unlimited alerts!</string>
+    <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
 
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>

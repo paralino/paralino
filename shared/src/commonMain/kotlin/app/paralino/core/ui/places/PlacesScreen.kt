@@ -211,7 +211,10 @@ private fun PlacesScreen(
 
                 if (state.shouldShowPlanBanner) {
                     this.item(key = "plan_upgrade_banner") {
-                        PremiumPlanBannerSmall(onClick = onPlanBannerClick)
+                        PremiumPlanBannerSmall(
+                            description = stringResource(MR.strings.plans_banner_inline_places),
+                            onClick = onPlanBannerClick
+                        )
                         Spacer(modifier = Modifier.size(40.dp))
                     }
                 }

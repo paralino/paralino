@@ -303,7 +303,10 @@ fun GroupDetailScreenCore(
 
                     if (state.data.shouldShowPlanBanner) {
                         this.item(key = "plan_upgrade_banner") {
-                            PremiumPlanBannerSmall(onClick = openSubscriptions)
+                            PremiumPlanBannerSmall(
+                                description = stringResource(MR.strings.plans_banner_inline_group_detail),
+                                onClick = openSubscriptions
+                            )
                             Spacer(modifier = Modifier.size(40.dp))
                         }
                     }
