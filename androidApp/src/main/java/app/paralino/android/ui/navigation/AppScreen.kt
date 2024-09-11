@@ -130,7 +130,9 @@ sealed class AppScreen {
             val argumentPlaceId: String = "placeId"
             val argumentLat: String = "lat"
             val argumentLng: String = "lng"
-            override val routeSignature: String = "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
+            override val routeSignature: String =
+                "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
+
             fun route(
                 groupId: String,
                 placeId: String?,
@@ -151,7 +153,10 @@ sealed class AppScreen {
 
         object PlaceDetail : Common.PlaceDetail("home")
 
-        object RawDataScreen: Common.RawDataScreen("home")
+        object RawDataScreen : Common.RawDataScreen("home")
+
+        object Subscriptions : Common.Subscriptions("home")
+        object BillingPaywall : Common.BillingPaywall("home")
     }
 
     object Settings : AppScreen() {
@@ -169,13 +174,9 @@ sealed class AppScreen {
             override val routeSignature: String = "blocklist"
         }
 
-        object Subscriptions : AppScreen() {
-            override val routeSignature: String = "subscription"
-        }
+        object Subscriptions : Common.Subscriptions("settings")
 
-        object BillingPaywall : AppScreen() {
-            override val routeSignature: String = "billing-paywall"
-        }
+        object BillingPaywall : Common.BillingPaywall("settings")
 
         object ProfileDetails : AppScreen() {
             override val routeSignature: String = "profile"
@@ -196,7 +197,7 @@ sealed class AppScreen {
                 override val routeSignature: String = "convert-account"
             }
 
-            object RawDataScreen: Common.RawDataScreen("profile")
+            object RawDataScreen : Common.RawDataScreen("profile")
         }
 
         object Licences : AppScreen() {
@@ -212,10 +213,12 @@ sealed class AppScreen {
         open class RawDataScreen(private val parent: String) : AppScreen() {
             val argumentDataType: String = "dataType"
             val argumentDataId: String = "dataId"
-            override val routeSignature: String = "${parent}-raw-data-screen?$argumentDataType={$argumentDataType}&$argumentDataId={$argumentDataId}"
+            override val routeSignature: String =
+                "${parent}-raw-data-screen?$argumentDataType={$argumentDataType}&$argumentDataId={$argumentDataId}"
+
             fun route(type: RawPresentationDataType): String {
 
-                val id = when(type) {
+                val id = when (type) {
                     is RawPresentationDataType.GroupMemberPresentation -> type.memberId
                     is RawPresentationDataType.GroupPlacePresentation -> type.placeId
                     is RawPresentationDataType.GroupPresentation -> type.groupId
@@ -233,7 +236,9 @@ sealed class AppScreen {
 
         open class PlaceDetail(private val parent: String) : AppScreen() {
             val argumentPlaceId: String = "placeId"
-            override val routeSignature: String = "$parent-places-detail?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}"
+            override val routeSignature: String =
+                "$parent-places-detail?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}"
+
             fun route(groupId: String, placeId: String): String {
                 val args = arrayOf(
                     "$argumentGroupId=$groupId",
@@ -241,6 +246,20 @@ sealed class AppScreen {
                 )
                     .joinToString(separator = "&")
                 return "$parent-places-detail?$args"
+            }
+        }
+
+        open class Subscriptions(private val parent: String) : AppScreen() {
+            override val routeSignature: String = "$parent-subscriptions-manage"
+            fun route(): String {
+                return "$parent-subscriptions-manage"
+            }
+        }
+
+        open class BillingPaywall(private val parent: String) : AppScreen() {
+            override val routeSignature: String = "$parent-subscriptions-paywall"
+            fun route(): String {
+                return "$parent-subscriptions-paywall"
             }
         }
     }

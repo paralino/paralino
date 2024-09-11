@@ -77,6 +77,9 @@ fun PlacesScreen(
                     )
                 )
             },
+            openSubscriptions = {
+                appState.navController.navigate(AppScreen.MainHome.Subscriptions.route())
+            },
             mapContent = { state ->
                 SimplePlaceMapComposable(
                     markers = state.markers,

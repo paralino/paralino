@@ -49,8 +49,83 @@ import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.random.Random
 
+
+@Composable
+fun PremiumPlanBannerSmall(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(90.dp)
+            .clickable(onClick = onClick)
+            .shadow(
+                elevation = 16.dp,
+                shape = RoundedCornerShape(12.dp),
+                ambientColor = if (isSystemInDarkTheme()) AppColors.accentLight else AppColors.accentDark,
+                spotColor = if (isSystemInDarkTheme()) AppColors.accentLight else AppColors.accentDark,
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(
+                        MaterialTheme.colors.primary,
+                        AppColors.accentDark
+                    ),
+                    center = Offset(x = 0f, y = 0.2f)
+                )
+            )
+    ) {
+        // Blurred circles background
+        val blurredCircles = remember { generateBlurredCircles() }
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawBlurredCircles(blurredCircles)
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = stringResource(MR.strings.plans_banner_settings_title),
+                    color = Color.White,
+                    style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.Bold)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(MR.strings.plans_banner_settings_description),
+                    color = Color.White,
+                    style = MaterialTheme.typography.caption
+                )
+            }
+
+            Text(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(percent = 50))
+                    .clickable(onClick = onClick)
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(percent = 50)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                text = stringResource(MR.strings.plans_banner_settings_action),
+                color = MaterialTheme.colors.primary,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
 
 @Composable
 fun PremiumPlanBanner(
@@ -278,7 +353,7 @@ private fun generateBlurredCircles(): List<BlurredCircle> {
             blurRadius = 0.2f
         ),
         BlurredCircle(
-            center = Offset(x = 0.45f, y = 1f),
+            center = Offset(x = 0.45f, y = 0.7f),
             radius = 0.6f,
             color = AppColors.darkBackground,
             blurRadius = 0.08f
@@ -293,12 +368,13 @@ private fun generateBlurredCircles(): List<BlurredCircle> {
 }
 
 private fun DrawScope.drawBlurredCircles(circles: List<BlurredCircle>) {
+    val maxSize = max(size.width, size.height)
     circles.forEach { circle ->
         drawBlurredCircle(
             center = Offset(circle.center.x * size.width, circle.center.y * size.height),
-            radius = circle.radius * size.width,
+            radius = circle.radius * maxSize,
             color = circle.color,
-            blurRadius = circle.blurRadius * size.width
+            blurRadius = circle.blurRadius * maxSize
         )
     }
 }

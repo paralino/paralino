@@ -151,6 +151,7 @@ class GroupDetailViewModel(
                 members = members,
                 membersLimit = membersLimit,
                 canShowMembersLimit = group.isCurrentUserOwner,
+                shouldShowPlanBanner = group.isCurrentUserOwner && !group.group.isGroupPremium(remoteConfigRepo.configState.value),
                 errors = errors
             )
         }

@@ -135,6 +135,12 @@ fun NavGraphBuilder.homeGraph(
             val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
             RawDataScreen(appState = appState, type = rawDataType!!)
         }
+        composable(AppScreen.MainHome.Subscriptions.routeSignature) {
+            SubscriptionScreen(appState)
+        }
+        composable(AppScreen.MainHome.BillingPaywall.routeSignature) {
+            BillingScreen(appState)
+        }
     }
 }
 

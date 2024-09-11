@@ -14,6 +14,7 @@ data class PlacesListScreenState constructor(
     val groupName: String,
     val placesLimit: Int,
     val canShowPlacesLimit: Boolean,
+    val shouldShowPlanBanner: Boolean,
     val places: List<PlaceListItemData>,
     val errors: List<ConditionErrorType>
 ) {

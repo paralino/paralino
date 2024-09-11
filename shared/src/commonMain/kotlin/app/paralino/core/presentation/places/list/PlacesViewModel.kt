@@ -63,6 +63,7 @@ class PlacesViewModel(
                     // only show places limit to other members if close to limit
                     placesState.size >= placesLimit.minus(2)
                 },
+                shouldShowPlanBanner = group.isCurrentUserOwner && !group.isGroupPremium(config = remoteConfigRepo.configState.value),
                 errors = errors
             )
             state

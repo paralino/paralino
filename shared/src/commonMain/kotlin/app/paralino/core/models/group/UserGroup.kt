@@ -49,6 +49,14 @@ data class UserGroup constructor(
         ?.let { it < nowUTC() }
         ?: false
 
+    fun isGroupPremium(config: ConfigData): Boolean {
+        if (isPlanExpired) {
+            return false
+        } else {
+            return config.planConfigForPlanType(planType).planTypeEnum.isPremium
+        }
+    }
+
     fun membersLimit(config: ConfigData): Int {
         if (isPlanExpired) {
             return PlanConfig.default.membersLimit
