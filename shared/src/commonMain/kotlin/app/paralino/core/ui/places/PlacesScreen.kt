@@ -86,10 +86,7 @@ fun PlacesScreenCore(
                 }
 
                 is PlacesScreenEvent.GroupPlacesLimitReached -> {
-                    showDialog = MainAlertDialog.PlanLimit(
-                        content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                        limit = event.limit
-                    )
+                    openSubscriptions()
                 }
 
                 null -> { /* do nothing */

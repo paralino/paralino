@@ -29,6 +29,7 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
@@ -87,7 +88,8 @@ class MapHomeViewModel constructor(
     private val userRepository: UserRepository,
     private val appPrefs: AppPrefs,
     private val deviceApiProvider: IDeviceApiProvider,
-    val valueFormatter: IValueFormatter
+    private val valueFormatter: IValueFormatter,
+    private val remoteConfig: RemoteConfigRepository
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
@@ -853,8 +855,11 @@ class MapHomeViewModel constructor(
     fun tryCreateGroup() {
         val limit = userRepository.userPlans.value.highestValidPlan?.plan?.groupsLimitOverride?.toInt()
             ?: userRepository.userPlans.value.highestValidPlanConfig.groupsLimit
+        val groupCount = getAllGroupsItemState().filter { it.isCurrentUserOwner }.size
+        val maxGroupLimit = remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.groupsLimit
+
         coroutineScope.launch {
-            if (limit >= 0 && getAllGroupsItemState().filter { it.isCurrentUserOwner }.size >= limit) {
+            if (groupCount >= maxGroupLimit) {
                 updateReadyState {
                     it.copy(
                         alertDialog = MainAlertDialog.PlanLimit(
@@ -863,6 +868,8 @@ class MapHomeViewModel constructor(
                         )
                     )
                 }
+            } else if (limit in 0..groupCount) {
+                _eventChannel.send(MapHomeScreenEvent.GroupsPlanLimitReached)
             } else {
                 _eventChannel.send(MapHomeScreenEvent.AddGroup)
             }

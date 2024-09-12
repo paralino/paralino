@@ -67,6 +67,7 @@ fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeSc
 
 sealed class MapHomeScreenEvent {
     data object AddGroup : MapHomeScreenEvent()
+    data object GroupsPlanLimitReached : MapHomeScreenEvent()
 }
 
 sealed interface MapHomeScreenUiEvent {

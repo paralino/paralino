@@ -104,6 +104,10 @@ private fun MapHomeContent(
                     appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
                 }
 
+                MapHomeScreenEvent.GroupsPlanLimitReached -> {
+                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                }
+
                 null -> {}
             }
         }

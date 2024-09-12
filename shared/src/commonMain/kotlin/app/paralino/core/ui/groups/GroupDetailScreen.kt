@@ -124,12 +124,7 @@ fun GroupDetailScreenCore(
                 }
 
                 is GroupDetailScreenEvent.GroupMembersLimitReached -> {
-                    onShowDialog(
-                        MainAlertDialog.PlanLimit(
-                            MR.strings.plan_limit_members_alert_info.localizedString(),
-                            limit = event.limit
-                        )
-                    )
+                    openSubscriptions()
                 }
 
                 GroupDetailScreenEvent.UserBlockActionCompleted -> {}
