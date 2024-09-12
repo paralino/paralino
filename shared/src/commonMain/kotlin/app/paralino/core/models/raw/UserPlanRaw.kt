@@ -8,6 +8,7 @@ import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
 class UserPlanRaw constructor(
@@ -23,9 +24,11 @@ class UserPlanRaw constructor(
 ) {
 
     // allow for some manual grace period
-    // it might take few minutes until correct subscription data is synced and reflected on backend
+    // it might take some time until correct subscription data is synced and reflected on backend
+    // most of time it is just few minutes at most
+    // In production we use multiple days as grace period if there are some billing issues
     val isExpired: Boolean get() = expiresAt
-        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 30.minutes)
+        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 7.days)
         ?.let { it < nowUTC() }
         ?: false
 

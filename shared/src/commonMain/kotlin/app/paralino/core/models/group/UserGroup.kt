@@ -17,6 +17,7 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
 @Serializable
@@ -45,7 +46,7 @@ data class UserGroup constructor(
     // allow for some manual grace period
     // it might take few minutes until correct subscription data is synced and reflected on backend
     private val isPlanExpired: Boolean get() = planExpiresAt
-        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 30.minutes)
+        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 7.days)
         ?.let { it < nowUTC() }
         ?: false
 
