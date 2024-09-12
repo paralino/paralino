@@ -1,5 +1,6 @@
 package app.paralino.core.provider
 
 interface IBillingProvider {
-    fun configure(billingUserId: String)
+    suspend fun configure(waitIfNeeded: Boolean)
+    fun configure(billingUserId: String): Boolean
 }

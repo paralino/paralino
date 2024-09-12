@@ -11,7 +11,6 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +22,6 @@ import kotlinx.coroutines.launch
 
 class SubscriptionViewModel(
     private val userRepo: UserRepository,
-    private val billingProvider: IBillingProvider,
     private val userConfigRepo: UserConfigRepository,
     private val deviceApi: IDeviceApiProvider,
 ) : CoreViewModel() {
@@ -49,13 +47,10 @@ class SubscriptionViewModel(
 
         coroutineScope.launch {
             try {
-                val billingUserId = userConfigRepo.ensureAndGetBillingUserId()
-                billingProvider.configure(billingUserId = billingUserId)
+                userConfigRepo.ensureAndGetBillingUserId()
                 _uiState.update { it.copy(isLoading = false) }
             } catch (e: Exception) {
-                logg.i(message = "Error getting billing ID", t = e)
-                messageDispatcher.showSnackbar(text = e.errorString())
-                _uiState.update { it.copy(alertDialog = MainAlertDialog.BillingLoadingError) }
+                logg.w(message = "Error getting billing ID", t = e)
             }
         }
     }

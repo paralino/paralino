@@ -78,7 +78,7 @@ fun PlacesScreen(
                 )
             },
             openSubscriptions = {
-                appState.navController.navigate(AppScreen.MainHome.Subscriptions.route())
+                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             },
             mapContent = { state ->
                 SimplePlaceMapComposable(

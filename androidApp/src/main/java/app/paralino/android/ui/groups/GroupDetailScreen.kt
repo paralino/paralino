@@ -99,7 +99,7 @@ private fun GroupDetailScreen(
                 )
             },
             openSubscriptions = {
-                appState.navController.navigate(AppScreen.MainHome.Subscriptions.route())
+                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             },
             onNavigateBack = { appState.navController.popBackStack() },
             askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },

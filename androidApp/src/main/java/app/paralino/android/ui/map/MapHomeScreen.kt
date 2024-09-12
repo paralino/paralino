@@ -203,7 +203,7 @@ private fun MapHomeContent(
                     }
 
                     GroupPickerAction.OpenSubscriptions -> {
-                        appState.navController.navigate(AppScreen.MainHome.Subscriptions.route())
+                        appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
                     }
 
                     GroupPickerAction.Close -> {}

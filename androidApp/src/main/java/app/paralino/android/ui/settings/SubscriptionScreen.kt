@@ -11,9 +11,11 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.presentation.settings.subscriptions.PaywallViewModel
 import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.settings.PaywallScreenCore
 import app.paralino.core.ui.settings.SubscriptionScreenCore
 import com.revenuecat.purchases.ui.revenuecatui.Paywall
 import com.revenuecat.purchases.ui.revenuecatui.PaywallOptions
@@ -46,7 +48,7 @@ fun SubscriptionScreen(
                 uriHandler.openUri(BackendResourceIDs.subscriptionUrlGooglePlay)
             },
             openBillingManagementScreen = {
-                appState.navController.navigate(AppScreen.Settings.BillingPaywall.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.BillingPaywall.route())
             }
         )
     }
@@ -55,26 +57,33 @@ fun SubscriptionScreen(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun BillingScreen(
-    appState: MainAppState
+    appState: MainAppState,
+    vm: PaywallViewModel = getViewModel()
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
                 title = "",
-                navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
+                navigationIcon = { ToolbarButtons.Close { appState.navController.popBackStack() } }
             )
         },
     ) {
-        val paywallOptions = remember {
-            PaywallOptions.Builder(
-                dismissRequest = {
-                    appState.navController.popBackStack()
-                }
-            )
-                .setShouldDisplayDismissButton(false)
-                .build()
+        PaywallScreenCore(
+            appState = appState,
+            vm = vm,
+            onNavigateBack = { appState.navController.popBackStack() }
+        ) {
+            val paywallOptions = remember {
+                PaywallOptions.Builder(
+                    dismissRequest = {
+                        appState.navController.popBackStack()
+                    }
+                )
+                    .setShouldDisplayDismissButton(false)
+                    .build()
+            }
+            Paywall(options = paywallOptions)
         }
-        Paywall(options = paywallOptions)
     }
 }

@@ -41,6 +41,8 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
+import app.paralino.core.presentation.settings.subscriptions.PaywallViewModel
+import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.DocumentApiWrapper
@@ -192,6 +194,8 @@ object KoinIOS {
             }
             factory { BlocklistViewModel(get()) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get()) }
+            factory { SubscriptionViewModel(get(), get(), get()) }
+            factory { PaywallViewModel(get(), get()) }
         }
     }
 
@@ -245,6 +249,8 @@ object KoinIOS {
             lng: Double? = null
         ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, lat, lng) }
         val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
+        val subscriptionVM get() = get<SubscriptionViewModel>()
+        val paywallVM get() = get<PaywallViewModel>()
     }
 
 }

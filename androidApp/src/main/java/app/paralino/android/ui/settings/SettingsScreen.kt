@@ -69,7 +69,10 @@ fun SettingsScreen(
                 appState.navController.navigate(AppScreen.Settings.AppStatusDebug.routeSignature)
             },
             openSubscriptions = {
-                appState.navController.navigate(AppScreen.Settings.Subscriptions.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.Subscriptions.route())
+            },
+            openPaywall = {
+                appState.navController.navigate(AppScreen.Settings.BillingPaywall.route())
             },
             onShareCode = {
                 context.share(it)

@@ -65,6 +65,7 @@ fun SettingsScreenCore(
     openLicences: () -> Unit,
     openAppStatus: () -> Unit,
     openSubscriptions: () -> Unit,
+    openPaywall: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
@@ -102,7 +103,7 @@ fun SettingsScreenCore(
 
         AnimatedVisibility(visible = readyState?.userPlan?.planTypeEnum?.isPremium == false) {
             PremiumPlanBanner(
-                onClick = openSubscriptions
+                onClick = openPaywall
             )
         }
 
