@@ -16,5 +16,6 @@ sealed class PaywallScreenEvent() {
 }
 
 sealed class PaywallScreenUiEvent() {
+    data object RefreshPlans : PaywallScreenUiEvent()
     data class DialogAction(val action: AlertDialogAction) : PaywallScreenUiEvent()
 }

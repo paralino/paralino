@@ -174,6 +174,6 @@ object KoinSetup {
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get()) }
-        viewModel { PaywallViewModel(get(), get()) }
+        viewModel { PaywallViewModel(get(), get(), get()) }
     }
 }
