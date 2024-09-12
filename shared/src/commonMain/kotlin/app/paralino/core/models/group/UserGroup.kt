@@ -60,7 +60,7 @@ data class UserGroup constructor(
 
     fun membersLimit(config: ConfigData): Int {
         if (isPlanExpired) {
-            return PlanConfig.default.membersLimit
+            return config.defaultFreePlanConfig().membersLimit
         } else {
             return membersLimitOverride?.toInt()
                 ?: config.planConfigForPlanType(planType).membersLimit
@@ -69,7 +69,7 @@ data class UserGroup constructor(
 
     fun devicesLimit(config: ConfigData): Int {
         if (isPlanExpired) {
-            return PlanConfig.default.devicesLimit
+            return config.defaultFreePlanConfig().devicesLimit
         } else {
             return devicesLimitOverride?.toInt()
                 ?: config.planConfigForPlanType(planType).devicesLimit
@@ -78,7 +78,7 @@ data class UserGroup constructor(
 
     fun placesLimit(config: ConfigData): Int {
         if (isPlanExpired) {
-            return PlanConfig.default.placesLimit
+            return config.defaultFreePlanConfig().placesLimit
         } else {
             return placesLimitOverride?.toInt()
                 ?: config.planConfigForPlanType(planType).placesLimit

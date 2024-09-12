@@ -46,6 +46,13 @@ data class ConfigData(
     }
 
     fun planConfigForPlanType(planType: String): PlanConfig {
-        return plans.firstOrNull { it.planType == planType } ?: PlanConfig.default
+        return plans.firstOrNull { it.planType == planType } ?: defaultFreePlanConfig()
+    }
+
+    fun defaultFreePlanConfig(): PlanConfig {
+        return plans
+            .filter { !it.planTypeEnum.isPremium && it.isActive }
+            .maxByOrNull { it.planTypeEnum.order }
+            ?: PlanConfig.default
     }
 }

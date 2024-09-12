@@ -104,7 +104,8 @@ data class PlanConfig(
     val placesLimit: Int,
     val historyDaysLimit: Int,
     val paralinoIdsLimit: Int,
-    val personalDevicesLimit: Int
+    val personalDevicesLimit: Int,
+    val isActive: Boolean
 ) {
 
     val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
@@ -119,7 +120,8 @@ data class PlanConfig(
             placesLimit = 2,
             historyDaysLimit = 2,
             paralinoIdsLimit = 1,
-            personalDevicesLimit = 2
+            personalDevicesLimit = 2,
+            isActive = true
         )
     }
 }
