@@ -35,7 +35,7 @@ fun PlanLimitCount(
             ) {
                 this.append("$count")
             }
-            if(limit != null && limit >= count) {
+            if(limit != null) {
                 this.withStyle(
                     style = SpanStyle(
                         fontWeight = FontWeight.Medium,
@@ -51,7 +51,7 @@ fun PlanLimitCount(
         style = MaterialTheme.typography.subtitle1,
         modifier = modifier
             .background(
-                color = if (limit == count) MaterialTheme.colors.error
+                color = if (limit != null && limit <= count) MaterialTheme.colors.error
                 else AppColors.accentLight.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(4.dp)
             )
