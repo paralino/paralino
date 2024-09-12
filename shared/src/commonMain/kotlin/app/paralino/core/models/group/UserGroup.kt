@@ -30,6 +30,7 @@ data class UserGroup constructor(
     val serverIntegrity: String,
     val schemeVersion: String,
     val planType: String,
+    val fallbackPlanType: String,
     val planExpiresAt: Instant?,
     val provider: String?,
     val membersLimitOverride: Long?,
@@ -60,7 +61,7 @@ data class UserGroup constructor(
 
     fun membersLimit(config: ConfigData): Int {
         if (isPlanExpired) {
-            return config.defaultFreePlanConfig().membersLimit
+            return config.planConfigForPlanType(fallbackPlanType).membersLimit
         } else {
             return membersLimitOverride?.toInt()
                 ?: config.planConfigForPlanType(planType).membersLimit
@@ -69,7 +70,7 @@ data class UserGroup constructor(
 
     fun devicesLimit(config: ConfigData): Int {
         if (isPlanExpired) {
-            return config.defaultFreePlanConfig().devicesLimit
+            return config.planConfigForPlanType(fallbackPlanType).devicesLimit
         } else {
             return devicesLimitOverride?.toInt()
                 ?: config.planConfigForPlanType(planType).devicesLimit
@@ -78,7 +79,7 @@ data class UserGroup constructor(
 
     fun placesLimit(config: ConfigData): Int {
         if (isPlanExpired) {
-            return config.defaultFreePlanConfig().placesLimit
+            return config.planConfigForPlanType(fallbackPlanType).placesLimit
         } else {
             return placesLimitOverride?.toInt()
                 ?: config.planConfigForPlanType(planType).placesLimit

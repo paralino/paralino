@@ -1,6 +1,8 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.data.db.GroupEntity
+import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
@@ -26,7 +28,8 @@ class GroupsMapperLocal(
             provider = model.provider,
             membersLimitOverride = model.membersLimitOverride,
             devicesLimitOverride = model.devicesLimitOverride,
-            placesLimitOverride = model.placesLimitOverride
+            placesLimitOverride = model.placesLimitOverride,
+            fallbackPlanType = model.fallbackPlanType ?: PlanConfig.default.planType
         )
     }
 
@@ -43,7 +46,8 @@ class GroupsMapperLocal(
             provider = model.provider,
             membersLimitOverride = model.membersLimitOverride,
             devicesLimitOverride = model.devicesLimitOverride,
-            placesLimitOverride = model.placesLimitOverride
+            placesLimitOverride = model.placesLimitOverride,
+            fallbackPlanType = model.fallbackPlanType
         )
     }
 }

@@ -1,6 +1,5 @@
 package app.paralino.core.models.raw
 
-import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
@@ -16,6 +15,7 @@ data class GroupDocumentRaw constructor(
     val serverIntegrity: String,
     val schemeVersion: String,
     val planType: String,
+    val fallbackPlanType: String,
     val provider: String?,
     val planExpiresAt: Instant?,
     val membersLimitOverride: Long?,
@@ -33,6 +33,7 @@ data class GroupDocumentRaw constructor(
                 serverIntegrity = map["serverIntegrity"] as String,
                 schemeVersion = map["schemeVersion"] as String,
                 planType = map["planType"] as String,
+                fallbackPlanType = map["fallbackPlanType"] as String,
                 planExpiresAt = (map["planExpiresAt"] as? String)?.isoWithOffsetToInstant(),
                 provider = map["provider"] as? String,
                 membersLimitOverride = (map["membersLimitOverride"] as? Number?)?.toLong(),

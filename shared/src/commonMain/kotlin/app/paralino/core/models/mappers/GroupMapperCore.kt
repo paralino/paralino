@@ -59,7 +59,8 @@ class GroupMapperCore constructor(
             provider = model.provider,
             membersLimitOverride = model.membersLimitOverride,
             devicesLimitOverride = model.devicesLimitOverride,
-            placesLimitOverride = model.placesLimitOverride
+            placesLimitOverride = model.placesLimitOverride,
+            fallbackPlanType = model.fallbackPlanType
         )
     }
 
@@ -103,7 +104,8 @@ class GroupMapperCore constructor(
             provider = model.provider,
             membersLimitOverride = model.membersLimitOverride,
             devicesLimitOverride = model.devicesLimitOverride,
-            placesLimitOverride = model.placesLimitOverride
+            placesLimitOverride = model.placesLimitOverride,
+            fallbackPlanType = model.fallbackPlanType
         )
     }
 

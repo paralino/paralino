@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS groupEntity (
 `devicesLimitOverride` INTEGER DEFAULT NULL,
 `placesLimitOverride` INTEGER DEFAULT NULL,
 `planExpiresAt` TEXT DEFAULT NULL,
-`provider` TEXT DEFAULT NULL
+`provider` TEXT DEFAULT NULL,
+`fallbackPlanType` TEXT DEFAULT NULL
 );
 
 createGroup:
