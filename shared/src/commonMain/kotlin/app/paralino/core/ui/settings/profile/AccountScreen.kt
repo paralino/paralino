@@ -266,7 +266,7 @@ fun AccountInfoHeader(
             modifier = modifier
                 .fillMaxWidth()
                 .clickable(enabled = onClick != null) { onClick?.invoke() },
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colors.primary,
             elevation = 16.dp
         ) {

@@ -131,8 +131,8 @@ fun SettingsScreenCore(
             }
 
             SettingsActionItem(
-                name = "Subs",
-                icon = CoreAppIcons.Settings.asPainterResource()
+                name = stringResource(MR.strings.plans_management_screen_title),
+                icon = CoreAppIcons.StarFamily.asPainterResource()
             ) {
                 openSubscriptions()
             }
