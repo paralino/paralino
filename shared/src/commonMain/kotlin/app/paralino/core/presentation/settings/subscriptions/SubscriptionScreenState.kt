@@ -6,7 +6,8 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 data class SubscriptionScreenState(
     val subscriptionState: SubscriptionInfoState? = null,
     val alertDialog: MainAlertDialog? = null,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val canShowMoreInfo: Boolean = false
 ) {
     val isSubscribed: Boolean = subscriptionState != null
 }

@@ -119,8 +119,8 @@ fun PremiumPlanBannerSmall(
                         color = Color.White,
                         shape = RoundedCornerShape(percent = 50)
                     )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                text = stringResource(MR.strings.plans_banner_settings_action),
+                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                text = stringResource(MR.strings.plans_banner_settings_action_small),
                 color = MaterialTheme.colors.primary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold

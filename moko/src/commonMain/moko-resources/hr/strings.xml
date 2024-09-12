@@ -128,11 +128,16 @@
 
     <string name="plans_banner_settings_title">Nadogradi svoj plan</string>
     <string name="plans_banner_settings_description">Otključaj više mogućnosti i poboljšaj svoje iskustvo!</string>
-    <string name="plans_banner_settings_action">Istraži</string>
+    <string name="plans_banner_settings_action">Nadogradi sad</string>
+    <string name="plans_banner_settings_action_small">Nadogradi</string>
     <string name="plans_banner_inline_group_detail">Poveži se i dodaj više prijatelja i članova obitelji!</string>
     <string name="plans_banner_inline_places">Kreiraj više mjesta i uživaj u neograničenim obavijestima!</string>
     <string name="plans_banner_inline_groups_picker">Kreiraj više grupa i poveži se sa još više dragih osoba!</string>
     <string name="plans_management_screen_title">Pretplata</string>
+    <string name="plans_management_info_not_subscribed">Trenutno nisi pretplaćen na premium plan!</string>
+    <string name="plans_management_info_wrong_platform">Ne možeš upravljati svojom pretplatom na ovom uređaju!\nKoristi uređaj sa kojim je aktivirana pretplata.</string>
+    <string name="plans_management_info_plan">Trenutno imaš **%1$s** plan!</string>
+    <string name="plans_management_action_manage">Upravljaj ili otkaži pretplatu</string>
 
     <string name="login_placeholder_user_name">Ime*</string>
     <string name="login_placeholder_email">E-mail*</string>

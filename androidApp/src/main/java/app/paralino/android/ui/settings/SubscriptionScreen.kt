@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.core.MR
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
@@ -16,6 +17,7 @@ import app.paralino.core.ui.components.dialogs.ToolbarButtons
 import app.paralino.core.ui.settings.SubscriptionScreenCore
 import com.revenuecat.purchases.ui.revenuecatui.Paywall
 import com.revenuecat.purchases.ui.revenuecatui.PaywallOptions
+import dev.icerock.moko.resources.compose.stringResource
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -27,7 +29,7 @@ fun SubscriptionScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
-                title = "",
+                title = stringResource(MR.strings.plans_management_screen_title),
                 navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
             )
         },
