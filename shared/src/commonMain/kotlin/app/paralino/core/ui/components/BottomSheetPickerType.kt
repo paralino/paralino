@@ -1,8 +1,16 @@
 package app.paralino.core.ui.components
 
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.presentation.groups.GroupItemState
 
 sealed interface BottomSheetPickerType {
     data class EmojiPickerBottomSheet(val emojis: List<String>) : BottomSheetPickerType
-    data class GroupPickerBottomSheet(val groups: List<GroupItemState>) : BottomSheetPickerType
+    data class GroupPickerBottomSheet(
+        val userPlan: PlanConfig,
+        val groups: List<GroupItemState>
+    ) : BottomSheetPickerType {
+
+        // only show plan banner if user has own groups and no premium plan
+        val shouldShowPlanBanner: Boolean = groups.any { it.isCurrentUserOwner } && !userPlan.planTypeEnum.isPremium
+    }
 }

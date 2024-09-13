@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
@@ -43,8 +43,8 @@ class CreateAccountUseCase constructor(
         return signUp(email, password)
             .onEach {
                 if (it >= SignUpStep.GENERATING_KEYS) {
-                    config.guestEmail = email
-                    config.guestPassword = password
+                    appPrefs.guestEmail = email
+                    appPrefs.guestPassword = password
                 }
             }
     }
@@ -106,7 +106,7 @@ class CreateAccountUseCase constructor(
                 userKeyRepository.clearAll()
                 // key generation failed but user is created
                 // we are saving user as is, so account recovery can take place later on
-                config.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
+                appPrefs.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
                 userRepo.initLocallyAfterSignUp(user, session)
 
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)

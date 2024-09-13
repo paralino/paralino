@@ -2,7 +2,7 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.location.LocationUploadEngine
@@ -35,7 +35,7 @@ class LogoutUseCase(
     private val geofenceManager: IGeofenceManager,
     private val sessionMonitor: UserSessionMonitor,
     private val limitedExecutionParentManager: LimitedExecutionParentManager,
-    private val config: AppConfig,
+    private val appPrefs: AppPrefs,
 ) : LimitedExecution(scope = limitedExecutionParentManager) {
 
     private val executionKey = "logout_or_delete"
@@ -50,8 +50,8 @@ class LogoutUseCase(
     suspend fun deleteAccount(logoutLocallyOnError: Boolean) {
         accountAction(logoutLocallyOnError = logoutLocallyOnError) {
             userRepo.deleteAccount()
-            config.guestEmail = ""
-            config.guestPassword = ""
+            appPrefs.guestEmail = ""
+            appPrefs.guestPassword = ""
         }
     }
 
@@ -66,11 +66,11 @@ class LogoutUseCase(
         try {
             action()
             sessionMonitor.resetSessionState()
-            config.wasUserLoggedIn = false
+            appPrefs.wasUserLoggedIn = false
             logoutLocallyImpl()
         } catch (e: Exception) {
             if (e is UnauthorizedException) {
-                config.wasUserLoggedIn = false
+                appPrefs.wasUserLoggedIn = false
             }
 
             if (logoutLocallyOnError || e is UnauthorizedException) {
@@ -102,7 +102,7 @@ class LogoutUseCase(
 
     private suspend fun logoutLocallyImpl() {
         logg.w("account_state", "Logging user out locally")
-        config.clear()
+        appPrefs.clear()
         scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
 
         userKeyRepo.clearAll()

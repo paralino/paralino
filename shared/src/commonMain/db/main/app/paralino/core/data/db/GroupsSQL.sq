@@ -8,7 +8,10 @@ CREATE TABLE IF NOT EXISTS groupEntity (
 `schemeVersion` TEXT NOT NULL,
 `membersLimitOverride` INTEGER DEFAULT NULL,
 `devicesLimitOverride` INTEGER DEFAULT NULL,
-`placesLimitOverride` INTEGER DEFAULT NULL
+`placesLimitOverride` INTEGER DEFAULT NULL,
+`planExpiresAt` TEXT DEFAULT NULL,
+`provider` TEXT DEFAULT NULL,
+`fallbackPlanType` TEXT DEFAULT NULL
 );
 
 createGroup:

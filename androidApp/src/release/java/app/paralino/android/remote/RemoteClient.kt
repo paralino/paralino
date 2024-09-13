@@ -4,7 +4,7 @@ import io.appwrite.Client
 import java.util.concurrent.TimeUnit
 
 object RemoteClient {
-    fun setup(client: Client, debug: Boolean): Client {
+    fun setup(client: Client, logRequests: Boolean): Client {
         client.http = client
             .http
             .newBuilder()

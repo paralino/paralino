@@ -2,6 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>paralinoServerUrl</key>
+	<string>$(serverUrl)</string>
+    <key>paralinoServerKey</key>
+    <string>$(serverKey)</string>
+    <key>paralinoPublicServerUrl</key>
+    <string>$(publicServerUrl)</string>
+    <key>internalTesting</key>
+    <string>$(internalTesting)</string>
+    <key>forceLogToSystem</key>
+    <string>$(forceLogToSystem)</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>app.paralino.ios.task.refresh.full</string>

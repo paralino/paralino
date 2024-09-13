@@ -1,6 +1,6 @@
 package app.paralino.core.domain.group
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.HashType
@@ -82,7 +82,7 @@ class GroupMemberAddUseCase constructor(
         val myMembershipKeys = cryptoKEKRepo.getMyPreKeyForGroup(groupId, version = 0)
 
         if (myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
-            throw MissingMemberKeyException(groupId, config.userId)
+            throw MissingMemberKeyException(groupId, appPrefs.userId)
 
         val allGroupKeys = cryptoKEKRepo.getAllGroupKeys(groupId)
         val encryptedOldKeys = allGroupKeys

@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.invite.manage
 
-import app.paralino.core.BuildKonfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -90,13 +90,13 @@ class PersonalCodeViewModel(
                 )
             }
 
-        val maxIDs = userPlans.highestPlanConfig.paralinoIdsLimit
+        val maxIDs = userPlans.highestValidPlanConfig.paralinoIdsLimit
         val inactiveCodes = codeData.filter { !it.isValid }
         return Payload.Success(
             PersonalCodeScreenState(
                 activeCode = codeData.firstOrNull { it.isValid },
                 inactiveCodes = inactiveCodes,
-                canCreateAlternativeId = BuildKonfig.hasPreviewFeatures && maxIDs > 0 && codeData.size < maxIDs,
+                canCreateAlternativeId = AppBuildConfig.instance.hasPreviewFeatures && maxIDs > 0 && codeData.size < maxIDs,
                 maxCodes = maxIDs,
                 createLoading = false,
                 alertDialog = activeAlertDialog

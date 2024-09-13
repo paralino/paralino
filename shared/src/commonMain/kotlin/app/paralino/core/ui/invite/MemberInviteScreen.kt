@@ -92,8 +92,8 @@ fun MemberInviteScreenCore(
         },
         onPickGroup = {
             appState.uiScope.launch {
-                val groups = vm.getAllGroups()
-                onPickGroup(BottomSheetPickerType.GroupPickerBottomSheet(groups))
+                val groupPickerState = vm.getGroupPickerState()
+                onPickGroup(groupPickerState)
             }
         }
     )
@@ -194,7 +194,7 @@ private fun MemberInviteScreen(
                     Spacer(modifier = Modifier.size(20.dp))
                     SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_group))
                     GroupListItem(
-                        data = state.group!!,
+                        data = state.group,
                         onEdit = {},
                         onClick = {
                             if (state.canChangeGroup) onPickGroup()

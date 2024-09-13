@@ -8,6 +8,8 @@ import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -28,6 +30,7 @@ class MemberInviteViewModel(
     private val codeRepo: PersonalCodesRepository,
     private val groupRepo: UserGroupLocalDataSource,
     private val groupMemberAdd: GroupMemberAddUseCase,
+    private val userRepo: UserRepository
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -163,7 +166,14 @@ class MemberInviteViewModel(
             .launchIn(coroutineScope)
     }
 
-    suspend fun getAllGroups(): List<GroupItemState> {
+    suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
+        return BottomSheetPickerType.GroupPickerBottomSheet(
+            userPlan = userRepo.userPlans.value.highestValidPlanConfig,
+            groups = getAllGroups()
+        )
+    }
+
+    private suspend fun getAllGroups(): List<GroupItemState> {
         return groupRepo.getAllGroupsWithMetadata()
             .firstOrNull()
             ?.map { GroupItemState(it) }

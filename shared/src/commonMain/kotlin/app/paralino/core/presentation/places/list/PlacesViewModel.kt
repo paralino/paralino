@@ -4,7 +4,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.ILocationStatusProvider
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.ConditionErrorType
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class PlacesViewModel(
     groupId: String,
-    private val appConfigRepo: AppConfigRepository,
+    private val remoteConfigRepo: RemoteConfigRepository,
     private val placesRepo: PlacesRepository,
     private val groupRepo: UserGroupLocalDataSource,
     val locationStatusProvider: ILocationStatusProvider,
@@ -50,8 +50,7 @@ class PlacesViewModel(
                 emptyList()
             }
 
-            val placesLimit = group.placesLimitOverride?.toInt()
-                ?: appConfigRepo.configState.value.planConfigForPlanType(group.planType).placesLimit
+            val placesLimit = group.placesLimit(remoteConfigRepo.configState.value)
             val state = PlacesListScreenState(
                 groupId = groupId,
                 groupImage = group.image,
@@ -64,6 +63,7 @@ class PlacesViewModel(
                     // only show places limit to other members if close to limit
                     placesState.size >= placesLimit.minus(2)
                 },
+                shouldShowPlanBanner = group.isCurrentUserOwner && !group.isGroupPremium(config = remoteConfigRepo.configState.value),
                 errors = errors
             )
             state

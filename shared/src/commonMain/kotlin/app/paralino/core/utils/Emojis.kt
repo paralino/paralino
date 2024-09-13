@@ -9,6 +9,7 @@ object Emojis {
     val lightBulb = "emoji_u1f4a1"
     val lock = "emoji_u26a0"
     val robot = "emoji_u1f916"
+    val star = "emoji_u2b50"
 
     private val userSpecific = listOf(
 //        "emoji_u1f4a9",
@@ -75,7 +76,6 @@ object Emojis {
     )
 
     val groupSpecific = listOf(
-
         "emoji_u1f3a1",
         "emoji_u1f3a3",
         "emoji_u1f3a4",

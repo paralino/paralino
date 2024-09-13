@@ -2,7 +2,7 @@ package app.paralino.core.data.db
 
 import com.russhwolf.settings.Settings
 
-actual class AppConfigProvider {
+actual class AppPrefsProvider {
     actual val userSettings: Settings = KeychainSettingsFixed(
         service = "paralino_prefs_user"
     )

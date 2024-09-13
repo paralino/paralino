@@ -660,4 +660,20 @@ sealed interface MainAlertDialog {
             },
         )
     }
+
+    object BillingLoadingError : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.error_something_wrong),
+            message = stringResource(resource = MR.strings.plan_billing_loading_error_alert_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_ok),
+                    color = AlertDialogButtonData.positiveColor
+                )
+            ),
+        )
+    }
 }

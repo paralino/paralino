@@ -4,7 +4,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.CryptoResource
@@ -37,7 +37,7 @@ import kotlinx.serialization.encodeToString
 class PlacesRemoteSource(
     private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
+    private val appBuildConfig: AppBuildConfig,
     private val mapper: PlaceMapperCore,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository,
@@ -139,14 +139,14 @@ class PlacesRemoteSource(
             val places = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = remoteConfig.resourceIds.collectionPlacesID
+                    collectionId = appBuildConfig.resourceIds.collectionPlacesID
                 ).map { it.parsePlace() }
             }
 
             val settings = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID
+                    collectionId = appBuildConfig.resourceIds.collectionPlacesSettingsID
                 ).map { it.parsePlaceSettings() }
             }.await()
 
@@ -211,7 +211,7 @@ class PlacesRemoteSource(
             if (data.id.isBlank()) {
                 api.createDocument(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID,
+                    collectionId = appBuildConfig.resourceIds.collectionPlacesSettingsID,
                     docId = null,
                     data = mapped.toPostJson()
                 ).parsePlaceSettings()
@@ -220,7 +220,7 @@ class PlacesRemoteSource(
                     // first try to update document
                     api.updateDocument(
                         databaseType = BackendDatabaseType.DATA,
-                        collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID,
+                        collectionId = appBuildConfig.resourceIds.collectionPlacesSettingsID,
                         docId = mapped.id,
                         data = mapped.toPostJsonUpdate()
                     ).parsePlaceSettings()
@@ -229,7 +229,7 @@ class PlacesRemoteSource(
                         // if document is not found, create it
                         api.createDocument(
                             databaseType = BackendDatabaseType.DATA,
-                            collectionId = remoteConfig.resourceIds.collectionPlacesSettingsID,
+                            collectionId = appBuildConfig.resourceIds.collectionPlacesSettingsID,
                             docId = null,
                             data = mapped.toPostJson()
                         ).parsePlaceSettings()

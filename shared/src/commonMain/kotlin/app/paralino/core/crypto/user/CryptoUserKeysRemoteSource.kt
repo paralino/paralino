@@ -1,6 +1,6 @@
 package app.paralino.core.crypto.user
 
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.raw.UpdateUserKeysFunctionData
 import app.paralino.core.models.raw.UserCryptoKeyRaw
@@ -12,13 +12,13 @@ import app.paralino.core.repo.api.runAndWait
 class CryptoUserKeysRemoteSource(
     private val docApi: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
+    private val appBuildConfig: AppBuildConfig,
 ) {
 
     suspend fun getAllMyKeys(): List<UserCryptoKeyRaw> {
         return docApi.listAllDocuments(
             databaseType = BackendDatabaseType.KEYS,
-            collectionId = remoteConfig.resourceIds.collectionUserKeysID
+            collectionId = appBuildConfig.resourceIds.collectionUserKeysID
         ).map { UserCryptoKeyRaw.from(it) }
     }
 

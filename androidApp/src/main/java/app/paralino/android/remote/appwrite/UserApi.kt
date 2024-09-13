@@ -13,7 +13,7 @@ class UserApi constructor(
 
     override suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
         return remoteModule.execute {
-            account.create(this.backendConfig.resourceIds.uniqueIdPlaceholder, email, password, userName).parseUser()
+            account.create(this.appBuildConfig.resourceIds.uniqueIdPlaceholder, email, password, userName).parseUser()
         }
     }
 
@@ -49,7 +49,7 @@ class UserApi constructor(
 
     override suspend fun initResetPassword(email: String) {
         remoteModule.execute {
-            account.createRecovery(email, remoteModule.backendConfig.resourceIds.passwordResetUrl)
+            account.createRecovery(email, remoteModule.appBuildConfig.resourceIds.passwordResetUrl)
         }
     }
 
@@ -65,7 +65,7 @@ class UserApi constructor(
 
     override suspend fun initEmailVerification() {
         return remoteModule.execute {
-            account.createVerification(remoteModule.backendConfig.resourceIds.emailConfirmationUrl)
+            account.createVerification(remoteModule.appBuildConfig.resourceIds.emailConfirmationUrl)
         }
     }
 

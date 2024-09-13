@@ -1,7 +1,7 @@
 package app.paralino.core.provider
 
 import app.paralino.core.logg
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 
 abstract class IConnectionStatusProvider(
-    private val backendConfig: BackendConfig
+    private val appBuildConfig: AppBuildConfig
 ) {
     private val _status: MutableStateFlow<NetworkConnectionInfo> = MutableStateFlow(NetworkConnectionInfo(ConnectionStatus.CONNECTED))
     val status = _status.asStateFlow()
@@ -25,7 +25,7 @@ abstract class IConnectionStatusProvider(
                 logg.v("app_state", "Network status OFFLINE")
                 NetworkConnectionInfo(ConnectionStatus.OFFLINE)
             }
-            checkInternet(url = backendConfig.serverUrl, forceCheck = forceCheck) -> {
+            checkInternet(url = appBuildConfig.serverUrl, forceCheck = forceCheck) -> {
                 NetworkConnectionInfo(ConnectionStatus.CONNECTED, getNetworkType())
             }
             else -> {

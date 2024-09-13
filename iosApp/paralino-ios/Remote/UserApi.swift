@@ -59,14 +59,14 @@ class UserApi: IUserApiIOS {
     
     func doInitEmailVerification() async throws -> Payload<KotlinUnit> {
         return await remoteModule.executeUserApi { module in
-            let result = try await module.account.createVerification(url: module.backendConfig.resourceIds.emailConfirmationUrl)
+            let result = try await module.account.createVerification(url: module.appBuildConfig.resourceIds.emailConfirmationUrl)
             return KotlinUnit()
         }
     }
     
     func doInitResetPassword(email: String) async throws -> Payload<KotlinUnit> {
         return await remoteModule.executeUserApi { module in
-            let result = try await module.account.createRecovery(email: email, url: module.backendConfig.resourceIds.passwordResetUrl)
+            let result = try await module.account.createRecovery(email: email, url: module.appBuildConfig.resourceIds.passwordResetUrl)
             return KotlinUnit()
         }
     }
@@ -94,7 +94,7 @@ class UserApi: IUserApiIOS {
     func signUp(userName: String?, email: String, password: String) async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
             try await module.account.create(
-                userId: module.backendConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName
+                userId: module.appBuildConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName
             ).parseUser()
         }
     }

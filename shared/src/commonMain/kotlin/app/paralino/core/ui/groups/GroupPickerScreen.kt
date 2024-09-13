@@ -32,12 +32,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.settings.PremiumPlanBannerSmall
 import app.paralino.core.ui.theme.ButtonStyle
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -58,7 +60,7 @@ fun GroupBottomSheetPicker(
         sheetContent = {
             Spacer(modifier = Modifier.height(1.dp))
             GroupPickerScreen(
-                groups = state.groups,
+                state = state.state,
                 onClick = onClick
             )
         },
@@ -67,17 +69,16 @@ fun GroupBottomSheetPicker(
 }
 
 class GroupBottomSheetPickerState @OptIn(ExperimentalMaterialApi::class) constructor(
-    val bottomSheetState: ModalBottomSheetState,
-    initialGroups: List<GroupItemState>
+    val bottomSheetState: ModalBottomSheetState
 ) {
-    var groups by mutableStateOf(initialGroups)
+    var state by mutableStateOf<BottomSheetPickerType.GroupPickerBottomSheet?>(null)
 
     @OptIn(ExperimentalMaterialApi::class)
     val isVisible: Boolean get() = bottomSheetState.isVisible
 
     @OptIn(ExperimentalMaterialApi::class)
-    suspend fun show(groups: List<GroupItemState>) {
-        this.groups = groups
+    suspend fun show(state: BottomSheetPickerType.GroupPickerBottomSheet) {
+        this.state = state
         bottomSheetState.show()
     }
 
@@ -90,16 +91,14 @@ class GroupBottomSheetPickerState @OptIn(ExperimentalMaterialApi::class) constru
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun rememberGroupBottomSheetPickerState(
-    initialValue: ModalBottomSheetValue = ModalBottomSheetValue.Hidden,
-    initialGroups: List<GroupItemState> = emptyList()
+    initialValue: ModalBottomSheetValue = ModalBottomSheetValue.Hidden
 ): GroupBottomSheetPickerState {
-    return key(initialValue, initialGroups) {
+    return key(initialValue) {
         GroupBottomSheetPickerState(
             bottomSheetState = rememberModalBottomSheetState(
                 initialValue = initialValue,
                 skipHalfExpanded = false
-            ),
-            initialGroups = initialGroups
+            )
         )
     }
 }
@@ -108,7 +107,7 @@ fun rememberGroupBottomSheetPickerState(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GroupPickerScreen(
-    groups: List<GroupItemState>,
+    state: BottomSheetPickerType.GroupPickerBottomSheet?,
     onClick: (GroupPickerAction) -> Unit
 ) {
     LazyColumn(
@@ -132,25 +131,43 @@ private fun GroupPickerScreen(
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.size(8.dp))
-                        PlanLimitCount(
-                            count = groups.size,
-                            limit = null
-                        )
+                        if (state != null) {
+                            PlanLimitCount(
+                                count = state.groups.size,
+                                limit = null
+                            )
+                        }
                     }
                 },
                 navigationIcon = { ToolbarButtons.Close(onClick = { onClick(GroupPickerAction.Close) }) },
                 actions = {}
             )
         }
-        items(groups.size, key = { groups.get(it).id }) {
-            val group = groups[it]
-            GroupListItem(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                data = group,
-                onClick = { onClick(GroupPickerAction.GroupPicked(group)) },
-                onEdit = { onClick(GroupPickerAction.GroupEditPicked(group)) }
-            )
+
+        if (state != null && state.shouldShowPlanBanner) {
+            item(key = "plan_upgrade_banner") {
+                PremiumPlanBannerSmall(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 30.dp),
+                    description = stringResource(MR.strings.plans_banner_inline_groups_picker),
+                    onClick = { onClick(GroupPickerAction.OpenSubscriptions) }
+                )
+            }
         }
+
+        if (state != null) {
+            items(state.groups.size, key = { state.groups.get(it).id }) {
+                val group = state.groups[it]
+                GroupListItem(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    data = group,
+                    onClick = { onClick(GroupPickerAction.GroupPicked(group)) },
+                    onEdit = { onClick(GroupPickerAction.GroupEditPicked(group)) }
+                )
+            }
+        }
+
         item(key = "new_group") {
             Spacer(
                 modifier = Modifier
@@ -198,6 +215,7 @@ sealed interface GroupPickerAction {
     object NewGroup : GroupPickerAction
     object JoinGroup : GroupPickerAction
     object Close : GroupPickerAction
+    object OpenSubscriptions : GroupPickerAction
     data class GroupPicked(val group: GroupItemState) : GroupPickerAction
     data class GroupEditPicked(val group: GroupItemState) : GroupPickerAction
 }

@@ -17,8 +17,8 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
     private var connectionActive = false
     private var mobileNetwork = false
     
-    override init(backendConfig: BackendConfig) {
-        super.init(backendConfig: backendConfig)
+    override init(appBuildConfig: AppBuildConfig) {
+        super.init(appBuildConfig: appBuildConfig)
         
         monitor = NWPathMonitor()
         guard monitor?.pathUpdateHandler == nil else { return }

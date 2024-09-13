@@ -1,6 +1,6 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
@@ -89,7 +89,7 @@ class RegisterDeviceForSharingUseCase constructor(
 
                 val payload = LocationCreatePayload(
                     groupId = groupId,
-                    deviceId = config.deviceId,
+                    deviceId = appPrefs.deviceId,
                     deviceData = deviceData,
                     status = status,
                     groupKeyVersion = groupKey.version,

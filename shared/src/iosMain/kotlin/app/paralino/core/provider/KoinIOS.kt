@@ -2,7 +2,7 @@ package app.paralino.core.provider
 
 import app.paralino.core.CoreAppManager
 import app.paralino.core.app_update.IAppUpdateManager
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.LogsDatabaseHelper
@@ -11,7 +11,7 @@ import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
@@ -41,6 +41,8 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
+import app.paralino.core.presentation.settings.subscriptions.PaywallViewModel
+import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.DocumentApiWrapper
@@ -78,16 +80,16 @@ object KoinIOS {
         groupActivityNotificationPresenter: IGroupActivityNotificationPresenter,
         infoNotificationPresenter: IInfoMessagesNotificationPresenter,
         geofenceManager: IGeofenceManager,
-        backendConfig: BackendConfig,
+        appBuildConfig: AppBuildConfig,
         oneTimeLocationProvider: (
             locationStatusProvider: ILocationStatusProvider,
             locationCacheRepo: LocationCacheRepository
         ) -> IOneTimeLocationProvider,
         remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
-        documentsApi: (IRemoteModule, BackendConfig) -> IDocumentApiIOS,
-        userApi: (IRemoteModule, BackendConfig) -> IUserApiIOS,
-        functionsApi: (IRemoteModule, BackendConfig) -> IFunctionsApiIOS,
-        realtimeApi: (IRemoteModule, BackendConfig) -> IRealtimeApiIOS,
+        documentsApi: (IRemoteModule, AppBuildConfig) -> IDocumentApiIOS,
+        userApi: (IRemoteModule, AppBuildConfig) -> IUserApiIOS,
+        functionsApi: (IRemoteModule, AppBuildConfig) -> IFunctionsApiIOS,
+        realtimeApi: (IRemoteModule, AppBuildConfig) -> IRealtimeApiIOS,
         cryptoServiceProvider: ICryptoServiceProviderIOS,
         valueFormatter: IValueFormatter,
         appUpdateManager: IAppUpdateManager
@@ -103,7 +105,7 @@ object KoinIOS {
                 factory { infoNotificationPresenter } bind IInfoMessagesNotificationPresenter::class
                 single { geofenceManager }
                 single { remoteModule(get()) }
-                single { backendConfig }
+                single { appBuildConfig }
                 single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
                 single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
                 single { FunctionsApiWrapper(functionsApi(get(), get())) } bind IFunctionsApi::class
@@ -125,15 +127,15 @@ object KoinIOS {
         return module {
             factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), config, get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get())
             }
-            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), config) }
+            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
             factory { (startScreenType: LoginScreenUiType) ->
-                LoginViewModel(get(), get(), get(), get(), startScreenType, config)
+                LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs)
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (args: String?) ->
-                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get())
+                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get()) }
             factory { PersonalCodeViewModel(get(), get(), get()) }
@@ -143,7 +145,8 @@ object KoinIOS {
                     code = code,
                     codeRepo = get(),
                     groupRepo = get(),
-                    groupMemberAdd = get()
+                    groupMemberAdd = get(),
+                    userRepo = get()
                 )
             }
             factory { (groupID: String) ->
@@ -191,6 +194,8 @@ object KoinIOS {
             }
             factory { BlocklistViewModel(get()) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get()) }
+            factory { SubscriptionViewModel(get(), get(), get()) }
+            factory { PaywallViewModel(get(), get()) }
         }
     }
 
@@ -244,6 +249,8 @@ object KoinIOS {
             lng: Double? = null
         ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, lat, lng) }
         val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
+        val subscriptionVM get() = get<SubscriptionViewModel>()
+        val paywallVM get() = get<PaywallViewModel>()
     }
 
 }

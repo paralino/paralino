@@ -1,6 +1,6 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
@@ -22,7 +22,7 @@ class UserRemoteSource constructor(
     private val api: IUserApi,
     private val functionsApi: IFunctionsApi,
     private val docApi: IDocumentsApi,
-    private val remoteConfig: BackendConfig,
+    private val appBuildConfig: AppBuildConfig,
     private val userMapper: UserMapperCore,
 ) {
 
@@ -87,7 +87,7 @@ class UserRemoteSource constructor(
     suspend fun getBlocklist(): List<BlocklistRaw> {
         return docApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = remoteConfig.resourceIds.collectionBlockedID
+            collectionId = appBuildConfig.resourceIds.collectionBlockedID
         ).map {
             BlocklistRaw.from(it)
         }
@@ -96,7 +96,7 @@ class UserRemoteSource constructor(
     suspend fun unblock(blockId: String) {
         docApi.deleteDocument(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = remoteConfig.resourceIds.collectionBlockedID,
+            collectionId = appBuildConfig.resourceIds.collectionBlockedID,
             documentId = blockId
         )
     }
@@ -104,7 +104,7 @@ class UserRemoteSource constructor(
     suspend fun getPlans(): List<UserPlanRaw> {
         return docApi.listAllDocuments(
             databaseType = BackendDatabaseType.PRODUCT,
-            collectionId = remoteConfig.resourceIds.collectionUserPlansID
+            collectionId = appBuildConfig.resourceIds.collectionUserPlansID
         ).map { UserPlanRaw.from(it) }
     }
 

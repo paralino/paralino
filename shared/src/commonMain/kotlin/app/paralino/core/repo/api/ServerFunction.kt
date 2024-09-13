@@ -1,6 +1,6 @@
 package app.paralino.core.repo.api
 
-import app.paralino.core.BuildKonfig
+import app.paralino.core.models.AppBuildConfig
 
 enum class ServerFunction constructor(
     val method: String,
@@ -34,6 +34,8 @@ enum class ServerFunction constructor(
     KEYS_UPDATE_CODE(method = "POST", path = "/keys/personal_code"),
     KEYS_UPDATE_USER(method = "POST", path = "/keys/user"),
 
+    BILLING_ID_UPDATE(method = "POST", path = "/user/create_billing_profile"),
+
     PERSONAL_CODE_CREATE(method = "POST", path = "/personal_code"),
     PERSONAL_CODE_READ(method = "GET", path = "/personal_code"),
     PERSONAL_CODE_UPDATE(method = "PATCH", path = "/personal_code"),
@@ -44,8 +46,8 @@ enum class ServerFunction constructor(
     ACCOUNT_DELETE(method = "DELETE", path = "/user"),
     ACCOUNT_RESET(method = "POST", path = "/user/reset"),
 
-    CONFIG(method = "GET", path = "/config", functionId = BuildKonfig.publicServerUrl, useSdk = false),
-    LOGIN(method = "POST", path = "/login", functionId = BuildKonfig.publicServerUrl, useSdk = false)
+    CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),
+    LOGIN(method = "POST", path = "/login", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false)
     ;
 
 }

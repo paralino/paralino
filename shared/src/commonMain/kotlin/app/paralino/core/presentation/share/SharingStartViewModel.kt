@@ -12,9 +12,11 @@ import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.exceptions.TimeoutException
@@ -33,14 +35,15 @@ import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
     groupId: String?,
-    private val appConfigRepo: AppConfigRepository,
+    private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
     val locationStatusProvider: ILocationStatusProvider,
     private val connectionStatus: IConnectionStatusProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
     private val userMemberIdUseCase: UserMemberIdUseCase,
-    private val locationRepo: LocationLocalDataSource
+    private val locationRepo: LocationLocalDataSource,
+    private val userRepo: UserRepository
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -96,8 +99,11 @@ class SharingStartViewModel(
         }.launchIn(coroutineScope)
     }
 
-    suspend fun getAllGroupItems(): List<GroupItemState> {
-        return getAllGroups().map { GroupItemState(it) }
+    suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
+        return BottomSheetPickerType.GroupPickerBottomSheet(
+            userPlan = userRepo.userPlans.value.highestValidPlanConfig,
+            groups = getAllGroups().map { GroupItemState(it) }
+        )
     }
 
     private suspend fun getAllGroups(): List<UserGroupWithMetadata> {
@@ -121,8 +127,7 @@ class SharingStartViewModel(
         _uiState.update {
             it.copy(
                 groupState = Payload.Success(groupItem),
-                devicesLimit = group.group.devicesLimitOverride?.toInt()
-                    ?: appConfigRepo.configState.value.planConfigForPlanType(group.group.planType).devicesLimit
+                devicesLimit = group.group.devicesLimit(remoteConfigRepo.configState.value)
             )
         }
     }

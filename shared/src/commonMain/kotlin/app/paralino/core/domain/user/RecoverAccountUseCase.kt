@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.UserAuthDerivedKey
@@ -91,7 +91,7 @@ class RecoverAccountUseCase(
             )
             emit(Unit)
         }
-            .onEach { config.temporaryMasterAuthKey = "" }
+            .onEach { appPrefs.temporaryMasterAuthKey = "" }
     }
 
     suspend fun recoverUserAccount(masterAuthKey: String, key: GeneratedUserKeys) {
@@ -110,7 +110,7 @@ class RecoverAccountUseCase(
                 if (it == ChangeCredentialsStep.DONE) {
                     // at this point encryption keys are correct and updated and old keys are removed
                     // we can remove temporary password
-                    config.temporaryMasterAuthKey = ""
+                    appPrefs.temporaryMasterAuthKey = ""
                 }
             }
             .collect()

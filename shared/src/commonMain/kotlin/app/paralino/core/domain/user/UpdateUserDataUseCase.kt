@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
@@ -102,10 +102,10 @@ class UpdateUserDataUseCase constructor(
                 return null
             }
 
-            val newPushToken = config.pushTokenUnsynced
-                .takeIf { it.isNotBlank() && it != config.pushTokenSynced }
+            val newPushToken = appPrefs.pushTokenUnsynced
+                .takeIf { it.isNotBlank() && it != appPrefs.pushTokenSynced }
                 ?: let {
-                    config.pushTokenUnsynced = ""
+                    appPrefs.pushTokenUnsynced = ""
                     logg.tag("push_notifications").v("No new push token to register")
                     return null
                 }
@@ -113,8 +113,8 @@ class UpdateUserDataUseCase constructor(
             logg.tag("push_notifications").v("Found unsynced push token, syncing...")
 
             userDevicesRemoteSource.updateDeviceData(newPushToken)
-            config.pushTokenUnsynced = ""
-            config.pushTokenSynced = newPushToken
+            appPrefs.pushTokenUnsynced = ""
+            appPrefs.pushTokenSynced = newPushToken
 
             logg.tag("push_notifications").v("Push token registered")
             return Payload.Success(Unit)

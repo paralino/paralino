@@ -1,10 +1,10 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.BackendDatabaseType
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.raw.GroupSettingsRaw
@@ -28,7 +28,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class LocationRemoteSource constructor(
     private val documentApi: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
-    private val remoteConfig: BackendConfig,
+    private val appBuildConfig: AppBuildConfig,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKRepository
 ) {
@@ -56,7 +56,7 @@ class LocationRemoteSource constructor(
         blocking {
             documentApi.updateDocument(
                 databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+                collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
                 docId = id,
                 data = mapOf(
                     "locationData" to "",
@@ -69,11 +69,11 @@ class LocationRemoteSource constructor(
     suspend fun saveCurrentLocation(data: MemberGroupId): MemberLocationRaw {
         val memberKey = cryptoKEKRepo.getMemberSenderKey(
             groupId = data.groupId,
-            memberUserId = config.userId,
+            memberUserId = appPrefs.userId,
             locationId = data.locationId
         )
         if (memberKey !is GroupMemberSenderKey.Valid)
-            throw MissingMemberKeyException(data.groupId, config.userId)
+            throw MissingMemberKeyException(data.groupId, appPrefs.userId)
 
         val locationData = data.locationData?.let {
             cryptoCore.encryptDataWithKey(
@@ -95,7 +95,7 @@ class LocationRemoteSource constructor(
 
         return documentApi.updateDocument(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+            collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
             docId = data.locationId,
             data = payload
         ).let { MemberLocationRaw.from(it) }
@@ -106,14 +106,14 @@ class LocationRemoteSource constructor(
 
             val member = documentApi.getDocument(
                 databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionGroupMembersID,
+                collectionId = appBuildConfig.resourceIds.collectionGroupMembersID,
                 documentId = memberId
             ).let { MemberDocumentRaw.from(it) }
 
-            val settings = if (member.ownerUserId == config.userId) {
+            val settings = if (member.ownerUserId == appPrefs.userId) {
                 documentApi.getDocument(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = remoteConfig.resourceIds.collectionGroupSettingsID,
+                    collectionId = appBuildConfig.resourceIds.collectionGroupSettingsID,
                     documentId = memberId
                 ).let { GroupSettingsRaw.from(it) }
             } else {
@@ -122,7 +122,7 @@ class LocationRemoteSource constructor(
 
             val locations = documentApi.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
-                collectionId = remoteConfig.resourceIds.collectionMemberLocationsID,
+                collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
                 queries = listOf(BackendQuery.Equals(key = "groupId", value = member.groupId))
             ).map { MemberLocationRaw.from(it) }
 

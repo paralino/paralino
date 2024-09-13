@@ -1,14 +1,21 @@
 package app.paralino.core.models
 
-data class BackendConfig constructor(
+data class AppBuildConfig constructor(
     val serverUrl: String,
     val projectId: String,
-    val debug: Boolean,
+    val publicServerUrl: String,
+    val isDevMode: Boolean,
+    val billingRCApiKey: String,
+    val hasPreviewFeatures: Boolean,
     val logToConsole: Boolean,
     val logErrorsToRemote: Boolean,
 ) {
     val endpoint = "$serverUrl/v1"
     val resourceIds = BackendResourceIDs
+
+    companion object {
+        lateinit var instance: AppBuildConfig
+    }
 }
 
 enum class BackendDatabaseType(val id: String) {
@@ -27,6 +34,7 @@ object BackendResourceIDs {
     const val privacyPolicyUrl = "https://paralino.com/privacy"
     const val termsOfUseUrl = "https://paralino.com/terms"
     const val storeUrlGooglePlay = "https://play.google.com/store/apps/details?id=app.paralino.android"
+    const val subscriptionUrlGooglePlay = "https://play.google.com/store/account/subscriptions"
 
     const val uniqueIdPlaceholder = "unique()"
 
@@ -52,6 +60,7 @@ object BackendResourceIDs {
     const val collectionUserDevicesID: String = "devices"
     const val collectionPushNotificationID: String = "push_notifications"
     const val collectionConfigID: String = "config"
+    const val collectionUserConfigID: String = "user_config"
     const val collectionUserPlansID: String = "plans"
     const val collectionBlockedID: String = "blocked"
 }

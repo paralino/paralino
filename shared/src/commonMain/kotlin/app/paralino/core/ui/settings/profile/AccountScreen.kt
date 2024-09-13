@@ -48,6 +48,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
+import app.paralino.core.models.user.UserPlan
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.CoreUiState
@@ -100,7 +101,7 @@ fun AccountScreenCore(
                     personalCode = state.data.userState.personalCode,
                     isGuestUser = state.data.userState.isGuestUser,
                     errorItem = state.data.userState.errorItem,
-                    userPlans = state.data.userPlans,
+                    userPlan = state.data.userPlan,
                     onGuestAccountClick = {
                         if (state.data.canUseEmail) {
                             openConvertAccount()
@@ -119,6 +120,8 @@ fun AccountScreenCore(
                     onShareCode = { onShare(it) },
                     onClick = null
                 )
+
+                Spacer(modifier = Modifier.size(40.dp))
 
                 SettingsActionItem(
                     name = stringResource(MR.strings.settings_account_edit_profile),
@@ -251,7 +254,7 @@ fun AccountInfoHeader(
     personalCode: String?,
     isGuestUser: Boolean,
     errorItem: ConditionErrorType?,
-    userPlans: List<PlanConfig>,
+    userPlan: PlanConfig,
     onErrorItemClick: (ConditionErrorType) -> Unit,
     onGuestAccountClick: () -> Unit,
     onCopy: (String) -> Unit,
@@ -262,9 +265,8 @@ fun AccountInfoHeader(
         Surface(
             modifier = modifier
                 .fillMaxWidth()
-                .clickable(enabled = onClick != null) { onClick?.invoke() }
-                .padding(bottom = 40.dp),
-            shape = RoundedCornerShape(12.dp),
+                .clickable(enabled = onClick != null) { onClick?.invoke() },
+            shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colors.primary,
             elevation = 16.dp
         ) {
@@ -276,7 +278,7 @@ fun AccountInfoHeader(
                     FlowRow(
                         modifier = Modifier.fillMaxWidth()
                             .padding(
-                                bottom = if (isGuestUser || userPlans.isNotEmpty()) 10.dp else 0.dp
+                                bottom = if (isGuestUser || userPlan.planTypeEnum.isOtherThanSilver) 10.dp else 0.dp
                             ),
                         verticalArrangement = Arrangement.Center,
                         horizontalArrangement = Arrangement.Start
@@ -290,17 +292,16 @@ fun AccountInfoHeader(
                                 onClick = onGuestAccountClick
                             )
                         }
-                        userPlans.forEach { plan ->
-                            if (plan.planType != PlanType.SILVER.key) {
-                                Spacer(modifier = Modifier.size(8.dp))
-                                AccountHeaderChip(
-                                    backgroundColor = AppColors.accentDark,
-                                    contentColor = MaterialTheme.colors.onPrimary,
-                                    icon = null,
-                                    text = plan.planName,
-                                    onClick = null
-                                )
-                            }
+
+                        if (userPlan.planTypeEnum.isOtherThanSilver) {
+                            Spacer(modifier = Modifier.size(8.dp))
+                            AccountHeaderChip(
+                                backgroundColor = AppColors.accentDark,
+                                contentColor = MaterialTheme.colors.onPrimary,
+                                icon = null,
+                                text = userPlan.planName,
+                                onClick = null
+                            )
                         }
                     }
 

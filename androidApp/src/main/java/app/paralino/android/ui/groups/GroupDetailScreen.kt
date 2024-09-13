@@ -98,6 +98,9 @@ private fun GroupDetailScreen(
                     AppScreen.MainHome.SharingStart.route(groupId)
                 )
             },
+            openSubscriptions = {
+                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+            },
             onNavigateBack = { appState.navController.popBackStack() },
             askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
             askLocationService = { locationPermissionHandler.askLocationService() },

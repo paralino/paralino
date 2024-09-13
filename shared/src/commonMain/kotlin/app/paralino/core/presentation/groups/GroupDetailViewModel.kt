@@ -1,11 +1,11 @@
 package app.paralino.core.presentation.groups
 
-import app.paralino.core.BuildKonfig
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -16,7 +16,7 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 class GroupDetailViewModel(
     val groupId: String,
     private val userRepo: UserRepository,
-    private val appConfigRepo: AppConfigRepository,
+    private val remoteConfigRepo: RemoteConfigRepository,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val sharingManager: LocationSharingManager,
     private val placeActivityRepo: PlaceActivityDataSource,
@@ -67,13 +67,13 @@ class GroupDetailViewModel(
             groupData.update { group }
             val members = group.members
                 .sortedBy { it.member.name }
-                .sortedBy { it.member.userId != config.userId }
+                .sortedBy { it.member.userId != appPrefs.userId }
                 .map { member ->
-                    val canEdit = group.isCurrentUserOwner || member.member.userId == config.userId
+                    val canEdit = group.isCurrentUserOwner || member.member.userId == appPrefs.userId
 
                     val memberState = GroupMemberState(
                         member = member.member,
-                        isCurrentUser = member.member.userId == config.userId,
+                        isCurrentUser = member.member.userId == appPrefs.userId,
                         canHaveExpandButton = true
                     )
                     GroupMemberItemStateWithLocations(
@@ -83,7 +83,7 @@ class GroupDetailViewModel(
                                 memberLocation = it,
                                 image = member.member.image,
                                 canEdit = canEdit,
-                                currentDevice = it.deviceId == config.deviceId,
+                                currentDevice = it.deviceId == appPrefs.deviceId,
                                 showSpeedAndElevation = false,
                                 formatter = valueFormatter,
                                 visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
@@ -93,17 +93,17 @@ class GroupDetailViewModel(
                             deleteMember = takeIf { group.isCurrentUserOwner && member.member.userId != group.ownerUserId }?.let {
                                 MemberActionItemState(MemberActionType.DELETE_MEMBER)
                             },
-                            blockUser = takeIf { member.member.userId != config.userId }
+                            blockUser = takeIf { member.member.userId != appPrefs.userId }
                                 ?.takeIf { blocklist.none { it.resourceId == member.member.userId } }
                                 ?.let {
                                     MemberActionItemState(MemberActionType.BLOCK_USER)
                                 },
-                            unblockUser = takeIf { member.member.userId != config.userId }
+                            unblockUser = takeIf { member.member.userId != appPrefs.userId }
                                 ?.takeIf { blocklist.any { it.resourceId == member.member.userId } }
                                 ?.let {
                                     MemberActionItemState(MemberActionType.UNBLOCK_USER)
                                 },
-                            securityAction = BuildKonfig.hasPreviewFeatures
+                            securityAction = AppBuildConfig.instance.hasPreviewFeatures
                         ),
                         allowShowingDevices = true,
                         lastLocationPing = valueFormatter.getLastLocationPing(member),
@@ -140,8 +140,7 @@ class GroupDetailViewModel(
                 )
             }
 
-            val membersLimit = group.group.membersLimitOverride?.toInt()
-                ?: appConfigRepo.configState.value.planConfigForPlanType(group.group.planType).membersLimit
+            val membersLimit = group.group.membersLimit(remoteConfigRepo.configState.value)
             GroupDetailScreenState(
                 id = groupId,
                 canEdit = group.isCurrentUserOwner,
@@ -152,6 +151,7 @@ class GroupDetailViewModel(
                 members = members,
                 membersLimit = membersLimit,
                 canShowMembersLimit = group.isCurrentUserOwner,
+                shouldShowPlanBanner = group.isCurrentUserOwner && !group.group.isGroupPremium(remoteConfigRepo.configState.value),
                 errors = errors
             )
         }

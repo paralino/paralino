@@ -35,7 +35,7 @@ class PushSetupProvider: IPushProviderManager {
             Task {
                 do {
                     // TODO replace with correct token
-                    shared.AppConfig.companion.instance.pushTokenUnsynced = "NOOP_IOS_TOKEN"
+                    shared.AppPrefs.companion.instance.pushTokenUnsynced = "NOOP_IOS_TOKEN"
                     let response = try await self?.userDataUpdate.registerPushTokenIfNeeded()
                     let payload = PayloadSwift<KotlinUnit>(data: response)
                     switch payload {

@@ -41,8 +41,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.core.BuildKonfig
 import app.paralino.core.MR
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.share.SharingStartScreenEvent
@@ -332,8 +332,8 @@ fun SharingStartScreenCore(
                         onClick = {
                             if (groupId.isNullOrBlank()) {
                                 appState.uiScope.launch {
-                                    val groups = vm.getAllGroupItems()
-                                    onPickGroup(BottomSheetPickerType.GroupPickerBottomSheet(groups))
+                                    val groupPickerState = vm.getGroupPickerState()
+                                    onPickGroup(groupPickerState)
                                 }
                             }
                         }
@@ -350,8 +350,8 @@ fun SharingStartScreenCore(
                         icon = CoreAppIcons.Groups.asPainterResource(),
                         onClick = {
                             appState.uiScope.launch {
-                                val groups = vm.getAllGroupItems()
-                                onPickGroup(BottomSheetPickerType.GroupPickerBottomSheet(groups))
+                                val groupPickerState = vm.getGroupPickerState()
+                                onPickGroup(groupPickerState)
                             }
                         }
                     ) {
@@ -374,7 +374,7 @@ fun SharingStartScreenCore(
                 onInputChange = { vm.onDeviceNameChange(it) }
             )
 
-            if (BuildKonfig.hasPreviewFeatures) {
+            if (AppBuildConfig.instance.hasPreviewFeatures) {
                 Row(
                     modifier = Modifier
                         .padding(vertical = 4.dp)
@@ -488,7 +488,7 @@ fun SharingStartScreenCore(
 //                )
             }
 
-            if (BuildKonfig.hasPreviewFeatures) {
+            if (AppBuildConfig.instance.hasPreviewFeatures) {
 
                 Spacer(modifier = Modifier.size(10.dp))
 

@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
@@ -116,7 +116,7 @@ class LoginUseCase constructor(
                 if (correctPersonalKey == null) {
                     // data is corrupted, current user password does not match user key
                     // this will trigger account recovery
-                    config.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
+                    appPrefs.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
                     userRepo.initLocallyAfterSignUp(user, session)
                     throw MissingUserKeyException(false)
                 } else {
@@ -141,7 +141,7 @@ class LoginUseCase constructor(
             } catch (e: Exception) {
                 // this will trigger account recovery
                 logg.w("login", "Error initializing user keys", e)
-                config.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
+                appPrefs.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
                 userRepo.initLocallyAfterSignUp(user, session)
                 throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
             }

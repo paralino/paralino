@@ -1,6 +1,6 @@
 package app.paralino.core.domain.crypto
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
@@ -221,7 +221,7 @@ class MemberDeviceKeyRotation(
 
         return MemberLocationDataPayload(
             locationId = currentDeviceLocation.id,
-            deviceId = config.deviceId,
+            deviceId = appPrefs.deviceId,
             groupKeyVersion = groupKey.version,
             deviceData = currentDeviceLocation.deviceData.data?.let {
                 cryptoCore.encryptDataWithKey(
@@ -240,7 +240,7 @@ class MemberDeviceKeyRotation(
         val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
 
         if (myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
-            throw MissingMemberKeyException(group.id, config.userId)
+            throw MissingMemberKeyException(group.id, appPrefs.userId)
 
         val newSenderKey = cryptoCore.getNewSymmetricKeyForLocationData()
 

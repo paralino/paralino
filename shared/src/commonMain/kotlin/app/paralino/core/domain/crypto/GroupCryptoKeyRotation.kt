@@ -1,6 +1,6 @@
 package app.paralino.core.domain.crypto
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
@@ -129,7 +129,7 @@ class GroupCryptoKeyRotation constructor(
             val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
 
             if (myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
-                throw MissingMemberKeyException(group.id, config.userId)
+                throw MissingMemberKeyException(group.id, appPrefs.userId)
 
             val newGroupKey = cryptoCore.getNewSymmetricKey()
 

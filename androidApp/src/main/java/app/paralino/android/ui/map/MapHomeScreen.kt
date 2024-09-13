@@ -104,6 +104,10 @@ private fun MapHomeContent(
                     appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
                 }
 
+                MapHomeScreenEvent.GroupsPlanLimitReached -> {
+                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                }
+
                 null -> {}
             }
         }
@@ -164,8 +168,8 @@ private fun MapHomeContent(
                 bottomOffset = bottomOffset,
                 onGroupPickerClick = {
                     appState.uiScope.launch {
-                        val groups = vm.getAllGroups()
-                        pickerState.show(groups)
+                        val groupPickerState = vm.getGroupPickerState()
+                        pickerState.show(groupPickerState)
                     }
                 }
             )
@@ -200,6 +204,10 @@ private fun MapHomeContent(
 
                     GroupPickerAction.JoinGroup -> {
                         appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                    }
+
+                    GroupPickerAction.OpenSubscriptions -> {
+                        appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
                     }
 
                     GroupPickerAction.Close -> {}

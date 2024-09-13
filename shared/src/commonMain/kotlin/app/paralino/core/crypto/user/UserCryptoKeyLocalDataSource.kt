@@ -1,7 +1,7 @@
 package app.paralino.core.crypto.user
 
 import app.paralino.core.crypto.SimpleKeyPairData
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.mapToOneOrNull
 import app.paralino.core.logg
@@ -17,26 +17,26 @@ import kotlinx.coroutines.flow.map
 
 class UserCryptoKeyLocalDataSource constructor(
     private val userKeyMapper: UserKeyMapperCore,
-    private val appConfig: AppConfig,
+    private val appPrefs: AppPrefs,
     private val database: AppDatabaseHelper
 ) {
 
     suspend fun getCachedUserKey(): SymmetricCryptoKeyData? {
-        if(appConfig.sessionMasterKey.isBlank() || appConfig.encryptedUserMasterKey.isBlank())
+        if(appPrefs.sessionMasterKey.isBlank() || appPrefs.encryptedUserMasterKey.isBlank())
             return null
 
         return userKeyMapper.unwrapMasterKey(
-            sessionMasterKey = appConfig.sessionMasterKey,
-            encryptedUserMasterKey = appConfig.encryptedUserMasterKey,
-            keyVersion = appConfig.userMasterKeyVersion
+            sessionMasterKey = appPrefs.sessionMasterKey,
+            encryptedUserMasterKey = appPrefs.encryptedUserMasterKey,
+            keyVersion = appPrefs.userMasterKeyVersion
         )
     }
 
     suspend fun saveKey(key: UserCryptoKeyRaw, decryptedMainKey: String) {
         val keyData = userKeyMapper.wrapMasterKey(userMasterKey = decryptedMainKey)
-        appConfig.sessionMasterKey = keyData.sessionKey
-        appConfig.encryptedUserMasterKey = keyData.encryptedKey
-        appConfig.userMasterKeyVersion = key.userKeyVersion
+        appPrefs.sessionMasterKey = keyData.sessionKey
+        appPrefs.encryptedUserMasterKey = keyData.encryptedKey
+        appPrefs.userMasterKeyVersion = key.userKeyVersion
 
         database.userKeysQueries.transaction {
             database.userKeysQueries.clearAll()
@@ -62,7 +62,7 @@ class UserCryptoKeyLocalDataSource constructor(
     fun listenToMyKey(): Flow<UserCryptoKeyRaw?> {
         return database.mapToOneOrNull { userKeysQueries.getActive() }
             .map {
-                it?.let { userKeyMapper.local2Remote(it, userId = appConfig.userId) }
+                it?.let { userKeyMapper.local2Remote(it, userId = appPrefs.userId) }
             }.catch {
                 logg.w("Error mapping user raw keys", it)
                 emit(null)
@@ -89,9 +89,9 @@ class UserCryptoKeyLocalDataSource constructor(
     }
 
     suspend fun clearAllKeys() {
-        appConfig.encryptedUserMasterKey = ""
-        appConfig.sessionMasterKey = ""
-        appConfig.userMasterKeyVersion = 0
+        appPrefs.encryptedUserMasterKey = ""
+        appPrefs.sessionMasterKey = ""
+        appPrefs.userMasterKeyVersion = 0
         database.userKeysQueries.transaction {
             database.userKeysQueries.clearAll()
         }

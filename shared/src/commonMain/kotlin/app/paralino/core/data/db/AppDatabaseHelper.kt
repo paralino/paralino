@@ -39,6 +39,7 @@ class AppDatabaseHelper(
     override val database = MainAppDatabase(driverFactory.createMainDatabaseDriver())
 
     val userQueries = database.userMeSQLQueries
+    val userConfigQueries = database.userConfigSQLQueries
     val subscriptionPlanQueries = database.plansSQLQueries
     val sharingContractQueries = database.sharingContractSQLQueries
     val personalCodeQueries = database.personalCodeSQLQueries

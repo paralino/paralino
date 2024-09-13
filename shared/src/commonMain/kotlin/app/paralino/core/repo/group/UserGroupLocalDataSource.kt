@@ -1,6 +1,6 @@
 package app.paralino.core.repo.group
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.mapToList
 import app.paralino.core.data.db.mapToOneOrNull
@@ -96,7 +96,7 @@ class UserGroupLocalDataSource constructor(
         return combine(
             database.mapToOneOrNull { groupQueries.getGroup(groupId) }.filterNotNull(),
             memberLocal.getMemberCountInGroup(groupId),
-            database.mapToOneOrNull { memberQueries.getMember(groupId = groupId, userId = config.userId) }.filterNotNull()
+            database.mapToOneOrNull { memberQueries.getMember(groupId = groupId, userId = appPrefs.userId) }.filterNotNull()
         ) { groupEntity, memberCount, member ->
             val group = mapper.local2Core(groupEntity)
             UserGroupWithMetadata(
@@ -144,7 +144,7 @@ class UserGroupLocalDataSource constructor(
                     combine(flows) {
                         it.map {
                             val group = mapper.local2Core(it.first)
-                            val verificationResult = memberLocal.getMemberOnce(group, config.userId)?.verificationResult
+                            val verificationResult = memberLocal.getMemberOnce(group, appPrefs.userId)?.verificationResult
                                 ?: VerificationResult.Unverified(errors = listOf(VerificationResultError.MEMBER_VERIFICATION_MISSING))
                             UserGroupWithMetadata(
                                 group = group,

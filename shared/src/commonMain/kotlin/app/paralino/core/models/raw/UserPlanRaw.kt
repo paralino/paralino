@@ -1,10 +1,15 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.PlanBillingPeriod
+import app.paralino.core.models.base.PlanProvider
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
 
 class UserPlanRaw constructor(
     @SerialName("\$id")
@@ -15,9 +20,19 @@ class UserPlanRaw constructor(
     val ownerUserId: String?,
     val expiresAt: Instant?,
     val groupsLimitOverride: Long?,
-    val provider: String?
+    val provider: PlanProvider
 ) {
-    val isExpired: Boolean get() = expiresAt?.let { it < nowUTC() } ?: false
+
+    // allow for some manual grace period
+    // it might take some time until correct subscription data is synced and reflected on backend
+    // most of time it is just few minutes at most
+    // In production we use multiple days as grace period if there are some billing issues
+    val isExpired: Boolean get() = expiresAt
+        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 7.days)
+        ?.let { it < nowUTC() }
+        ?: false
+
+    val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
 
     companion object {
         fun from(map: Map<String, Any>): UserPlanRaw {
@@ -31,7 +46,7 @@ class UserPlanRaw constructor(
                 },
                 expiresAt = (map["expiresAt"] as? String)?.isoWithOffsetToInstant(),
                 groupsLimitOverride = (map["groupsLimitOverride"] as? Number?)?.toLong(),
-                provider = map["provider"] as? String
+                provider = PlanProvider.fromKey(map["provider"] as? String)
             )
         }
     }

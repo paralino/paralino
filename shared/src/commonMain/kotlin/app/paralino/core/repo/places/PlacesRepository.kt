@@ -1,6 +1,6 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.data
@@ -15,7 +15,6 @@ import app.paralino.core.models.places.GroupPlaceSettingsData
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.raw.GroupPlaceRaw
-import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
@@ -48,7 +47,7 @@ class PlacesRepository constructor(
     private val locationPerformanceManager: LocationPerformanceManager,
     private val geofenceManager: IGeofenceManager,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val appConfig: AppConfig
+    private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
     fun subscribeToAllActivePlaces(): Flow<List<GroupPlace>> {
@@ -205,7 +204,7 @@ class PlacesRepository constructor(
                 // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
                 // also adding few meters of buffer to improve filter
                 val isExit =
-                    distance > (placeData.radiusMeters + data.accuracy + if (appConfig.placeActivityThrottle) 5 else 0)
+                    distance > (placeData.radiusMeters + data.accuracy + if (appPrefs.placeActivityThrottle) 5 else 0)
                 val previousState = placeActivityRepo.getPlaceActivity(placeId = place.id)
 
 //                logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
@@ -527,7 +526,7 @@ class PlacesRepository constructor(
     }
 
     suspend fun placeActivityDelay() {
-        if (appConfig.placeActivityThrottle) {
+        if (appPrefs.placeActivityThrottle) {
             delay(20.seconds)
         } else {
             delay(5.seconds)

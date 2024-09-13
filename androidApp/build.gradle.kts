@@ -23,7 +23,8 @@ android {
 
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
-        val variantIgnore = (variant.buildType == "debug" && names.contains("playStore")) ||
+        val variantIgnore =
+//                (variant.buildType == "debug" && names.contains("playStore")) ||
                 (variant.buildType == "debug" && names.contains("playStoreTest")) ||
                 (variant.buildType == "debug" && names.contains("direct")) ||
                 (variant.buildType == "release" && names.contains("dev")) ||
@@ -52,18 +53,15 @@ android {
 
         setProperty("archivesBaseName", "Paralino_v$versionName($versionCode)")
 
-        buildConfigField("boolean", "internalTesting", "false")
-        buildConfigField("boolean", "forceLogToSystem", "false")
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         val propsFile = rootProject.file("user.properties")
-        if (propsFile.exists()) {
-            val props = Properties()
-            props.load(FileInputStream(propsFile))
-            manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
-            resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
-        }
+        val props = Properties()
+        props.load(FileInputStream(propsFile))
+
+        manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
+        resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
+        buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
 
         // room schema export
         javaCompileOptions {
@@ -95,10 +93,31 @@ android {
             isShrinkResources = true
             isDebuggable = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+
+            buildConfigField("boolean", "internalTesting", "false")
+            buildConfigField("boolean", "forceLogToSystem", "false")
+
+            val propsFile = rootProject.file("user.properties")
+            val props = Properties()
+            props.load(FileInputStream(propsFile))
+            buildConfigField("String", "serverUrl", props["productionServerUrl"] as String)
+            buildConfigField("String", "serverKey", props["productionServerKey"] as String)
+            buildConfigField("String", "publicServerUrl", props["productionPublicServerUrl"] as String)
         }
         debug {
             isDebuggable = true
             versionNameSuffix = "D"
+
+            buildConfigField("boolean", "internalTesting", "true")
+            buildConfigField("boolean", "forceLogToSystem", "true")
+
+            val propsFile = rootProject.file("user.properties")
+            val props = Properties()
+            props.load(FileInputStream(propsFile))
+            buildConfigField("String", "serverUrl", props["devServerUrl"] as String)
+            buildConfigField("String", "serverKey", props["devServerKey"] as String)
+            buildConfigField("String", "publicServerUrl", props["devPublicServerUrl"] as String)
+
             signingConfig = signingConfigs.getByName("testConfig")
         }
     }
@@ -108,12 +127,11 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 26
-            versionName = "0.9.5"
+            versionCode = 28
+            versionName = "0.9.7"
 
-            val propsFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
-
-            if (!propsFile.exists()) {
+            val fcmConfigFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
+            if (!fcmConfigFile.exists()) {
                 throw FileNotFoundException("Missing Firebase config file")
             }
         }
@@ -123,19 +141,13 @@ android {
             versionName = "0.8.3"
             versionNameSuffix = "-int"
             applicationIdSuffix = ".int"
-            buildConfigField("boolean", "forceLogToSystem", "false")
-            signingConfig = signingConfigs.getByName("testConfig")
         }
         create("dev") {
             dimension = "version"
-            versionCode = 21
-            versionName = "0.8.4"
+            versionCode = 29
+            versionName = "0.9.8"
             versionNameSuffix = "-dev"
             applicationIdSuffix = ".dev"
-
-            buildConfigField("boolean", "internalTesting", "true")
-            buildConfigField("boolean", "forceLogToSystem", "true")
-            signingConfig = signingConfigs.getByName("testConfig")
         }
         create("oss") {
             dimension = "source"
@@ -245,6 +257,9 @@ dependencies {
     // region utils
     implementation(libs.play.services.location)
     googleImplementation(libs.firebase.messaging.ktx)
+
+    googleImplementation(libs.revenuecat.android)
+    googleImplementation(libs.revenuecat.android.ui)
 
     ossImplementation(libs.osmdroid.android)
     googleImplementation(libs.maps.compose)

@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.config
+import app.paralino.core.appPrefs
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
@@ -14,8 +14,8 @@ class ConvertAccountUseCase constructor(
         password: String,
     ): Flow<ChangeCredentialsStep> {
         return changeCredentials.changeCredentials(
-            userId = config.userId,
-            oldPassword = config.guestPassword,
+            userId = appPrefs.userId,
+            oldPassword = appPrefs.guestPassword,
             newPassword = password,
             action = { oldLoginKey, newLoginKey ->
                 userRepo.changePassword(
@@ -23,7 +23,7 @@ class ConvertAccountUseCase constructor(
                     newPassword = newLoginKey
                 )
 
-                config.guestPassword = password
+                appPrefs.guestPassword = password
 
                 userRepo.updateUserEmail(
                     newEmail = email,
@@ -32,8 +32,8 @@ class ConvertAccountUseCase constructor(
             }
         ).onEach {
             if (it == ChangeCredentialsStep.DONE) {
-                config.guestEmail = ""
-                config.guestPassword = ""
+                appPrefs.guestEmail = ""
+                appPrefs.guestPassword = ""
             }
         }
     }

@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.logg
@@ -18,7 +18,7 @@ class ExpiredSessionRecovery(
     private val parentManager: LimitedExecutionParentManager,
     private val sessionMonitor: UserSessionMonitor,
     private val userRepo: UserRepository,
-    private val config: AppConfig,
+    private val appPrefs: AppPrefs,
 ) : LimitedExecution(scope = parentManager) {
 
     private val sessionRecoveryKey = "guest_session_recovery"
@@ -31,7 +31,7 @@ class ExpiredSessionRecovery(
         startProcessing(sessionRecoveryKey)
 
         val cachedUser = userRepo.cachedUser
-        if (cachedUser == null || !cachedUser.isGuestUser || !config.hasGuestAccount()) {
+        if (cachedUser == null || !cachedUser.isGuestUser || !appPrefs.hasGuestAccount()) {
             logg.w("account_state", "User is not a guest, skip session recovery")
             logoutUseCase.logoutLocally()
             sessionMonitor.updateSessionState(state = UserSessionState.EXPIRED)
@@ -46,10 +46,10 @@ class ExpiredSessionRecovery(
                 // clearing user here will disable any further potential actions until session is refreshed
                 userRepo.clearLocally()
                 // also clearing push tokens, so those will be synced again after new login
-                config.pushTokenUnsynced = ""
-                config.pushTokenSynced = ""
+                appPrefs.pushTokenUnsynced = ""
+                appPrefs.pushTokenSynced = ""
 
-                loginUseCase.login(email = config.guestEmail, password = config.guestPassword)
+                loginUseCase.login(email = appPrefs.guestEmail, password = appPrefs.guestPassword)
                     .catch {
                         logg.w(
                             tag = "account_state",
@@ -63,8 +63,8 @@ class ExpiredSessionRecovery(
                                     tag = "account_state",
                                     message = "Guest user is no longer authorized, logout locally and clear user"
                                 )
-                                config.guestEmail = ""
-                                config.guestPassword = ""
+                                appPrefs.guestEmail = ""
+                                appPrefs.guestPassword = ""
                             } else {
                                 logg.w(
                                     tag = "account_state",

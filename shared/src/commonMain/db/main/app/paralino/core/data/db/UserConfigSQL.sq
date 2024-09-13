@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS userConfigEntity (
+`id` TEXT NOT NULL PRIMARY KEY,
+`type` TEXT NOT NULL,
+`ownerUserId` TEXT NOT NULL,
+`data` TEXT
+);
+
+createConfig:
+INSERT OR REPLACE INTO userConfigEntity
+VALUES ?;
+
+getForType:
+SELECT * FROM userConfigEntity
+WHERE type = :type;
+
+getAll:
+SELECT * FROM userConfigEntity;
+
+clearAll:
+DELETE FROM userConfigEntity;

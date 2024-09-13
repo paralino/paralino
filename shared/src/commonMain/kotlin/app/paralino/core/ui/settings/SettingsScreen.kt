@@ -1,11 +1,13 @@
 package app.paralino.core.ui.settings
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,8 +35,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.BuildKonfig
 import app.paralino.core.MR
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -62,6 +64,8 @@ fun SettingsScreenCore(
     openBlockList: () -> Unit,
     openLicences: () -> Unit,
     openAppStatus: () -> Unit,
+    openSubscriptions: () -> Unit,
+    openPaywall: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
@@ -81,7 +85,7 @@ fun SettingsScreenCore(
                 image = readyState.userState.image ?: ImageModel.emoji(Emojis.robot),
                 personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
-                userPlans = readyState.userPlans,
+                userPlan = readyState.userPlan,
                 errorItem = null,
                 onGuestAccountClick = {
                     if (readyState.canUseEmail) {
@@ -94,6 +98,16 @@ fun SettingsScreenCore(
                 onClick = openProfileDetails
             )
         }
+
+        Spacer(modifier = Modifier.size(20.dp))
+
+        AnimatedVisibility(visible = readyState?.userPlan?.planTypeEnum?.isPremium == false) {
+            PremiumPlanBanner(
+                onClick = openPaywall
+            )
+        }
+
+        Spacer(modifier = Modifier.size(20.dp))
 
         if (readyState != null) {
             SettingsActionItem(
@@ -117,11 +131,22 @@ fun SettingsScreenCore(
                 openProfileRawScreen()
             }
 
-            if (BuildKonfig.hasPreviewFeatures) {
+            SettingsActionItem(
+                name = stringResource(MR.strings.plans_management_screen_title),
+                icon = CoreAppIcons.StarFamily.asPainterResource()
+            ) {
+                openSubscriptions()
+            }
+
+            if (AppBuildConfig.instance.hasPreviewFeatures) {
                 SettingsActionItem(
                     name = stringResource(MR.strings.setting_title_locationBoost),
                     description = when (readyState.boostTime != null) {
-                        true -> stringResource(MR.strings.setting_description_locationBoost_enabled, readyState.boostTime)
+                        true -> stringResource(
+                            MR.strings.setting_description_locationBoost_enabled,
+                            readyState.boostTime
+                        )
+
                         false -> stringResource(MR.strings.setting_description_locationBoost_disabled)
                     },
                     icon = CoreAppIcons.ShareLocation.asPainterResource(),
@@ -131,7 +156,7 @@ fun SettingsScreenCore(
                 }
             }
 
-            if (BuildKonfig.hasPreviewFeatures) {
+            if (AppBuildConfig.instance.hasPreviewFeatures) {
                 SettingsActionItem(
                     name = stringResource(MR.strings.setting_title_placeActivityThrottle),
                     description = when (readyState.placeActivityThrottleEnabled) {
@@ -172,7 +197,7 @@ fun SettingSectionInfo(
     Column {
         SettingsSectionHeader(name = stringResource(MR.strings.settings_section_general_title))
 
-        if (BuildKonfig.hasPreviewFeatures) {
+        if (AppBuildConfig.instance.hasPreviewFeatures) {
             SettingsActionItem(
                 name = "App status",
                 icon = CoreAppIcons.Settings.asPainterResource()
@@ -181,7 +206,7 @@ fun SettingSectionInfo(
             }
         }
 
-        if (BuildKonfig.hasPreviewFeatures) {
+        if (AppBuildConfig.instance.hasPreviewFeatures) {
             SettingsActionItem(
                 name = stringResource(MR.strings.setting_title_share),
                 icon = CoreAppIcons.Share.asPainterResource()

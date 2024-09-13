@@ -3,7 +3,7 @@ package app.paralino.android.remote.appwrite
 import android.app.Application
 import app.paralino.android.remote.RemoteClient
 import app.paralino.core.domain.user.UserSessionMonitor
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.appwrite.Client
@@ -16,7 +16,7 @@ import java.net.UnknownHostException
 
 class AppWriteRemoteModule(
     private val app: Application,
-    val backendConfig: BackendConfig,
+    val appBuildConfig: AppBuildConfig,
     val sessionMonitor: UserSessionMonitor,
 ) {
 
@@ -28,12 +28,17 @@ class AppWriteRemoteModule(
     private val client: Client by lazy {
         Client(
             context = app,
-            endpoint = backendConfig.endpoint,
+            endpoint = appBuildConfig.endpoint,
             selfSigned = false
         )
-            .setEndpoint(backendConfig.endpoint)
-            .setProject(backendConfig.projectId)
-            .run { RemoteClient.setup(this, backendConfig.debug && backendConfig.logToConsole) }
+            .setEndpoint(appBuildConfig.endpoint)
+            .setProject(appBuildConfig.projectId)
+            .run {
+                RemoteClient.setup(
+                    client = this,
+                    logRequests = appBuildConfig.logToConsole
+                )
+            }
     }
 
     inline fun <T> execute(forceLogoutOnError: Boolean = false, action: AppWriteRemoteModule.() -> T): T {

@@ -51,6 +51,7 @@ import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.settings.PremiumPlanBannerSmall
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
@@ -64,6 +65,7 @@ fun PlacesScreenCore(
     contentPadding: PaddingValues,
     askNotificationPermission: () -> Unit,
     addNewPlace: () -> Unit,
+    openSubscriptions: () -> Unit,
     openPlaceDetails: (place: PlaceListItemData) -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
@@ -84,10 +86,7 @@ fun PlacesScreenCore(
                 }
 
                 is PlacesScreenEvent.GroupPlacesLimitReached -> {
-                    showDialog = MainAlertDialog.PlanLimit(
-                        content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                        limit = event.limit
-                    )
+                    openSubscriptions()
                 }
 
                 null -> { /* do nothing */
@@ -132,6 +131,7 @@ fun PlacesScreenCore(
                 onCreatePlace = {
                     vm.tryCreatePlace()
                 },
+                onPlanBannerClick = openSubscriptions,
                 onErrorItemClick = {
                     askNotificationPermission()
                 },
@@ -150,6 +150,7 @@ private fun PlacesScreen(
     onPlaceClick: (PlaceListItemData) -> Unit,
     onErrorItemClick: (ConditionErrorType) -> Unit,
     onCreatePlace: () -> Unit,
+    onPlanBannerClick: () -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
     Scaffold(
@@ -203,6 +204,16 @@ private fun PlacesScreen(
                         }
                     }
                     Spacer(modifier = Modifier.size(40.dp))
+                }
+
+                if (state.shouldShowPlanBanner) {
+                    this.item(key = "plan_upgrade_banner") {
+                        PremiumPlanBannerSmall(
+                            description = stringResource(MR.strings.plans_banner_inline_places),
+                            onClick = onPlanBannerClick
+                        )
+                        Spacer(modifier = Modifier.size(40.dp))
+                    }
                 }
 
                 this.stickyHeader(key = "count_header") {

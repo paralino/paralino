@@ -65,6 +65,7 @@ import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.settings.PremiumPlanBannerSmall
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
@@ -84,6 +85,7 @@ fun GroupDetailScreenCore(
     openGroupSettings: () -> Unit,
     openMemberRawData: (String) -> Unit,
     openSharing: () -> Unit,
+    openSubscriptions: () -> Unit,
     onNavigateBack: () -> Unit,
     askNotificationPermission: () -> Unit,
     askLocationService: () -> Unit,
@@ -122,12 +124,7 @@ fun GroupDetailScreenCore(
                 }
 
                 is GroupDetailScreenEvent.GroupMembersLimitReached -> {
-                    onShowDialog(
-                        MainAlertDialog.PlanLimit(
-                            MR.strings.plan_limit_members_alert_info.localizedString(),
-                            limit = event.limit
-                        )
-                    )
+                    openSubscriptions()
                 }
 
                 GroupDetailScreenEvent.UserBlockActionCompleted -> {}
@@ -297,6 +294,16 @@ fun GroupDetailScreenCore(
                             onSettingsClick = openGroupSettings,
                             onSharingClick = { openSharing() }
                         )
+                    }
+
+                    if (state.data.shouldShowPlanBanner) {
+                        this.item(key = "plan_upgrade_banner") {
+                            PremiumPlanBannerSmall(
+                                description = stringResource(MR.strings.plans_banner_inline_group_detail),
+                                onClick = openSubscriptions
+                            )
+                            Spacer(modifier = Modifier.size(40.dp))
+                        }
                     }
 
                     this.stickyHeader(key = "member_list_header") {

@@ -1,7 +1,7 @@
 package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
@@ -34,7 +34,7 @@ class AppAccountStateMonitor constructor(
     private val pushManager: IPushProviderManager,
     private val scopeProvider: ICoroutineScopeProvider,
     private val userSessionMonitor: UserSessionMonitor,
-    private val config: AppConfig
+    private val appPrefs: AppPrefs
 ) {
 
     private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
@@ -48,26 +48,26 @@ class AppAccountStateMonitor constructor(
                     val user = userState.data
                     when {
                         user == null -> {
-                            if (config.isTokenValid) {
+                            if (appPrefs.isTokenValid) {
                                 // try and sync user
                                 logg.tag("account_state")
                                     .v("User is null but token is active - try to refresh")
                                 Resource.Ready(data = AppAccountState.NO_USER_DATA)
                             } else {
                                 logg.tag("account_state").v("User is null and token is missing")
-                                Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = config.hasGuestAccount()))
+                                Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = appPrefs.hasGuestAccount()))
                             }
                         }
 
                         userKeyRepo.userKeyState().firstOrNull() != true -> {
-                            if (config.temporaryMasterAuthKey.isNotBlank()) {
+                            if (appPrefs.temporaryMasterAuthKey.isNotBlank()) {
                                 logg.tag("account_state")
                                     .v("Key is not valid but backup password is active")
                                 Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                             } else {
                                 logg.tag("account_state")
                                     .v("Key is not valid and no backup password")
-                                Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = config.hasGuestAccount()))
+                                Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = appPrefs.hasGuestAccount()))
                             }
                         }
 
@@ -84,13 +84,13 @@ class AppAccountStateMonitor constructor(
                                 }
                             } catch (e: Exception) {
                                 logg.e("Error decrypting user", e)
-                                if (config.temporaryMasterAuthKey.isNotBlank()) {
+                                if (appPrefs.temporaryMasterAuthKey.isNotBlank()) {
                                     logg.tag("account_state").v("User needs to reset account")
                                     Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                                 } else {
                                     logg.tag("account_state")
                                         .w("User can not be initialized (${e.message})")
-                                    Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = config.hasGuestAccount()))
+                                    Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = appPrefs.hasGuestAccount()))
                                 }
                             }
                         }
@@ -123,7 +123,7 @@ class AppAccountStateMonitor constructor(
                     emit(Resource.Ready(AppAccountState.DATA_REFRESH))
                     refreshEverything.refreshEverything(forceGroupRefresh = true)
                 } else if (it.data is AppAccountState.USER_READY) {
-                    if (config.didEverFullyRefreshData) {
+                    if (appPrefs.didEverFullyRefreshData) {
                         logg.tag("account_state")
                             .v("${it.data} - Refresh user data in background - don't force")
                         scopeProvider.userSessionIOScope.launch {
@@ -138,15 +138,15 @@ class AppAccountStateMonitor constructor(
                         logg.tag("account_state").v("${it.data} - First time refresh")
                         emit(Resource.Ready(AppAccountState.DATA_REFRESH))
                         refreshEverything.refreshEverything(forceGroupRefresh = true)
-                        config.didEverFullyRefreshData = true
+                        appPrefs.didEverFullyRefreshData = true
                     }
                 } else if (it.data is AppAccountState.NO_PROFILE) {
                     logg.tag("account_state").v("${it.data} - Refresh user and profile")
                     userRepo.refreshUserMaybe()
                 } else if (!everHadUser && it.data is AppAccountState.NO_USER) {
                     logg.tag("account_state")
-                        .v("${it.data} - try to logout (${config.wasUserLoggedIn})")
-                    if (config.wasUserLoggedIn) {
+                        .v("${it.data} - try to logout (${appPrefs.wasUserLoggedIn})")
+                    if (appPrefs.wasUserLoggedIn) {
                         try {
                             logoutUseCase.fullLogout(logoutLocallyOnError = true)
                         } catch (e: Exception) {

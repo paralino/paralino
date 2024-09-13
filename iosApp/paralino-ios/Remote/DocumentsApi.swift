@@ -22,7 +22,7 @@ class DocumentsApi: IDocumentApiIOS {
             let result = try await module.database.createDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
-                documentId: docId ?? module.backendConfig.resourceIds.uniqueIdPlaceholder,
+                documentId: docId ?? module.appBuildConfig.resourceIds.uniqueIdPlaceholder,
                 data: data
             ).parseDocument()
             return NSDictionary(dictionary: result)

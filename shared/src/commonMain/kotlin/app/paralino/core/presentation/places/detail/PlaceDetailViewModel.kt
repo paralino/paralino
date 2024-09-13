@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.places.detail
 
-import app.paralino.core.BuildKonfig
-import app.paralino.core.config
+import app.paralino.core.appPrefs
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
@@ -16,7 +16,15 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PlaceDetailViewModel(
@@ -46,7 +54,7 @@ class PlaceDetailViewModel(
             placeFlow.update { Resource.Ready(place) }
             groupFlow.update { Resource.Ready(group) }
 
-            val settings = if (BuildKonfig.hasPreviewFeatures) {
+            val settings = if (AppBuildConfig.instance.hasPreviewFeatures) {
                 group.members.map { member ->
                     val memberSetting =
                         place.settings?.alertData?.firstOrNull { it.memberUserId == member.member.userId }
@@ -57,8 +65,8 @@ class PlaceDetailViewModel(
                         name = member.member.name,
                         image = member.member.image ?: ImageModel.emoji(Emojis.robot),
                         // default to true for other members and false to current user
-                        notifyEnter = memberSetting?.enter ?: (member.member.userId != config.userId),
-                        notifyExit = memberSetting?.exit ?: (member.member.userId != config.userId),
+                        notifyEnter = memberSetting?.enter ?: (member.member.userId != appPrefs.userId),
+                        notifyExit = memberSetting?.exit ?: (member.member.userId != appPrefs.userId),
                         loadingEnter = false,
                         loadingExit = false
                     )
@@ -122,7 +130,7 @@ class PlaceDetailViewModel(
     private fun canEditPlace(): Boolean {
         val place = placeFlow.value.data ?: return false
         val group = groupFlow.value.data ?: return false
-        return group.isCurrentUserOwner || place.place.ownerUserId == config.userId
+        return group.isCurrentUserOwner || place.place.ownerUserId == appPrefs.userId
     }
 
     fun toggleEnterSettings(userId: String) {
@@ -188,7 +196,7 @@ class PlaceDetailViewModel(
 
     private fun List<PlaceSettingsState>.sortedSettings(): List<PlaceSettingsState> {
         return this.sortedBy { it.name }
-            .sortedBy { it.memberUserId == config.userId }
+            .sortedBy { it.memberUserId == appPrefs.userId }
     }
 
 }

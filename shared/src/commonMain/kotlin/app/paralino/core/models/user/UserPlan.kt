@@ -15,9 +15,9 @@ data class UserPlans(
         )
     }
 
-    val nonExpiredPlans = plans.filter { !it.plan.isExpired }
-    val highestPlan: UserPlan? get() = nonExpiredPlans.maxByOrNull { it.plan.planType }
-    val highestPlanConfig: PlanConfig get() = highestPlan?.config ?: PlanConfig.default
+    val nonExpiredPlans get() = plans.filter { !it.plan.isExpired }
+    val highestValidPlan: UserPlan? get() = nonExpiredPlans.maxByOrNull { it.plan.planTypeEnum.order }
+    val highestValidPlanConfig: PlanConfig get() = highestValidPlan?.config ?: config.defaultFreePlanConfig()
 }
 
 data class UserPlan(

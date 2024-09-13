@@ -10,6 +10,7 @@ import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.notification.PlaceNotificationPresenter
+import app.paralino.android.provider.BillingProvider
 import app.paralino.android.provider.ConnectionStatusProvider
 import app.paralino.android.provider.DeviceApiProvider
 import app.paralino.android.provider.LocationStatusProvider
@@ -22,14 +23,13 @@ import app.paralino.android.remote.appwrite.RealtimeApi
 import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
-import app.paralino.core.BuildKonfig
+import app.paralino.core.appPrefs
 import app.paralino.core.app_update.IAppUpdateManager
-import app.paralino.core.config
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.LogsDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
-import app.paralino.core.models.BackendConfig
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
@@ -58,7 +58,10 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
+import app.paralino.core.presentation.settings.subscriptions.PaywallViewModel
+import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
+import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
@@ -105,6 +108,8 @@ object KoinSetup {
         single<IFunctionsApi> { FunctionsApi(get(), get()) }
         single<IRealtimeApi> { RealtimeApi(get()) }
 
+        single<IBillingProvider> { BillingProvider(androidApplication() as AppClass, get(), get()) }
+
         single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
     }
 
@@ -114,29 +119,32 @@ object KoinSetup {
         factory { LocationNotificationHandler(androidContext()) }
 
         single {
-            BackendConfig(
-                serverUrl = BuildKonfig.serverUrl,
-                projectId = BuildKonfig.serverKey,
-                debug = BuildConfig.internalTesting,
-                logToConsole = BuildConfig.forceLogToSystem && BuildConfig.BUILD_TYPE == "debug",
+            AppBuildConfig(
+                serverUrl = BuildConfig.serverUrl,
+                projectId = BuildConfig.serverKey,
+                publicServerUrl = BuildConfig.publicServerUrl,
+                isDevMode = BuildConfig.internalTesting,
+                hasPreviewFeatures = BuildConfig.internalTesting,
+                logToConsole = BuildConfig.forceLogToSystem,
+                billingRCApiKey = BuildConfig.revenueCatApiKey,
                 logErrorsToRemote = true
             )
         }
         single {
             AppWriteRemoteModule(
                 app = androidApplication(),
-                backendConfig = get(),
+                appBuildConfig = get(),
                 sessionMonitor = get()
             )
         }
 
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
-        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), config, get(), get()) }
-        viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), config) }
-        viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, config) }
+        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get()) }
+        viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+        viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
         viewModel { (args: String?) ->
-            SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get())
+            SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get()) }
@@ -146,7 +154,8 @@ object KoinSetup {
                 code = code,
                 codeRepo = get(),
                 groupRepo = get(),
-                groupMemberAdd = get()
+                groupMemberAdd = get(),
+                userRepo = get()
             )
         }
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -164,5 +173,7 @@ object KoinSetup {
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
+        viewModel { SubscriptionViewModel(get(), get(), get()) }
+        viewModel { PaywallViewModel(get(), get(), get()) }
     }
 }

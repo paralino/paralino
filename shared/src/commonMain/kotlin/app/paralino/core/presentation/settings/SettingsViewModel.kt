@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.settings
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppConfig
+import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -18,7 +18,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
@@ -52,18 +52,18 @@ import kotlin.time.Duration.Companion.minutes
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
     private val userRepo: UserRepository,
-    private val appConfigRepository: AppConfigRepository,
+    private val remoteConfigRepository: RemoteConfigRepository,
     private val personalCodeRepo: PersonalCodesRepository,
     private val deviceApiProvider: IDeviceApiProvider,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val valueFormatter: IValueFormatter,
-    private val config: AppConfig
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(
         mapUserState(
             userState = userRepo.localUser.value,
-            appConfig = appConfigRepository.configState.value,
+            remoteConfig = remoteConfigRepository.configState.value,
             personalCode = personalCodeRepo.activePersonalCodeState.value,
             userPlans = userRepo.userPlans.value
         )
@@ -86,7 +86,7 @@ class SettingsViewModel(
 
         combine(
             userRepo.localUser,
-            appConfigRepository.getConfig(),
+            remoteConfigRepository.getConfig(),
             personalCodeRepo.activePersonalCodeState,
             userRepo.userPlans
         ) { userState, appConfig, personalCode, userPlans ->
@@ -101,7 +101,7 @@ class SettingsViewModel(
 
     private fun mapUserState(
         userState: Resource<UserMe?>,
-        appConfig: ConfigData?,
+        remoteConfig: ConfigData?,
         personalCode: UserPersonalCode?,
         userPlans: UserPlans
     ): Payload<AccountScreenState> {
@@ -121,14 +121,14 @@ class SettingsViewModel(
                                     ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
                                 else null
                             ),
-                            canUseEmail = appConfig?.isEmailEnabled ?: false,
+                            canUseEmail = remoteConfig?.isEmailEnabled ?: false,
                             logoutState = null,
                             deleteAccountState = null,
                             versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
                             boostTime = null,
-                            placeActivityThrottleEnabled = config.placeActivityThrottle,
-                            isErrorReportingEnabled = config.errorReporting,
-                            userPlans = userPlans.plans.map { it.config }
+                            placeActivityThrottleEnabled = appPrefs.placeActivityThrottle,
+                            isErrorReportingEnabled = appPrefs.errorReporting,
+                            userPlan = userPlans.highestValidPlanConfig
                         )
                     )
                 } else {
@@ -199,7 +199,7 @@ class SettingsViewModel(
                 null
             }
 
-            config.trackingBoostEndTime = trackingBoostEndTime
+            appPrefs.trackingBoostEndTime = trackingBoostEndTime
 
             if (boostValue) {
                 locationPerformanceManager.locationBoostRequested(
@@ -219,7 +219,7 @@ class SettingsViewModel(
             it.mapSuccess {
                 val newValue = !it.placeActivityThrottleEnabled
                 logg.v("Toggle place activity throttle: $newValue")
-                config.placeActivityThrottle = newValue
+                appPrefs.placeActivityThrottle = newValue
                 it.copy(placeActivityThrottleEnabled = newValue)
             }
         }
@@ -230,7 +230,7 @@ class SettingsViewModel(
             it.mapSuccess {
                 val newValue = !it.isErrorReportingEnabled
                 logg.v("Toggle error reporting: $newValue")
-                config.errorReporting = newValue
+                appPrefs.errorReporting = newValue
                 it.copy(isErrorReportingEnabled = newValue)
             }
         }
@@ -269,7 +269,7 @@ class SettingsViewModel(
             while (isActive) {
                 updateLocationBoostTime()
                 delay(1.minutes)
-                if (config.trackingBoostEndTime == null) {
+                if (appPrefs.trackingBoostEndTime == null) {
                     locationBoostTimeJob?.cancel()
                 }
             }
@@ -280,7 +280,7 @@ class SettingsViewModel(
         _accountState.update {
             it.mapSuccess {
                 it.copy(
-                    boostTime = config.trackingBoostEndTime?.takeIf { it > nowUTC() }?.let {
+                    boostTime = appPrefs.trackingBoostEndTime?.takeIf { it > nowUTC() }?.let {
                         valueFormatter.formatTimeOnly(it.toLocalDateTime(TimeZone.UTC))
                     }
                 )

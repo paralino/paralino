@@ -18,16 +18,22 @@ func initKoin(locationStatusProvider: LocationStatusProvider) {
 
 func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_coreModule] {
     
-    let backendConfig = BackendConfig(
-        serverUrl: BuildKonfig.shared.serverUrl,
-        projectId: BuildKonfig.shared.serverKey,
-        debug: true,
-        logToConsole: true,
+    let appBuildConfig = AppBuildConfig(
+        serverUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoServerUrl") as! String,
+        projectId: Bundle.main.object(forInfoDictionaryKey: "paralinoServerKey") as! String,
+        publicServerUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoPublicServerUrl") as! String,
+        isDevMode: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
+        hasPreviewFeatures: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
+        logToConsole: (Bundle.main.object(forInfoDictionaryKey: "forceLogToSystem") as! String) == "true",
         logErrorsToRemote: true
     )
     
-    let connectionStatusProvider = ConnectionStatusProvider(backendConfig: backendConfig)
-    let deviceApiProvider = DeviceApiProvider(backendConfig: backendConfig, locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider)
+    let connectionStatusProvider = ConnectionStatusProvider(appBuildConfig: appBuildConfig)
+    let deviceApiProvider = DeviceApiProvider(
+        appBuildConfig: appBuildConfig,
+        locationStatusProvider: locationStatusProvider,
+        connectionStatusProvider: connectionStatusProvider
+    )
     
     let coreIOSModules = KoinIOS.shared.createIOSKoinModules(
         deviceProvider: deviceApiProvider,
@@ -38,7 +44,7 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         groupActivityNotificationPresenter: GroupActivityNotificationPresenter(),
         infoNotificationPresenter: InfoNotificationPresenter(),
         geofenceManager: GeofenceManager(),
-        backendConfig: backendConfig,
+        appBuildConfig: appBuildConfig,
         oneTimeLocationProvider: { locationStatusProvider, locationCacheRepository in
             OneTimeLocationProvider(
                 locationManager: AppDelegate.shared.locationManager,
@@ -46,7 +52,7 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
                 locationCacheRepo: locationCacheRepository
             )
         },
-        remoteModule: { sessionMonitor in AppwriteRemoteModule(sessionMonitor: sessionMonitor, backendConfig: backendConfig) },
+        remoteModule: { sessionMonitor in AppwriteRemoteModule(sessionMonitor: sessionMonitor, appBuildConfig: appBuildConfig) },
         documentsApi: { module, _ in DocumentsApi(remoteModule: module as! AppwriteRemoteModule) },
         userApi: { module, _ in UserApi(remoteModule: module as! AppwriteRemoteModule) },
         functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule, deviceApiProvider: deviceApiProvider) },

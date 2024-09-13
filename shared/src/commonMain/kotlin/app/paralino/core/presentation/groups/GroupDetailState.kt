@@ -13,6 +13,7 @@ data class GroupDetailScreenState(
     val members: List<GroupMemberItemState>,
     val membersLimit: Int,
     val canShowMembersLimit: Boolean,
+    val shouldShowPlanBanner: Boolean,
     val errors: List<ConditionErrorType>
 )
 

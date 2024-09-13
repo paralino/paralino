@@ -12,6 +12,7 @@ import paralino.shared.generated.resources.ic_account_circle
 import paralino.shared.generated.resources.ic_add
 import paralino.shared.generated.resources.ic_add_link
 import paralino.shared.generated.resources.ic_adjust
+import paralino.shared.generated.resources.ic_arrow_open_in_new
 import paralino.shared.generated.resources.ic_auto_fix_high
 import paralino.shared.generated.resources.ic_battery_charging_full
 import paralino.shared.generated.resources.ic_battery_full
@@ -31,6 +32,7 @@ import paralino.shared.generated.resources.ic_drag_indicator
 import paralino.shared.generated.resources.ic_edit
 import paralino.shared.generated.resources.ic_expand_less
 import paralino.shared.generated.resources.ic_expand_more
+import paralino.shared.generated.resources.ic_family_star
 import paralino.shared.generated.resources.ic_group
 import paralino.shared.generated.resources.ic_groups
 import paralino.shared.generated.resources.ic_home
@@ -58,6 +60,8 @@ import paralino.shared.generated.resources.ic_phone_android
 import paralino.shared.generated.resources.ic_phonelink_setup
 import paralino.shared.generated.resources.ic_privacy_tip
 import paralino.shared.generated.resources.ic_radio_button_unchecked
+import paralino.shared.generated.resources.ic_refresh
+import paralino.shared.generated.resources.ic_replay
 import paralino.shared.generated.resources.ic_save
 import paralino.shared.generated.resources.ic_schedule
 import paralino.shared.generated.resources.ic_security
@@ -69,7 +73,10 @@ import paralino.shared.generated.resources.ic_signal_cell_2
 import paralino.shared.generated.resources.ic_signal_cell_3
 import paralino.shared.generated.resources.ic_speed
 import paralino.shared.generated.resources.ic_stacked_line_chart
+import paralino.shared.generated.resources.ic_star
+import paralino.shared.generated.resources.ic_star_circle_filled
 import paralino.shared.generated.resources.ic_stop_circle
+import paralino.shared.generated.resources.ic_sync
 import paralino.shared.generated.resources.ic_timer
 import paralino.shared.generated.resources.ic_visibility
 import paralino.shared.generated.resources.ic_visibility_off
@@ -143,6 +150,14 @@ object CoreAppIcons {
     val MoreVert get() = Res.drawable.ic_more_vert
     val PersonAdd get() = Res.drawable.ic_person_add
     val Settings get() = Res.drawable.ic_settings
+
+    val Refresh get() = Res.drawable.ic_refresh
+    val Replay get() = Res.drawable.ic_replay
+    val Sync get() = Res.drawable.ic_sync
+    val ArrowOpenNew get() = Res.drawable.ic_arrow_open_in_new
+    val StarFamily get() = Res.drawable.ic_family_star
+    val Star get() = Res.drawable.ic_star
+    val StarCircle get() = Res.drawable.ic_star_circle_filled
 
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
     val NotificationsOff get() = Res.drawable.ic_notifications_off
