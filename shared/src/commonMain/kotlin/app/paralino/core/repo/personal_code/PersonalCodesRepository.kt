@@ -59,6 +59,11 @@ class PersonalCodesRepository constructor(
         val user = userRepo.cachedUser!!
 //            ?: throw Throwable("User not valid")
 
+        if (!canCreateNewCode()) {
+            // can not create new code
+            return
+        }
+
         return triggerRemoteOnly {
             try {
                 remote.tryCreatingCode(user, userMeData)
@@ -84,6 +89,10 @@ class PersonalCodesRepository constructor(
 
     fun getActivePersonalCodeOnce(): UserPersonalCode? {
         return activePersonalCodeState.value
+    }
+
+    fun canCreateNewCode(): Boolean {
+        return personalCodeLocalState.value.size < userRepo.userPlans.value.highestValidPlanConfig.paralinoIdsLimit
     }
 
     suspend fun refreshPersonalCodes() {
@@ -138,7 +147,9 @@ class PersonalCodesRepository constructor(
                     userId = userRepo.cachedUserId,
                     userMeData = userMeData
                 )
-            } else {
+            } else if (canCreateNewCode() && personalCodeLocalState.value.isNotEmpty()) {
+                // even if user can create new code, we should only create one if user has no codes at all
+                // this would be the case when account is created
                 createPersonalCode(userMeData = userMeData)
             }
             refreshPersonalCodes()
