@@ -147,7 +147,7 @@ class PersonalCodesRepository constructor(
                     userId = userRepo.cachedUserId,
                     userMeData = userMeData
                 )
-            } else if (canCreateNewCode() && personalCodeLocalState.value.isNotEmpty()) {
+            } else if (canCreateNewCode() && personalCodeLocalState.value.isEmpty()) {
                 // even if user can create new code, we should only create one if user has no codes at all
                 // this would be the case when account is created
                 createPersonalCode(userMeData = userMeData)
