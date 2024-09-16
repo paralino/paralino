@@ -59,6 +59,7 @@ abstract class IDeviceApiProvider(
     protected abstract val _batteryLevel: Int
     abstract val isCharging: Boolean
     abstract val deviceType: DeviceType
+    abstract val deviceOSVersion: Int
     abstract val appVersionCode: Long
     abstract val appVersion: String
     abstract val defaultDeviceName: String

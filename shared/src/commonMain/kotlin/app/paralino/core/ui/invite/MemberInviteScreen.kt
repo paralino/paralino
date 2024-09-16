@@ -58,7 +58,7 @@ fun MemberInviteScreenCore(
     vm: MemberInviteViewModel,
     contentPadding: PaddingValues,
     onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
-    onNavigateBack: () -> Unit,
+    onMemberAdded: () -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
@@ -68,7 +68,7 @@ fun MemberInviteScreenCore(
         vm.events.collectLatest { event ->
             when (event) {
                 MemberInviteScreenEvent.MemberAdded -> {
-                    onNavigateBack()
+                    onMemberAdded()
                 }
 
                 null -> {

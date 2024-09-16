@@ -46,7 +46,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.share.SharingStartScreenEvent
-import app.paralino.core.presentation.share.SharingStartScreenState
+import app.paralino.core.presentation.share.SharingStartScreenUiEvent
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
@@ -62,15 +62,13 @@ import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.components.nameRes
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -84,8 +82,9 @@ fun SharingStartScreenCore(
     appState: CoreUiState,
     groupId: String?,
     vm: SharingStartViewModel,
-    onNavigateBack: () -> Unit,
+    onSharingStarted: () -> Unit,
     onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
+    openSubscriptions: () -> Unit,
     askNotificationPermission: () -> Unit,
     askLocationService: () -> Unit,
     askLocationPermission: () -> Unit,
@@ -93,13 +92,8 @@ fun SharingStartScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val state by vm.uiState.collectAsState(
-        initial = SharingStartScreenState(
-            groupState = if (groupId.isNullOrBlank()) Payload.Success(null) else Payload.Loading
-        )
-    )
+    val state by vm.uiState.collectAsState()
 
-    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
     var scrollToPosition by remember { mutableStateOf(0F) }
     val scrollState = rememberScrollState()
 
@@ -160,77 +154,20 @@ fun SharingStartScreenCore(
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is SharingStartScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
-                }
-
                 SharingStartScreenEvent.Started -> {
                     delay(400)
-                    onNavigateBack()
+                    onSharingStarted()
                 }
 
-                SharingStartScreenEvent.LocationStatusInsufficient -> {
-                    showDialog =
-                        MainAlertDialog.SharingErrors(state.errors.map { it.nameRes.localizedString() })
-                }
-
-                SharingStartScreenEvent.MissingBackgroundPermission -> {
-                    showDialog = MainAlertDialog.SharingBackgroundLocationMissing
-                }
-
-                SharingStartScreenEvent.SelectGroupInfo -> {
-                    vm.showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
-                }
-
-                SharingStartScreenEvent.CanNotRegisterDevice -> {
-                    vm.showSnackbar(MR.strings.error_generic_snacbar.localizedString())
-                }
-
-                null -> {
-                    /* do nothing */
-                }
-
-                is SharingStartScreenEvent.UnverifiedGroup -> {
-                    showDialog = MainAlertDialog.UnverifiedGroupInfo
-                }
-
-                is SharingStartScreenEvent.DevicesLimitReached -> {
-                    showDialog = MainAlertDialog.PlanLimit(
-                        content = MR.strings.plan_limit_devices_alert_info.localizedString(),
-                        limit = event.limit
-                    )
-                }
-            }
-        }
-    }
-
-    when (val dialog = showDialog) {
-        is MainAlertDialog.SharingBackgroundLocationMissing -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    askBackgroundLocationPermission()
-                }
-            }
-        }
-
-        is MainAlertDialog.UnverifiedGroupInfo -> {
-            dialog.Show {
-                showDialog = null
-            }
-        }
-
-        is MainAlertDialog.SharingErrors -> {
-            dialog.Show {
-                showDialog = null
-                appState.uiScope.launch {
+                SharingStartScreenEvent.AdjustScrollPosition -> {
                     scrollState.animateScrollTo(
                         scrollToPosition.roundToInt(),
                         animationSpec = tween(durationMillis = 500)
                     )
                 }
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    when (state.errors.firstOrNull()) {
+
+                is SharingStartScreenEvent.AskForPermission -> {
+                    when (event.error) {
                         ConditionErrorType.GPS -> askLocationService()
                         ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
                         ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
@@ -242,16 +179,21 @@ fun SharingStartScreenCore(
                         else -> {}
                     }
                 }
+
+                null -> {
+                    /* do nothing */
+                }
+
+                is SharingStartScreenEvent.DevicesLimitReached -> {
+                    openSubscriptions()
+                }
             }
         }
+    }
 
-        is MainAlertDialog.PlanLimit -> {
-            dialog.Show {
-                showDialog = null
-            }
-        }
-
-        else -> {}
+    val dialog = state.alertDialog
+    dialog?.Show {
+        vm.onEvent(SharingStartScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
     }
 
     Scaffold(

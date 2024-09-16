@@ -65,21 +65,36 @@ fun SubscriptionScreen(
 @Composable
 fun BillingScreen(
     appState: MainAppState,
+    groupId: String? = null,
     vm: PaywallViewModel = getViewModel()
 ) {
+    fun goBack() {
+        if(!groupId.isNullOrBlank()) {
+            appState.navController.navigate(
+                AppScreen.MainHome.GroupDetails.route(groupId = groupId)
+            ) {
+                this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
+                    this.inclusive = false
+                }
+            }
+        } else {
+            appState.navController.popBackStack()
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
                 title = "",
-                navigationIcon = { ToolbarButtons.Close { appState.navController.popBackStack() } }
+                navigationIcon = { ToolbarButtons.Close { goBack() } }
             )
         },
     ) {
         PaywallScreenCore(
             appState = appState,
             vm = vm,
-            onNavigateBack = { appState.navController.popBackStack() }
+            onNavigateBack = { goBack() }
         ) {
             var dismissBlock by remember {
                 mutableStateOf(false)
@@ -88,7 +103,7 @@ fun BillingScreen(
                 PaywallOptions.Builder(
                     dismissRequest = {
                         if (!dismissBlock) {
-                            appState.navController.popBackStack()
+                            goBack()
                         }
                     }
                 )

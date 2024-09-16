@@ -13,6 +13,7 @@ import paralino.shared.generated.resources.ic_add
 import paralino.shared.generated.resources.ic_add_link
 import paralino.shared.generated.resources.ic_adjust
 import paralino.shared.generated.resources.ic_arrow_open_in_new
+import paralino.shared.generated.resources.ic_arrow_spinny
 import paralino.shared.generated.resources.ic_auto_fix_high
 import paralino.shared.generated.resources.ic_battery_charging_full
 import paralino.shared.generated.resources.ic_battery_full
@@ -155,6 +156,7 @@ object CoreAppIcons {
     val Replay get() = Res.drawable.ic_replay
     val Sync get() = Res.drawable.ic_sync
     val ArrowOpenNew get() = Res.drawable.ic_arrow_open_in_new
+    val ArrowSpinny get() = Res.drawable.ic_arrow_spinny
     val StarFamily get() = Res.drawable.ic_family_star
     val Star get() = Res.drawable.ic_star
     val StarCircle get() = Res.drawable.ic_star_circle_filled

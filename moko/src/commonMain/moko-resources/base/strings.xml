@@ -66,7 +66,9 @@
     <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create new group</string>
     <string name="dashboard_groups_join_button">Join a group</string>
-    <string name="dashboard_groups_create_info">Or create a group</string>
+    <string name="dashboard_groups_create_info">Or create your own group</string>
+    <string name="dashboard_paralino_id_title">This is your **Paralino.ID**</string>
+    <string name="dashboard_paralino_id_description">Share it to join a group</string>
 
     <string name="location_banner_error_gps_off">Device location is disabled</string>
     <string name="location_banner_error_no_permission_notifications">Missing notifications permission</string>
@@ -274,7 +276,7 @@
     <string name="group_settings_verification_dialog_message_on">Enabling verification will trigger re-verification process for all current members.\n\nMembers will be cryptographically verified and no one else will be able to add new members to this group.</string>
     <string name="group_settings_verification_dialog_message_off">Disabling member verification will allow others to add new members to your group.</string>
 
-    <string name="group_create_start_title">Connect with your family</string>
+    <string name="group_create_start_title">Connect</string>
     <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>
     <string name="group_create_button_text">Create group</string>
@@ -369,6 +371,8 @@
 
     <string name="plan_limit_alert_title">BETA version</string>
     <string name="plan_limit_alert_message">You reached the maximum number of %1$s (**%2$d**) while in BETA.\n\nMore plans will be available soon.\n\nThank you for your patience while we scale up our infrastructure!</string>
+    <string name="plan_limit_contact_owner_alert_title">Plan limit</string>
+    <string name="plan_limit_contact_owner_alert_message">Please contact group owner to adjust group plan!\n\nMaximum number of %1$s (**%2$d**).</string>
     <string name="plan_limit_members_alert_info">group members</string>
     <string name="plan_limit_places_alert_info">group places</string>
     <string name="plan_limit_devices_alert_info">devices</string>

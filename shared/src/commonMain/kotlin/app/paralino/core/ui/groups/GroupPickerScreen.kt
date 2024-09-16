@@ -97,7 +97,7 @@ fun rememberGroupBottomSheetPickerState(
         GroupBottomSheetPickerState(
             bottomSheetState = rememberModalBottomSheetState(
                 initialValue = initialValue,
-                skipHalfExpanded = false
+                skipHalfExpanded = true
             )
         )
     }

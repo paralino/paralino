@@ -26,20 +26,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
+import app.paralino.core.models.data
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesScreenEvent
+import app.paralino.core.presentation.places.list.PlacesScreenUiEvent
 import app.paralino.core.presentation.places.list.PlacesViewModel
-import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
@@ -49,7 +47,7 @@ import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.PremiumPlanBannerSmall
 import app.paralino.core.utils.ConditionErrorType
@@ -72,7 +70,6 @@ fun PlacesScreenCore(
 
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
-    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
@@ -95,14 +92,9 @@ fun PlacesScreenCore(
         }
     }
 
-    when (val dialog = showDialog) {
-        is MainAlertDialog.PlanLimit -> {
-            dialog.Show {
-                showDialog = null
-            }
-        }
-
-        else -> {}
+    val dialog = uiState.data?.alertDialog
+    dialog?.Show {
+        vm.onEvent(PlacesScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
     }
 
     when (val state = uiState) {
@@ -129,7 +121,7 @@ fun PlacesScreenCore(
                     openPlaceDetails(it)
                 },
                 onCreatePlace = {
-                    vm.tryCreatePlace()
+                    vm.onEvent(PlacesScreenUiEvent.CreatePlace)
                 },
                 onPlanBannerClick = openSubscriptions,
                 onErrorItemClick = {

@@ -68,6 +68,8 @@
     <string name="dashboard_groups_add_button">Kreiraj novu grupu</string>
     <string name="dashboard_groups_join_button">Pridruži se grupi</string>
     <string name="dashboard_groups_create_info">Ili kreirajte grupu</string>
+    <string name="dashboard_paralino_id_title">Ovo je tvoj **Paralino.ID**</string>
+    <string name="dashboard_paralino_id_description">Podijeli ga i pridruži se grupi</string>
 
     <string name="location_banner_error_gps_off">Lokacija uređaja je onemogućena</string>
     <string name="location_banner_error_no_permission_notifications">Nedostaje dozvola za obavijesti</string>
@@ -275,7 +277,7 @@
     <string name="group_settings_verification_dialog_message_on">Svaki trenutni član grupe će biti ponovno kriptografski verificiran te nitko osim tebe neće moći dodati nove članove u grupu.</string>
     <string name="group_settings_verification_dialog_message_off">Nepotvrđeni članovi će moći koristiti lokaciju u grupi te nove članove grupe mogu dodati i ostali.</string>
 
-    <string name="group_create_start_title">Povežite se s obitelji</string>
+    <string name="group_create_start_title">Povežite se</string>
     <string name="group_load_error">Nemoguće učitati vašu grupu</string>
     <string name="group_create_name_placeholder">Ime grupe</string>
     <string name="group_create_button_text">Kreiraj grupu</string>
@@ -369,7 +371,9 @@
     <string name="raw_data_section_decrypted">Dekriptirani podaci na uređaju</string>
 
     <string name="plan_limit_alert_title">BETA verzija</string>
-    <string name="plan_limit_alert_message">Dosegli ste maksimalni broj %1$s (**%2$d**) tijekom BETA testiranja.\n\nViše planova će biti dostupno uskoro.\n\nHvala na strpljenju dok širimo našu infrastrukturu!</string>
+    <string name="plan_limit_alert_message">Dosegli ste maksimalan broj %1$s (**%2$d**) tijekom BETA testiranja.\n\nViše planova će biti dostupno uskoro.\n\nHvala na strpljenju dok širimo našu infrastrukturu!</string>
+    <string name="plan_limit_contact_owner_alert_title">Limit pretplate</string>
+    <string name="plan_limit_contact_owner_alert_message">Kontaktirajte vlasnika grupe u vezi nadogradnje pretplate!\n\nMaksimalan broj %1$s (**%2$d**).</string>
     <string name="plan_limit_members_alert_info">članova grupe</string>
     <string name="plan_limit_places_alert_info">mjesta grupe</string>
     <string name="plan_limit_devices_alert_info">uređaja</string>

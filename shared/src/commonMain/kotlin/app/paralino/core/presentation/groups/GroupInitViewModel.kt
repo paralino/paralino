@@ -23,13 +23,12 @@ import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -50,7 +49,7 @@ class GroupInitViewModel(
             codes = personalCodesRepo.personalCodeLocalState.value
         )
     )
-    val uiState: Flow<GroupInitScreenState> = _uiState
+    val uiState: StateFlow<GroupInitScreenState> = _uiState
 
     private val _eventChannel = Channel<GroupInitScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()

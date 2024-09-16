@@ -21,7 +21,7 @@ abstract class BaseFunctionsApi(
     private val deviceApiProvider: IDeviceApiProvider
 ) {
     private val clientHeaderValue: String =
-        "${deviceApiProvider.deviceType.key}/${deviceApiProvider.appVersionCode}/${deviceApiProvider.appVersion}"
+        "${deviceApiProvider.deviceType.key}/${deviceApiProvider.deviceOSVersion}/${deviceApiProvider.appVersionCode}/${deviceApiProvider.appVersion}"
     val clientHeader: Pair<String, String> = "x-paralino-client" to clientHeaderValue
 
     suspend fun executeFunction(function: ServerFunction, data: String?): FunctionExecutionRaw {

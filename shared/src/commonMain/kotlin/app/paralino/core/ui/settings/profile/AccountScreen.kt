@@ -390,6 +390,7 @@ fun AccountInfoHeader(
 
 @Composable
 fun AccountHeaderChip(
+    modifier: Modifier = Modifier,
     backgroundColor: Color,
     contentColor: Color,
     icon: Painter?,
@@ -397,7 +398,7 @@ fun AccountHeaderChip(
     onClick: (() -> Unit)?
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(percent = 50))
             .clickable(enabled = onClick != null) { onClick?.invoke() }
             .background(

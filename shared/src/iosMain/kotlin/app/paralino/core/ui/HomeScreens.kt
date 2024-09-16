@@ -108,6 +108,7 @@ object HomeScreens {
         openGroupSettings: () -> Unit,
         openMemberRawData: (String) -> Unit,
         openSharing: () -> Unit,
+        openSubscriptions: () -> Unit,
         onNavigateBack: () -> Unit,
         askNotificationPermission: () -> Unit,
         askLocationService: () -> Unit,
@@ -126,6 +127,7 @@ object HomeScreens {
                 openGroupSettings = openGroupSettings,
                 openMemberRawData = openMemberRawData,
                 openSharing = openSharing,
+                openSubscriptions = openSubscriptions,
                 onNavigateBack = onNavigateBack,
                 askNotificationPermission = askNotificationPermission,
                 askLocationService = askLocationService,
@@ -155,7 +157,7 @@ object HomeScreens {
     fun MemberInviteScreenVC(
         vm: MemberInviteViewModel,
         onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
-        onExit: () -> Unit,
+        onMemberAdded: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             MemberInviteScreenCore(
@@ -163,7 +165,7 @@ object HomeScreens {
                 vm = vm,
                 contentPadding = PaddingValues(),
                 onPickGroup = onPickGroup,
-                onNavigateBack = onExit
+                onMemberAdded = onMemberAdded
             )
         }
     }
@@ -172,7 +174,8 @@ object HomeScreens {
         vm: SharingStartViewModel,
         groupId: String?,
         onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
-        onNavigateBack: () -> Unit,
+        onSharingStarted: () -> Unit,
+        openSubscriptions: () -> Unit,
         askNotificationPermission: () -> Unit,
         askLocationService: () -> Unit,
         askLocationPermission: () -> Unit,
@@ -184,7 +187,8 @@ object HomeScreens {
                 vm = vm,
                 groupId = groupId,
                 onPickGroup = onPickGroup,
-                onNavigateBack = onNavigateBack,
+                onSharingStarted = onSharingStarted,
+                openSubscriptions = openSubscriptions,
                 askNotificationPermission = askNotificationPermission,
                 askLocationService = askLocationService,
                 askLocationPermission = askLocationPermission,
@@ -246,6 +250,10 @@ object HomeScreens {
                         when (event) {
                             MapHomeScreenEvent.AddGroup -> {
                                 onCreateGroup()
+                            }
+
+                            MapHomeScreenEvent.GroupsPlanLimitReached -> {
+                                // TODO react
                             }
 
                             null -> {}
@@ -335,6 +343,7 @@ object HomeScreens {
     fun PlacesScreenVC(
         vm: PlacesViewModel,
         addNewPlace: () -> Unit,
+        openSubscriptions: () -> Unit,
         openPlaceDetailScreen: (place: PlaceListItemData) -> Unit,
         askNotificationPermission: () -> Unit,
         mapUIView: (PlacesListScreenState) -> UIView,
@@ -352,6 +361,7 @@ object HomeScreens {
                 contentPadding = PaddingValues(bottom = 30.dp),
                 askNotificationPermission = askNotificationPermission,
                 addNewPlace = addNewPlace,
+                openSubscriptions = openSubscriptions,
                 openPlaceDetails = openPlaceDetailScreen,
                 mapContent = { state ->
                     Box(
