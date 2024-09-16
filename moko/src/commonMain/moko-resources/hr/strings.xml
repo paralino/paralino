@@ -68,6 +68,8 @@
     <string name="dashboard_groups_add_button">Kreiraj novu grupu</string>
     <string name="dashboard_groups_join_button">Pridruži se grupi</string>
     <string name="dashboard_groups_create_info">Ili kreirajte grupu</string>
+    <string name="dashboard_paralino_id_title">Ovo je tvoj **Paralino.ID**</string>
+    <string name="dashboard_paralino_id_description">Podijeli ga i pridruži se grupi</string>
 
     <string name="location_banner_error_gps_off">Lokacija uređaja je onemogućena</string>
     <string name="location_banner_error_no_permission_notifications">Nedostaje dozvola za obavijesti</string>

@@ -84,7 +84,7 @@ fun SharingStartScreenCore(
     appState: CoreUiState,
     groupId: String?,
     vm: SharingStartViewModel,
-    onNavigateBack: () -> Unit,
+    onSharingStarted: () -> Unit,
     onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
     askNotificationPermission: () -> Unit,
     askLocationService: () -> Unit,
@@ -166,7 +166,7 @@ fun SharingStartScreenCore(
 
                 SharingStartScreenEvent.Started -> {
                     delay(400)
-                    onNavigateBack()
+                    onSharingStarted()
                 }
 
                 SharingStartScreenEvent.LocationStatusInsufficient -> {

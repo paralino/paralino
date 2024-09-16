@@ -93,17 +93,23 @@ fun NavGraphBuilder.homeGraph(
                 it.arguments?.getString(AppScreen.MainHome.GroupMemberAdd.argumentGroupId)
             val code =
                 it.arguments?.getString(AppScreen.MainHome.GroupMemberAdd.argumentCode)
-            MemberInviteScreen(appState = appState, groupId = groupId, code = code)
+            val onboarding =
+                it.arguments?.getString(AppScreen.MainHome.GroupMemberAdd.argumentOnboarding)?.toBoolean() ?: false
+            MemberInviteScreen(appState = appState, groupId = groupId, code = code, isOnboarding = onboarding)
         }
         composable(AppScreen.MainHome.SharingStart.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.SharingStart.argumentGroupId)
-            SharingStartScreen(appState = appState, groupId = groupId)
+            val onboarding =
+                it.arguments?.getString(AppScreen.MainHome.SharingStart.argumentOnboarding)?.toBoolean() ?: false
+            SharingStartScreen(appState = appState, groupId = groupId, isOnboarding = onboarding)
         }
         composable(AppScreen.MainHome.PlacesList.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.PlacesList.argumentGroupId)!!
-            PlacesScreen(appState = appState, groupId = groupId)
+            val onboarding =
+                it.arguments?.getString(AppScreen.MainHome.PlacesList.argumentOnboarding)?.toBoolean() ?: false
+            PlacesScreen(appState = appState, groupId = groupId, isOnboarding = onboarding)
         }
         composable(AppScreen.MainHome.PlaceDetail.routeSignature) {
             val groupId =

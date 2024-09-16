@@ -143,8 +143,8 @@ object KoinSetup {
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
-        viewModel { (args: String?) ->
-            SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get(), get())
+        viewModel { (groupId: String?, isOnboarding: Boolean) ->
+            SharingStartViewModel(groupId = groupId, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get(), get()) }
@@ -167,7 +167,7 @@ object KoinSetup {
         viewModel { EditProfileViewModel(get(), get()) }
         viewModel { RecoverKeysViewModel(get(), get()) }
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
-        viewModel { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get(), get()) }
+        viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
         viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }

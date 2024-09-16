@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 
 class PlacesViewModel(
     groupId: String,
+    isOnboarding: Boolean,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val placesRepo: PlacesRepository,
     private val groupRepo: UserGroupLocalDataSource,
@@ -63,7 +64,7 @@ class PlacesViewModel(
                     // only show places limit to other members if close to limit
                     placesState.size >= placesLimit.minus(2)
                 },
-                shouldShowPlanBanner = group.isCurrentUserOwner && !group.isGroupPremium(config = remoteConfigRepo.configState.value),
+                shouldShowPlanBanner = !isOnboarding && group.isCurrentUserOwner && !group.isGroupPremium(config = remoteConfigRepo.configState.value),
                 errors = errors
             )
             state

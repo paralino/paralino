@@ -1,5 +1,6 @@
 package app.paralino.android.ui.navigation
 
+import app.paralino.android.ui.navigation.AppScreen.MainHome.GroupMemberAdd.argumentCode
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 
@@ -67,11 +68,19 @@ sealed class AppScreen {
         }
 
         object SharingStart : AppScreen() {
-            override val routeSignature: String = "home-share?$argumentGroupId={$argumentGroupId}"
-            fun route(groupId: String? = null): String {
-                if (groupId == null)
+            val argumentOnboarding: String = "onboarding"
+            override val routeSignature: String = "home-share?$argumentGroupId={$argumentGroupId}&$argumentOnboarding={$argumentOnboarding}"
+            fun route(groupId: String? = null, isOnboarding: Boolean = false): String {
+                val args = arrayOf(
+                    groupId?.let { "$argumentGroupId=$groupId" },
+                    "${argumentOnboarding}=$isOnboarding",
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+
+                if (args.isEmpty())
                     return "home-share"
-                return "home-share?$argumentGroupId=$groupId"
+                return "home-share?$args"
             }
         }
 
@@ -100,13 +109,15 @@ sealed class AppScreen {
 
         object GroupMemberAdd : AppScreen() {
             val argumentCode: String = "code"
+            val argumentOnboarding: String = "onboarding"
             override val routeSignature: String =
-                "group-member-add?$argumentGroupId={$argumentGroupId}&$argumentCode={$argumentCode}"
+                "group-member-add?$argumentGroupId={$argumentGroupId}&$argumentCode={$argumentCode}&$argumentOnboarding={$argumentOnboarding}"
 
-            fun route(groupId: String? = null, code: String? = null): String {
+            fun route(groupId: String? = null, code: String? = null, isOnboarding: Boolean = false): String {
                 val args = arrayOf(
                     groupId?.let { "$argumentGroupId=$groupId" },
-                    code?.let { "$argumentCode=$code" }
+                    code?.let { "$argumentCode=$code" },
+                    "$argumentOnboarding=$isOnboarding",
                 )
                     .filterNotNull()
                     .joinToString(separator = "&")
@@ -118,11 +129,19 @@ sealed class AppScreen {
         }
 
         object PlacesList : AppScreen() {
-            override val routeSignature: String = "places-list?$argumentGroupId={$argumentGroupId}"
-            fun route(groupId: String? = null): String {
-                if (groupId == null)
+            val argumentOnboarding: String = "onboarding"
+            override val routeSignature: String = "places-list?$argumentGroupId={$argumentGroupId}&${argumentOnboarding}={$argumentOnboarding}"
+            fun route(groupId: String? = null, isOnboarding: Boolean = false): String {
+                val args = arrayOf(
+                    groupId?.let { "$argumentGroupId=$groupId" },
+                    "${argumentOnboarding}=$isOnboarding",
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+
+                if (args.isEmpty())
                     return "places-list"
-                return "places-list?$argumentGroupId=$groupId"
+                return "places-list?$args"
             }
         }
 

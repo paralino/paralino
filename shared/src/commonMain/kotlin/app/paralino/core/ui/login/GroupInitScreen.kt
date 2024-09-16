@@ -137,7 +137,7 @@ fun GroupInitScreenCore(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "This is your **Paralino.ID**".annotatedBold(),
+                        text = stringResource(MR.strings.dashboard_paralino_id_title).annotatedBold(),
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
@@ -145,7 +145,7 @@ fun GroupInitScreenCore(
                         modifier = Modifier.padding(horizontal = 20.dp).padding(top = 4.dp),
                         image = null,
                         backgroundColor = AppColors.accentLight.copy(alpha = 0.3f),
-                        text = "Share it to join a group"
+                        text = stringResource(MR.strings.dashboard_paralino_id_description)
                     )
                     Box(
                         modifier = Modifier.padding(top = 8.dp),

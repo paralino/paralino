@@ -127,18 +127,18 @@ object KoinIOS {
         return module {
             factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get())
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
             factory { (startScreenType: LoginScreenUiType) ->
                 LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs)
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
-            factory { (args: String?) ->
-                SharingStartViewModel(args, get(), get(), get(), get(), get(), get(), get(), get(), get())
+            factory { (groupID: String?, isOnboarding: Boolean) ->
+                SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get()) }
-            factory { PersonalCodeViewModel(get(), get(), get()) }
+            factory { PersonalCodeViewModel(get(), get(), get(), get()) }
             factory { (groupId: String?, code: String?) ->
                 MemberInviteViewModel(
                     groupId = groupId,
@@ -168,7 +168,7 @@ object KoinIOS {
                     resetPassword = get()
                 )
             }
-            factory { (groupID: String) -> PlacesViewModel(groupID, get(), get(), get(), get()) }
+            factory { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get()) }
             factory { (groupID: String, placeId: String) ->
                 PlaceDetailViewModel(
                     groupId = groupID,
@@ -195,7 +195,7 @@ object KoinIOS {
             factory { BlocklistViewModel(get()) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get()) }
             factory { SubscriptionViewModel(get(), get(), get()) }
-            factory { PaywallViewModel(get(), get()) }
+            factory { PaywallViewModel(get(), get(), get()) }
         }
     }
 

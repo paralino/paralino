@@ -90,7 +90,8 @@ fun SmallActionButton(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.onError,
     contentColor: Color = MaterialTheme.colors.onPrimary,
-    icon: Painter,
+    hasEndArrow: Boolean = false,
+    icon: Painter?,
     text: @Composable () -> Unit,
     onClick: () -> Unit
 ) {
@@ -105,15 +106,26 @@ fun SmallActionButton(
             .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            painter = icon,
-            contentDescription = null,
-            modifier = Modifier.size(14.dp),
-            tint = contentColor
-        )
+        if (icon != null) {
+            Icon(
+                painter = icon,
+                contentDescription = null,
+                modifier = Modifier.size(14.dp),
+                tint = contentColor
+            )
+        }
         Spacer(modifier = Modifier.size(4.dp))
         CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.caption.copy(color = contentColor)) {
             text()
+        }
+        if (hasEndArrow) {
+            Icon(
+                modifier = Modifier
+                    .width(20.dp),
+                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                tint = contentColor,
+                contentDescription = null
+            )
         }
     }
 }
