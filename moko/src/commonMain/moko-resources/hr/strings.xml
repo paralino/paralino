@@ -275,7 +275,7 @@
     <string name="group_settings_verification_dialog_message_on">Svaki trenutni član grupe će biti ponovno kriptografski verificiran te nitko osim tebe neće moći dodati nove članove u grupu.</string>
     <string name="group_settings_verification_dialog_message_off">Nepotvrđeni članovi će moći koristiti lokaciju u grupi te nove članove grupe mogu dodati i ostali.</string>
 
-    <string name="group_create_start_title">Povežite se s obitelji</string>
+    <string name="group_create_start_title">Povežite se</string>
     <string name="group_load_error">Nemoguće učitati vašu grupu</string>
     <string name="group_create_name_placeholder">Ime grupe</string>
     <string name="group_create_button_text">Kreiraj grupu</string>

@@ -14,6 +14,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -69,6 +70,7 @@ fun DataInfoChip(
         Text(
             text = text,
             style = MaterialTheme.typography.subtitle1,
+            color = contentColorFor(backgroundColor)
         )
         if (hasEndArrow) {
             Icon(

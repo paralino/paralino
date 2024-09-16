@@ -1,6 +1,7 @@
 package app.paralino.core.ui.login
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,16 +11,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.groups.GroupInitScreenState
 import app.paralino.core.presentation.groups.GroupInitScreenUiEvent
 import app.paralino.core.presentation.groups.GroupInitViewModel
 import app.paralino.core.provider.localizedString
@@ -27,18 +31,20 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.SettingsBigHeader
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.invite.manage.PersonalCodeItem
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 
 
@@ -54,7 +60,7 @@ fun GroupInitScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val state by vm.uiState.collectAsState(GroupInitScreenState())
+    val state by vm.uiState.collectAsState()
 
     when (val dialog = state.alertDialog) {
         is MainAlertDialog.VerifyEmail -> {
@@ -73,7 +79,7 @@ fun GroupInitScreenCore(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
-                title = null,
+                title = stringResource(MR.strings.group_create_start_title),
                 navigationIcon = null,
                 actions = {
                     ImageModelImage(
@@ -124,26 +130,47 @@ fun GroupInitScreenCore(
                 }
             }
 
-            SettingsBigHeader(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp),
-                name = stringResource(MR.strings.group_create_start_title)
-            )
-
             Spacer(modifier = Modifier.size(20.dp))
 
             if (state.personalCode != null) {
-                PersonalCodeItem(
-                    state = state.personalCode!!,
-                    onCopy = {
-                        vm.onEvent(GroupInitScreenUiEvent.CopyPersonalCode)
-                        vm.showSnackbar(MR.strings.toast_copy_invite_code.localizedString())
-                    },
-                    onShare = {
-                        onSharePersonalCode(state.personalCode!!.code)
-                    },
-                    onDelete = {}
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "This is your **Paralino.ID**".annotatedBold(),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                    DataInfoChip(
+                        modifier = Modifier.padding(horizontal = 20.dp).padding(top = 4.dp),
+                        image = null,
+                        backgroundColor = AppColors.accentLight.copy(alpha = 0.3f),
+                        text = "Share it to join a group"
+                    )
+                    Box(
+                        modifier = Modifier.padding(top = 8.dp),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        PersonalCodeItem(
+                            modifier = Modifier.padding(top = 40.dp),
+                            state = state.personalCode!!,
+                            onCopy = {
+                                vm.onEvent(GroupInitScreenUiEvent.CopyPersonalCode)
+                                vm.showSnackbar(MR.strings.toast_copy_invite_code.localizedString())
+                            },
+                            onShare = {
+                                onSharePersonalCode(state.personalCode!!.code)
+                            },
+                            onDelete = {}
+                        )
+                        Icon(
+                            modifier = Modifier.height(70.dp).rotate(-10f),
+                            painter = CoreAppIcons.ArrowSpinny.asPainterResource(),
+                            tint = AppColors.highlightGold,
+                            contentDescription = null
+                        )
+                    }
+                }
             } else {
                 LargeSeekbarSwitch(
                     modifier = Modifier
