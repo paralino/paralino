@@ -35,6 +35,8 @@ object SettingsScreens {
         openProfileRawScreen: () -> Unit,
         openLicences: () -> Unit,
         openAppStatus: () -> Unit,
+        openSubscriptions: () -> Unit,
+        openPaywall: () -> Unit,
         onShare: (String) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -45,10 +47,12 @@ object SettingsScreens {
                 openConvertAccount = openConvertAccount,
                 openProfileDetails = openProfileDetails,
                 openPersonalCodes = openPersonalCodes,
+                openProfileRawScreen = openProfileRawScreen,
                 openBlockList = openBlockList,
                 openLicences = openLicences,
                 openAppStatus = openAppStatus,
-                openProfileRawScreen = openProfileRawScreen,
+                openSubscriptions = openSubscriptions,
+                openPaywall = openPaywall,
                 onShareCode = onShare
             )
         }
@@ -77,12 +81,14 @@ object SettingsScreens {
 
     fun PersonalCodeScreenVC(
         vm: PersonalCodeViewModel,
-        onShare: (String) -> Unit,
+        askNotificationPermission: () -> Unit,
+        onShare: (String) -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
             PersonalCodeScreenCore(
                 appState = it,
                 vm = vm,
+                askNotificationPermission = askNotificationPermission,
                 onShare = onShare,
             )
         }
