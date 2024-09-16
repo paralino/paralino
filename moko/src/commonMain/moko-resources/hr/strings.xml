@@ -371,7 +371,9 @@
     <string name="raw_data_section_decrypted">Dekriptirani podaci na uređaju</string>
 
     <string name="plan_limit_alert_title">BETA verzija</string>
-    <string name="plan_limit_alert_message">Dosegli ste maksimalni broj %1$s (**%2$d**) tijekom BETA testiranja.\n\nViše planova će biti dostupno uskoro.\n\nHvala na strpljenju dok širimo našu infrastrukturu!</string>
+    <string name="plan_limit_alert_message">Dosegli ste maksimalan broj %1$s (**%2$d**) tijekom BETA testiranja.\n\nViše planova će biti dostupno uskoro.\n\nHvala na strpljenju dok širimo našu infrastrukturu!</string>
+    <string name="plan_limit_contact_owner_alert_title">Limit pretplate</string>
+    <string name="plan_limit_contact_owner_alert_message">Kontaktirajte vlasnika grupe u vezi nadogradnje pretplate!\n\nMaksimalan broj %1$s (**%2$d**).</string>
     <string name="plan_limit_members_alert_info">članova grupe</string>
     <string name="plan_limit_places_alert_info">mjesta grupe</string>
     <string name="plan_limit_devices_alert_info">uređaja</string>

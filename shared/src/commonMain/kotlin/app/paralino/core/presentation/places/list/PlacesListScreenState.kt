@@ -3,8 +3,9 @@ package app.paralino.core.presentation.places.list
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.places.GroupPlace
-import app.paralino.core.presentation.groups.GroupDetailScreenEvent
 import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 
@@ -13,10 +14,12 @@ data class PlacesListScreenState constructor(
     val groupImage: ImageModel,
     val groupName: String,
     val placesLimit: Int,
+    val isGroupOwner: Boolean,
     val canShowPlacesLimit: Boolean,
     val shouldShowPlanBanner: Boolean,
     val places: List<PlaceListItemData>,
-    val errors: List<ConditionErrorType>
+    val errors: List<ConditionErrorType>,
+    val alertDialog: MainAlertDialog?
 ) {
     val markers: List<MapPinData> = places.filter { it.lat != null && it.lng != null }
         .map { MapPinData(groupId, it) }
@@ -32,7 +35,7 @@ data class PlaceListItemData constructor(
     val lng: Double?,
     val radiusMeters: Int,
 ) {
-    constructor(place: GroupPlace): this(
+    constructor(place: GroupPlace) : this(
         id = place.id,
         groupId = place.groupId,
         name = place.data.data?.name ?: "---",
@@ -48,4 +51,9 @@ sealed class PlacesScreenEvent() {
     data class Error(val error: Throwable) : PlacesScreenEvent()
     object AddPlace : PlacesScreenEvent()
     data class GroupPlacesLimitReached(val limit: Int) : PlacesScreenEvent()
+}
+
+sealed interface PlacesScreenUiEvent {
+    data object CreatePlace : PlacesScreenUiEvent
+    data class DialogAction(val action: AlertDialogAction) : PlacesScreenUiEvent
 }

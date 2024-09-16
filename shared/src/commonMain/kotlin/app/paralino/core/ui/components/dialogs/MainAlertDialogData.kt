@@ -611,6 +611,26 @@ sealed interface MainAlertDialog {
         )
     }
 
+    data class PlanLimitForMembers(
+        val content: String,
+        val limit: Int
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.plan_limit_contact_owner_alert_title),
+            message = MR.strings.plan_limit_contact_owner_alert_message.localizedString(content, limit),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_ok),
+                    color = AlertDialogButtonData.positiveColor
+                ),
+            ),
+        )
+    }
+
     data class AppVersionInfo(
         val forceUpdate: Boolean
     ) : MainAlertDialog {
