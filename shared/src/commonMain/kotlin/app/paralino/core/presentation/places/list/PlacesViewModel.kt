@@ -120,7 +120,7 @@ class PlacesViewModel(
                 }
             } else if (limit in 0..placeCount) {
                 if (state.isGroupOwner) {
-                    _eventChannel.send(PlacesScreenEvent.GroupPlacesLimitReached(limit = state.placesLimit))
+                    _eventChannel.send(PlacesScreenEvent.GroupPlacesLimitReached(limit = limit))
                 } else {
                     _uiState.update {
                         it.mapSuccess {

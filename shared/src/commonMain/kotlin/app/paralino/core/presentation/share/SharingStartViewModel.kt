@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.share
 
+import app.paralino.core.MR
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
@@ -11,19 +12,23 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.nameRes
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.exceptions.TimeoutException
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.poll
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapMerge
@@ -55,7 +60,7 @@ class SharingStartViewModel(
                 else Payload.Loading
             )
         )
-    val uiState: Flow<SharingStartScreenState> = _uiState
+    val uiState: StateFlow<SharingStartScreenState> = _uiState
 
     private val currentGroup = MutableStateFlow<UserGroupWithMetadata?>(null)
 
@@ -100,6 +105,45 @@ class SharingStartViewModel(
         }.launchIn(coroutineScope)
     }
 
+    fun onEvent(event: SharingStartScreenUiEvent) {
+        when (event) {
+            is SharingStartScreenUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.PlanLimit, is MainAlertDialog.PlanLimitForMembers -> {
+                        _uiState.update { it.copy(alertDialog = null) }
+                    }
+
+                    is MainAlertDialog.SharingBackgroundLocationMissing -> {
+                        _uiState.update { it.copy(alertDialog = null) }
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            coroutineScope.launch {
+                                _eventChannel.send(SharingStartScreenEvent.AskForPermission(ConditionErrorType.PERMISSION_LOCATION_BACKGROUND))
+                            }
+                        }
+                    }
+
+                    is MainAlertDialog.UnverifiedGroupInfo -> {
+                        _uiState.update { it.copy(alertDialog = null) }
+                    }
+
+                    is MainAlertDialog.SharingErrors -> {
+                        _uiState.update { it.copy(alertDialog = null) }
+                        coroutineScope.launch {
+                            _eventChannel.send(SharingStartScreenEvent.AdjustScrollPosition)
+                            if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                                uiState.value.errors.firstOrNull()?.let {
+                                    _eventChannel.send(SharingStartScreenEvent.AskForPermission(it))
+                                }
+                            }
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
     suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
         return BottomSheetPickerType.GroupPickerBottomSheet(
             userPlan = userRepo.userPlans.value.highestValidPlanConfig,
@@ -141,45 +185,58 @@ class SharingStartViewModel(
         }
 
         _uiState.value.groupState.data ?: let {
-            coroutineScope.launch {
-                _eventChannel.send(SharingStartScreenEvent.SelectGroupInfo)
-            }
+            showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
             return
         }
 
         if (_uiState.value.groupState.data?.uiType == GroupItemState.GroupUiType.UNVERIFIED) {
-            coroutineScope.launch {
-                _eventChannel.send(SharingStartScreenEvent.UnverifiedGroup)
-            }
+            _uiState.update { it.copy(alertDialog = MainAlertDialog.UnverifiedGroupInfo) }
         } else if (getErrors(forLongTerm = false).isEmpty() && _uiState.value.isLongTerm) {
             // only background location permission is missing
-            coroutineScope.launch {
-                _eventChannel.send(SharingStartScreenEvent.MissingBackgroundPermission)
-            }
+            _uiState.update { it.copy(alertDialog = MainAlertDialog.SharingBackgroundLocationMissing) }
         } else {
-            coroutineScope.launch {
-                _eventChannel.send(SharingStartScreenEvent.LocationStatusInsufficient)
-            }
+            _uiState.update { it.copy(alertDialog = MainAlertDialog.SharingErrors(uiState.value.errors.map { it.nameRes.localizedString() })) }
         }
     }
 
     private fun proceedWithSharing() {
         val group = _uiState.value.groupState.data ?: let {
-            coroutineScope.launch {
-                _eventChannel.send(SharingStartScreenEvent.SelectGroupInfo)
-            }
+            showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
             return
         }
 
         coroutineScope.launch {
             _uiState.update { it.copy(loadingAction = true) }
 
-            if (_uiState.value.devicesCount >= _uiState.value.devicesLimit && !registerDevice.isDeviceAlreadyRegistered(
-                    groupId = group.id
-                )
-            ) {
-                coroutineScope.launch {
-                    _eventChannel.send(SharingStartScreenEvent.DevicesLimitReached(_uiState.value.devicesLimit))
+            val limit = _uiState.value.devicesLimit
+            val devicesCount = _uiState.value.devicesCount
+            val maxDeviceLimit =
+                remoteConfigRepo.configState.value.plans.maxBy { it.planTypeEnum.order }.devicesLimit
+            val isDeviceRegistered = registerDevice.isDeviceAlreadyRegistered(groupId = group.id)
+
+            if (group.isCurrentUserOwner && devicesCount >= maxDeviceLimit && !isDeviceRegistered) {
+                _uiState.update {
+                    it.copy(
+                        alertDialog = MainAlertDialog.PlanLimit(
+                            content = MR.strings.plan_limit_devices_alert_info.localizedString(),
+                            limit = limit
+                        )
+                    )
+                }
+                _uiState.update { it.copy(loadingAction = false) }
+                return@launch
+            } else if (limit in 0..devicesCount && !isDeviceRegistered) {
+                if (group.isCurrentUserOwner) {
+                    _eventChannel.send(SharingStartScreenEvent.DevicesLimitReached(limit = limit))
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            alertDialog = MainAlertDialog.PlanLimitForMembers(
+                                content = MR.strings.plan_limit_devices_alert_info.localizedString(),
+                                limit = limit
+                            )
+                        )
+                    }
                 }
                 _uiState.update { it.copy(loadingAction = false) }
                 return@launch
@@ -205,7 +262,7 @@ class SharingStartViewModel(
             } catch (e: Exception) {
                 logg.e("Unable to register device", e)
                 _uiState.update { it.copy(loadingAction = false) }
-                _eventChannel.send(SharingStartScreenEvent.CanNotRegisterDevice)
+                showSnackbar(MR.strings.error_generic_snacbar.localizedString())
                 return@launch
             }
 
@@ -233,7 +290,7 @@ class SharingStartViewModel(
                 if (active) {
                     _eventChannel.send(SharingStartScreenEvent.Started)
                 } else {
-                    _eventChannel.send(SharingStartScreenEvent.Error(Exception("Unable to start sharing")))
+                    showSnackbar(Exception("Unable to start sharing").errorString())
                 }
             }
         }

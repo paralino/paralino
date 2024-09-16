@@ -92,6 +92,11 @@ fun PlacesScreenCore(
         }
     }
 
+    val dialog = uiState.data?.alertDialog
+    dialog?.Show {
+        vm.onEvent(PlacesScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
+    }
+
     when (val state = uiState) {
         Payload.Loading -> {
             Column(
@@ -108,12 +113,6 @@ fun PlacesScreenCore(
         }
 
         is Payload.Success -> {
-
-            val dialog = uiState.data?.alertDialog
-            dialog?.Show {
-                vm.onEvent(PlacesScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
-            }
-
             PlacesScreen(
                 state = state.data,
                 userScrollEnabled = userScrollEnabled,
