@@ -145,7 +145,9 @@ fun NavGraphBuilder.homeGraph(
             SubscriptionScreen(appState)
         }
         composable(AppScreen.MainHome.BillingPaywall.routeSignature) {
-            BillingScreen(appState)
+            val groupId =
+                it.arguments?.getString(AppScreen.MainHome.BillingPaywall.argumentGroupId)
+            BillingScreen(appState, groupId = groupId)
         }
     }
 }

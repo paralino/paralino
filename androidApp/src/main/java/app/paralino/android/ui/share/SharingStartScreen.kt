@@ -15,6 +15,7 @@ import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
+import app.paralino.core.data.db.AppPrefs.Companion.keyDidStartedGroupOnboarding
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
@@ -52,6 +53,30 @@ fun SharingStartScreen(
 
     val pickerState = rememberGroupBottomSheetPickerState()
 
+    fun finishWithSharingScreen(
+        isOnboarding: Boolean
+    ) {
+        if (vm.shouldProceedToPaywall) {
+            appState.navController.navigate(
+                AppScreen.MainHome.BillingPaywall.route(groupId = groupId)
+            ) {
+                this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
+                    this.inclusive = false
+                }
+            }
+        } else if(isOnboarding) {
+            appState.navController.navigate(
+                AppScreen.MainHome.GroupDetails.route(groupId = groupId!!)
+            ) {
+                this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
+                    this.inclusive = false
+                }
+            }
+        } else {
+            appState.navController.popBackStack()
+        }
+    }
+
     Scaffold(
         topBar = {
             DefaultToolbar(
@@ -75,15 +100,7 @@ fun SharingStartScreen(
                                     fontSize = 14.sp
                                 )
                             },
-                            onClick = {
-                                appState.navController.navigate(
-                                    AppScreen.MainHome.GroupDetails.route(groupId = groupId!!)
-                                ) {
-                                    this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                                        this.inclusive = false
-                                    }
-                                }
-                            }
+                            onClick = { finishWithSharingScreen(isOnboarding = true) }
                         )
                     }
                 }
@@ -95,17 +112,7 @@ fun SharingStartScreen(
             groupId = groupId,
             vm = vm,
             onSharingStarted = {
-                if (isOnboarding) {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.GroupDetails.route(groupId = groupId!!)
-                    ) {
-                        this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                            this.inclusive = false
-                        }
-                    }
-                } else {
-                    appState.navController.popBackStack()
-                }
+                finishWithSharingScreen(isOnboarding = isOnboarding)
             },
             onPickGroup = {
                 appState.uiScope.launch { pickerState.show(it) }
@@ -115,9 +122,7 @@ fun SharingStartScreen(
             askLocationPermission = { permissionHandler.askLocationPermission() },
             askBackgroundLocationPermission = { permissionHandler.askBackgroundLocationPermission() },
             openSubscriptions = {
-                appState.navController.navigate(
-                    AppScreen.MainHome.BillingPaywall.route()
-                )
+                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             }
         )
     }

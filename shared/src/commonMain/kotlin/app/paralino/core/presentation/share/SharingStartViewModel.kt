@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
     groupId: String?,
-    isOnboarding: Boolean,
+    private val isOnboarding: Boolean,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
@@ -66,6 +66,12 @@ class SharingStartViewModel(
 
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
+
+    val shouldProceedToPaywall: Boolean get() {
+        return isOnboarding
+                && currentGroup.value?.group?.isCurrentUserOwner == true
+                && !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
+    }
 
     init {
 

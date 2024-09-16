@@ -1,6 +1,5 @@
 package app.paralino.android.ui.navigation
 
-import app.paralino.android.ui.navigation.AppScreen.MainHome.GroupMemberAdd.argumentCode
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 
@@ -276,9 +275,17 @@ sealed class AppScreen {
         }
 
         open class BillingPaywall(private val parent: String) : AppScreen() {
-            override val routeSignature: String = "$parent-subscriptions-paywall"
-            fun route(): String {
-                return "$parent-subscriptions-paywall"
+            override val routeSignature: String = "$parent-subscriptions-paywall?$argumentGroupId={$argumentGroupId}"
+            fun route(groupId: String? = null): String {
+                val args = arrayOf(
+                    groupId?.let { "$argumentGroupId=$groupId" }
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+
+                if (args.isEmpty())
+                    return "$parent-subscriptions-paywall"
+                return "$parent-subscriptions-paywall?$args"
             }
         }
     }
