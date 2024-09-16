@@ -1,5 +1,6 @@
 package app.paralino.core.ui.invite.manage
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,12 +21,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
@@ -100,15 +104,15 @@ fun PersonalCodeItem(
     onShare: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    Column {
+    Column(modifier = modifier) {
         Surface(
-            modifier = modifier.padding(horizontal = 20.dp),
+            modifier = Modifier.zIndex(1f).padding(horizontal = 20.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colors.primary,
             elevation = 16.dp
         ) {
             Column(
-                modifier = modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp)
             ) {
                 Text(
                     modifier = Modifier
@@ -192,12 +196,22 @@ fun PersonalCodeItem(
                 }
             }
         }
-        Spacer(modifier = Modifier.size(10.dp))
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                modifier = Modifier.padding(horizontal = 40.dp),
+                modifier = Modifier
+                    .zIndex(0f)
+                    .padding(horizontal = 30.dp)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp)
+                    )
+                    .clip(RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp))
+                    .background(MaterialTheme.colors.surface)
+                    .padding(top = 12.dp, bottom = 8.dp)
+                    .padding(horizontal = 8.dp),
                 text = stringResource(MR.strings.invite_manage_description).annotatedBold(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.SemiBold)
             )
         }
         Spacer(modifier = Modifier.size(50.dp))

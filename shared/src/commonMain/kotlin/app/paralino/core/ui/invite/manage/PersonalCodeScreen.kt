@@ -1,17 +1,13 @@
 package app.paralino.core.ui.invite.manage
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
@@ -25,15 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
-import app.paralino.core.models.Payload
-import app.paralino.core.models.data
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenUiEvent
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
@@ -43,6 +37,7 @@ import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -51,13 +46,14 @@ import dev.icerock.moko.resources.compose.stringResource
 fun PersonalCodeScreenCore(
     appState: CoreUiState,
     vm: PersonalCodeViewModel,
+    askNotificationPermission: () -> Unit,
     onShare: (String) -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
 
-    when (val dialog = uiState.data?.alertDialog) {
+    when (val dialog = uiState.alertDialog) {
         is MainAlertDialog.PersonalCodeDelete -> {
             dialog.Show {
                 vm.onEvent(PersonalCodeScreenUiEvent.HideDialog)
@@ -69,113 +65,122 @@ fun PersonalCodeScreenCore(
         else -> {}
     }
 
-    when (val state = uiState) {
-        Payload.Loading -> {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+    LazyColumn(
+        contentPadding = PaddingValues(vertical = 20.dp)
+    ) {
+        this.items(uiState.errors, key = { it }) {
+            ConditionErrorItem(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                data = it
             ) {
-                CircularProgressIndicator()
+                when (it) {
+                    ConditionErrorType.NETWORK -> {
+                        vm.showSnackbar(
+                            text = MR.strings.error_no_connection_snackbar.localizedString()
+                        )
+                    }
+
+                    ConditionErrorType.PERMISSION_NOTIFICATIONS -> {
+                        askNotificationPermission()
+                    }
+
+                    else -> {
+                        /* do nothing */
+                    }
+                }
             }
         }
 
-        is Payload.Error -> {
-            DefaultEmptyState(content = stringResource(MR.strings.error_load_data_generic))
+        if (uiState.activeCode != null) {
+            this.item(key = "activeCode") {
+                PersonalCodeItem(
+                    modifier = Modifier.padding(bottom = 4.dp).animateItemPlacement(),
+                    state = uiState.activeCode!!,
+                    onCopy = {
+                        vm.onEvent(PersonalCodeScreenUiEvent.CopyPersonalCode)
+                        vm.showSnackbar(text = MR.strings.toast_copy_invite_code.localizedString())
+                    },
+                    onShare = {
+                        onShare(uiState.activeCode!!.code)
+                    },
+                    onDelete = {
+                        vm.onEvent(PersonalCodeScreenUiEvent.DisableCode)
+                    }
+                )
+            }
         }
 
-        is Payload.Success -> {
-            LazyColumn(
-                contentPadding = PaddingValues(vertical = 20.dp)
-            ) {
-                if (state.data.activeCode != null) {
-                    this.item(key = "activeCode") {
-                        PersonalCodeItem(
-                            modifier = Modifier.padding(bottom = 4.dp).animateItemPlacement(),
-                            state = state.data.activeCode!!,
-                            onCopy = {
-                                vm.onEvent(PersonalCodeScreenUiEvent.CopyToClipboard(state.data.activeCode!!.code))
-                                vm.showSnackbar(text = MR.strings.toast_copy_invite_code.localizedString())
-                            },
-                            onShare = {
-                                onShare(state.data.activeCode!!.code)
-                            },
-                            onDelete = {
-                                vm.onEvent(PersonalCodeScreenUiEvent.DisableCode)
-                            }
-                        )
-                    }
+        if (uiState.inactiveCodes.isNotEmpty()) {
+            this.item(key = "inactive_header") {
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .padding(horizontal = 20.dp)
+                        .animateItemPlacement(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.settings_section_personal_code_inactive_title),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.alpha(ContentAlpha.medium)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    PlanLimitCount(
+                        count = uiState.inactiveCodes.size,
+                        limit = null
+                    )
                 }
-
-                if (state.data.inactiveCodes.isNotEmpty()) {
-                    this.item(key = "inactive_header") {
-                        Row(
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .padding(horizontal = 20.dp)
-                                .animateItemPlacement(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(MR.strings.settings_section_personal_code_inactive_title),
-                                style = MaterialTheme.typography.h6,
-                                modifier = Modifier.alpha(ContentAlpha.medium)
-                            )
-                            Spacer(modifier = Modifier.size(8.dp))
-                            PlanLimitCount(
-                                count = state.data.inactiveCodes.size,
-                                limit = null
-                            )
-                        }
-                    }
-                    this.items(state.data.inactiveCodes, key = { it.id }) { code ->
-                        PersonalCodeItemInactive(
-                            modifier = Modifier.animateItemPlacement(),
-                            state = code
-                        ) {
-                            vm.onEvent(PersonalCodeScreenUiEvent.ActivateCode(it))
-                        }
-                    }
-                    this.item(key = "inactive_spacer") {
-                        Spacer(modifier = Modifier.size(40.dp))
-                    }
+            }
+            this.items(uiState.inactiveCodes, key = { it.id }) { code ->
+                PersonalCodeItemInactive(
+                    modifier = Modifier.animateItemPlacement(),
+                    state = code
+                ) {
+                    vm.onEvent(PersonalCodeScreenUiEvent.ActivateCode(it))
                 }
+            }
+            this.item(key = "inactive_spacer") {
+                Spacer(modifier = Modifier.size(40.dp))
+            }
+        }
 
-                if (state.data.inactiveCodes.isEmpty() && state.data.activeCode == null) {
-                    this.item(key = "empty_state") {
-                        DefaultEmptyState(
-                            icon = CoreAppIcons.AddLink.asPainterResource(),
-                            content = stringResource(MR.strings.invite_manage_empty_description),
-                            buttonText = stringResource(MR.strings.invite_create_button),
-                            buttonState = if (state.data.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,
-                            onClick = { vm.onEvent(PersonalCodeScreenUiEvent.CreateCode) }
+        if (uiState.inactiveCodes.isEmpty() && uiState.activeCode == null) {
+            this.item(key = "empty_state") {
+                DefaultEmptyState(
+                    icon = CoreAppIcons.AddLink.asPainterResource(),
+                    content = stringResource(MR.strings.invite_manage_empty_description),
+                    buttonText = stringResource(MR.strings.invite_create_button),
+                    buttonState = if (uiState.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,
+                    onClick = { vm.onEvent(PersonalCodeScreenUiEvent.CreateCode) }
+                )
+            }
+        } else {
+            this.item(key = "button") {
+                if (uiState.canCreateAlternativeId) {
+                    FilledButton(
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                            .padding(top = 20.dp, bottom = 10.dp),
+                        style = ButtonStyle.BIG,
+                        state = if (uiState.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,
+                        icon = CoreAppIcons.AddLink.asPainterResource(),
+                        onClick = { vm.onEvent(PersonalCodeScreenUiEvent.CreateCode) }
+                    ) {
+                        Text(stringResource(MR.strings.invite_create_new_button))
+                    }
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 40.dp)
+                                .padding(bottom = 20.dp),
+                            text = stringResource(
+                                MR.strings.invite_create_alternative_description,
+                                "${uiState.maxCodes}"
+                            ).annotatedBold(),
+                            style = MaterialTheme.typography.caption,
+                            textAlign = TextAlign.Center
                         )
                     }
                 } else {
-                    this.item(key = "button") {
-                        if (state.data.canCreateAlternativeId) {
-                            FilledButton(
-                                modifier = Modifier.padding(horizontal = 20.dp).padding(top = 20.dp, bottom = 10.dp),
-                                style = ButtonStyle.BIG,
-                                state = if (state.data.createLoading) AppButtonState.LOADING else AppButtonState.CHECK_THEN_CONTENT,
-                                icon = CoreAppIcons.AddLink.asPainterResource(),
-                                onClick = { vm.onEvent(PersonalCodeScreenUiEvent.CreateCode) }
-                            ) {
-                                Text(stringResource(MR.strings.invite_create_new_button))
-                            }
-                            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                                Text(
-                                    modifier = Modifier.padding(horizontal = 40.dp)
-                                        .padding(bottom = 20.dp),
-                                    text = stringResource(MR.strings.invite_create_alternative_description, "${state.data.maxCodes}").annotatedBold(),
-                                    style = MaterialTheme.typography.caption,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        } else {
-                            Spacer(modifier = Modifier.size(40.dp))
-                        }
-                    }
+                    Spacer(modifier = Modifier.size(40.dp))
                 }
             }
         }

@@ -4,14 +4,16 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
-import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
@@ -32,17 +34,19 @@ import kotlinx.coroutines.launch
 class PersonalCodeViewModel(
     private val personalCodeRepo: PersonalCodesRepository,
     private val deviceApiProvider: IDeviceApiProvider,
+    val locationStatusProvider: ILocationStatusProvider,
     private val userRepo: UserRepository
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow<Payload<PersonalCodeScreenState>>(
+    private val _uiState = MutableStateFlow<PersonalCodeScreenState>(
         mapPersonalCodes(
             personalCodes = personalCodeRepo.personalCodeLocalState.value,
             userPlans = userRepo.userPlans.value,
+            locationStatus = locationStatusProvider.currentStatus,
             activeAlertDialog = null
         )
     )
-    val uiState: StateFlow<Payload<PersonalCodeScreenState>> = _uiState
+    val uiState: StateFlow<PersonalCodeScreenState> = _uiState
 
     private val _eventChannel = Channel<PersonalCodeScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -57,13 +61,15 @@ class PersonalCodeViewModel(
 
         combine(
             personalCodeRepo.personalCodeLocalState,
+            locationStatusProvider.status,
             userRepo.userPlans
-        ) { personalCodes, plans ->
+        ) { personalCodes, permissionStatus, plans ->
             _uiState.update {
                 mapPersonalCodes(
                     personalCodes = personalCodes,
                     userPlans = plans,
-                    activeAlertDialog = it.data?.alertDialog
+                    locationStatus = permissionStatus,
+                    activeAlertDialog = it.alertDialog
                 )
             }
         }
@@ -74,8 +80,9 @@ class PersonalCodeViewModel(
     private fun mapPersonalCodes(
         personalCodes: List<UserPersonalCode>,
         userPlans: UserPlans,
+        locationStatus: LocationConditionStatus,
         activeAlertDialog: MainAlertDialog?
-    ): Payload<PersonalCodeScreenState> {
+    ): PersonalCodeScreenState {
         val codeData = personalCodes
             .map {
                 PersonalCodeScreenCodeData(
@@ -86,33 +93,36 @@ class PersonalCodeViewModel(
                     userName = it.codeData.data?.ownerName ?: "---",
                     canDisable = it.isStillValid(),
                     isValid = it.isStillValid(),
-                    isActionLoading = false
+                    isActionLoading = false,
                 )
             }
 
         val maxIDs = userPlans.highestValidPlanConfig.paralinoIdsLimit
         val inactiveCodes = codeData.filter { !it.isValid }
-        return Payload.Success(
-            PersonalCodeScreenState(
-                activeCode = codeData.firstOrNull { it.isValid },
-                inactiveCodes = inactiveCodes,
-                canCreateAlternativeId = AppBuildConfig.instance.hasPreviewFeatures && maxIDs > 0 && codeData.size < maxIDs,
-                maxCodes = maxIDs,
-                createLoading = false,
-                alertDialog = activeAlertDialog
-            )
+        return PersonalCodeScreenState(
+            activeCode = codeData.firstOrNull { it.isValid },
+            inactiveCodes = inactiveCodes,
+            canCreateAlternativeId = AppBuildConfig.instance.hasPreviewFeatures && maxIDs > 0 && codeData.size < maxIDs,
+            maxCodes = maxIDs,
+            createLoading = false,
+            alertDialog = activeAlertDialog,
+            errors = buildList {
+                if (!locationStatus.isNotificationPermissionAllowed) {
+                    add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+                }
+            }
         )
     }
 
     private fun createPersonalCode() {
-        if (_uiState.value is Payload.Loading || _uiState.value.data?.loading == true)
+        if (_uiState.value.loading)
             return
 
         flow { emit(personalCodeRepo.createAndSavePersonalCode()) }
             .mapToPayload { Unit }
             .onEach { result ->
                 _uiState.update {
-                    it.mapSuccess { it.copy(createLoading = result is Payload.Loading) }
+                    it.copy(createLoading = result is Payload.Loading)
                 }
                 when (result) {
                     Payload.Loading -> {}
@@ -129,7 +139,7 @@ class PersonalCodeViewModel(
     }
 
     private fun deletePersonalCode() {
-        if (_uiState.value is Payload.Loading || _uiState.value.data?.loading == true)
+        if (_uiState.value.loading)
             return
 
         personalCodeRepo.revokePersonalCode()
@@ -137,26 +147,22 @@ class PersonalCodeViewModel(
                 when (result) {
                     Payload.Loading -> {
                         _uiState.update {
-                            it.mapSuccess {
-                                it.copy(
-                                    activeCode = it.activeCode?.copy(
-                                        isActionLoading = true
-                                    )
+                            it.copy(
+                                activeCode = it.activeCode?.copy(
+                                    isActionLoading = true
                                 )
-                            }
+                            )
                         }
                     }
 
                     is Payload.Error -> {
                         showSnackbar(result.exception.errorString())
                         _uiState.update {
-                            it.mapSuccess {
-                                it.copy(
-                                    activeCode = it.activeCode?.copy(
-                                        isActionLoading = false
-                                    )
+                            it.copy(
+                                activeCode = it.activeCode?.copy(
+                                    isActionLoading = false
                                 )
-                            }
+                            )
                         }
                     }
 
@@ -169,24 +175,22 @@ class PersonalCodeViewModel(
     }
 
     private fun activatePersonalCode(code: String) {
-        if (_uiState.value is Payload.Loading || _uiState.value.data?.loading == true)
+        if (_uiState.value.loading)
             return
 
         personalCodeRepo.activateUserCode(code)
             .onEach { result ->
                 _uiState.update {
                     val loading = result is Payload.Loading
-                    it.mapSuccess {
-                        it.copy(
-                            inactiveCodes = it.inactiveCodes.map {
-                                if (it.code == code) {
-                                    it.copy(isActionLoading = loading)
-                                } else {
-                                    it
-                                }
+                    it.copy(
+                        inactiveCodes = it.inactiveCodes.map {
+                            if (it.code == code) {
+                                it.copy(isActionLoading = loading)
+                            } else {
+                                it
                             }
-                        )
-                    }
+                        }
+                    )
                 }
                 when (result) {
                     Payload.Loading -> {}
@@ -205,19 +209,21 @@ class PersonalCodeViewModel(
     fun onEvent(event: PersonalCodeScreenUiEvent) {
         when (event) {
             is PersonalCodeScreenUiEvent.ActivateCode -> activatePersonalCode(event.code)
-            is PersonalCodeScreenUiEvent.CopyToClipboard -> deviceApiProvider.copyToClipboard(event.content)
+            is PersonalCodeScreenUiEvent.CopyPersonalCode -> {
+                deviceApiProvider.copyToClipboard(uiState.value.activeCode?.code ?: "")
+            }
             PersonalCodeScreenUiEvent.CreateCode -> createPersonalCode()
             PersonalCodeScreenUiEvent.DisableCode -> _uiState.update {
-                it.mapSuccess {
-                    it.copy(alertDialog = it.activeCode?.code?.let {
+                it.copy(
+                    alertDialog = it.activeCode?.code?.let {
                         MainAlertDialog.PersonalCodeDelete(it)
-                    })
-                }
+                    }
+                )
             }
 
             PersonalCodeScreenUiEvent.HideDialog -> {
                 _uiState.update {
-                    it.mapSuccess { it.copy(alertDialog = null) }
+                    it.copy(alertDialog = null)
                 }
             }
 

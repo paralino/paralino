@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.MR
@@ -22,6 +23,12 @@ fun PersonalCodeScreen(
 ) {
 
     val context = LocalContext.current
+    val notificationPermissionHandler = rememberNotificationsPermissionHandler(
+        appState = appState,
+        messageDispatcher = vm.messageDispatcher,
+        locationStatusProvider = vm.locationStatusProvider
+    )
+
     Scaffold(
         topBar = {
             DefaultToolbar(
@@ -33,6 +40,9 @@ fun PersonalCodeScreen(
         PersonalCodeScreenCore(
             appState = appState,
             vm = vm,
+            askNotificationPermission = {
+                notificationPermissionHandler.askNotificationPermission()
+            },
             onShare = { context.share(it) }
         )
     }

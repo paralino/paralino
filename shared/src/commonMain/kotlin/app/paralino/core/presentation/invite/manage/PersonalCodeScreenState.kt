@@ -2,6 +2,7 @@ package app.paralino.core.presentation.invite.manage
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.ConditionErrorType
 
 data class PersonalCodeScreenState(
     val activeCode: PersonalCodeScreenCodeData?,
@@ -9,7 +10,8 @@ data class PersonalCodeScreenState(
     val maxCodes: Int,
     val canCreateAlternativeId: Boolean,
     val createLoading: Boolean,
-    val alertDialog: MainAlertDialog?
+    val alertDialog: MainAlertDialog?,
+    val errors: List<ConditionErrorType> = emptyList()
 ) {
     val loading get() = createLoading || inactiveCodes.any { it.isActionLoading }
 }
@@ -35,5 +37,5 @@ sealed class PersonalCodeScreenUiEvent() {
     data object DisableCode: PersonalCodeScreenUiEvent()
     data object DisableCodeConfirm: PersonalCodeScreenUiEvent()
     data class ActivateCode(val code: String): PersonalCodeScreenUiEvent()
-    data class CopyToClipboard(val content: String): PersonalCodeScreenUiEvent()
+    data object CopyPersonalCode: PersonalCodeScreenUiEvent()
 }
