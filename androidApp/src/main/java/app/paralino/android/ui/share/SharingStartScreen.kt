@@ -15,7 +15,6 @@ import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppPrefs.Companion.keyDidStartedGroupOnboarding
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
