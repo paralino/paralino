@@ -140,6 +140,7 @@
     <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\nUse device you originally used for purchase.</string>
     <string name="plans_management_info_plan">You currently have **%1$s** plan!</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>
+    <string name="plans_paywall_onboarding_skip_button">Use free version</string>
 
     <string name="plans_gift_screen_title">Lets celebrate 🎉</string>
     <string name="plans_gift_screen_box_title">Special Launch Gift!</string>

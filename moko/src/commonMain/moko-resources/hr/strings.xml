@@ -140,6 +140,7 @@
     <string name="plans_management_info_wrong_platform">Ne možeš upravljati svojom pretplatom na ovom uređaju!\nKoristi uređaj sa kojim je aktivirana pretplata.</string>
     <string name="plans_management_info_plan">Trenutno imaš **%1$s** plan!</string>
     <string name="plans_management_action_manage">Upravljaj ili otkaži pretplatu</string>
+    <string name="plans_paywall_onboarding_skip_button">Besplatna verzija</string>
 
     <string name="plans_gift_screen_title">Slavimo zajedno 🎉</string>
     <string name="plans_gift_screen_box_title">Poseban Poklon!</string>
