@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun PaywallScreenCore(
     appState: CoreUiState,
     vm: PaywallViewModel,
-    onNavigateBack: () -> Unit,
+    onNavigateBack: (Boolean) -> Unit,
     paywallContent: @Composable () -> Unit,
 ) {
     MessageDispatcherEffect(vm, appState)
@@ -33,8 +33,8 @@ fun PaywallScreenCore(
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                PaywallScreenEvent.OnNavigateBack -> {
-                    onNavigateBack()
+                is PaywallScreenEvent.OnNavigateBack -> {
+                    onNavigateBack(event.isSuccess)
                 }
 
                 null -> {
@@ -69,5 +69,17 @@ fun PaywallScreenCore(
 
     AnimatedVisibility(visible = !uiState.isLoading, modifier = Modifier.fillMaxSize()) {
         paywallContent()
+    }
+}
+
+enum class BillingScreenSourceType(val key: String) {
+    ONBOARDING("onboarding"),
+    FREE_PLAN_NOTICE("notice"),
+    NORMAL("normal");
+
+    companion object {
+        fun fromKey(key: String?): BillingScreenSourceType {
+            return BillingScreenSourceType.entries.firstOrNull { it.key == key } ?: NORMAL
+        }
     }
 }

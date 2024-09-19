@@ -21,6 +21,7 @@
     <string name="button_showAll">Show all</string>
     <string name="button_open">Open</string>
     <string name="button_cool">Cool</string>
+    <string name="button_continue">Continue</string>
 
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
@@ -139,6 +140,14 @@
     <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\nUse device you originally used for purchase.</string>
     <string name="plans_management_info_plan">You currently have **%1$s** plan!</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>
+
+    <string name="plans_gift_screen_title">Lets celebrate 🎉</string>
+    <string name="plans_gift_screen_box_title">Special Launch Gift!</string>
+    <string name="plans_gift_screen_box_message">As an early adopter you get specially crafted plan, yours to keep!</string>
+    <string name="plans_gift_screen_benefits_title">🎁 What you get 🎁</string>
+    <string name="plans_gift_screen_benefits_content">⭐  **1 group**\n⭐️  **%1$s members**\n⭐️  **%2$s places**\n⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
+    <string name="plans_gift_screen_benefits_content_multiple">⭐  **%1$s groups**\n⭐️  **%2$s members**\n⭐️  **%3$s places**⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
+    <string name="plans_gift_screen_separator_text">Need more?</string>
 
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>

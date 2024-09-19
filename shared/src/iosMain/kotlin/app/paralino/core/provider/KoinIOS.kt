@@ -42,6 +42,7 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.settings.subscriptions.PaywallViewModel
+import app.paralino.core.presentation.settings.subscriptions.PlanInfoViewModel
 import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.LocationSharingManager
@@ -125,7 +126,7 @@ object KoinIOS {
 
     private fun createViewModelModule(): Module {
         return module {
-            factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
+            factory { GroupInitViewModel(get(), get(), get(), get(), get(), appPrefs) }
             factory {
                 MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get())
             }
@@ -196,6 +197,7 @@ object KoinIOS {
             factory { AppStatusDebugViewModel(get(), get(), get(), get()) }
             factory { SubscriptionViewModel(get(), get(), get()) }
             factory { PaywallViewModel(get(), get(), get()) }
+            factory { PlanInfoViewModel(get(), appPrefs) }
         }
     }
 

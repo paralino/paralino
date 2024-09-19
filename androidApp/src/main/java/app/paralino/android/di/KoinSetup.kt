@@ -59,6 +59,7 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.settings.subscriptions.PaywallViewModel
+import app.paralino.core.presentation.settings.subscriptions.PlanInfoViewModel
 import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.IBillingProvider
@@ -138,7 +139,7 @@ object KoinSetup {
             )
         }
 
-        viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
+        viewModel { GroupInitViewModel(get(), get(), get(), get(), get(), appPrefs) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs) }
@@ -175,5 +176,6 @@ object KoinSetup {
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get()) }
         viewModel { PaywallViewModel(get(), get(), get()) }
+        viewModel { PlanInfoViewModel(get(), appPrefs) }
     }
 }

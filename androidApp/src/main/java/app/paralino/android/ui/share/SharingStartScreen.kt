@@ -22,6 +22,7 @@ import app.paralino.core.ui.components.dialogs.ToolbarButtons
 import app.paralino.core.ui.groups.GroupBottomSheetPicker
 import app.paralino.core.ui.groups.GroupPickerAction
 import app.paralino.core.ui.groups.rememberGroupBottomSheetPickerState
+import app.paralino.core.ui.settings.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
@@ -57,7 +58,13 @@ fun SharingStartScreen(
     ) {
         if (vm.shouldProceedToPaywall) {
             appState.navController.navigate(
-                AppScreen.MainHome.BillingPaywall.route(groupId = groupId)
+                AppScreen.MainHome.BillingPaywall.route(
+                    groupId = groupId,
+                    type = when (isOnboarding) {
+                        true -> BillingScreenSourceType.ONBOARDING
+                        false -> BillingScreenSourceType.NORMAL
+                    }
+                )
             ) {
                 this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
                     this.inclusive = false

@@ -20,6 +20,7 @@ import app.paralino.android.ui.login.RecoverKeysScreen
 import app.paralino.android.ui.login.ResetPasswordScreen
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.MapHomeScreen
+import app.paralino.android.ui.onboarding.FreePlanInfoScreen
 import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
@@ -39,6 +40,7 @@ import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.ui.settings.BillingScreenSourceType
 
 
 @Composable
@@ -147,7 +149,14 @@ fun NavGraphBuilder.homeGraph(
         composable(AppScreen.MainHome.BillingPaywall.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.BillingPaywall.argumentGroupId)
-            BillingScreen(appState, groupId = groupId)
+            val type = it.arguments?.getString(AppScreen.MainHome.BillingPaywall.argumentSourceType)
+                .let { BillingScreenSourceType.fromKey(it) }
+            BillingScreen(appState, groupId = groupId, type = type)
+        }
+        composable(AppScreen.MainHome.FreePlanNoticeScreen.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.MainHome.FreePlanNoticeScreen.argumentGroupId)
+            FreePlanInfoScreen(appState)
         }
     }
 }
@@ -191,7 +200,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             SubscriptionScreen(appState)
         }
         composable(AppScreen.Settings.BillingPaywall.routeSignature) {
-            BillingScreen(appState)
+            val type = it.arguments?.getString(AppScreen.Settings.BillingPaywall.argumentSourceType)
+                .let { BillingScreenSourceType.fromKey(it) }
+            BillingScreen(appState, groupId = null, type = type)
         }
         composable(AppScreen.Settings.ProfileDetails.RawDataScreen.routeSignature) {
             val type =

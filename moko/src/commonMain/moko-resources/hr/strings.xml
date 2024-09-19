@@ -141,6 +141,14 @@
     <string name="plans_management_info_plan">Trenutno imaš **%1$s** plan!</string>
     <string name="plans_management_action_manage">Upravljaj ili otkaži pretplatu</string>
 
+    <string name="plans_gift_screen_title">Slavimo zajedno 🎉</string>
+    <string name="plans_gift_screen_box_title">Poseban Poklon!</string>
+    <string name="plans_gift_screen_box_message">Kao jedan od prvih korisnika dobivaš specijalan plan, potpuno besplatno!</string>
+    <string name="plans_gift_screen_benefits_title">🎁 Što je uključeno 🎁</string>
+    <string name="plans_gift_screen_benefits_content">⭐  **1 grupa**\n⭐️  **%1$s članova**\n⭐️  **%2$s mjesta**\n⭐️  Neograničene obavijesti\n⭐️  Neograničeno dijeljenje lokacije</string>
+    <string name="plans_gift_screen_benefits_content_multiple">⭐  **%1$s grupe**\n⭐️  **%1$s članova**\n⭐️  **%2$s mjesta**\n⭐️  Neograničene obavijesti\n⭐️  Neograničeno dijeljenje lokacije</string>
+    <string name="plans_gift_screen_separator_text">Trebaš još?</string>
+
     <string name="login_placeholder_user_name">Ime*</string>
     <string name="login_placeholder_email">E-mail*</string>
     <string name="login_placeholder_password">Lozinka*</string>
@@ -377,7 +385,8 @@
     <string name="plan_limit_members_alert_info">članova grupe</string>
     <string name="plan_limit_places_alert_info">mjesta grupe</string>
     <string name="plan_limit_devices_alert_info">uređaja</string>
-    <string name="plan_limit_groups_alert_info">groupa</string>
+    <string name="plan_limit_groups_alert_info">grupa</string>
+    <string name="plan_billing_loading_error_alert_message">Nije moguće učitati nadogradnje, pokušajte ponovno.</string>
 
     <string name="app_version_alert_title">Nova nadogradnja aplikacije</string>
     <string name="app_version_alert_message">Nova verzija aplikacije Paralino je dostupna, molimo vas da je ažurirate za bolje iskustvo!</string>

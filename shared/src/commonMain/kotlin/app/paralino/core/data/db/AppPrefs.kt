@@ -59,6 +59,7 @@ class AppPrefs(
         const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
         const val keyWasUserLoggedIn = "prefs.device.hadUser"
         const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
+        const val keyDidStartedGroupOnboarding = "prefs.group.onboardingStarted"
         const val keyErrorReporting = "prefs.user.errorReporting"
     }
 
@@ -193,6 +194,12 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyErrorReporting, true)
         set(value) {
             provider.userSettings.putBoolean(keyErrorReporting, value)
+        }
+
+    var didStartedGroupOnboarding: Boolean
+        get() = provider.userSettings.getBoolean(keyDidStartedGroupOnboarding, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyDidStartedGroupOnboarding, value)
         }
 
     fun hasGuestAccount(): Boolean {
