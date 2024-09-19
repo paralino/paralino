@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.rawdata
 
+import app.paralino.core.domain.crypto.ContentIdItem
 import app.paralino.core.domain.crypto.RawPresentationModel
 import app.paralino.core.models.CryptoResource
 
@@ -28,7 +29,7 @@ data class RawDataScreenState constructor(
 data class RawDataSectionState(
     val title: String?,
     val subtitle: String?,
-    val contentIdInfo: List<String>,
+    val contentIdInfo: List<ContentIdItem>,
     val rawContent: String,
     val decryptedContent: String,
     val type: RawPresentationDataType,
@@ -63,4 +64,8 @@ sealed class RawPresentationDataType() {
 
 sealed class RawDataScreenEvent() {
     data class Error(val error: Throwable) : RawDataScreenEvent()
+}
+
+sealed interface RawDataScreenUiEvent {
+    data class CopyContent(val item: ContentIdItem) : RawDataScreenUiEvent
 }

@@ -189,8 +189,9 @@ object KoinIOS {
             }
             factory { (rawDataType: RawPresentationDataType) ->
                 RawDataPresentationViewModel(
+                    rawPresentationType = rawDataType,
                     rawCryptoPresentation = get(),
-                    rawPresentationType = rawDataType
+                    deviceApiProvider = get()
                 )
             }
             factory { BlocklistViewModel(get()) }
