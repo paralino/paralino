@@ -248,6 +248,7 @@
     <string name="invite_code_button_copy">Copy</string>
     <string name="invite_code_button_share">Share code</string>
     <string name="invite_code_button_activate">Activate</string>
+    <string name="invite_connect_already_member_message">This user is already a member of your group!</string>
 
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>

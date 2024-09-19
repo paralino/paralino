@@ -248,6 +248,7 @@
     <string name="invite_code_button_copy">Kopiraj</string>
     <string name="invite_code_button_share">Podijeli</string>
     <string name="invite_code_button_activate">Aktiviraj</string>
+    <string name="invite_connect_already_member_message">Ovaj korisnik je već član tvoje grupe!</string>
 
     <string name="group_members_item_remove_button">UKLONI</string>
     <string name="group_members_item_clear_location_button">UKLONI LOKACIJU</string>
