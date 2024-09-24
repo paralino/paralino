@@ -168,43 +168,45 @@ private fun GroupPickerScreen(
             }
         }
 
-        item(key = "new_group") {
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .padding(horizontal = 40.dp)
-                    .padding(top = 20.dp, bottom = 4.dp)
-                    .height(1.dp)
-                    .background(MaterialTheme.colors.surface)
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-            ) {
-                FilledButton(
+        if (state?.onlyShowGroups == false) {
+            item(key = "new_group") {
+                Spacer(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 4.dp),
-                    style = ButtonStyle.BIG,
-                    icon = CoreAppIcons.Add.asPainterResource(),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
-                    elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
-                    onClick = { onClick(GroupPickerAction.NewGroup) },
-                ) {
-                    Text(stringResource(MR.strings.group_picker_button_create))
-                }
-                FilledButton(
+                        .fillMaxWidth(1f)
+                        .padding(horizontal = 40.dp)
+                        .padding(top = 20.dp, bottom = 4.dp)
+                        .height(1.dp)
+                        .background(MaterialTheme.colors.surface)
+                )
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 4.dp),
-                    style = ButtonStyle.BIG,
-                    icon = CoreAppIcons.Key.asPainterResource(),
-                    elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
-                    onClick = { onClick(GroupPickerAction.JoinGroup) }
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
                 ) {
-                    Text(stringResource(MR.strings.group_picker_button_join))
+                    FilledButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 4.dp),
+                        style = ButtonStyle.BIG,
+                        icon = CoreAppIcons.Add.asPainterResource(),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+                        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+                        onClick = { onClick(GroupPickerAction.NewGroup) },
+                    ) {
+                        Text(stringResource(MR.strings.group_picker_button_create))
+                    }
+                    FilledButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 4.dp),
+                        style = ButtonStyle.BIG,
+                        icon = CoreAppIcons.Key.asPainterResource(),
+                        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+                        onClick = { onClick(GroupPickerAction.JoinGroup) }
+                    ) {
+                        Text(stringResource(MR.strings.group_picker_button_join))
+                    }
                 }
             }
         }

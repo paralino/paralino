@@ -176,6 +176,7 @@ class MemberInviteViewModel(
 
     suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
         return BottomSheetPickerType.GroupPickerBottomSheet(
+            onlyShowGroups = true,
             userPlan = userRepo.userPlans.value.highestValidPlanConfig,
             groups = getAllGroups()
         )
