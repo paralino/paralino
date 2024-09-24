@@ -1,5 +1,6 @@
 package app.paralino.android.remote.appwrite
 
+import app.paralino.core.logg
 import app.paralino.core.models.raw.FunctionExecutionRaw
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.api.BaseFunctionsApi
@@ -15,6 +16,7 @@ class FunctionsApi constructor(
 ) : BaseFunctionsApi(deviceApiProvider), IFunctionsApi {
 
     override suspend fun runAsync(function: ServerFunction, data: String?): String {
+        logg.d("server_function", "Call: ${function.functionId}${function.path} - (sync: false, sdk: ${function.useSdk})")
         return remoteModule.execute {
             functions.createExecution(
                 functionId = function.functionId,
@@ -28,6 +30,8 @@ class FunctionsApi constructor(
     }
 
     override suspend fun runAndWait(function: ServerFunction, data: String?): FunctionExecutionRaw {
+
+        logg.d("server_function", "Call: ${function.functionId}${function.path} - (sync: false, sdk: ${function.useSdk})")
 
         if (!function.useSdk) {
             return executeFunction(function, data)

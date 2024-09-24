@@ -12,6 +12,7 @@ import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.presentation.login.SignUpStepException
+import app.paralino.core.provider.isSocketTimeout
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -98,18 +99,27 @@ class CreateAccountUseCase constructor(
 
             emit(SignUpStep.GENERATING_KEYS)
 
+            val keys = try {
+                createNewKey(userId = user.id, authKey = authKey)
+            } catch (e: Exception) {
+                throw userKeySetupFailed(user, session, authKey, e)
+            }
+
             try {
-                val keys = createNewKey(userId = user.id, authKey = authKey)
                 val remoteKey = userKeyRepository.uploadNewUserKey(keys.encryptedKeyData)
                 userKeyRepository.saveUserKeyLocally(remoteKey, keys.userPersonalKey)
             } catch (e: Exception) {
-                userKeyRepository.clearAll()
-                // key generation failed but user is created
-                // we are saving user as is, so account recovery can take place later on
-                appPrefs.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
-                userRepo.initLocallyAfterSignUp(user, session)
-
-                throw SignUpStepException(SignUpStep.GENERATING_KEYS, e)
+                if (e.isSocketTimeout()) {
+                    // try once more if socket times out
+                    try {
+                        val remoteKey = userKeyRepository.uploadNewUserKey(keys.encryptedKeyData)
+                        userKeyRepository.saveUserKeyLocally(remoteKey, keys.userPersonalKey)
+                    } catch (e: Exception) {
+                        throw userKeySetupFailed(user, session, authKey, e)
+                    }
+                } else {
+                    throw userKeySetupFailed(user, session, authKey, e)
+                }
             }
 
             // user and user keys are ready
@@ -125,6 +135,21 @@ class CreateAccountUseCase constructor(
                 throw it
             }
             .flowOn(Dispatchers.IO)
+    }
+
+    private suspend fun userKeySetupFailed(
+        user: UserMeRaw,
+        session: UserSession,
+        authKey: UserAuthDerivedKey,
+        e: Throwable
+    ): SignUpStepException {
+        userKeyRepository.clearAll()
+        // key generation failed but user is created
+        // we are saving user as is, so account recovery can take place later on
+        appPrefs.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
+        userRepo.initLocallyAfterSignUp(user, session)
+
+        return SignUpStepException(SignUpStep.GENERATING_KEYS, e)
     }
 
     private suspend fun createNewKey(
