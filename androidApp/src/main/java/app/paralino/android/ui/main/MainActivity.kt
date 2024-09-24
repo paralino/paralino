@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.ui.navigation.Deeplink
 import app.paralino.android.ui.navigation.MainNavHost
 import app.paralino.android.ui.navigation.loggedOutGraph
 import app.paralino.android.ui.shared.errorString
@@ -37,8 +36,10 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -65,17 +66,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleExtraDeeplink(deeplinkUri: Uri?) {
-        handleExtraDeeplink(Deeplink.parse(deeplinkUri?.toString()))
-    }
-
-    private fun handleExtraDeeplink(deeplink: Deeplink?) {
-        when (deeplink) {
-            is Deeplink.EmailVerify -> {
-                vm.verifyEmail(deeplink.userId, deeplink.secret)
-            }
-
-            else -> {}
-        }
+        vm.setDeeplink(DeeplinkType.parse(deeplinkUri?.toString()))
     }
 }
 
@@ -158,7 +149,14 @@ fun RootApp(
                     }
 
                     is AppAccountState.USER_READY -> {
-                        MainAppScreen(appState = appState, onAppClose = onAppClose)
+                        MainAppScreen(
+                            appState = appState,
+                            pendingDeeplink = uiState.pendingDeeplinkType,
+                            onAppClose = onAppClose,
+                            onDeeplinkComplete = {
+                                vm.setDeeplink(null)
+                            }
+                        )
                     }
                 }
 
@@ -230,8 +228,27 @@ fun AppStartScreen(
 @Composable
 fun MainAppScreen(
     appState: MainAppState,
-    onAppClose: () -> Unit
+    pendingDeeplink: DeeplinkType?,
+    onAppClose: () -> Unit,
+    onDeeplinkComplete: () -> Unit
 ) {
+    LaunchedEffect(pendingDeeplink) {
+        delay(500)
+        when (pendingDeeplink) {
+            is DeeplinkType.ParalinoID -> {
+                appState.navController.navigate(
+                    AppScreen.MainHome.GroupMemberAdd.route(
+                        groupId = null,
+                        code = pendingDeeplink.paralinoID,
+                        isOnboarding = false
+                    )
+                )
+                onDeeplinkComplete()
+            }
+
+            else -> {}
+        }
+    }
     RootAppScreen(appState) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),

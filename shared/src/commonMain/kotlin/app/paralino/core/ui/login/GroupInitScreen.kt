@@ -42,6 +42,7 @@ import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.invite.manage.PersonalCodeItem
+import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
@@ -159,7 +160,9 @@ fun GroupInitScreenCore(
                                 vm.showSnackbar(MR.strings.toast_copy_invite_code.localizedString())
                             },
                             onShare = {
-                                onSharePersonalCode(state.personalCode!!.code)
+                                onSharePersonalCode(
+                                    DeeplinkType.ParalinoID.buildUrl(state.personalCode!!.code)
+                                )
                             },
                             onDelete = {}
                         )
