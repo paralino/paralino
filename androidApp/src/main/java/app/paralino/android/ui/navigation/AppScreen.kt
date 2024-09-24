@@ -2,6 +2,7 @@ package app.paralino.android.ui.navigation
 
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.BillingScreenSourceType
 
 sealed class AppScreen {
@@ -40,12 +41,12 @@ sealed class AppScreen {
         }
 
         object PasswordReset : AppScreen() {
-            val argumentUserId: String = Deeplink.PasswordReset.argumentUserId
-            val argumentSecret: String = Deeplink.PasswordReset.argumentSecret
-            val argumentExpire: String = Deeplink.PasswordReset.argumentExpire
-            override val routeSignature: String = Deeplink.PasswordReset.routeSignature()
+            val argumentUserId: String = DeeplinkType.PasswordReset.argumentUserId
+            val argumentSecret: String = DeeplinkType.PasswordReset.argumentSecret
+            val argumentExpire: String = DeeplinkType.PasswordReset.argumentExpire
+            override val routeSignature: String = DeeplinkType.PasswordReset.routeSignature()
 
-            fun route(deeplink: Deeplink.PasswordReset): String {
+            fun route(deeplink: DeeplinkType.PasswordReset): String {
                 return deeplink.route()
             }
         }

@@ -40,6 +40,7 @@ import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.BillingScreenSourceType
 
 
@@ -242,7 +243,7 @@ fun NavGraphBuilder.loggedOutGraph(
             AppScreen.LoggedOut.PasswordReset.routeSignature,
             deepLinks = listOf(
                 navDeepLink {
-                    this.uriPattern = Deeplink.PasswordReset.uriPattern()
+                    this.uriPattern = DeeplinkType.PasswordReset.uriPattern()
                 }
             )
         ) {

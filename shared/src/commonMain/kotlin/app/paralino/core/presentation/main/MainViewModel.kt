@@ -8,6 +8,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.main.DeeplinkType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
@@ -77,6 +78,21 @@ class MainViewModel constructor(
                 } catch (e: Exception) {
                     _eventChannel.send(MainScreenEvent.Error(e))
                 }
+            }
+        }
+    }
+
+    fun setDeeplink(deeplinkType: DeeplinkType?) {
+        when (deeplinkType) {
+            is DeeplinkType.EmailVerify -> {
+                verifyEmail(userId = deeplinkType.userId, secret = deeplinkType.secret)
+            }
+            is DeeplinkType.ParalinoID -> {
+                _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
+            }
+            is DeeplinkType.PasswordReset -> {}
+            null -> {
+                _uiState.update { it.copy(pendingDeeplinkType = null) }
             }
         }
     }

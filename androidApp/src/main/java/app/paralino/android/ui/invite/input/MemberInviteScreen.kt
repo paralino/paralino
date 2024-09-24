@@ -97,6 +97,7 @@ fun MemberInviteScreen(
         onClick = {
             when (it) {
                 is GroupPickerAction.GroupPicked -> {
+                    appState.uiScope.launch { pickerState.hide() }
                     vm.selectGroup(it.group)
                 }
 

@@ -595,6 +595,7 @@ class MapHomeViewModel constructor(
 
     fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
         return BottomSheetPickerType.GroupPickerBottomSheet(
+            onlyShowGroups = false,
             userPlan = userRepository.userPlans.value.highestValidPlanConfig,
             groups = getAllGroupsItemState()
         )

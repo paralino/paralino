@@ -10,6 +10,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -176,6 +177,7 @@ class MemberInviteViewModel(
 
     suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
         return BottomSheetPickerType.GroupPickerBottomSheet(
+            onlyShowGroups = true,
             userPlan = userRepo.userPlans.value.highestValidPlanConfig,
             groups = getAllGroups()
         )
@@ -200,7 +202,10 @@ class MemberInviteViewModel(
     fun codeChanged(code: String) {
         _uiState.update {
             MemberInviteScreenState.Empty(
-                code = code.trim().uppercase(),
+                code = code
+                    .trim()
+                    .let { DeeplinkType.ParalinoID.get(it) }
+                    .uppercase(),
                 hasInputError = if (it.hasInputError) code.isBlank() else false,
                 actionLoading = it.actionLoading
             )
