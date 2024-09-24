@@ -56,6 +56,9 @@ class PlacesViewModel(
             }
 
             val placesLimit = group.placesLimit(remoteConfig.configState.value)
+            val canShowPlanBanner = group.isCurrentUserOwner && !group.isGroupPremium(
+                config = remoteConfig.configState.value
+            )
             val state = PlacesListScreenState(
                 groupId = groupId,
                 groupImage = group.image,
@@ -69,9 +72,12 @@ class PlacesViewModel(
                     // only show places limit to other members if close to limit
                     placesState.size >= placesLimit.minus(2)
                 },
-                shouldShowPlanBanner = !isOnboarding && group.isCurrentUserOwner && !group.isGroupPremium(
-                    config = remoteConfig.configState.value
-                ),
+                shouldShowPlanBanner = if (isOnboarding) {
+                    // in onboarding only show upgrade banner if places limit is reached
+                    canShowPlanBanner && placesState.size >= placesLimit
+                } else {
+                    canShowPlanBanner
+                },
                 errors = errors,
                 alertDialog = _uiState.value.data?.alertDialog
             )

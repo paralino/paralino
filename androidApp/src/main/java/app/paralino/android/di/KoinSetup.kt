@@ -59,6 +59,7 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.settings.subscriptions.PaywallViewModel
+import app.paralino.core.presentation.settings.subscriptions.PlanInfoViewModel
 import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.IBillingProvider
@@ -138,7 +139,7 @@ object KoinSetup {
             )
         }
 
-        viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
+        viewModel { GroupInitViewModel(get(), get(), get(), get(), get(), appPrefs) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs) }
@@ -170,10 +171,11 @@ object KoinSetup {
         viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
         viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get()) }
-        viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(get(), rawDataType) }
+        viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get()) }
         viewModel { PaywallViewModel(get(), get(), get()) }
+        viewModel { PlanInfoViewModel(get(), appPrefs) }
     }
 }

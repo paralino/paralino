@@ -10,11 +10,13 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -151,10 +153,16 @@ class MemberInviteViewModel(
                     }
 
                     is Payload.Error -> {
-                        _uiState.update {
-                            state.copy(actionLoading = false)
+                        if (result.exception.asRemoteException() is ConflictException) {
+                            showSnackbar(MR.strings.invite_connect_already_member_message.localizedString())
+                            delay(2000)
+                            _eventChannel.send(MemberInviteScreenEvent.MemberAdded)
+                        } else {
+                            _uiState.update {
+                                state.copy(actionLoading = false)
+                            }
+                            showSnackbar(result.exception.errorString())
                         }
-                        showSnackbar(result.exception.errorString())
                     }
 
                     is Payload.Success -> {

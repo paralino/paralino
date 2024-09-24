@@ -1,6 +1,7 @@
 package app.paralino.core.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,9 +32,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.domain.crypto.ContentIdItem
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawDataScreenState
+import app.paralino.core.presentation.rawdata.RawDataScreenUiEvent
 import app.paralino.core.presentation.rawdata.RawDataSectionState
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
@@ -73,7 +76,8 @@ fun RawDataScreenCore(
 
         is Payload.Success -> {
             RawDataScreen(
-                state = finalState.data
+                state = finalState.data,
+                onCopy = { vm.onEvent(RawDataScreenUiEvent.CopyContent(it)) }
             )
         }
     }
@@ -81,7 +85,8 @@ fun RawDataScreenCore(
 
 @Composable
 fun RawDataScreen(
-    state: RawDataScreenState
+    state: RawDataScreenState,
+    onCopy: (ContentIdItem) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -115,14 +120,15 @@ fun RawDataScreen(
         }
         this.items(state.sections) {
             Spacer(modifier = Modifier.size(40.dp))
-            RawDataScreenSection(it)
+            RawDataScreenSection(section = it, onCopy = onCopy)
         }
     }
 }
 
 @Composable
 private fun RawDataScreenSection(
-    section: RawDataSectionState
+    section: RawDataSectionState,
+    onCopy: (ContentIdItem) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -148,12 +154,29 @@ private fun RawDataScreenSection(
         }
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-            section.contentIdInfo.forEach {
-                Text(
-                    modifier = Modifier,
-                    text = it.annotatedBold(),
-                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
-                )
+            section.contentIdInfo.forEach { item ->
+                Row(
+                    modifier = Modifier.padding(vertical = if(item.separateWithPadding) 4.dp else 0.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    if (item.canCopy) {
+                        Icon(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clickable { onCopy(item) }
+                                .padding(vertical = 4.dp)
+                                .padding(end = 8.dp),
+                            painter = CoreAppIcons.ContentCopy.asPainterResource(),
+                            contentDescription = null
+                        )
+                    }
+                    Text(
+                        modifier = Modifier,
+                        text = item.text.annotatedBold(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
+                    )
+                }
             }
         }
 

@@ -2,6 +2,7 @@ package app.paralino.android.ui.navigation
 
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.ui.settings.BillingScreenSourceType
 
 sealed class AppScreen {
 
@@ -175,6 +176,20 @@ sealed class AppScreen {
 
         object Subscriptions : Common.Subscriptions("home")
         object BillingPaywall : Common.BillingPaywall("home")
+        object FreePlanNoticeScreen : AppScreen() {
+            override val routeSignature: String = "free-plan-notice?$argumentGroupId={$argumentGroupId}"
+            fun route(groupId: String? = null): String {
+                val args = arrayOf(
+                    groupId?.let { "$argumentGroupId=$groupId" }
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+
+                if (args.isEmpty())
+                    return "free-plan-notice"
+                return "free-plan-notice?$args"
+            }
+        }
     }
 
     object Settings : AppScreen() {
@@ -193,7 +208,6 @@ sealed class AppScreen {
         }
 
         object Subscriptions : Common.Subscriptions("settings")
-
         object BillingPaywall : Common.BillingPaywall("settings")
 
         object ProfileDetails : AppScreen() {
@@ -275,10 +289,12 @@ sealed class AppScreen {
         }
 
         open class BillingPaywall(private val parent: String) : AppScreen() {
-            override val routeSignature: String = "$parent-subscriptions-paywall?$argumentGroupId={$argumentGroupId}"
-            fun route(groupId: String? = null): String {
+            val argumentSourceType: String = "type"
+            override val routeSignature: String = "$parent-subscriptions-paywall?$argumentGroupId={$argumentGroupId}&$argumentSourceType={$argumentSourceType}"
+            fun route(groupId: String? = null, type: BillingScreenSourceType = BillingScreenSourceType.NORMAL): String {
                 val args = arrayOf(
-                    groupId?.let { "$argumentGroupId=$groupId" }
+                    groupId?.let { "$argumentGroupId=$groupId" },
+                    "$argumentSourceType=${type.key}"
                 )
                     .filterNotNull()
                     .joinToString(separator = "&")

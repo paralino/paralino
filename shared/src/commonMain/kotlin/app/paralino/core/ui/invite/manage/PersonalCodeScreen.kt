@@ -68,7 +68,7 @@ fun PersonalCodeScreenCore(
     LazyColumn(
         contentPadding = PaddingValues(vertical = 20.dp)
     ) {
-        this.items(uiState.errors, key = { it }) {
+        this.items(uiState.errors, key = { it.toString() }) {
             ConditionErrorItem(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 data = it
@@ -88,6 +88,12 @@ fun PersonalCodeScreenCore(
                         /* do nothing */
                     }
                 }
+            }
+        }
+
+        if (uiState.errors.isNotEmpty()) {
+            this.item (key = "spacing") {
+                Spacer(modifier = Modifier.size(16.dp))
             }
         }
 

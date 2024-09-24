@@ -12,7 +12,7 @@ data class PaywallScreenState(
 }
 
 sealed class PaywallScreenEvent() {
-    data object OnNavigateBack : PaywallScreenEvent()
+    data class OnNavigateBack(val isSuccess: Boolean) : PaywallScreenEvent()
 }
 
 sealed class PaywallScreenUiEvent() {

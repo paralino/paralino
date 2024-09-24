@@ -42,7 +42,7 @@ class RawCryptoPresentation constructor(
                         }
                         add("Group encryption scheme: **${it.first.schemeVersion}**")
                         add("Supported encryption scheme: **${AppPrefs.supportedEncryptionScheme}**")
-                    },
+                    }.map { ContentIdItem(it) },
                     rawData = it.first.data,
                     decryptedData = it.second.data.mapSuccess {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
@@ -74,7 +74,7 @@ class RawCryptoPresentation constructor(
                             // only allow place owner to see place id
                             add("PlaceID: **$placeId**")
                         }
-                    },
+                    }.map { ContentIdItem(it) },
                     rawData = it.first.data,
                     decryptedData = it.second.data.mapSuccess {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
@@ -153,7 +153,7 @@ class RawCryptoPresentation constructor(
                                 if (rawPair.first.member.ownerUserId == appPrefs.userId) {
                                     add("DeviceID: **${location.deviceId}**")
                                 }
-                            },
+                            }.map { ContentIdItem(it) },
                             rawData = locationDataPrint(
                                 deviceData = location.deviceData,
                                 locationData = location.locationData,
@@ -178,7 +178,7 @@ class RawCryptoPresentation constructor(
                                 }
                                 add("Devices: **${rawPair.first.locations.size}**")
                                 add("Verification: **${rawPair.second.member.verificationResult}**")
-                            },
+                            }.map { ContentIdItem(it) },
                             rawData = buildString {
                                 append("\"data\": ")
                                 append(rawPair.first.member.data)
@@ -228,11 +228,11 @@ class RawCryptoPresentation constructor(
                     subtitle = null,
                     contentIdInfo = buildList {
                         if (it?.second?.isGuestUser == false) {
-                            add("Email:\n**${it.second.email}**\n")
+                            add(ContentIdItem(text = "Email:\n**${it.second.email}**", separateWithPadding = true))
                         }
-                        add("UserID:\n**${appPrefs.userId}**\n")
-                        add("Billing UserID:\n**${userConfigRepo.configState.value.billingCustomerId}**\n")
-                        add("DeviceID:\n**${appPrefs.deviceId}**")
+                        add(ContentIdItem(text = "UserID:\n**${appPrefs.userId}**", separateWithPadding = true, canCopy = true))
+                        add(ContentIdItem(text = "Billing UserID:\n**${userConfigRepo.configState.value.billingCustomerId}**", separateWithPadding = true, canCopy = true))
+                        add(ContentIdItem(text = "DeviceID:\n**${appPrefs.deviceId}**", separateWithPadding = true, canCopy = true))
                     },
                     rawData = it?.first?.data?.let {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
@@ -255,7 +255,13 @@ data class RawPresentationModelSection constructor(
     val title: String?,
     val subtitle: String?,
     val rawData: String,
-    val contentIdInfo: List<String>,
+    val contentIdInfo: List<ContentIdItem>,
     val decryptedData: CryptoResource<String>,
     val type: RawPresentationDataType
+)
+
+data class ContentIdItem(
+    val text: String,
+    val separateWithPadding: Boolean = false,
+    val canCopy: Boolean = false
 )

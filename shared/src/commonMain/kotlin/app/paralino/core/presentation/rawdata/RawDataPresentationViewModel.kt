@@ -5,6 +5,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -14,8 +15,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 
 class RawDataPresentationViewModel constructor(
-    private val rawCryptoPresentation: RawCryptoPresentation,
     private val rawPresentationType: RawPresentationDataType,
+    private val rawCryptoPresentation: RawCryptoPresentation,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<RawDataScreenState>>(Payload.Loading)
@@ -54,4 +56,11 @@ class RawDataPresentationViewModel constructor(
             .launchIn(coroutineScope)
     }
 
+    fun onEvent(event: RawDataScreenUiEvent) {
+        when (event) {
+            is RawDataScreenUiEvent.CopyContent -> {
+                deviceApiProvider.copyToClipboard(event.item.text.trim())
+            }
+        }
+    }
 }

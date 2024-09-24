@@ -8,6 +8,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,17 +36,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.RadialGradientShader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.ui.components.BlurredCircle
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.components.drawBlurredCircles
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
@@ -56,6 +58,7 @@ import kotlin.random.Random
 @Composable
 fun PremiumPlanBannerSmall(
     modifier: Modifier = Modifier,
+    elevation: Dp = 16.dp,
     description: String = stringResource(MR.strings.plans_banner_settings_description),
     onClick: () -> Unit
 ) {
@@ -65,7 +68,7 @@ fun PremiumPlanBannerSmall(
             .height(90.dp)
             .clickable(onClick = onClick)
             .shadow(
-                elevation = 16.dp,
+                elevation = elevation,
                 shape = RoundedCornerShape(12.dp),
                 ambientColor = if (isSystemInDarkTheme()) AppColors.accentLight else AppColors.accentDark,
                 spotColor = if (isSystemInDarkTheme()) AppColors.accentLight else AppColors.accentDark,
@@ -162,45 +165,44 @@ fun PremiumPlanBanner(
             drawBlurredCircles(animatedCircles)
         }
 
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.Center
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = stringResource(MR.strings.plans_banner_settings_title),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(MR.strings.plans_banner_settings_description),
-                    fontSize = 14.sp,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(percent = 50))
-                        .clickable(onClick = onClick)
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(percent = 50)
-                        )
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    text = stringResource(MR.strings.plans_banner_settings_action),
-                    color = MaterialTheme.colors.primary,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            AnimatedPlanStar()
+            Text(
+                text = stringResource(MR.strings.plans_banner_settings_title),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                modifier = Modifier.padding(end = 60.dp),
+                text = stringResource(MR.strings.plans_banner_settings_description),
+                style = MaterialTheme.typography.body2,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(percent = 50))
+                    .clickable(onClick = onClick)
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(percent = 50)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                text = stringResource(MR.strings.plans_banner_settings_action),
+                color = MaterialTheme.colors.primary,
+                fontWeight = FontWeight.Bold
+            )
         }
+
+        AnimatedPlanStar(
+            modifier = Modifier.align(Alignment.CenterEnd)
+        )
     }
 }
 
@@ -293,7 +295,7 @@ private val starAnimationRepeatCount = 4
 private val starAnimationRoundDuration = 3000
 
 @Composable
-fun AnimatedPlanStar() {
+private fun AnimatedPlanStar(modifier: Modifier = Modifier) {
     val starRotation = remember { Animatable(0f) }
     val starScale = remember { Animatable(1f) }
 
@@ -324,7 +326,7 @@ fun AnimatedPlanStar() {
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(80.dp)
             .offset(x = 30.dp)
     ) {
@@ -338,13 +340,6 @@ fun AnimatedPlanStar() {
         )
     }
 }
-
-private data class BlurredCircle(
-    val center: Offset,
-    val radius: Float,
-    val color: Color,
-    val blurRadius: Float
-)
 
 private fun generateBlurredCircles(): List<BlurredCircle> {
     return listOf(
@@ -366,44 +361,5 @@ private fun generateBlurredCircles(): List<BlurredCircle> {
             color = AppColors.lightThemePrimary,
             blurRadius = 0.12f
         )
-    )
-}
-
-private fun DrawScope.drawBlurredCircles(circles: List<BlurredCircle>) {
-    val maxSize = max(size.width, size.height)
-    circles.forEach { circle ->
-        drawBlurredCircle(
-            center = Offset(circle.center.x * size.width, circle.center.y * size.height),
-            radius = circle.radius * maxSize,
-            color = circle.color,
-            blurRadius = circle.blurRadius * maxSize
-        )
-    }
-}
-
-private fun DrawScope.drawBlurredCircle(
-    center: Offset,
-    radius: Float,
-    color: Color,
-    blurRadius: Float
-) {
-    val paint = Paint()
-    val frameworkPaint = paint.asFrameworkPaint()
-    frameworkPaint.color = color.toArgb()
-
-    val outerRadius = radius + blurRadius
-    val gradient = RadialGradientShader(
-        center = center,
-        radius = outerRadius,
-        colors = listOf(color, color.copy(alpha = 0f)),
-        colorStops = listOf(0f, 1f)
-    )
-
-    paint.shader = gradient
-    drawCircle(
-        center = center,
-        radius = outerRadius,
-        brush = ShaderBrush(gradient),
-        blendMode = BlendMode.Plus
     )
 }

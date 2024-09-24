@@ -21,6 +21,7 @@
     <string name="button_showAll">Show all</string>
     <string name="button_open">Open</string>
     <string name="button_cool">Cool</string>
+    <string name="button_continue">Continue</string>
 
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
@@ -37,7 +38,7 @@
     <string name="error_location_permission_missing_sheet_message">Location permission is **required** in order to successfully track and share your location with others.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Please grant **precise location permission** in order to successfully track and share your location with others.</string>
     <string name="error_location_background_permission_missing_sheet_message">Please allow **all the time** location access in order to **reliably and always** track and share your location with others.</string>
-    <string name="error_location_background_permission_missing_sheet_message_android11">Please grant **%s** location permission in order to **reliably and always** track and share your location with others.</string>
+    <string name="error_location_background_permission_missing_sheet_message_android11">Please change location permission settings to\n**%s**\nin order to **reliably and always** track and share your location with others.</string>
     <string name="error_location_service_missing_sheet_message">Please enable **device location** in order to locate your device.</string>
     <string name="error_notification_permission_missing_sheet_message">Please enable **notifications** in order to receive **important** alerts for your places.</string>
     <string name="error_location_background_permission_missing_notification_message">Location sharing can\'t start because you are missing all time location permission!\nPlease open the app to restart location sharing!</string>
@@ -139,6 +140,15 @@
     <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\nUse device you originally used for purchase.</string>
     <string name="plans_management_info_plan">You currently have **%1$s** plan!</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>
+    <string name="plans_paywall_onboarding_skip_button">Use free version</string>
+
+    <string name="plans_gift_screen_title">Lets celebrate 🎉</string>
+    <string name="plans_gift_screen_box_title">Special Launch Gift!</string>
+    <string name="plans_gift_screen_box_message">As an early adopter you get specially crafted plan, yours to keep!</string>
+    <string name="plans_gift_screen_benefits_title">🎁 What you get 🎁</string>
+    <string name="plans_gift_screen_benefits_content">⭐  **1 group**\n⭐️  **%1$s members**\n⭐️  **%2$s places**\n⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
+    <string name="plans_gift_screen_benefits_content_multiple">⭐  **%1$s groups**\n⭐️  **%2$s members**\n⭐️  **%3$s places**⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
+    <string name="plans_gift_screen_separator_text">Need more?</string>
 
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>
@@ -239,6 +249,7 @@
     <string name="invite_code_button_copy">Copy</string>
     <string name="invite_code_button_share">Share code</string>
     <string name="invite_code_button_activate">Activate</string>
+    <string name="invite_connect_already_member_message">This user is already a member of your group!</string>
 
     <string name="group_members_item_remove_button">REMOVE</string>
     <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
