@@ -49,7 +49,7 @@ import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.settings.PremiumPlanBannerSmall
+import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource

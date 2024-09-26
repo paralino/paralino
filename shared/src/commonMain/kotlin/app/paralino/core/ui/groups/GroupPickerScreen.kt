@@ -39,7 +39,7 @@ import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.ToolbarButtons
-import app.paralino.core.ui.settings.PremiumPlanBannerSmall
+import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.ui.theme.ButtonStyle
 import dev.icerock.moko.resources.compose.stringResource
 

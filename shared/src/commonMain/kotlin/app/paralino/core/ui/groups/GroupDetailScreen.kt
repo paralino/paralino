@@ -65,7 +65,7 @@ import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
-import app.paralino.core.ui.settings.PremiumPlanBannerSmall
+import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString

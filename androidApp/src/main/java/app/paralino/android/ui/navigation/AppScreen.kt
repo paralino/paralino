@@ -3,7 +3,7 @@ package app.paralino.android.ui.navigation
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.main.DeeplinkType
-import app.paralino.core.ui.settings.BillingScreenSourceType
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 
 sealed class AppScreen {
 

@@ -1,4 +1,4 @@
-package app.paralino.core.ui.settings
+package app.paralino.core.ui.settings.billing
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement

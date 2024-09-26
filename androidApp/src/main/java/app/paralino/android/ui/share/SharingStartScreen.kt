@@ -22,7 +22,7 @@ import app.paralino.core.ui.components.dialogs.ToolbarButtons
 import app.paralino.core.ui.groups.GroupBottomSheetPicker
 import app.paralino.core.ui.groups.GroupPickerAction
 import app.paralino.core.ui.groups.rememberGroupBottomSheetPickerState
-import app.paralino.core.ui.settings.BillingScreenSourceType
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch

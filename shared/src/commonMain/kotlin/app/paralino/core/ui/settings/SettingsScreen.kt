@@ -47,6 +47,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.settings.billing.PremiumPlanBanner
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold

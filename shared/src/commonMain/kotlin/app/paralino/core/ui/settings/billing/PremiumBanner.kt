@@ -1,4 +1,4 @@
-package app.paralino.core.ui.settings
+package app.paralino.core.ui.settings.billing
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -33,12 +33,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RadialGradientShader
-import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -51,7 +47,6 @@ import app.paralino.core.ui.components.drawBlurredCircles
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
-import kotlin.math.max
 import kotlin.random.Random
 
 

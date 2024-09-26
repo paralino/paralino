@@ -5,7 +5,7 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.settings.subscriptions.PlanInfoViewModel
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
-import app.paralino.core.ui.settings.BillingScreenSourceType
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
