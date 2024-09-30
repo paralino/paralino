@@ -61,8 +61,8 @@ class PlaceActivityNotificationHandler(
             valueFormatter.formatSimpleDateTime(
                 timeUTC = triggerTime.toLocalDateTime(TimeZone.UTC),
                 optionalYear = true,
-                optionalMonth = true,
-                showTodayInfo = true
+                optionalMonth = false,
+                showTodayInfo = false
             )
         } else {
             null

@@ -116,8 +116,8 @@ class GroupActivityNotificationsHandler(
             valueFormatter.formatSimpleDateTime(
                 timeUTC = push.createdAt.toLocalDateTime(TimeZone.UTC),
                 optionalYear = true,
-                optionalMonth = true,
-                showTodayInfo = true
+                optionalMonth = false,
+                showTodayInfo = false
             )
         } else {
             null
