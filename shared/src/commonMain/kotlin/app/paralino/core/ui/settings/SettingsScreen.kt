@@ -227,13 +227,15 @@ fun SettingSectionInfo(
 //        }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_privacy),
-            icon = CoreAppIcons.PrivacyTip.asPainterResource()
+            icon = CoreAppIcons.PrivacyTip.asPainterResource(),
+            type = SettingsActionItemType.Link
         ) {
             uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl)
         }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_terms),
-            icon = CoreAppIcons.PrivacyTip.asPainterResource()
+            icon = CoreAppIcons.PrivacyTip.asPainterResource(),
+            type = SettingsActionItemType.Link
         ) {
             uriHandler.openUri(BackendResourceIDs.termsOfUseUrl)
         }
@@ -315,6 +317,14 @@ fun SettingsActionItem(
                         contentDescription = null
                     )
                 }
+                SettingsActionItemType.Link -> {
+                    Icon(
+                        modifier = Modifier.width(24.dp),
+                        painter = CoreAppIcons.ArrowOpenNew.asPainterResource(),
+                        tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                        contentDescription = null
+                    )
+                }
 
                 is SettingsActionItemType.Switch -> {
                     Box(
@@ -366,5 +376,6 @@ fun SettingsActionItem(
 sealed interface SettingsActionItemType {
     object Navigation : SettingsActionItemType
     object Action : SettingsActionItemType
+    object Link : SettingsActionItemType
     data class Switch(val checked: Boolean) : SettingsActionItemType
 }
