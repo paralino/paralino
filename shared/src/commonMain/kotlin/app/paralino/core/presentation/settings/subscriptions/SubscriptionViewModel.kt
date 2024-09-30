@@ -47,6 +47,14 @@ class SubscriptionViewModel(
 
         coroutineScope.launch {
             try {
+                userRepo.refreshUserMaybe()
+            } catch (e: Exception) {
+                logg.d(message = "Error refreshing user and plans", t = e)
+            }
+        }
+
+        coroutineScope.launch {
+            try {
                 userConfigRepo.ensureAndGetBillingUserId()
                 _uiState.update { it.copy(isLoading = false) }
             } catch (e: Exception) {
