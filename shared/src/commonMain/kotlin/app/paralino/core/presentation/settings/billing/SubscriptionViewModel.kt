@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.settings.subscriptions
+package app.paralino.core.presentation.settings.billing
 
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
@@ -6,7 +6,6 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.user.UserPlan
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository

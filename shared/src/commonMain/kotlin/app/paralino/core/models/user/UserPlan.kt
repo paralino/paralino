@@ -11,7 +11,7 @@ data class UserPlans(
     val plans = rawPlans.map {
         UserPlan(
             plan = it,
-            config = config.planConfigForPlanType(it.planType)
+            config = config.planConfigForPlanTypeOrDefault(it.planType)
         )
     }
 

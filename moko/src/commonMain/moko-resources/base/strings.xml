@@ -137,10 +137,32 @@
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
     <string name="plans_management_screen_title">Subscription</string>
     <string name="plans_management_info_not_subscribed">You are currently not subscribed to premium plan!</string>
-    <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\nUse device you originally used for purchase.</string>
-    <string name="plans_management_info_plan">You currently have **%1$s** plan!</string>
+    <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\n\nUse device you originally used for purchase.</string>
+    <string name="plans_management_info_plan">You currently have a **%1$s** plan!</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>
-    <string name="plans_paywall_onboarding_skip_button">Use free version</string>
+    <string name="plans_management_action_change">Change plan</string>
+
+    <string name="plan_period_weekly_name">Weekly</string>
+    <string name="plan_period_monthly_name">Monthly</string>
+    <string name="plan_period_annually_name">Annually</string>
+    <string name="plan_period_onetime_name">Lifetime</string>
+
+    <string name="paywall_onboarding_skip_button">Use free version</string>
+    <string name="paywall_screen_title">Select the plan that is right for you</string>
+    <string name="paywall_current_plan_label">Current plan</string>
+    <string name="paywall_all_members_features_notice">All members get group benefits</string>
+    <string name="paywall_free_trial_notice">First **%s days** are free</string>
+    <string name="paywall_start_button_free">Start **free trial**</string>
+    <string name="paywall_start_button_continue">Continue with **%s**</string>
+    <string name="paywall_cancellation_notice">You can cancel anytime</string>
+    <string name="paywall_button_restore">Restore</string>
+    <string name="paywall_privacy_policy_label">Privacy</string>
+    <string name="paywall_terms_of_use_label">Terms</string>
+    <string name="paywall_faq_section_title">Frequently Asked Questions</string>
+    <string name="paywall_select_plan_label">Select your plan</string>
+    <string name="paywall_free_plan_name">Free</string>
+    <string name="paywall_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
+    <string name="paywall_purchase_error_alert_message">Unable to perform billing request, please try again.</string>
 
     <string name="plans_gift_screen_title">Lets celebrate 🎉</string>
     <string name="plans_gift_screen_box_title">Special Launch Gift!</string>
@@ -149,6 +171,8 @@
     <string name="plans_gift_screen_benefits_content">⭐  **1 group**\n⭐️  **%1$s members**\n⭐️  **%2$s places**\n⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
     <string name="plans_gift_screen_benefits_content_multiple">⭐  **%1$s groups**\n⭐️  **%2$s members**\n⭐️  **%3$s places**⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
     <string name="plans_gift_screen_separator_text">Need more?</string>
+    <string name="plans_benefit_place_alerts">Unlimited place alerts</string>
+    <string name="plans_benefit_sharing">Unlimited location sharing</string>
 
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>
@@ -388,7 +412,6 @@
     <string name="plan_limit_places_alert_info">group places</string>
     <string name="plan_limit_devices_alert_info">devices</string>
     <string name="plan_limit_groups_alert_info">groups</string>
-    <string name="plan_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
 
     <string name="app_version_alert_title">New app update</string>
     <string name="app_version_alert_message">New version of Paralino is available, please update for a better experience!</string>

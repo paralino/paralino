@@ -22,9 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.settings.subscriptions.SubscriptionScreenEvent
-import app.paralino.core.presentation.settings.subscriptions.SubscriptionScreenUiEvent
-import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
+import app.paralino.core.presentation.settings.billing.SubscriptionScreenEvent
+import app.paralino.core.presentation.settings.billing.SubscriptionScreenUiEvent
+import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -126,19 +126,18 @@ fun SubscriptionScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.plans_management_action_manage),
                         icon = CoreAppIcons.Edit.asPainterResource(),
-                        type = SettingsActionItemType.Navigation
+                        type = SettingsActionItemType.Link
                     ) {
                         openBillingStore()
                     }
 
-                    // currently we can not upgrade and users could end up with multiple subscriptions
-//                    SettingsActionItem(
-//                        name = "Change plan",
-//                        icon = CoreAppIcons.Edit.asPainterResource(),
-//                        type = SettingsActionItemType.Navigation
-//                    ) {
-//                        openBillingManagementScreen()
-//                    }
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.plans_management_action_change),
+                        icon = CoreAppIcons.Edit.asPainterResource(),
+                        type = SettingsActionItemType.Navigation
+                    ) {
+                        openBillingManagementScreen()
+                    }
                 } else {
                     Text(
                         text = stringResource(MR.strings.plans_management_info_wrong_platform),

@@ -93,12 +93,12 @@ fun SmallActionButton(
     hasEndArrow: Boolean = false,
     icon: Painter?,
     text: @Composable () -> Unit,
-    onClick: () -> Unit
+    onClick: (() -> Unit)?
 ) {
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(percent = 50))
-            .clickable { onClick() }
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .background(
                 backgroundColor,
                 RoundedCornerShape(percent = 50)

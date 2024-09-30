@@ -10,7 +10,7 @@ import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.notification.PlaceNotificationPresenter
-import app.paralino.android.provider.BillingProvider
+import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.provider.ConnectionStatusProvider
 import app.paralino.android.provider.DeviceApiProvider
 import app.paralino.android.provider.LocationStatusProvider
@@ -58,9 +58,9 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
-import app.paralino.core.presentation.settings.subscriptions.PaywallViewModel
-import app.paralino.core.presentation.settings.subscriptions.PlanInfoViewModel
-import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
+import app.paralino.core.presentation.settings.billing.PaywallViewModel
+import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
+import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IConnectionStatusProvider
@@ -75,6 +75,7 @@ import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -109,7 +110,7 @@ object KoinSetup {
         single<IFunctionsApi> { FunctionsApi(get(), get()) }
         single<IRealtimeApi> { RealtimeApi(get()) }
 
-        single<IBillingProvider> { BillingProvider(androidApplication() as AppClass, get(), get()) }
+        single<IBillingProvider> { BillingProviderAndroid(androidApplication() as AppClass, get(), get(), get()) }
 
         single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
     }
@@ -175,7 +176,7 @@ object KoinSetup {
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get()) }
-        viewModel { PaywallViewModel(get(), get(), get()) }
+        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get()) }
         viewModel { PlanInfoViewModel(get(), appPrefs) }
     }
 }

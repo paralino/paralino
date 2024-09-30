@@ -45,8 +45,12 @@ data class ConfigData(
         }
     }
 
-    fun planConfigForPlanType(planType: String): PlanConfig {
-        return plans.firstOrNull { it.planType == planType } ?: defaultFreePlanConfig()
+    fun planConfigForPlanTypeOrDefault(planType: String): PlanConfig {
+        return planConfigForPlanType(planType) ?: defaultFreePlanConfig()
+    }
+
+    fun planConfigForPlanType(planType: String): PlanConfig? {
+        return plans.firstOrNull { it.planType == planType }
     }
 
     fun defaultFreePlanConfig(): PlanConfig {

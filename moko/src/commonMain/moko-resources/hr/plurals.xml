@@ -30,4 +30,19 @@
         <item quantity="few">Dijeljenje lokacije sa %d grupe</item>
         <item quantity="other">Dijeljenje lokacije sa %d grupa</item>
     </plurals>
+    <plurals name="plan_benefit_group">
+        <item quantity="one">**%d grupa**</item>
+        <item quantity="few">**%d grupe**</item>
+        <item quantity="other">**%d grupa**</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">**%d član**</item>
+        <item quantity="few">**%d člana**</item>
+        <item quantity="other">**%d članova**</item>
+    </plurals>
+    <plurals name="plan_benefit_places">
+        <item quantity="one">**%d mjesto**</item>
+        <item quantity="few">**%d mjesta**</item>
+        <item quantity="other">**%d mjesta**</item>
+    </plurals>
 </resources>

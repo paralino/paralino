@@ -259,7 +259,6 @@ dependencies {
     googleImplementation(libs.firebase.messaging.ktx)
 
     googleImplementation(libs.revenuecat.android)
-    googleImplementation(libs.revenuecat.android.ui)
 
     ossImplementation(libs.osmdroid.android)
     googleImplementation(libs.maps.compose)

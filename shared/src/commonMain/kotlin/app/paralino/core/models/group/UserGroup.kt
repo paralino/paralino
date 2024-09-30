@@ -54,34 +54,34 @@ data class UserGroup constructor(
         if (isPlanExpired) {
             return false
         } else {
-            return config.planConfigForPlanType(planType).planTypeEnum.isPremium
+            return config.planConfigForPlanTypeOrDefault(planType).planTypeEnum.isPremium
         }
     }
 
     fun membersLimit(config: ConfigData): Int {
         if (isPlanExpired) {
-            return config.planConfigForPlanType(fallbackPlanType).membersLimit
+            return config.planConfigForPlanTypeOrDefault(fallbackPlanType).membersLimit
         } else {
             return membersLimitOverride?.toInt()
-                ?: config.planConfigForPlanType(planType).membersLimit
+                ?: config.planConfigForPlanTypeOrDefault(planType).membersLimit
         }
     }
 
     fun devicesLimit(config: ConfigData): Int {
         if (isPlanExpired) {
-            return config.planConfigForPlanType(fallbackPlanType).devicesLimit
+            return config.planConfigForPlanTypeOrDefault(fallbackPlanType).devicesLimit
         } else {
             return devicesLimitOverride?.toInt()
-                ?: config.planConfigForPlanType(planType).devicesLimit
+                ?: config.planConfigForPlanTypeOrDefault(planType).devicesLimit
         }
     }
 
     fun placesLimit(config: ConfigData): Int {
         if (isPlanExpired) {
-            return config.planConfigForPlanType(fallbackPlanType).placesLimit
+            return config.planConfigForPlanTypeOrDefault(fallbackPlanType).placesLimit
         } else {
             return placesLimitOverride?.toInt()
-                ?: config.planConfigForPlanType(planType).placesLimit
+                ?: config.planConfigForPlanTypeOrDefault(planType).placesLimit
         }
     }
 

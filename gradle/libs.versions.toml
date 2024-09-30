@@ -112,7 +112,6 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 
 # Required
 revenuecat-android = { module = "com.revenuecat.purchases:purchases", version.ref = "revenuecat-android" }
-revenuecat-android-ui = { module = "com.revenuecat.purchases:purchases-ui", version.ref = "revenuecat-android" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

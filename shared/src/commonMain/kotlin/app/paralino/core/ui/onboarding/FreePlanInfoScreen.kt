@@ -40,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.settings.subscriptions.PlanInfoViewModel
+import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.BlurredCircle
 import app.paralino.core.ui.components.CoreAppIcons
@@ -186,6 +186,10 @@ fun FreePlanInfoScreenCore(
                     }
                 }
 
+                val benefits = remember(uiState) {
+                    uiState.planBenefits().joinToString(separator = "\n") { "⭐️ $it" }
+                        .annotatedBold()
+                }
                 Column {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
@@ -197,20 +201,7 @@ fun FreePlanInfoScreenCore(
                     )
 
                     Text(
-                        text = if (uiState.groupsLimit == 1) {
-                            stringResource(
-                                MR.strings.plans_gift_screen_benefits_content,
-                                uiState.membersLimit,
-                                uiState.placesLimit
-                            ).annotatedBold()
-                        } else {
-                            stringResource(
-                                MR.strings.plans_gift_screen_benefits_content_multiple,
-                                uiState.groupsLimit,
-                                uiState.membersLimit,
-                                uiState.placesLimit
-                            ).annotatedBold()
-                        },
+                        text = benefits,
                         style = MaterialTheme.typography.h6,
                         color = MaterialTheme.colors.onBackground,
                         modifier = Modifier.padding(vertical = 16.dp).padding(horizontal = 8.dp)

@@ -52,8 +52,8 @@ sealed interface MainAlertDialog {
     val key: String
     val dialogData: AlertDialogData
 
-    fun stringResource(resource: StringResource): String {
-        return resource.localizedString()
+    fun stringResource(resource: StringResource, vararg args: Any): String {
+        return resource.localizedString(*args)
     }
 
     object ComingSoon : MainAlertDialog {
@@ -686,7 +686,26 @@ sealed interface MainAlertDialog {
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
             title = stringResource(resource = MR.strings.error_something_wrong),
-            message = stringResource(resource = MR.strings.plan_billing_loading_error_alert_message),
+            message = stringResource(resource = MR.strings.paywall_billing_loading_error_alert_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_ok),
+                    color = AlertDialogButtonData.positiveColor
+                )
+            ),
+        )
+    }
+
+    data class BillingError(
+        val code: Int,
+        val message: String
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(MR.strings.error_something_wrong_http, code),
+            message = message,
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,

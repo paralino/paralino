@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.settings.subscriptions
+package app.paralino.core.presentation.settings.billing
 
 import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.models.base.PlanConfig

@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.settings.subscriptions
+package app.paralino.core.presentation.settings.billing
 
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
