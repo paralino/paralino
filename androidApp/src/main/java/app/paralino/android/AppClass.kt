@@ -144,6 +144,10 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
         coreAppManager.onAppActive()
     }
 
+    override fun onResume(owner: LifecycleOwner) {
+        coreAppManager.onAppActive()
+    }
+
     override fun onPause(owner: LifecycleOwner) {
         coreAppManager.onAppInactive()
     }

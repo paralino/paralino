@@ -49,7 +49,10 @@ class CoreAppManager(
             if (state.current == AppLifecycleType.ACTIVE) {
                 updateLocationStatus()
                 updateConnectionStatus()
-                updateConfig()
+
+                if (state.comingFromBackground) {
+                    updateConfig()
+                }
             }
 
             if (state.comingFromBackground) {
