@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +44,8 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.BlurredCircle
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.drawBlurredCircles
 import app.paralino.core.ui.theme.AppColors
@@ -60,7 +64,6 @@ fun PremiumPlanBannerSmall(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(90.dp)
             .clickable(onClick = onClick)
             .shadow(
                 elevation = elevation,
@@ -81,7 +84,7 @@ fun PremiumPlanBannerSmall(
     ) {
         // Blurred circles background
         val blurredCircles = remember { generateBlurredCircles() }
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.matchParentSize()) {
             drawBlurredCircles(blurredCircles)
         }
 
@@ -107,21 +110,19 @@ fun PremiumPlanBannerSmall(
                 )
             }
 
-            Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(8.dp))
 
-            Text(
+            Icon(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(percent = 50))
-                    .clickable(onClick = onClick)
+                    .size(32.dp)
                     .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(percent = 50)
+                        color = AppColors.lightBackground,
+                        shape = CircleShape
                     )
-                    .padding(horizontal = 10.dp, vertical = 4.dp),
-                text = stringResource(MR.strings.plans_banner_settings_action_small),
-                color = MaterialTheme.colors.primary,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold
+                    .padding(4.dp),
+                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary,
             )
         }
     }
@@ -137,7 +138,6 @@ fun PremiumPlanBanner(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(200.dp)
             .clickable(onClick = onClick)
             .shadow(
                 elevation = 16.dp,
@@ -156,7 +156,7 @@ fun PremiumPlanBanner(
             )
     ) {
         // Animated blurred circles background
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.matchParentSize()) {
             drawBlurredCircles(animatedCircles)
         }
 
@@ -174,7 +174,7 @@ fun PremiumPlanBanner(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                modifier = Modifier.padding(end = 60.dp),
+                modifier = Modifier.padding(end = 50.dp),
                 text = stringResource(MR.strings.plans_banner_settings_description),
                 style = MaterialTheme.typography.body2,
                 color = Color.White
