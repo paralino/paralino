@@ -6,7 +6,6 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
@@ -17,7 +16,7 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 @Serializable
@@ -47,7 +46,7 @@ data class UserGroup constructor(
     // allow for some manual grace period
     // it might take few minutes until correct subscription data is synced and reflected on backend
     private val isPlanExpired: Boolean get() = planExpiresAt
-        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 1.days)
+        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 1.hours)
         ?.let { it < nowUTC() }
         ?: false
 
