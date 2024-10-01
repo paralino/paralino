@@ -237,6 +237,7 @@ class PaywallViewModel(
             ?: emptyList()
 
         val isFreePlanSelected = isPlanSelected(
+            plans = plans,
             planType = freePlanConfig.planTypeEnum,
             currentState = currentState
         )
@@ -254,6 +255,7 @@ class PaywallViewModel(
         val uiPlans = availableProducts.map { product ->
             val planConfig = product.planConfig
             val isPlanSelected = isPlanSelected(
+                plans = plans,
                 planType = planConfig.planTypeEnum,
                 currentState = currentState
             )
@@ -446,10 +448,24 @@ class PaywallViewModel(
     }
 
     private fun isPlanSelected(
+        plans: UserPlans,
         planType: PlanType,
         currentState: PaywallScreenState?
     ): Boolean {
-        return currentState?.plans?.firstOrNull { it.type == planType }?.isSelected
-            ?: false
+        val currentlySelected = currentState?.plans?.firstOrNull { it.type == planType }
+        if (currentlySelected != null) {
+            return currentlySelected.isSelected
+        } else if (sourceType == BillingScreenSourceType.ONBOARDING) {
+            if (plans.highestValidPlanConfig.planTypeEnum.isPremium) {
+                return false
+            } else {
+                // if user does not have a premium plan, pre-select lowest premium tier
+                return remoteConfigRepo.configState.value.listedPlanConfigs()
+                    .filter { it.planTypeEnum.isPremium }
+                    .minByOrNull { it.planTypeEnum.order }?.planTypeEnum == planType
+            }
+        } else {
+            return false
+        }
     }
 }

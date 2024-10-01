@@ -46,6 +46,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -75,7 +76,6 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
@@ -130,7 +130,7 @@ fun PaywallScreenCore(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
-                title = if (uiState.selectedPlan == null) {
+                title = if (uiState.isLoading || uiState.selectedPlan == null) {
                     null
                 } else {
                     stringResource(MR.strings.paywall_select_plan_label)
@@ -194,12 +194,14 @@ private fun PaywallScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(vertical = 12.dp, horizontal = 20.dp)
-                .padding(bottom = with(density) { bottomCardHeight.toDp() })
+                .padding(top = 12.dp)
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.Top
         ) {
             AnimatedVisibility(state.selectedPlan == null) {
                 Text(
                     modifier = Modifier
+                        .padding(top = 8.dp)
                         .fillMaxWidth(),
                     text = stringResource(MR.strings.paywall_screen_title),
                     style = MaterialTheme.typography.h4,
@@ -209,7 +211,8 @@ private fun PaywallScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             state.plans.forEachIndexed { index, plan ->
                 if (index > 0) {
@@ -225,10 +228,15 @@ private fun PaywallScreen(
                 }
             }
 
-            if (state.faq != null) {
-                Spacer(modifier = Modifier.size(24.dp))
-                FaqSection(faqsList = state.faq.faqs)
+            Spacer(modifier = Modifier.weight(1f))
+
+            AnimatedVisibility(state.selectedPlan != null) {
+                if (state.faq != null) {
+                    FaqSection(faqsList = state.faq.faqs)
+                }
             }
+
+            Spacer(modifier = Modifier.size(with(density) { bottomCardHeight.toDp() }))
         }
 
         Box(
@@ -240,7 +248,7 @@ private fun PaywallScreen(
                     Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            MaterialTheme.colors.surface.copy(alpha = 0.5f),
+                            MaterialTheme.colors.surface,
                             MaterialTheme.colors.surface
                         )
                     )
@@ -393,7 +401,7 @@ private fun PaywallBottomCard(
                 Text(
                     modifier = Modifier.padding(bottom = 8.dp),
                     text = stringResource(MR.strings.paywall_all_members_features_notice),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.caption,
                     textAlign = TextAlign.Center,
                     color = contentColor
                 )
@@ -457,7 +465,7 @@ private fun PaywallBottomCard(
 
             Spacer(modifier = Modifier.size(12.dp))
             SmallActionButton(
-                modifier = Modifier.padding(horizontal = 20.dp),
+                modifier = Modifier,
                 backgroundColor = AppColors.accentLight.copy(alpha = 0.6f),
                 contentColor = contentColor,
                 icon = CoreAppIcons.Security.asPainterResource(),
@@ -549,12 +557,39 @@ private fun PlanName(
 private fun FaqSection(
     faqsList: List<FaqSectionItem>
 ) {
+    var expanded by remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxWidth()) {
-        SettingsSectionHeader(name = stringResource(MR.strings.paywall_faq_section_title))
+        Spacer(modifier = Modifier.size(32.dp))
+        Row(
+            modifier = Modifier
+                .clickable { expanded = !expanded },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.alpha(ContentAlpha.medium),
+                text = stringResource(MR.strings.paywall_faq_section_title),
+                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
+            )
+            Icon(
+                modifier = Modifier.padding(horizontal = 8.dp).size(20.dp),
+                painter = if (expanded) {
+                    CoreAppIcons.ExpandLess.asPainterResource()
+                } else {
+                    CoreAppIcons.ExpandMore.asPainterResource()
+                },
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.weight(1f))
+        }
         Spacer(modifier = Modifier.size(8.dp))
-        faqsList.forEach { faq ->
-            FaqItem(faq)
-            Spacer(modifier = Modifier.size(8.dp))
+        AnimatedVisibility(expanded) {
+            Column {
+                Spacer(modifier = Modifier.size(12.dp))
+                faqsList.forEach { faq ->
+                    FaqItem(faq)
+                    Spacer(modifier = Modifier.size(8.dp))
+                }
+            }
         }
     }
 }
