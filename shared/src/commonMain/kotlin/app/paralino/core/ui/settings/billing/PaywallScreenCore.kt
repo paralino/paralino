@@ -196,15 +196,17 @@ private fun PaywallScreen(
                 .padding(vertical = 12.dp, horizontal = 20.dp)
                 .padding(bottom = with(density) { bottomCardHeight.toDp() })
         ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = stringResource(MR.strings.paywall_screen_title),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold,
-                fontSize = 28.sp,
-                textAlign = TextAlign.Center
-            )
+            AnimatedVisibility(state.selectedPlan == null) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = stringResource(MR.strings.paywall_screen_title),
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
 
             Spacer(modifier = Modifier.size(24.dp))
 

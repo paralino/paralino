@@ -1,5 +1,6 @@
 package app.paralino.core.ui.components.dialogs
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.RowScope
@@ -32,9 +33,9 @@ fun DefaultToolbar(
         backgroundColor = MaterialTheme.colors.background,
         elevation = elevation,
         title = {
-            if (titleComposable != null) {
+            AnimatedVisibility (titleComposable != null) {
                 ProvideTextStyle(value = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)) {
-                    titleComposable()
+                    titleComposable?.invoke()
                 }
             }
         },
