@@ -25,6 +25,7 @@ data class PlanInfoState(
     val name: String,
     val type: PlanType,
     val isCurrentPlan: Boolean,
+    val hasSpecialOffer: Boolean,
     val isSelected: Boolean,
     val isExpanded: Boolean,
     val billingPeriods: List<PlanBillingPeriodState>,

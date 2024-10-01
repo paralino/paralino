@@ -319,18 +319,10 @@ private fun PlanCardDetails(
                     )
                     if (state.isCurrentPlan) {
                         Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            modifier = Modifier
-                                .background(
-                                    color = AppColors.accent.copy(alpha = 0.8f),
-                                    shape = RoundedCornerShape(25)
-                                )
-                                .padding(horizontal = 6.dp),
-                            text = stringResource(MR.strings.paywall_current_plan_label),
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 12.sp,
-                            color = AppColors.lightBackground
-                        )
+                        PlanInfoBadge(text = stringResource(MR.strings.paywall_current_plan_label))
+                    } else if (state.hasSpecialOffer) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        PlanInfoBadge(text = stringResource(MR.strings.paywall_special_offer_label))
                     }
                 }
 
@@ -365,6 +357,25 @@ private fun PlanCardDetails(
             }
         }
     }
+}
+
+@Composable
+private fun PlanInfoBadge(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Text(
+        modifier = modifier
+            .background(
+                color = AppColors.accent.copy(alpha = 0.8f),
+                shape = RoundedCornerShape(25)
+            )
+            .padding(horizontal = 6.dp),
+        text = text,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 12.sp,
+        color = AppColors.lightBackground
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)

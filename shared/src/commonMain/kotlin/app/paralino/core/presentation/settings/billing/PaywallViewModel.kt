@@ -246,6 +246,7 @@ class PaywallViewModel(
             name = MR.strings.paywall_free_plan_name.localizedString(),
             type = config.defaultFreePlanConfig().planTypeEnum,
             isCurrentPlan = false,
+            hasSpecialOffer = false,
             isSelected = isFreePlanSelected,
             isExpanded = false,
             billingPeriods = emptyList(),
@@ -259,63 +260,65 @@ class PaywallViewModel(
                 planType = planConfig.planTypeEnum,
                 currentState = currentState
             )
+            val billingPeriods = product.periods
+                .groupBy { it.billingPeriod }
+                .map { periods ->
+                    val period = periods.value.first()
+
+                    val fullYearlyPrice = product.periods
+                        .filter { it.billingPeriod == PlanBillingPeriod.MONTHLY }
+                        .maxBy { it.referencePerYearPrice ?: it.price }
+                        .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
+
+                    val highestPrice = periods.value.maxBy { it.price }
+                        .takeIf { periods.value.size > 1 }
+                    val lowestPrice = periods.value.minBy { it.price }
+
+                    PlanBillingPeriodState(
+                        productPlanId = lowestPrice.productPlanId,
+                        name = when (period.billingPeriod) {
+                            PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
+                            PlanBillingPeriod.MONTHLY -> MR.strings.plan_period_monthly_name.localizedString()
+                            PlanBillingPeriod.ANNUALLY -> MR.strings.plan_period_annually_name.localizedString()
+                            PlanBillingPeriod.ONETIME -> MR.strings.plan_period_onetime_name.localizedString()
+                        },
+                        billingPeriod = period.billingPeriod,
+                        isSelected = isBillingPeriodSelected(
+                            period = period.billingPeriod,
+                            planType = planConfig.planTypeEnum,
+                            plans = plans,
+                            currentState = currentState
+                        ),
+                        price = lowestPrice.formattedPrice,
+                        discountedPrice = listOfNotNull(
+                            fullYearlyPrice?.referencePerYearFormattedPrice,
+                            highestPrice?.formattedPrice
+                        )
+                            .distinct()
+                            .takeIf { it.isNotEmpty() }
+                            ?.joinToString("\n") { it.filterNot { it == ' ' } },
+                        discountPercent = listOfNotNull(
+                            fullYearlyPrice?.referencePerYearPrice,
+                            highestPrice?.price
+                        )
+                            .maxOrNull()
+                            ?.let { (1f - (lowestPrice.price.toFloat() / it)) * 100 }
+                            ?.toInt()
+                            ?.let { "-$it%" },
+                        isPromoDiscount = highestPrice != null,
+                        pricePerMonth = null,
+                        trialDurationDays = lowestPrice.trialDurationDays,
+                    )
+                }
             PlanInfoState(
                 productId = product.productId,
                 name = planConfig.planName,
                 type = planConfig.planTypeEnum,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
+                hasSpecialOffer = billingPeriods.any { it.isPromoDiscount },
                 isSelected = isPlanSelected,
                 isExpanded = sourceType != BillingScreenSourceType.ONBOARDING,
-                billingPeriods = product.periods
-                    .groupBy { it.billingPeriod }
-                    .map { periods ->
-                        val period = periods.value.first()
-
-                        val fullYearlyPrice = product.periods
-                            .filter { it.billingPeriod == PlanBillingPeriod.MONTHLY }
-                            .maxBy { it.referencePerYearPrice ?: it.price }
-                            .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
-
-                        val highestPrice = periods.value.maxBy { it.price }
-                            .takeIf { periods.value.size > 1 }
-                        val lowestPrice = periods.value.minBy { it.price }
-
-                        PlanBillingPeriodState(
-                            productPlanId = lowestPrice.productPlanId,
-                            name = when (period.billingPeriod) {
-                                PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
-                                PlanBillingPeriod.MONTHLY -> MR.strings.plan_period_monthly_name.localizedString()
-                                PlanBillingPeriod.ANNUALLY -> MR.strings.plan_period_annually_name.localizedString()
-                                PlanBillingPeriod.ONETIME -> MR.strings.plan_period_onetime_name.localizedString()
-                            },
-                            billingPeriod = period.billingPeriod,
-                            isSelected = isBillingPeriodSelected(
-                                period = period.billingPeriod,
-                                planType = planConfig.planTypeEnum,
-                                plans = plans,
-                                currentState = currentState
-                            ),
-                            price = lowestPrice.formattedPrice,
-                            discountedPrice = listOfNotNull(
-                                fullYearlyPrice?.referencePerYearFormattedPrice,
-                                highestPrice?.formattedPrice
-                            )
-                                .distinct()
-                                .takeIf { it.isNotEmpty() }
-                                ?.joinToString("\n") { it.filterNot { it == ' ' } },
-                            discountPercent = listOfNotNull(
-                                fullYearlyPrice?.referencePerYearPrice,
-                                highestPrice?.price
-                            )
-                                .maxOrNull()
-                                ?.let { (1f - (lowestPrice.price.toFloat() / it)) * 100 }
-                                ?.toInt()
-                                ?.let { "-$it%" },
-                            isPromoDiscount = highestPrice != null,
-                            pricePerMonth = null,
-                            trialDurationDays = lowestPrice.trialDurationDays,
-                        )
-                    },
+                billingPeriods = billingPeriods,
                 benefits = planConfig.planBenefits()
             )
         }
