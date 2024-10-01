@@ -61,6 +61,7 @@ import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
@@ -328,7 +329,9 @@ fun AccountInfoHeader(
                             modifier = Modifier
                         ) {
                             IconButton(
-                                onClick = { onShareCode(personalCode) }
+                                onClick = {
+                                    onShareCode(DeeplinkType.ParalinoID.buildUrl(personalCode))
+                                }
                             ) {
                                 Icon(
                                     modifier = Modifier.size(16.dp),

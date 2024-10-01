@@ -106,9 +106,7 @@ fun PersonalCodeScreenCore(
                         vm.onEvent(PersonalCodeScreenUiEvent.CopyPersonalCode)
                         vm.showSnackbar(text = MR.strings.toast_copy_invite_code.localizedString())
                     },
-                    onShare = {
-                        onShare(uiState.activeCode!!.code)
-                    },
+                    onShare = onShare,
                     onDelete = {
                         vm.onEvent(PersonalCodeScreenUiEvent.DisableCode)
                     }

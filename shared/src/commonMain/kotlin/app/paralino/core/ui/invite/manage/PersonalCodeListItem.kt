@@ -38,6 +38,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
@@ -47,7 +48,7 @@ fun PersonalCodeItem(
     modifier: Modifier = Modifier,
     state: PersonalCodeScreenCodeData,
     onCopy: () -> Unit,
-    onShare: () -> Unit,
+    onShare: (String) -> Unit,
     onDelete: () -> Unit,
     onActivate: (String) -> Unit = {},
 ) {
@@ -101,7 +102,7 @@ fun PersonalCodeItem(
     hasDelete: Boolean,
     deleteLoading: Boolean,
     onCopy: () -> Unit,
-    onShare: () -> Unit,
+    onShare: (String) -> Unit,
     onDelete: () -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -168,7 +169,9 @@ fun PersonalCodeItem(
                         icon = CoreAppIcons.Share.asPainterResource(),
                         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
                         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
-                        onClick = onShare
+                        onClick = {
+                            onShare(DeeplinkType.ParalinoID.buildUrl(code))
+                        }
                     ) {
                         Text(text = stringResource(MR.strings.invite_code_button_share))
                     }

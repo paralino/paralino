@@ -159,11 +159,7 @@ fun GroupInitScreenCore(
                                 vm.onEvent(GroupInitScreenUiEvent.CopyPersonalCode)
                                 vm.showSnackbar(MR.strings.toast_copy_invite_code.localizedString())
                             },
-                            onShare = {
-                                onSharePersonalCode(
-                                    DeeplinkType.ParalinoID.buildUrl(state.personalCode!!.code)
-                                )
-                            },
+                            onShare = onSharePersonalCode,
                             onDelete = {}
                         )
                         Icon(
