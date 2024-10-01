@@ -1,21 +1,26 @@
 package app.paralino.core.presentation.settings.billing
 
+import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IBillingProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.poll
+import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +39,7 @@ class PaywallViewModel(
     private val userRepo: UserRepository,
     private val refreshUseCase: RefreshEverythingUseCase,
     private val remoteConfigRepo: RemoteConfigRepository,
+    private val deviceApiProvider: IDeviceApiProvider,
     val billingProvider: IBillingProvider
 ) : CoreViewModel() {
 
@@ -317,8 +323,106 @@ class PaywallViewModel(
             plans = listOfNotNull(freeUiPlan.takeIf { sourceType == BillingScreenSourceType.ONBOARDING }) + uiPlans,
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
-            isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false
+            isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
+            faq = currentState?.faq ?: getFaqSection()
         )
+    }
+
+    private fun getFaqSection(): FaqSectionState {
+        return FaqSectionState(
+            faqs = buildList {
+                add(
+                    FaqSectionItem(
+                        title = MR.strings.paywall_faq_question_premium_group_features.string(),
+                        content = MR.strings.paywall_faq_answer_premium_group_features.string()
+                    )
+                )
+
+                remoteConfigRepo.configState.value.listedPlanConfigs()
+                    .filter { it.isActive }
+                    .forEach {
+                        val planName = if (it.planTypeEnum.isPremium) {
+                            it.planName
+                        } else {
+                            MR.strings.paywall_free_plan_name.localizedString()
+                        }
+                        add(
+                            FaqSectionItem(
+                                title = MR.strings.paywall_faq_question_plan_features.localizedString(
+                                    planName
+                                ).annotatedBold(),
+                                content = MR.strings.paywall_faq_answer_plan_features.localizedString(
+                                    planName,
+                                    it.membersLimit,
+                                    it.placesLimit
+                                ).annotatedBold()
+                            )
+                        )
+                    }
+
+                add(
+                    FaqSectionItem(
+                        title = MR.strings.paywall_faq_question_free_trial.string(),
+                        content = MR.strings.paywall_faq_answer_free_trial.string()
+                    )
+                )
+                add(
+                    FaqSectionItem(
+                        title = MR.strings.paywall_faq_question_upgrade_downgrade.string(),
+                        content = MR.strings.paywall_faq_answer_upgrade_downgrade.string()
+                    )
+                )
+                add(
+                    FaqSectionItem(
+                        title = MR.strings.paywall_faq_question_how_to_cancel.string(),
+                        content = MR.strings.paywall_faq_answer_how_to_cancel.string()
+                    )
+                )
+
+                when (deviceApiProvider.deviceType) {
+                    DeviceType.Android -> {
+                        add(
+                            FaqSectionItem(
+                                title = MR.strings.paywall_faq_question_refund.string(),
+                                content = MR.strings.paywall_faq_answer_refund_google.string()
+                            )
+                        )
+                        add(
+                            FaqSectionItem(
+                                title = MR.strings.paywall_faq_question_payment_security.string(),
+                                content = MR.strings.paywall_faq_answer_payment_security_google.string()
+                            )
+                        )
+                    }
+
+                    DeviceType.iOS -> {
+                        add(
+                            FaqSectionItem(
+                                title = MR.strings.paywall_faq_question_refund.string(),
+                                content = MR.strings.paywall_faq_answer_refund_apple.string()
+                            )
+                        )
+                        add(
+                            FaqSectionItem(
+                                title = MR.strings.paywall_faq_question_payment_security.string(),
+                                content = MR.strings.paywall_faq_answer_payment_security_apple.string()
+                            )
+                        )
+                    }
+                }
+
+                add(
+                    FaqSectionItem(
+                        title = MR.strings.paywall_faq_question_contact_support.string(),
+                        content = MR.strings.paywall_faq_answer_contact_support.string()
+                    )
+                )
+            }
+        )
+    }
+
+    private fun StringResource.string(): AnnotatedString {
+        return this.localizedString().annotatedBold()
     }
 
     private fun isBillingPeriodSelected(

@@ -6,6 +6,7 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.extensions.annotatedBold
 
 data class PaywallScreenState(
     val plans: List<PlanInfoState>,
@@ -13,6 +14,7 @@ data class PaywallScreenState(
     val isLoading: Boolean,
     val isPurchaseButtonLoading: Boolean,
     val alertDialog: MainAlertDialog?,
+    val faq: FaqSectionState?
 ) {
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod
@@ -50,6 +52,15 @@ data class PlanBillingPeriodState(
     val isPromoDiscount: Boolean,
     val pricePerMonth: String?,
     val trialDurationDays: Int?,
+)
+
+data class FaqSectionState(
+    val faqs: List<FaqSectionItem>
+)
+
+data class FaqSectionItem(
+    val title: AnnotatedString,
+    val content: AnnotatedString
 )
 
 sealed class PaywallScreenEvent() {

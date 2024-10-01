@@ -59,4 +59,9 @@ data class ConfigData(
             .maxByOrNull { it.planTypeEnum.order }
             ?: PlanConfig.default
     }
+
+    fun listedPlanConfigs(): List<PlanConfig> {
+        val freePlan = defaultFreePlanConfig()
+        return listOf(freePlan) + plans.filter { it.planTypeEnum.isPremium && it.isActive }
+    }
 }

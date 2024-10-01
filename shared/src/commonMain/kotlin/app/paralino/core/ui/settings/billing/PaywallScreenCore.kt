@@ -63,6 +63,7 @@ import app.paralino.core.MR
 import app.paralino.core.models.BackendResourceIDs
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanType
+import app.paralino.core.presentation.settings.billing.FaqSectionItem
 import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
 import app.paralino.core.presentation.settings.billing.PaywallScreenState
 import app.paralino.core.presentation.settings.billing.PaywallScreenUiEvent
@@ -224,7 +225,10 @@ private fun PaywallScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.size(24.dp))
+            if (state.faq != null) {
+                Spacer(modifier = Modifier.size(24.dp))
+                FaqSection(faqsList = state.faq.faqs)
+            }
         }
 
         Box(
@@ -543,7 +547,7 @@ private fun PlanName(
 
 @Composable
 private fun FaqSection(
-    faqsList: List<Pair<String, String>>
+    faqsList: List<FaqSectionItem>
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingsSectionHeader(name = stringResource(MR.strings.paywall_faq_section_title))
@@ -556,7 +560,7 @@ private fun FaqSection(
 }
 
 @Composable
-private fun FaqItem(faq: Pair<String, String>) {
+private fun FaqItem(faq: FaqSectionItem) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -571,14 +575,14 @@ private fun FaqItem(faq: Pair<String, String>) {
                 .padding(16.dp)
         ) {
             Text(
-                text = faq.first,
+                text = faq.title,
                 style = MaterialTheme.typography.body2
             )
             AnimatedVisibility(expanded) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
                         modifier = Modifier.padding(top = 8.dp),
-                        text = faq.second,
+                        text = faq.content,
                         style = MaterialTheme.typography.caption
                     )
                 }

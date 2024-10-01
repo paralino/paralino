@@ -162,6 +162,26 @@
     <string name="paywall_select_plan_label">Odaberi svoj plan</string>
     <string name="paywall_free_plan_name">Besplatno</string>
 
+    <string name="paywall_faq_question_how_to_cancel">Kako mogu otkazati svoju pretplatu?</string>
+    <string name="paywall_faq_question_upgrade_downgrade">Kako mogu nadograditi ili smanjiti svoj plan?</string>
+    <string name="paywall_faq_question_plan_features">Koliko članova i mjesta može imati grupa u %s planu?</string>
+    <string name="paywall_faq_question_premium_group_features">Dobivaju li svi članovi grupne pogodnosti?</string>
+    <string name="paywall_faq_question_refund">Kako mogu zatražiti povrat novca?</string>
+    <string name="paywall_faq_question_payment_security">Je li moja platna informacija sigurna?</string>
+    <string name="paywall_faq_question_free_trial">Je li dostupno besplatno probno razdoblje?</string>
+    <string name="paywall_faq_question_contact_support">Kako mogu kontaktirati podršku?</string>
+
+    <string name="paywall_faq_answer_how_to_cancel">Pretplatu možete otkazati u bilo kojem trenutku u postavkama računa pod **Pretplata** i odaberite **Otkaži**. Bit ćete preusmjereni na postavke trgovine gdje možete otkazati svoj plan.</string>
+    <string name="paywall_faq_answer_upgrade_downgrade">Za promjenu svog plana idite na **Pretplata** u postavkama računa, zatim odaberite **Promijeni plan** i odaberite plan koji želite.</string>
+    <string name="paywall_faq_answer_plan_features">Svaka grupa u %1$s planu može imati %2$s članova i %3$s mjesta.</string>
+    <string name="paywall_faq_answer_premium_group_features">Da, svi članovi vaše grupe imat će pristup premium grupnim značajkama. Samo jedna osoba plaća premium plan, ali svaki član grupe može koristiti dodatne pogodnosti.</string>
+    <string name="paywall_faq_answer_refund_apple">Budući da Apple upravlja vašim plaćanjem, morat ćete otići na reportaproblem.apple.com i slijediti tamo navedene korake.</string>
+    <string name="paywall_faq_answer_refund_google">Možete kontaktirati naš tim za podršku putem e-pošte na **contact@paralino.com**.</string>
+    <string name="paywall_faq_answer_payment_security_apple">Da, vaše plaćanje izravno obrađuje Apple App Store. Mi ne obrađujemo niti pohranjujemo nikakve platne informacije.</string>
+    <string name="paywall_faq_answer_payment_security_google">Da, vaše plaćanje izravno obrađuje Google Play Store. Mi ne obrađujemo niti pohranjujemo nikakve platne informacije.</string>
+    <string name="paywall_faq_answer_free_trial">Da, nudimo besplatno probno razdoblje prvi put kada pokrenete svoju pretplatu. Tada možete uživati u premium značajkama bez ikakvih troškova.</string>
+    <string name="paywall_faq_answer_contact_support">Možete kontaktirati naš tim za podršku putem e-pošte na **contact@paralino.com**.</string>
+
     <string name="plans_gift_screen_title">Slavimo zajedno 🎉</string>
     <string name="plans_gift_screen_box_title">Poseban Poklon!</string>
     <string name="plans_gift_screen_box_message">Kao jedan od prvih korisnika dobivaš specijalan plan, potpuno besplatno!</string>

@@ -164,6 +164,26 @@
     <string name="paywall_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
     <string name="paywall_purchase_error_alert_message">Unable to perform billing request, please try again.</string>
 
+    <string name="paywall_faq_question_how_to_cancel">How can I cancel my subscription?</string>
+    <string name="paywall_faq_question_upgrade_downgrade">How can I upgrade or downgrade my plan?</string>
+    <string name="paywall_faq_question_plan_features">How many members and places can a group have in a %s plan?</string>
+    <string name="paywall_faq_question_premium_group_features">Do all members get group benefits?</string>
+    <string name="paywall_faq_question_refund">How can I request a refund?</string>
+    <string name="paywall_faq_question_payment_security">Is my payment information secure?</string>
+    <string name="paywall_faq_question_free_trial">Is there a free trial available?</string>
+    <string name="paywall_faq_question_contact_support">How can I contact support?</string>
+
+    <string name="paywall_faq_answer_how_to_cancel">You can cancel your subscription at any time in your account settings under **Subscription** and tap **Cancel**. You will be taken to the store settings where you can cancel your plan.</string>
+    <string name="paywall_faq_answer_upgrade_downgrade">To change your plan, go to **Subscriptions** in your account settings, then tap on Change** and select the plan you like.</string>
+    <string name="paywall_faq_answer_plan_features">Each group in the %1$s plan can have %2$s members and %3$s places.</string>
+    <string name="paywall_faq_answer_premium_group_features">Yes, all members in your group will have access to premium group features. Only one person pays for the premium plan but every group member can use additional benefits.</string>
+    <string name="paywall_faq_answer_refund_apple">Since Apple is handling your payment, you will need to go to reportaproblem.apple.com and follow the steps there.</string>
+    <string name="paywall_faq_answer_refund_google">You can contact our support team by emailing **contact@paralino.com**.</string>
+    <string name="paywall_faq_answer_payment_security_apple">Yes, your payment is processed directly by the Apple App Store. We do not process or store any payment information.</string>
+    <string name="paywall_faq_answer_payment_security_google">Yes, your payment is processed directly by the Google Play Store. We do not process or store any payment information.</string>
+    <string name="paywall_faq_answer_free_trial">Yes, we offer a free trial period for the first time you start your subscription. You can then enjoy premium features at no cost.</string>
+    <string name="paywall_faq_answer_contact_support">You can contact our support team by emailing **contact@paralino.com**.</string>
+
     <string name="plans_gift_screen_title">Lets celebrate 🎉</string>
     <string name="plans_gift_screen_box_title">Special Launch Gift!</string>
     <string name="plans_gift_screen_box_message">As an early adopter you get specially crafted plan, yours to keep!</string>
