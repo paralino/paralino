@@ -129,7 +129,11 @@ fun PaywallScreenCore(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
-                title = null,
+                title = if (uiState.selectedPlan == null) {
+                    null
+                } else {
+                    stringResource(MR.strings.paywall_select_plan_label)
+                },
                 navigationIcon = if (uiState.isLoading) {
                     null
                 } else {
@@ -322,12 +326,8 @@ private fun PlanCardDetails(
                     Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        val benefits = remember(state.benefits) {
-                            state.benefits.joinToString(separator = "\n") { "⭐️ $it" }
-                                .annotatedBold()
-                        }
                         Text(
-                            text = benefits,
+                            text = state.expandedBenefits,
                             style = MaterialTheme.typography.body1
                         )
 //                    Column {
@@ -344,7 +344,7 @@ private fun PlanCardDetails(
 
                 AnimatedVisibility(!state.isExpanded) {
                     Text(
-                        text = state.oneLineBenefits.annotatedBold(),
+                        text = state.oneLineBenefits,
                         style = MaterialTheme.typography.body2
                     )
                 }

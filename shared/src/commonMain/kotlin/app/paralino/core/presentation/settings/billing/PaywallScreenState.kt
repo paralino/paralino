@@ -1,6 +1,8 @@
 package app.paralino.core.presentation.settings.billing
 
+import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.models.base.PlanBillingPeriod
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -24,9 +26,16 @@ data class PlanInfoState(
     val isSelected: Boolean,
     val isExpanded: Boolean,
     val billingPeriods: List<PlanBillingPeriodState>,
-    val benefits: List<String>
+    val benefits: List<PlanConfig.PlanBenefit>
 ) {
-    val oneLineBenefits: String = benefits.joinToString(separator = ", ")
+    val oneLineBenefits: AnnotatedString = benefits.joinToString(separator = ", ") { it.content }.annotatedBold()
+    val expandedBenefits: AnnotatedString = benefits.joinToString(separator = "\n") {
+        if (it.isHighlighted) {
+            "⭐️ ${it.content}"
+        } else {
+            it.content
+        }
+    }.annotatedBold()
     val selectedBillingPeriod: PlanBillingPeriodState? = billingPeriods.firstOrNull { it.isSelected }
 }
 

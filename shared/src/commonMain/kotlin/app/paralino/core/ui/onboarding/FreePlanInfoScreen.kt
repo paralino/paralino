@@ -187,8 +187,9 @@ fun FreePlanInfoScreenCore(
                 }
 
                 val benefits = remember(uiState) {
-                    uiState.planBenefits().joinToString(separator = "\n") { "⭐️ $it" }
-                        .annotatedBold()
+                    uiState.planBenefits().joinToString(separator = "\n") {
+                        "⭐️ ${it.content}"
+                    }.annotatedBold()
                 }
                 Column {
                     Text(

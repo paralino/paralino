@@ -130,14 +130,48 @@ data class PlanConfig(
 
     val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
 
-    fun planBenefits(): List<String> {
+    fun planBenefits(): List<PlanBenefit> {
         val planConfig = this
         return buildList {
-            add(MR.plurals.plan_benefit_group.localizedString(planConfig.groupsLimit, planConfig.groupsLimit))
-            add(MR.plurals.plan_benefit_members.localizedString(planConfig.membersLimit, planConfig.membersLimit))
-            add(MR.plurals.plan_benefit_places.localizedString(planConfig.placesLimit, planConfig.placesLimit))
-            add(MR.strings.plans_benefit_place_alerts.localizedString())
-            add(MR.strings.plans_benefit_sharing.localizedString())
+            add(
+                PlanBenefit(
+                    content = MR.plurals.plan_benefit_group.localizedString(
+                        planConfig.groupsLimit,
+                        planConfig.groupsLimit
+                    ),
+                    isHighlighted = true
+                )
+            )
+            add(
+                PlanBenefit(
+                    content = MR.plurals.plan_benefit_members.localizedString(
+                        planConfig.membersLimit,
+                        planConfig.membersLimit
+                    ),
+                    isHighlighted = true
+                )
+            )
+            add(
+                PlanBenefit(
+                    content = MR.plurals.plan_benefit_places.localizedString(
+                        planConfig.placesLimit,
+                        planConfig.placesLimit
+                    ),
+                    isHighlighted = true
+                )
+            )
+            add(
+                PlanBenefit(
+                    content = MR.strings.plans_benefit_place_alerts.localizedString(),
+                    isHighlighted = false
+                )
+            )
+            add(
+                PlanBenefit(
+                    content = MR.strings.plans_benefit_sharing.localizedString(),
+                    isHighlighted = false
+                )
+            )
         }
     }
 
@@ -157,4 +191,9 @@ data class PlanConfig(
             productPlanIds = listOf("free")
         )
     }
+
+    data class PlanBenefit(
+        val content: String,
+        val isHighlighted: Boolean
+    )
 }
