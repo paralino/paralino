@@ -158,13 +158,15 @@
     <string name="paywall_button_restore">Vrati</string>
     <string name="paywall_privacy_policy_label">Privatnost</string>
     <string name="paywall_terms_of_use_label">Uvjeti</string>
-    <string name="paywall_faq_section_title">Često postavljana pitanja</string>
+    <string name="paywall_faq_section_title">Saznaj više</string>
     <string name="paywall_select_plan_label">Odaberi svoj plan</string>
-    <string name="paywall_free_plan_name">Besplatno</string>
+    <string name="paywall_free_plan_name">Osnovni</string>
+    <string name="paywall_billing_loading_error_alert_message">Nije moguće učitati nadogradnje, pokušajte ponovno.</string>
+    <string name="paywall_purchase_error_alert_message">Nije moguće izvršiti zahtjev, pokušajte ponovno.</string>
 
     <string name="paywall_faq_question_how_to_cancel">Kako mogu otkazati svoju pretplatu?</string>
     <string name="paywall_faq_question_upgrade_downgrade">Kako mogu nadograditi ili smanjiti svoj plan?</string>
-    <string name="paywall_faq_question_plan_features">Koliko članova i mjesta može imati grupa u %s planu?</string>
+    <string name="paywall_faq_question_plan_features">Koliko članova i mjesta može imati grupa sa planom %s?</string>
     <string name="paywall_faq_question_premium_group_features">Dobivaju li svi članovi grupne pogodnosti?</string>
     <string name="paywall_faq_question_refund">Kako mogu zatražiti povrat novca?</string>
     <string name="paywall_faq_question_payment_security">Je li moja platna informacija sigurna?</string>
@@ -173,7 +175,7 @@
 
     <string name="paywall_faq_answer_how_to_cancel">Pretplatu možete otkazati u bilo kojem trenutku u postavkama računa pod **Pretplata** i odaberite **Otkaži**. Bit ćete preusmjereni na postavke trgovine gdje možete otkazati svoj plan.</string>
     <string name="paywall_faq_answer_upgrade_downgrade">Za promjenu svog plana idite na **Pretplata** u postavkama računa, zatim odaberite **Promijeni plan** i odaberite plan koji želite.</string>
-    <string name="paywall_faq_answer_plan_features">Svaka grupa u %1$s planu može imati %2$s članova i %3$s mjesta.</string>
+    <string name="paywall_faq_answer_plan_features">Sa planom %1$s, svaka grupa može imati %2$s članova i %3$s mjesta.</string>
     <string name="paywall_faq_answer_premium_group_features">Da, svi članovi vaše grupe imat će pristup premium grupnim značajkama. Samo jedna osoba plaća premium plan, ali svaki član grupe može koristiti dodatne pogodnosti.</string>
     <string name="paywall_faq_answer_refund_apple">Budući da Apple upravlja vašim plaćanjem, morat ćete otići na reportaproblem.apple.com i slijediti tamo navedene korake.</string>
     <string name="paywall_faq_answer_refund_google">Možete kontaktirati naš tim za podršku putem e-pošte na **contact@paralino.com**.</string>
@@ -185,9 +187,7 @@
     <string name="plans_gift_screen_title">Slavimo zajedno 🎉</string>
     <string name="plans_gift_screen_box_title">Poseban Poklon!</string>
     <string name="plans_gift_screen_box_message">Kao jedan od prvih korisnika dobivaš specijalan plan, potpuno besplatno!</string>
-    <string name="plans_gift_screen_benefits_title">🎁 Što je uključeno 🎁</string>
-    <string name="plans_gift_screen_benefits_content">⭐  **1 grupa**\n⭐️  **%1$s članova**\n⭐️  **%2$s mjesta**\n⭐️  Neograničene obavijesti\n⭐️  Neograničeno dijeljenje lokacije</string>
-    <string name="plans_gift_screen_benefits_content_multiple">⭐  **%1$s grupe**\n⭐️  **%1$s članova**\n⭐️  **%2$s mjesta**\n⭐️  Neograničene obavijesti\n⭐️  Neograničeno dijeljenje lokacije</string>
+    <string name="plans_gift_screen_benefits_title">Što je uključeno</string>
     <string name="plans_gift_screen_separator_text">Trebaš još?</string>
     <string name="plans_benefit_place_alerts">Neograničene obavijesti</string>
     <string name="plans_benefit_sharing">Neograničeno dijeljenje lokacije</string>
@@ -430,7 +430,6 @@
     <string name="plan_limit_places_alert_info">mjesta grupe</string>
     <string name="plan_limit_devices_alert_info">uređaja</string>
     <string name="plan_limit_groups_alert_info">grupa</string>
-    <string name="plan_billing_loading_error_alert_message">Nije moguće učitati nadogradnje, pokušajte ponovno.</string>
 
     <string name="app_version_alert_title">Nova nadogradnja aplikacije</string>
     <string name="app_version_alert_message">Nova verzija aplikacije Paralino je dostupna, molimo vas da je ažurirate za bolje iskustvo!</string>

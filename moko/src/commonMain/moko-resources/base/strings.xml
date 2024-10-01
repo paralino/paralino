@@ -158,9 +158,9 @@
     <string name="paywall_button_restore">Restore</string>
     <string name="paywall_privacy_policy_label">Privacy</string>
     <string name="paywall_terms_of_use_label">Terms</string>
-    <string name="paywall_faq_section_title">Frequently Asked Questions</string>
+    <string name="paywall_faq_section_title">Learn more</string>
     <string name="paywall_select_plan_label">Select your plan</string>
-    <string name="paywall_free_plan_name">Free</string>
+    <string name="paywall_free_plan_name">Basic</string>
     <string name="paywall_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
     <string name="paywall_purchase_error_alert_message">Unable to perform billing request, please try again.</string>
 
@@ -174,7 +174,7 @@
     <string name="paywall_faq_question_contact_support">How can I contact support?</string>
 
     <string name="paywall_faq_answer_how_to_cancel">You can cancel your subscription at any time in your account settings under **Subscription** and tap **Cancel**. You will be taken to the store settings where you can cancel your plan.</string>
-    <string name="paywall_faq_answer_upgrade_downgrade">To change your plan, go to **Subscriptions** in your account settings, then tap on Change** and select the plan you like.</string>
+    <string name="paywall_faq_answer_upgrade_downgrade">To change your plan, go to **Subscriptions** in your account settings, then tap on **Change** and select the plan you like.</string>
     <string name="paywall_faq_answer_plan_features">Each group in the %1$s plan can have %2$s members and %3$s places.</string>
     <string name="paywall_faq_answer_premium_group_features">Yes, all members in your group will have access to premium group features. Only one person pays for the premium plan but every group member can use additional benefits.</string>
     <string name="paywall_faq_answer_refund_apple">Since Apple is handling your payment, you will need to go to reportaproblem.apple.com and follow the steps there.</string>
@@ -187,9 +187,7 @@
     <string name="plans_gift_screen_title">Lets celebrate 🎉</string>
     <string name="plans_gift_screen_box_title">Special Launch Gift!</string>
     <string name="plans_gift_screen_box_message">As an early adopter you get specially crafted plan, yours to keep!</string>
-    <string name="plans_gift_screen_benefits_title">🎁 What you get 🎁</string>
-    <string name="plans_gift_screen_benefits_content">⭐  **1 group**\n⭐️  **%1$s members**\n⭐️  **%2$s places**\n⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
-    <string name="plans_gift_screen_benefits_content_multiple">⭐  **%1$s groups**\n⭐️  **%2$s members**\n⭐️  **%3$s places**⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
+    <string name="plans_gift_screen_benefits_title">What you get</string>
     <string name="plans_gift_screen_separator_text">Need more?</string>
     <string name="plans_benefit_place_alerts">Unlimited place alerts</string>
     <string name="plans_benefit_sharing">Unlimited location sharing</string>
@@ -278,7 +276,7 @@
     <string name="toast_copy_invite_code">Code copied</string>
     <string name="invite_delete_alert_title">Are you sure you want to disable this code?\n\nYou will not be able to join any new groups but you can always come back and enable Paralino.ID again.</string>
     <string name="invite_manage_empty_description">You don\'t have an active **Paralino.ID**.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
-    <string name="invite_manage_description">Share this code to join a group and start securely sharing your location.</string>
+    <string name="invite_manage_description">Share this code to join a group.</string>
     <string name="invite_create_alternative_description">Alternative Paralino.IDs allow you to diversify your identity and share different IDs with different people. You can have **%s** Paralino.IDs with your plan.</string>
     <string name="invite_connect_code_placeholder">User Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">You are about to add **%1$s** to **%2$s** group.\nAfter that you can start securely sharing your location.</string>
