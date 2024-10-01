@@ -690,14 +690,14 @@ private fun SubscriptionOptionItem(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-            AnimatedVisibility(discountPercent != null) {
-                Text(
-                    text = discountPercent ?: "",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.sp,
-                    lineHeight = 14.sp
-                )
-            }
+//            AnimatedVisibility(discountPercent != null) {
+//                Text(
+//                    text = discountPercent ?: "",
+//                    fontWeight = FontWeight.SemiBold,
+//                    fontSize = 12.sp,
+//                    lineHeight = 14.sp
+//                )
+//            }
             if (isPromoDiscount) {
                 PlanPriceBadge("🎁 $originalPrice")
             } else {
