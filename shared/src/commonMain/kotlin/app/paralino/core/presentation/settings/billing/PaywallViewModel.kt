@@ -158,7 +158,7 @@ class PaywallViewModel(
                         plans = it.plans.map {
                             it.copy(
                                 isSelected = it.type == event.planType,
-                                isExpanded = it.type == event.planType && sourceType != BillingScreenSourceType.ONBOARDING
+                                isExpanded = false
                             )
                         }
                     )
@@ -240,7 +240,7 @@ class PaywallViewModel(
             type = config.defaultFreePlanConfig().planTypeEnum,
             isCurrentPlan = false,
             isSelected = isFreePlanSelected,
-            isExpanded = isFreePlanSelected && sourceType != BillingScreenSourceType.ONBOARDING,
+            isExpanded = false,
             billingPeriods = emptyList(),
             benefits = freePlanConfig.planBenefits()
         )
@@ -257,7 +257,7 @@ class PaywallViewModel(
                 type = planConfig.planTypeEnum,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
                 isSelected = isPlanSelected,
-                isExpanded = isPlanSelected && sourceType != BillingScreenSourceType.ONBOARDING,
+                isExpanded = sourceType != BillingScreenSourceType.ONBOARDING,
                 billingPeriods = product.periods
                     .groupBy { it.billingPeriod }
                     .map { periods ->
