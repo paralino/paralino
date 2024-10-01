@@ -74,7 +74,7 @@
             android:name=".tracking.LocationService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="location|dataSync" />
+            android:foregroundServiceType="location" />
 
         <receiver
             android:name=".tracking.LocationStartBroadcastReceiver"
