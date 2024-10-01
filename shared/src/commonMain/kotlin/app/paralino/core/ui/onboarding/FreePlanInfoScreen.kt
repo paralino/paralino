@@ -153,8 +153,7 @@ fun FreePlanInfoScreenCore(
 
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     elevation = 8.dp,
                     backgroundColor = MaterialTheme.colors.primary
