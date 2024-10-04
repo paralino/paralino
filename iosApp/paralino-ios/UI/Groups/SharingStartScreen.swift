@@ -13,7 +13,7 @@ struct SharingStartScreen: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var locationManager: LocationManager
     @Binding var path: [NavigationGraph]
-    @StateObject var appState: ViewModelFactoryIOS<SharingStartViewModel>
+    @StateObject var appState: SharingStartState
     
     @State var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     let notificationPermissionHandler = NotificationPermissionHandler()
@@ -26,8 +26,11 @@ struct SharingStartScreen: View {
                     vm: appState.vm,
                     groupId: nil,
                     onPickGroup: { sheet in bottomSheet = sheet },
-                    onNavigateBack: {
+                    onSharingStarted: {
                         path.removeLast()
+                    },
+                    openSubscriptions: {
+                        path.append(.settings(.subscriptions))
                     },
                     askNotificationPermission: {
                         notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
@@ -48,8 +51,24 @@ struct SharingStartScreen: View {
         }
     }
     
-    static func createState(groupId: String?) -> ViewModelFactoryIOS<SharingStartViewModel> {
-        ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.sharingStartVM(groupId: groupId))
+    static func createState(groupId: String?, isOnboarding: Bool) -> SharingStartState {
+        SharingStartState(groupId: groupId, isOnboarding: isOnboarding)
     }
 }
 
+class SharingStartState: ObservableObject {
+    
+    let groupId: String?
+    let isOnboarding: Bool
+    let vm: SharingStartViewModel
+    
+    init (groupId: String?, isOnboarding: Bool) {
+        self.groupId = groupId
+        self.isOnboarding = isOnboarding
+        self.vm = KoinIOS.ViewModels.shared.sharingStartVM(groupId: groupId, isOnboarding: isOnboarding)
+    }
+    
+    deinit {
+        vm.cleanup()
+    }
+}

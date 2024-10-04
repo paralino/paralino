@@ -24,14 +24,14 @@ struct GroupDetailScreen: View {
                     vm: appState.vm,
                     groupId: appState.vm.groupId,
                     openMemberAdd: {
-                        path.append(.home(.memberInvite(groupId: appState.vm.groupId, code: nil)))
+                        path.append(.home(HomeGraph.memberInvite(groupId: appState.vm.groupId, code: nil, isOnboarding: false)))
                     },
                     openMap: {
                         path.removeAll()
                         path.append(.home(.map))
                     },
                     openPlaces: {
-                        path.append(.home(.places(groupId: appState.vm.groupId)))
+                        path.append(.home(.places(groupId: appState.vm.groupId, isOnboarding: false)))
                     },
                     openGroupSettings: {
                         path.append(.home(.groupSettings(groupId: appState.vm.groupId)))
@@ -40,7 +40,10 @@ struct GroupDetailScreen: View {
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupMemberPresentation(memberId: memberId))))
                     },
                     openSharing: {
-                        path.append(.home(.sharingStart(groupId: appState.vm.groupId)))
+                        path.append(.home(.sharingStart(groupId: appState.vm.groupId, isOnboarding: false)))
+                    },
+                    openPaywall: {
+                        
                     },
                     onNavigateBack: {
                         path.removeLast()

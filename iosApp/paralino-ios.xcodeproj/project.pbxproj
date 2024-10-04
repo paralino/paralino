@@ -44,7 +44,6 @@
 		2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */; };
 		256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */; };
 		256FCA692BCD445300DCD2FE /* GroupSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */; };
-		2585A9EA2C7733DE00BC04AA /* production-config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2585A9E92C7733DE00BC04AA /* production-config.xcconfig */; };
 		258C2D3E2BDAED0700CA9229 /* SwiftLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 258C2D3D2BDAED0700CA9229 /* SwiftLocation */; };
 		258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258E9BF629EBDEBF006BD46C /* AlertDialog.swift */; };
 		259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */; };
@@ -73,6 +72,10 @@
 		25C91A342A580CBA00A49F06 /* GroupDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */; };
 		25C91A362A5890B400A49F06 /* MemberInviteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */; };
 		25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D8A43429CE24A00023A0E5 /* AppDelegate.swift */; };
+		25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */; };
+		25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */; };
+		25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802E2CAEABD000DFC890 /* FreePlanInfoScreen.swift */; };
+		25EF80312CAEAC0000DFC890 /* BillingProviderIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF80302CAEAC0000DFC890 /* BillingProviderIOS.swift */; };
 		25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFDE272A5AF6DF00522293 /* GroupStatusTag.swift */; };
 		25EFDE2A2A5B0DCA00522293 /* GroupListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFDE292A5B0DCA00522293 /* GroupListItem.swift */; };
 		25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFDE2B2A5B250600522293 /* GroupPickerSheet.swift */; };
@@ -154,6 +157,10 @@
 		25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailScreen.swift; sourceTree = "<group>"; };
 		25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberInviteScreen.swift; sourceTree = "<group>"; };
 		25D8A43429CE24A00023A0E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionsScreen.swift; sourceTree = "<group>"; };
+		25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen.swift; sourceTree = "<group>"; };
+		25EF802E2CAEABD000DFC890 /* FreePlanInfoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreePlanInfoScreen.swift; sourceTree = "<group>"; };
+		25EF80302CAEAC0000DFC890 /* BillingProviderIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingProviderIOS.swift; sourceTree = "<group>"; };
 		25EFDE272A5AF6DF00522293 /* GroupStatusTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupStatusTag.swift; sourceTree = "<group>"; };
 		25EFDE292A5B0DCA00522293 /* GroupListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupListItem.swift; sourceTree = "<group>"; };
 		25EFDE2B2A5B250600522293 /* GroupPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPickerSheet.swift; sourceTree = "<group>"; };
@@ -202,6 +209,7 @@
 				25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */,
 				2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */,
 				25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */,
+				25EF80302CAEAC0000DFC890 /* BillingProviderIOS.swift */,
 			);
 			path = Provider;
 			sourceTree = "<group>";
@@ -345,6 +353,9 @@
 		25B2DB412A44D7E10007E89D /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */,
+				25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */,
+				25EF802E2CAEABD000DFC890 /* FreePlanInfoScreen.swift */,
 				25B2DB422A44D7F60007E89D /* SettingsScreen.swift */,
 				25B2DB442A44D89B0007E89D /* AccountScreen.swift */,
 				25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */,
@@ -478,7 +489,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					25C03A6329CCE77100646364 = {
 						CreatedOnToolsVersion = 14.2;
@@ -520,7 +531,6 @@
 				254B6F3429EC8039008B1458 /* Localizable.strings in Resources */,
 				254B6F3329EC8039008B1458 /* Localizable.strings in Resources */,
 				25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */,
-				2585A9EA2C7733DE00BC04AA /* production-config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -529,6 +539,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		252D59F22AC6133D00C49BBE /* Compile Kotlin */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -616,6 +627,7 @@
 				25C7DD722BEC16BC00D16BC9 /* AppStatusDebugScreen.swift in Sources */,
 				252EA01D29DDF93B00338956 /* RealtimeApi.swift in Sources */,
 				252EA00929DD8BE100338956 /* LocationStatusProvider.swift in Sources */,
+				25EF80312CAEAC0000DFC890 /* BillingProviderIOS.swift in Sources */,
 				25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */,
 				259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */,
 				252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */,
@@ -624,14 +636,17 @@
 				252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */,
 				252EA00D29DD9AF500338956 /* PushNotificationPresenters.swift in Sources */,
 				254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */,
+				25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */,
 				2522C6872B322923007C4913 /* MapComponent.swift in Sources */,
 				25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */,
 				2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */,
+				25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */,
 				25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */,
 				25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */,
 				252EA01729DDE5A800338956 /* DocumentsApi.swift in Sources */,
 				252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */,
 				25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */,
+				25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */,
 				259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */,
 				252EA01929DDEFC400338956 /* FunctionsApi.swift in Sources */,
 				2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */,
@@ -667,6 +682,7 @@
 			baseConfigurationReference = 2585A9EE2C777EE000BC04AA /* debugProductionConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -699,6 +715,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -734,6 +751,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = XWZADCUWC3;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
@@ -778,6 +796,7 @@
 			baseConfigurationReference = 2585A9EF2C777EF300BC04AA /* debugStagingConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -810,6 +829,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -839,6 +859,7 @@
 			baseConfigurationReference = 2585A9F02C777F1000BC04AA /* releaseProductionConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -871,6 +892,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -900,6 +922,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = XWZADCUWC3;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
@@ -950,6 +973,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = XWZADCUWC3;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",

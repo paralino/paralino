@@ -23,6 +23,8 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         projectId: Bundle.main.object(forInfoDictionaryKey: "paralinoServerKey") as! String,
         publicServerUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoPublicServerUrl") as! String,
         isDevMode: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
+        // TODO add key
+        billingRCApiKey: "",
         hasPreviewFeatures: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
         logToConsole: (Bundle.main.object(forInfoDictionaryKey: "forceLogToSystem") as! String) == "true",
         logErrorsToRemote: true
@@ -59,7 +61,8 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) },
         cryptoServiceProvider: CryptoFrameworkProvider(),
         valueFormatter: ValueFormatter(),
-        appUpdateManager: AppUpdateManager()
+        appUpdateManager: AppUpdateManager(),
+        billingProvider: BillingProviderIOS()
     )
     
     return coreIOSModules

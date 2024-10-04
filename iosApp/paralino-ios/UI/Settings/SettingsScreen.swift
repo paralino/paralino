@@ -45,6 +45,12 @@ struct SettingsScreen: View {
                     openAppStatus: {
                         path.append(.settings(.appStatusDebug))
                     },
+                    openSubscriptions: {
+                        path.append(.settings(.subscriptions))
+                    },
+                    openPaywall: {
+                        
+                    },
                     onShare: { data in
                         shareText = ShareText(text: data)
                     }

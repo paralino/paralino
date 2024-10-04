@@ -25,6 +25,9 @@ struct PlacesScreen: View {
                     addNewPlace: {
                         path.append(.home(.placeCreate(groupId: appState.groupId, placeId: nil, lat: nil, lng: nil)))
                     },
+                    openPaywall: {
+                        
+                    },
                     openPlaceDetailScreen: { place in
                         path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
                     },
@@ -52,19 +55,21 @@ struct PlacesScreen: View {
         }
     }
     
-    static func createState(groupId: String) -> PlacesState {
-        PlacesState(groupId: groupId)
+    static func createState(groupId: String, isOnboarding: Bool) -> PlacesState {
+        PlacesState(groupId: groupId, isOnboarding: isOnboarding)
     }
 }
 
 class PlacesState: BaseMapObservableObject {
     
     let groupId: String
+    let isOnboarding: Bool
     let vm: PlacesViewModel
     
-    init(groupId: String) {
+    init(groupId: String, isOnboarding: Bool) {
         self.groupId = groupId
-        self.vm = KoinIOS.ViewModels.shared.placesVM(groupId: groupId)
+        self.isOnboarding = isOnboarding
+        self.vm = KoinIOS.ViewModels.shared.placesVM(groupId: groupId, isOnboarding: isOnboarding)
     }
     
     func updateMarkers(state: PlacesListScreenState) {

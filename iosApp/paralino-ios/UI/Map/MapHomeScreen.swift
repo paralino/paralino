@@ -27,7 +27,7 @@ struct MapHomeScreen: View {
                         },
                         onOpenPlacesScreen: {
                             if let groupId = mapState.uiState.asReady()?.groupId {
-                                path.append(.home(.places(groupId: groupId)))
+                                path.append(.home(.places(groupId: groupId, isOnboarding: false)))
                             }
                         },
                         onOpenCreatePlaceScreen: {
@@ -41,7 +41,7 @@ struct MapHomeScreen: View {
                             }
                         },
                         onGroupPickerClick: {
-                            groupPicker = BottomSheetPickerTypeGroupPickerBottomSheet(groups: mapState.vm.getAllGroups())
+                            groupPicker = mapState.vm.getGroupPickerState()
                         },
                         onGroupDetailsClick: {
                             if let groupId = mapState.uiState.asReady()?.groupId {
@@ -50,7 +50,7 @@ struct MapHomeScreen: View {
                         },
                         onSharingStartClick: {
                             if let groupId = mapState.uiState.asReady()?.groupId {
-                                path.append(.home(.sharingStart(groupId: groupId)))
+                                path.append(.home(.sharingStart(groupId: groupId, isOnboarding: false)))
                             }
                         },
                         onSettingsClick: {
@@ -61,6 +61,9 @@ struct MapHomeScreen: View {
                         },
                         onCreateGroup: {
                             path.append(.home(.groupCreate(groupId: nil)))
+                        },
+                        openPaywall: {
+                            
                         },
                         mapUIView: { () -> UIView in
                             SwiftUIInUIView(

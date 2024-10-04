@@ -34,6 +34,11 @@ class DeviceApiProvider: IDeviceApiProvider {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
     
+    override var deviceOSVersion: Int32 {
+        // TODO use correct value
+        return 0
+    }
+    
     override var _batteryLevel: Int32 {
         let level = UIDevice.current.batteryLevel
         if level >= 0 && level <= 1 {

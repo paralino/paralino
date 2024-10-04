@@ -25,7 +25,7 @@ struct GroupCreateScreen: View {
                     },
                     groupUpdated: { newGroupId in
                         if appState.vm.isGroupCreate() {
-                            path[path.count - 1] = .home(.groupDetail(groupId: newGroupId))
+                            path[path.count - 1] = .home(HomeGraph.memberInvite(groupId: newGroupId, code: nil, isOnboarding: true))
                         } else {
                             path.removeLast()
                         }

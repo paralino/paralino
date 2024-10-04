@@ -11,7 +11,7 @@ import shared
 struct MemberInviteScreen: View {
     
     @Binding var path: [NavigationGraph]
-    @StateObject var appState: ViewModelFactoryIOS<MemberInviteViewModel>
+    @StateObject var appState: MemberInviteState
     
     // TODO add group picker
     @State var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
@@ -23,7 +23,13 @@ struct MemberInviteScreen: View {
                 ScreensIOS.shared.home.MemberInviteScreenVC(
                     vm: appState.vm,
                     onPickGroup: { sheet in bottomSheet = sheet },
-                    onExit: { path.removeLast() }
+                    onMemberAdded: {
+                        if appState.isOnboarding {
+                            path[path.count - 1] = .home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding))
+                        } else {
+                            path.removeLast()
+                        }
+                    }
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
@@ -31,14 +37,26 @@ struct MemberInviteScreen: View {
         }
     }
     
-    static func createState(groupId: String?, code: String?) -> ViewModelFactoryIOS<MemberInviteViewModel> {
-        ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.memberInviteVM(groupId: groupId, code: code))
+    static func createState(groupId: String?, code: String?, isOnboarding: Bool) -> MemberInviteState {
+        MemberInviteState(groupId: groupId, code: code, isOnboarding: isOnboarding)
     }
 }
 
-struct MemberInviteScreen_Previews: PreviewProvider {
-    @State static var path: [NavigationGraph] = [.home(.groupCreate(groupId: nil))]
-    static var previews: some View {
-        MemberInviteScreen(path: $path, appState: MemberInviteScreen.createState(groupId: nil, code: nil))
+class MemberInviteState: ObservableObject {
+    
+    let groupId: String?
+    let code: String?
+    let isOnboarding: Bool
+    let vm: MemberInviteViewModel
+    
+    init (groupId: String?, code: String?, isOnboarding: Bool) {
+        self.groupId = groupId
+        self.code = code
+        self.isOnboarding = isOnboarding
+        self.vm = KoinIOS.ViewModels.shared.memberInviteVM(groupId: groupId, code: code)
+    }
+    
+    deinit {
+        vm.cleanup()
     }
 }

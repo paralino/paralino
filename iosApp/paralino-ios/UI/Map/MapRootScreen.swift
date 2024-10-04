@@ -31,22 +31,36 @@ struct MapRootScreen: View {
                                 RawDataScreen(appState: RawDataScreen.createState(type: type))
                             case .editProfile: EditProfileScreen(path: $mapState.path)
                             case .appStatusDebug: AppStatusDebugScreen(path: $mapState.path)
+                            case .subscriptions: SubscriptionsScreen(path: $mapState.path)
+                            case .paywall(type: let type): SubscriptionsScreen(path: $mapState.path)
                             }
                         case let .home(homeGraph):
                             switch homeGraph {
                             case .groupCreate(let groupId): GroupCreateScreen(path: $mapState.path, appState: GroupCreateScreen.createState(groupId: groupId))
                             case .groupDetail(let groupId): GroupDetailScreen(path: $mapState.path, appState: GroupDetailScreen.createState(groupId: groupId))
                             case .groupSettings(let groupId): GroupSettingsScreen(path: $mapState.path, appState: GroupSettingsScreen.createState(groupId: groupId))
-                            case .sharingStart(let groupId): SharingStartScreen(path: $mapState.path, appState: SharingStartScreen.createState(groupId: groupId))
+                            case .sharingStart(let groupId, let isOnboarding):
+                                SharingStartScreen(
+                                    path: $mapState.path,
+                                    appState: SharingStartScreen.createState(groupId: groupId, isOnboarding: isOnboarding)
+                                )
                             case .map: MapHomeScreen(path: $mapState.path, mapState: mapState)
                             case .groupInit: GroupInitScreen(path: $mapState.path)
-                            case .memberInvite(let groupId, let code): MemberInviteScreen(path: $mapState.path, appState: MemberInviteScreen.createState(groupId: groupId, code: code))
-                            case .places(groupId: let groupId):
-                                PlacesScreen(path: $mapState.path, appState: PlacesScreen.createState(groupId: groupId))
+                            case .memberInvite(let groupId, let code, let isOnboarding):
+                                MemberInviteScreen(
+                                    path: $mapState.path,
+                                    appState: MemberInviteScreen.createState(groupId: groupId, code: code, isOnboarding: isOnboarding)
+                                )
+                            case .places(let groupId, let isOnboarding):
+                                PlacesScreen(
+                                    path: $mapState.path,
+                                    appState: PlacesScreen.createState(groupId: groupId, isOnboarding: isOnboarding)
+                                )
                             case .placeDetail(groupId: let groupId, placeId: let placeId):
                                 PlaceDetailScreen(path: $mapState.path, appState: PlaceDetailScreen.createState(groupId: groupId, placeId: placeId))
                             case .placeCreate(groupId: let groupId, placeId: let placeId, lat: let lat, lng: let lng):
                                 PlaceCreateScreen(path: $mapState.path, appState: PlaceCreateScreen.createState(groupId: groupId, placeId: placeId, lat: lat, lng: lng))
+                            case .freePlanInfo: FreePlanInfoScreen(path: $mapState.path)
                             }
                         }
                     }.onAppear {
