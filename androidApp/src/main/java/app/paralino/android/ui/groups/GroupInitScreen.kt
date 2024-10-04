@@ -28,13 +28,12 @@ fun GroupInitScreen(
         vm = vm,
         openSettings = { appState.navController.navigate(AppScreen.Settings.routeSignature) },
         onCreateGroup = {
-            if (vm.shouldShowFreePlanNoticeScreen) {
-                appState.navController.navigate(
-                    AppScreen.MainHome.FreePlanNoticeScreen.route(groupId = null)
-                )
-            } else {
-                appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(null))
-            }
+            appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(null))
+        },
+        openFreePlanInfo = {
+            appState.navController.navigate(
+                AppScreen.MainHome.FreePlanNoticeScreen.route(groupId = null)
+            )
         },
         openPersonalCodes = { appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature) },
         onSharePersonalCode = { context.share(it) },

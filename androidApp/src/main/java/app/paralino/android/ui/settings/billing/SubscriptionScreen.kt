@@ -41,7 +41,7 @@ fun SubscriptionScreen(
             openBillingStore = {
                 uriHandler.openUri(BackendResourceIDs.subscriptionUrlGooglePlay)
             },
-            openBillingManagementScreen = {
+            openPaywall = {
                 appState.navController.navigate(AppScreen.Settings.BillingPaywall.route())
             }
         )

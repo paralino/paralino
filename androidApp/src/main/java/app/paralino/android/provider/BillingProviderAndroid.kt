@@ -75,7 +75,7 @@ class BillingProviderAndroid(
             .also { currentUserPlan.value = it }
     }
 
-    override suspend fun configure() {
+    override suspend fun configure(): List<IBillingProvider.SubscriptionPlanData> {
         val billingUserId = userConfigRepo.ensureAndGetBillingUserId()
         val result = configure(billingUserId = billingUserId)
 
@@ -85,6 +85,7 @@ class BillingProviderAndroid(
         }
 
         loadPlatformHighestUserPlan()
+        return loadAndGetProducts()
     }
 
     private fun configure(billingUserId: String): Boolean {
@@ -109,7 +110,7 @@ class BillingProviderAndroid(
         return false
     }
 
-    override suspend fun loadAndGetProducts(): MutableList<IBillingProvider.SubscriptionPlanData> {
+    private suspend fun loadAndGetProducts(): List<IBillingProvider.SubscriptionPlanData> {
         val offerings = Purchases.sharedInstance.awaitOfferings()
         this.offerings.value = offerings
         val products = mutableMapOf<String, IBillingProvider.SubscriptionPlanData>()
@@ -170,7 +171,7 @@ class BillingProviderAndroid(
                 }
             }
         }
-        return products.values.toMutableList()
+        return products.values.toList()
     }
 
     suspend fun startPurchase(

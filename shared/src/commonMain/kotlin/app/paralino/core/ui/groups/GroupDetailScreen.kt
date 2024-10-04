@@ -85,7 +85,7 @@ fun GroupDetailScreenCore(
     openGroupSettings: () -> Unit,
     openMemberRawData: (String) -> Unit,
     openSharing: () -> Unit,
-    openSubscriptions: () -> Unit,
+    openPaywall: () -> Unit,
     onNavigateBack: () -> Unit,
     askNotificationPermission: () -> Unit,
     askLocationService: () -> Unit,
@@ -124,7 +124,7 @@ fun GroupDetailScreenCore(
                 }
 
                 is GroupDetailScreenEvent.GroupMembersLimitReached -> {
-                    openSubscriptions()
+                    openPaywall()
                 }
 
                 GroupDetailScreenEvent.UserBlockActionCompleted -> {}
@@ -300,7 +300,7 @@ fun GroupDetailScreenCore(
                         this.item(key = "plan_upgrade_banner") {
                             PremiumPlanBannerSmall(
                                 description = stringResource(MR.strings.plans_banner_inline_group_detail),
-                                onClick = openSubscriptions
+                                onClick = openPaywall
                             )
                             Spacer(modifier = Modifier.size(40.dp))
                         }

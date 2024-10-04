@@ -113,7 +113,7 @@ fun PlacesScreen(
                     )
                 )
             },
-            openSubscriptions = {
+            openPaywall = {
                 appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             },
             mapContent = { state ->

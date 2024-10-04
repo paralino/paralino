@@ -1,5 +1,6 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.kotlin.daemon.common.trimQuotes
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.util.Properties
@@ -18,20 +19,18 @@ plugins {
 kotlin {
     androidTarget()
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries {
-            framework {
-                baseName = "shared"
-                isStatic = true
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
-                // required so iOS app can use resource directly in Swift code
-                export(project(":moko"))
-                export(libs.moko.resources)
-            }
+    targets.withType<KotlinNativeTarget>().configureEach {
+        binaries.framework {
+            baseName = "shared"
+            isStatic = true
+
+            // required so iOS app can use resource directly in Swift code
+            export(project(":moko"))
+            export(libs.moko.resources)
         }
     }
 

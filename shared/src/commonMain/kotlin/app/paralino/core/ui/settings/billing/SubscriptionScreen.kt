@@ -44,7 +44,7 @@ fun SubscriptionScreenCore(
     paddingValues: PaddingValues,
     onNavigateBack: () -> Unit,
     openBillingStore: () -> Unit,
-    openBillingManagementScreen: () -> Unit,
+    openPaywall: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
@@ -112,7 +112,7 @@ fun SubscriptionScreenCore(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.size(40.dp))
-                    PremiumPlanBanner(onClick = openBillingManagementScreen)
+                    PremiumPlanBanner(onClick = openPaywall)
                 } else if (uiState.subscriptionState?.isCurrentPlatform == true) {
                     Text(
                         text = stringResource(
@@ -136,7 +136,7 @@ fun SubscriptionScreenCore(
                         icon = CoreAppIcons.Edit.asPainterResource(),
                         type = SettingsActionItemType.Navigation
                     ) {
-                        openBillingManagementScreen()
+                        openPaywall()
                     }
                 } else {
                     Text(
@@ -152,7 +152,7 @@ fun SubscriptionScreenCore(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.size(40.dp))
-                PremiumPlanBanner(onClick = openBillingManagementScreen)
+                PremiumPlanBanner(onClick = openPaywall)
             }
         }
     }

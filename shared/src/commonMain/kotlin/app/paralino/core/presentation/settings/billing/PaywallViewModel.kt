@@ -59,8 +59,7 @@ class PaywallViewModel(
         combine(
             userRepo.userPlans,
             flow {
-                billingProvider.configure()
-                val products = billingProvider.loadAndGetProducts()
+                val products = billingProvider.configure()
                 emit(products)
                 _uiState.update { it.copy(isLoading = false) }
             }

@@ -42,7 +42,6 @@ import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.invite.manage.PersonalCodeItem
-import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
@@ -55,6 +54,7 @@ fun GroupInitScreenCore(
     vm: GroupInitViewModel,
     openSettings: () -> Unit,
     onCreateGroup: () -> Unit,
+    openFreePlanInfo: () -> Unit,
     openPersonalCodes: () -> Unit,
     onSharePersonalCode: (String) -> Unit,
     askNotificationPermission: () -> Unit
@@ -218,7 +218,11 @@ fun GroupInitScreenCore(
                     seekbarState = null
                 ),
                 onStateChange = {
-                    onCreateGroup()
+                    if (vm.shouldShowFreePlanNoticeScreen) {
+                        openFreePlanInfo()
+                    } else {
+                        onCreateGroup()
+                    }
                 }
             )
 

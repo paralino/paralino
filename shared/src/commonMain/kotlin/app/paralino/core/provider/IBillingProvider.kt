@@ -4,8 +4,7 @@ import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 
 interface IBillingProvider {
-    suspend fun configure()
-    suspend fun loadAndGetProducts(): MutableList<SubscriptionPlanData>
+    suspend fun configure(): List<SubscriptionPlanData>
 
     data class SubscriptionPlanData(
         val productId: String,

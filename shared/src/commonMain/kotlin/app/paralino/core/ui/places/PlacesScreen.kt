@@ -63,7 +63,7 @@ fun PlacesScreenCore(
     contentPadding: PaddingValues,
     askNotificationPermission: () -> Unit,
     addNewPlace: () -> Unit,
-    openSubscriptions: () -> Unit,
+    openPaywall: () -> Unit,
     openPlaceDetails: (place: PlaceListItemData) -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
@@ -83,7 +83,7 @@ fun PlacesScreenCore(
                 }
 
                 is PlacesScreenEvent.GroupPlacesLimitReached -> {
-                    openSubscriptions()
+                    openPaywall()
                 }
 
                 null -> { /* do nothing */
@@ -123,7 +123,7 @@ fun PlacesScreenCore(
                 onCreatePlace = {
                     vm.onEvent(PlacesScreenUiEvent.CreatePlace)
                 },
-                onPlanBannerClick = openSubscriptions,
+                onPlanBannerClick = openPaywall,
                 onErrorItemClick = {
                     askNotificationPermission()
                 },
