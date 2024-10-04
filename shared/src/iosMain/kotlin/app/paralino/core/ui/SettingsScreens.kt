@@ -7,6 +7,9 @@ import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
+import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
+import app.paralino.core.presentation.settings.billing.PaywallViewModel
+import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
@@ -18,6 +21,8 @@ import app.paralino.core.ui.settings.AppStatusDebugScreenCore
 import app.paralino.core.ui.settings.BlocklistScreenCore
 import app.paralino.core.ui.settings.RawDataScreenCore
 import app.paralino.core.ui.settings.SettingsScreenCore
+import app.paralino.core.ui.settings.billing.PaywallScreenCore
+import app.paralino.core.ui.settings.billing.SubscriptionScreenCore
 import app.paralino.core.ui.settings.profile.AccountScreenCore
 import app.paralino.core.ui.settings.profile.ChangeEmailScreenCore
 import app.paralino.core.ui.settings.profile.ChangePasswordScreenCore
@@ -169,6 +174,41 @@ object SettingsScreens {
                 appState = it,
                 vm = vm,
                 paddingValues = PaddingValues()
+            )
+        }
+    }
+
+    fun SubscriptionsScreenVC(
+        vm: SubscriptionViewModel,
+        onNavigateBack: () -> Unit,
+        openBillingStore: () -> Unit,
+        openPaywall: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            SubscriptionScreenCore(
+                appState = it,
+                vm = vm,
+                paddingValues = PaddingValues(bottom = 30.dp),
+                onNavigateBack = onNavigateBack,
+                openBillingStore = openBillingStore,
+                openPaywall = openPaywall
+            )
+        }
+    }
+
+    fun PaywallScreenVC(
+        vm: PaywallViewModel,
+        onNavigateBack: (Boolean) -> Unit,
+        onStartPurchase: (PaywallScreenEvent.OnStartPurchase) -> Unit,
+        onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            PaywallScreenCore(
+                appState = it,
+                vm = vm,
+                onNavigateBack = onNavigateBack,
+                onStartPurchase = onStartPurchase,
+                onRestorePurchase = onRestorePurchase
             )
         }
     }

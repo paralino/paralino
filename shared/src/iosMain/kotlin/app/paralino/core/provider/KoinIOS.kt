@@ -94,7 +94,8 @@ object KoinIOS {
         realtimeApi: (IRemoteModule, AppBuildConfig) -> IRealtimeApiIOS,
         cryptoServiceProvider: ICryptoServiceProviderIOS,
         valueFormatter: IValueFormatter,
-        appUpdateManager: IAppUpdateManager
+        appUpdateManager: IAppUpdateManager,
+        billingProvider: IBillingProvider,
     ): List<Module> {
         return listOf(
             module {
@@ -105,6 +106,7 @@ object KoinIOS {
                 factory { placeNotificationPresenter } bind IPlaceActivityNotificationPresenter::class
                 factory { groupActivityNotificationPresenter } bind IGroupActivityNotificationPresenter::class
                 factory { infoNotificationPresenter } bind IInfoMessagesNotificationPresenter::class
+                factory { billingProvider } bind IBillingProvider::class
                 single { geofenceManager }
                 single { remoteModule(get()) }
                 single { appBuildConfig }
@@ -241,8 +243,8 @@ object KoinIOS {
         fun memberInviteVM(groupId: String?, code: String?) =
             get<MemberInviteViewModel> { parametersOf(groupId, code) }
 
-        fun sharingStartVM(groupId: String?) = get<SharingStartViewModel> { parametersOf(groupId) }
-        fun placesVM(groupId: String) = get<PlacesViewModel> { parametersOf(groupId) }
+        fun sharingStartVM(groupId: String?, isOnboarding: Boolean) = get<SharingStartViewModel> { parametersOf(groupId, isOnboarding) }
+        fun placesVM(groupId: String, isOnboarding: Boolean) = get<PlacesViewModel> { parametersOf(groupId, isOnboarding) }
         fun placeDetailVM(groupId: String, placeId: String) =
             get<PlaceDetailViewModel> { parametersOf(groupId, placeId) }
 
@@ -255,6 +257,7 @@ object KoinIOS {
         val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
         val subscriptionVM get() = get<SubscriptionViewModel>()
         val paywallVM get() = get<PaywallViewModel>()
+        val planInfoVM get() = get<PlanInfoViewModel>()
     }
 
 }

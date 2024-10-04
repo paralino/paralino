@@ -41,6 +41,7 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.MessageDispatcherEffect
@@ -54,6 +55,7 @@ import app.paralino.core.ui.login.GroupInitScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
+import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
@@ -67,6 +69,7 @@ object HomeScreens {
         vm: GroupInitViewModel,
         openSettings: () -> Unit,
         onCreateGroup: () -> Unit,
+        openFreePlanInfo: () -> Unit,
         openPersonalCodes: () -> Unit,
         onSharePersonalCode: (String) -> Unit,
         askNotificationPermission: () -> Unit,
@@ -77,6 +80,7 @@ object HomeScreens {
                 vm = vm,
                 openSettings = openSettings,
                 onCreateGroup = onCreateGroup,
+                openFreePlanInfo = openFreePlanInfo,
                 openPersonalCodes = openPersonalCodes,
                 onSharePersonalCode = onSharePersonalCode,
                 askNotificationPermission = askNotificationPermission,
@@ -108,7 +112,7 @@ object HomeScreens {
         openGroupSettings: () -> Unit,
         openMemberRawData: (String) -> Unit,
         openSharing: () -> Unit,
-        openSubscriptions: () -> Unit,
+        openPaywall: () -> Unit,
         onNavigateBack: () -> Unit,
         askNotificationPermission: () -> Unit,
         askLocationService: () -> Unit,
@@ -127,7 +131,7 @@ object HomeScreens {
                 openGroupSettings = openGroupSettings,
                 openMemberRawData = openMemberRawData,
                 openSharing = openSharing,
-                openSubscriptions = openSubscriptions,
+                openPaywall = openPaywall,
                 onNavigateBack = onNavigateBack,
                 askNotificationPermission = askNotificationPermission,
                 askLocationService = askLocationService,
@@ -211,6 +215,7 @@ object HomeScreens {
         onSettingsClick: () -> Unit,
         onPlaceClick: (PlaceListItemData) -> Unit,
         onCreateGroup: () -> Unit,
+        openPaywall: () -> Unit,
         mapUIView: () -> UIView,
     ) = ComposeUIViewController() {
         RootScreenIOS {
@@ -253,7 +258,7 @@ object HomeScreens {
                             }
 
                             MapHomeScreenEvent.GroupsPlanLimitReached -> {
-                                // TODO react
+                                openPaywall()
                             }
 
                             null -> {}
@@ -343,7 +348,7 @@ object HomeScreens {
     fun PlacesScreenVC(
         vm: PlacesViewModel,
         addNewPlace: () -> Unit,
-        openSubscriptions: () -> Unit,
+        openPaywall: () -> Unit,
         openPlaceDetailScreen: (place: PlaceListItemData) -> Unit,
         askNotificationPermission: () -> Unit,
         mapUIView: (PlacesListScreenState) -> UIView,
@@ -361,7 +366,7 @@ object HomeScreens {
                 contentPadding = PaddingValues(bottom = 30.dp),
                 askNotificationPermission = askNotificationPermission,
                 addNewPlace = addNewPlace,
-                openSubscriptions = openSubscriptions,
+                openPaywall = openPaywall,
                 openPlaceDetails = openPlaceDetailScreen,
                 mapContent = { state ->
                     Box(
@@ -436,6 +441,23 @@ object HomeScreens {
                         )
                     }
                 }
+            )
+        }
+    }
+
+    fun FreePlanInfoScreenVC(
+        vm: PlanInfoViewModel,
+        showBanner: Boolean,
+        onContinue: () -> Unit,
+        openPaywall: () -> Unit
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            FreePlanInfoScreenCore(
+                coreUiState = it,
+                vm = vm,
+                showBanner = showBanner,
+                onContinue = onContinue,
+                openPaywall = openPaywall,
             )
         }
     }
