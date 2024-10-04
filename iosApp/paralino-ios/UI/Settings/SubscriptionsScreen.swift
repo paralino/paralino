@@ -30,7 +30,7 @@ struct SubscriptionsScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-            .navigationTitle(MR.shared.strings.plan_limit_alert_title.localizedString())
+            .navigationTitle(MR.shared.strings.plans_management_screen_title.localizedString())
         }
     }
 }
