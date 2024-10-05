@@ -9,7 +9,3 @@
 // https://help.apple.com/xcode/#/dev745c5c974
 
 #include "production-config.xcconfig"
-
-TEAM_ID=
-BUNDLE_ID=app.paralino.ios
-APP_NAME=Paralino
