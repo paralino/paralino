@@ -192,7 +192,7 @@ fun FreePlanInfoScreenCore(
                 }
                 Column {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
                         text = stringResource(MR.strings.plans_gift_screen_benefits_title),
                         style = MaterialTheme.typography.h4,
                         fontWeight = FontWeight.Bold,

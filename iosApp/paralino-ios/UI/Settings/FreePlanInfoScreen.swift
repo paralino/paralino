@@ -23,12 +23,12 @@ struct FreePlanInfoScreen: View {
                         path.append(.home(.groupCreate(groupId: nil)))
                     },
                     openPaywall: {
-                        path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.freePlanNotice)))
                     }
                 )
             }
-            .ignoresSafeArea(.all, edges: .bottom)
-            .navigationTitle(MR.shared.strings.plan_limit_alert_title.localizedString())
+            .ignoresSafeArea(.all, edges: .vertical)
+            .navigationBarBackButtonHidden(true)
         }
     }
 }
