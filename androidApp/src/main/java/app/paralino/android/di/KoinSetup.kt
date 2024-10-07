@@ -101,9 +101,9 @@ object KoinSetup {
         single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class
 
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
-        factory { PlaceNotificationPresenter(androidContext()) } bind IPlaceActivityNotificationPresenter::class
-        factory { GroupActivityNotificationPresenter(androidContext()) } bind IGroupActivityNotificationPresenter::class
-        factory { InfoMessagesNotificationPresenter(androidContext()) } bind IInfoMessagesNotificationPresenter::class
+        factory { PlaceNotificationPresenter(androidContext(), get()) } bind IPlaceActivityNotificationPresenter::class
+        factory { GroupActivityNotificationPresenter(androidContext(), get()) } bind IGroupActivityNotificationPresenter::class
+        factory { InfoMessagesNotificationPresenter(androidContext(), get()) } bind IInfoMessagesNotificationPresenter::class
 
         single<IUserApi> { UserApi(get()) }
         single<IDocumentsApi> { DocumentsApi(get()) }

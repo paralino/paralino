@@ -5,9 +5,6 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.IValueFormatter
-import app.paralino.core.provider.InAppLogger
-import app.paralino.core.provider.InAppLoggerLogType
-import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
@@ -26,12 +23,15 @@ class PlaceActivityNotificationHandler(
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val presenter: IPlaceActivityNotificationPresenter,
     private val groupPresenter: IGroupActivityNotificationPresenter,
-    private val inAppLogger: InAppLogger,
     private val valueFormatter: IValueFormatter
 ) {
-    suspend fun processPlaceActivity(push: PushNotificationRaw) {
+    suspend fun processPlaceActivity(
+        push: PushNotificationRaw,
+        notify: Boolean
+    ): IPushNotificationPresenter.Payload? {
 
-        val payload = push.content?.tryParseFromJson<PlaceActivityNotificationPayload>() ?: return
+        val payload =
+            push.content?.tryParseFromJson<PlaceActivityNotificationPayload>() ?: return null
 
         var placeName: String? = null
         var userName: String? = null
@@ -65,26 +65,29 @@ class PlaceActivityNotificationHandler(
         } else {
             null
         }
-        presenter.notify(
+
+        val pushPayload = IPushNotificationPresenter.Payload(
             notificationId = notificationId,
             title = title,
             message = null,
             timeMillis = triggerTime.toEpochMilliseconds(),
-            timeInfo = timeInfo
+            timeInfo = timeInfo,
+            loggerTag = "place_notification"
         )
 
-        inAppLogger.log(
-            type = InAppLoggerLogType.NOTIFICATIONS,
-            priority = LogPriority.INFO,
-            tag = "place_notification",
-            title = title,
-            info = timeInfo
-        )
+        if (notify) {
+            presenter.notify(pushPayload)
+        }
+
+        return pushPayload
     }
 
-    suspend fun processPlaceCreated(push: PushNotificationRaw) {
+    suspend fun processPlaceCreated(
+        push: PushNotificationRaw,
+        notify: Boolean
+    ): IPushNotificationPresenter.Payload? {
         val payload =
-            push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return
+            push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return null
 
         preRefreshUseCase.refreshGroupWithMembers(
             groupId = payload.groupId,
@@ -107,40 +110,48 @@ class PlaceActivityNotificationHandler(
             MR.strings.place_created_notification.localizedString(groupName, placeName)
         }
 
-        val notificationId = payload.hashCode()
-        groupPresenter.notify(
-            notificationId = notificationId,
+        val pushPayload = IPushNotificationPresenter.Payload(
+            notificationId = payload.hashCode(),
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),
-            timeInfo = null
+            timeInfo = null,
+            loggerTag = "place_notification"
         )
 
-        inAppLogger.log(
-            type = InAppLoggerLogType.NOTIFICATIONS,
-            priority = LogPriority.INFO,
-            tag = "place_notification",
-            title = title,
-            info = null
-        )
+        if (notify) {
+            groupPresenter.notify(pushPayload)
+        }
+
+        return pushPayload
     }
 
-    suspend fun processPlaceDeleted(push: PushNotificationRaw) {
+    suspend fun processPlaceDeleted(
+        push: PushNotificationRaw,
+        notify: Boolean
+    ): IPushNotificationPresenter.Payload? {
         val payload =
-            push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return
+            push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return null
         preRefreshUseCase.refreshGroupWithMembers(
             groupId = payload.groupId,
             cacheTimeMillis = 20.seconds.inWholeMilliseconds
         )
+
+        return null
     }
 
-    suspend fun processPlaceUpdated(push: PushNotificationRaw) {
+    suspend fun processPlaceUpdated(
+        push: PushNotificationRaw,
+        notify: Boolean
+    ): IPushNotificationPresenter.Payload? {
         val payload =
-            push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return
+            push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return null
         preRefreshUseCase.refreshGroupWithMembers(
             groupId = payload.groupId,
             cacheTimeMillis = 20.seconds.inWholeMilliseconds
         )
+
+        return null
     }
 }
 

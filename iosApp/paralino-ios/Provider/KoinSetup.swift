@@ -42,9 +42,9 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         connectionStatusProvider: connectionStatusProvider,
         locationStatusProvider: locationStatusProvider,
         pushSetupProvider: PushSetupProvider(),
-        placeNotificationPresenter: PlaceNotificationPresenter(),
-        groupActivityNotificationPresenter: GroupActivityNotificationPresenter(),
-        infoNotificationPresenter: InfoNotificationPresenter(),
+        placeNotificationPresenter: { inAppLogger in PlaceNotificationPresenter(inAppLogger: inAppLogger) },
+        groupActivityNotificationPresenter: { inAppLogger in GroupActivityNotificationPresenter(inAppLogger: inAppLogger) },
+        infoNotificationPresenter: { inAppLogger in InfoNotificationPresenter(inAppLogger: inAppLogger) },
         geofenceManager: GeofenceManager(),
         appBuildConfig: appBuildConfig,
         oneTimeLocationProvider: { locationStatusProvider, locationCacheRepository in

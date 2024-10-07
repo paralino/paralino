@@ -26,6 +26,7 @@ import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.notifications.IPushNotificationPresenter
 import app.paralino.core.provider.CoreAppClass
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
@@ -97,11 +98,13 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
                                 MR.strings.error_location_sharing_start_notification_message.getString(this)
                             }
                         infoMessagesNotifications.notify(
-                            notificationId = 54343,
-                            title = MR.strings.error_something_wrong.getString(this),
-                            message = message,
-                            timeMillis = null,
-                            timeInfo = null
+                            IPushNotificationPresenter.Payload(
+                                notificationId = 54343,
+                                title = MR.strings.error_something_wrong.getString(this),
+                                message = message,
+                                timeMillis = null,
+                                timeInfo = null
+                            )
                         )
                     }
                 }

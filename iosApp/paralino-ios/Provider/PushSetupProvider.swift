@@ -18,6 +18,11 @@ class PushSetupProvider: IPushProviderManager {
         
     }
     
+    func getNotificationPayload(notificationId: String) async -> IPushNotificationPresenter.Payload? {
+        let payload = try? await pushHandler.retrievePushPresenterPayload(notificationId: notificationId, force: true)
+        return payload
+    }
+    
     func syncPushNotifications() {
         DispatchQueue.main.async { [weak self] in
             Task {

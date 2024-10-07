@@ -78,9 +78,9 @@ object KoinIOS {
         connectionStatusProvider: IConnectionStatusProvider,
         locationStatusProvider: ILocationStatusProvider,
         pushSetupProvider: IPushProviderManager,
-        placeNotificationPresenter: IPlaceActivityNotificationPresenter,
-        groupActivityNotificationPresenter: IGroupActivityNotificationPresenter,
-        infoNotificationPresenter: IInfoMessagesNotificationPresenter,
+        placeNotificationPresenter: (InAppLogger) -> IPlaceActivityNotificationPresenter,
+        groupActivityNotificationPresenter: (InAppLogger) -> IGroupActivityNotificationPresenter,
+        infoNotificationPresenter: (InAppLogger) -> IInfoMessagesNotificationPresenter,
         geofenceManager: IGeofenceManager,
         appBuildConfig: AppBuildConfig,
         oneTimeLocationProvider: (
@@ -103,9 +103,9 @@ object KoinIOS {
                 single { connectionStatusProvider }
                 single { locationStatusProvider }
                 single { pushSetupProvider }
-                factory { placeNotificationPresenter } bind IPlaceActivityNotificationPresenter::class
-                factory { groupActivityNotificationPresenter } bind IGroupActivityNotificationPresenter::class
-                factory { infoNotificationPresenter } bind IInfoMessagesNotificationPresenter::class
+                factory { placeNotificationPresenter(get()) } bind IPlaceActivityNotificationPresenter::class
+                factory { groupActivityNotificationPresenter(get()) } bind IGroupActivityNotificationPresenter::class
+                factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
                 factory { billingProvider } bind IBillingProvider::class
                 single { geofenceManager }
                 single { remoteModule(get()) }

@@ -10,43 +10,34 @@ import shared
 import UserNotifications
 
 class PlaceNotificationPresenter: IPlaceActivityNotificationPresenter {
-    func notify(notificationId: Int32, title: String, message: String?, timeMillis: KotlinLong?, timeInfo: String?) {
-        let content = UNMutableNotificationContent()
-        
-        let formattedDate = timeInfo != nil ? "\n\(timeInfo ?? "")" : ""
-        
-        if let message = message {
-            content.title = title
-            content.body = message + formattedDate
-        } else {
-            content.body = title + formattedDate
-        }
+    override func showPushNotification(payload: IPushNotificationPresenter.Payload) {
+        let content = payload.notificationContent()
     
-        let request = UNNotificationRequest(identifier: "\(notificationId)", content: content, trigger: nil)
+        let request = UNNotificationRequest(identifier: "\(payload.notificationId)", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { (error : Error?) in }
     }
 }
 
 class GroupActivityNotificationPresenter: IGroupActivityNotificationPresenter {
-    func notify(notificationId: Int32, title: String, message: String?, timeMillis: KotlinLong?, timeInfo: String?) {
-        let content = UNMutableNotificationContent()
-        
-        let formattedDate = timeInfo != nil ? "\n\(timeInfo ?? "")" : ""
-        
-        if let message = message {
-            content.title = title
-            content.body = message + formattedDate
-        } else {
-            content.body = title + formattedDate
-        }
+    override func showPushNotification(payload: IPushNotificationPresenter.Payload) {
+        let content = payload.notificationContent()
     
-        let request = UNNotificationRequest(identifier: "\(notificationId)", content: content, trigger: nil)
+        let request = UNNotificationRequest(identifier: "\(payload.notificationId)", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { (error : Error?) in }
     }
 }
 
 class InfoNotificationPresenter: IInfoMessagesNotificationPresenter {
-    func notify(notificationId: Int32, title: String, message: String?, timeMillis: KotlinLong?, timeInfo: String?) {
+    override func showPushNotification(payload: IPushNotificationPresenter.Payload) {
+        let content = payload.notificationContent()
+    
+        let request = UNNotificationRequest(identifier: "\(payload.notificationId)", content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request) { (error : Error?) in }
+    }
+}
+
+extension IPushNotificationPresenter.Payload {
+    func notificationContent() -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
         
         let formattedDate = timeInfo != nil ? "\n\(timeInfo ?? "")" : ""
@@ -57,8 +48,7 @@ class InfoNotificationPresenter: IInfoMessagesNotificationPresenter {
         } else {
             content.body = title + formattedDate
         }
-    
-        let request = UNNotificationRequest(identifier: "\(notificationId)", content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request) { (error : Error?) in }
+        
+        return content
     }
 }

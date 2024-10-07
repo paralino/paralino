@@ -24,6 +24,51 @@ class PushNotificationHandler constructor(
 
     private val executionKey = "notification_sync"
 
+    suspend fun retrievePushPresenterPayload(
+        notificationId: String,
+        force: Boolean
+    ): IPushNotificationPresenter.Payload? {
+
+        try {
+            startProcessing(executionKey)
+        } catch (e: Exception) {
+            logg.tag(executionKey).v("Processing, can't fetch notification")
+            if (!force) {
+                return null
+            }
+        }
+
+        try {
+            val notification = docApi.getDocument(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = BackendResourceIDs.collectionPushNotificationID,
+                documentId = notificationId
+            )
+                .also {
+                    logg.tag("push_notifications").v("Got ${it.size} notifications documents")
+                }
+                .let {
+                    try {
+                        PushNotificationRaw.from(it)
+                    } catch (e: Exception) {
+                        logg.tag("push_notifications").e("Error parsing push notification", e)
+                        null
+                    }
+                }
+
+            return processNotification(
+                push = notification!!,
+                notify = false,
+                onDelete = null
+            )
+        } catch (e: Exception) {
+            logg.tag(executionKey).w("Error fetching push notification - ${e.message}")
+            return null
+        } finally {
+            stopProcessing(executionKey)
+        }
+    }
+
     suspend fun checkForPushNotifications(): Result<Unit> {
         try {
             startProcessing(executionKey)
@@ -127,19 +172,9 @@ class PushNotificationHandler constructor(
             .forEach {
                 processNotification(
                     push = it,
+                    notify = true,
                     onDelete = { push ->
-                        try {
-                            logg.tag("push_notifications").v("Delete push notification document")
-                            docApi.deleteDocument(
-                                databaseType = BackendDatabaseType.DATA,
-                                collectionId = BackendResourceIDs.collectionPushNotificationID,
-                                documentId = push.id
-                            )
-                            delay(400)
-                        } catch (e: Exception) {
-                            logg.tag("push_notifications")
-                                .w("Error deleting push notification ${push.id} - ${e.message}")
-                        }
+                        deletePushNotification(notificationId = push.id)
                     }
                 )
             }
@@ -156,7 +191,7 @@ class PushNotificationHandler constructor(
                     .v("Processing ${it.size} location focus documents")
             }
             .forEach {
-                processNotification(push = it)
+                processNotification(push = it, notify = true)
             }
 
         logg.tag("push_notifications").v("Processing notifications done")
@@ -164,11 +199,12 @@ class PushNotificationHandler constructor(
 
     private suspend fun processNotification(
         push: PushNotificationRaw,
+        notify: Boolean,
         onDelete: (suspend (PushNotificationRaw) -> Unit)? = null
-    ) {
+    ): IPushNotificationPresenter.Payload? {
 
         if (!push.isForThisDevice()) {
-            return
+            return null
         }
 
         logg.tag("push_notifications")
@@ -177,51 +213,76 @@ class PushNotificationHandler constructor(
         if (push.isExpired) {
             logg.tag("push_notifications").v("Push notification expired, ignore")
             onDelete?.invoke(push)
-            return
+            return null
         }
 
-        when (push.pushType) {
+        val payload: IPushNotificationPresenter.Payload? = when (push.pushType) {
             PushNotificationType.PLACE_ALERT -> {
-                placePush.processPlaceActivity(push)
-                onDelete?.invoke(push)
+                placePush.processPlaceActivity(push, notify).also {
+                    onDelete?.invoke(push)
+                }
             }
 
             PushNotificationType.GROUP_MEMBER_ADDED -> {
-                groupMemberActivityPush.processMemberAdded(push)
-                onDelete?.invoke(push)
+                groupMemberActivityPush.processMemberAdded(push, notify).also {
+                    onDelete?.invoke(push)
+                }
             }
 
             PushNotificationType.GROUP_MEMBER_DELETED -> {
-                groupMemberActivityPush.processMemberDeleted(push)
-                onDelete?.invoke(push)
+                groupMemberActivityPush.processMemberDeleted(push, notify).also {
+                    onDelete?.invoke(push)
+                }
             }
 
             PushNotificationType.LOCATION_REQUEST, PushNotificationType.LOCATION_FOCUS -> {
                 locationRequestPush.process(push)
                 onDelete?.invoke(push)
+                null
             }
 
             PushNotificationType.PLACE_CREATED -> {
-                placePush.processPlaceCreated(push)
-                onDelete?.invoke(push)
+                placePush.processPlaceCreated(push, notify).also {
+                    onDelete?.invoke(push)
+                }
             }
 
             PushNotificationType.PLACE_UPDATED -> {
-                placePush.processPlaceUpdated(push)
-                onDelete?.invoke(push)
+                placePush.processPlaceUpdated(push, notify).also {
+                    onDelete?.invoke(push)
+                }
             }
 
             PushNotificationType.PLACE_DELETED -> {
-                placePush.processPlaceDeleted(push)
-                onDelete?.invoke(push)
+                placePush.processPlaceDeleted(push, notify).also {
+                    onDelete?.invoke(push)
+                }
             }
 
             PushNotificationType.LOCATION_STARTED -> {
-                groupMemberActivityPush.processLocationSharingStarted(push)
-                onDelete?.invoke(push)
+                groupMemberActivityPush.processLocationSharingStarted(push, notify).also {
+                    onDelete?.invoke(push)
+                }
             }
 
-            null -> {}
+            null -> null
+        }
+
+        return payload
+    }
+
+    suspend fun deletePushNotification(notificationId: String) {
+        try {
+            logg.tag("push_notifications").v("Delete push notification document")
+            docApi.deleteDocument(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = BackendResourceIDs.collectionPushNotificationID,
+                documentId = notificationId
+            )
+            delay(400)
+        } catch (e: Exception) {
+            logg.tag("push_notifications")
+                .w("Error deleting push notification $notificationId - ${e.message}")
         }
     }
 

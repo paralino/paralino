@@ -6,9 +6,6 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.IValueFormatter
-import app.paralino.core.provider.InAppLogger
-import app.paralino.core.provider.InAppLoggerLogType
-import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.utils.extensions.isOlderThan
@@ -24,13 +21,15 @@ class GroupActivityNotificationsHandler(
     private val groupRepo: GroupRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val presenter: IGroupActivityNotificationPresenter,
-    private val inAppLogger: InAppLogger,
     private val valueFormatter: IValueFormatter
 ) {
-    suspend fun processMemberAdded(push: PushNotificationRaw) {
+    suspend fun processMemberAdded(
+        push: PushNotificationRaw,
+        notify: Boolean
+    ): IPushNotificationPresenter.Payload? {
 
         val payload =
-            push.content?.tryParseFromJson<GroupMemberAddedNotificationPayload>() ?: return
+            push.content?.tryParseFromJson<GroupMemberAddedNotificationPayload>() ?: return null
 
         preRefreshUseCase.refreshGroupWithMembers(
             groupId = payload.groupId,
@@ -62,36 +61,42 @@ class GroupActivityNotificationsHandler(
             MR.strings.group_member_add_notification_default.localizedString()
         }
 
-        val notificationId = "new_member_${payload}".hashCode()
-        presenter.notify(
-            notificationId = notificationId,
+        val pushPayload = IPushNotificationPresenter.Payload(
+            notificationId = "new_member_${payload}".hashCode(),
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),
-            timeInfo = null
+            timeInfo = null,
+            loggerTag = "group_activity_notification"
         )
 
-        inAppLogger.log(
-            type = InAppLoggerLogType.NOTIFICATIONS,
-            priority = LogPriority.INFO,
-            tag = "group_activity_notification",
-            title = title,
-            info = null
-        )
+        if (notify) {
+            presenter.notify(pushPayload)
+        }
+
+        return pushPayload
     }
 
-    suspend fun processMemberDeleted(push: PushNotificationRaw) {
+    suspend fun processMemberDeleted(
+        push: PushNotificationRaw,
+        notify: Boolean
+    ): IPushNotificationPresenter.Payload? {
         val payload =
-            push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return
+            push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return null
         preRefreshUseCase.refreshGroupWithMembers(
             groupId = payload.groupId,
             cacheTimeMillis = 10.seconds.inWholeMilliseconds
         )
+
+        return null
     }
 
-    suspend fun processLocationSharingStarted(push: PushNotificationRaw) {
+    suspend fun processLocationSharingStarted(
+        push: PushNotificationRaw,
+        notify: Boolean
+    ): IPushNotificationPresenter.Payload? {
         val payload =
-            push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return
+            push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return null
 
         val title = try {
             val group = groupRepo.getGroupWithMembersLocally(payload.groupId).firstOrNull()
@@ -111,7 +116,6 @@ class GroupActivityNotificationsHandler(
             MR.strings.group_member_sharing_started_notification_default.localizedString()
         }
 
-        val notificationId = "sharing_start_${payload}".hashCode()
         val timeInfo = if (push.createdAt.isOlderThan(10.minutes)) {
             valueFormatter.formatSimpleDateTime(
                 timeUTC = push.createdAt.toLocalDateTime(TimeZone.UTC),
@@ -122,21 +126,21 @@ class GroupActivityNotificationsHandler(
         } else {
             null
         }
-        presenter.notify(
-            notificationId = notificationId,
+
+        val pushPayload = IPushNotificationPresenter.Payload(
+            notificationId = "sharing_start_${payload}".hashCode(),
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),
-            timeInfo = timeInfo
+            timeInfo = timeInfo,
+            loggerTag = "group_activity_notification"
         )
 
-        inAppLogger.log(
-            type = InAppLoggerLogType.NOTIFICATIONS,
-            priority = LogPriority.INFO,
-            tag = "group_activity_notification",
-            title = title,
-            info = timeInfo
-        )
+        if (notify) {
+            presenter.notify(pushPayload)
+        }
+
+        return pushPayload
     }
 }
 

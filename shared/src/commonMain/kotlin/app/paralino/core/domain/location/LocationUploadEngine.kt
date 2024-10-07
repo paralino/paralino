@@ -9,6 +9,7 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.notifications.IPushNotificationPresenter
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.provider.localizedString
@@ -238,11 +239,13 @@ class LocationUploadEngine constructor(
                     "Current member is unverified in group ${groupId}, ignore location update"
                 )
                 infoNotificationPresenter.notify(
-                    notificationId = 6345,
-                    title = MR.strings.error_something_wrong.localizedString(),
-                    message = MR.strings.error_unverified_member_notification_message.localizedString(),
-                    timeMillis = null,
-                    timeInfo = null
+                    IPushNotificationPresenter.Payload(
+                        notificationId = 6345,
+                        title = MR.strings.error_something_wrong.localizedString(),
+                        message = MR.strings.error_unverified_member_notification_message.localizedString(),
+                        timeMillis = null,
+                        timeInfo = null
+                    )
                 )
                 null
             }
@@ -290,11 +293,13 @@ class LocationUploadEngine constructor(
                         it.toMutableMap().apply { set(groupId, 0) }
                     }
                     infoNotificationPresenter.notify(
-                        notificationId = 54343,
-                        title = MR.strings.error_something_wrong.localizedString(),
-                        message = MR.strings.error_device_registration_notification_message.localizedString(),
-                        timeMillis = null,
-                        timeInfo = null
+                        IPushNotificationPresenter.Payload(
+                            notificationId = 54343,
+                            title = MR.strings.error_something_wrong.localizedString(),
+                            message = MR.strings.error_device_registration_notification_message.localizedString(),
+                            timeMillis = null,
+                            timeInfo = null
+                        )
                     )
                 }
                 return null
@@ -302,11 +307,13 @@ class LocationUploadEngine constructor(
         } catch (e: Exception) {
             logg.w("location_service", "Error registering device for group sharing", e)
             infoNotificationPresenter.notify(
-                notificationId = 54343,
-                title = MR.strings.error_something_wrong.localizedString(),
-                message = MR.strings.error_device_registration_notification_message.localizedString(),
-                timeMillis = null,
-                timeInfo = null
+                IPushNotificationPresenter.Payload(
+                    notificationId = 54343,
+                    title = MR.strings.error_something_wrong.localizedString(),
+                    message = MR.strings.error_device_registration_notification_message.localizedString(),
+                    timeMillis = null,
+                    timeInfo = null
+                )
             )
             return null
         }
