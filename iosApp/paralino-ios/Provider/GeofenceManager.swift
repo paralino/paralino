@@ -12,7 +12,7 @@ import UIKit
 
 class GeofenceManager: IGeofenceManager {
     
-    let appDelegate = AppDelegate.shared!
+    let appDelegate = AppDelegate.sharedInstance!
     
     func deleteAllGeofences() {
         Logr.d(tag: "place_activity_geofence", message: "Removing all geofences")

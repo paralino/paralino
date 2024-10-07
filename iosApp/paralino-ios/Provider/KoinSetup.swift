@@ -49,7 +49,7 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         appBuildConfig: appBuildConfig,
         oneTimeLocationProvider: { locationStatusProvider, locationCacheRepository in
             OneTimeLocationProvider(
-                locationManager: AppDelegate.shared.locationManager,
+                locationManager: AppDelegate.sharedInstance.locationManager,
                 locationStatusProvider: locationStatusProvider,
                 locationCacheRepo: locationCacheRepository
             )

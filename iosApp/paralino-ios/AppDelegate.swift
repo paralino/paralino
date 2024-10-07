@@ -13,10 +13,11 @@ import Sentry
 
 class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNotificationCenterDelegate {
     
-    static internal var shared: AppDelegate!
+    static internal var sharedInstance: AppDelegate!
     
     let locationStatusProvider = LocationStatusProvider()
     lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
+    lazy var pushProvider: IPushProviderManager = { KoinIOS.Instances.shared.pushProvider }()
     lazy var locationManager = LocationManager()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
@@ -41,6 +42,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
         BackgroundRefresh.scheduleAppRefresh()
         BackgroundRefresh.scheduleNotificationsRefresh()
         
+        UIApplication.shared.registerForRemoteNotifications()
+        
         return true
     }
     
@@ -61,5 +64,11 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.list, .banner, .badge, .sound])
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let token = deviceToken.map { String(format: "%.2hhx", $0) }.joined()
+        shared.AppPrefs.companion.instance.pushTokenUnsynced = token
+        pushProvider.syncPushToken()
     }
 }

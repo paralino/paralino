@@ -93,6 +93,7 @@
 
 /* Begin PBXFileReference section */
 		25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeLocationProvider.swift; sourceTree = "<group>"; };
+		250701212CB1C6AA006FBC1C /* paralino-iosDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-iosDebug.entitlements"; sourceTree = "<group>"; };
 		2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacesScreen.swift; sourceTree = "<group>"; };
 		2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailScreen.swift; sourceTree = "<group>"; };
 		2522C6862B322923007C4913 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
@@ -400,6 +401,7 @@
 		25C03A6629CCE77100646364 /* paralino-ios */ = {
 			isa = PBXGroup;
 			children = (
+				250701212CB1C6AA006FBC1C /* paralino-iosDebug.entitlements */,
 				2529CAAA2B10CF1500D88042 /* Info.plist */,
 				252EA02329E03D2400338956 /* Crypto */,
 				25B4E5DB2B6F994200F2E24D /* Location */,
@@ -800,6 +802,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-iosDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
@@ -813,7 +816,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "paralino-ios/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = ParalinoS;
+				INFOPLIST_KEY_CFBundleDisplayName = Paralino;
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always on and when in use location permission is required to post updates";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Always on location permission is required to post updates";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "When in use location permission is required to post updates";

@@ -17,7 +17,7 @@ struct MainApp: App {
     @State var isOrWasActive = false
     
     init() {
-        AppDelegate.shared = appDelegate
+        AppDelegate.sharedInstance = appDelegate
     }
     
     var body: some Scene {
