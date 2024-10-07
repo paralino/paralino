@@ -14,8 +14,6 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.tryParseFromJson
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
@@ -39,7 +37,7 @@ class PlaceActivityNotificationHandler(
         var userName: String? = null
 
         try {
-            val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
+            val place = placeRepo.getPlaceLocallyOnce(payload.placeId)
             placeName = place?.data?.data?.name
             userName = groupRepo.getMemberOnce(place!!.groupId, payload.memberUserId)?.name
         } catch (_: Exception) {
@@ -97,9 +95,9 @@ class PlaceActivityNotificationHandler(
         var groupName: String? = null
 
         try {
-            val place = placeRepo.getPlaceLocally(payload.placeId).firstOrNull()
+            val place = placeRepo.getPlaceLocallyOnce(payload.placeId)
             placeName = place?.nameOrNull
-            groupName = groupRepo.getGroupWithoutMembers(place!!.groupId).first().nameOrNull
+            groupName = groupRepo.getGroupOnce(payload.groupId)?.nameOrNull
         } catch (e: Exception) {
         }
 
