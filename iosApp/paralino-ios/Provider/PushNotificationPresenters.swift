@@ -7,6 +7,7 @@
 
 import Foundation
 import shared
+import paralino_apple_core
 import UserNotifications
 
 class PlaceNotificationPresenter: IPlaceActivityNotificationPresenter {
@@ -33,22 +34,5 @@ class InfoNotificationPresenter: IInfoMessagesNotificationPresenter {
     
         let request = UNNotificationRequest(identifier: "\(payload.notificationId)", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { (error : Error?) in }
-    }
-}
-
-extension IPushNotificationPresenter.Payload {
-    func notificationContent() -> UNMutableNotificationContent {
-        let content = UNMutableNotificationContent()
-        
-        let formattedDate = timeInfo != nil ? "\n\(timeInfo ?? "")" : ""
-        
-        if let message = message {
-            content.title = title
-            content.body = message + formattedDate
-        } else {
-            content.body = title + formattedDate
-        }
-        
-        return content
     }
 }

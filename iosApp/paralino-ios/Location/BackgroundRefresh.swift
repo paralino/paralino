@@ -9,6 +9,7 @@ import Foundation
 import BackgroundTasks
 import UserNotifications
 import shared
+import paralino_apple_core
 
 class BackgroundRefresh {
     

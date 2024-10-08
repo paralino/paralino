@@ -46,24 +46,6 @@ class DebbugLogr: SystemLogr {
     }
 }
 
-class CrashReportingLogr: SystemLogr {
-    
-    let canLogToRemote: Bool
-    
-    init(canLogToRemote: Bool) {
-        self.canLogToRemote = canLogToRemote
-    }
-    
-    override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {
-        guard canLogToRemote else { return }
-        guard priority == LogPriority.error else { return }
-        guard let error = t?.description() else { return }
-        if t is InternalConnectionException { return }
-        
-        SentrySDK.capture(error: KotlinError(message: message, stackTrace: error))
-    }
-}
-
 class KotlinError: Swift.Error, Decodable {
     let message: String
     let stackTrace: String

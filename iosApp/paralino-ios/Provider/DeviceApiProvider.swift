@@ -8,6 +8,8 @@
 import Foundation
 import shared
 import UIKit
+import paralino_apple_core
+import Sentry
 
 class DeviceApiProvider: IDeviceApiProvider {
     
@@ -75,5 +77,23 @@ class DeviceApiProvider: IDeviceApiProvider {
     
     override func doCopyToClipboard(data: String) {
         UIPasteboard.general.string = data
+    }
+}
+
+class CrashReportingLogr: SystemLogr {
+    
+    let canLogToRemote: Bool
+    
+    init(canLogToRemote: Bool) {
+        self.canLogToRemote = canLogToRemote
+    }
+    
+    override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {
+        guard canLogToRemote else { return }
+        guard priority == LogPriority.error else { return }
+        guard let error = t?.description() else { return }
+        if t is InternalConnectionException { return }
+        
+        SentrySDK.capture(error: KotlinError(message: message, stackTrace: error))
     }
 }

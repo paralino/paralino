@@ -7,6 +7,7 @@
 
 import Foundation
 import shared
+import paralino_apple_core
 
 class PushSetupProvider: IPushProviderManager {
     

@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import shared
 import UserNotifications
+import paralino_apple_core
 
 class NotificationPermissionHandler {
     

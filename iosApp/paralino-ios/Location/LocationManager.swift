@@ -9,6 +9,7 @@ import Foundation
 import CoreLocation
 import shared
 import UserNotifications
+import paralino_apple_core
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     

@@ -9,6 +9,7 @@ import Foundation
 import shared
 import CoreLocation
 import UIKit
+import paralino_apple_core
 
 class GeofenceManager: IGeofenceManager {
     

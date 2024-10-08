@@ -9,6 +9,7 @@ import Foundation
 import shared
 import Network
 import CoreTelephony
+import paralino_apple_core
 
 class ConnectionStatusProvider: IConnectionStatusProvider {
     

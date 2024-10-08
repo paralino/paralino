@@ -9,6 +9,7 @@ import Foundation
 import shared
 import CoreLocation
 import SwiftLocation
+import paralino_apple_core
 
 class OneTimeLocationProvider: IOneTimeLocationProvider, CLLocationManagerDelegate {
     

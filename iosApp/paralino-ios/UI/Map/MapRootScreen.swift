@@ -7,6 +7,7 @@
 
 import SwiftUI
 import shared
+import paralino_apple_core
 
 struct MapRootScreen: View {
     

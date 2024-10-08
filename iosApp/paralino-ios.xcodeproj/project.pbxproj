@@ -11,6 +11,7 @@
 		2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */; };
 		2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */; };
 		2522C6872B322923007C4913 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2522C6862B322923007C4913 /* MapComponent.swift */; };
+		2528AB092CB56FC500FD5EDC /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 2528AB082CB56FC500FD5EDC /* Sentry */; };
 		2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */; };
 		2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAAB2B113C4D00D88042 /* LocationManager.swift */; };
 		252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */; };
@@ -20,13 +21,6 @@
 		252EA00B29DD99F900338956 /* PushSetupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00A29DD99F900338956 /* PushSetupProvider.swift */; };
 		252EA00D29DD9AF500338956 /* PushNotificationPresenters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */; };
 		252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00E29DD9FC300338956 /* GeofenceManager.swift */; };
-		252EA01229DDA67700338956 /* AppwriteRemoteModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01129DDA67700338956 /* AppwriteRemoteModule.swift */; };
-		252EA01729DDE5A800338956 /* DocumentsApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01629DDE5A800338956 /* DocumentsApi.swift */; };
-		252EA01929DDEFC400338956 /* FunctionsApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01829DDEFC400338956 /* FunctionsApi.swift */; };
-		252EA01B29DDF1B500338956 /* UserApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01A29DDF1B500338956 /* UserApi.swift */; };
-		252EA01D29DDF93B00338956 /* RealtimeApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01C29DDF93B00338956 /* RealtimeApi.swift */; };
-		252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */; };
-		25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A8F29E9452300CD32F5 /* SealedClasses.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
 		25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25395C1E2B630042000394DA /* BaseMapObservableObject.swift */; };
 		254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */; };
@@ -46,13 +40,13 @@
 		2568AF662CB5342B007EE00F /* NIOFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF652CB5342B007EE00F /* NIOFoundationCompat */; };
 		256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */; };
 		256FCA692BCD445300DCD2FE /* GroupSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */; };
+		257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = 257B6E0A2CB5717B004F5438 /* Atomics */; };
 		257DCAD92CB4407700402562 /* paralino_apple_core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; };
 		257DCADA2CB4407700402562 /* paralino_apple_core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		257DCAE42CB441BB00402562 /* Clibsodium in Frameworks */ = {isa = PBXBuildFile; productRef = 257DCAE32CB441BB00402562 /* Clibsodium */; };
 		257DCAE62CB441BB00402562 /* Sodium in Frameworks */ = {isa = PBXBuildFile; productRef = 257DCAE52CB441BB00402562 /* Sodium */; };
 		257DCAEA2CB441BB00402562 /* AsyncHTTPClient in Frameworks */ = {isa = PBXBuildFile; productRef = 257DCAE92CB441BB00402562 /* AsyncHTTPClient */; };
 		257DCAEC2CB441BB00402562 /* SwiftLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 257DCAEB2CB441BB00402562 /* SwiftLocation */; };
-		2584CDB72CB44CD400F9AD13 /* Logr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2584CDB62CB44CD400F9AD13 /* Logr.swift */; };
 		258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258E9BF629EBDEBF006BD46C /* AlertDialog.swift */; };
 		259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */; };
 		259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF982A3C68580083FF4B /* ComposeRepresentable.swift */; };
@@ -63,13 +57,11 @@
 		259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA32A3E19740083FF4B /* Sharing.swift */; };
 		259AEFA62A3E2EF30083FF4B /* MapHomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA52A3E2EF30083FF4B /* MapHomeScreen.swift */; };
 		259AEFA82A3E2F960083FF4B /* MapHomeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA72A3E2F960083FF4B /* MapHomeState.swift */; };
-		259B91B92CB536D700482F9C /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 25129FEC2BBDE6B800D1A5AE /* Sentry */; };
 		25AFAD4F2BBACDB3001909CA /* AppUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */; };
 		25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB422A44D7F60007E89D /* SettingsScreen.swift */; };
 		25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB442A44D89B0007E89D /* AccountScreen.swift */; };
 		25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */; };
 		25B3A0C12BBEBF11002F1CB4 /* BackgroundRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */; };
-		25B85F2C2A4A1F1E007618E6 /* ValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */; };
 		25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
 		25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6B29CCE77200646364 /* Assets.xcassets */; };
@@ -176,13 +168,6 @@
 		252EA00A29DD99F900338956 /* PushSetupProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushSetupProvider.swift; sourceTree = "<group>"; };
 		252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationPresenters.swift; sourceTree = "<group>"; };
 		252EA00E29DD9FC300338956 /* GeofenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceManager.swift; sourceTree = "<group>"; };
-		252EA01129DDA67700338956 /* AppwriteRemoteModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppwriteRemoteModule.swift; sourceTree = "<group>"; };
-		252EA01629DDE5A800338956 /* DocumentsApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsApi.swift; sourceTree = "<group>"; };
-		252EA01829DDEFC400338956 /* FunctionsApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionsApi.swift; sourceTree = "<group>"; };
-		252EA01A29DDF1B500338956 /* UserApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserApi.swift; sourceTree = "<group>"; };
-		252EA01C29DDF93B00338956 /* RealtimeApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeApi.swift; sourceTree = "<group>"; };
-		252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoFrameworkProvider.swift; sourceTree = "<group>"; };
-		25356A8F29E9452300CD32F5 /* SealedClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SealedClasses.swift; sourceTree = "<group>"; };
 		25356A9929EAB8E100CD32F5 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		25395C1E2B630042000394DA /* BaseMapObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMapObservableObject.swift; sourceTree = "<group>"; };
 		254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
@@ -196,7 +181,6 @@
 		256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppObject.swift; sourceTree = "<group>"; };
 		256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSettingsScreen.swift; sourceTree = "<group>"; };
 		257DCAD32CB4407700402562 /* paralino_apple_core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = paralino_apple_core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2584CDB62CB44CD400F9AD13 /* Logr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logr.swift; sourceTree = "<group>"; };
 		2585A9E92C7733DE00BC04AA /* production-config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "production-config.xcconfig"; sourceTree = "<group>"; };
 		2585A9ED2C777EB000BC04AA /* staging-config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "staging-config.xcconfig"; sourceTree = "<group>"; };
 		2585A9EF2C777EF300BC04AA /* debugConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debugConfig.xcconfig; sourceTree = "<group>"; };
@@ -216,7 +200,6 @@
 		25B2DB442A44D89B0007E89D /* AccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountScreen.swift; sourceTree = "<group>"; };
 		25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCodeScreen.swift; sourceTree = "<group>"; };
 		25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefresh.swift; sourceTree = "<group>"; };
-		25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueFormatter.swift; sourceTree = "<group>"; };
 		25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCreateScreen.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C03A6729CCE77100646364 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
@@ -248,6 +231,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Crypto/CryptoFrameworkProvider.swift,
+				Provider/Logr.swift,
+				Provider/SealedClasses.swift,
+				Provider/ValueFormatter.swift,
+			);
+			target = 25C03A6329CCE77100646364 /* paralino-ios */;
+		};
 		254EFF742CB5457800818618 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -266,7 +259,8 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		254EFF6C2CB5457800818618 /* paralino-nse */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (254EFF742CB5457800818618 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-nse"; sourceTree = "<group>"; };
-		257DCAD42CB4407700402562 /* paralino-apple-core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-apple-core"; sourceTree = "<group>"; };
+		257DCAD42CB4407700402562 /* paralino-apple-core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-apple-core"; sourceTree = "<group>"; };
+		25C3B96E2CB57248003B8A46 /* Remote */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Remote; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -290,6 +284,7 @@
 				2568AF662CB5342B007EE00F /* NIOFoundationCompat in Frameworks */,
 				257DCAE42CB441BB00402562 /* Clibsodium in Frameworks */,
 				2568AF622CB5342B007EE00F /* NIOCore in Frameworks */,
+				257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */,
 				257DCAE62CB441BB00402562 /* Sodium in Frameworks */,
 				25DE873F2CB535B200EEA47B /* Appwrite in Frameworks */,
 			);
@@ -299,8 +294,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				259B91B92CB536D700482F9C /* Sentry in Frameworks */,
 				257DCAD92CB4407700402562 /* paralino_apple_core.framework in Frameworks */,
+				2528AB092CB56FC500FD5EDC /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,7 +305,6 @@
 		252E361129CF5EB0008FC635 /* Provider */ = {
 			isa = PBXGroup;
 			children = (
-				2584CDB62CB44CD400F9AD13 /* Logr.swift */,
 				252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */,
 				252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */,
 				252EA00629DD89C800338956 /* KoinSetup.swift */,
@@ -318,8 +312,6 @@
 				252EA00A29DD99F900338956 /* PushSetupProvider.swift */,
 				252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */,
 				252EA00E29DD9FC300338956 /* GeofenceManager.swift */,
-				25356A8F29E9452300CD32F5 /* SealedClasses.swift */,
-				25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */,
 				2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */,
 				25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */,
 				25EF80302CAEAC0000DFC890 /* BillingProviderIOS.swift */,
@@ -340,22 +332,9 @@
 			path = Login;
 			sourceTree = "<group>";
 		};
-		252EA01029DDA66400338956 /* Remote */ = {
-			isa = PBXGroup;
-			children = (
-				252EA01129DDA67700338956 /* AppwriteRemoteModule.swift */,
-				252EA01629DDE5A800338956 /* DocumentsApi.swift */,
-				252EA01829DDEFC400338956 /* FunctionsApi.swift */,
-				252EA01A29DDF1B500338956 /* UserApi.swift */,
-				252EA01C29DDF93B00338956 /* RealtimeApi.swift */,
-			);
-			path = Remote;
-			sourceTree = "<group>";
-		};
 		252EA02329E03D2400338956 /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
-				252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -524,7 +503,7 @@
 				25B4E5DB2B6F994200F2E24D /* Location */,
 				254B6F3529EC8056008B1458 /* Localization */,
 				252E361129CF5EB0008FC635 /* Provider */,
-				252EA01029DDA66400338956 /* Remote */,
+				25C3B96E2CB57248003B8A46 /* Remote */,
 				256C5A5829E8934E00FCF0B7 /* UI */,
 				25C03A6D29CCE77200646364 /* Preview Content */,
 				25C03A6B29CCE77200646364 /* Assets.xcassets */,
@@ -634,6 +613,7 @@
 				2568AF632CB5342B007EE00F /* NIOEmbedded */,
 				2568AF652CB5342B007EE00F /* NIOFoundationCompat */,
 				25DE873E2CB535B200EEA47B /* Appwrite */,
+				257B6E0A2CB5717B004F5438 /* Atomics */,
 			);
 			productName = "paralino-apple-core";
 			productReference = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */;
@@ -656,9 +636,12 @@
 				257DCAD82CB4407700402562 /* PBXTargetDependency */,
 				254EFF712CB5457800818618 /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				25C3B96E2CB57248003B8A46 /* Remote */,
+			);
 			name = "paralino-ios";
 			packageProductDependencies = (
-				25129FEC2BBDE6B800D1A5AE /* Sentry */,
+				2528AB082CB56FC500FD5EDC /* Sentry */,
 			);
 			productName = "paralino-ios";
 			productReference = 25C03A6429CCE77100646364 /* paralino-ios.app */;
@@ -703,6 +686,7 @@
 				25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */,
 				25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */,
 				2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */,
+				257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */,
 			);
 			productRefGroup = 25C03A6529CCE77100646364 /* Products */;
 			projectDirPath = "";
@@ -834,12 +818,10 @@
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
 				25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */,
 				259AEFA82A3E2F960083FF4B /* MapHomeState.swift in Sources */,
-				252EA01B29DDF1B500338956 /* UserApi.swift in Sources */,
 				259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */,
 				25AFAD4F2BBACDB3001909CA /* AppUpdateManager.swift in Sources */,
 				25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */,
 				25FC5CAE2A45FB320006E796 /* BlockListScreen.swift in Sources */,
-				25B85F2C2A4A1F1E007618E6 /* ValueFormatter.swift in Sources */,
 				25FC5CAC2A45F8CC0006E796 /* ConvertAccountScreen.swift in Sources */,
 				25C03A6829CCE77100646364 /* MainApp.swift in Sources */,
 				259AEF9C2A3DB1C70083FF4B /* MapRootScreen.swift in Sources */,
@@ -862,16 +844,12 @@
 				25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */,
 				25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */,
 				25C7DD722BEC16BC00D16BC9 /* AppStatusDebugScreen.swift in Sources */,
-				252EA01D29DDF93B00338956 /* RealtimeApi.swift in Sources */,
 				252EA00929DD8BE100338956 /* LocationStatusProvider.swift in Sources */,
 				25EF80312CAEAC0000DFC890 /* BillingProviderIOS.swift in Sources */,
-				25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */,
 				259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */,
 				252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */,
-				252EA01229DDA67700338956 /* AppwriteRemoteModule.swift in Sources */,
 				254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */,
 				252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */,
-				2584CDB72CB44CD400F9AD13 /* Logr.swift in Sources */,
 				252EA00D29DD9AF500338956 /* PushNotificationPresenters.swift in Sources */,
 				254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */,
 				25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */,
@@ -881,12 +859,9 @@
 				25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */,
 				25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */,
 				25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */,
-				252EA01729DDE5A800338956 /* DocumentsApi.swift in Sources */,
-				252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */,
 				25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */,
 				25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */,
 				259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */,
-				252EA01929DDEFC400338956 /* FunctionsApi.swift in Sources */,
 				2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */,
 				25FC5CB02A460A510006E796 /* RawDataScreen.swift in Sources */,
 				252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */,
@@ -1268,8 +1243,6 @@
 				MARKETING_VERSION = 0.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-framework",
-					shared,
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.test;
@@ -1318,8 +1291,6 @@
 				MARKETING_VERSION = 0.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-framework",
-					shared,
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios;
@@ -1415,6 +1386,14 @@
 				minimumVersion = 2.74.0;
 			};
 		};
+		257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-atomics.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 		25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/swift-server/async-http-client.git";
@@ -1426,7 +1405,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		25129FEC2BBDE6B800D1A5AE /* Sentry */ = {
+		2528AB082CB56FC500FD5EDC /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
@@ -1455,6 +1434,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
 			productName = NIOFoundationCompat;
+		};
+		257B6E0A2CB5717B004F5438 /* Atomics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */;
+			productName = Atomics;
 		};
 		257DCAE32CB441BB00402562 /* Clibsodium */ = {
 			isa = XCSwiftPackageProductDependency;
