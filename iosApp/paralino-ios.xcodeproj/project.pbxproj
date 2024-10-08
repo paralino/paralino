@@ -238,6 +238,11 @@
 				Provider/Logr.swift,
 				Provider/SealedClasses.swift,
 				Provider/ValueFormatter.swift,
+				Remote/AppwriteRemoteModule.swift,
+				Remote/DocumentsApi.swift,
+				Remote/FunctionsApi.swift,
+				Remote/RealtimeApi.swift,
+				Remote/UserApi.swift,
 			);
 			target = 25C03A6329CCE77100646364 /* paralino-ios */;
 		};
@@ -985,7 +990,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1039,7 +1044,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
