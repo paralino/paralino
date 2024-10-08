@@ -151,6 +151,11 @@ class AppAccountStateMonitor constructor(
                             logoutUseCase.fullLogout(logoutLocallyOnError = true)
                         } catch (e: Exception) {
                         }
+                    } else {
+                        try {
+                            logoutUseCase.logoutLocally()
+                        } catch (e: Exception) {
+                        }
                     }
                 } else {
                     logg.tag("account_state").v("${it.data} - Not refreshing user data")
