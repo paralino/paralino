@@ -9,15 +9,15 @@ import Foundation
 import shared
 import paralino_apple_core
 
-func initKoin(locationStatusProvider: LocationStatusProvider) {
+func initKoin(locationManager: LocationManager) {
     let koinApp = ParalinoCore.shared.doInit(
         preLaunch: { koinApp in koinApp },
-        appModules: createKoinModules(locationStatusProvider: locationStatusProvider)
+        appModules: createKoinModules(locationManager: locationManager)
     )
     _koin = koinApp.koin
 }
 
-func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_coreModule] {
+func createKoinModules(locationManager: LocationManager) -> [Koin_coreModule] {
     
     let appBuildConfig = AppBuildConfig(
         serverUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoServerUrl") as! String,
@@ -31,6 +31,7 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         logErrorsToRemote: true
     )
     
+    let locationStatusProvider = LocationStatusProvider()
     let connectionStatusProvider = ConnectionStatusProvider(appBuildConfig: appBuildConfig)
     let deviceApiProvider = DeviceApiProvider(
         appBuildConfig: appBuildConfig,
@@ -46,7 +47,7 @@ func createKoinModules(locationStatusProvider: LocationStatusProvider) -> [Koin_
         placeNotificationPresenter: { inAppLogger in PlaceNotificationPresenter(inAppLogger: inAppLogger) },
         groupActivityNotificationPresenter: { inAppLogger in GroupActivityNotificationPresenter(inAppLogger: inAppLogger) },
         infoNotificationPresenter: { inAppLogger in InfoNotificationPresenter(inAppLogger: inAppLogger) },
-        geofenceManager: GeofenceManager(),
+        geofenceManager: GeofenceManager(locationManager: AppDelegate.sharedInstance.locationManager.manager),
         appBuildConfig: appBuildConfig,
         oneTimeLocationProvider: { locationStatusProvider, locationCacheRepository in
             OneTimeLocationProvider(

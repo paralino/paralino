@@ -7,7 +7,6 @@
 
 import Foundation
 import shared
-import paralino_apple_core
 import UserNotifications
 
 class PlaceNotificationPresenter: IPlaceActivityNotificationPresenter {

@@ -7,22 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		25008E4B2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */; };
 		2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */; };
 		2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */; };
 		2522C6872B322923007C4913 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2522C6862B322923007C4913 /* MapComponent.swift */; };
-		2528AB092CB56FC500FD5EDC /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 2528AB082CB56FC500FD5EDC /* Sentry */; };
 		2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */; };
-		2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAAB2B113C4D00D88042 /* LocationManager.swift */; };
-		252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */; };
-		252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */; };
 		252EA00729DD89C800338956 /* KoinSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00629DD89C800338956 /* KoinSetup.swift */; };
-		252EA00929DD8BE100338956 /* LocationStatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00829DD8BE100338956 /* LocationStatusProvider.swift */; };
-		252EA00B29DD99F900338956 /* PushSetupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00A29DD99F900338956 /* PushSetupProvider.swift */; };
-		252EA00D29DD9AF500338956 /* PushNotificationPresenters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */; };
-		252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00E29DD9FC300338956 /* GeofenceManager.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
 		25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25395C1E2B630042000394DA /* BaseMapObservableObject.swift */; };
+		254729E62CB5967000172F55 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 254729E52CB5967000172F55 /* Sentry */; };
 		254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */; };
 		254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2729EC7C50008B1458 /* Image+Extensions.swift */; };
 		254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2929EC7F6A008B1458 /* LoginScreenObject.swift */; };
@@ -61,7 +53,6 @@
 		25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB422A44D7F60007E89D /* SettingsScreen.swift */; };
 		25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB442A44D89B0007E89D /* AccountScreen.swift */; };
 		25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */; };
-		25B3A0C12BBEBF11002F1CB4 /* BackgroundRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */; };
 		25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
 		25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6B29CCE77200646364 /* Assets.xcassets */; };
@@ -153,21 +144,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeLocationProvider.swift; sourceTree = "<group>"; };
 		250701212CB1C6AA006FBC1C /* paralino-iosDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-iosDebug.entitlements"; sourceTree = "<group>"; };
 		2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacesScreen.swift; sourceTree = "<group>"; };
 		2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailScreen.swift; sourceTree = "<group>"; };
 		2522C6862B322923007C4913 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
 		2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingStartScreen.swift; sourceTree = "<group>"; };
 		2529CAAA2B10CF1500D88042 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		2529CAAB2B113C4D00D88042 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceApiProvider.swift; sourceTree = "<group>"; };
-		252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionStatusProvider.swift; sourceTree = "<group>"; };
 		252EA00629DD89C800338956 /* KoinSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinSetup.swift; sourceTree = "<group>"; };
-		252EA00829DD8BE100338956 /* LocationStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationStatusProvider.swift; sourceTree = "<group>"; };
-		252EA00A29DD99F900338956 /* PushSetupProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushSetupProvider.swift; sourceTree = "<group>"; };
-		252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationPresenters.swift; sourceTree = "<group>"; };
-		252EA00E29DD9FC300338956 /* GeofenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceManager.swift; sourceTree = "<group>"; };
 		25356A9929EAB8E100CD32F5 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		25395C1E2B630042000394DA /* BaseMapObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMapObservableObject.swift; sourceTree = "<group>"; };
 		254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
@@ -199,7 +182,6 @@
 		25B2DB422A44D7F60007E89D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		25B2DB442A44D89B0007E89D /* AccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountScreen.swift; sourceTree = "<group>"; };
 		25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCodeScreen.swift; sourceTree = "<group>"; };
-		25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefresh.swift; sourceTree = "<group>"; };
 		25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCreateScreen.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C03A6729CCE77100646364 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
@@ -235,7 +217,16 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Crypto/CryptoFrameworkProvider.swift,
+				Location/BackgroundRefresh.swift,
+				Location/LocationManager.swift,
+				Location/OneTimeLocationProvider.swift,
+				Provider/ConnectionStatusProvider.swift,
+				Provider/DeviceApiProvider.swift,
+				Provider/GeofenceManager.swift,
+				Provider/LocationStatusProvider.swift,
 				Provider/Logr.swift,
+				Provider/PushNotificationPresenters.swift,
+				Provider/PushSetupProvider.swift,
 				Provider/SealedClasses.swift,
 				Provider/ValueFormatter.swift,
 				Remote/AppwriteRemoteModule.swift,
@@ -265,7 +256,6 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		254EFF6C2CB5457800818618 /* paralino-nse */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (254EFF742CB5457800818618 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-nse"; sourceTree = "<group>"; };
 		257DCAD42CB4407700402562 /* paralino-apple-core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-apple-core"; sourceTree = "<group>"; };
-		25C3B96E2CB57248003B8A46 /* Remote */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Remote; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -292,6 +282,7 @@
 				257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */,
 				257DCAE62CB441BB00402562 /* Sodium in Frameworks */,
 				25DE873F2CB535B200EEA47B /* Appwrite in Frameworks */,
+				254729E62CB5967000172F55 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,7 +291,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				257DCAD92CB4407700402562 /* paralino_apple_core.framework in Frameworks */,
-				2528AB092CB56FC500FD5EDC /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,13 +300,7 @@
 		252E361129CF5EB0008FC635 /* Provider */ = {
 			isa = PBXGroup;
 			children = (
-				252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */,
-				252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */,
 				252EA00629DD89C800338956 /* KoinSetup.swift */,
-				252EA00829DD8BE100338956 /* LocationStatusProvider.swift */,
-				252EA00A29DD99F900338956 /* PushSetupProvider.swift */,
-				252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */,
-				252EA00E29DD9FC300338956 /* GeofenceManager.swift */,
 				2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */,
 				25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */,
 				25EF80302CAEAC0000DFC890 /* BillingProviderIOS.swift */,
@@ -335,13 +319,6 @@
 				259AEFA12A3E0F860083FF4B /* ResetPasswordScreen.swift */,
 			);
 			path = Login;
-			sourceTree = "<group>";
-		};
-		252EA02329E03D2400338956 /* Crypto */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Crypto;
 			sourceTree = "<group>";
 		};
 		25356A9829EAB8CD00CD32F5 /* Theme */ = {
@@ -467,16 +444,6 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		25B4E5DB2B6F994200F2E24D /* Location */ = {
-			isa = PBXGroup;
-			children = (
-				2529CAAB2B113C4D00D88042 /* LocationManager.swift */,
-				25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */,
-				25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */,
-			);
-			path = Location;
-			sourceTree = "<group>";
-		};
 		25C03A5B29CCE77100646364 = {
 			isa = PBXGroup;
 			children = (
@@ -504,11 +471,8 @@
 			children = (
 				250701212CB1C6AA006FBC1C /* paralino-iosDebug.entitlements */,
 				2529CAAA2B10CF1500D88042 /* Info.plist */,
-				252EA02329E03D2400338956 /* Crypto */,
-				25B4E5DB2B6F994200F2E24D /* Location */,
 				254B6F3529EC8056008B1458 /* Localization */,
 				252E361129CF5EB0008FC635 /* Provider */,
-				25C3B96E2CB57248003B8A46 /* Remote */,
 				256C5A5829E8934E00FCF0B7 /* UI */,
 				25C03A6D29CCE77200646364 /* Preview Content */,
 				25C03A6B29CCE77200646364 /* Assets.xcassets */,
@@ -619,6 +583,7 @@
 				2568AF652CB5342B007EE00F /* NIOFoundationCompat */,
 				25DE873E2CB535B200EEA47B /* Appwrite */,
 				257B6E0A2CB5717B004F5438 /* Atomics */,
+				254729E52CB5967000172F55 /* Sentry */,
 			);
 			productName = "paralino-apple-core";
 			productReference = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */;
@@ -640,9 +605,6 @@
 			dependencies = (
 				257DCAD82CB4407700402562 /* PBXTargetDependency */,
 				254EFF712CB5457800818618 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				25C3B96E2CB57248003B8A46 /* Remote */,
 			);
 			name = "paralino-ios";
 			packageProductDependencies = (
@@ -809,17 +771,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
-				25B3A0C12BBEBF11002F1CB4 /* BackgroundRefresh.swift in Sources */,
 				25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */,
 				259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */,
 				25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */,
 				25C91A322A57F38A00A49F06 /* GroupCreateScreen.swift in Sources */,
 				259AEFA02A3E0D0A0083FF4B /* RecoverKeysScreen.swift in Sources */,
 				2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */,
-				2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */,
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */,
-				25008E4B2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
 				25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */,
 				259AEFA82A3E2F960083FF4B /* MapHomeState.swift in Sources */,
@@ -833,7 +792,6 @@
 				25C91A2F2A57EFC600A49F06 /* PhotoPickerSheet.swift in Sources */,
 				259AEFA62A3E2EF30083FF4B /* MapHomeScreen.swift in Sources */,
 				2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */,
-				252EA00B29DD99F900338956 /* PushSetupProvider.swift in Sources */,
 				254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */,
 				25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */,
 				256FCA692BCD445300DCD2FE /* GroupSettingsScreen.swift in Sources */,
@@ -849,13 +807,9 @@
 				25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */,
 				25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */,
 				25C7DD722BEC16BC00D16BC9 /* AppStatusDebugScreen.swift in Sources */,
-				252EA00929DD8BE100338956 /* LocationStatusProvider.swift in Sources */,
 				25EF80312CAEAC0000DFC890 /* BillingProviderIOS.swift in Sources */,
 				259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */,
-				252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */,
 				254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */,
-				252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */,
-				252EA00D29DD9AF500338956 /* PushNotificationPresenters.swift in Sources */,
 				254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */,
 				25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */,
 				2522C6872B322923007C4913 /* MapComponent.swift in Sources */,
@@ -869,7 +823,6 @@
 				259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */,
 				2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */,
 				25FC5CB02A460A510006E796 /* RawDataScreen.swift in Sources */,
-				252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1411,6 +1364,11 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		2528AB082CB56FC500FD5EDC /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
+		};
+		254729E52CB5967000172F55 /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;

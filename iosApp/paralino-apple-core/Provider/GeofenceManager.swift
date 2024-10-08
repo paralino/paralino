@@ -9,22 +9,23 @@ import Foundation
 import shared
 import CoreLocation
 import UIKit
-import paralino_apple_core
 
 class GeofenceManager: IGeofenceManager {
     
-    let appDelegate = AppDelegate.sharedInstance!
+    let locationManager: CLLocationManager
+    
+    init(locationManager: CLLocationManager) {
+        self.locationManager = locationManager
+    }
     
     func deleteAllGeofences() {
         Logr.d(tag: "place_activity_geofence", message: "Removing all geofences")
-        let locationManager = appDelegate.locationManager.manager
         for region in locationManager.monitoredRegions {
             locationManager.stopMonitoring(for: region)
         }
     }
     
     func deleteGeofences(placesIds: [String]) {
-        let locationManager = appDelegate.locationManager.manager
         let regions = locationManager.monitoredRegions.filter { region in placesIds.contains { region.identifier == $0 } }
         for region in regions {
             locationManager.stopMonitoring(for: region)
@@ -48,7 +49,6 @@ class GeofenceManager: IGeofenceManager {
             
             deleteAllGeofences()
             
-            let locationManager = appDelegate.locationManager.manager
             let lastLocation = locationManager.location
             
             let regions = places.map {
