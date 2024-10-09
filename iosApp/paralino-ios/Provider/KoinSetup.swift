@@ -6,71 +6,14 @@
 //
 
 import Foundation
-import shared
 import paralino_apple_core
 
-func initKoin(locationManager: LocationManager) {
-    let koinApp = ParalinoCore.shared.doInit(
-        preLaunch: { koinApp in koinApp },
-        appModules: createKoinModules(locationManager: locationManager)
-    )
-    _koin = koinApp.koin
-}
-
-func createKoinModules(locationManager: LocationManager) -> [Koin_coreModule] {
-    
-    let appBuildConfig = AppBuildConfig(
-        serverUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoServerUrl") as! String,
-        projectId: Bundle.main.object(forInfoDictionaryKey: "paralinoServerKey") as! String,
-        publicServerUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoPublicServerUrl") as! String,
-        isDevMode: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
-        // TODO add key
-        billingRCApiKey: "",
-        hasPreviewFeatures: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
-        logToConsole: (Bundle.main.object(forInfoDictionaryKey: "forceLogToSystem") as! String) == "true",
-        logErrorsToRemote: true
-    )
-    
-    let locationStatusProvider = LocationStatusProvider()
-    let connectionStatusProvider = ConnectionStatusProvider(appBuildConfig: appBuildConfig)
-    let deviceApiProvider = DeviceApiProvider(
-        appBuildConfig: appBuildConfig,
-        locationStatusProvider: locationStatusProvider,
-        connectionStatusProvider: connectionStatusProvider
-    )
-    
-    let coreIOSModules = KoinIOS.shared.createIOSKoinModules(
-        deviceProvider: deviceApiProvider,
-        connectionStatusProvider: connectionStatusProvider,
-        locationStatusProvider: locationStatusProvider,
-        pushSetupProvider: PushSetupProvider(),
-        placeNotificationPresenter: { inAppLogger in PlaceNotificationPresenter(inAppLogger: inAppLogger) },
-        groupActivityNotificationPresenter: { inAppLogger in GroupActivityNotificationPresenter(inAppLogger: inAppLogger) },
-        infoNotificationPresenter: { inAppLogger in InfoNotificationPresenter(inAppLogger: inAppLogger) },
-        geofenceManager: GeofenceManager(locationManager: AppDelegate.sharedInstance.locationManager.manager),
-        appBuildConfig: appBuildConfig,
-        oneTimeLocationProvider: { locationStatusProvider, locationCacheRepository in
-            OneTimeLocationProvider(
-                locationManager: AppDelegate.sharedInstance.locationManager,
-                locationStatusProvider: locationStatusProvider,
-                locationCacheRepo: locationCacheRepository
-            )
-        },
-        remoteModule: { sessionMonitor in AppwriteRemoteModule(sessionMonitor: sessionMonitor, appBuildConfig: appBuildConfig) },
-        documentsApi: { module, _ in DocumentsApi(remoteModule: module as! AppwriteRemoteModule) },
-        userApi: { module, _ in UserApi(remoteModule: module as! AppwriteRemoteModule) },
-        functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule, deviceApiProvider: deviceApiProvider) },
-        realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) },
-        cryptoServiceProvider: CryptoFrameworkProvider(),
-        valueFormatter: ValueFormatter(),
-        appUpdateManager: AppUpdateManager(),
-        billingProvider: BillingProviderIOS()
-    )
-    
-    return coreIOSModules
-}
-
-private var _koin: Koin_coreKoin?
-var koin: Koin_coreKoin {
-    return _koin!
+class KoinSetup {
+    static func initKoin(locationManager: LocationManager) {
+        CoreKoinSetup.initKoin(
+            locationManager: locationManager,
+            appUpdateManager: AppUpdateManager(),
+            billingProvider: BillingProviderIOS()
+        )
+    }
 }

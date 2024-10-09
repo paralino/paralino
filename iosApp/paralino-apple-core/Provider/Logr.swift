@@ -29,19 +29,21 @@ class DebbugLogr: SystemLogr {
         let tagElement = tag != nil && !tag!.isEmpty ? "[\(tag!)] - " : ""
         let output = "\(time) | \(tagElement)\(message)"
         
+        // using public as privacy option will enable logs in service extensions
+        // we are controling when to log to console through canLogToConsole flags so public is not a problem here
         switch priority {
         case .info:
-            logger.info("🟢 \(output)")
+            logger.info("🟢 \(output, privacy: .public)")
         case .debug:
-            logger.debug("🟤 \(output)")
+            logger.debug("🟤 \(output, privacy: .public)")
         case .verbose:
-            logger.debug("⚪️ \(output)")
+            logger.debug("⚪️ \(output, privacy: .public)")
         case .warn:
-            logger.warning("🟠 \(output)")
+            logger.warning("🟠 \(output, privacy: .public)")
         case .error:
-            logger.error("🔴 \(output)")
+            logger.error("🔴 \(output, privacy: .public)")
         default:
-            logger.notice("⚪️ \(output)")
+            logger.notice("⚪️ \(output, privacy: .public)")
         }
     }
 }

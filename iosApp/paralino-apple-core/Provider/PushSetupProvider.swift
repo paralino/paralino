@@ -8,22 +8,22 @@
 import Foundation
 import shared
 
-class PushSetupProvider: IPushProviderManager {
+public class PushSetupProvider: IPushProviderManager {
     
     lazy var userDataUpdate: UpdateUserDataUseCase = { KoinIOS.Instances.shared.userDataUpdate }()
     lazy var pushHandler: PushNotificationHandler = { KoinIOS.Instances.shared.pushNotificationsHandler }()
     
     
-    func logout() async throws {
+    public func logout() async throws {
         
     }
     
-    func getNotificationPayload(notificationId: String) async -> IPushNotificationPresenter.Payload? {
+    public func getNotificationPayload(notificationId: String) async -> IPushNotificationPresenter.Payload? {
         let payload = try? await pushHandler.retrievePushPresenterPayload(notificationId: notificationId, force: true)
         return payload
     }
     
-    func syncPushNotifications() {
+    public func syncPushNotifications() {
         DispatchQueue.main.async { [weak self] in
             Task {
                 do {
@@ -35,7 +35,7 @@ class PushSetupProvider: IPushProviderManager {
         }
     }
     
-    func syncPushToken() {
+    public func syncPushToken() {
         DispatchQueue.main.async { [weak self] in
             Task {
                 do {

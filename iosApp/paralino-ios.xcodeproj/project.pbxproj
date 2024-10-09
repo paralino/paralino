@@ -221,6 +221,7 @@
 				Location/LocationManager.swift,
 				Location/OneTimeLocationProvider.swift,
 				Provider/ConnectionStatusProvider.swift,
+				Provider/CoreKoinSetup.swift,
 				Provider/DeviceApiProvider.swift,
 				Provider/GeofenceManager.swift,
 				Provider/LocationStatusProvider.swift,
@@ -251,11 +252,18 @@
 			);
 			target = 257DCAD22CB4407700402562 /* paralino-apple-core */;
 		};
+		2580EF8D2CB6957800C9431D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Provider/Logr.swift,
+			);
+			target = 254EFF6A2CB5457800818618 /* paralino-nse */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		254EFF6C2CB5457800818618 /* paralino-nse */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (254EFF742CB5457800818618 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-nse"; sourceTree = "<group>"; };
-		257DCAD42CB4407700402562 /* paralino-apple-core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-apple-core"; sourceTree = "<group>"; };
+		257DCAD42CB4407700402562 /* paralino-apple-core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 2580EF8D2CB6957800C9431D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-apple-core"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -532,6 +540,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 254EFF752CB5457800818618 /* Build configuration list for PBXNativeTarget "paralino-nse" */;
 			buildPhases = (
+				2580EF8A2CB6834A00C9431D /* Compile Kotlin */,
 				254EFF672CB5457800818618 /* Sources */,
 				254EFF682CB5457800818618 /* Frameworks */,
 				254EFF692CB5457800818618 /* Resources */,
@@ -608,7 +617,6 @@
 			);
 			name = "paralino-ios";
 			packageProductDependencies = (
-				2528AB082CB56FC500FD5EDC /* Sentry */,
 			);
 			productName = "paralino-ios";
 			productReference = 25C03A6429CCE77100646364 /* paralino-ios.app */;
@@ -696,6 +704,24 @@
 
 /* Begin PBXShellScriptBuildPhase section */
 		257DCAE02CB440D100402562 /* Compile Kotlin */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Compile Kotlin";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+		};
+		2580EF8A2CB6834A00C9431D /* Compile Kotlin */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -874,11 +900,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "paralino-nse/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "paralino-nse";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always on and when in use location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Always on location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "When in use location permission is required to post updates";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -889,8 +919,6 @@
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-framework",
-					shared,
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.test.paralinonse;
@@ -900,6 +928,8 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				forceLogToSystem = true;
+                internalTesting = true;
 			};
 			name = Debug;
 		};
@@ -911,11 +941,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "paralino-nse/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "paralino-nse";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always on and when in use location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Always on location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "When in use location permission is required to post updates";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -926,8 +960,6 @@
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-framework",
-					shared,
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.paralinonse;
@@ -936,6 +968,8 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				forceLogToSystem = false;
+                internalTesting = false;
 			};
 			name = Release;
 		};
@@ -1363,11 +1397,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2528AB082CB56FC500FD5EDC /* Sentry */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
-			productName = Sentry;
-		};
 		254729E52CB5967000172F55 /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;

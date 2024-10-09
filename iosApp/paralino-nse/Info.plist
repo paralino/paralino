@@ -9,5 +9,21 @@
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).NotificationService</string>
 	</dict>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>location</string>
+        <string>processing</string>
+    </array>
+    <key>forceLogToSystem</key>
+    <string>$(forceLogToSystem)</string>
+    <key>internalTesting</key>
+    <string>$(internalTesting)</string>
+    <key>paralinoPublicServerUrl</key>
+    <string>$(publicServerUrl)</string>
+    <key>paralinoServerKey</key>
+    <string>$(serverKey)</string>
+    <key>paralinoServerUrl</key>
+    <string>$(serverUrl)</string>
 </dict>
 </plist>

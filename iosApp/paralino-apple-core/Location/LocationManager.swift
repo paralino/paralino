@@ -10,17 +10,23 @@ import CoreLocation
 import shared
 import UserNotifications
 
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+public class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
-    let manager = CLLocationManager()
+    public let manager = CLLocationManager()
     
     lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
     lazy var placeRepo: PlacesRepository = { KoinIOS.Instances.shared.placesRepo }()
     lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
     lazy var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
     
-    override init() {
+    public init(setupManager: Bool) {
         super.init()
+        if (setupManager) {
+            setup()
+        }
+    }
+    
+    func setup() {
         manager.allowsBackgroundLocationUpdates = true
         manager.showsBackgroundLocationIndicator = true
         manager.pausesLocationUpdatesAutomatically = true
@@ -87,7 +93,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.stopMonitoringSignificantLocationChanges()
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         guard let location = locations.last?.toLocationModel() else { return }
         let systemLocation = manager.location?.toLocationModel()
@@ -98,11 +104,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationRepo.registerNewLocation(data: locationModel!)
     }
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+    public func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         Logr.w(tag: "location_service", message: "Location updates got error: \(error.localizedDescription)")
     }
     
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+    public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         DispatchQueue.main.async { [weak self] in
             Task {
                 let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
@@ -113,7 +119,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         placeRepo.placesEnter(placesIds: [region.identifier], trigger: PlaceActivityTriggerType.goefence)
     }
     
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+    public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         DispatchQueue.main.async { [weak self] in
             Task {
                 let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
@@ -123,15 +129,15 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         placeRepo.placesExit(placesIds: [region.identifier], trigger: PlaceActivityTriggerType.goefence)
     }
     
-    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
+    public func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
         Logr.w(tag: "location_service", message: "Location updates are paused")
     }
     
-    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
+    public func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
         Logr.w(tag: "location_service", message: "Location updates are resumed")
     }
     
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+    public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         //        notifyUser(id: "LocationResume", message: "Permission changed: \(manager.authorizationStatus)")
     }
 }
