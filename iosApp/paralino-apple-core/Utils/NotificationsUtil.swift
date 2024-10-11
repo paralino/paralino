@@ -17,11 +17,12 @@ extension IPushNotificationPresenter.Payload {
         
         if let message = message {
             content.title = title
-            content.subtitle = message
-            content.body = formattedDate
+            content.subtitle = formattedDate
+            content.body = message
         } else {
-            content.title = title
-            content.body = formattedDate
+            content.title = "Paralino"
+            content.subtitle = formattedDate
+            content.body = title
         }
         
         return content
