@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */; };
 		2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */; };
+		250BB6AA2CB9391800CCAB64 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 250BB6A92CB9391800CCAB64 /* Appwrite */; };
 		2522C6872B322923007C4913 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2522C6862B322923007C4913 /* MapComponent.swift */; };
 		2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */; };
 		252EA00729DD89C800338956 /* KoinSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00629DD89C800338956 /* KoinSetup.swift */; };
@@ -63,7 +64,6 @@
 		25C91A342A580CBA00A49F06 /* GroupDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */; };
 		25C91A362A5890B400A49F06 /* MemberInviteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */; };
 		25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D8A43429CE24A00023A0E5 /* AppDelegate.swift */; };
-		25DE873F2CB535B200EEA47B /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 25DE873E2CB535B200EEA47B /* Appwrite */; };
 		25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */; };
 		25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */; };
 		25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802E2CAEABD000DFC890 /* FreePlanInfoScreen.swift */; };
@@ -288,9 +288,9 @@
 				2568AF662CB5342B007EE00F /* NIOFoundationCompat in Frameworks */,
 				257DCAE42CB441BB00402562 /* Clibsodium in Frameworks */,
 				2568AF622CB5342B007EE00F /* NIOCore in Frameworks */,
+				250BB6AA2CB9391800CCAB64 /* Appwrite in Frameworks */,
 				257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */,
 				257DCAE62CB441BB00402562 /* Sodium in Frameworks */,
-				25DE873F2CB535B200EEA47B /* Appwrite in Frameworks */,
 				254729E62CB5967000172F55 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -592,9 +592,9 @@
 				2568AF612CB5342B007EE00F /* NIOCore */,
 				2568AF632CB5342B007EE00F /* NIOEmbedded */,
 				2568AF652CB5342B007EE00F /* NIOFoundationCompat */,
-				25DE873E2CB535B200EEA47B /* Appwrite */,
 				257B6E0A2CB5717B004F5438 /* Atomics */,
 				254729E52CB5967000172F55 /* Sentry */,
+				250BB6A92CB9391800CCAB64 /* Appwrite */,
 			);
 			productName = "paralino-apple-core";
 			productReference = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */;
@@ -657,13 +657,13 @@
 			);
 			mainGroup = 25C03A5B29CCE77100646364;
 			packageReferences = (
-				252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */,
 				252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */,
 				25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */,
 				25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */,
 				2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */,
 				257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */,
+				25A5A6222CB9384100D3D160 /* XCLocalSwiftPackageReference "appwrite-ios" */,
 			);
 			productRefGroup = 25C03A6529CCE77100646364 /* Products */;
 			projectDirPath = "";
@@ -1342,6 +1342,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		25A5A6222CB9384100D3D160 /* XCLocalSwiftPackageReference "appwrite-ios" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "appwrite-ios";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1357,14 +1364,6 @@
 			requirement = {
 				kind = exactVersion;
 				version = 8.26.0;
-			};
-		};
-		252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/appwrite/sdk-for-apple.git";
-			requirement = {
-				kind = exactVersion;
-				version = 5.0.0;
 			};
 		};
 		252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */ = {
@@ -1402,6 +1401,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		250BB6A92CB9391800CCAB64 /* Appwrite */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Appwrite;
+		};
 		254729E52CB5967000172F55 /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
@@ -1456,11 +1459,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */;
 			productName = SwiftLocation;
-		};
-		25DE873E2CB535B200EEA47B /* Appwrite */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */;
-			productName = Appwrite;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
