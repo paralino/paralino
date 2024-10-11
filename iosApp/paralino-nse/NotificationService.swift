@@ -36,45 +36,35 @@ class NotificationService: UNNotificationServiceExtension {
             DispatchQueue.main.async { [weak self] in
                 Task {
                     let notificationId = bestAttemptContent.userInfo["notificationId"] as? String
-                    if let notificationId {
-                        let pushprov = self?.pushProvider
-                        if let pushprov {
-                            let payload = await pushprov.getNotificationPayload(notificationId: notificationId)
-                            let content = payload?.notificationContent()
-                            
-                            if let content {
-                                bestAttemptContent.title = content.title
-                                bestAttemptContent.body = content.body
-                                bestAttemptContent.subtitle = content.subtitle
-                                contentHandler(bestAttemptContent)
-                            } else {
-                                bestAttemptContent.title = "Content is null"
-                                bestAttemptContent.body = ""
-                                bestAttemptContent.subtitle = ""
-                                contentHandler(bestAttemptContent)
-                            }
+                    if let notificationId, let pushProvider = self?.pushProvider {
+                        let payload = await pushProvider.getNotificationPayload(notificationId: notificationId)
+                        let content = payload?.notificationContent()
+                        
+                        if let content {
+                            contentHandler(content)
                         } else {
-                            bestAttemptContent.title = "Provider is null"
-                            bestAttemptContent.body = ""
-                            bestAttemptContent.subtitle = ""
-                            contentHandler(bestAttemptContent)
+                            self?.suppressNotification(contentHandler)
                         }
                     } else {
-                        bestAttemptContent.title = "Notification id is missing"
-                        bestAttemptContent.body = ""
-                        bestAttemptContent.subtitle = ""
-                        contentHandler(bestAttemptContent)
+                        self?.suppressNotification(contentHandler)
                     }
                 }
             }
+        } else {
+            suppressNotification(contentHandler)
         }
+    }
+    
+    func suppressNotification(_ contentHandler: @escaping (UNNotificationContent) -> Void, content: UNNotificationContent? = nil) {
+        // Notification will be suppressed only if com.apple.developer.usernotifications.filtering is granted
+        contentHandler(UNNotificationContent())
     }
     
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
-            contentHandler(bestAttemptContent)
+            suppressNotification(contentHandler, content: bestAttemptContent)
         }
     }
 }
