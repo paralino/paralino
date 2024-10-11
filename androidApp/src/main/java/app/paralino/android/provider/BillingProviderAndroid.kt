@@ -1,7 +1,6 @@
 package app.paralino.android.provider
 
 import android.app.Activity
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType

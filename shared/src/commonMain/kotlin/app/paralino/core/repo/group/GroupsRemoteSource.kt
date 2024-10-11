@@ -5,7 +5,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup

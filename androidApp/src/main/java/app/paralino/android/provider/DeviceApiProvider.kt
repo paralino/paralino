@@ -12,7 +12,6 @@ import app.paralino.core.appPrefs
 import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.data.db.AppPrefsProvider
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.IDeviceApiProvider

@@ -7,7 +7,7 @@ import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.raw.PersonalCodeCreateData

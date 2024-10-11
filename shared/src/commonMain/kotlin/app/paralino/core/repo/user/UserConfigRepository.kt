@@ -3,8 +3,8 @@ package app.paralino.core.repo.user
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.UserConfigEntity
 import app.paralino.core.data.db.mapToList
-import app.paralino.core.models.BackendDatabaseType
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.user.UserConfigModel
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.api.IDocumentsApi

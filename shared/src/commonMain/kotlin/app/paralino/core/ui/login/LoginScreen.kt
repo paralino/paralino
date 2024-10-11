@@ -45,7 +45,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.presentation.login.LoginScreenEvent
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiEvent

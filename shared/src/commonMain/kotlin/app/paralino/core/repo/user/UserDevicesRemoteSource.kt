@@ -3,7 +3,7 @@ package app.paralino.core.repo.user
 import app.paralino.core.appPrefs
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.raw.UpdateUserDeviceFunctionData
 import app.paralino.core.models.raw.UserDeviceRaw
 import app.paralino.core.repo.api.IDocumentsApi

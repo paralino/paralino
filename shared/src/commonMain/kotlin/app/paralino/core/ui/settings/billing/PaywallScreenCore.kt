@@ -61,7 +61,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.presentation.settings.billing.FaqSectionItem

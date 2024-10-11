@@ -3,8 +3,8 @@ package app.paralino.core.notifications
 import app.paralino.core.data.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
-import app.paralino.core.models.BackendDatabaseType
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.raw.LocationFocusRaw
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.models.raw.PushNotificationType
