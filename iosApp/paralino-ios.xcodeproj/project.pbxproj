@@ -178,6 +178,7 @@
 		259AEFA32A3E19740083FF4B /* Sharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sharing.swift; sourceTree = "<group>"; };
 		259AEFA52A3E2EF30083FF4B /* MapHomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeScreen.swift; sourceTree = "<group>"; };
 		259AEFA72A3E2F960083FF4B /* MapHomeState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeState.swift; sourceTree = "<group>"; };
+		25A5A6202CB7E14B00D3D160 /* paralino-ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-ios.entitlements"; sourceTree = "<group>"; };
 		25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateManager.swift; sourceTree = "<group>"; };
 		25B2DB422A44D7F60007E89D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		25B2DB442A44D89B0007E89D /* AccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountScreen.swift; sourceTree = "<group>"; };
@@ -477,6 +478,7 @@
 		25C03A6629CCE77100646364 /* paralino-ios */ = {
 			isa = PBXGroup;
 			children = (
+				25A5A6202CB7E14B00D3D160 /* paralino-ios.entitlements */,
 				250701212CB1C6AA006FBC1C /* paralino-iosDebug.entitlements */,
 				2529CAAA2B10CF1500D88042 /* Info.plist */,
 				254B6F3529EC8056008B1458 /* Localization */,
@@ -896,6 +898,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = "paralino-nse/paralino-nse.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -929,7 +932,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				forceLogToSystem = true;
-                internalTesting = true;
+				internalTesting = true;
 			};
 			name = Debug;
 		};
@@ -937,6 +940,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = "paralino-nse/paralino-nse.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -969,7 +973,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				forceLogToSystem = false;
-                internalTesting = false;
+				internalTesting = false;
 			};
 			name = Release;
 		};
@@ -1253,6 +1257,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-ios.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
