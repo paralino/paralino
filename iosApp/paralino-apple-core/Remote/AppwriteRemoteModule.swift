@@ -20,7 +20,7 @@ class AppwriteRemoteModule: IRemoteModule {
     }
     
     lazy var client: Client = {
-        return Client()
+        return Client(userDefaultsGroup: "group.app.paralino.ios")
             .setEndpoint(appBuildConfig.endpoint)
             .setProject(appBuildConfig.projectId)
             .setSelfSigned(false)
