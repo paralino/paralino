@@ -21,6 +21,8 @@
 		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
+    <key>TEAM_ID</key>
+    <string>$(TEAM_ID)</string>
 	<key>forceLogToSystem</key>
 	<string>$(forceLogToSystem)</string>
 	<key>internalTesting</key>

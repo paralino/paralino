@@ -15,6 +15,7 @@ public class CoreKoinSetup {
     }
     
     public static func initKoin(
+        appHost: AppHost,
         locationManager: LocationManager,
         appUpdateManager: IAppUpdateManager,
         billingProvider: IBillingProvider
@@ -27,6 +28,7 @@ public class CoreKoinSetup {
         let koinApp = ParalinoCore.shared.doInit(
             preLaunch: { koinApp in koinApp },
             appModules: CoreKoinSetup.createKoinModules(
+                apphost: appHost,
                 locationManager: locationManager,
                 appUpdateManager: appUpdateManager,
                 billingProvider: billingProvider
@@ -36,6 +38,7 @@ public class CoreKoinSetup {
     }
     
     private static func createKoinModules(
+        apphost: AppHost,
         locationManager: LocationManager,
         appUpdateManager: IAppUpdateManager,
         billingProvider: IBillingProvider
@@ -45,9 +48,11 @@ public class CoreKoinSetup {
             serverUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoServerUrl") as! String,
             projectId: Bundle.main.object(forInfoDictionaryKey: "paralinoServerKey") as! String,
             publicServerUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoPublicServerUrl") as! String,
-            isDevMode: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
             // TODO add key
             billingRCApiKey: "",
+            iOSTeamId: Bundle.main.object(forInfoDictionaryKey: "TEAM_ID") as! String,
+            appHost: apphost,
+            isDevMode: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
             hasPreviewFeatures: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
             logToConsole: (Bundle.main.object(forInfoDictionaryKey: "forceLogToSystem") as! String) == "true",
             logErrorsToRemote: true

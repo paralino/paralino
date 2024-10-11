@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import shared
 import paralino_apple_core
 
 class KoinSetup {
     static func initKoin(locationManager: LocationManager) {
         CoreKoinSetup.initKoin(
+            appHost: AppHost.mainApp,
             locationManager: locationManager,
             appUpdateManager: AppUpdateManager(),
             billingProvider: BillingProviderIOS()

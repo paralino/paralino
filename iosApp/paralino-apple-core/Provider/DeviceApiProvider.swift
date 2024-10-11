@@ -64,7 +64,7 @@ class DeviceApiProvider: IDeviceApiProvider {
     }
     
     override func createConfig() -> AppPrefs {
-        AppPrefs(provider: AppPrefsProvider())
+        AppPrefs(provider: AppPrefsProvider(appBuildConfig: appBuildConfig))
     }
     
     override func createSystemLogr() -> SystemLogr {

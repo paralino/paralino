@@ -125,10 +125,12 @@ object KoinSetup {
                 serverUrl = BuildConfig.serverUrl,
                 projectId = BuildConfig.serverKey,
                 publicServerUrl = BuildConfig.publicServerUrl,
+                billingRCApiKey = BuildConfig.revenueCatApiKey,
+                iOSTeamId = "",
+                appHost = AppHost.MAIN_APP,
                 isDevMode = BuildConfig.internalTesting,
                 hasPreviewFeatures = BuildConfig.internalTesting,
                 logToConsole = BuildConfig.forceLogToSystem,
-                billingRCApiKey = BuildConfig.revenueCatApiKey,
                 logErrorsToRemote = true
             )
         }
