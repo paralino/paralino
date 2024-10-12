@@ -19,14 +19,13 @@ class NotificationService: UNNotificationServiceExtension {
     
     override init() {
         self.locationManager = LocationManager(setupManager: false)
+        locationManager.manager.delegate = locationManager
+        KoinSetup.initKoin(locationManager: self.locationManager)
     }
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-        
-        locationManager.manager.delegate = locationManager
-        KoinSetup.initKoin(locationManager: self.locationManager)
         
         Logr.w(tag: "notification", message: "Received alert notification")
         
