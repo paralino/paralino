@@ -7,6 +7,7 @@ import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.data.db.AppDatabaseHelper
 import app.paralino.core.data.db.LogsDatabaseHelper
 import app.paralino.core.data.db.SqlDriverFactory
+import app.paralino.core.data.db.logs.AppLogsDatabase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
@@ -115,8 +116,8 @@ object KoinIOS {
                 single { FunctionsApiWrapper(functionsApi(get(), get())) } bind IFunctionsApi::class
                 single { RealtimeApiWrapperIOS(realtimeApi(get(), get()), get()) } bind IRealtimeApi::class
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
-                single { AppDatabaseHelper(SqlDriverFactory(), get()) }
-                single { LogsDatabaseHelper(SqlDriverFactory(), get()) }
+                single { AppDatabaseHelper(SqlDriverFactory(get()), get()) }
+                single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(get()))) }
                 single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
                 single { valueFormatter } bind IValueFormatter::class
                 single { appUpdateManager } bind IAppUpdateManager::class
@@ -198,7 +199,7 @@ object KoinIOS {
                 )
             }
             factory { BlocklistViewModel(get()) }
-            factory { AppStatusDebugViewModel(get(), get(), get(), get()) }
+            factory { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
             factory { SubscriptionViewModel(get(), get(), get()) }
             factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get()) }
             factory { PlanInfoViewModel(get(), appPrefs) }

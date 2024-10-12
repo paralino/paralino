@@ -45,7 +45,7 @@ class PushNotificationHandler constructor(
                 documentId = notificationId
             )
                 .also {
-                    logg.tag("push_notifications").v("Got ${it.size} notifications documents")
+                    logg.tag("push_notifications").v("Got notification document")
                 }
                 .let {
                     try {

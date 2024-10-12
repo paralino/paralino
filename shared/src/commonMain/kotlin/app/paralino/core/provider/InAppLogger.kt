@@ -1,9 +1,7 @@
 package app.paralino.core.provider
 
-import app.paralino.core.data.db.DebugLogsEntity
 import app.paralino.core.data.db.LogsDatabaseHelper
-import app.paralino.core.data.db.execute
-import app.paralino.core.data.db.mapToList
+import app.paralino.core.data.db.logs.debug.DebugLogsEntity
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
@@ -18,9 +16,8 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -53,25 +50,13 @@ class InAppLogger(
                         }
 
                         lastFlushTime = nowUTC()
-                        scopeProvider.userSessionIOScope.launch {
+                        scopeProvider.defaultIOScope.launch {
                             try {
-                                database.transaction {
-                                    logs.forEach {
-                                        database.debugLogsQueries.insertEntry(
-                                            timeUTC = it.timeUTC,
-                                            type = it.type,
-                                            priority = it.priority,
-                                            tag = it.tag,
-                                            title = it.title,
-                                            info = it.info,
-                                            host = it.host
-                                        )
-                                        database.debugLogsQueries.removeOlderThan(
-                                            nowUTC().minus(2.days).toString()
-                                        )
-                                    }
-                                }
-                                _pendingLogsFlow.update { emptyList() }
+                                _pendingLogsFlow.update { it - logs.toSet() }
+                                database.debugLogsQueries.insertNewAndRemoveOldEntries(
+                                    maxValidTimeUTC = nowUTC().minus(2.days).toString(),
+                                    logs = logs
+                                )
                             } catch (e: Exception) {
                                 lastFlushTime = null
                                 logg.w(
@@ -100,7 +85,7 @@ class InAppLogger(
             return
         }
 
-        if (priority < LogPriority.INFO) {
+        if (priority < LogPriority.INFO && appBuildConfig.appHost == AppHost.MAIN_APP) {
             return
         }
 
@@ -141,32 +126,46 @@ class InAppLogger(
         hosts: List<AppHost>,
         text: String?
     ): Flow<List<DebugLogsEntity>> {
-        return database.mapToList {
-            debugLogsQueries.getFiltered(
-                types = types.map { it.key },
-                tags = tags,
-                hosts = hosts.map { it.key },
-                priorities = priorities.map { it.key },
-                typesNullIfEmpty = if (types.isEmpty()) 1 else 0,
-                tagsNullIfEmpty = if (tags.isEmpty()) 1 else 0,
-                priorityNullIfEmpty = if (priorities.isEmpty()) 1 else 0,
-                hostsNullIfEmpty = if (hosts.isEmpty()) 1 else 0,
-                text = text ?: ""
-            )
-        }
+        return database.debugLogsQueries.getFiltered(
+            types = types.map { it.key },
+            tags = tags,
+            hosts = hosts.map { it.key },
+            priorities = priorities.map { it.key },
+            typesNullIfEmpty = if (types.isEmpty()) 1 else 0,
+            tagsNullIfEmpty = if (tags.isEmpty()) 1 else 0,
+            priorityNullIfEmpty = if (priorities.isEmpty()) 1 else 0,
+            hostsNullIfEmpty = if (hosts.isEmpty()) 1 else 0,
+            text = text ?: ""
+        )
     }
 
     suspend fun clearLogs() {
         _pendingLogsFlow.update { listOf() }
-        database.execute { debugLogsQueries.clearAll() }
+        database.debugLogsQueries.clearAll()
     }
 }
 
-fun DebugLogsEntity.print(): String {
-    return "${
-        this.timeUTC.isoWithOffsetToInstant()?.toLocalDateTime(TimeZone.currentSystemDefault())
-            ?.format(format = LocalDateTime.Formats.ISO)?.replace("T", " ")
-    } [${this.type}] [${LogPriority.fromKeyOrFloor(this.priority)}]\n[${this.tag}]\n${this.title}${this.info?.let { " | ${this.info}" } ?: ""}\n"
+fun DebugLogsEntity.print(valueFormatter: IValueFormatter): String {
+    return buildString {
+        append("[$tag] ")
+        append("\n")
+        append(
+            timeUTC.isoWithOffsetToInstant()
+                ?.toLocalDateTime(TimeZone.currentSystemDefault())
+                ?.toInstant(TimeZone.UTC)
+                ?.epochSeconds
+                ?.let { valueFormatter.formatBestPattern(it, "yyyyMMdd' 'HHmmss'.'S") }
+        )
+        append(" [${type}] ")
+        append(" [${LogPriority.fromKeyOrFloor(priority)}] ")
+        append(" [$host] ")
+        append("\n")
+        append(title)
+        if (!info.isNullOrBlank()) {
+            append(" | $info")
+        }
+        append("\n")
+    }
 }
 
 enum class InAppLoggerLogType constructor(val key: String) {

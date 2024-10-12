@@ -5,6 +5,7 @@ import app.cash.sqldelight.Transacter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import app.paralino.core.data.db.logs.AppLogsDatabase
 import app.paralino.core.provider.ICoroutineScopeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -16,19 +17,9 @@ abstract class ParalinoDatabaseHelper<T : Transacter> {
 }
 
 class LogsDatabaseHelper(
-    private val driverFactory: SqlDriverFactory,
-    val scopeProvider: ICoroutineScopeProvider
-) : ParalinoDatabaseHelper<LogsDatabase>() {
-    override val defaultContext: CoroutineContext get() = scopeProvider.ioDispatcher
-    override val database = LogsDatabase(driverFactory.createLogsDatabaseDriver())
-
-    val debugLogsQueries = database.debugLogsSQLQueries
-
-    suspend fun transaction(query: LogsDatabaseHelper.() -> Unit) =
-        withContext(defaultContext) { database.transaction { query() } }
-
-    suspend fun <T : Any> transactionWithResult(query: LogsDatabaseHelper.() -> T?): T? =
-        withContext(defaultContext) { database.transactionWithResult { query() } }
+    private val database: AppLogsDatabase
+) {
+    val debugLogsQueries = database.debugLogsDao()
 }
 
 class AppDatabaseHelper(

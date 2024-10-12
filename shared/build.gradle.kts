@@ -127,10 +127,6 @@ sqldelight {
             packageName.set("app.paralino.core.data.db")
             srcDirs.setFrom("src/commonMain/db/main")
         }
-        create("LogsDatabase") {
-            packageName.set("app.paralino.core.data.db")
-            srcDirs.setFrom("src/commonMain/db/logs")
-        }
     }
 }
 
