@@ -1,9 +1,9 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.executeWithResult
-import app.paralino.core.data.db.mapToList
-import app.paralino.core.data.db.mapToOneOrNull
+import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.executeWithResult
+import app.paralino.core.db.mapToList
+import app.paralino.core.db.mapToOneOrNull
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.models.places.GroupPlace

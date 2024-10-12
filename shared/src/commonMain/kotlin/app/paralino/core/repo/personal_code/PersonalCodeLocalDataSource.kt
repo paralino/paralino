@@ -1,7 +1,7 @@
 package app.paralino.core.repo.personal_code
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.mapToList
+import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.mapToList
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.PersonalCodeMapperLocal
 import app.paralino.core.models.raw.PersonalCodeRaw

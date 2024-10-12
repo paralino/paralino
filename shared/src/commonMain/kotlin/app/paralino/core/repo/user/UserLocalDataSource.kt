@@ -1,8 +1,8 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.mapToList
-import app.paralino.core.data.db.mapToOneOrNull
+import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.mapToList
+import app.paralino.core.db.mapToOneOrNull
 import app.paralino.core.models.mappers.UserMapperLocal
 import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserMeRaw

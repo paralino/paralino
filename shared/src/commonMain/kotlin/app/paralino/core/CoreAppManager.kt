@@ -1,6 +1,6 @@
 package app.paralino.core
 
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.LogoutUseCase

@@ -1,9 +1,9 @@
 package app.paralino.core.crypto.user
 
 import app.paralino.core.crypto.SimpleKeyPairData
-import app.paralino.core.data.db.AppPrefs
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.mapToOneOrNull
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.mapToOneOrNull
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw

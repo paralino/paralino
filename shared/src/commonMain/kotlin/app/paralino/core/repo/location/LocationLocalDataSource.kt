@@ -1,7 +1,7 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.mapToOneOrNull
+import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.mapToOneOrNull
 import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModel

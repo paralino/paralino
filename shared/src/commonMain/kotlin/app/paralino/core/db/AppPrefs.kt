@@ -1,4 +1,4 @@
-package app.paralino.core.data.db
+package app.paralino.core.db
 
 import app.paralino.core.appPrefs
 import app.paralino.core.presentation.common.FormValidation

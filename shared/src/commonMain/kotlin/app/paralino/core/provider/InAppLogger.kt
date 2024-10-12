@@ -1,7 +1,7 @@
 package app.paralino.core.provider
 
-import app.paralino.core.data.db.LogsDatabaseHelper
-import app.paralino.core.data.db.logs.debug.DebugLogsEntity
+import app.paralino.core.db.LogsDatabaseHelper
+import app.paralino.core.db.logs.debug.DebugLogsEntity
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost

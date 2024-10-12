@@ -4,10 +4,10 @@ import app.paralino.core.CoreAppManager
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.appPrefs
 import app.paralino.core.crypto.ICryptoServiceProvider
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.LogsDatabaseHelper
-import app.paralino.core.data.db.SqlDriverFactory
-import app.paralino.core.data.db.logs.AppLogsDatabase
+import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.LogsDatabaseHelper
+import app.paralino.core.db.SqlDriverFactory
+import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase

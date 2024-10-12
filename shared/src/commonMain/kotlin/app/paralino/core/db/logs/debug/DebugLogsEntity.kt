@@ -1,4 +1,4 @@
-package app.paralino.core.data.db.logs.debug
+package app.paralino.core.db.logs.debug
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

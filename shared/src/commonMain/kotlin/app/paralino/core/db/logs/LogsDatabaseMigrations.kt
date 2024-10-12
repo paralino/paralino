@@ -1,4 +1,4 @@
-package app.paralino.core.data.db.logs
+package app.paralino.core.db.logs
 
 import androidx.room.migration.Migration
 import androidx.sqlite.SQLiteConnection

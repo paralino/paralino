@@ -1,10 +1,11 @@
-package app.paralino.core.data.db
+package app.paralino.core.db
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
-import app.paralino.core.data.db.logs.AppLogsDatabase
+import app.paralino.core.data.db.MainAppDatabase
+import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.models.AppBuildConfig
 import platform.Foundation.NSFileManager
 

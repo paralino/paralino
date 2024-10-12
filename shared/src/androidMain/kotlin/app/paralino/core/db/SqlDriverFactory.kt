@@ -1,4 +1,4 @@
-package app.paralino.core.data.db
+package app.paralino.core.db
 
 import android.content.Context
 import androidx.room.Room
@@ -6,7 +6,8 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import app.paralino.core.data.db.logs.AppLogsDatabase
+import app.paralino.core.data.db.MainAppDatabase
+import app.paralino.core.db.logs.AppLogsDatabase
 
 actual class SqlDriverFactory(private val context: Context) {
     actual fun createMainDatabaseDriver(): SqlDriver {

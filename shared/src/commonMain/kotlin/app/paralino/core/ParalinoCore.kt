@@ -8,7 +8,7 @@ import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.crypto.user.UserCryptoKeyLocalDataSource
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.GroupValidityVerification

@@ -1,9 +1,9 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.db.AppDatabaseHelper
 import app.paralino.core.data.db.PlaceActivityEntity
-import app.paralino.core.data.db.execute
-import app.paralino.core.data.db.executeWithResult
+import app.paralino.core.db.execute
+import app.paralino.core.db.executeWithResult
 import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import kotlinx.coroutines.flow.MutableStateFlow

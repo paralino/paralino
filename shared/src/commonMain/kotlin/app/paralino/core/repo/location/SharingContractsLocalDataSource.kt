@@ -3,8 +3,8 @@ package app.paralino.core.repo.location
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import app.paralino.core.models.mappers.SharingContractsMapper
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.mapToList
+import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.mapToList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

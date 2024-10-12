@@ -1,4 +1,4 @@
-package app.paralino.core.data.db
+package app.paralino.core.db
 
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences

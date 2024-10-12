@@ -1,13 +1,13 @@
-package app.paralino.core.data.db.logs
+package app.paralino.core.db.logs
 
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import app.paralino.core.data.db.SqlDriverFactory
-import app.paralino.core.data.db.logs.debug.DebugLogsDao
-import app.paralino.core.data.db.logs.debug.DebugLogsEntity
+import app.paralino.core.db.SqlDriverFactory
+import app.paralino.core.db.logs.debug.DebugLogsDao
+import app.paralino.core.db.logs.debug.DebugLogsEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 

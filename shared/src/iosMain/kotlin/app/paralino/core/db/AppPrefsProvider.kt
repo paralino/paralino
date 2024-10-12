@@ -1,4 +1,4 @@
-package app.paralino.core.data.db
+package app.paralino.core.db
 
 import app.paralino.core.models.AppBuildConfig
 import com.russhwolf.settings.ExperimentalSettingsApi

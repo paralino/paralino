@@ -1,11 +1,12 @@
-package app.paralino.core.data.db
+package app.paralino.core.db
 
 import app.cash.sqldelight.Query
 import app.cash.sqldelight.Transacter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import app.paralino.core.data.db.logs.AppLogsDatabase
+import app.paralino.core.data.db.MainAppDatabase
+import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.provider.ICoroutineScopeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

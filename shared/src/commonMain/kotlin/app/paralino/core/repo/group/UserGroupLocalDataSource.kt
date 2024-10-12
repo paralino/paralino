@@ -1,9 +1,9 @@
 package app.paralino.core.repo.group
 
 import app.paralino.core.appPrefs
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.mapToList
-import app.paralino.core.data.db.mapToOneOrNull
+import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.mapToList
+import app.paralino.core.db.mapToOneOrNull
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.domain.crypto.VerificationResultError
 import app.paralino.core.models.group.UserGroup

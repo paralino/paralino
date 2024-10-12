@@ -9,8 +9,8 @@ import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.isBatteryCharging
 import app.paralino.core.appPrefs
-import app.paralino.core.data.db.AppPrefs
-import app.paralino.core.data.db.AppPrefsProvider
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.AppPrefsProvider
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.DeviceType

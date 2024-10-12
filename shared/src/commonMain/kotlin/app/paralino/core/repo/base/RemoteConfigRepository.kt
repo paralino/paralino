@@ -1,9 +1,9 @@
 package app.paralino.core.repo.base
 
-import app.paralino.core.data.db.AppPrefs
-import app.paralino.core.data.db.AppDatabaseHelper
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.AppDatabaseHelper
 import app.paralino.core.data.db.ConfigNodeEntity
-import app.paralino.core.data.db.mapToList
+import app.paralino.core.db.mapToList
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.ICoroutineScopeProvider
