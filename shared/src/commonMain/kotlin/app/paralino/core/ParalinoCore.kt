@@ -134,9 +134,9 @@ object ParalinoCore {
         connectionStatus = deviceApiProvider.connectionStatusProvider
 
         logr.init(
-            logrs = listOf(
+            logrs = listOfNotNull(
                 deviceApiProvider.createSystemLogr(),
-                inAppLogger,
+                inAppLogger.takeIf { appBuildConfig.isDevMode },
                 deviceApiProvider.createCrashReportingLogr()
             )
         )
