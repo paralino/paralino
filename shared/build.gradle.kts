@@ -14,6 +14,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.moko.resources)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 kotlin {
@@ -50,11 +52,13 @@ kotlin {
             api(libs.kotlinx.serialization.json)
             api(libs.sqldelight.coroutines)
             api(libs.sqldelight.adapters)
+            api(libs.koin.core)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.multiplatform.settings)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.logging)
-            api(libs.koin.core)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.sqlite.bundled)
         }
 
         androidMain.dependencies {
@@ -104,6 +108,17 @@ android {
     kotlin {
         jvmToolchain(17)
     }
+}
+
+dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 sqldelight {

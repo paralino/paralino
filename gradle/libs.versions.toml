@@ -42,6 +42,9 @@ okhttp = "4.12.0"
 appwrite = "5.1.1"
 ktor = "2.3.12"
 revenuecat-android = "8.7.0"
+androidx-room = "2.7.0-alpha09"
+sqlite = "2.5.0-alpha09"
+ksp = "2.0.20-1.0.24"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -109,9 +112,10 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
-
-# Required
 revenuecat-android = { module = "com.revenuecat.purchases:purchases", version.ref = "revenuecat-android" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -126,3 +130,5 @@ aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "abo
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "mokoResources" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
