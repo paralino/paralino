@@ -3,6 +3,7 @@ package app.paralino.android.remote.appwrite
 import android.app.Application
 import app.paralino.android.remote.RemoteClient
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.appwrite.Client

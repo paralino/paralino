@@ -11,6 +11,7 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.NetworkType
 import kotlinx.coroutines.Dispatchers
