@@ -5,18 +5,20 @@ CREATE TABLE IF NOT EXISTS debugLogsEntity (
 `priority` INTEGER NOT NULL,
 `tag` TEXT NOT NULL,
 `title` TEXT NOT NULL,
-`info` TEXT DEFAULT NULL
+`info` TEXT DEFAULT NULL,
+`host` TEXT DEFAULT NULL
 );
 
 insertEntry:
-INSERT INTO debugLogsEntity (timeUTC, type, priority, tag, title, info)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT INTO debugLogsEntity (timeUTC, type, priority, tag, title, info, host)
+VALUES (?, ?, ?, ?, ?, ?, ?);
 
 getFiltered:
 SELECT * FROM debugLogsEntity
 WHERE
     (:typesNullIfEmpty IS 1 OR type IN :types) AND
     (:tagsNullIfEmpty IS 1 OR tag IN :tags) AND
+    (:hostsNullIfEmpty IS 1 OR host IN :hosts) AND
     (:priorityNullIfEmpty IS 1 OR priority IN :priorities) AND
 --     CASE WHEN :priority != NULL THEN priority >= :priority ELSE 1 END AND
     (

@@ -22,8 +22,8 @@ data class AppBuildConfig constructor(
     }
 }
 
-enum class AppHost {
-    MAIN_APP,
-    IOS_NOTIFICATION_EXTENSION,
-    IOS_LOCATION_EXTENSION
+enum class AppHost constructor(val key: String) {
+    MAIN_APP("app"),
+    IOS_NOTIFICATION_EXTENSION("ios_nse"),
+    IOS_LOCATION_EXTENSION("ios_lse")
 }

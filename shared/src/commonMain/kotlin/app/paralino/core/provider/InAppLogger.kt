@@ -5,6 +5,8 @@ import app.paralino.core.data.db.LogsDatabaseHelper
 import app.paralino.core.data.db.execute
 import app.paralino.core.data.db.mapToList
 import app.paralino.core.logg
+import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.AppHost
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
@@ -27,7 +29,7 @@ import kotlin.time.Duration.Companion.seconds
 class InAppLogger(
     private val database: LogsDatabaseHelper,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val valueFormatter: IValueFormatter
+    private val appBuildConfig: AppBuildConfig
 ) : SystemLogr() {
 
     private val _pendingLogsFlow = MutableStateFlow<List<DebugLogsEntity>>(emptyList())
@@ -61,7 +63,8 @@ class InAppLogger(
                                             priority = it.priority,
                                             tag = it.tag,
                                             title = it.title,
-                                            info = it.info
+                                            info = it.info,
+                                            host = it.host
                                         )
                                         database.debugLogsQueries.removeOlderThan(
                                             nowUTC().minus(2.days).toString()
@@ -117,10 +120,11 @@ class InAppLogger(
             id = 0,
             timeUTC = nowUTC().toString(),
             type = type.key,
+            host = appBuildConfig.appHost.key,
             priority = priority.key,
             tag = tag ?: "default",
             title = title,
-            info = info
+            info = info,
         )
 
         _pendingLogsFlow.update { it + entry }
@@ -130,16 +134,19 @@ class InAppLogger(
         priorities: List<LogPriority>,
         types: List<InAppLoggerLogType>,
         tags: List<String>,
+        hosts: List<AppHost>,
         text: String?
     ): Flow<List<DebugLogsEntity>> {
         return database.mapToList {
             debugLogsQueries.getFiltered(
                 types = types.map { it.key },
                 tags = tags,
+                hosts = hosts.map { it.key },
                 priorities = priorities.map { it.key },
                 typesNullIfEmpty = if (types.isEmpty()) 1 else 0,
                 tagsNullIfEmpty = if (tags.isEmpty()) 1 else 0,
                 priorityNullIfEmpty = if (priorities.isEmpty()) 1 else 0,
+                hostsNullIfEmpty = if (hosts.isEmpty()) 1 else 0,
                 text = text ?: ""
             )
         }
