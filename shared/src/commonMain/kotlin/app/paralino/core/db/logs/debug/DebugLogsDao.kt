@@ -35,7 +35,7 @@ interface DebugLogsDao {
                 info LIKE '%' || :text || '%' OR
                 tag LIKE '%' || :text || '%'
             )
-        ORDER BY id DESC
+        ORDER BY timeUTC DESC
         """
     )
     fun getFiltered(

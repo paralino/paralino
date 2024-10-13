@@ -217,6 +217,7 @@ object KoinIOS {
         val refreshEverything: RefreshEverythingUseCase get() = get()
         val pushProvider: IPushProviderManager get() = get()
         val locationStatusProvider: ILocationStatusProvider get() = get()
+        val inAppLogger: InAppLogger get() = get()
     }
 
     object ViewModels : KoinComponent {

@@ -22,19 +22,7 @@ class ValueFormatter: IValueFormatter {
     }
     
     override func formatTimeOnly(timeUTC: Kotlinx_datetimeLocalDateTime?) -> String? {
-        guard let time = timeUTC else { return nil }
-        let dateComponents = DateComponents(
-            timeZone: .gmt,
-            year: Int(time.year),
-            month: Int(time.monthNumber),
-            day: Int(time.dayOfMonth),
-            hour: Int(time.hour),
-            minute: Int(time.minute),
-            second: Int(time.second),
-            nanosecond: Int(time.nanosecond)
-        )
-        
-        guard let date = Calendar.current.date(from: dateComponents) else { return nil }
+        guard let date = timeUTC?.toDate() else { return nil }
         
         let format = DateFormatter()
         format.dateStyle = .none
@@ -47,11 +35,38 @@ class ValueFormatter: IValueFormatter {
         Date().ISO8601Format(.iso8601(timeZone: .gmt))
     }
     
-    override func formatBestPattern(epochSeconds: Int64, pattern: String) -> String {
-        let date = Date(timeIntervalSince1970: Double(epochSeconds))
+    override func formatBestPattern(timeUTC: Kotlinx_datetimeLocalDateTime, pattern: String) -> String {
+        let date = timeUTC.toDate()!
         let dateFormatter = DateFormatter()
-        let dayFormat = DateFormatter.dateFormat(fromTemplate: pattern, options: 0, locale: Locale.current)!
-        dateFormatter.dateFormat = dayFormat
+        dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: pattern, options: 0, locale: Locale.current)!
         return dateFormatter.string(from: date)
+    }
+    
+    override func formatWithPattern(timeUTC: Kotlinx_datetimeLocalDateTime, pattern: String) -> String {
+        let date = timeUTC.toDate()!
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = pattern
+        dateFormatter.locale = Locale.current
+        dateFormatter.timeZone = TimeZone.current
+        return dateFormatter.string(from: date)
+    }
+}
+
+extension Kotlinx_datetimeLocalDateTime {
+    func toDateComponents() -> DateComponents {
+        DateComponents(
+            timeZone: .gmt,
+            year: Int(year),
+            month: Int(monthNumber),
+            day: Int(dayOfMonth),
+            hour: Int(hour),
+            minute: Int(minute),
+            second: Int(second),
+            nanosecond: Int(nanosecond)
+        )
+    }
+    
+    func toDate() -> Date? {
+        Calendar.current.date(from: toDateComponents())
     }
 }

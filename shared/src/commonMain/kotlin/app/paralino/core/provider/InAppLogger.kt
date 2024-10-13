@@ -5,6 +5,7 @@ import app.paralino.core.db.logs.debug.DebugLogsEntity
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
+import app.paralino.core.notifications.IPushNotificationPresenter
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -98,6 +98,19 @@ class InAppLogger(
         )
     }
 
+    fun logNotificationPayload(payload: IPushNotificationPresenter.Payload) {
+        if (payload.loggerTag != null) {
+            val timeInfo = payload.timeInfo ?: payload.timeMillis?.let { Instant.fromEpochMilliseconds(it).toString() }
+            log(
+                type = InAppLoggerLogType.NOTIFICATIONS,
+                priority = LogPriority.INFO,
+                tag = payload.loggerTag,
+                title = listOfNotNull(payload.title, payload.message?.let { "($it)" }).joinToString(separator = " "),
+                info = timeInfo
+            )
+        }
+    }
+
     fun log(
         type: InAppLoggerLogType,
         priority: LogPriority,
@@ -116,7 +129,23 @@ class InAppLogger(
             info = info,
         )
 
-        _pendingLogsFlow.update { it + entry }
+        if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+            _pendingLogsFlow.update { it + entry }
+        } else {
+            scopeProvider.defaultIOScope.launch {
+                try {
+                    database.debugLogsQueries.insertNewAndRemoveOldEntries(
+                        maxValidTimeUTC = nowUTC().minus(2.days).toString(),
+                        logs = listOf(entry)
+                    )
+                } catch (e: Exception) {
+                    logg.w(
+                        tag = "app_logger",
+                        message = "Error writing new logs: ${e.message}"
+                    )
+                }
+            }
+        }
     }
 
     fun getFilteredLog(
@@ -147,18 +176,20 @@ class InAppLogger(
 
 fun DebugLogsEntity.print(valueFormatter: IValueFormatter): String {
     return buildString {
-        append("[$tag] ")
+        append("[$tag]")
         append("\n")
         append(
             timeUTC.isoWithOffsetToInstant()
-                ?.toLocalDateTime(TimeZone.currentSystemDefault())
-                ?.toInstant(TimeZone.UTC)
-                ?.epochSeconds
-                ?.let { valueFormatter.formatBestPattern(it, "yyyyMMdd' 'HHmmss'.'S") }
+                ?.let {
+                    valueFormatter.formatWithPattern(
+                        timeUTC = it.toLocalDateTime(TimeZone.UTC),
+                        pattern = "yyyy-MM-dd' 'HH:mm:ss'.'SSS"
+                    )
+                }
         )
-        append(" [${type}] ")
-        append(" [${LogPriority.fromKeyOrFloor(priority)}] ")
-        append(" [$host] ")
+        append(" [${type}]")
+        append(" [${LogPriority.fromKeyOrFloor(priority)}]")
+        append(" [$host]")
         append("\n")
         append(title)
         if (!info.isNullOrBlank()) {
