@@ -9,12 +9,6 @@
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).NotificationService</string>
 	</dict>
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>fetch</string>
-        <string>location</string>
-        <string>processing</string>
-    </array>
     <key>TEAM_ID</key>
     <string>$(TEAM_ID)</string>
     <key>forceLogToSystem</key>
