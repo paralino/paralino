@@ -1,7 +1,6 @@
 package app.paralino.core.repo.personal_code
 
 import app.paralino.core.db.AppDatabaseHelper
-import app.paralino.core.db.mapToList
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.PersonalCodeMapperLocal
 import app.paralino.core.models.raw.PersonalCodeRaw
@@ -16,20 +15,11 @@ class PersonalCodeLocalDataSource(
 ) {
 
     suspend fun replacePersonalCodes(data: List<PersonalCodeRaw>) {
-        database.personalCodeQueries.transaction {
-            database.personalCodeQueries.clearAll()
-            data.forEach {
-                database.personalCodeQueries.createCode(mapper.remote2Local(it))
-            }
-        }
-    }
-
-    suspend fun addPersonalCode(data: PersonalCodeRaw) {
-        database.personalCodeQueries.createCode(mapper.remote2Local(data))
+        database.personalCodeDao.recreateCodes(data.map { mapper.remote2Local(it) })
     }
 
     fun getPersonalCodes(): Flow<List<UserPersonalCode>> {
-        return database.mapToList { personalCodeQueries.getAllCodes() }
+        return database.personalCodeDao.getAllCodes()
             .distinctFlowOfList()
             .map {
                 it.mapNotNull {
@@ -45,6 +35,6 @@ class PersonalCodeLocalDataSource(
 
 
     suspend fun clear() {
-        database.personalCodeQueries.clearAll()
+        database.personalCodeDao.clearAll()
     }
 }

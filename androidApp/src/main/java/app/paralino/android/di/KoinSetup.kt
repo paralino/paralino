@@ -30,6 +30,7 @@ import app.paralino.core.db.AppDatabaseHelper
 import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.LogsDatabaseHelper
 import app.paralino.core.db.SqlDriverFactory
+import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
@@ -89,7 +90,7 @@ object KoinSetup {
     val modules get() = listOf(coreDependencyModule, appSpecificModule)
 
     private val coreDependencyModule = module {
-        single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
+        single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get(), AppMainDatabase.create(SqlDriverFactory(androidContext()))) }
         single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(androidContext()))) }
 
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class

@@ -1,0 +1,181 @@
+package app.paralino.core.db.main.members
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+
+@Dao
+interface GroupRelatedKeysDao {
+
+    @Transaction
+    suspend fun recreateAllKeys(
+        groupKeys: List<GroupKeysEntity>,
+        memberKeys: List<GroupMembersKeysEntity>,
+        deviceKeys: List<GroupDeviceKeysEntity>,
+        personalKeys: List<PersonalGroupKeyEntity>
+    ) {
+        clearAllGroupKeys()
+        clearAllGroupMembersKeys()
+        clearAllGroupDeviceKeys()
+        clearAllPersonalGroupKeys()
+
+        createGroupKeys(groupKeys)
+        createGroupMemberKeys(memberKeys)
+        createGroupDeviceKeys(deviceKeys)
+        createPersonalGroupKeys(personalKeys)
+    }
+
+    @Transaction
+    suspend fun recreateAllKeys(
+        groupId: String,
+        groupKeys: List<GroupKeysEntity>,
+        memberKeys: List<GroupMembersKeysEntity>,
+        deviceKeys: List<GroupDeviceKeysEntity>,
+        personalKeys: List<PersonalGroupKeyEntity>
+    ) {
+        clearAllGroupKeys(groupId = groupId)
+        clearAllGroupMembersKeys(groupId = groupId)
+        clearAllGroupDeviceKeys(groupId = groupId)
+        clearAllPersonalGroupKeys(groupId = groupId)
+
+        createGroupKeys(groupKeys)
+        createGroupMemberKeys(memberKeys)
+        createGroupDeviceKeys(deviceKeys)
+        createPersonalGroupKeys(personalKeys)
+    }
+
+    @Transaction
+    suspend fun recreateGroupKeys(
+        groupId: String,
+        groupKeys: List<GroupKeysEntity>,
+    ) {
+        clearAllGroupKeys(groupId = groupId)
+        createGroupKeys(groupKeys)
+    }
+
+    @Transaction
+    suspend fun recreateMemberKeys(
+        groupId: String,
+        memberKeys: List<GroupMembersKeysEntity>,
+        personalKeys: List<PersonalGroupKeyEntity>
+    ) {
+        clearAllGroupMembersKeys(groupId = groupId)
+        clearAllPersonalGroupKeys(groupId = groupId)
+
+        createGroupMemberKeys(memberKeys)
+        createPersonalGroupKeys(personalKeys)
+    }
+
+    @Transaction
+    suspend fun recreateDeviceKeys(
+        groupId: String,
+        deviceKeys: List<GroupDeviceKeysEntity>
+    ) {
+        clearAllGroupDeviceKeys(groupId = groupId)
+        createGroupDeviceKeys(deviceKeys)
+    }
+
+    @Transaction
+    suspend fun clearAllGroupRelatedKeys() {
+        clearAllGroupKeys()
+        clearAllGroupMembersKeys()
+        clearAllGroupDeviceKeys()
+        clearAllPersonalGroupKeys()
+        clearAllGroupDeviceIntegrityKeys()
+    }
+
+    @Transaction
+    suspend fun clearAllGroupRelatedKeys(groupId: String) {
+        clearAllGroupKeys(groupId = groupId)
+        clearAllGroupMembersKeys(groupId = groupId)
+        clearAllGroupDeviceKeys(groupId = groupId)
+        clearAllPersonalGroupKeys(groupId = groupId)
+        clearAllGroupDeviceIntegrityKeys(groupId = groupId)
+    }
+
+    @Transaction
+    suspend fun clearAllKeysForUser(groupId: String, userId: String) {
+        clearAllGroupMembersKeys(groupId = groupId, userId = userId)
+        clearAllGroupDeviceKeys(groupId = groupId, userId = userId)
+    }
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createGroupKeys(keys: List<GroupKeysEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createGroupMemberKeys(keys: List<GroupMembersKeysEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createGroupDeviceKeys(keys: List<GroupDeviceKeysEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createPersonalGroupKeys(keys: List<PersonalGroupKeyEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createGroupDeviceIntegrityKey(key: GroupDeviceIntegrityEntity)
+
+
+
+    @Query("SELECT * FROM groupKeysEntity")
+    suspend fun getAllGroupKeys(): List<GroupKeysEntity>
+
+    @Query("SELECT * FROM groupMembersKeysEntity")
+    suspend fun getAllGroupMembersKeys(): List<GroupMembersKeysEntity>
+
+    @Query("SELECT * FROM groupDeviceKeysEntity")
+    suspend fun getAllGroupDeviceKeys(): List<GroupDeviceKeysEntity>
+
+    @Query("SELECT * FROM personalGroupKeyEntity")
+    suspend fun getAllPersonalGroupKeys(): List<PersonalGroupKeyEntity>
+
+    @Query("SELECT * FROM groupDeviceIntegrityEntity WHERE groupId = :id")
+    suspend fun getGroupDeviceIntegrityKey(groupId: String): GroupDeviceIntegrityEntity?
+
+
+
+    @Query("DELETE FROM groupKeysEntity")
+    suspend fun clearAllGroupKeys()
+
+    @Query("DELETE FROM groupMembersKeysEntity")
+    suspend fun clearAllGroupMembersKeys()
+
+    @Query("DELETE FROM groupDeviceKeysEntity")
+    suspend fun clearAllGroupDeviceKeys()
+
+    @Query("DELETE FROM personalGroupKeyEntity")
+    suspend fun clearAllPersonalGroupKeys()
+
+    @Query("DELETE FROM groupDeviceIntegrityEntity")
+    suspend fun clearAllGroupDeviceIntegrityKeys()
+
+
+
+    @Query("DELETE FROM groupKeysEntity WHERE groupId = :groupId")
+    suspend fun clearAllGroupKeys(groupId: String)
+
+    @Query("DELETE FROM groupMembersKeysEntity WHERE groupId = :groupId")
+    suspend fun clearAllGroupMembersKeys(groupId: String)
+
+    @Query("DELETE FROM groupDeviceKeysEntity WHERE groupId = :groupId")
+    suspend fun clearAllGroupDeviceKeys(groupId: String)
+
+    @Query("DELETE FROM personalGroupKeyEntity WHERE groupId = :groupId")
+    suspend fun clearAllPersonalGroupKeys(groupId: String)
+
+    @Query("DELETE FROM groupDeviceIntegrityEntity WHERE groupId = :groupId")
+    suspend fun clearAllGroupDeviceIntegrityKeys(groupId: String)
+
+
+
+    @Query("DELETE FROM groupMembersKeysEntity WHERE groupId = :groupId AND ownerUserId = :userId")
+    suspend fun clearAllGroupMembersKeys(groupId: String, userId: String)
+
+    @Query("""
+        DELETE FROM groupDeviceKeysEntity 
+        WHERE groupId = :groupId AND (memberUserId = :userId OR ownerUserId = :userId)
+    """)
+    suspend fun clearAllGroupDeviceKeys(groupId: String, userId: String)
+}

@@ -1,8 +1,8 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.data.db.BlocklistEntity
-import app.paralino.core.data.db.SubscriptionPlanEntity
-import app.paralino.core.data.db.UserEntity
+import app.paralino.core.db.main.user.BlocklistEntity
+import app.paralino.core.db.main.user.SubscriptionPlanEntity
+import app.paralino.core.db.main.user.UserEntity
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.raw.BlocklistRaw
@@ -32,9 +32,9 @@ class UserMapperLocal constructor(
             registration = model.registration,
             emailVerification = model.emailVerification,
             data = UserMeDataRaw(
-                userImage = model.user_data_userImage,
-                userName = model.user_data_userName,
-                userKeyVersion = model.user_data_userKeyVersion
+                userImage = model.userImage,
+                userName = model.userName,
+                userKeyVersion = model.userKeyVersion
             )
         )
     }
@@ -45,9 +45,9 @@ class UserMapperLocal constructor(
             email = model.email,
             registration = model.registration,
             emailVerification = model.emailVerification,
-            user_data_userImage = model.data?.userImage,
-            user_data_userName = model.data?.userName,
-            user_data_userKeyVersion = model.data?.userKeyVersion,
+            userImage = model.data?.userImage,
+            userName = model.data?.userName,
+            userKeyVersion = model.data?.userKeyVersion,
         )
     }
 
@@ -57,7 +57,7 @@ class UserMapperLocal constructor(
             ownerUserId = model.ownerUserId,
             resourceId = model.resourceId,
             resourceType = model.resourceType,
-            data_ = model.data,
+            data = model.data,
             userKeyVersion = model.userKeyVersion
         )
     }
@@ -68,7 +68,7 @@ class UserMapperLocal constructor(
             ownerUserId = model.ownerUserId,
             resourceId = model.resourceId,
             resourceType = model.resourceType,
-            data = model.data_,
+            data = model.data,
             userKeyVersion = model.userKeyVersion
         )
     }

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.map
 class PlacesLocalDataSource(
     private val database: AppDatabaseHelper,
     private val mapper: GroupPlaceMapperLocal,
+    private val placeActivity: PlaceActivityDataSource
 ) {
 
     suspend fun recreatePlaces(places: List<GroupPlaceWithSettingsRaw>) {
@@ -34,6 +35,7 @@ class PlacesLocalDataSource(
                 }
             }
         }
+        placeActivity.recreatePlaces(places = places)
     }
 
     suspend fun updateOrCreatePlace(place: GroupPlaceWithSettingsRaw) {

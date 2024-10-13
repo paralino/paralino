@@ -8,6 +8,7 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import app.paralino.core.data.db.MainAppDatabase
 import app.paralino.core.db.logs.AppLogsDatabase
+import app.paralino.core.db.main.AppMainDatabase
 
 actual class SqlDriverFactory(private val context: Context) {
     actual fun createMainDatabaseDriver(): SqlDriver {
@@ -28,6 +29,15 @@ actual class SqlDriverFactory(private val context: Context) {
                     cursor.close()
                 }
             }
+        )
+    }
+
+    actual fun createMainDatabaseBuilder(): RoomDatabase.Builder<AppMainDatabase> {
+        val appContext = context.applicationContext
+        val dbFile = appContext.getDatabasePath("paralino_main.db")
+        return Room.databaseBuilder<AppMainDatabase>(
+            context = appContext,
+            name = dbFile.absolutePath
         )
     }
 

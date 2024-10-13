@@ -178,7 +178,7 @@ val dataSourceModule = module {
     single { CryptoKeyLocalDataSource(get(), get()) }
     single { UserGroupLocalDataSource(get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
-    single { PlacesLocalDataSource(get(), get()) }
+    single { PlacesLocalDataSource(get(), get(), get()) }
 
     single { UserRemoteSource(get(), get(), get(), get(), get()) }
     single { UserDevicesRemoteSource(get(), get(), get(), get()) }

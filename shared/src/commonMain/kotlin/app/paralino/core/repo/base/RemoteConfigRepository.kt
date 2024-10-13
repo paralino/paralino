@@ -1,9 +1,8 @@
 package app.paralino.core.repo.base
 
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.AppDatabaseHelper
-import app.paralino.core.data.db.ConfigNodeEntity
-import app.paralino.core.db.mapToList
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.main.user.RemoteConfigEntity
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -51,22 +50,19 @@ class RemoteConfigRepository(
             )
         ) { getConfigFromRemote() }
             ?.also { nodes ->
-                database.configQueries.transaction {
-                    database.configQueries.clearAll()
-                    nodes.entries.forEach { node ->
+                database.remoteConfigDao.recreateConfig(
+                    nodes.entries.map { node ->
                         val value = node.value
-                        database.configQueries.createConfig(
-                            ConfigNodeEntity(
-                                id = node.key,
-                                value_ = if (value is JsonPrimitive && value.isString) {
-                                    value.content
-                                } else {
-                                    value.toString()
-                                }
-                            )
+                        RemoteConfigEntity(
+                            id = node.key,
+                            value = if (value is JsonPrimitive && value.isString) {
+                                value.content
+                            } else {
+                                value.toString()
+                            }
                         )
                     }
-                }
+                )
             }
     }
 
@@ -79,15 +75,14 @@ class RemoteConfigRepository(
     }
 
     fun getConfig(): Flow<ConfigData> {
-        return database.mapToList { configQueries.getAll() }
+        return database.remoteConfigDao.getAll()
             .map { ConfigData.init(it) }
             .distinctUntilChanged()
     }
 
     private suspend fun getConfigOnce(): ConfigData {
-        return database.configQueries
-            .getAll()
-            .executeAsList()
+        return database.remoteConfigDao
+            .getAllOnce()
             .let { ConfigData.init(it) }
     }
 

@@ -1,6 +1,6 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.data.db.SharingContractEntity
+import app.paralino.core.db.main.location.SharingContractEntity
 import app.paralino.core.models.location.LocationSharingContract
 
 object SharingContractsMapper {
@@ -12,7 +12,7 @@ object SharingContractsMapper {
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,
             shareNetwork = model.shareNetwork,
-            approximateLocationInMeters = model.approximateLocationInMeters?.toInt()
+            approximateLocationInMeters = model.approximateLocationInMeters
         )
     }
 
@@ -24,7 +24,7 @@ object SharingContractsMapper {
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,
             shareNetwork = model.shareNetwork,
-            approximateLocationInMeters = model.approximateLocationInMeters?.toLong()
+            approximateLocationInMeters = model.approximateLocationInMeters
         )
     }
 }

@@ -2,7 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.SimpleKeyPairData
-import app.paralino.core.data.db.UserKeysEntity
+import app.paralino.core.db.main.user.UserKeysEntity
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.OldMasterKeys

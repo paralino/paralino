@@ -1,8 +1,7 @@
 package app.paralino.core.repo.user
 
 import app.paralino.core.db.AppDatabaseHelper
-import app.paralino.core.data.db.UserConfigEntity
-import app.paralino.core.db.mapToList
+import app.paralino.core.db.main.user.UserConfigEntity
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.user.UserConfigModel
@@ -43,19 +42,16 @@ class UserConfigRepository(
             )
         ) { getConfigFromRemote() }
             ?.also { config ->
-                database.userConfigQueries.transaction {
-                    database.userConfigQueries.clearAll()
-                    config.nodes.forEach { node ->
-                        database.userConfigQueries.createConfig(
-                            UserConfigEntity(
-                                id = node.id,
-                                ownerUserId = node.ownerUserId,
-                                type = node.type,
-                                data_ = node.data
-                            )
+                database.userConfigDao.recreateConfig(
+                    config.nodes.map { node ->
+                        UserConfigEntity(
+                            id = node.id,
+                            ownerUserId = node.ownerUserId,
+                            type = node.type,
+                            data = node.data
                         )
                     }
-                }
+                )
             }
     }
 
@@ -81,7 +77,7 @@ class UserConfigRepository(
     }
 
     private fun getConfig(): Flow<UserConfigModel> {
-        return database.mapToList { userConfigQueries.getAll() }
+        return database.userConfigDao.getAll()
             .map { UserConfigModel.fromDatabase(it) }
             .distinctUntilChanged()
     }
