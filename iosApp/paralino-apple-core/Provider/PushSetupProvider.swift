@@ -18,9 +18,12 @@ public class PushSetupProvider: IPushProviderManager {
         
     }
     
-    public func getNotificationPayload(notificationId: String) async -> IPushNotificationPresenter.Payload? {
-        let payload = try? await pushHandler.retrievePushPresenterPayload(notificationId: notificationId, force: true)
-        return payload
+    public func getNotificationPayload(notificationId: String) async throws -> IPushNotificationPresenter.Payload? {
+        return try await pushHandler.retrievePushPresenterPayload(notificationId: notificationId, force: true)
+    }
+    
+    public func deleteNotification(notificationId: String) async throws {
+        try await pushHandler.deletePushNotification(notificationId: notificationId)
     }
     
     public func syncPushNotifications() {
